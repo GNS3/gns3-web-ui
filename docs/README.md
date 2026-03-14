@@ -11,6 +11,7 @@
 ```
 docs/
 ├── ai-chat-complete-guide.md             # ⭐ Complete AI Chat implementation guide
+├── ai-profile-management.md              # AI Profile / LLM Model Configuration management
 ├── console-devices-panel-implementation.md # Console devices panel docs (v1.7.0)
 ├── dialog-style-isolation-guide.md       # Dialog style isolation using panelClass
 ├── window-boundary-service.md            # Window boundary service documentation
@@ -26,6 +27,7 @@ docs/
 | Document | Description |
 |----------|-------------|
 | [ai-chat-complete-guide.md](./ai-chat-complete-guide.md) | ⭐ Complete AI Chat implementation guide |
+| [ai-profile-management.md](./ai-profile-management.md) | AI Profile / LLM Model Configuration management |
 | [console-devices-panel-implementation.md](./console-devices-panel-implementation.md) | Console devices panel (v1.7.0) |
 | [dialog-style-isolation-guide.md](./dialog-style-isolation-guide.md) | Dialog style isolation using panelClass |
 | [window-boundary-service.md](./window-boundary-service.md) | Window boundary service |
@@ -37,6 +39,7 @@ docs/
 ### Featured Documentation
 
 - **AI Chat Feature**: [ai-chat-complete-guide.md](./ai-chat-complete-guide.md) - Complete AI Chat implementation guide
+- **AI Profile Management**: [ai-profile-management.md](./ai-profile-management.md) - LLM Model Configuration management
 - **Console Devices Panel**: [console-devices-panel-implementation.md](./console-devices-panel-implementation.md) - Multi-device console management
 - **Dialog Style Isolation**: [dialog-style-isolation-guide.md](./dialog-style-isolation-guide.md) - Using panelClass to prevent style pollution
 - **Window Boundary Service**: [window-boundary-service.md](./window-boundary-service.md) - Window boundary management
@@ -44,13 +47,24 @@ docs/
 ### Getting Started
 
 1. **New to AI Chat?** Start with [ai-chat-complete-guide.md](./ai-chat-complete-guide.md)
-2. **Console Management?** See [console-devices-panel-implementation.md](./console-devices-panel-implementation.md)
-3. **Dialog Styling?** Check [dialog-style-isolation-guide.md](./dialog-style-isolation-guide.md)
-4. **Service Integration?** Check [window-boundary-service.md](./window-boundary-service.md)
+2. **AI Profile Management?** See [ai-profile-management.md](./ai-profile-management.md)
+3. **Console Management?** See [console-devices-panel-implementation.md](./console-devices-panel-implementation.md)
+4. **Dialog Styling?** Check [dialog-style-isolation-guide.md](./dialog-style-isolation-guide.md)
+5. **Service Integration?** Check [window-boundary-service.md](./window-boundary-service.md)
 
 ---
 
 ## 📝 Recent Updates
+
+### 2026-03-14
+- ✅ **AI Profile Management**: New documentation for LLM Model Configuration management
+  - Complete feature overview and component structure
+  - API integration documentation for user and group endpoints
+  - Form validation rules (conditional API key validation)
+  - Provider presets (OpenRouter, DeepSeek, Custom)
+  - Custom field support
+  - Security considerations (API key encryption)
+  - Configuration inheritance model
 
 ### 2026-03-13
 - ✅ **Dialog Style Isolation Guide**: New documentation for using panelClass to scope dialog styles
@@ -69,4 +83,4 @@ docs/
 
 ---
 
-*Last Updated: 2026-03-13*
+*Last Updated: 2026-03-14*

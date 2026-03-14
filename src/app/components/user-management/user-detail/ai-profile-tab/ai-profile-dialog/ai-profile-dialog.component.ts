@@ -139,13 +139,21 @@ export class AiProfileDialogComponent implements OnInit {
     if (this.mode === 'edit' && this.data.config) {
       const config = this.data.config;
 
+      // In edit mode, make api_key optional (existing key is preserved if not changed)
+      const apiKeyControl = this.form.get('api_key');
+      if (apiKeyControl) {
+        apiKeyControl.clearValidators();
+        apiKeyControl.setValidators([Validators.minLength(10)]);
+        apiKeyControl.updateValueAndValidity();
+      }
+
       // Patch form with nested config values
       this.form.patchValue({
         name: config.name,
         model_type: config.model_type,
         provider: config.config.provider,
         model: config.config.model,
-        api_key: config.config.api_key || '',
+        api_key: '', // Always empty in edit mode (API returns null)
         base_url: config.config.base_url,
         temperature: config.config.temperature,
         context_limit: config.config.context_limit,
@@ -156,7 +164,7 @@ export class AiProfileDialogComponent implements OnInit {
 
       // Extract custom fields (non-standard fields from config object)
       this.customFields = Object.entries(config.config)
-        .filter(([key]) => !STANDARD_FIELDS.includes(key))
+        .filter(([key]) => !STANDARD_FIELDS.includes(key) && key !== 'max_tokens')
         .map(([key, value]) => ({ key, value: String(value) }));
 
       // Try to find matching preset
@@ -308,7 +316,7 @@ export class AiProfileDialogComponent implements OnInit {
 
     if (field === 'api_key') {
       if (errors.required) return 'API Key is required';
-      if (errors.minlength) return 'API Key is too short';
+      if (errors.minlength) return 'API Key is too short (minimum 10 characters)';
       return 'Invalid API Key format';
     }
 
@@ -396,11 +404,15 @@ export class AiProfileDialogComponent implements OnInit {
       model: value.model,
       temperature: parseFloat(value.temperature),
       context_limit: parseInt(value.context_limit, 10),
-      api_key: value.api_key,
       context_strategy: value.context_strategy,
       copilot_mode: value.copilot_mode,
       is_default: value.is_default || false
     };
+
+    // Only include api_key if provided (create mode) or if user entered a new value (edit mode)
+    if (value.api_key && value.api_key.trim()) {
+      configData.api_key = value.api_key.trim();
+    }
 
     // Add custom fields
     this.customFields.forEach(field => {

@@ -79,9 +79,16 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>API Key</mat-label>
-      <input matInput formControlName="api_key" type="password">
+      <input matInput formControlName="api_key" type="password" [placeholder]="mode === 'edit' ? 'Leave empty to keep existing key' : ''">
       <mat-error *ngIf="hasError('api_key')">{{ getErrorMessage('api_key') }}</mat-error>
-      <mat-hint>API key will be encrypted on the server. Minimum length: 10 characters</mat-hint>
+      <mat-hint>
+        <ng-container *ngIf="mode === 'edit'">
+          <span class="existing-key-hint">A saved API key exists for this configuration. Leave empty to keep it, or enter a new key to update.</span>
+        </ng-container>
+        <ng-container *ngIf="mode === 'create'">
+          API key will be encrypted on the server. Minimum length: 10 characters
+        </ng-container>
+      </mat-hint>
     </mat-form-field>
 
     <!-- Model Parameters Section -->
@@ -132,7 +139,6 @@
       <mat-checkbox formControlName="is_default" color="primary">
         Set as default configuration
       </mat-checkbox>
-      <mat-hint class="checkbox-hint">If checked, this will be the default configuration for {{ mode === 'create' ? 'this user/group' : 'this user/group' }}</mat-hint>
     </div>
 
     <!-- Custom Fields Section -->

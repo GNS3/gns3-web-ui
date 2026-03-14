@@ -94,9 +94,7 @@
                     mat-icon-button
                     (click)="toggleDefaultConfig(config)"
                     [disabled]="(settingDefault$ | async)?.has(config.config_id) || !isEditable(config)"
-                    [class.active-btn]="isDefault(config)"
-                    [matTooltip]="isDefault(config) ? 'Remove as default' : 'Set as default'"
-                    matTooltipClass="custom-tooltip">
+                    [class.active-btn]="isDefault(config)">
                     <mat-icon>check_circle</mat-icon>
                   </button>
 
