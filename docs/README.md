@@ -2,7 +2,7 @@
 
 > Complete documentation index for GNS3 Web UI project
 
-**Last Updated**: 2026-03-13
+**Last Updated**: 2026-03-14
 
 ---
 
@@ -12,8 +12,9 @@
 docs/
 ├── ai-chat-complete-guide.md             # ⭐ Complete AI Chat implementation guide
 ├── ai-profile-management.md              # AI Profile / LLM Model Configuration management
-├── console-devices-panel-implementation.md # Console devices panel docs (v1.7.0)
+├── console-devices-panel-implementation.md # Console devices panel docs (v1.8.0)
 ├── dialog-style-isolation-guide.md       # Dialog style isolation using panelClass
+├── electron-removal-migration-guide.md   # Electron removal and migration guide
 ├── window-boundary-service.md            # Window boundary service documentation
 └── README.md                             # This file
 ```
@@ -28,8 +29,9 @@ docs/
 |----------|-------------|
 | [ai-chat-complete-guide.md](./ai-chat-complete-guide.md) | ⭐ Complete AI Chat implementation guide |
 | [ai-profile-management.md](./ai-profile-management.md) | AI Profile / LLM Model Configuration management |
-| [console-devices-panel-implementation.md](./console-devices-panel-implementation.md) | Console devices panel (v1.7.0) |
+| [console-devices-panel-implementation.md](./console-devices-panel-implementation.md) | Console devices panel (v1.8.0) |
 | [dialog-style-isolation-guide.md](./dialog-style-isolation-guide.md) | Dialog style isolation using panelClass |
+| [electron-removal-migration-guide.md](./electron-removal-migration-guide.md) | Electron removal and migration guide |
 | [window-boundary-service.md](./window-boundary-service.md) | Window boundary service |
 
 ---
@@ -57,6 +59,13 @@ docs/
 ## 📝 Recent Updates
 
 ### 2026-03-14
+- ✅ **Electron Removal**: Removed Electron desktop application support
+  - Application is now web-only (browser-based)
+  - Removed 5 Electron dependencies: electron, electron-builder, @sentry/electron, ngx-electron, ngx-childprocess
+  - Reduced package count from 1647 to 1430 (-13%)
+  - Fixed 11 Electron-related security vulnerabilities
+  - Simplified codebase and improved build performance
+  - Updated Console Devices Panel documentation (v1.8.0) to reflect web-only nature
 - ✅ **AI Profile Management**: New documentation for LLM Model Configuration management
   - Complete feature overview and component structure
   - API integration documentation for user and group endpoints
@@ -79,7 +88,7 @@ docs/
   - Removed nested `ai-chat/` and `services/` subdirectories
   - Simplified navigation and file organization
 - ✅ **AI Chat v1.0**: Complete AI Chat functionality with multi-session management
-- ✅ **Console Panel v1.7.0**: Enhanced device console management with window persistence
+- ✅ **Console Panel v1.8.0**: Enhanced device console management with window persistence
 
 ---
 

@@ -3,14 +3,30 @@
 ## Document Information
 
 **Created**: 2026-03-10
-**Updated**: 2026-03-10
+**Updated**: 2026-03-14
 **Status**: ✅ **Completed**
-**Version**: 1.7.0
+**Version**: 1.8.0
 **Author**: Development Team
 
 ---
 
 ## Version History
+
+### v1.8.0 (2026-03-14)
+
+**Breaking Changes**:
+- ✅ Remove Electron desktop application support
+- ✅ Application is now web-only (browser-based)
+
+**Improvements**:
+- ✅ Simplify codebase by removing Electron-specific code paths
+- ✅ Reduce bundle size and dependency count
+- ✅ Improve build performance and security posture
+
+**Notes**:
+- All features now work through browser console only
+- Keyboard shortcuts (Alt+1-9) fully supported in web browsers
+- Local controller management no longer available
 
 ### v1.7.0 (2026-03-10)
 
@@ -546,7 +562,6 @@ import { ConsoleDevicesPanelComponent } from '@components/project-map/console-wr
 | Browser Environment | Alt+1-9 Support |
 |---------------------|-----------------|
 | **Web (Chrome/Firefox/Edge)** | ✅ Fully supported |
-| **Electron** | ✅ Fully supported |
 
 **Note**: Unlike native desktop applications, web browsers reserve many keyboard shortcuts. Alt+1-9 was chosen because it doesn't conflict with common browser shortcuts (unlike Ctrl+1-9 which switches browser tabs).
 
