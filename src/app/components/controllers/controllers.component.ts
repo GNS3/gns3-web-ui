@@ -4,7 +4,6 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, MatSortable } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ChildProcessService } from 'ngx-childprocess';
 import { ElectronService } from 'ngx-electron';
 import { BehaviorSubject, interval, merge, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -41,7 +40,6 @@ export class ControllersComponent implements OnInit, OnDestroy {
     private controllerManagement: ControllerManagementService,
     private changeDetector: ChangeDetectorRef,
     private electronService: ElectronService,
-    private childProcessService: ChildProcessService,
     private bottomSheet: MatBottomSheet,
     private route: ActivatedRoute,
     private router: Router

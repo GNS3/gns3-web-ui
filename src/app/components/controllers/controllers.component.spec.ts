@@ -13,7 +13,6 @@ import { MockedControllerService } from 'app/services/controller.service.spec';
 import { ControllersComponent } from './controllers.component';
 import { ControllerManagementService } from '@services/controller-management.service';
 import { ElectronService } from 'ngx-electron';
-import { ChildProcessService } from 'ngx-childprocess';
 import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MockedActivatedRoute } from '../snapshots/list-of-snapshots/list-of-snaphshots.component.spec';
@@ -64,7 +63,6 @@ describe('ControllersComponent', () => {
         ControllerDatabase,
         ElectronService,
         MatBottomSheet,
-        ChildProcessService,
         ChangeDetectorRef,
         { provide: ControllerService, useValue: controllerMockedService },
         { provide: ControllerManagementService, useValue: mockedControllerManagementService },

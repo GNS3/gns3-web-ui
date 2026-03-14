@@ -74,7 +74,6 @@
     "mousetrap": "^1.6.5",
     "ng-circle-progress": "^1.6.0",
     "ng2-file-upload": "^3.0.0",
-    "ngx-childprocess": "^0.0.6",
     "ngx-device-detector": "4.0.1",
     "ngx-electron": "^2.2.0",
     "node-fetch": "^3.2.10",
