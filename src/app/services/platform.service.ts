@@ -1,19 +1,18 @@
 import { Injectable } from '@angular/core';
-import { ElectronService } from 'ngx-electron';
 
 @Injectable()
 export class PlatformService {
-  constructor(private electronService: ElectronService) {}
+  constructor() {}
 
   isWindows() {
-    return this.electronService.process.platform === 'win32';
+    return navigator.platform.indexOf('Win') > -1;
   }
 
   isLinux() {
-    return this.electronService.process.platform === 'linux';
+    return navigator.platform.indexOf('Linux') > -1;
   }
 
   isDarwin() {
-    return this.electronService.process.platform === 'darwin';
+    return navigator.platform.indexOf('Mac') > -1;
   }
 }

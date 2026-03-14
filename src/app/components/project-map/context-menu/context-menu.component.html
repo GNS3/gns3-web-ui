@@ -17,21 +17,11 @@
       [controller]="controller"
       [nodes]="nodes"
     ></app-http-console-new-tab-action>
-    <app-console-device-action
-      *ngIf="!projectService.isReadOnly(project) && nodes.length && isElectronApp"
-      [controller]="controller"
-      [nodes]="nodes"
-    ></app-console-device-action>
     <app-console-device-action-browser
-      *ngIf="!projectService.isReadOnly(project) && nodes.length === 1 && !isElectronApp"
+      *ngIf="!projectService.isReadOnly(project) && nodes.length === 1"
       [controller]="controller"
       [node]="nodes[0]"
     ></app-console-device-action-browser>
-    <app-open-file-explorer-action
-      *ngIf="!projectService.isReadOnly(project) && nodes.length === 1 && isElectronApp"
-      [controller]="controller"
-      [node]="nodes[0]"
-    ></app-open-file-explorer-action>
     <app-isolate-node-action *ngIf="nodes.length === 1" [controller]="controller" [node]="nodes[0]"></app-isolate-node-action>
     <app-unisolate-node-action *ngIf="nodes.length === 1" [controller]="controller" [node]="nodes[0]"></app-unisolate-node-action>
     <app-change-hostname-action

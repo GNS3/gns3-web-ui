@@ -596,7 +596,6 @@ import { GroupAiProfileTabComponent } from '@components/group-details/group-ai-p
         ToolDetailsDialogComponent,
         CdkTableModule,
         CartographyModule,
-        NgxElectronModule,
         FileUploadModule,
         MatSidenavModule,
         MatFormFieldModule,

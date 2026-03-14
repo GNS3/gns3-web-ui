@@ -18,13 +18,12 @@ export class ScreenshotDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<ScreenshotDialogComponent>,
     private toasterService: ToasterService,
     private formBuilder: UntypedFormBuilder,
-    private electronService: ElectronService,
     private deviceService: DeviceDetectorService
   ) {
     this.nameForm = this.formBuilder.group({
       screenshotName: new UntypedFormControl(`screenshot-${Date.now()}`, [Validators.required]),
     });
-    this.isPngAvailable = this.electronService.isWindows || this.deviceService.getDeviceInfo().os === 'Windows';
+    this.isPngAvailable = this.deviceService.getDeviceInfo().os === 'Windows';
   }
 
   ngOnInit() {}
