@@ -1,7 +1,6 @@
 import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ElectronService } from 'ngx-electron';
 import { Drawing } from '../../../cartography/models/drawing';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
 import { Label } from '../../../cartography/models/label';
@@ -33,20 +32,17 @@ export class ContextMenuComponent implements OnInit {
   linkNodes: LinkNode[] = [];
 
   hasTextCapabilities = false;
-  isElectronApp = false;
   isBundledController: boolean = false;
 
   constructor(
     private sanitizer: DomSanitizer,
     private changeDetector: ChangeDetectorRef,
-    private electronService: ElectronService,
     public projectService: ProjectService
   ) {}
 
   ngOnInit() {
     this.setPosition(0, 0);
 
-    this.isElectronApp = this.electronService.isElectronApp;
     this.isBundledController = this.controller.location === 'bundled';
   }
 

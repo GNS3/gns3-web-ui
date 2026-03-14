@@ -12,7 +12,6 @@ import {
 import { MatMenuTrigger } from '@angular/material/menu';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
@@ -20,7 +19,6 @@ import { MapSettingsService } from '@services/mapsettings.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { ToasterService } from '@services/toaster.service';
 import { ConsoleDeviceActionBrowserComponent } from '../context-menu/actions/console-device-action-browser/console-device-action-browser.component';
-import { ConsoleDeviceActionComponent } from '../context-menu/actions/console-device-action/console-device-action.component';
 
 @Component({
   selector: 'app-context-console-menu',
@@ -32,19 +30,16 @@ export class ContextConsoleMenuComponent implements OnInit {
   @Input() controller: Controller;
   @ViewChild(MatMenuTrigger) contextConsoleMenu: MatMenuTrigger;
   @ViewChild('container', { read: ViewContainerRef }) container;
-  componentRef: ComponentRef<ConsoleDeviceActionComponent>;
   componentBrowserRef: ComponentRef<ConsoleDeviceActionBrowserComponent>;
 
   topPosition;
   leftPosition;
-  isElectronApp = false;
   node: Node;
 
   constructor(
     private sanitizer: DomSanitizer,
     private changeDetector: ChangeDetectorRef,
     private mapSettingsService: MapSettingsService,
-    private electronService: ElectronService,
     private consoleService: NodeConsoleService,
     private toasterService: ToasterService,
     private router: Router,
@@ -53,7 +48,6 @@ export class ContextConsoleMenuComponent implements OnInit {
 
   ngOnInit() {
     this.setPosition(0, 0);
-    this.isElectronApp = this.electronService.isElectronApp;
   }
 
   public setPosition(top: number, left: number) {
@@ -81,24 +75,13 @@ export class ContextConsoleMenuComponent implements OnInit {
 
   openConsole() {
     this.mapSettingsService.setConsoleContextMenuAction('console');
-    if (this.isElectronApp) {
-      const factory: ComponentFactory<ConsoleDeviceActionComponent> = this.resolver.resolveComponentFactory(
-        ConsoleDeviceActionComponent
-      );
-      this.componentRef = this.container.createComponent(factory);
-      this.componentRef.instance.controller = this.controller;
-      this.componentRef.instance.nodes = [this.node];
-
-      this.componentRef.instance.console();
-    } else {
-      const factory: ComponentFactory<ConsoleDeviceActionBrowserComponent> = this.resolver.resolveComponentFactory(
-        ConsoleDeviceActionBrowserComponent
-      );
-      this.componentBrowserRef = this.container.createComponent(factory);
-      this.componentBrowserRef.instance.controller = this.controller;
-      this.componentBrowserRef.instance.node = this.node;
-      this.componentBrowserRef.instance.openConsole();
-    }
+    const factory: ComponentFactory<ConsoleDeviceActionBrowserComponent> = this.resolver.resolveComponentFactory(
+      ConsoleDeviceActionBrowserComponent
+    );
+    this.componentBrowserRef = this.container.createComponent(factory);
+    this.componentBrowserRef.instance.controller = this.controller;
+    this.componentBrowserRef.instance.node = this.node;
+    this.componentBrowserRef.instance.openConsole();
   }
 
   openWebConsole() {

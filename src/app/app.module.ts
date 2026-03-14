@@ -13,8 +13,6 @@ import { ResizableModule } from 'angular-resizable-element';
 import { D3Service } from 'd3-ng2-service';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { FileUploadModule } from 'ng2-file-upload';
-import { NgxChildProcessModule } from 'ngx-childprocess';
-import { NgxElectronModule } from 'ngx-electron';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CartographyModule } from './cartography/cartography.module';
@@ -606,7 +604,6 @@ import { GroupAiProfileTabComponent } from '@components/group-details/group-ai-p
         ResizableModule,
         DragAndDropModule,
         DragDropModule,
-        NgxChildProcessModule,
         MATERIAL_IMPORTS,
         NgCircleProgressModule.forRoot(),
         OverlayModule,

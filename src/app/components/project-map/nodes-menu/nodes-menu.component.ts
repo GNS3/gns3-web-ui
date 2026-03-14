@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { ElectronService } from 'ngx-electron';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
@@ -30,36 +29,14 @@ export class NodesMenuComponent {
     private controllerService: ControllerService,
     private settingsService: SettingsService,
     private mapSettingsService: MapSettingsService,
-    private electronService: ElectronService,
     private dialog: MatDialog
   ) {}
 
   async startConsoleForAllNodes() {
-    if (this.electronService.isElectronApp) {
-      let consoleCommand = this.settingsService.getConsoleSettings()
-        ? this.settingsService.getConsoleSettings()
-        : this.nodeService.getDefaultCommand();
-
-      let nodes = this.nodesDataSource.getItems();
-      for (var node of nodes) {
-        const request = {
-          command: consoleCommand,
-          type: node.console_type,
-          host: node.console_host,
-          port: node.console,
-          name: node.name,
-          project_id: node.project_id,
-          node_id: node.node_id,
-          controller_url: this.controllerService.getControllerUrl(this.controller),
-        };
-        await this.electronService.remote.require('./console-executor.js').openConsole(request);
-      }
+    if (this.mapSettingsService.openConsolesInWidget) {
+      this.nodeConsoleService.openConsolesForAllNodesInWidget(this.nodesDataSource.getItems());
     } else {
-      if (this.mapSettingsService.openConsolesInWidget) {
-        this.nodeConsoleService.openConsolesForAllNodesInWidget(this.nodesDataSource.getItems());
-      } else {
-        this.nodeConsoleService.openConsolesForAllNodesInNewTabs(this.nodesDataSource.getItems());
-      }
+      this.nodeConsoleService.openConsolesForAllNodesInNewTabs(this.nodesDataSource.getItems());
     }
   }
 

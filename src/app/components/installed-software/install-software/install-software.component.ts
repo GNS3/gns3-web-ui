@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
-import { ElectronService } from 'ngx-electron';
 
 @Component({
   selector: 'app-install-software',
@@ -17,35 +16,22 @@ export class InstallSoftwareComponent implements OnInit, OnDestroy, OnChanges {
   public readyToInstall = true;
   public buttonText: string;
 
-  constructor(private electronService: ElectronService) { }
+  constructor() {}
 
   ngOnInit() {
-    if (this.electronService && this.electronService.ipcRenderer) {
-      this.electronService.ipcRenderer.on(this.responseChannel, (event, data) => {
-        this.updateButton();
-        this.installedChanged.emit(data);
-      });
-    }
+    this.updateButton();
   }
 
-  ngOnDestroy() {
-    if (this.electronService && this.electronService.ipcRenderer) {
-      this.electronService.ipcRenderer.removeAllListeners(this.responseChannel);
-    }
-  }
+  ngOnDestroy() {}
 
   ngOnChanges() {
     this.updateButton();
   }
 
   install() {
+    // Installation is not supported in web mode
     this.disabled = true;
-    this.buttonText = 'Installing';
-    this.electronService.ipcRenderer.send('installed-software-install', this.software);
-  }
-
-  private get responseChannel() {
-    return `installed-software-installed-${this.software.name}`;
+    this.buttonText = 'Not supported';
   }
 
   private updateButton() {
