@@ -143,5 +143,13 @@
       "typescript"
     ]
   },
-  "snyk": true
+  "snyk": true,
+  "overrides": {
+    "dompurify": "3.3.3",
+    "dagre-d3-es": "7.0.13"
+  },
+  "resolutions": {
+    "dompurify": "3.3.3",
+    "dagre-d3-es": "7.0.13"
+  }
 }
