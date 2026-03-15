@@ -28,6 +28,15 @@
             <button mat-raised-button (click)="setDarkMode(false)">Switch to light theme</button>
             <button mat-raised-button (click)="setDarkMode(true)">Switch to dark theme</button>
           </div>
+ 
+          <div class="theme-panel theme-panel--map">
+            <label class="theme-panel__label">Project map background</label>
+            <mat-radio-group [value]="mapTheme" (change)="setMapTheme($event.value)" class="theme-panel__radio-group">
+              <mat-radio-button value="auto">Follow global theme</mat-radio-button>
+              <mat-radio-button value="light">Always light</mat-radio-button>
+              <mat-radio-button value="dark">Always dark</mat-radio-button>
+            </mat-radio-group>
+          </div>
         </mat-expansion-panel>
 
         <mat-expansion-panel [expanded]="false">

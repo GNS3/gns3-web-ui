@@ -16,6 +16,7 @@ export class SettingsComponent implements OnInit {
   integrateLinksLabelsToLinks: boolean;
   openReadme: boolean;
   openConsolesInWidget: boolean;
+  mapTheme: string;
 
   constructor(
     private settingsService: SettingsService,
@@ -31,6 +32,7 @@ export class SettingsComponent implements OnInit {
     this.integrateLinksLabelsToLinks = this.mapSettingsService.integrateLinkLabelsToLinks;
     this.openReadme = this.mapSettingsService.openReadme;
     this.openConsolesInWidget = this.mapSettingsService.openConsolesInWidget;
+    this.mapTheme = this.themeService.savedMapTheme;
   }
 
   save() {
@@ -46,6 +48,11 @@ export class SettingsComponent implements OnInit {
     this.themeService.setDarkMode(value);
   }
 
+    setMapTheme(theme: 'light' | 'dark' | 'auto') {
+    this.mapTheme = theme;
+    this.themeService.setMapTheme(theme);
+  }
+ 
   checkForUpdates() {
     window.open('https://gns3.com/software');
   }
