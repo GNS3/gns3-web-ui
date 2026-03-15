@@ -49,7 +49,10 @@ export class AppComponent implements OnInit {
     } else {
       this.darkThemeEnabled = false;
     }
-    this.overlayContainer.getContainerElement().classList.add(theme);
+    const classList = this.overlayContainer.getContainerElement().classList;
+    classList.remove('dark-theme', 'light-theme', 'dark', 'light');
+    classList.add(theme);
+    classList.add(theme === 'dark-theme' ? 'dark' : 'light');
     this.componentCssClass = theme;
   }
 

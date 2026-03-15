@@ -108,6 +108,17 @@ mat-cell, mat-header-cell, mat-footer-cell {
   color: #d52435;
 }
 
+@keyframes row-flash {
+  0%   { background-color: transparent; }
+  20%  { background-color: rgba(21, 101, 192, 0.22); }
+  80%  { background-color: rgba(21, 101, 192, 0.22); }
+  100% { background-color: transparent; }
+}
+
+.row-highlight {
+  animation: row-flash 1.8s ease;
+}
+
 @media (max-width: 768px) {
   .table-container {
     overflow-x: auto;

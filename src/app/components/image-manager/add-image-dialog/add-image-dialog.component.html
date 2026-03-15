@@ -32,61 +32,28 @@
 
 <div *ngIf="isInstallAppliance">
   <div class="row" style="display: flex">
-    <div class="col-md-6">
-      <h5 *ngIf="uploaderImage.queue.length <= 0">Please Select image</h5>
-      <p *ngIf="uploaderImage.queue.length > 0" class="uploaded-text">Upload queue</p>
+    <div class="col-md-8">
+      <h5>Select image file(s) to upload</h5>
+      <p class="background-hint">
+        <mat-icon class="hint-icon">info_outline</mat-icon>
+        Uploads run in the background — you can navigate away freely.
+      </p>
     </div>
-    <div class="col-md-4 txt-align" *ngIf="uploaderImage.queue.length <= 0">
+    <div class="col-md-2 txt-align">
       <input
         type="file"
         accept=".bin,.image,.iol,.qcow2,.vmdk"
         multiple
-        #file
+        #fileInput
         class="non-visible"
-        ng2FileSelect
-        [uploader]="uploaderImage"
-        (onFileSelected)="uploadImageFile()"
+        (change)="onFilesSelected($event)"
       />
-      <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
+      <button mat-raised-button color="primary" (click)="fileInput.click()" class="file-button">Browse</button>
     </div>
-    <div class="{{uploaderImage.queue.length > 0 ? 'col-md-6 txt-align' : 'col-md-2 txt-align'}}  ">
+    <div class="col-md-2 txt-align">
       <button mat-button (click)="closeDialog()">
         <mat-icon>close</mat-icon>
       </button>
     </div>
-  </div>
-
-
-  <div class="row" *ngFor="let img of uploaderImage.queue; let i = index">
-    <div class="col-md-6">
-      <mat-title [ngClass]="{ 'uploaded-error-text': img.isError }">
-        {{ i + 1 }}. {{ img.file.name }}
-      </mat-title>
-    </div>
-    <div class="col-md-4">
-      <mat-progress-bar
-        mode="determinate"
-        [value]="getUploadState(img).progress"
-        aria-valuemin="0"
-        aria-valuemax="100"
-      ></mat-progress-bar>
-    </div>
-    <div class="col-md-2">
-      <span class="upload-state" [ngClass]="{ 'uploaded-error-text': getUploadState(img).status === 'error' }">
-        {{ getUploadState(img).progress }}%
-        <span *ngIf="getUploadState(img).status === 'uploaded'">done</span>
-        <span *ngIf="getUploadState(img).status === 'error'">error</span>
-        <span *ngIf="getUploadState(img).status === 'uploading'">uploading</span>
-      </span>
-    </div>
-  </div>
-  <div mat-dialog-actions align="end" *ngIf="uploaderImage.queue.length > 0">
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="uploaderImage.queue.length > 0 && hasActiveUploads() ? cancelUploading() : closeDialog()"
-    >
-      {{ hasActiveUploads() ? 'Cancel uploads' : 'Close' }}
-    </button>
   </div>
 </div>

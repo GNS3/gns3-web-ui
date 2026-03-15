@@ -330,6 +330,7 @@ import { DeleteResourcePoolComponent } from '@components/resource-pools-manageme
 import { ResourcePoolsFilterPipe } from '@components/resource-pools-management/resource-pools-filter.pipe';
 import { ResourcePoolDetailsComponent } from '@components/resource-pool-details/resource-pool-details.component';
 import { DeleteResourceConfirmationDialogComponent } from '@components/resource-pool-details/delete-resource-confirmation-dialog/delete-resource-confirmation-dialog.component';
+import { GlobalUploadIndicatorComponent } from '@components/global-upload-indicator/global-upload-indicator.component';
 
 @NgModule({
     declarations: [
@@ -569,6 +570,7 @@ import { DeleteResourceConfirmationDialogComponent } from '@components/resource-
         ResourcePoolsFilterPipe,
         ResourcePoolDetailsComponent,
         DeleteResourceConfirmationDialogComponent,
+        GlobalUploadIndicatorComponent,
     ],
     imports: [
         BrowserModule,
