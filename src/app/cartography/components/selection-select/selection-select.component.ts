@@ -16,10 +16,10 @@ export class SelectionSelectComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.onSelected = this.selectionManager.selected.subscribe(() => {
-      this.mapChangeDetectorRef.detectChanges();
+      this.mapChangeDetectorRef.detectSelectionChanges();
     });
     this.onUnselected = this.selectionManager.unselected.subscribe(() => {
-      this.mapChangeDetectorRef.detectChanges();
+      this.mapChangeDetectorRef.detectSelectionChanges();
     });
   }
 

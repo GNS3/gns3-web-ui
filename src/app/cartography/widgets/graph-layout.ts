@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { SelectionManager } from '../managers/selection-manager';
 import { LayersManager } from '../managers/layers-manager';
 import { Context } from '../models/context';
 import { SVGSelection } from '../models/types';
@@ -17,7 +18,8 @@ export class GraphLayout implements Widget {
     private selectionTool: SelectionTool,
     private movingTool: MovingTool,
     private layersWidget: LayersWidget,
-    private layersManager: LayersManager
+    private layersManager: LayersManager,
+    private selectionManager: SelectionManager
   ) {}
 
   public getNodesWidget() {
@@ -55,6 +57,16 @@ export class GraphLayout implements Widget {
     this.drawingLineTool.draw(view, context);
     this.selectionTool.draw(view, context);
     this.movingTool.draw(view, context);
+  }
+
+  public updateSelectionHighlights(view: SVGSelection) {
+    const canvas = view.select<SVGGElement>('g.canvas');
+    canvas.selectAll<SVGGElement, any>('g.node_body')
+      .classed('selected', (n) => this.selectionManager.isSelected(n));
+    canvas.selectAll<SVGGElement, any>('g.link_body')
+      .classed('selected', (l) => this.selectionManager.isSelected(l));
+    canvas.selectAll<SVGGElement, any>('g.drawing_body')
+      .classed('drawing_selected', (d) => this.selectionManager.isSelected(d));
   }
 
   disconnect(view: SVGSelection) {
