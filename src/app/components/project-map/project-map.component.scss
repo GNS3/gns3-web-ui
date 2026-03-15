@@ -15,17 +15,17 @@ g.node:hover {
 
 .project-map {
   background-color: #18242b;
- 
+
   .label {
     fill: #ffffff !important;
   }
- 
+
   &:not(.lightTheme) {
     // Dark mode: make default black ethernet cables visible as white
     path.ethernet_link[stroke="#000000"] {
       stroke: #ffffff;
     }
- 
+
     // Dark mode: brighten default dark-red serial cables so they're visible
     path.serial_link[stroke="#800000"] {
       stroke: #e05555;
@@ -36,14 +36,14 @@ g.node:hover {
       stroke: #ffffff;
     }
   }
- 
+
   &.lightTheme {
     background-color: #e8ecef;
- 
+
     .label {
       fill: #000000 !important;
     }
- 
+
     // Light mode: drawing cable line is black
     g.drawing-line-tool path {
       stroke: #000000;
@@ -373,7 +373,7 @@ path.serial_link.selected {
 }
 
 path.ethernet_link:hover {
-  stroke: darkred !important;
+  stroke: darkred;
 }
 
 .selected > .interface_label_border {
