@@ -153,6 +153,13 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   addTab(node: Node, selectAfterAdding: boolean) {
+    // Skip VNC nodes - they use standalone windows, not embedded console
+    console.debug('[ConsoleWrapper] addTab called for node:', node.name, 'console_type:', node.console_type);
+    if (node.console_type === 'vnc') {
+      console.debug('[ConsoleWrapper] Skipping VNC node:', node.name);
+      return;
+    }
+
     this.minimize(false);
 
     // Check if node already exists in tabs

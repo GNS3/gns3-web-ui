@@ -5,6 +5,7 @@ import { NodeConsoleService } from '@services/nodeConsole.service';
 import { VncConsoleService } from '@services/vnc-console.service';
 import { ToasterService } from '@services/toaster.service';
 import { Router } from '@angular/router';
+import { MapSettingsService } from '@services/mapsettings.service';
 
 @Component({
   selector: 'app-http-console-action',
@@ -18,7 +19,8 @@ export class HttpConsoleActionComponent implements OnInit {
     private nodeConsoleService: NodeConsoleService,
     private vncConsoleService: VncConsoleService,
     private toasterService: ToasterService,
-    private router: Router
+    private router: Router,
+    private mapSettingsService: MapSettingsService
   ) {}
 
   ngOnInit() {}
@@ -47,29 +49,11 @@ export class HttpConsoleActionComponent implements OnInit {
             const uri = `${n.console_type}://${n.console_host}:${n.console}`;
             window.open(uri, `Console-${n.name}`, 'width=1024,height=768');
           } else if (n.console_type === 'telnet') {
-            // Telnet console: open in popup window
-            let url = this.router.url.split('/');
-            let urlString = `/static/web-ui/${url[1]}/${url[2]}/${url[3]}/${url[4]}/nodes/${n.node_id}`;
-
-            // Parse console_resolution if available (format: "1024x768")
-            // Add padding for browser chrome (title bar, borders, etc.)
-            const windowPadding = 10;
-            let windowWidth = 800 + windowPadding;
-            let windowHeight = 600 + windowPadding;
-
-            if (n.properties) {
-              const props = n.properties as any;
-              if (props.console_resolution) {
-                const resolution = props.console_resolution;
-                const parts = resolution.split('x');
-                if (parts.length === 2) {
-                  windowWidth = parseInt(parts[0], 10) + windowPadding;
-                  windowHeight = parseInt(parts[1], 10) + windowPadding;
-                }
-              }
-            }
-
-            window.open(urlString, `Console-${n.name}`, `width=${windowWidth},height=${windowHeight}`);
+            // Telnet console: open in embedded widget
+            this.mapSettingsService.logConsoleSubject.next(true);
+            setTimeout(() => {
+              this.nodeConsoleService.openConsoleForNode(n);
+            }, 500);
           } else {
             this.toasterService.error(`Console type '${n.console_type}' is not supported for node ${n.name}.`);
           }

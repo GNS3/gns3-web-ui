@@ -33,7 +33,13 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
     this.nodesDataSource.changes.pipe(
       takeUntil(this.destroy$)
     ).subscribe((nodes: Node[]) => {
-      this.nodes = nodes.filter(n => n.console_type !== 'none');
+      // Filter out nodes without console and VNC/HTTP/HTTPS nodes (they use standalone popup windows)
+      this.nodes = nodes.filter(n => {
+        const noConsole = n.console_type === 'none';
+        const isVnc = n.console_type === 'vnc';
+        const isHttp = n.console_type.startsWith('http');
+        return !noConsole && !isVnc && !isHttp;
+      });
       this.sortNodes();
       this.cdr.markForCheck();
     });
