@@ -99,6 +99,40 @@ export class ElectronService {
   }
 
   /**
+   * Download capture file from GNS3 server and open in Wireshark
+   *
+   * @param config - Capture configuration
+   * @returns Observable with success status
+   */
+  downloadAndOpenCapture(config: {
+    host: string;
+    port: number;
+    protocol: string;
+    projectId: string;
+    linkId: string;
+    captureName?: string;
+    authToken?: string;
+  }): Observable<{ success: boolean; file?: string }> {
+    if (!this.isElectron()) {
+      console.warn('[ElectronService] Not running in Electron environment');
+      return of({ success: false });
+    }
+
+    return from(
+      (window as any).electronAPI.downloadAndOpenCapture(config)
+    ).pipe(
+      map((result: any) => {
+        console.log('[ElectronService] Capture downloaded and Wireshark opened:', result);
+        return result;
+      }),
+      catchError(error => {
+        console.error('[ElectronService] Failed to download/open capture:', error);
+        return of({ success: false });
+      })
+    );
+  }
+
+  /**
    * Get platform information
    *
    * @returns Observable with platform details

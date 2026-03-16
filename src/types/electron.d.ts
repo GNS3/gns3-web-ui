@@ -35,6 +35,21 @@ interface ElectronAPI {
   checkSoftware(softwareName: string): Promise<{ installed: boolean }>;
 
   /**
+   * Download capture file from GNS3 server and open in Wireshark
+   * @param config - Capture configuration
+   * @returns Promise with success status and file path
+   */
+  downloadAndOpenCapture(config: {
+    host: string;
+    port: number;
+    protocol: string;
+    projectId: string;
+    linkId: string;
+    captureName?: string;
+    authToken?: string;
+  }): Promise<{ success: boolean; file?: string }>;
+
+  /**
    * Get platform information
    * @returns Promise with platform details
    */

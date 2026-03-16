@@ -33,6 +33,20 @@ contextBridge.exposeInMainWorld('electronAPI', {
     ipcRenderer.invoke('check-software', softwareName),
 
   /**
+   * Download capture file from GNS3 server and open in Wireshark
+   * @param {Object} config - Capture configuration
+   * @param {string} config.host - GNS3 server host
+   * @param {number} config.port - GNS3 server port
+   * @param {string} config.protocol - Protocol (http/https)
+   * @param {string} config.projectId - Project ID
+   * @param {string} config.linkId - Link ID
+   * @param {string} [config.captureName] - Capture file name
+   * @returns {Promise<{success: boolean, file?: string}>}
+   */
+  downloadAndOpenCapture: (config) =>
+    ipcRenderer.invoke('download-and-open-capture', config),
+
+  /**
    * Get platform information
    * @returns {Promise<{platform: string, arch: string, versions: Object}>}
    */
