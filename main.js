@@ -1,103 +1,163 @@
-const electron = require('electron');
-const app = electron.app;
-const BrowserWindow = electron.BrowserWindow;
+const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('path');
-const url = require('url');
-const yargs = require('yargs');
+const { exec } = require('child_process');
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
-let isDev = false;
 
-const argv = yargs
-  .describe('m', 'Maximizes window on startup.')
-  .boolean('m')
-  .describe('e', 'Environment, `dev` for developer mode and when not specified then production mode.')
-  .choices('e', ['dev', null])
-  .describe('d', 'Enable developer tools.')
-  .boolean('d')
-  .argv;
-
-if (argv.e == 'dev') {
-  isDev = true;
-}
-
-
-function createWindow () {
-  // Create the browser window.
+function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1400,
+    height: 900,
     webPreferences: {
-      nodeIntegration: true, 
-      preload: path.join(__dirname, 'sentry.js')
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js')
     }
   });
 
-  // and load the index.html of the app.
-
-  if(isDev) {
-    mainWindow.loadURL('http://localhost:4200/');
-  }
-  else {
-    mainWindow.loadURL(url.format({
-      pathname: path.join(__dirname, 'dist/index.html'),
-      protocol: 'file:',
-      slashes: true
-    }));
-    mainWindow.maximize();
-  }
-
-  if(argv.d) {
-    // Open the DevTools.
+  // Development: Connect to Angular dev server
+  // Production: Load packaged Angular files
+  if (process.env.NODE_ENV === 'development') {
+    mainWindow.loadURL('http://localhost:4200');
+    // Open DevTools in development
     mainWindow.webContents.openDevTools();
+  } else {
+    mainWindow.loadFile(path.join(__dirname, 'dist/index.html'));
   }
 
-  if(argv.m) {
-    mainWindow.maximize();
-  }
-
-  // Emitted when the window is closed.
-  mainWindow.on('closed',async function () {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
+  mainWindow.on('closed', () => {
     mainWindow = null;
-  });
-
-
-  // forward event to renderer
-  electron.ipcMain.on('local-server-status-events', (event) => {
-    mainWindow.webContents.send('local-server-status-events', event);
   });
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+// ============================================
+// IPC Handlers for Local Tool Integration
+// ============================================
 
-// app.on('ready', createServerProc);
-// app.on('will-quit', exitServerProc);
+/**
+ * Open Wireshark with a capture file
+ */
+ipcMain.handle('open-wireshark', async (event, captureFilePath) => {
+  return new Promise((resolve, reject) => {
+    let wiresharkPath;
 
-// Quit when all windows are closed.
-app.on('window-all-closed', function () {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
-  if (process.platform !== 'darwin') {
-    app.quit()
+    // Detect Wireshark path based on platform
+    if (process.platform === 'win32') {
+      wiresharkPath = 'C:\\Program Files\\Wireshark\\Wireshark.exe';
+    } else if (process.platform === 'darwin') {
+      wiresharkPath = '/Applications/Wireshark.app/Contents/MacOS/Wireshark';
+    } else {
+      wiresharkPath = '/usr/bin/wireshark';
+    }
+
+    exec(`"${wiresharkPath}" "${captureFilePath}"`, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Failed to open Wireshark: ${error.message}`);
+        reject({ success: false, error: error.message });
+      } else {
+        console.log('Wireshark launched successfully');
+        resolve({ success: true });
+      }
+    });
+  });
+});
+
+/**
+ * Open RDP connection
+ */
+ipcMain.handle('open-rdp', async (event, config) => {
+  return new Promise((resolve, reject) => {
+    let command;
+
+    if (process.platform === 'win32') {
+      // Windows mstsc
+      command = `mstsc /v:${config.host}:${config.port}`;
+      if (config.username) {
+        command += ` /u:${config.username}`;
+      }
+    } else if (process.platform === 'darwin') {
+      // Mac Microsoft Remote Desktop
+      command = `open "rdp://full%20address=s:${config.host}:${config.port}"`;
+    } else {
+      // Linux rdesktop
+      command = `rdesktop ${config.host}:${config.port}`;
+      if (config.username) {
+        command += ` -u ${config.username}`;
+      }
+    }
+
+    exec(command, (error) => {
+      if (error) {
+        console.error(`Failed to open RDP: ${error.message}`);
+        reject({ success: false, error: error.message });
+      } else {
+        console.log('RDP launched successfully');
+        resolve({ success: true });
+      }
+    });
+  });
+});
+
+/**
+ * Check if software is installed
+ */
+ipcMain.handle('check-software', async (event, softwareName) => {
+  const { execSync } = require('child_process');
+
+  try {
+    if (softwareName === 'wireshark') {
+      if (process.platform === 'win32') {
+        execSync('where wireshark');
+      } else {
+        execSync('which wireshark');
+      }
+      return { installed: true };
+    }
+    return { installed: false };
+  } catch (error) {
+    return { installed: false };
   }
 });
 
-app.on('activate', function () {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
+/**
+ * Get platform information
+ */
+ipcMain.handle('get-platform-info', async () => {
+  return {
+    platform: process.platform,
+    arch: process.arch,
+    versions: {
+      node: process.versions.node,
+      chrome: process.versions.chrome,
+      electron: process.versions.electron
+    }
+  };
+});
+
+// ============================================
+// App Event Handlers
+// ============================================
+
+app.on('ready', createWindow);
+
+app.on('window-all-closed', () => {
+  // On macOS, keep app running even when all windows are closed
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+
+app.on('activate', () => {
+  // On macOS, recreate window when dock icon is clicked
   if (mainWindow === null) {
     createWindow();
   }
 });
 
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+// Security: Prevent new window creation
+app.on('web-contents-created', (event, contents) => {
+  contents.on('new-window', (event, navigationUrl) => {
+    event.preventDefault();
+    shell.openExternal(navigationUrl);
+  });
+});
