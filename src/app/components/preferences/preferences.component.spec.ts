@@ -15,6 +15,7 @@ export class MockedActivatedRoute {
   get() {
     return {
       params: of({ id: 3 }),
+      queryParams: of({}), // Added to fix test error
       snapshot: {
         parent: {
           params: {
