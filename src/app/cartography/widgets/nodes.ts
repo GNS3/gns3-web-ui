@@ -19,6 +19,15 @@ export class NodesWidget implements Widget {
     this.nodeWidget.draw(this.selectNode(view, node));
   }
 
+  public updateNodePosition(view: SVGSelection, node: MapNode) {
+    this.selectNode(view, node)
+      .select<SVGGElement>('g.node_body')
+      .attr('transform', () => {
+        if (!node.width) return `translate(${node.x - 30},${node.y - 30})`;
+        return `translate(${node.x},${node.y})`;
+      });
+  }
+
   public draw(view: SVGSelection) {
     const node = view.selectAll<SVGGElement, MapNode>('g.node').data(
       (layer: Layer) => {
