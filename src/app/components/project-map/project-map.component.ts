@@ -217,6 +217,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.themeService.mapThemeChanged.subscribe((value: string) => {
       this.isLightThemeEnabled = value === 'light';
+      this.applyMapBackground(this.isLightThemeEnabled);
     });
 
     this.themeService.themeChanged.subscribe((value: string) => {
@@ -227,6 +228,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   getSettings() {
     this.isLightThemeEnabled = this.themeService.getActualMapTheme() === 'light';
     this.isGlobalLightTheme = this.themeService.getActualTheme() === 'light';
+    this.applyMapBackground(this.isLightThemeEnabled);
     this.cd.detectChanges();
 
     this.settings = this.settingsService.getAll();
@@ -1144,7 +1146,17 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     instance.project = this.project;
   }
 
+  private applyMapBackground(isLight: boolean): void {
+    const color = isLight ? '#e8ecef' : '#18242b';
+    document.body.style.backgroundColor = color;
+    document.documentElement.style.backgroundColor = color;
+  }
+ 
   public ngOnDestroy() {
+    const globalColor = this.themeService.getActualTheme() === 'light' ? '#e8ecef' : '#18242b';
+    document.body.style.backgroundColor = globalColor;
+    document.documentElement.style.backgroundColor = globalColor;
+ 
     this.nodeConsoleService.openConsoles = 0;
     this.title.setTitle('GNS3 Web UI');
 
