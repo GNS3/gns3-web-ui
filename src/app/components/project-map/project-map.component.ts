@@ -16,7 +16,7 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { ExportPortableProjectComponent } from '@components/export-portable-project/export-portable-project.component';
 import { environment } from 'environments/environment';
 import * as Mousetrap from 'mousetrap';
-import { from, Observable, Subscription } from 'rxjs';
+import { forkJoin, from, Observable, Subscription } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 import * as d3 from 'd3';
@@ -67,6 +67,7 @@ import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { Symbol } from '@models/symbol';
 import { DrawingService } from '@services/drawing.service';
+import { LinkService } from '@services/link.service';
 import { MapScaleService } from '@services/mapScale.service';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { NodeService } from '@services/node.service';
@@ -151,6 +152,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private controllerService: ControllerService,
     private projectService: ProjectService,
     private nodeService: NodeService,
+    private linkService: LinkService,
     public drawingService: DrawingService,
     private progressService: ProgressService,
     private projectWebServiceHandler: ProjectWebServiceHandler,
@@ -221,6 +223,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.themeService.mapThemeChanged.subscribe((value: string) => {
       this.isLightThemeEnabled = value === 'light';
+      this.applyMapBackground(this.isLightThemeEnabled);
     });
 
     this.themeService.themeChanged.subscribe((value: string) => {
@@ -231,6 +234,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   getSettings() {
     this.isLightThemeEnabled = this.themeService.getActualMapTheme() === 'light';
     this.isGlobalLightTheme = this.themeService.getActualTheme() === 'light';
+    this.applyMapBackground(this.isLightThemeEnabled);
     this.cd.detectChanges();
 
     this.settings = this.settingsService.getAll();
@@ -276,19 +280,57 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.projectMapSubscription.add(
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
         if (!this.controller) return;
-        nodes.forEach(async (node: Node) => {
-          node.symbol_url = `${this.controller.protocol}//${this.controller.host}:${this.controller.port}/${environment.current_version}/symbols/${node.symbol}/raw`;
 
+        const nodesToLoad = nodes.filter((node: Node) => !node.symbol_url);
+
+        // Fetch dimensions for any node with unknown size
+        nodesToLoad.forEach((node: Node) => {
           if (node.width == 0 && node.height == 0) {
-            let symbolDimensions = await this.symbolService.getDimensions(this.controller, node.symbol).toPromise();
-            node.width = symbolDimensions.width;
-            node.height = symbolDimensions.height;
+            this.symbolService.getDimensions(this.controller, node.symbol).subscribe((symbolDimensions) => {
+              node.width = symbolDimensions.width;
+              node.height = symbolDimensions.height;
+            });
           }
         });
 
-        this.nodes = nodes;
-        if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
-        this.mapChangeDetectorRef.detectChanges();
+        if (nodesToLoad.length === 0) {
+          this.nodes = nodes;
+          if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
+          this.mapChangeDetectorRef.detectChanges();
+          return;
+        }
+
+        // Build a map from node -> rawUrl for all nodes that need loading
+        const nodeRawUrlMap = new Map<Node, string>();
+        nodesToLoad.forEach((node: Node) => {
+          nodeRawUrlMap.set(
+            node,
+            `${this.controller.protocol}//${this.controller.host}:${this.controller.port}/${environment.current_version}/symbols/${node.symbol}/raw`
+          );
+        });
+
+        // Deduplicate: only 1 fetch per unique symbol URL (shareReplay(1) in getSymbolBlobUrl handles concurrent callers)
+        const uniqueRawUrls = [...new Set(nodeRawUrlMap.values())];
+        forkJoin(uniqueRawUrls.map((url) => this.symbolService.getSymbolBlobUrl(url))).subscribe(
+          (blobUrls: string[]) => {
+            const blobUrlMap = new Map(uniqueRawUrls.map((url, i) => [url, blobUrls[i]]));
+            nodesToLoad.forEach((node: Node) => {
+              node.symbol_url = blobUrlMap.get(nodeRawUrlMap.get(node));
+            });
+            this.nodes = nodes;
+            if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
+            this.mapChangeDetectorRef.detectChanges();
+          },
+          () => {
+            // Fallback to raw URLs if blob fetch fails
+            nodesToLoad.forEach((node: Node) => {
+              node.symbol_url = nodeRawUrlMap.get(node);
+            });
+            this.nodes = nodes;
+            if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
+            this.mapChangeDetectorRef.detectChanges();
+          }
+        );
       })
     );
 
@@ -446,6 +488,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             const node = this.mapNodeToNode.convert(item);
             this.nodeService.delete(this.controller, node).subscribe((data) => {
               this.toasterService.success('Node has been deleted');
+            });
+          });
+          
+        selected
+          .filter((item) => item instanceof MapLink)
+          .forEach((item: MapLink) => {
+            const link = this.mapLinkToLink.convert(item);
+            this.linkService.deleteLink(this.controller, link).subscribe(() => {
+              this.toasterService.success('Link has been deleted');
             });
           });
 
@@ -1140,6 +1191,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     instance.project = this.project;
   }
 
+<<<<<<< HEAD
   /**
    * Handle device selection from console devices panel
    * Highlights the selected node and its connected links in the topology
@@ -1213,9 +1265,23 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.clearConsoleHighlight();
   }
 
+  /**
+   * Apply map background color based on theme
+   */
+  private applyMapBackground(isLight: boolean): void {
+    const color = isLight ? '#e8ecef' : '#18242b';
+    document.body.style.backgroundColor = color;
+    document.documentElement.style.backgroundColor = color;
+  }
+
   public ngOnDestroy(): void {
     // Close AI Chat when leaving project
     this.onLeaveProject();
+
+    // Reset background color
+    const globalColor = this.themeService.getActualTheme() === 'light' ? '#e8ecef' : '#18242b';
+    document.body.style.backgroundColor = globalColor;
+    document.documentElement.style.backgroundColor = globalColor;
 
     this.nodeConsoleService.openConsoles = 0;
     this.title.setTitle('GNS3 Web UI');

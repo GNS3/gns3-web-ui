@@ -19,12 +19,6 @@ export class ThemeService {
      
     if (!localStorage.getItem('mapTheme')) localStorage.setItem('mapTheme', 'auto');
     this.savedMapTheme = localStorage.getItem('mapTheme');
- 
-    this.applyBodyBackground();
-  }
- 
-  private applyBodyBackground() {
-    document.body.style.backgroundColor = this.savedTheme === 'dark' ? '#18242b' : '#e8ecef';
   }
 
   getActualTheme() {
@@ -47,7 +41,6 @@ export class ThemeService {
       this.themeChanged.emit('light-theme');
       localStorage.setItem('theme', 'light');
     }
-    this.applyBodyBackground();
         // If map theme is set to auto, notify the map too so it follows the change.
     if (this.savedMapTheme === 'auto') {
       this.mapThemeChanged.emit(this.savedTheme);

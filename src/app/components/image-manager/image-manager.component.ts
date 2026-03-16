@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ControllerService } from '@services/controller.service';
 import { Image } from '@models/images';
 import { Controller } from '@models/controller';
@@ -35,6 +35,8 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   private refreshAfterUploadTimer: ReturnType<typeof setTimeout>;
   private displayedRows: ImageTableRow[] = [];
   private lastSelectedPath: string | null = null;
+  highlightedFilename: string | null = null;
+  private highlightTimer: ReturnType<typeof setTimeout>;
 
   // Pagination properties
   pageSizeOptions: number[] = [5, 10, 25, 50, 100];
@@ -51,7 +53,8 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
     private controllerService: ControllerService,
     private dialog: MatDialog,
     private toasterService: ToasterService,
-    private imageUploadSessionService: ImageUploadSessionService
+    private imageUploadSessionService: ImageUploadSessionService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
@@ -78,6 +81,14 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
       this.onUploadEvent(event);
     });
 
+    this.route.queryParams.subscribe((params) => {
+      if (params['highlight']) {
+        this.flashRow(params['highlight']);
+        this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
+      }
+    });
+
+
     this.controllerService.get(controller_id).then((controller: Controller ) => {
       this.controller = controller;
       if (controller.authToken) {
@@ -95,6 +106,9 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
     }
     if (this.refreshAfterUploadTimer) {
       clearTimeout(this.refreshAfterUploadTimer);
+    }
+    if (this.highlightTimer) {
+      clearTimeout(this.highlightTimer);
     }
   }
 
@@ -123,6 +137,18 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
         this.paginator.pageIndex = 0;
       }
     }
+  }
+
+  isHighlighted(row: ImageTableRow): boolean {
+    return !!this.highlightedFilename && row.filename === this.highlightedFilename;
+  }
+
+  private flashRow(filename: string) {
+    if (this.highlightTimer) clearTimeout(this.highlightTimer);
+    this.highlightedFilename = filename;
+    this.highlightTimer = setTimeout(() => {
+      this.highlightedFilename = null;
+    }, 2000);
   }
 
   isPersistedRow(row: ImageTableRow): boolean {
@@ -287,7 +313,6 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
       width: '600px',
       maxHeight: '550px',
       autoFocus: false,
-      disableClose: true,
       data: this.controller
     });
 

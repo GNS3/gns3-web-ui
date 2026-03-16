@@ -339,6 +339,7 @@ import { AiProfileTabComponent } from '@components/user-management/user-detail/a
 import { AiProfileDialogComponent } from '@components/user-management/user-detail/ai-profile-tab/ai-profile-dialog/ai-profile-dialog.component';
 import { ConfirmDialogComponent } from '@components/user-management/user-detail/ai-profile-tab/ai-profile-dialog/confirm-dialog/confirm-dialog.component';
 import { GroupAiProfileTabComponent } from '@components/group-details/group-ai-profile-tab/group-ai-profile-tab.component';
+import { GlobalUploadIndicatorComponent } from '@components/global-upload-indicator/global-upload-indicator.component';
 
 @NgModule({
     declarations: [
@@ -586,6 +587,7 @@ import { GroupAiProfileTabComponent } from '@components/group-details/group-ai-p
         AiProfileDialogComponent,
         ConfirmDialogComponent,
         GroupAiProfileTabComponent,
+        GlobalUploadIndicatorComponent,
     ],
     imports: [
         BrowserModule,

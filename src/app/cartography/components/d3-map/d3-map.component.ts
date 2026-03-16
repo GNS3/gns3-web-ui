@@ -145,6 +145,14 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
       }
     });
 
+    this.subscriptions.push(
+      this.mapChangeDetectorRef.selectionChangesDetected.subscribe(() => {
+        if (this.mapChangeDetectorRef.hasBeenDrawn) {
+          this.graphLayout.updateSelectionHighlights(this.svg);
+        }
+      })
+    );
+
     this.subscriptions.push(this.mapScaleService.scaleChangeEmitter.subscribe((value: number) => this.redraw()));
 
     this.subscriptions.push(
