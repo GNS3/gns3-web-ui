@@ -15,6 +15,8 @@ g.node:hover {
 
 .project-map {
   background-color: #18242b;
+  min-height: 100vh;
+  min-width: 100vw;
 
   .label {
     fill: #ffffff !important;
