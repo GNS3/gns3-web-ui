@@ -18,6 +18,7 @@ import { Controller } from '@models/controller';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { ToasterService } from '@services/toaster.service';
+import { VncConsoleService } from '@services/vnc-console.service';
 import { ConsoleDeviceActionBrowserComponent } from '../context-menu/actions/console-device-action-browser/console-device-action-browser.component';
 
 @Component({
@@ -43,7 +44,8 @@ export class ContextConsoleMenuComponent implements OnInit {
     private consoleService: NodeConsoleService,
     private toasterService: ToasterService,
     private router: Router,
-    private resolver: ComponentFactoryResolver
+    private resolver: ComponentFactoryResolver,
+    private vncConsoleService: VncConsoleService
   ) {}
 
   ngOnInit() {
@@ -87,8 +89,18 @@ export class ContextConsoleMenuComponent implements OnInit {
   openWebConsole() {
     this.mapSettingsService.setConsoleContextMenuAction('web console');
     if (this.node.status === 'started') {
-      this.mapSettingsService.logConsoleSubject.next(true);
-      this.consoleService.openConsoleForNode(this.node);
+      // Check console type to determine how to open the console
+      if (this.node.console_type === 'vnc') {
+        // VNC console: use standalone page
+        this.vncConsoleService.openVncConsole(this.controller, this.node);
+      } else if (this.node.console_type.startsWith('spice')) {
+        // SPICE console: not yet implemented
+        this.toasterService.error('SPICE console is not yet supported.');
+      } else {
+        // Telnet and other types: use embedded console
+        this.mapSettingsService.logConsoleSubject.next(true);
+        this.consoleService.openConsoleForNode(this.node);
+      }
     } else {
       this.toasterService.error('To open console please start the node');
     }
@@ -97,9 +109,21 @@ export class ContextConsoleMenuComponent implements OnInit {
   openWebConsoleInNewTab() {
     this.mapSettingsService.setConsoleContextMenuAction('web console in new tab');
     if (this.node.status === 'started') {
-      let url = this.router.url.split('/');
-      let urlString = `/static/web-ui/${url[1]}/${url[2]}/${url[3]}/${url[4]}/nodes/${this.node.node_id}`;
-      window.open(urlString);
+      // Check console type to determine how to open the console
+      if (this.node.console_type === 'vnc') {
+        // VNC console: use standalone page (same as web console)
+        this.vncConsoleService.openVncConsole(this.controller, this.node);
+      } else if (this.node.console_type.startsWith('spice')) {
+        // SPICE console: not yet implemented
+        this.toasterService.error('SPICE console is not yet supported.');
+      } else if (this.node.console_type === 'telnet') {
+        // Telnet console: use existing URL-based approach
+        let url = this.router.url.split('/');
+        let urlString = `/static/web-ui/${url[1]}/${url[2]}/${url[3]}/${url[4]}/nodes/${this.node.node_id}`;
+        window.open(urlString);
+      } else {
+        this.toasterService.error('Console type not supported in new tab');
+      }
     } else {
       this.toasterService.error('To open console please start the node');
     }

@@ -5,6 +5,7 @@ import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 import { ProtocolHandlerService } from '@services/protocol-handler.service';
+import { VncConsoleService } from '@services/vnc-console.service';
 
 import * as ipaddr from 'ipaddr.js';
 
@@ -20,7 +21,8 @@ export class ConsoleDeviceActionBrowserComponent {
   private toasterService: ToasterService,
   private nodeService: NodeService,
   private deviceService: DeviceDetectorService,
-  private protocolHandlerService: ProtocolHandlerService
+  private protocolHandlerService: ProtocolHandlerService,
+  private vncConsoleService: VncConsoleService
   ) {}
 
   openConsole(auxiliary: boolean = false) {
@@ -62,7 +64,9 @@ export class ConsoleDeviceActionBrowserComponent {
           }
           uri = `gns3+telnet://${host}:${console_port}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`;
         } else if (this.node.console_type === 'vnc') {
-          uri = `gns3+vnc://${host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`;
+          // Open VNC console in standalone page via WebSocket API
+          this.vncConsoleService.openVncConsole(this.controller, this.node);
+          return;  // Return early, don't use protocol handler
         } else if (this.node.console_type.startsWith('spice')) {
           uri = `gns3+spice://${host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`
         } else if (this.node.console_type.startsWith('http')) {
