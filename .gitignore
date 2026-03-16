@@ -6,6 +6,7 @@
 /out-tsc
 /ng-dist
 /dist
+/dist-electron
 /build
 /scripts/tmp
 /scripts/env
