@@ -3,7 +3,6 @@ import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { VncConsoleService } from '@services/vnc-console.service';
-import { SpiceConsoleService } from '@services/spice-console.service';
 import { ToasterService } from '@services/toaster.service';
 import { Router } from '@angular/router';
 
@@ -18,7 +17,6 @@ export class HttpConsoleActionComponent implements OnInit {
   constructor(
     private nodeConsoleService: NodeConsoleService,
     private vncConsoleService: VncConsoleService,
-    private spiceConsoleService: SpiceConsoleService,
     private toasterService: ToasterService,
     private router: Router
   ) {}
@@ -36,9 +34,6 @@ export class HttpConsoleActionComponent implements OnInit {
           if (n.console_type === 'vnc') {
             // VNC console: use standalone page in popup window
             this.vncConsoleService.openVncConsole(this.controller, n, false);
-          } else if (n.console_type.startsWith('spice')) {
-            // SPICE console: use standalone page in popup window
-            this.spiceConsoleService.openSpiceConsole(this.controller, n, false);
           } else if (n.console_type.startsWith('http')) {
             // HTTP/HTTPS console: open directly in popup window
             if (

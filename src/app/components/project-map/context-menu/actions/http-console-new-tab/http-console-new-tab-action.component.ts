@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { VncConsoleService } from '@services/vnc-console.service';
-import { SpiceConsoleService } from '@services/spice-console.service';
 import { ToasterService } from '@services/toaster.service';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
@@ -18,7 +17,6 @@ export class HttpConsoleNewTabActionComponent implements OnInit {
   constructor(
     private nodeConsoleService: NodeConsoleService,
     private vncConsoleService: VncConsoleService,
-    private spiceConsoleService: SpiceConsoleService,
     private toasterService: ToasterService,
     private router: Router
   ) {}
@@ -36,9 +34,6 @@ export class HttpConsoleNewTabActionComponent implements OnInit {
           if (n.console_type === 'vnc') {
             // VNC console: use standalone page in new tab
             this.vncConsoleService.openVncConsole(this.controller, n, true);
-          } else if (n.console_type.startsWith('spice')) {
-            // SPICE console: use standalone page in new tab
-            this.spiceConsoleService.openSpiceConsole(this.controller, n, true);
           } else if (n.console_type.startsWith('http')) {
             // HTTP/HTTPS console: open directly in new tab
             if (

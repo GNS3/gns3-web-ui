@@ -36,6 +36,21 @@
     }
   }
 
+  // Enhanced debugging for SPICE connection
+  function debugSpiceState() {
+    if (!sc) {
+      log('SPICE connection object not initialized', 'warn');
+      return;
+    }
+
+    log(`SPICE state: ${sc.state}`, 'info');
+    log(`WebSocket readyState: ${sc.ws ? sc.ws.readyState : 'no WebSocket'}`, 'info');
+
+    if (sc.ws) {
+      log(`WebSocket url: ${sc.ws.url}`, 'info');
+    }
+  }
+
   // Update status display
   function updateStatus(message, type = 'info') {
     log(message, type);
@@ -83,18 +98,34 @@
   // Connection timeout handler
   if (autoconnect) {
     connectionTimeout = setTimeout(() => {
-      if (sc && sc.state !== 'connected') {
+      debugSpiceState();
+
+      // Note: spice-html5 uses 'ready' state, not 'connected'
+      // Show error only if state is still connecting/start/link/ticket
+      const connectingStates = ['connecting', 'start', 'link', 'ticket'];
+      if (sc && connectingStates.includes(sc.state)) {
+        log(`Connection timeout. Current state: ${sc.state}`, 'error');
         showError(
           'Connection Timeout',
           'Could not connect to the SPICE server. Please verify:\n\n' +
           '• The node is started\n' +
           '• The console type is set to SPICE\n' +
           '• Your network connection is stable\n' +
-          '• No firewall is blocking the connection'
+          '• No firewall is blocking the connection\n\n' +
+          `Debug info: SPICE state = ${sc.state}`
         );
         if (sc) {
           sc.stop();
         }
+      } else if (sc && sc.state === 'error') {
+        log('SPICE connection in error state', 'error');
+        showError(
+          'Connection Error',
+          'SPICE connection failed during initialization.\n\n' +
+          'Please check the browser console for detailed error messages.'
+        );
+      } else {
+        log(`Connection completed. State: ${sc.state}`, 'info');
       }
     }, 15000);
   }
@@ -122,16 +153,20 @@
       screen_id: 'spice-canvas-container',
       password: password,
       onsuccess: function() {
+        log('onsuccess callback triggered', 'info');
         clearTimeout(connectionTimeout);
         hideLoading();
         updateStatus('Connected', 'success');
         log('Successfully connected to SPICE server');
+        debugSpiceState();
       },
       onerror: function(e) {
+        log(`onerror callback triggered: ${e}`, 'error');
         clearTimeout(connectionTimeout);
         hideLoading();
         const reason = e || 'Unknown error';
         log(`Connection error: ${reason}`, 'error');
+        debugSpiceState();
         showError(
           'Connection Failed',
           `Could not connect to the SPICE server.\n\nReason: ${reason}\n\n` +
@@ -142,6 +177,19 @@
         log('SPICE agent connected');
       }
     });
+
+    log('SPICE initialized successfully');
+    log('Waiting for connection... (will check state in 15 seconds)');
+
+    // Monitor state changes for debugging
+    const stateCheckInterval = setInterval(() => {
+      if (sc) {
+        log(`Current SPICE state: ${sc.state}`, 'debug');
+        if (sc.state === 'ready' || sc.state === 'error') {
+          clearInterval(stateCheckInterval);
+        }
+      }
+    }, 2000);
 
     log('SPICE initialized successfully');
 
