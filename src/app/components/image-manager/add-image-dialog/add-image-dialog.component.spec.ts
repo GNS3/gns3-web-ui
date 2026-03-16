@@ -46,7 +46,8 @@ describe('AddImageDialogComponent', () => {
         MatMenuModule,
         MatCheckboxModule,
         MatDialogModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        require('@angular/common/http/testing').HttpClientTestingModule
       ],
       providers: [
         { provide: ControllerService, useValue: mockedControllerService },
