@@ -248,6 +248,7 @@ import { NodeService } from '@services/node.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { NotificationService } from '@services/notification.service';
 import { VncConsoleService } from '@services/vnc-console.service';
+import { SpiceConsoleService } from '@services/spice-console.service';
 import { PacketCaptureService } from '@services/packet-capture.service';
 import { PlatformService } from '@services/platform.service';
 import { ProjectService } from '@services/project.service';
@@ -685,6 +686,7 @@ import { GroupAiProfileTabComponent } from '@components/group-details/group-ai-p
         GoogleAnalyticsService,
         NodeConsoleService,
         VncConsoleService,
+        SpiceConsoleService,
         ControllerResolve,
         LoginGuard,
         ConsoleGuard,

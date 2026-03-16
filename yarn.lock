@@ -9319,6 +9319,11 @@ spdy@^4.0.2:
     select-hose "^2.0.0"
     spdy-transport "^3.0.0"
 
+spice-html5-bower@^1.7.3:
+  version "1.7.3"
+  resolved "https://registry.npmjs.org/spice-html5-bower/-/spice-html5-bower-1.7.3.tgz"
+  integrity sha512-DYdjXqqIe3L/m6QEctdIhmmCYkDDOMs7Y+aCf9S9gKCImyPRilxYVw870YZnzEgdxXG5+6DZbbKvPzZKcMsvVA==
+
 sprintf-js@^1.0.3, sprintf-js@^1.1.2:
   version "1.1.3"
   resolved "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.1.3.tgz"

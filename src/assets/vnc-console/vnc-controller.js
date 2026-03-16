@@ -1,3 +1,5 @@
+import RFB from './novnc/core/rfb.js';
+
 (function() {
   'use strict';
 
@@ -106,7 +108,8 @@
 
     // Create RFB instance
     rfb = new RFB(container, wsUrl, {
-      resizeSession: true,
+      resizeSession: false,  // Don't resize the remote session
+      scaleViewport: true,   // Scale the display to fit the container
       // Additional noVNC options can be added here
     });
 
@@ -122,6 +125,15 @@
       hideLoading();
       updateStatus('Connected', 'success');
       log('Successfully connected to VNC server');
+
+      // Force initial scale
+      setTimeout(() => {
+        if (rfb) {
+          rfb.scaleViewport = true;
+          rfb.sendScaleConfig();
+          log('VNC display scaled to fit viewport');
+        }
+      }, 500);
     });
 
     // Event: Disconnect
@@ -245,8 +257,10 @@
     // Window resize handling
     window.addEventListener('resize', () => {
       if (rfb && rfb._rfb_connection_state === 'connected') {
-        // noVNC will handle resize automatically with resizeSession option
-        log('Window resized');
+        // Re-apply scaling after resize
+        rfb.scaleViewport = true;
+        rfb.sendScaleConfig();
+        log('Window resized, VNC display rescaled');
       }
     });
 
