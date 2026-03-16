@@ -14,6 +14,8 @@ const CACHE_SIZE = 1;
 export class SymbolService {
   public symbols: BehaviorSubject<Symbol[]> = new BehaviorSubject<Symbol[]>([]);
   private cache: Observable<Symbol[]>;
+  private dimensionsCache = new Map<string, Observable<SymbolDimension>>();
+  private blobUrlCache = new Map<string, Observable<string>>();
   private maximumSymbolSize: number = 80;
 
   constructor(private httpController: HttpController) {}
@@ -27,8 +29,33 @@ export class SymbolService {
   }
 
   getDimensions(controller: Controller, symbol_id: string): Observable<SymbolDimension> {
-    const encoded_uri = encodeURI(symbol_id);
-    return this.httpController.get(controller, `/symbols/${encoded_uri}/dimensions`);
+    const cacheKey = `${controller.host}:${controller.port}:${symbol_id}`;
+    if (!this.dimensionsCache.has(cacheKey)) {
+      const encoded_uri = encodeURI(symbol_id);
+      this.dimensionsCache.set(
+        cacheKey,
+        this.httpController.get<SymbolDimension>(controller, `/symbols/${encoded_uri}/dimensions`).pipe(shareReplay(1))
+      );
+    }
+    return this.dimensionsCache.get(cacheKey);
+  }
+
+  getSymbolBlobUrl(symbolRawUrl: string): Observable<string> {
+    if (!this.blobUrlCache.has(symbolRawUrl)) {
+      this.blobUrlCache.set(
+        symbolRawUrl,
+        new Observable<string>((observer) => {
+          fetch(symbolRawUrl)
+            .then((response) => response.blob())
+            .then((blob) => {
+              observer.next(URL.createObjectURL(blob));
+              observer.complete();
+            })
+            .catch((err) => observer.error(err));
+        }).pipe(shareReplay(1))
+      );
+    }
+    return this.blobUrlCache.get(symbolRawUrl);
   }
 
   scaleDimensionsForNode(node: Node): SymbolDimension {
