@@ -1191,7 +1191,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     instance.project = this.project;
   }
 
-<<<<<<< HEAD
   /**
    * Handle device selection from console devices panel
    * Highlights the selected node and its connected links in the topology
