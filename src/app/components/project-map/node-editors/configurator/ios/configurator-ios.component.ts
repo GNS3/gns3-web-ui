@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { IosConfigurationService } from '@services/ios-configuration.service';
@@ -26,6 +28,7 @@ export class ConfiguratorDialogIosComponent implements OnInit {
   wicsForNode: string[] = [];
   adapterMatrix = {};
   wicMatrix = {};
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
   constructor(
     public dialogRef: MatDialogRef<ConfiguratorDialogIosComponent>,
@@ -54,6 +57,9 @@ export class ConfiguratorDialogIosComponent implements OnInit {
     this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = node.name;
+      if (!this.node.tags) {
+        this.node.tags = [];
+      }
       this.getConfiguration();
       this.fillSlotsData();
     });
@@ -88,7 +94,11 @@ export class ConfiguratorDialogIosComponent implements OnInit {
 
     // save network adapters
     for (let i = 0; i <= 6; i++) {
-      if (this.adapterMatrix[this.node.properties.platform][this.node.properties.chassis || ''][i]) {
+      const platform = this.node.properties.platform;
+      const chassis = this.node.properties.chassis || '';
+      const slotAdapters = this.adapterMatrix?.[platform]?.[chassis]?.[i];
+
+      if (slotAdapters) {
         if (this.networkAdaptersForNode[i] === undefined)
           this.node.properties[`slot${i}`] = ""
         else
@@ -98,7 +108,10 @@ export class ConfiguratorDialogIosComponent implements OnInit {
 
     // save WICs
     for (let i = 0; i <= 3; i++) {
-      if (this.wicMatrix[this.node.properties.platform][i]) {
+      const platform = this.node.properties.platform;
+      const wicAdapters = this.wicMatrix?.[platform]?.[i];
+
+      if (wicAdapters) {
         if (this.wicsForNode[i] === undefined)
           this.node.properties[`wic${i}`] = ""
         else
@@ -121,5 +134,32 @@ export class ConfiguratorDialogIosComponent implements OnInit {
 
   onCancelClick() {
     this.dialogRef.close();
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.node) {
+      if (!this.node.tags) {
+        this.node.tags = [];
+      }
+      this.node.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.node.tags) {
+      return;
+    }
+    const index = this.node.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.node.tags.splice(index, 1);
+    }
   }
 }

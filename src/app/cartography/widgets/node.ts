@@ -86,7 +86,11 @@ export class NodeWidget implements Widget {
         event.preventDefault();
         self.onContextConsoleMenu.emit(new NodeContextMenu(event, n));
       })
-      .attr('xnode:href', (n: MapNode) => n.symbolUrl)
+      .each(function (n: MapNode) {
+        if ((this as Element).getAttribute('href') !== n.symbolUrl) {
+          (this as Element).setAttribute('href', n.symbolUrl);
+        }
+      })
       .attr('width', (n: MapNode) => {
         if (!n.width) return 60;
         return n.width;

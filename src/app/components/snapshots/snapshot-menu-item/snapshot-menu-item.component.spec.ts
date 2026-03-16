@@ -1,14 +1,15 @@
-import { Overlay, ScrollStrategyOptions } from '@angular/cdk/overlay';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { Context } from 'app/cartography/models/context';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ProgressDialogService } from 'app/common/progress-dialog/progress-dialog.service';
-import { HttpController, ControllerErrorHandler } from 'app/services/http-controller.service';
+import { HttpController } from 'app/services/http-controller.service';
 import { SnapshotService } from 'app/services/snapshot.service';
 import { ToasterService } from 'app/services/toaster.service';
+import { AppTestingModule } from 'app/testing/app-testing/app-testing.module';
 import { SnapshotMenuItemComponent } from './snapshot-menu-item.component';
+import { MatIconModule } from '@angular/material/icon';
 
 describe('SnapshotMenuItemComponent', () => {
   let component: SnapshotMenuItemComponent;
@@ -17,17 +18,18 @@ describe('SnapshotMenuItemComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [SnapshotMenuItemComponent],
-      imports:[MatDialogModule,HttpClientModule,MatSnackBarModule],
+      imports: [
+        MatDialogModule,
+        MatIconModule,
+        HttpClientTestingModule,
+        MatSnackBarModule,
+        NoopAnimationsModule,
+        AppTestingModule
+      ],
       providers: [
         SnapshotService,
-        MatDialog,
         HttpController,
-        Overlay,
-        ScrollStrategyOptions,
-        HttpClient,
-        ControllerErrorHandler,
         ProgressDialogService,
-        Context,
         ToasterService
       ]
     }).compileComponents();

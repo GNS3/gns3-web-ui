@@ -14,6 +14,19 @@
               <mat-form-field class="form-field">
                 <input matInput type="text" formControlName="name" [(ngModel)]="node.name" placeholder="Name" />
               </mat-form-field>
+              <mat-form-field class="form-field tags-field">
+                <mat-label>Tags</mat-label>
+                <mat-chip-list #chipList>
+                  <mat-chip *ngFor="let tag of node?.tags" (removed)="removeTag(tag)">
+                    {{ tag }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                </mat-chip-list>
+                <input matInput placeholder="Add tags"
+                       [matChipInputFor]="chipList"
+                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                       (matChipInputTokenEnd)="addTag($event)" />
+              </mat-form-field>
               <mat-form-field class="form-field">
                 <input matInput type="text" formControlName="path" [(ngModel)]="node.properties.image" placeholder="IOS image path"/>
               </mat-form-field>
@@ -75,7 +88,7 @@
                 <span matSuffix>MiB</span>
               </mat-form-field>
             </form>
-            <mat-form-field class="form-field" *ngIf="node.properties.iomem">
+            <mat-form-field class="form-field" *ngIf="['c1700', 'c2600', 'c2691', 'c3600', 'c3725', 'c3745'].includes(node.properties.platform)">
               <input
                 matInput
                 type="number"

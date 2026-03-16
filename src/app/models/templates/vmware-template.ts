@@ -23,4 +23,5 @@ export class VmwareTemplate {
   usage: string;
   use_any_adapter: boolean;
   vmx_path: string;
+  tags?: string[];
 }

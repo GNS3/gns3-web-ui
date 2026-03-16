@@ -15,4 +15,5 @@ export interface CloudTemplate {
     template_id: string;
     template_type: string;
     usage: string;
+    tags?: string[];
 }

@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Controller } from '@models/controller';
 import { EthernetSwitchTemplate } from '@models/templates/ethernet-switch-template';
 import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
@@ -20,6 +22,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
   ethernetSwitchTemplate: EthernetSwitchTemplate;
   inputForm: UntypedFormGroup;
   isSymbolSelectionOpened: boolean = false;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   categories = [];
   consoleTypes: string[] = [];
 
@@ -50,6 +53,9 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
         .getTemplate(this.controller, template_id)
         .subscribe((ethernetSwitchTemplate: EthernetSwitchTemplate) => {
           this.ethernetSwitchTemplate = ethernetSwitchTemplate;
+          if (!this.ethernetSwitchTemplate.tags) {
+            this.ethernetSwitchTemplate.tags = [];
+          }
         });
     });
   }
@@ -83,5 +89,32 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
   symbolChanged(chosenSymbol: string) {
     this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
     this.ethernetSwitchTemplate.symbol = chosenSymbol;
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.ethernetSwitchTemplate) {
+      if (!this.ethernetSwitchTemplate.tags) {
+        this.ethernetSwitchTemplate.tags = [];
+      }
+      this.ethernetSwitchTemplate.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.ethernetSwitchTemplate.tags) {
+      return;
+    }
+    const index = this.ethernetSwitchTemplate.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.ethernetSwitchTemplate.tags.splice(index, 1);
+    }
   }
 }

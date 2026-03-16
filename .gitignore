@@ -5,6 +5,7 @@
 /tmp
 /out-tsc
 /ng-dist
+/dist
 /build
 /scripts/tmp
 /scripts/env
@@ -36,6 +37,7 @@
 /connect.lock
 /coverage
 /libpeerconnection.log
+*.log
 npm-debug.log
 testem.log
 /typings

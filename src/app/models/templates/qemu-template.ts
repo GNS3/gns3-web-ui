@@ -46,4 +46,5 @@ export class QemuTemplate {
   replicate_network_connection_state: boolean;
   tpm: boolean;
   uefi: boolean;
+  tags: string[];
 }

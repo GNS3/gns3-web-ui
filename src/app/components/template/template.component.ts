@@ -6,11 +6,11 @@ import { Subscription } from 'rxjs';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { Template } from '@models/template';
-import { MapScaleService } from '@services/mapScale.service';
 import { SymbolService } from '@services/symbol.service';
 import { TemplateService } from '@services/template.service';
 import { NodeAddedEvent, TemplateListDialogComponent } from './template-list-dialog/template-list-dialog.component';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Context } from '../../cartography/models/context';
 
 @Component({
   selector: 'app-template',
@@ -40,11 +40,8 @@ export class TemplateComponent implements OnInit, OnDestroy {
   ];
   selectedType: string;
 
-  movementX: number;
-  movementY: number;
-
-  startX: number;
-  startY: number;
+  private startX: number;
+  private startY: number;
 
   private subscription: Subscription;
   private themeSubscription: Subscription;
@@ -53,11 +50,11 @@ export class TemplateComponent implements OnInit, OnDestroy {
   constructor(
     private dialog: MatDialog,
     private templateService: TemplateService,
-    private scaleService: MapScaleService,
     private symbolService: SymbolService,
     private domSanitizer: DomSanitizer,
     private themeService: ThemeService,
     private overlayContainer: OverlayContainer,
+    private context: Context,
   ) {
     this.overlay = overlayContainer.getContainerElement();
   }
@@ -110,26 +107,32 @@ export class TemplateComponent implements OnInit, OnDestroy {
   }
 
   dragStart(ev) {
-    let elemRect = (event.target as HTMLElement).getBoundingClientRect();
-
+    // mwlDraggable fires a synthetic event; capture the raw clientX/Y from the
+    // native event so we can reconstruct the absolute drop position later.
     this.startX = (event as MouseEvent).clientX;
     this.startY = (event as MouseEvent).clientY;
-
-    this.movementY = elemRect.top - (event as MouseEvent).clientY;
-    this.movementX = elemRect.left - (event as MouseEvent).clientX;
   }
 
   dragEnd(ev, template: Template) {
     this.symbolService.raw(this.controller, template.symbol.substring(1)).subscribe((symbolSvg: string) => {
       let width = +symbolSvg.split('width="')[1].split('"')[0] ? +symbolSvg.split('width="')[1].split('"')[0] : 0;
-      let scale = this.scaleService.getScale();
+      
+      // mwlDraggable's DragEndEvent.x/y are displacement deltas, not absolute
+      // coordinates. Add to the captured start position to get the final
+      // screen position, then convert to canvas coordinates.
+      const dropClientX = this.startX + ev.x;
+      const dropClientY = this.startY + ev.y;
+ 
+      const svgElement = document.getElementById('map');
+      const svgRect = svgElement ? svgElement.getBoundingClientRect() : { left: 0, top: 0 };
+      const k = this.context.transformation.k;
 
       let nodeAddedEvent: NodeAddedEvent = {
         template: template,
         controller: 'local',
         numberOfNodes: 1,
-        x: (this.startX + ev.x - this.project.scene_width / 2 - width / 2) * scale + window.scrollX,
-        y: (this.startY + ev.y - this.project.scene_height / 2) * scale + window.scrollY,
+        x: (dropClientX - svgRect.left - this.context.size.width / 2 - this.context.transformation.x) / k - width / 2,
+        y: (dropClientY - svgRect.top - this.context.size.height / 2 - this.context.transformation.y) / k,
       };
       this.onNodeCreation.emit(nodeAddedEvent);
     });

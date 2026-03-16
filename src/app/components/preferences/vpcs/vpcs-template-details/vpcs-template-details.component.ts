@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatChipInputEvent } from '@angular/material/chips';
 import { Controller } from '@models/controller';
 import { VpcsTemplate } from '@models/templates/vpcs-template';
 import { ControllerService } from '@services/controller.service';
@@ -18,6 +20,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
   vpcsTemplate: VpcsTemplate;
   inputForm: UntypedFormGroup;
   isSymbolSelectionOpened: boolean = false;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
   categories = [];
 
@@ -47,6 +50,9 @@ export class VpcsTemplateDetailsComponent implements OnInit {
       this.getConfiguration();
       this.vpcsService.getTemplate(this.controller, template_id).subscribe((vpcsTemplate: VpcsTemplate) => {
         this.vpcsTemplate = vpcsTemplate;
+        if (!this.vpcsTemplate.tags) {
+          this.vpcsTemplate.tags = [];
+        }
       });
     });
   }
@@ -77,5 +83,32 @@ export class VpcsTemplateDetailsComponent implements OnInit {
   symbolChanged(chosenSymbol: string) {
     this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
     this.vpcsTemplate.symbol = chosenSymbol;
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.vpcsTemplate) {
+      if (!this.vpcsTemplate.tags) {
+        this.vpcsTemplate.tags = [];
+      }
+      this.vpcsTemplate.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.vpcsTemplate.tags) {
+      return;
+    }
+    const index = this.vpcsTemplate.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.vpcsTemplate.tags.splice(index, 1);
+    }
   }
 }

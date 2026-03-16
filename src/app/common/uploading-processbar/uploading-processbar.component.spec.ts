@@ -1,8 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatSnackBarModule, MatSnackBarRef, MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
+import { MatButtonModule } from '@angular/material/button';
 import { UploadServiceService } from './upload-service.service';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { UploadingProcessbarComponent } from './uploading-processbar.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 describe('UploadingProcessbarComponent', () => {
   let component: UploadingProcessbarComponent;
@@ -11,13 +14,18 @@ describe('UploadingProcessbarComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [UploadingProcessbarComponent],
-      imports:[MatSnackBarModule],
+      imports:[
+        MatSnackBarModule,
+        MatProgressBarModule,
+        MatButtonModule
+      ],
       providers: [
         { provide: MAT_SNACK_BAR_DATA, useValue: {} },
         { provide: MatSnackBarRef, useValue: {} },
         { provide:  UploadServiceService, useClass: UploadServiceService },
 
-      ]
+      ],
+      schemas: [NO_ERRORS_SCHEMA]
     })
       .compileComponents();
   });

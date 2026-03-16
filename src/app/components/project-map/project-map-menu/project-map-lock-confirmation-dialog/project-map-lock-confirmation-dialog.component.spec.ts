@@ -1,10 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 import { ProjectMapLockConfirmationDialogComponent } from './project-map-lock-confirmation-dialog.component';
 
@@ -15,19 +18,22 @@ describe('ProjectMapLockConfirmationDialogComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports:[
+        MatButtonModule,
         MatIconModule,
         MatToolbarModule,
         MatMenuModule,
         MatCheckboxModule,
         MatDialogModule,
+        MatDividerModule,
         MatSnackBarModule,
       ],
       providers: [
-       
+
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: MatDialogRef, useValue: {} },
       ],
-      declarations: [ ProjectMapLockConfirmationDialogComponent ]
+      declarations: [ ProjectMapLockConfirmationDialogComponent ],
+      schemas: [NO_ERRORS_SCHEMA]
     })
     .compileComponents();
   });

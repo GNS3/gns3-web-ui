@@ -15,11 +15,11 @@ describe('NodesWidget', () => {
     widget = new NodesWidget(nodeWidget, new MapSettingsManager());
   });
   it('draggable behaviour', () => {
-    
+
   })
 
   afterEach(() => {
     svg.destroy();
   });
-  
+
 });

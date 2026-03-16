@@ -26,6 +26,7 @@ import {Observable} from "rxjs/Rx";
 import {startWith} from "rxjs/operators";
 import {map} from "rxjs//operators";
 import {matchingPassword} from "@components/user-management/ConfirmPasswordValidator";
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-add-user-dialog',
@@ -113,10 +114,12 @@ export class AddUserDialogComponent implements OnInit {
           })
         this.dialogRef.close();
       },
-      (error) => {
-        this.toasterService.error('Cannot create user : ' + error);
+      (error: HttpErrorResponse) => {
+        this.toasterService.error('Cannot create user: ' + `${error.error.message}`);
       })
   }
+
+
 
   deleteGroup(group: Group) {
     this.groupsToAdd.delete(group);

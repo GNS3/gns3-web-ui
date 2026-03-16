@@ -115,6 +115,7 @@ export class Node {
   status: string;
   symbol: string;
   symbol_url: string; // @TODO: full URL to symbol, move to MapNode once converters are moved to app module
+  tags?: string[];
   usage?: string;
   width: number;
   x: number;

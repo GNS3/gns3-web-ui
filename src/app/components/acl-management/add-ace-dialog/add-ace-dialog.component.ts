@@ -135,7 +135,8 @@ export class AddAceDialogComponent implements OnInit {
   }
 
   displayFnUser(value): string {
-    return value && value.full_name && value.username ? value.username.concat(" - ", value.full_name) : '';
+    if (!value || !value.username) return '';
+    return value.full_name ? value.username.concat(" - ", value.full_name) : value.username;
   }
 
   _filter(value: string, data: any): any {
@@ -151,7 +152,7 @@ export class AddAceDialogComponent implements OnInit {
     if (typeof value === 'string' && users) {
       const filterValue = value.toLowerCase();
 
-      return users.filter(option => option.full_name.toLowerCase().includes(filterValue) || option.username.toLowerCase().includes(filterValue));
+      return users.filter(option => (option.full_name?.toLowerCase().includes(filterValue) ?? false) || option.username.toLowerCase().includes(filterValue));
     }
 
   }

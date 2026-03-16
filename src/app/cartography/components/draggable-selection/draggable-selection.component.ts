@@ -102,7 +102,7 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
           node.x += evt.dx;
           node.y += evt.dy;
 
-          this.nodesWidget.redrawNode(svg, node);
+          this.nodesWidget.updateNodePosition(svg, node);
 
           const links = this.graphDataManager
             .getLinks()

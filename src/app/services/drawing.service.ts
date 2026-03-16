@@ -40,7 +40,7 @@ export class DrawingService {
       xPosition =
         Math.round((xPosition + drawing.element.width / 2) / project.drawing_grid_size) * project.drawing_grid_size;
       yPosition =
-        Math.round((yPosition + drawing.element.width / 2) / project.drawing_grid_size) * project.drawing_grid_size;
+        Math.round((yPosition + drawing.element.height / 2) / project.drawing_grid_size) * project.drawing_grid_size;
 
       xPosition = Math.round(xPosition - drawing.element.width / 2);
       yPosition = Math.round(yPosition - drawing.element.height / 2);

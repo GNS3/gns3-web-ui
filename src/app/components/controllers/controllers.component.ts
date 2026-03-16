@@ -1,13 +1,14 @@
 import { DataSource } from '@angular/cdk/collections';
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSort, MatSortable } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ChildProcessService } from 'ngx-childprocess';
 import { ElectronService } from 'ngx-electron';
-import { merge, Observable, Subscription } from 'rxjs';
+import { BehaviorSubject, interval, merge, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
-import {Controller, ControllerProtocol } from '@models/controller';
+import { Controller, ControllerProtocol } from '@models/controller';
 import { ControllerManagementService } from '@services/controller-management.service';
 import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
@@ -21,9 +22,17 @@ import { AddControllerDialogComponent } from './add-controller-dialog/add-contro
 })
 export class ControllersComponent implements OnInit, OnDestroy {
   dataSource: ControllerDataSource;
-  displayedColumns = ['id', 'name', 'location', 'ip', 'port', 'actions'];
+  displayedColumns = ['id', 'name', 'status', 'location', 'ip', 'port', 'actions'];
   controllerStatusSubscription: Subscription;
   isElectronApp: boolean = false;
+  searchText: string = '';
+  private readonly minStartingDisplayMs = 700;
+  private readonly statusRefreshIntervalMs = 5000;
+  private startingTimestamps: Map<string, number> = new Map();
+  private startingTimeouts: Map<string, ReturnType<typeof setTimeout>> = new Map();
+  private statusRefreshSubscription: Subscription;
+
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
 
   constructor(
     private dialog: MatDialog,
@@ -43,22 +52,22 @@ export class ControllersComponent implements OnInit, OnDestroy {
 
     this.controllerService.findAll().then((controllers: Controller []) => {
       controllers.forEach((controller) => {
+        controller.status = 'stopped';
+
         const controllerIndex = runningControllerNames.findIndex((controllerName) => controller.name === controllerName);
         if (controllerIndex >= 0) {
           controller.status = 'running';
         }
+
+        if (!controller.protocol) {
+          controller.protocol = location.protocol as ControllerProtocol;
+        }
       });
 
+      this.controllerDatabase.addControllers(controllers);
+
       controllers.forEach((controller) => {
-        this.controllerService.checkControllerVersion(controller).subscribe(
-          (controllerInfo) => {
-            if (controllerInfo.version.split('.')[0] >= 3) {
-              if (!controller.protocol) controller.protocol = location.protocol as ControllerProtocol;
-              if (!this.controllerDatabase.find(controller.name)) this.controllerDatabase.addController(controller);
-            }
-          },
-          (error) => { }
-        );
+        this.updateControllerOnlineStatus(controller);
       });
     });
   }
@@ -76,24 +85,56 @@ export class ControllersComponent implements OnInit, OnDestroy {
       });
     }
 
-    this.dataSource = new ControllerDataSource(this.controllerDatabase);
+    this.sort.sort(<MatSortable>{
+      id: 'id',
+      start: 'asc',
+    });
+    this.dataSource = new ControllerDataSource(this.controllerDatabase, this.sort);
+    this.startStatusAutoRefresh();
 
     this.controllerStatusSubscription = this.controllerManagement.controllerStatusChanged.subscribe((controllerStatus) => {
       const controller = this.controllerDatabase.find(controllerStatus.controllerName);
       if (!controller) {
         return;
       }
+
+      const pendingTimeout = this.startingTimeouts.get(controller.name);
+      if (pendingTimeout && controllerStatus.status !== 'started') {
+        clearTimeout(pendingTimeout);
+        this.startingTimeouts.delete(controller.name);
+      }
+
       if (controllerStatus.status === 'starting') {
         controller.status = 'starting';
+        this.startingTimestamps.set(controller.name, Date.now());
       }
       if (controllerStatus.status === 'stopped') {
         controller.status = 'stopped';
+        this.startingTimestamps.delete(controller.name);
       }
       if (controllerStatus.status === 'errored') {
         controller.status = 'stopped';
+        this.startingTimestamps.delete(controller.name);
       }
       if (controllerStatus.status === 'started') {
+        const startedAt = this.startingTimestamps.get(controller.name) || Date.now();
+        const elapsed = Date.now() - startedAt;
+        const delay = Math.max(0, this.minStartingDisplayMs - elapsed);
+
+        if (delay > 0) {
+          const timeout = setTimeout(() => {
+            controller.status = 'running';
+            this.controllerDatabase.update(controller);
+            this.changeDetector.detectChanges();
+            this.startingTimeouts.delete(controller.name);
+            this.startingTimestamps.delete(controller.name);
+          }, delay);
+          this.startingTimeouts.set(controller.name, timeout);
+          return;
+        }
+
         controller.status = 'running';
+        this.startingTimestamps.delete(controller.name);
       }
       this.controllerDatabase.update(controller);
       this.changeDetector.detectChanges();
@@ -102,10 +143,18 @@ export class ControllersComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.controllerStatusSubscription.unsubscribe();
+    this.startingTimeouts.forEach((timeout) => clearTimeout(timeout));
+    this.startingTimeouts.clear();
+    if (this.statusRefreshSubscription) {
+      this.statusRefreshSubscription.unsubscribe();
+    }
   }
 
   startLocalController() {
-    const controller = this.controllerDatabase.data.find((n) => n.location === 'bundled' || 'local');
+    const controller = this.controllerDatabase.data.find((n) => n.location === 'bundled' || n.location === 'local');
+    if (!controller) {
+      return;
+    }
     this.startController(controller);
   }
 
@@ -123,19 +172,47 @@ export class ControllersComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe((controller) => {
       if (controller) {
         this.controllerService.create(controller).then((created: Controller ) => {
+          created.status = 'stopped';
           this.controllerDatabase.addController(created);
+          this.updateControllerOnlineStatus(created);
         });
       }
     });
   }
 
-  getControllerStatus(controller: Controller ) {
-    if (controller.location === 'local') {
-      if (controller.status === undefined) {
-        return 'stopped';
+  private startStatusAutoRefresh() {
+    this.statusRefreshSubscription = interval(this.statusRefreshIntervalMs).subscribe(() => {
+      this.refreshControllersStatuses();
+    });
+  }
+
+  private refreshControllersStatuses() {
+    this.controllerDatabase.data.slice().forEach((controller) => {
+      if (controller.status === 'starting') {
+        return;
       }
-      return controller.status;
+      this.updateControllerOnlineStatus(controller);
+    });
+  }
+
+  private updateControllerOnlineStatus(controller: Controller) {
+    this.controllerService.checkControllerVersion(controller).subscribe(
+      (controllerInfo) => {
+        controller.status = controllerInfo.version.split('.')[0] >= 3 ? 'running' : 'stopped';
+        this.controllerDatabase.update(controller);
+      },
+      () => {
+        controller.status = 'stopped';
+        this.controllerDatabase.update(controller);
+      }
+    );
+  }
+
+  getControllerStatus(controller: Controller ) {
+    if (controller.status === undefined) {
+      return 'stopped';
     }
+    return controller.status;
   }
 
   deleteController(controller: Controller ) {
@@ -152,23 +229,74 @@ export class ControllersComponent implements OnInit, OnDestroy {
   }
 
   async startController(controller: Controller ) {
+    if (!controller) {
+      return;
+    }
+
+    controller.status = 'starting';
+    this.controllerDatabase.update(controller);
+    this.changeDetector.detectChanges();
+
     await this.controllerManagement.start(controller);
   }
 
   async stopController(controller: Controller ) {
     await this.controllerManagement.stop(controller);
   }
+
+  onSearchChange(value: string) {
+    if (this.dataSource) {
+      this.dataSource.setFilter(value);
+    }
+  }
 }
 
 export class ControllerDataSource extends DataSource<Controller> {
-  constructor(private controllerDatabase: ControllerDatabase) {
+  private filterChange: BehaviorSubject<string> = new BehaviorSubject<string>('');
+
+  constructor(private controllerDatabase: ControllerDatabase, private sort: MatSort) {
     super();
   }
 
+  setFilter(filter: string) {
+    this.filterChange.next((filter || '').trim().toLowerCase());
+  }
+
   connect(): Observable< Controller[] > {
-    return merge(this.controllerDatabase.dataChange).pipe(
+    return merge(this.controllerDatabase.dataChange, this.sort.sortChange, this.filterChange).pipe(
       map(() => {
-        return this.controllerDatabase.data;
+        let data = this.controllerDatabase.data.slice();
+        const filter = this.filterChange.value;
+
+        if (filter) {
+          data = data.filter((controller: Controller) => {
+            const row = [
+              controller.id,
+              controller.name,
+              controller.location,
+              controller.host,
+              controller.port,
+              controller.status || 'stopped',
+            ]
+              .map((value) => String(value || '').toLowerCase())
+              .join(' ');
+            return row.includes(filter);
+          });
+        }
+
+        if (!this.sort.active || this.sort.direction === '') {
+          return data;
+        }
+
+        return data.sort((a, b) => {
+          const propertyA = a[this.sort.active] !== undefined ? a[this.sort.active] : '';
+          const propertyB = b[this.sort.active] !== undefined ? b[this.sort.active] : '';
+
+          const valueA = isNaN(+propertyA) ? propertyA : +propertyA;
+          const valueB = isNaN(+propertyB) ? propertyB : +propertyB;
+
+          return (valueA < valueB ? -1 : 1) * (this.sort.direction === 'asc' ? 1 : -1);
+        });
       })
     );
   }

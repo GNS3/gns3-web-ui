@@ -23,4 +23,5 @@ export class DockerTemplate {
   template_id: string;
   template_type: string;
   usage: string;
+  tags: string[];
 }

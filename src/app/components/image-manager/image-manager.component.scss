@@ -5,19 +5,37 @@
 .install-all-button {
   height: 40px;
   width: 160px;
-  margin: 20px;
+  margin: 20px 12px 20px 0;
 }
 
 .prune-button {
   height: 40px;
   width: 160px;
-  margin: 20px;
+  margin: 20px 12px 20px 0;
 }
 
 .add-button {
   height: 40px;
   width: 160px;
-  margin: 20px;
+  margin: 20px 0;
+}
+
+.image-manager-header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.title {
+  margin-right: auto;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.images-search {
+  margin-top: 12px;
 }
 
 mat-header-cell, mat-cell {
@@ -31,3 +49,110 @@ mat-cell, mat-header-cell, mat-footer-cell {
   min-height: inherit;
 }
 
+.mat-header-row {
+  z-index: 1;
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+.mat-header-cell {
+  background: inherit;
+}
+
+.table-container {
+  overflow: visible;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mat-table-sticky {
+  top: 0 !important;
+  z-index: 3 !important;
+}
+
+.row-content {
+  width: 100%;
+}
+
+.mat-column-filename {
+  flex: 2.6;
+  min-width: 300px;
+}
+
+.mat-column-image_type,
+.mat-column-image_size,
+.mat-column-created_at {
+  flex: 1;
+  min-width: 140px;
+}
+
+.mat-column-select,
+.mat-column-delete {
+  flex: 0 0 72px;
+  min-width: 72px;
+}
+
+.upload-status {
+  margin-top: 4px;
+}
+
+.upload-text {
+  display: inline-block;
+  font-size: 12px;
+  margin-top: 4px;
+  word-break: break-word;
+}
+
+.upload-error {
+  color: #d52435;
+}
+
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+
+  .image-manager-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .title {
+    margin-right: 0;
+    margin-bottom: 6px;
+  }
+
+  .action-button {
+    width: 100%;
+    margin: 0;
+    justify-content: center;
+  }
+
+  .images-search {
+    margin-top: 8px;
+  }
+
+  .mat-column-filename {
+    min-width: 220px;
+  }
+
+  .mat-column-image_type,
+  .mat-column-image_size,
+  .mat-column-created_at {
+    min-width: 120px;
+  }
+
+  mat-cell,
+  mat-header-cell {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 640px) {
+  .mat-column-created_at {
+    display: none;
+  }
+}

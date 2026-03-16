@@ -38,15 +38,82 @@
   <body class="mat-app-background" oncontextmenu="return false;">
     <app-root></app-root>
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-0BT7QQV1W1"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag('js', new Date());
+      (function() {
+        'use strict';
 
-      gtag('config', 'G-0BT7QQV1W1');
+        /**
+         * Check if user has enabled statistics
+         * @returns {boolean} true if statistics are enabled
+         */
+        function isStatisticsEnabled() {
+          try {
+            const setting = localStorage.getItem('statistics_command');
+
+            // First visit: enabled by default
+            if (setting === null) {
+              console.info('[Analytics] First visit, statistics enabled by default');
+              return true;
+            }
+
+            const enabled = setting === 'true';
+            console.info('[Analytics] Statistics ' + (enabled ? 'enabled' : 'disabled') + ' by user preference');
+            return enabled;
+          } catch (e) {
+            console.warn('[Analytics] Error reading statistics setting:', e);
+            return false; // Default to disabled on error
+          }
+        }
+
+        /**
+         * Initialize Google Analytics
+         */
+        function initGoogleAnalytics() {
+          // Check user setting
+          if (!isStatisticsEnabled()) {
+            console.info('[Analytics] Not loading per user settings');
+            return;
+          }
+
+          // Initialize dataLayer
+          window.dataLayer = window.dataLayer || [];
+
+          // Define gtag function
+          window.gtag = function() {
+            window.dataLayer.push(arguments);
+          };
+
+          // Configure Google Analytics
+          window.gtag('js', new Date());
+          window.gtag('config', 'G-0BT7QQV1W1', {
+            send_page_view: false,  // Manual page view control
+            anonymize_ip: true      // Anonymize IP addresses
+          });
+
+          // Dynamically load script
+          var script = document.createElement('script');
+          script.async = true;
+          script.src = 'https://www.googletagmanager.com/gtag/js?id=G-0BT7QQV1W1';
+
+          script.onload = function() {
+            console.info('[Analytics] Google Analytics loaded successfully');
+          };
+
+          script.onerror = function() {
+            console.warn('[Analytics] Failed to load Google Analytics');
+          };
+
+          // Add to head
+          document.head.appendChild(script);
+        }
+
+        // Initialize on page load
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initGoogleAnalytics);
+        } else {
+          initGoogleAnalytics();
+        }
+      })();
     </script>
   </body>
 </html>

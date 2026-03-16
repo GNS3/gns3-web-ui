@@ -64,10 +64,15 @@
     color: #0ca8c7;
     font-size: 17px;
   }
-  .uploaded-error-text{
+.uploaded-error-text{
       color: #d52435;
       font-weight: 600;
   }
+
+.upload-state {
+  display: inline-block;
+  margin-top: 8px;
+}
 
   .choose-instal-appliance {
     display: flex;

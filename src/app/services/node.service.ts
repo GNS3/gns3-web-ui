@@ -132,16 +132,38 @@ export class NodeService {
       locked: node.locked,
       name: node.name,
       properties: node.properties,
+      tags: node.tags,
     });
   }
 
   updateNodeWithCustomAdapters(controller: Controller, node: Node): Observable<Node> {
+    // Filter out null values from custom_adapters for QEMU nodes
+    const filtered_custom_adapters = node.custom_adapters ? node.custom_adapters.map(adapter => {
+      const filteredAdapter: any = {
+        adapter_number: adapter.adapter_number,
+        adapter_type: adapter.adapter_type
+      };
+
+      // Only include port_name if it's not null
+      if (adapter.port_name !== null && adapter.port_name !== undefined) {
+        filteredAdapter.port_name = adapter.port_name;
+      }
+
+      // Only include mac_address if it's not null
+      if (adapter.mac_address !== null && adapter.mac_address !== undefined) {
+        filteredAdapter.mac_address = adapter.mac_address;
+      }
+
+      return filteredAdapter;
+    }) : [];
+
     return this.httpController.put<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`, {
       console_type: node.console_type,
       console_auto_start: node.console_auto_start,
-      custom_adapters: node.custom_adapters,
+      custom_adapters: filtered_custom_adapters,
       name: node.name,
       properties: node.properties,
+      tags: node.tags,
     });
   }
 

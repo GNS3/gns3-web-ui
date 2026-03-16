@@ -9,6 +9,73 @@ table {
   width: 100%;
 }
 
+.full-width {
+  width: 100%;
+}
+
+.controllers-search {
+  margin-top: 12px;
+}
+
 mat-header-cell, mat-cell {
   justify-content: center;
+}
+
+.mat-header-row {
+  z-index: 1;
+}
+
+.mat-header-cell {
+  background: inherit;
+}
+
+.table-container {
+  overflow: visible;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mat-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+
+.mat-table-sticky {
+  top: 0 !important;
+  z-index: 3 !important;
+}
+
+.status-chip {
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 5px 10px;
+}
+
+.status-running {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-starting {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-stopped {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+@media (max-width: 768px) {
+  .table-container {
+    overflow-x: auto;
+    overflow-y: visible;
+  }
+
+  .button {
+    margin: 10px 0 !important;
+    width: 100%;
+  }
 }
