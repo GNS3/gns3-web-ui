@@ -19,7 +19,7 @@ export class ElectronService {
   /**
    * Check if running in Electron environment
    */
-  private isElectron(): boolean {
+  isElectron(): boolean {
     return !!(window && (window as any).electronAPI);
   }
 
@@ -38,7 +38,7 @@ export class ElectronService {
     return from(
       (window as any).electronAPI.openWireshark(captureFilePath)
     ).pipe(
-      map(result => {
+      map((result: any) => {
         console.log('[ElectronService] Wireshark opened:', result);
         return result.success;
       }),
@@ -68,7 +68,7 @@ export class ElectronService {
     return from(
       (window as any).electronAPI.openRDP(config)
     ).pipe(
-      map(result => {
+      map((result: any) => {
         console.log('[ElectronService] RDP opened:', result);
         return result.success;
       }),
@@ -93,7 +93,7 @@ export class ElectronService {
     return from(
       (window as any).electronAPI.checkSoftware(softwareName)
     ).pipe(
-      map(result => result.installed),
+      map((result: any) => result.installed),
       catchError(() => of(false))
     );
   }
