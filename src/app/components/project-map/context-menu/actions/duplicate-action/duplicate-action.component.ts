@@ -28,26 +28,21 @@ export class DuplicateActionComponent {
   ) {}
 
   duplicate() {
-    let runningNodes: string = '';
     for (let node of this.nodes) {
-      if (node.status === 'stopped') {
-        this.nodeService.duplicate(this.controller, node).subscribe((node: Node) => {
+      this.nodeService.duplicate(this.controller, node).subscribe(
+        (node: Node) => {
           this.nodesDataSource.add(node);
-        });
-      } else {
-        runningNodes += `${node.name}, `;
-      }
+        },
+        (error) => {
+          this.toasterService.error(`Cannot duplicate node ${node.name}: ${error.message || error}`);
+        }
+      );
     }
 
     for (let drawing of this.drawings) {
       this.drawingService.duplicate(this.controller, drawing.project_id, drawing).subscribe((drawing: Drawing) => {
         this.drawingsDataSource.add(drawing);
       });
-    }
-
-    if (runningNodes.length > 0) {
-      runningNodes = runningNodes.substring(0, runningNodes.length - 2);
-      this.toasterService.error(`Cannot duplicate node data for nodes: ${runningNodes}`);
     }
   }
 }
