@@ -754,8 +754,8 @@ import RFB from './novnc/core/rfb.js';
 
           // Draw camera in corner (picture-in-picture)
           if (cameraVideo) {
-            const pipWidth = 160;
-            const pipHeight = 120;
+            const pipWidth = 200;
+            const pipHeight = 150;
             const pipX = recordingCanvas.width - pipWidth - 10;
             const pipY = recordingCanvas.height - pipHeight - 10;
 
