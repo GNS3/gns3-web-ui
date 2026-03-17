@@ -938,7 +938,17 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    * @returns Message ID
    */
   private generateMessageId(): string {
-    return `msg_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const randomBytes = new Uint8Array(4);
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      crypto.getRandomValues(randomBytes);
+    } else {
+      // Fallback for environments without crypto support
+      for (let i = 0; i < randomBytes.length; i++) {
+        randomBytes[i] = Math.floor(Math.random() * 256);
+      }
+    }
+    const randomStr = Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
+    return `msg_${Date.now()}_${randomStr}`;
   }
 
   /**
@@ -995,11 +1005,30 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    * @returns UUID string
    */
   private generateUUID(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-      const r = Math.random() * 16 | 0;
-      const v = c === 'x' ? r : (r & 0x3 | 0x8);
-      return v.toString(16);
-    });
+    // Generate UUID using cryptographically secure random values
+    const bytes = new Uint8Array(16);
+    if (typeof crypto !== 'undefined' && crypto.getRandomValues) {
+      crypto.getRandomValues(bytes);
+    } else {
+      // Fallback for environments without crypto support
+      for (let i = 0; i < bytes.length; i++) {
+        bytes[i] = Math.floor(Math.random() * 256);
+      }
+    }
+
+    // Set version bits to 4 (UUID v4) and variant bits to RFC 4122
+    bytes[6] = (bytes[6]! & 0x0f) | 0x40; // Version 4
+    bytes[8] = (bytes[8]! & 0x3f) | 0x80; // Variant
+
+    // Format as UUID string
+    const hex = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+    return [
+      hex.substring(0, 8),
+      hex.substring(8, 12),
+      hex.substring(12, 16),
+      hex.substring(16, 20),
+      hex.substring(20, 32)
+    ].join('-');
   }
 
   /**
