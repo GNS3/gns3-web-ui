@@ -21,6 +21,7 @@ export type LinkPathOptions = {
     bezierVariation?: number;
     sourceOrientation?: ConnectorOrientation;
     targetOrientation?: ConnectorOrientation;
+    flowchartDistance?: number;
 };
 
 export class StyleTranslator {
@@ -96,7 +97,7 @@ export class StyleTranslator {
         }
         if (linkType === 'flowchart') {
             const flowchartRoundness = StyleTranslator.normalizeFlowchartRoundness(linkStyle?.flowchart_roundness);
-            return StyleTranslator.getFlowchartPath(source, target, flowchartRoundness);
+            return StyleTranslator.getFlowchartPath(source, target, flowchartRoundness, options?.flowchartDistance);
         }
         if (linkType === 'statemachine') {
             const stateMachineCurviness = StyleTranslator.normalizeStateMachineCurviness(linkStyle?.bezier_curviness);
@@ -259,13 +260,23 @@ export class StyleTranslator {
         return lineGenerator.toString();
     }
 
-    private static getFlowchartPath(source: [number, number], target: [number, number], roundness: number) {
+    private static getFlowchartPath(
+        source: [number, number],
+        target: [number, number],
+        roundness: number,
+        flowchartDistance: number = 0
+    ) {
         const deltaX = target[0] - source[0];
         const deltaY = target[1] - source[1];
         const absDeltaX = Math.abs(deltaX);
         const absDeltaY = Math.abs(deltaY);
         const horizontalDominant = Math.abs(deltaX) >= Math.abs(deltaY);
         const nearAlignedThreshold = 6;
+        const safeLength = Math.hypot(deltaX, deltaY) || 1;
+        const normalizedDistance =
+            typeof flowchartDistance === 'number' && !Number.isNaN(flowchartDistance) ? flowchartDistance : 0;
+        const translationX = (-deltaY / safeLength) * normalizedDistance;
+        const translationY = (deltaX / safeLength) * normalizedDistance;
 
         // Keep aligned links visually straight. Elbows appear only once alignment is broken.
         if (absDeltaX <= nearAlignedThreshold || absDeltaY <= nearAlignedThreshold) {
@@ -275,11 +286,15 @@ export class StyleTranslator {
         const points: [number, number][] = [[source[0], source[1]]];
 
         if (horizontalDominant) {
-            const middleX = source[0] + deltaX / 2;
+            // Keep middle-lane spacing equal to endpoint horizontal-segment spacing,
+            // without canceling against group translation on near-diagonal links.
+            const desiredMiddleShiftX = (translationX < 0 ? -1 : 1) * Math.abs(translationY);
+            const middleX = source[0] + deltaX / 2 + (desiredMiddleShiftX - translationX);
             points.push([middleX, source[1]]);
             points.push([middleX, target[1]]);
         } else {
-            const middleY = source[1] + deltaY / 2;
+            const desiredMiddleShiftY = (translationY < 0 ? -1 : 1) * Math.abs(translationX);
+            const middleY = source[1] + deltaY / 2 + (desiredMiddleShiftY - translationY);
             points.push([source[0], middleY]);
             points.push([target[0], middleY]);
         }

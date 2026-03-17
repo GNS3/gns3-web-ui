@@ -113,7 +113,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
         : cachedFlowchartRoundness;
 
     this.formGroup.controls['flowchartRoundness'].setValue(
-      this.normalizeFlowchartRoundness(configuredFlowchartRoundness)
+      StyleTranslator.normalizeFlowchartRoundness(configuredFlowchartRoundness)
     );
 
     this.formGroup.controls['linkType'].valueChanges.subscribe((selectedLinkTypeLabel) => {
@@ -171,20 +171,12 @@ export class LinkStyleEditorDialogComponent implements OnInit {
     return this.getCurvinessStepByLinkType(this.normalizeLinkType(this.formGroup.controls['linkType'].value));
   }
 
-  private normalizeBezierCurviness(value: number): number {
-    return StyleTranslator.normalizeBezierCurviness(value);
-  }
-
-  private normalizeStateMachineCurviness(value: number): number {
-    return StyleTranslator.normalizeStateMachineCurviness(value);
-  }
-
   private normalizeCurvinessByLinkType(linkType: string, value: number): number {
     if (linkType === 'statemachine') {
-      return this.normalizeStateMachineCurviness(value);
+      return StyleTranslator.normalizeStateMachineCurviness(value);
     }
 
-    return this.normalizeBezierCurviness(value);
+    return StyleTranslator.normalizeBezierCurviness(value);
   }
 
   private getCurvinessMinByLinkType(linkType: string): number {
@@ -212,10 +204,6 @@ export class LinkStyleEditorDialogComponent implements OnInit {
     this.formGroup.controls['bezierCurviness'].updateValueAndValidity({ emitEvent: false });
   }
 
-  private normalizeFlowchartRoundness(value: number): number {
-    return StyleTranslator.normalizeFlowchartRoundness(value);
-  }
-
   onNoClick() {
     this.dialogRef.close();
   }
@@ -240,7 +228,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
         this.link.link_style.link_type,
         this.formGroup.controls['bezierCurviness'].value
       );
-      this.link.link_style.flowchart_roundness = this.normalizeFlowchartRoundness(this.formGroup.controls['flowchartRoundness'].value);
+      this.link.link_style.flowchart_roundness = StyleTranslator.normalizeFlowchartRoundness(this.formGroup.controls['flowchartRoundness'].value);
 
       const expectedLinkType = this.link.link_style.link_type;
       const expectedBezierCurviness = this.link.link_style.bezier_curviness;
@@ -281,7 +269,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
           LinkTypeCache.setFlowchartRoundness(
             link.project_id,
             link.link_id,
-            this.normalizeFlowchartRoundness(link.link_style.flowchart_roundness)
+            StyleTranslator.normalizeFlowchartRoundness(link.link_style.flowchart_roundness)
           );
 
           this.linksDataSource.update(link);

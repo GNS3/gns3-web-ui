@@ -12,6 +12,7 @@ export class LinksWidget implements Widget {
 
   public redrawLink(view: SVGSelection, link: MapLink) {
     const selection = this.selectLink(view, link);
+    let referenceLink: MapLink | null = null;
 
     selection.each((existingLink: MapLink) => {
       this.mergeDefinedFields(existingLink, link);
@@ -21,9 +22,24 @@ export class LinksWidget implements Widget {
           ...link.link_style,
         };
       }
+
+      referenceLink = existingLink;
     });
 
-    this.linkWidget.draw(selection);
+    // Ensure selectors reflect the latest source/target before related-link lookup.
+    selection
+      .attr('map-source', (l: MapLink) => (l.source?.id ? l.source.id : ''))
+      .attr('map-target', (l: MapLink) => (l.target?.id ? l.target.id : ''));
+
+    const relatedSelection = this.selectRelatedLinks(view, referenceLink || link);
+    const selectionToDraw = relatedSelection.empty() ? selection : relatedSelection;
+    const linksToDraw = selectionToDraw.data() as MapLink[];
+
+    if (Array.isArray(linksToDraw) && linksToDraw.length > 0) {
+      this.multiLinkCalculatorHelper.assignDataToLinks(linksToDraw);
+    }
+
+    this.linkWidget.draw(selectionToDraw);
   }
 
   public draw(view: SVGSelection) {
@@ -51,7 +67,11 @@ export class LinksWidget implements Widget {
       .attr('map-source', (l: MapLink) => l.source.id)
       .attr('map-target', (l: MapLink) => l.target.id);
 
-    const merge = link.merge(link_enter);
+    const merge = link
+      .merge(link_enter)
+      .attr('link_id', (l: MapLink) => l.id)
+      .attr('map-source', (l: MapLink) => l.source.id)
+      .attr('map-target', (l: MapLink) => l.target.id);
 
     this.linkWidget.draw(merge);
 
@@ -60,6 +80,23 @@ export class LinksWidget implements Widget {
 
   private selectLink(view: SVGSelection, link: MapLink) {
     return view.selectAll<SVGGElement, MapLink>(`g.link[link_id="${link.id}"]`);
+  }
+
+  private selectRelatedLinks(view: SVGSelection, link: MapLink) {
+    const sourceId = link.source?.id;
+    const targetId = link.target?.id;
+
+    if (!sourceId || !targetId) {
+      return this.selectLink(view, link);
+    }
+
+    const selector =
+      `g.link[map-source="${sourceId}"], ` +
+      `g.link[map-target="${sourceId}"], ` +
+      `g.link[map-source="${targetId}"], ` +
+      `g.link[map-target="${targetId}"]`;
+
+    return view.selectAll<SVGGElement, MapLink>(selector);
   }
 
   private mergeDefinedFields(target: MapLink, source: MapLink) {

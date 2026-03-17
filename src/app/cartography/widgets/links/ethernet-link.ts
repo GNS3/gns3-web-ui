@@ -90,12 +90,12 @@ export class EthernetLinkWidget implements Widget {
       sourcePoint = this.bezierLayout.getEndpointPoint(
         sourceCenter,
         sourceOrientation,
-        this.bezierLayout.getEndpointOrder(link, 0)
+        this.bezierLayout.getRenderEndpointOrder(link, 0)
       );
       targetPoint = this.bezierLayout.getEndpointPoint(
         targetCenter,
         targetOrientation,
-        this.bezierLayout.getEndpointOrder(link, 1)
+        this.bezierLayout.getRenderEndpointOrder(link, 1)
       );
 
       const majorAnchor = StyleTranslator.getEffectiveBezierMajorAnchor(style.bezier_curviness, bezierVariation);
@@ -144,7 +144,6 @@ export class EthernetLinkWidget implements Widget {
       .enter()
       .append<SVGPathElement>('path')
       .attr('class', 'ethernet_link')
-      .attr('fill', 'none')
       .on('contextmenu', (arg1: unknown, arg2: unknown) => {
         const evt = event;
         const link = this.resolveContextMenuLink(arg1, arg2);
@@ -152,15 +151,6 @@ export class EthernetLinkWidget implements Widget {
           return;
         }
         this.onContextMenu.emit(new LinkContextMenu(evt, link));
-      })
-      .attr('stroke', (datum) => {
-        return datum.style.color;
-      })
-      .attr('stroke-width', (datum) => {
-        return datum.style.width;
-      })
-      .attr('stroke-dasharray', (datum) => {
-        return StyleTranslator.getLinkStyle(datum.style);
       });
 
     const link_merge = link.merge(link_enter);
@@ -184,6 +174,10 @@ export class EthernetLinkWidget implements Widget {
           bezierVariation: ethernet.bezierVariation,
           sourceOrientation: ethernet.sourceOrientation,
           targetOrientation: ethernet.targetOrientation,
+          flowchartDistance:
+            typeof ethernet.link.distance === 'number' && !Number.isNaN(ethernet.link.distance)
+              ? ethernet.link.distance
+              : 0,
         });
       });
   }

@@ -40,62 +40,57 @@ export class LinkTypeCache {
     }
   }
 
-  static getBezierCurviness(projectId?: string, linkId?: string): number | undefined {
-    if (!projectId || !linkId) {
-      return undefined;
-    }
-
+  private static getNumberValue(key: string): number | undefined {
     try {
-      const value = localStorage.getItem(LinkTypeCache.bezierCurvinessKey(projectId, linkId));
+      const value = localStorage.getItem(key);
       if (value === null || value === '') {
         return undefined;
       }
-      const parsedValue = parseInt(value, 10);
-      return Number.isNaN(parsedValue) ? undefined : parsedValue;
+      const parsed = parseInt(value, 10);
+      return Number.isNaN(parsed) ? undefined : parsed;
     } catch {
       return undefined;
     }
   }
 
-  static setBezierCurviness(projectId?: string, linkId?: string, bezierCurviness?: number): void {
-    if (!projectId || !linkId || bezierCurviness === undefined || bezierCurviness === null) {
+  private static setNumberValue(key: string, value?: number): void {
+    if (value === undefined || value === null) {
       return;
     }
 
     try {
-      localStorage.setItem(LinkTypeCache.bezierCurvinessKey(projectId, linkId), `${bezierCurviness}`);
+      localStorage.setItem(key, `${value}`);
     } catch {
       // Ignore storage exceptions in restricted browsing contexts.
     }
+  }
+
+  static getBezierCurviness(projectId?: string, linkId?: string): number | undefined {
+    if (!projectId || !linkId) {
+      return undefined;
+    }
+    return LinkTypeCache.getNumberValue(LinkTypeCache.bezierCurvinessKey(projectId, linkId));
+  }
+
+  static setBezierCurviness(projectId?: string, linkId?: string, bezierCurviness?: number): void {
+    if (!projectId || !linkId) {
+      return;
+    }
+    LinkTypeCache.setNumberValue(LinkTypeCache.bezierCurvinessKey(projectId, linkId), bezierCurviness);
   }
 
   static getFlowchartRoundness(projectId?: string, linkId?: string): number | undefined {
     if (!projectId || !linkId) {
       return undefined;
     }
-
-    try {
-      const value = localStorage.getItem(LinkTypeCache.flowchartRoundnessKey(projectId, linkId));
-      if (value === null || value === '') {
-        return undefined;
-      }
-      const parsedValue = parseInt(value, 10);
-      return Number.isNaN(parsedValue) ? undefined : parsedValue;
-    } catch {
-      return undefined;
-    }
+    return LinkTypeCache.getNumberValue(LinkTypeCache.flowchartRoundnessKey(projectId, linkId));
   }
 
   static setFlowchartRoundness(projectId?: string, linkId?: string, flowchartRoundness?: number): void {
-    if (!projectId || !linkId || flowchartRoundness === undefined || flowchartRoundness === null) {
+    if (!projectId || !linkId) {
       return;
     }
-
-    try {
-      localStorage.setItem(LinkTypeCache.flowchartRoundnessKey(projectId, linkId), `${flowchartRoundness}`);
-    } catch {
-      // Ignore storage exceptions in restricted browsing contexts.
-    }
+    LinkTypeCache.setNumberValue(LinkTypeCache.flowchartRoundnessKey(projectId, linkId), flowchartRoundness);
   }
 
   static getStyleSnapshot(projectId?: string, linkId?: string): {
