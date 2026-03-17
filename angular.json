@@ -32,7 +32,9 @@
                             "xterm",
                             "xterm-addon-attach",
                             "xterm-addon-fit",
-                            "ipaddr.js"
+                            "ipaddr.js",
+                            "d3",
+                            "d3-array"
                         ],
                         "outputPath": "dist",
                         "index": "src/index.html",
