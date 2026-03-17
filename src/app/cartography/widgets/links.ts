@@ -11,7 +11,19 @@ export class LinksWidget implements Widget {
   constructor(private multiLinkCalculatorHelper: MultiLinkCalculatorHelper, private linkWidget: LinkWidget) {}
 
   public redrawLink(view: SVGSelection, link: MapLink) {
-    this.linkWidget.draw(this.selectLink(view, link));
+    const selection = this.selectLink(view, link);
+
+    selection.each((existingLink: MapLink) => {
+      this.mergeDefinedFields(existingLink, link);
+      if (link.link_style) {
+        existingLink.link_style = {
+          ...(existingLink.link_style || {}),
+          ...link.link_style,
+        };
+      }
+    });
+
+    this.linkWidget.draw(selection);
   }
 
   public draw(view: SVGSelection) {
@@ -48,5 +60,18 @@ export class LinksWidget implements Widget {
 
   private selectLink(view: SVGSelection, link: MapLink) {
     return view.selectAll<SVGGElement, MapLink>(`g.link[link_id="${link.id}"]`);
+  }
+
+  private mergeDefinedFields(target: MapLink, source: MapLink) {
+    if (!target || !source) {
+      return;
+    }
+
+    Object.keys(source).forEach((key) => {
+      const value = source[key];
+      if (value !== undefined && key !== 'link_style') {
+        target[key] = value;
+      }
+    });
   }
 }

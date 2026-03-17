@@ -10,6 +10,7 @@ import { Link } from '@models/link';
 import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
 import { LinkService } from '@services/link.service';
+import { LinkTypeCache } from '@services/link-type-cache';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
@@ -74,7 +75,9 @@ export class DeleteActionComponent implements OnInit {
     if (this.nodes.length == 0 && this.drawings.length == 0) {
       this.links.forEach((link) => {
         this.linksDataSource.remove(link);
-        this.linkService.deleteLink(this.controller, link).subscribe(() => {});
+        this.linkService.deleteLink(this.controller, link).subscribe(() => {
+          LinkTypeCache.remove(link.project_id, link.link_id);
+        });
       });
     }
   }
