@@ -1149,7 +1149,7 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.18.9", "@babel/runtime@^7.21.0":
+"@babel/runtime@^7.21.0":
   version "7.29.2"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.29.2.tgz#9a6e2d05f4b6692e1801cd4fb176ad823930ed5e"
   integrity sha512-JiDShH45zKHWyGe4ZNVRrCjBz8Nh9TMmZG1kh4QTK8hCBTWBi8Da+i7s1fJw7/lYpM4ccepSNfqzZ/QvABBi5g==
@@ -1552,11 +1552,6 @@
   dependencies:
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
-
-"@novnc/novnc@^1.4.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@novnc/novnc/-/novnc-1.6.0.tgz#e68ac47d8d4151a34a80f408b5ffa3af5e4780d2"
-  integrity sha512-CJrmdSe9Yt2ZbLsJpVFoVkEu0KICEvnr3njW25Nz0jodaiFJtg8AYLGZogRYy0/N5HUWkGUsCmegKXYBSqwygw==
 
 "@npmcli/fs@^2.1.0":
   version "2.1.2"
