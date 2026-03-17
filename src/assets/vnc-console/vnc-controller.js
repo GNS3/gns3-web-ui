@@ -676,11 +676,79 @@ import RFB from './novnc/core/rfb.js';
       recordedChunks = [];
 
       // Continuous draw function to ensure video has actual duration
+      // Handle camera mode switching during recording
+      async function handleCameraModeSwitch(newMode) {
+        // Only process if mode changed and recording is active
+        if (newMode === recordingMode || !isRecording) return;
+
+        const oldMode = recordingMode;
+        recordingMode = newMode;
+        log(`Switching recording mode from ${oldMode} to ${newMode}`);
+
+        // Show/hide camera preview based on mode
+        const previewVideo = document.getElementById('camera-preview');
+
+        // Need camera for vnc-camera or camera mode
+        if (newMode === 'vnc-camera' || newMode === 'camera') {
+          if (!cameraStream) {
+            try {
+              cameraStream = await navigator.mediaDevices.getUserMedia({
+                video: { width: 320, height: 240 },
+                audio: false
+              });
+
+              // Use existing preview video element from DOM
+              if (previewVideo) {
+                previewVideo.srcObject = cameraStream;
+                previewVideo.style.display = 'inline-block';
+                cameraVideo = previewVideo;
+              } else {
+                cameraVideo = document.createElement('video');
+                cameraVideo.srcObject = cameraStream;
+                cameraVideo.muted = true;
+                cameraVideo.autoplay = true;
+              }
+              await cameraVideo.play();
+              log('Camera initialized after mode switch');
+            } catch (err) {
+              log(`Camera not available after mode switch: ${err.message}`, 'warn');
+              recordingMode = 'vnc'; // Fall back to VNC only
+              // Show warning to user
+              const modeSelect = document.getElementById('record-mode');
+              if (modeSelect) modeSelect.value = 'vnc';
+            }
+          } else {
+            // Camera stream exists, just show preview
+            if (previewVideo) {
+              previewVideo.style.display = 'inline-block';
+              cameraVideo = previewVideo;
+            }
+          }
+        }
+
+        // If switching to VNC only, hide camera preview but keep stream
+        if (newMode === 'vnc' && cameraStream) {
+          if (previewVideo) {
+            previewVideo.style.display = 'none';
+          }
+          log('Switched to VNC only mode, camera hidden but available');
+        }
+      }
+
       function continuousDraw() {
         // Always keep drawing, but only record when not paused
         // This ensures the animation loop continues for when we resume
 
-        if (recordingMode === 'vnc-camera' && vncCanvas && recordingCtx) {
+        // Dynamically get recording mode from select (allows switching during recording)
+        const modeSelect = document.getElementById('record-mode');
+        const currentMode = modeSelect ? modeSelect.value : 'vnc';
+
+        // Handle camera mode switching during recording
+        if (isRecording) {
+          handleCameraModeSwitch(currentMode);
+        }
+
+        if (currentMode === 'vnc-camera' && vncCanvas && recordingCtx) {
           // Draw VNC canvas
           recordingCtx.drawImage(vncCanvas, 0, 0);
 
@@ -698,10 +766,10 @@ import RFB from './novnc/core/rfb.js';
             // Draw camera feed
             recordingCtx.drawImage(cameraVideo, pipX, pipY, pipWidth, pipHeight);
           }
-        } else if (recordingMode === 'vnc' && vncCanvas && recordingCtx) {
+        } else if (currentMode === 'vnc' && vncCanvas && recordingCtx) {
           // VNC only mode
           recordingCtx.drawImage(vncCanvas, 0, 0);
-        } else if (recordingMode === 'camera' && cameraVideo) {
+        } else if (currentMode === 'camera' && cameraVideo) {
           // Camera only mode
           recordingCtx.drawImage(cameraVideo, 0, 0, recordingCanvas.width, recordingCanvas.height);
         }
