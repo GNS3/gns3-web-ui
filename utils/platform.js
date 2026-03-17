@@ -6,13 +6,43 @@
 
 const os = require('os');
 const fs = require('fs');
+const { execSync } = require('child_process');
+
+/**
+ * Find executable in system PATH
+ */
+function findInPath(executableName) {
+  try {
+    if (process.platform === 'win32') {
+      return execSync(`where ${executableName}`, { encoding: 'utf8' }).split('\n')[0].trim();
+    } else {
+      return execSync(`which ${executableName}`, { encoding: 'utf8' }).trim();
+    }
+  } catch (e) {
+    return null;
+  }
+}
 
 /**
  * Get Wireshark executable path for current platform
  */
 function getWiresharkPath() {
+  // First try to find in PATH
+  const wiresharkInPath = findInPath('wireshark');
+  if (wiresharkInPath && fs.existsSync(wiresharkInPath)) {
+    return wiresharkInPath;
+  }
+
+  // Fallback to common installation paths
   if (process.platform === 'win32') {
-    return 'C:\\Program Files\\Wireshark\\Wireshark.exe';
+    const possiblePaths = [
+      'C:\\Program Files\\Wireshark\\Wireshark.exe',
+      'C:\\Program Files (x86)\\Wireshark\\Wireshark.exe'
+    ];
+    for (const p of possiblePaths) {
+      if (fs.existsSync(p)) return p;
+    }
+    return possiblePaths[0]; // Return default even if not found
   } else if (process.platform === 'darwin') {
     return '/Applications/Wireshark.app/Contents/MacOS/Wireshark';
   } else {

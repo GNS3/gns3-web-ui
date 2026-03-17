@@ -28,8 +28,6 @@ function createWindow() {
     mainWindow.webContents.openDevTools();
   } else {
     mainWindow.loadFile(path.join(__dirname, 'dist/index.html'));
-    // Temporarily enable DevTools for debugging
-    mainWindow.webContents.openDevTools();
   }
 
   mainWindow.on('closed', () => {
@@ -81,7 +79,9 @@ app.on('web-contents-created', (event, contents) => {
                           navigationUrl.includes('/console') ||
                           navigationUrl.includes('/web-ui') ||
                           navigationUrl.startsWith('http://localhost') ||
-                          navigationUrl.startsWith('http://127.0.0.1');
+                          navigationUrl.startsWith('http://127.0.0.1') ||
+                          navigationUrl.startsWith('file://') ||
+                          navigationUrl.endsWith('.html');
 
     if (isInternalLink) {
       // Open internal links in Electron with DevTools for debugging
@@ -99,7 +99,6 @@ app.on('web-contents-created', (event, contents) => {
       console.log(`[Debug] Opening internal window ${newWindowId}: ${navigationUrl}`);
 
       newWindow.loadURL(navigationUrl);
-      newWindow.webContents.openDevTools();
 
       newWindow.on('closed', () => {
         console.log(`[Debug] Internal window ${newWindowId} closed`);

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Controller } from '@models/controller';
 import { Node } from '../cartography/models/node';
 import { ToasterService } from './toaster.service';
+import { ElectronService } from './electron.service';
 import { environment } from 'environments/environment';
 
 /**
@@ -9,7 +10,10 @@ import { environment } from 'environments/environment';
  */
 @Injectable()
 export class VncConsoleService {
-  constructor(private toasterService: ToasterService) {}
+  constructor(
+    private toasterService: ToasterService,
+    private electronService: ElectronService
+  ) {}
 
   /**
    * Build WebSocket URL for VNC console connection
@@ -51,6 +55,11 @@ export class VncConsoleService {
     });
 
     // Return path to standalone HTML page
+    // In Electron packaged app, use relative path since assets are alongside index.html
+    if (this.electronService.isElectron()) {
+      // Use relative path: from dist/index.html to dist/assets/vnc-console/index.html
+      return `assets/vnc-console/index.html?${params.toString()}`;
+    }
     return `/assets/vnc-console/index.html?${params.toString()}`;
   }
 
