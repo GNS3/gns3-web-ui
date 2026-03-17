@@ -142,6 +142,9 @@
     ]
   },
   "snyk": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "overrides": {
     "dompurify": "3.3.3",
     "dagre-d3-es": "7.0.13"
