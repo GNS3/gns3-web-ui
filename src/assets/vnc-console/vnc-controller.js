@@ -561,7 +561,11 @@ import RFB from './novnc/core/rfb.js';
       const recordingCtx = recordingCanvas.getContext('2d');
 
       // Capture stream from the recording canvas at 30 FPS
-      const stream = recordingCanvas.captureStream(30);
+      // Get display refresh rate (fallback to 30 if not available)
+      const refreshRate = window.screen.refreshRate || 30;
+      log(`Display refresh rate: ${refreshRate}Hz, using ${Math.min(refreshRate, 60)}Hz for recording`);
+
+      const stream = recordingCanvas.captureStream(Math.min(refreshRate, 60));
 
       // Create MediaRecorder
       const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
@@ -600,6 +604,44 @@ import RFB from './novnc/core/rfb.js';
           recordingCtx.textBaseline = 'top';
           recordingCtx.textShadow = '2px 2px 4px rgba(0, 0, 0, 0.8)';
           recordingCtx.fillText(`⏺ ${timestamp}`, recordingCanvas.width / 2, 20);
+        }
+
+        // Draw GNS3 watermark at bottom right (steganography - barely visible)
+        recordingCtx.save();
+        recordingCtx.font = 'bold 24px sans-serif';
+        recordingCtx.textAlign = 'right';
+        recordingCtx.textBaseline = 'bottom';
+        recordingCtx.fillStyle = 'rgba(255, 255, 255, 0.15)'; // Subtle - 15% opacity
+        recordingCtx.fillText('GNS3', recordingCanvas.width - 20, recordingCanvas.height - 20);
+        recordingCtx.restore();
+
+        // Steganography watermark - embed GNS3 in pixel data (for verification)
+        // Every frame, embed 4 characters at specific pixel positions
+        const frameCount = Math.floor((Date.now() - recordingStartTime) / 1000 * 60);
+        if (frameCount % 30 === 0) { // Every ~0.5 seconds
+          const watermarkText = 'GNS3';
+          const startX = recordingCanvas.width - 100;
+          const startY = recordingCanvas.height - 40;
+
+          // Get image data from watermark area
+          const imageData = recordingCtx.getImageData(startX, startY, 80, 40);
+          const data = imageData.data;
+
+          // Embed watermark by slightly modifying blue channel's LSB
+          for (let i = 0; i < watermarkText.length; i++) {
+            const charCode = watermarkText.charCodeAt(i);
+            for (let bit = 0; bit < 8; bit++) {
+              const pixelIdx = (i * 8 + bit) * 4;
+              if (pixelIdx < data.length) {
+                const bitValue = (charCode >> bit) & 1;
+                // Modify blue channel's LSB
+                data[pixelIdx + 2] = (data[pixelIdx + 2] & 0xFE) | bitValue;
+              }
+            }
+          }
+
+          // Put modified data back
+          recordingCtx.putImageData(imageData, startX, startY);
         }
 
         // Draw mouse cursor
