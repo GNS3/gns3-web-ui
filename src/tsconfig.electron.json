@@ -1,7 +1,7 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../out-tsc/app",
+    "outDir": "../out-tsc/electron",
     "baseUrl": "./",
     "paths": {
       "@components/*": ["app/components/*"],
@@ -10,14 +10,19 @@
       "@filters/*": ["app/filters/*"],
       "@models/*": ["app/models/*"]
     },
-    "types": []
+    "types": [],
+    // Override target to ES2015 for Electron (Chromium 108+)
+    // This fixes JIT compiler issues in Electron while not affecting Web UI
+    "target": "es2015"
   },
   "files": [
-    "main.ts",
     "main.electron.ts",
     "polyfills.ts"
   ],
   "include": [
     // "../src/**/*"
+  ],
+  "exclude": [
+    "main.ts"
   ]
 }

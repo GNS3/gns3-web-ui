@@ -10,7 +10,7 @@ import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DragAndDropModule } from 'angular-draggable-droppable';
 import { ResizableModule } from 'angular-resizable-element';
-import { D3Service } from 'd3-ng2-service';
+// import { D3Service } from 'd3-ng2-service';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { FileUploadModule } from 'ng2-file-upload';
 import { AppRoutingModule } from './app-routing.module';
@@ -623,7 +623,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         { provide: ErrorHandler, useClass: ToasterErrorHandler },
         { provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true },
         VersionService,
-        D3Service,
+        // D3Service, // Removed - triggers JIT in Electron
         ProjectService,
         SymbolService,
         ControllerService,

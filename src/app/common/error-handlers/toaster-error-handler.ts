@@ -1,10 +1,10 @@
-import { ErrorHandler, Inject, Injectable, Injector } from '@angular/core';
+import { ErrorHandler, Injectable, Injector, inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ToasterService } from '@services/toaster.service';
 
 @Injectable()
 export class ToasterErrorHandler implements ErrorHandler {
-  constructor(@Inject(Injector) protected injector: Injector) {}
+  private injector = inject(Injector);
 
   extractError(error) {
     // Try to unwrap zone.js error.

@@ -1,6 +1,6 @@
 {
   "name": "gns3-web-ui",
-  "version": "3.1.0.dev1",
+  "version": "3.1.0-dev.1",
   "author": {
     "name": "GNS3 Technology Inc.",
     "email": "developers@gns3.com"
@@ -32,8 +32,9 @@
     "prepare": "husky install",
     "electron": "cross-env NODE_ENV=development electron .",
     "electron:dev": "concurrently -k \"npm start\" \"wait-on http://localhost:4200 && npm run electron\"",
-    "electron:build": "npm run buildforproduction && electron-builder -w",
-    "electron:build:all": "npm run buildforproduction && electron-builder -wml"
+    "build:electron": "ng build --configuration=electronProd --base-href ./",
+    "electron:build": "npm run build:electron && electron-builder -w",
+    "electron:build:all": "npm run build:electron && electron-builder -wml"
   },
   "private": true,
   "dependencies": {
@@ -160,7 +161,15 @@
       "dist/**/*",
       "main.js",
       "preload.js",
-      "package.json"
+      "package.json",
+      "ipc-handlers/**/*",
+      "utils/**/*",
+      "services/**/*",
+      "node_modules/@angular/compiler/**/*",
+      "node_modules/@angular/core/**/*",
+      "node_modules/@angular/common/**/*",
+      "node_modules/@angular/platform-browser/**/*",
+      "node_modules/@angular/platform-browser-dynamic/**/*"
     ],
     "win": {
       "target": [
