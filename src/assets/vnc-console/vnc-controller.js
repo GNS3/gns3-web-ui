@@ -46,8 +46,13 @@ import RFB from './novnc/core/rfb.js';
   let currentMousePos = null; // Current mouse position for cursor rendering
   let drawAnimationFrame = null; // Animation frame ID for continuous drawing
 
+  // Debug mode - set to false in production
+  const DEBUG = false;
+
   // Logging utility
   function log(message, level = 'info') {
+    if (!DEBUG && level !== 'error') return; // Only log errors in production
+
     const prefix = '[VNC Console]';
     const timestamp = new Date().toISOString();
     const logMessage = `${timestamp} ${prefix} ${level.toUpperCase()}: ${message}`;
@@ -143,11 +148,9 @@ import RFB from './novnc/core/rfb.js';
       hideLoading();
       isConnected = false;
 
-      // Stop recording if active
-      if (isRecording) {
-        log('Stopping recording due to disconnect');
-        stopRecording();
-      }
+      // Note: Do NOT stop recording on disconnect
+      // Recording continues locally, even if VNC connection is lost
+      // This allows users to get a complete video with possible black screen periods
 
       const clean = e.detail && e.detail.clean;
 
@@ -623,32 +626,43 @@ import RFB from './novnc/core/rfb.js';
         recordingCtx.restore();
 
         // Steganography watermark - embed GNS3 in pixel data (for verification)
-        // Every frame, embed 4 characters at specific pixel positions
+        // Embed with multiple positions and redundancy for robustness
         const frameCount = Math.floor((Date.now() - recordingStartTime) / 1000 * 60);
         if (frameCount % 30 === 0) { // Every ~0.5 seconds
           const watermarkText = 'GNS3';
-          const startX = recordingCanvas.width - 100;
-          const startY = recordingCanvas.height - 40;
 
-          // Get image data from watermark area
-          const imageData = recordingCtx.getImageData(startX, startY, 80, 40);
-          const data = imageData.data;
+          // Multiple embedding positions for redundancy
+          const positions = [
+            { x: recordingCanvas.width - 100, y: recordingCanvas.height - 40 },
+            { x: recordingCanvas.width - 180, y: recordingCanvas.height - 30 },
+            { x: recordingCanvas.width - 60, y: recordingCanvas.height - 60 }
+          ];
 
-          // Embed watermark by slightly modifying blue channel's LSB
-          for (let i = 0; i < watermarkText.length; i++) {
-            const charCode = watermarkText.charCodeAt(i);
-            for (let bit = 0; bit < 8; bit++) {
-              const pixelIdx = (i * 8 + bit) * 4;
-              if (pixelIdx < data.length) {
-                const bitValue = (charCode >> bit) & 1;
-                // Modify blue channel's LSB
-                data[pixelIdx + 2] = (data[pixelIdx + 2] & 0xFE) | bitValue;
+          positions.forEach((pos, posIdx) => {
+            // Get image data from watermark area
+            const imageData = recordingCtx.getImageData(pos.x, pos.y, 40, 30);
+            const data = imageData.data;
+
+            // Embed watermark 3 times with offset for redundancy
+            for (let copy = 0; copy < 3; copy++) {
+              const offset = copy * 10;
+
+              for (let i = 0; i < watermarkText.length; i++) {
+                const charCode = watermarkText.charCodeAt(i);
+                for (let bit = 0; bit < 8; bit++) {
+                  const pixelIdx = ((i + offset) * 8 + bit) * 4;
+                  if (pixelIdx < data.length) {
+                    const bitValue = (charCode >> bit) & 1;
+                    // Modify blue channel's 2nd bit (more robust than LSB)
+                    data[pixelIdx + 2] = (data[pixelIdx + 2] & 0xFD) | (bitValue << 1);
+                  }
+                }
               }
             }
-          }
 
-          // Put modified data back
-          recordingCtx.putImageData(imageData, startX, startY);
+            // Put modified data back
+            recordingCtx.putImageData(imageData, pos.x, pos.y);
+          });
         }
 
         // Draw mouse cursor
@@ -671,13 +685,6 @@ import RFB from './novnc/core/rfb.js';
 
         // Draw click effects (ripples)
         const currentTime = Date.now();
-
-        if (clickEffects.length > 0) {
-          // Debug: log occasionally
-          if (Math.random() < 0.05) { // Only log 5% of the time to avoid spam
-            log(`Drawing ${clickEffects.length} click effects`);
-          }
-        }
 
         clickEffects = clickEffects.filter(effect => {
           const age = currentTime - effect.startTime;
