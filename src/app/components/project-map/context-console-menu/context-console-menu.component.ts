@@ -1,8 +1,6 @@
 import {
   ChangeDetectorRef,
   Component,
-  ComponentFactory,
-  ComponentFactoryResolver,
   ComponentRef,
   Input,
   OnInit,
@@ -44,7 +42,6 @@ export class ContextConsoleMenuComponent implements OnInit {
     private consoleService: NodeConsoleService,
     private toasterService: ToasterService,
     private router: Router,
-    private resolver: ComponentFactoryResolver,
     private vncConsoleService: VncConsoleService
   ) {}
 
@@ -77,10 +74,8 @@ export class ContextConsoleMenuComponent implements OnInit {
 
   openConsole() {
     this.mapSettingsService.setConsoleContextMenuAction('console');
-    const factory: ComponentFactory<ConsoleDeviceActionBrowserComponent> = this.resolver.resolveComponentFactory(
-      ConsoleDeviceActionBrowserComponent
-    );
-    this.componentBrowserRef = this.container.createComponent(factory);
+    // Use Ivy's new API - no need for resolveComponentFactory
+    this.componentBrowserRef = this.container.createComponent(ConsoleDeviceActionBrowserComponent);
     this.componentBrowserRef.instance.controller = this.controller;
     this.componentBrowserRef.instance.node = this.node;
     this.componentBrowserRef.instance.openConsole();
