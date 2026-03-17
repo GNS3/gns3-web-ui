@@ -133,9 +133,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   protected settings: Settings;
   private inReadOnlyMode = false;
-  private scrollX: number = 0;
-  private scrollY: number = 0;
-  private scrollEnabled: boolean = false;
   public isLightThemeEnabled: boolean = false;
   private highlightedNodeId: string = null;
   public isGlobalLightTheme: boolean = false;
@@ -264,12 +261,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   addSubscriptions() {
-    this.projectMapSubscription.add(
-      this.mapSettingsService.mapRenderedEmitter.subscribe((value: boolean) => {
-        if (this.scrollEnabled) this.centerCanvas();
-      })
-    );
-
     this.projectMapSubscription.add(
       this.drawingsDataSource.changes.subscribe((drawings: Drawing[]) => {
         this.drawings = drawings;
@@ -686,152 +677,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           this.progressService.deactivate();
         }
       );
-  }
-
-  public fitInView() {
-    this.drawings.forEach((drawing) => {
-      let splittedSvg = drawing.svg.split('"');
-      let height: number = parseInt(splittedSvg[1], 10);
-      let width: number = parseInt(splittedSvg[3], 10);
-
-      drawing.element = {
-        width: width,
-        height: height,
-      };
-    });
-
-    if (this.nodes.length === 0 && this.drawings.length === 0) {
-      return;
-    }
-    let minX: number, maxX: number, minY: number, maxY: number;
-
-    let borderedNodes: BorderedNode[] = [];
-    this.nodes.forEach((n) => {
-      let borderedNode: BorderedNode = new BorderedNode();
-      borderedNode.node = n;
-      borderedNode.top = n.y;
-      borderedNode.left = n.x;
-      borderedNode.bottom = n.y + n.height;
-      borderedNode.right = n.x + n.width;
-
-      if (n.y + n.label.y < borderedNode.top) {
-        borderedNode.top = n.y + n.label.y;
-      }
-
-      if (n.x + n.label.x < borderedNode.left) {
-        borderedNode.left = n.x + n.label.x;
-      }
-
-      if (n.y + n.label.y > borderedNode.bottom) {
-        borderedNode.bottom = n.y + n.label.y;
-      }
-
-      if (n.x + n.label.x > borderedNode.right) {
-        borderedNode.right = n.x + n.label.x;
-      }
-
-      borderedNodes.push(borderedNode);
-    });
-
-    let nodeMinX = borderedNodes.sort((n, m) => n.left - m.left)[0];
-    let nodeMaxX = borderedNodes.sort((n, m) => n.right - m.right)[borderedNodes.length - 1];
-    let nodeMinY = borderedNodes.sort((n, m) => n.top - m.top)[0];
-    let nodeMaxY = borderedNodes.sort((n, m) => n.bottom - m.bottom)[borderedNodes.length - 1];
-
-    let borderedDrawings: BorderedDrawing[] = [];
-    this.drawings.forEach((n) => {
-      let borderedDrawing: BorderedDrawing = new BorderedDrawing();
-      borderedDrawing.drawing = n;
-      borderedDrawing.top = n.y;
-      borderedDrawing.left = n.x;
-      borderedDrawing.bottom = n.y + n.element.height;
-      borderedDrawing.right = n.x + n.element.width;
-
-      borderedDrawings.push(borderedDrawing);
-    });
-
-    let drawingMinX = borderedDrawings.sort((n, m) => n.left - m.left)[0];
-    let drawingMaxX = borderedDrawings.sort((n, m) => n.right - m.right)[borderedDrawings.length - 1];
-    let drawingMinY = borderedDrawings.sort((n, m) => n.top - m.top)[0];
-    let drawingMaxY = borderedDrawings.sort((n, m) => n.bottom - m.bottom)[borderedDrawings.length - 1];
-
-    if (drawingMinX && nodeMinX) {
-      if (nodeMinX.left < drawingMinX.left) {
-        minX = nodeMinX.left;
-      } else {
-        minX = drawingMinX.left;
-      }
-
-      if (nodeMaxX.right > drawingMaxX.right) {
-        maxX = nodeMaxX.right;
-      } else {
-        maxX = drawingMaxX.right;
-      }
-
-      if (nodeMinY.top < drawingMinY.top) {
-        minY = nodeMinY.top;
-      } else {
-        minY = drawingMinY.top;
-      }
-
-      if (nodeMaxY.bottom > drawingMaxY.bottom) {
-        maxY = nodeMaxY.bottom;
-      } else {
-        maxY = drawingMaxY.bottom;
-      }
-    } else if (nodeMinX && !drawingMinX) {
-      minX = nodeMinX.left;
-      maxX = nodeMaxX.right;
-      minY = nodeMinY.top;
-      maxY = nodeMaxY.bottom;
-    } else if (drawingMinX && !nodeMinX) {
-      minX = drawingMinX.left;
-      maxX = drawingMaxX.right;
-      minY = drawingMinY.top;
-      maxY = drawingMaxY.bottom;
-    } else {
-      minX = 0;
-      maxX = 0;
-      minY = 0;
-      maxY = 0;
-    }
-
-    let margin: number = 20;
-    minX = minX - margin;
-    maxX = maxX + margin;
-    minY = minY - margin;
-    maxY = maxY + margin;
-
-    let windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    let windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    let widthOfAreaToShow = maxX - minX;
-    let heightOfAreaToShow = maxY - minY;
-    let widthToSceneWidthRatio = widthOfAreaToShow / windowWidth;
-    let heightToSceneHeightRatio = heightOfAreaToShow / windowHeight;
-
-    let scale = 1 / Math.max(widthToSceneWidthRatio, heightToSceneHeightRatio);
-
-    if (scale !== this.mapScaleService.currentScale) {
-      this.mapScaleService.setScale(scale);
-      this.project.scene_width = this.project.scene_width * scale;
-      this.project.scene_height = this.project.scene_height * scale;
-      if (heightToSceneHeightRatio < widthOfAreaToShow) {
-        this.scrollX = minX * scale - (windowWidth - widthOfAreaToShow * scale) / 2 + this.project.scene_width / 2;
-        this.scrollY = minY * scale + this.project.scene_height / 2;
-      } else {
-        this.scrollX = minX * scale + this.project.scene_width / 2;
-        this.scrollY = minY * scale - (windowHeight - heightOfAreaToShow * scale) / 2 + this.project.scene_height / 2;
-      }
-    } else {
-      this.scrollX = minX * scale + this.project.scene_width / 2;
-      this.scrollY = minY * scale + this.project.scene_height / 2;
-    }
-    this.scrollEnabled = true;
-  }
-
-  public centerCanvas() {
-    window.scrollTo(this.scrollX, this.scrollY);
-    this.scrollEnabled = false;
   }
 
   public centerView() {
@@ -1297,20 +1142,4 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     }
     this.projectMapSubscription.unsubscribe();
   }
-}
-
-export class BorderedNode {
-  top: number;
-  left: number;
-  bottom: number;
-  right: number;
-  node: Node;
-}
-
-export class BorderedDrawing {
-  top: number;
-  left: number;
-  bottom: number;
-  right: number;
-  drawing: Drawing;
 }
