@@ -4,7 +4,6 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { ElectronService } from 'ngx-electron';
 import { of } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { NodeService } from '@services/node.service';
@@ -31,7 +30,6 @@ xdescribe('NodesMenuComponent', () => {
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
         { provide: ControllerService },
         { provide: SettingsService },
-        { provide: ElectronService },
       ],
       declarations: [NodesMenuComponent],
       schemas: [NO_ERRORS_SCHEMA],

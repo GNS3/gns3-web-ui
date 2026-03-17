@@ -3,30 +3,24 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ElectronService, NgxElectronModule } from 'ngx-electron';
 import { AppComponent } from './app.component';
 import { ProgressService } from './common/progress/progress.service';
 import { SettingsService } from '@services/settings.service';
 import { AppTestingModule } from './testing/app-testing/app-testing.module';
 
-import createSpyObj = jasmine.createSpyObj;
-// import 'jasmine';
-
 describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
-  let electronService: ElectronService;
   let settingsService: SettingsService;
 
   beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [AppComponent],
-      imports: [RouterTestingModule, MatIconModule, HttpClientTestingModule, NgxElectronModule, AppTestingModule],
+      imports: [RouterTestingModule, MatIconModule, HttpClientTestingModule, AppTestingModule],
       providers: [SettingsService, ProgressService],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
-    electronService = TestBed.inject(ElectronService);
     settingsService = TestBed.inject(SettingsService);
   });
 
@@ -46,19 +40,10 @@ describe('AppComponent', () => {
     await expect(compiled.querySelector('router-outlet').textContent).toEqual('');
   });
 
-  it('should receive changed settings and forward to electron', async() => {
-    await spyOnProperty(electronService, 'isElectronApp').and.returnValue(true);
+  it('should receive changed settings', async() => {
     settingsService.setReportsSettings(true);
     component.ngOnInit();
     settingsService.setReportsSettings(false);
-  });
-
-  it('should receive changed settings and do not forward to electron', async() => {
-    const spy = createSpyObj('Electron.IpcRenderer', ['send']);
-    spyOnProperty(electronService, 'isElectronApp').and.returnValue(false);
-    settingsService.setReportsSettings(true);
-    component.ngOnInit();
-    settingsService.setReportsSettings(false);
-    await expect(spy.send).not.toHaveBeenCalled();
+    expect(component).toBeTruthy();
   });
 });
