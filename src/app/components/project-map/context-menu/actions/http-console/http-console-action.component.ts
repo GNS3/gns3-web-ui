@@ -36,7 +36,7 @@ export class HttpConsoleActionComponent implements OnInit {
           if (n.console_type === 'vnc') {
             // VNC console: use standalone page in popup window
             this.vncConsoleService.openVncConsole(this.controller, n, false);
-          } else if (n.console_type.startsWith('http')) {
+          } else if (n.console_type && n.console_type.startsWith('http')) {
             // HTTP/HTTPS console: open directly in popup window
             if (
               n.console_host === '0.0.0.0' ||

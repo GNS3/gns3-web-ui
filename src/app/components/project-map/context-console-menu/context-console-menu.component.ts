@@ -88,7 +88,7 @@ export class ContextConsoleMenuComponent implements OnInit {
       if (this.node.console_type === 'vnc') {
         // VNC console: use standalone page
         this.vncConsoleService.openVncConsole(this.controller, this.node);
-      } else if (this.node.console_type.startsWith('spice')) {
+      } else if (this.node.console_type && this.node.console_type.startsWith('spice')) {
         // SPICE console: not yet implemented
         this.toasterService.error('SPICE console is not yet supported.');
       } else {
@@ -108,7 +108,7 @@ export class ContextConsoleMenuComponent implements OnInit {
       if (this.node.console_type === 'vnc') {
         // VNC console: use standalone page (same as web console)
         this.vncConsoleService.openVncConsole(this.controller, this.node);
-      } else if (this.node.console_type.startsWith('spice')) {
+      } else if (this.node.console_type && this.node.console_type.startsWith('spice')) {
         // SPICE console: not yet implemented
         this.toasterService.error('SPICE console is not yet supported.');
       } else if (this.node.console_type === 'telnet') {

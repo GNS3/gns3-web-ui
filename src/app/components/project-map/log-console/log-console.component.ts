@@ -240,11 +240,11 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
               this.protocolHandlerService.open(
                 `gns3+vnc://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
-            } else if (node.console_type.startsWith('spice')) {
+            } else if (node.console_type && node.console_type.startsWith('spice')) {
               this.protocolHandlerService.open(
                 `gns3+spice://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
-            } else if (node.console_type.startsWith('http')) {
+            } else if (node.console_type && node.console_type.startsWith('http')) {
                window.open(`${node.console_type}://${host}:${node.console}`);
             } else {
               this.showCommand('Supported console types are: telnet, vnc, spice and spice+agent');

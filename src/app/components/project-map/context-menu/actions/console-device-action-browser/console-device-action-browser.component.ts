@@ -67,9 +67,9 @@ export class ConsoleDeviceActionBrowserComponent {
           // Open VNC console in standalone page via WebSocket API
           this.vncConsoleService.openVncConsole(this.controller, this.node);
           return;  // Return early, don't use protocol handler
-        } else if (this.node.console_type.startsWith('spice')) {
+        } else if (this.node.console_type && this.node.console_type.startsWith('spice')) {
           uri = `gns3+spice://${host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`
-        } else if (this.node.console_type.startsWith('http')) {
+        } else if (this.node.console_type && this.node.console_type.startsWith('http')) {
           uri = `${this.node.console_type}://${host}:${this.node.console}`
           return window.open(uri);  // open an http console directly in a new window/tab
         } else {

@@ -34,7 +34,7 @@ export class HttpConsoleNewTabActionComponent implements OnInit {
           if (n.console_type === 'vnc') {
             // VNC console: use standalone page in new tab
             this.vncConsoleService.openVncConsole(this.controller, n, true);
-          } else if (n.console_type.startsWith('http')) {
+          } else if (n.console_type && n.console_type.startsWith('http')) {
             // HTTP/HTTPS console: open directly in new tab
             if (
               n.console_host === '0.0.0.0' ||
