@@ -34,7 +34,11 @@ export class DuplicateActionComponent {
           this.nodesDataSource.add(node);
         },
         (error) => {
-          this.toasterService.error(`Cannot duplicate node ${node.name}: ${error.message || error}`);
+          if (error.status === 409) {
+            this.toasterService.error(`Shutdown ${node.name} before duplicating`);
+          } else {
+            this.toasterService.error(`Cannot duplicate node ${node.name}: ${error.message || error}`);
+          }
         }
       );
     }
