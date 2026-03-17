@@ -36,6 +36,20 @@ export class InterfaceLabelWidget {
     return style.replace(/fill:\s*[^;]+;?/gi, `fill: ${labelColor};`);
   }
 
+  private getRenderedLabelX(labelNode: MapLinkNode) {
+    const renderOffsetX = this.selectionManager.isSelected(labelNode)
+      ? 0
+      : labelNode.bezierRenderOffsetX || 0;
+    return labelNode.label.x + renderOffsetX;
+  }
+
+  private getRenderedLabelY(labelNode: MapLinkNode) {
+    const renderOffsetY = this.selectionManager.isSelected(labelNode)
+      ? 0
+      : labelNode.bezierRenderOffsetY || 0;
+    return labelNode.label.y + renderOffsetY;
+  }
+
   public setEnabled(enabled) {
     this.enabled = enabled;
   }
@@ -98,10 +112,12 @@ export class InterfaceLabelWidget {
         styles = this.applyThemeLabelColor(styles);
         return styles;
       })
-      .attr('x', (l: MapLinkNode) => l.label.x)
-      .attr('y', (l: MapLinkNode) => l.label.y)
+      .attr('x', (l: MapLinkNode) => this.getRenderedLabelX(l))
+      .attr('y', (l: MapLinkNode) => this.getRenderedLabelY(l))
       .attr('transform', (l: MapLinkNode) => {
-        return `rotate(${l.label.rotation}, ${l.label.x}, ${l.label.y})`;
+        const renderedX = this.getRenderedLabelX(l);
+        const renderedY = this.getRenderedLabelY(l);
+        return `rotate(${l.label.rotation}, ${renderedX}, ${renderedY})`;
       });
 
     // update surrounding rect
