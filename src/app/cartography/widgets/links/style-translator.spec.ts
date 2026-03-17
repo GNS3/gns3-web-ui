@@ -138,6 +138,54 @@ describe('StyleTranslator', () => {
     expect((path.match(/L/g) || []).length).toBeGreaterThan(2);
   });
 
+  it('should offset only flowchart middle lane when distance is provided', () => {
+    const horizontalSource: [number, number] = [10, 20];
+    const horizontalTarget: [number, number] = [110, 40];
+    const basePath = StyleTranslator.getLinkPath(horizontalSource, horizontalTarget, createLinkStyle('flowchart'));
+    const shiftedPath = StyleTranslator.getLinkPath(horizontalSource, horizontalTarget, createLinkStyle('flowchart'), {
+      flowchartDistance: 14,
+    });
+
+    const baseNumbers = (basePath.match(/-?\d+(?:\.\d+)?/g) || []).map((value) => parseFloat(value));
+    const shiftedNumbers = (shiftedPath.match(/-?\d+(?:\.\d+)?/g) || []).map((value) => parseFloat(value));
+
+    // Keep endpoints fixed and move only the elbow lane.
+    expect(shiftedNumbers[0]).toEqual(baseNumbers[0]);
+    expect(shiftedNumbers[1]).toEqual(baseNumbers[1]);
+    expect(shiftedNumbers[6]).toEqual(baseNumbers[6]);
+    expect(shiftedNumbers[7]).toEqual(baseNumbers[7]);
+    expect(shiftedNumbers[2]).not.toBeCloseTo(baseNumbers[2], 4);
+    expect(shiftedNumbers[4]).not.toBeCloseTo(baseNumbers[4], 4);
+  });
+
+  it('should keep near-diagonal flowchart middle lanes separated after translation', () => {
+    const diagonalSource: [number, number] = [10, 20];
+    const diagonalTarget: [number, number] = [110, 120];
+    const positiveDistance = 14;
+    const negativeDistance = -14;
+
+    const positivePath = StyleTranslator.getLinkPath(diagonalSource, diagonalTarget, createLinkStyle('flowchart'), {
+      flowchartDistance: positiveDistance,
+    });
+    const negativePath = StyleTranslator.getLinkPath(diagonalSource, diagonalTarget, createLinkStyle('flowchart'), {
+      flowchartDistance: negativeDistance,
+    });
+
+    const positiveNumbers = (positivePath.match(/-?\d+(?:\.\d+)?/g) || []).map((value) => parseFloat(value));
+    const negativeNumbers = (negativePath.match(/-?\d+(?:\.\d+)?/g) || []).map((value) => parseFloat(value));
+
+    const deltaX = diagonalTarget[0] - diagonalSource[0];
+    const deltaY = diagonalTarget[1] - diagonalSource[1];
+    const safeLength = Math.hypot(deltaX, deltaY) || 1;
+    const translationXPositive = (-deltaY / safeLength) * positiveDistance;
+    const translationXNegative = (-deltaY / safeLength) * negativeDistance;
+
+    const positiveRenderedMiddleX = positiveNumbers[2] + translationXPositive;
+    const negativeRenderedMiddleX = negativeNumbers[2] + translationXNegative;
+
+    expect(Math.abs(positiveRenderedMiddleX - negativeRenderedMiddleX)).toBeGreaterThan(10);
+  });
+
   it('should round flowchart corners when roundness is set', () => {
     const roundedPath = StyleTranslator.getLinkPath(source, target, {
       ...createLinkStyle('flowchart'),

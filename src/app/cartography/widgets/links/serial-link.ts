@@ -114,12 +114,12 @@ export class SerialLinkWidget implements Widget {
       sourcePoint = this.bezierLayout.getEndpointPoint(
         sourceCenter,
         sourceOrientation,
-        this.bezierLayout.getEndpointOrder(link, 0)
+        this.bezierLayout.getRenderEndpointOrder(link, 0)
       );
       targetPoint = this.bezierLayout.getEndpointPoint(
         targetCenter,
         targetOrientation,
-        this.bezierLayout.getEndpointOrder(link, 1)
+        this.bezierLayout.getRenderEndpointOrder(link, 1)
       );
 
       const majorAnchor = StyleTranslator.getEffectiveBezierMajorAnchor(style.bezier_curviness, bezierVariation);
@@ -170,7 +170,6 @@ export class SerialLinkWidget implements Widget {
       .enter()
       .append<SVGPathElement>('path')
       .attr('class', 'serial_link')
-      .attr('fill', 'none')
       .on('contextmenu', (arg1: unknown, arg2: unknown) => {
         const evt = event;
         const link = this.resolveContextMenuLink(arg1, arg2);
@@ -178,15 +177,6 @@ export class SerialLinkWidget implements Widget {
           return;
         }
         this.onContextMenu.emit(new LinkContextMenu(evt, link));
-      })
-      .attr('stroke', (datum) => {
-        return datum.style.color;
-      })
-      .attr('stroke-width', (datum) => {
-        return datum.style.width;
-      })
-      .attr('stroke-dasharray', (datum) => {
-        return StyleTranslator.getLinkStyle(datum.style);
       });
 
     const link_merge = link.merge(link_enter);
@@ -214,6 +204,10 @@ export class SerialLinkWidget implements Widget {
           bezierVariation: serial.bezierVariation,
           sourceOrientation: serial.sourceOrientation,
           targetOrientation: serial.targetOrientation,
+          flowchartDistance:
+            typeof serial.link.distance === 'number' && !Number.isNaN(serial.link.distance)
+              ? serial.link.distance
+              : 0,
         });
       });
   }

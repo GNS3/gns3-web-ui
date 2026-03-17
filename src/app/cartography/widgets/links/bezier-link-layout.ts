@@ -12,17 +12,41 @@ export class BezierLinkLayout {
     return this.endpointOrder.get(this.getEndpointOrderKey(link.id, endpointIndex)) || 0;
   }
 
+  hasDistanceBasedParallelSpacing(link: MapLink) {
+    return link.parallelLinksCount > 1 && typeof link.distance === 'number' && !Number.isNaN(link.distance);
+  }
+
+  getRenderEndpointOrder(link: MapLink, endpointIndex: number) {
+    if (this.hasDistanceBasedParallelSpacing(link)) {
+      return 0;
+    }
+
+    return this.getEndpointOrder(link, endpointIndex);
+  }
+
   getEndpointPoint(
     center: [number, number],
     orientation: ConnectorOrientation,
-    endpointOrder: number
+    endpointOrder: number,
+    parallelOffset: number = 0
   ): [number, number] {
     const tangentX = -orientation[1];
     const tangentY = orientation[0];
     const spread = 14;
-    const offset = endpointOrder * spread;
+    const offset = endpointOrder * spread + parallelOffset;
 
     return [center[0] + tangentX * offset, center[1] + tangentY * offset];
+  }
+
+  private getFaceEndpointOrder(totalEndpoints: number, index: number) {
+    const centeredOrder = index - (totalEndpoints - 1) / 2;
+
+    // Two-link faces were too tightly packed at +/-0.5 and could still overlap.
+    if (totalEndpoints === 2) {
+      return index === 0 ? -1 : 1;
+    }
+
+    return centeredOrder;
   }
 
   buildEndpointOrder(links: MapLink[]) {
@@ -79,12 +103,12 @@ export class BezierLinkLayout {
 
     endpointsByNodeFace.forEach((endpoints) => {
       endpoints.sort((a, b) => a.projection - b.projection);
-      const midpoint = (endpoints.length - 1) / 2;
 
       endpoints.forEach((endpoint, index) => {
+        const endpointOrder = this.getFaceEndpointOrder(endpoints.length, index);
         this.endpointOrder.set(
           this.getEndpointOrderKey(endpoint.link.id, endpoint.endpointIndex),
-          index - midpoint
+          endpointOrder
         );
       });
     });
@@ -120,10 +144,12 @@ export class BezierLinkLayout {
     const normalizedSideDirection = sideDirection >= 0 ? 1 : -1;
     const offsetMagnitude = Math.min(16, Math.max(7, 7 + Math.abs(majorAnchor) * 0.03));
     const orderSpacing = 6;
-    const sourceEndpointOrder = this.getEndpointOrder(link, 0);
-    const targetEndpointOrder = this.getEndpointOrder(link, 1);
-    const sourceOffset = offsetMagnitude * normalizedSideDirection + sourceEndpointOrder * orderSpacing;
-    const targetOffset = -offsetMagnitude * normalizedSideDirection + targetEndpointOrder * orderSpacing;
+    const sourceEndpointOrder = this.getRenderEndpointOrder(link, 0);
+    const targetEndpointOrder = this.getRenderEndpointOrder(link, 1);
+    const sourceOffset =
+      offsetMagnitude * normalizedSideDirection + sourceEndpointOrder * orderSpacing;
+    const targetOffset =
+      -offsetMagnitude * normalizedSideDirection + targetEndpointOrder * orderSpacing;
 
     link.nodes[0].bezierRenderOffsetX = normalX * sourceOffset;
     link.nodes[0].bezierRenderOffsetY = normalY * sourceOffset;
