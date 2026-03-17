@@ -160,26 +160,30 @@ export class IosTemplateDetailsComponent implements OnInit {
   saveSlotsData() {
 
     // save network adapters
-    if (this.adapterMatrix[this.iosTemplate.platform] && this.adapterMatrix[this.iosTemplate.platform][this.iosTemplate.chassis || '']) {
-      for (let i = 0; i <= 6; i++) {
-        if (this.adapterMatrix[this.iosTemplate.platform][this.iosTemplate.chassis || ''][i]) {
-          if (this.networkAdaptersForTemplate[i] === undefined)
-            this.iosTemplate[`slot${i}`] = ""
-          else
-            this.iosTemplate[`slot${i}`] = this.networkAdaptersForTemplate[i];
-        }
+    for (let i = 0; i <= 6; i++) {
+      const slotAdapters = this.adapterMatrix?.[this.iosTemplate.platform]?.[this.iosTemplate.chassis || '']?.[i];
+      if (slotAdapters) {
+        if (this.networkAdaptersForTemplate[i] === undefined)
+          this.iosTemplate[`slot${i}`] = ""
+        else
+          this.iosTemplate[`slot${i}`] = this.networkAdaptersForTemplate[i];
+      } else {
+        // Remove slot properties that don't exist on this platform/chassis
+        delete this.iosTemplate[`slot${i}`];
       }
     }
 
     // save WICs
-    if (this.wicMatrix[this.iosTemplate.platform]) {
-      for (let i = 0; i <= 3; i++) {
-        if (this.wicMatrix[this.iosTemplate.platform][i]) {
-          if (this.wicsForTemplate[i] === undefined)
-            this.iosTemplate[`wic${i}`] = ""
-          else
-            this.iosTemplate[`wic${i}`] = this.wicsForTemplate[i];
-        }
+    for (let i = 0; i <= 3; i++) {
+      const wicAdapters = this.wicMatrix?.[this.iosTemplate.platform]?.[i];
+      if (wicAdapters) {
+        if (this.wicsForTemplate[i] === undefined)
+          this.iosTemplate[`wic${i}`] = ""
+        else
+          this.iosTemplate[`wic${i}`] = this.wicsForTemplate[i];
+      } else {
+        // Remove WIC properties that don't exist on this platform
+        delete this.iosTemplate[`wic${i}`];
       }
     }
   }
