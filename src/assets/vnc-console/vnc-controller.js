@@ -44,6 +44,7 @@ import RFB from './novnc/core/rfb.js';
   // Click effect for recording
   let clickEffects = []; // Array of {x, y, startTime}
   let currentMousePos = null; // Current mouse position for cursor rendering
+  let drawAnimationFrame = null; // Animation frame ID for continuous drawing
 
   // Logging utility
   function log(message, level = 'info') {
@@ -575,14 +576,10 @@ import RFB from './novnc/core/rfb.js';
       mediaRecorder = new MediaRecorder(stream, { mimeType });
       recordedChunks = [];
 
-      // Animation frame ID for continuous drawing
-      let drawAnimationFrame = null;
-
       // Continuous draw function to ensure video has actual duration
       function continuousDraw() {
-        if (!isRecording || isPaused) {
-          return;
-        }
+        // Always keep drawing, but only record when not paused
+        // This ensures the animation loop continues for when we resume
 
         // Copy VNC canvas to recording canvas
         recordingCtx.drawImage(vncCanvas, 0, 0);
@@ -606,12 +603,22 @@ import RFB from './novnc/core/rfb.js';
           recordingCtx.fillText(`⏺ ${timestamp}`, recordingCanvas.width / 2, 20);
         }
 
-        // Draw GNS3 watermark at bottom right (steganography - barely visible)
+        // Draw GNS3 watermark at bottom right (artistic style)
         recordingCtx.save();
-        recordingCtx.font = 'bold 24px sans-serif';
+        recordingCtx.font = 'bold italic 40px serif';
         recordingCtx.textAlign = 'right';
         recordingCtx.textBaseline = 'bottom';
-        recordingCtx.fillStyle = 'rgba(255, 255, 255, 0.15)'; // Subtle - 15% opacity
+
+        // Add shadow for depth effect
+        recordingCtx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+        recordingCtx.shadowBlur = 4;
+        recordingCtx.shadowOffsetX = 2;
+        recordingCtx.shadowOffsetY = 2;
+
+        // Draw with gradient-like effect using two overlapping texts
+        recordingCtx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+        recordingCtx.fillText('GNS3', recordingCanvas.width - 22, recordingCanvas.height - 22);
+        recordingCtx.fillStyle = 'rgba(255, 255, 255, 0.2)';
         recordingCtx.fillText('GNS3', recordingCanvas.width - 20, recordingCanvas.height - 20);
         recordingCtx.restore();
 
@@ -811,6 +818,9 @@ import RFB from './novnc/core/rfb.js';
       isPaused = true;
       pausedStartTime = Date.now();
 
+      // Note: We don't stop continuousDrawing anymore - it keeps running
+      // so it will be ready when we resume
+
       // Stop updating overlay (freeze the timestamp display)
       if (recordingAnimationFrame) {
         cancelAnimationFrame(recordingAnimationFrame);
@@ -835,6 +845,8 @@ import RFB from './novnc/core/rfb.js';
         totalPausedTime += Date.now() - pausedStartTime;
         pausedStartTime = null;
       }
+
+      // Note: continuousDrawing is already running, no need to restart
 
       // Resume overlay animation
       drawRecordingTimestamp();
