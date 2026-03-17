@@ -62,29 +62,16 @@ export class AddControllerDialogComponent implements OnInit {
     return 3080;
   }
 
-  async getDefaultLocalControllerPath() {
-    return;
-  }
-
-  async getDefaultUbridgePath() {
-    return;
-  }
-
   async ngOnInit() {
     this.locations = await this.getLocations();
-
-    const defaultLocalControllerPath = await this.getDefaultLocalControllerPath();
-    const defaultUbridgePath = await this.getDefaultUbridgePath();
 
     this.controllerForm.get('location').valueChanges.subscribe((location: string) => {
       const pathControl = this.controllerForm.get('path');
       const ubridgePathControl = this.controllerForm.get('ubridge_path');
 
       if (location === 'local') {
-        pathControl.setValue(defaultLocalControllerPath);
         pathControl.setValidators([Validators.required]);
 
-        ubridgePathControl.setValue(defaultUbridgePath);
         ubridgePathControl.setValidators([Validators.required]);
       } else {
         pathControl.setValue('');
