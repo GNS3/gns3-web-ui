@@ -360,6 +360,25 @@
       content: '▲';
     }
 
+    /* Record mode select */
+    #record-mode {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 6px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      height: 32px;
+      min-height: 32px;
+      box-sizing: border-box;
+    }
+
+    #record-mode option {
+      background: rgba(40, 40, 40, 0.98);
+      color: #fff;
+    }
+
     #vnc-toolbar button {
       background: rgba(255, 255, 255, 0.08);
       color: #fff;
@@ -471,7 +490,7 @@
       margin-right: 4px;
     }
 
-    #vnc-toolbar .connection-info {
+    #vnc-toolbar .connection-status {
       color: rgba(255, 255, 255, 0.7);
       font-size: 12px;
       padding: 0 8px;
@@ -595,6 +614,8 @@
 </head>
 <body>
   <div id="vnc-container">
+    <!-- Camera preview overlay -->
+    <video id="camera-preview" autoplay muted playsinline style="display: none; position: absolute; bottom: 60px; right: 10px; width: 180px; height: 135px; border: 2px solid rgba(255,255,255,0.5); border-radius: 8px; z-index: 50; box-shadow: 0 4px 12px rgba(0,0,0,0.3);"></video>
     <div class="loading-container" id="loading">
       <div class="loading-spinner"></div>
       <div class="loading-text">Initializing VNC Console...</div>
@@ -614,7 +635,7 @@
   <div id="vnc-toolbar" class="hidden">
     <!-- Connection Controls -->
     <div class="toolbar-section">
-      <span class="toolbar-label">Connection</span>
+      <span class="connection-status" id="connection-status">● Connecting...</span>
       <button id="btn-fullscreen" title="Toggle Fullscreen (F11)">⛶ Fullscreen</button>
       <button id="btn-connect" class="success" title="Connect/Reconnect">↻ Connect</button>
       <button id="btn-disconnect" class="danger" title="Disconnect">✕ Disconnect</button>
@@ -682,7 +703,6 @@
 
     <!-- Scale Controls -->
     <div class="toolbar-section">
-      <span class="toolbar-label">Scale</span>
       <button id="btn-scale-up" title="Scale Up">+</button>
       <button id="btn-scale-down" title="Scale Down">−</button>
       <button id="btn-scale-fit" title="Scale to Fit">Fit</button>
@@ -691,6 +711,12 @@
     <!-- Screen Capture -->
     <div class="toolbar-section">
       <span class="toolbar-label">Capture</span>
+      <select id="record-mode" title="Recording Mode">
+        <option value="vnc">VNC</option>
+        <option value="vnc-camera">VNC + Camera</option>
+        <option value="camera">Camera</option>
+      </select>
+      <button id="btn-mute" title="Toggle Microphone">🔊 Mic</button>
       <button id="btn-screenshot" title="Take Screenshot">📷 Screenshot</button>
       <button id="btn-record-pause" title="Start/Pause Recording">⏺ Record</button>
       <button id="btn-record-stop" class="danger" title="Stop Recording" style="display: none;">⏹ Stop</button>
@@ -698,13 +724,7 @@
 
     <!-- Clipboard -->
     <div class="toolbar-section">
-      <span class="toolbar-label">Clipboard</span>
       <button id="btn-clipboard" title="Open Clipboard">📋 Clipboard</button>
-    </div>
-
-    <!-- Connection Info -->
-    <div class="toolbar-section">
-      <span class="connection-info" id="connection-status">● Connecting...</span>
     </div>
   </div>
 

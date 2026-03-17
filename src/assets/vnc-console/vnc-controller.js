@@ -45,6 +45,11 @@ import RFB from './novnc/core/rfb.js';
   let clickEffects = []; // Array of {x, y, startTime}
   let currentMousePos = null; // Current mouse position for cursor rendering
   let drawAnimationFrame = null; // Animation frame ID for continuous drawing
+  let audioStream = null; // Audio stream for microphone
+  let cameraStream = null; // Camera stream for video recording
+  let cameraVideo = null; // Video element for camera preview
+  let recordingMode = 'vnc'; // Current recording mode: 'vnc', 'vnc-camera', 'camera'
+  let isMuted = false; // Microphone muted state
 
   // Debug mode - set to false in production
   const DEBUG = false;
@@ -136,8 +141,10 @@ import RFB from './novnc/core/rfb.js';
       setTimeout(() => {
         if (rfbInstance) {
           rfbInstance.scaleViewport = true;
-          rfbInstance.sendScaleConfig();
-          log('VNC display scaled to fit viewport');
+          if (typeof rfbInstance.sendScaleConfig === 'function') {
+            rfbInstance.sendScaleConfig();
+            log('VNC display scaled to fit viewport');
+          }
         }
       }, 500);
     });
@@ -454,6 +461,27 @@ import RFB from './novnc/core/rfb.js';
     }
   }
 
+  // Toggle microphone mute
+  function toggleMute() {
+    isMuted = !isMuted;
+
+    const muteBtn = document.getElementById('btn-mute');
+    if (muteBtn) {
+      muteBtn.textContent = isMuted ? '🔇 Muted' : '🔊 Mic';
+      muteBtn.classList.toggle('recording', isMuted);
+    }
+
+    // If recording is active, toggle audio track
+    if (audioStream) {
+      audioStream.getAudioTracks().forEach(track => {
+        track.enabled = !isMuted;
+      });
+      log(isMuted ? 'Microphone muted' : 'Microphone unmuted');
+    } else {
+      log(isMuted ? 'Will mute microphone when recording starts' : 'Microphone will be enabled when recording');
+    }
+  }
+
   // Take screenshot and download
   function takeScreenshot() {
     if (!rfb || !isConnected) {
@@ -538,45 +566,113 @@ import RFB from './novnc/core/rfb.js';
   // Start recording
   async function startRecording() {
     try {
-      log('Starting canvas recording...');
+      // Get recording mode from select
+      const modeSelect = document.getElementById('record-mode');
+      recordingMode = modeSelect ? modeSelect.value : 'vnc';
+      log(`Starting recording in mode: ${recordingMode}`);
 
-      // Get the VNC canvas
       let vncCanvas = null;
-      if (typeof rfb.get_canvas === 'function') {
-        vncCanvas = rfb.get_canvas();
-      } else if (rfb.canvas) {
-        vncCanvas = rfb.canvas;
+      let recordingCanvas, recordingCtx;
+
+      // Create camera video element for camera modes
+      if (recordingMode === 'vnc-camera' || recordingMode === 'camera') {
+        try {
+          cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: { width: 320, height: 240 },
+            audio: false
+          });
+
+          // Use existing preview video element from DOM
+          const previewVideo = document.getElementById('camera-preview');
+          if (previewVideo) {
+            previewVideo.srcObject = cameraStream;
+            previewVideo.style.display = 'inline-block';
+            cameraVideo = previewVideo;
+          } else {
+            // Create video element for camera if preview not found
+            cameraVideo = document.createElement('video');
+            cameraVideo.srcObject = cameraStream;
+            cameraVideo.muted = true;
+            cameraVideo.autoplay = true;
+          }
+          await cameraVideo.play();
+          log('Camera initialized for recording');
+        } catch (err) {
+          log(`Camera not available: ${err.message}`, 'warn');
+          // Fall back to VNC only mode
+          recordingMode = 'vnc';
+          cameraStream = null;
+          cameraVideo = null;
+        }
+      }
+
+      if (recordingMode === 'vnc' || recordingMode === 'vnc-camera') {
+        // Get the VNC canvas
+        if (typeof rfb.get_canvas === 'function') {
+          vncCanvas = rfb.get_canvas();
+        } else if (rfb.canvas) {
+          vncCanvas = rfb.canvas;
+        } else {
+          vncCanvas = container.querySelector('canvas');
+        }
+
+        if (!vncCanvas) {
+          log('Cannot find VNC canvas for recording', 'error');
+          updateStatus('Recording failed: Cannot find VNC canvas', 'error');
+          return;
+        }
+
+        log(`Got canvas: ${vncCanvas.width}x${vncCanvas.height}`);
+
+        // Create a recording canvas
+        recordingCanvas = document.createElement('canvas');
+        recordingCanvas.width = vncCanvas.width;
+        recordingCanvas.height = vncCanvas.height;
+        recordingCtx = recordingCanvas.getContext('2d', { willReadFrequently: true });
       } else {
-        vncCanvas = container.querySelector('canvas');
+        // Pure camera mode - create canvas based on camera resolution
+        const camWidth = cameraVideo.videoWidth || 640;
+        const camHeight = cameraVideo.videoHeight || 480;
+
+        recordingCanvas = document.createElement('canvas');
+        recordingCanvas.width = camWidth;
+        recordingCanvas.height = camHeight;
+        recordingCtx = recordingCanvas.getContext('2d', { willReadFrequently: true });
       }
 
-      if (!vncCanvas) {
-        log('Cannot find VNC canvas for recording', 'error');
-        updateStatus('Recording failed: Cannot find VNC canvas', 'error');
-        return;
-      }
-
-      log(`Got canvas: ${vncCanvas.width}x${vncCanvas.height}`);
-
-      // Create a recording canvas that combines VNC content with UI elements
-      const recordingCanvas = document.createElement('canvas');
-      recordingCanvas.width = vncCanvas.width;
-      recordingCanvas.height = vncCanvas.height;
-      const recordingCtx = recordingCanvas.getContext('2d');
-
-      // Capture stream from the recording canvas at 30 FPS
-      // Get display refresh rate (fallback to 30 if not available)
+      // Capture stream from the recording canvas
       const refreshRate = window.screen.refreshRate || 30;
       log(`Display refresh rate: ${refreshRate}Hz, using ${Math.min(refreshRate, 60)}Hz for recording`);
 
-      const stream = recordingCanvas.captureStream(Math.min(refreshRate, 60));
+      let videoStream;
+      if (recordingCanvas) {
+        videoStream = recordingCanvas.captureStream(Math.min(refreshRate, 60));
+      } else {
+        // Pure camera mode - use camera stream directly
+        videoStream = cameraStream;
+      }
+
+      // Get microphone audio
+      let combinedStream = videoStream;
+      try {
+        audioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        // Apply mute state
+        audioStream.getAudioTracks().forEach(track => {
+          track.enabled = !isMuted;
+          combinedStream.addTrack(track);
+        });
+        log(isMuted ? 'Microphone added but muted' : 'Microphone audio added to recording');
+      } catch (err) {
+        log(`Microphone not available: ${err.message}`, 'warn');
+        audioStream = null;
+      }
 
       // Create MediaRecorder
       const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
         ? 'video/webm;codecs=vp9'
         : 'video/webm';
 
-      mediaRecorder = new MediaRecorder(stream, { mimeType });
+      mediaRecorder = new MediaRecorder(combinedStream, { mimeType });
       recordedChunks = [];
 
       // Continuous draw function to ensure video has actual duration
@@ -584,8 +680,31 @@ import RFB from './novnc/core/rfb.js';
         // Always keep drawing, but only record when not paused
         // This ensures the animation loop continues for when we resume
 
-        // Copy VNC canvas to recording canvas
-        recordingCtx.drawImage(vncCanvas, 0, 0);
+        if (recordingMode === 'vnc-camera' && vncCanvas && recordingCtx) {
+          // Draw VNC canvas
+          recordingCtx.drawImage(vncCanvas, 0, 0);
+
+          // Draw camera in corner (picture-in-picture)
+          if (cameraVideo) {
+            const pipWidth = 160;
+            const pipHeight = 120;
+            const pipX = recordingCanvas.width - pipWidth - 10;
+            const pipY = recordingCanvas.height - pipHeight - 10;
+
+            // Draw semi-transparent background
+            recordingCtx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+            recordingCtx.fillRect(pipX - 2, pipY - 2, pipWidth + 4, pipHeight + 4);
+
+            // Draw camera feed
+            recordingCtx.drawImage(cameraVideo, pipX, pipY, pipWidth, pipHeight);
+          }
+        } else if (recordingMode === 'vnc' && vncCanvas && recordingCtx) {
+          // VNC only mode
+          recordingCtx.drawImage(vncCanvas, 0, 0);
+        } else if (recordingMode === 'camera' && cameraVideo) {
+          // Camera only mode
+          recordingCtx.drawImage(cameraVideo, 0, 0, recordingCanvas.width, recordingCanvas.height);
+        }
 
         // Draw recording timestamp on the recording canvas
         if (recordingStartTime) {
@@ -755,6 +874,26 @@ import RFB from './novnc/core/rfb.js';
         clickEffects = [];
         currentMousePos = null;
 
+        // Stop and clear audio stream
+        if (audioStream) {
+          audioStream.getTracks().forEach(track => track.stop());
+          audioStream = null;
+        }
+
+        // Stop and clear camera stream
+        if (cameraStream) {
+          cameraStream.getTracks().forEach(track => track.stop());
+          cameraStream = null;
+        }
+        cameraVideo = null;
+
+        // Hide camera preview
+        const previewVideo = document.getElementById('camera-preview');
+        if (previewVideo) {
+          previewVideo.style.display = 'none';
+          previewVideo.srcObject = null;
+        }
+
         const blob = new Blob(recordedChunks, { type: 'video/webm' });
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
         const filename = `vnc-recording-${timestamp}.webm`;
@@ -923,6 +1062,14 @@ import RFB from './novnc/core/rfb.js';
       pausedStartTime = null;
       totalPausedTime = 0;
 
+      // Reset mute state
+      isMuted = false;
+      const muteBtn = document.getElementById('btn-mute');
+      if (muteBtn) {
+        muteBtn.textContent = '🔊 Mic';
+        muteBtn.classList.remove('recording');
+      }
+
       // Stop recording overlay
       stopRecordingOverlay();
 
@@ -1049,7 +1196,9 @@ import RFB from './novnc/core/rfb.js';
       scale = Math.min(scale + 0.1, 3.0);
       rfb.scaleViewport = false;
       rfb.scale = scale;
-      rfb.sendScaleConfig();
+      if (typeof rfb.sendScaleConfig === 'function') {
+        rfb.sendScaleConfig();
+      }
       log(`Scale up to ${scale.toFixed(1)}x`);
     }
   }
@@ -1060,7 +1209,9 @@ import RFB from './novnc/core/rfb.js';
       scale = Math.max(scale - 0.1, 0.3);
       rfb.scaleViewport = false;
       rfb.scale = scale;
-      rfb.sendScaleConfig();
+      if (typeof rfb.sendScaleConfig === 'function') {
+        rfb.sendScaleConfig();
+      }
       log(`Scale down to ${scale.toFixed(1)}x`);
     }
   }
@@ -1070,7 +1221,9 @@ import RFB from './novnc/core/rfb.js';
     if (rfb && isConnected) {
       scale = 1.0;
       rfb.scaleViewport = true;
-      rfb.sendScaleConfig();
+      if (typeof rfb.sendScaleConfig === 'function') {
+        rfb.sendScaleConfig();
+      }
       log('Scale to fit viewport');
     }
   }
@@ -1269,6 +1422,7 @@ import RFB from './novnc/core/rfb.js';
 
     // Screen capture
     document.getElementById('btn-screenshot').addEventListener('click', takeScreenshot);
+    document.getElementById('btn-mute').addEventListener('click', toggleMute);
     document.getElementById('btn-record-pause').addEventListener('click', toggleRecording);
     document.getElementById('btn-record-stop').addEventListener('click', stopRecording);
 
@@ -1489,7 +1643,9 @@ import RFB from './novnc/core/rfb.js';
       if (rfb && rfb._rfb_connection_state === 'connected') {
         // Re-apply scaling after resize
         rfb.scaleViewport = true;
-        rfb.sendScaleConfig();
+        if (typeof rfb.sendScaleConfig === 'function') {
+          rfb.sendScaleConfig();
+        }
         log('Window resized, VNC display rescaled');
       }
     });
