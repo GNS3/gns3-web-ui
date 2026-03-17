@@ -103,6 +103,9 @@ export class ConfiguratorDialogIosComponent implements OnInit {
           this.node.properties[`slot${i}`] = ""
         else
           this.node.properties[`slot${i}`] = this.networkAdaptersForNode[i];
+      } else {
+        // Remove slot properties that don't exist on this platform/chassis
+        delete this.node.properties[`slot${i}`];
       }
     }
 
@@ -116,6 +119,9 @@ export class ConfiguratorDialogIosComponent implements OnInit {
           this.node.properties[`wic${i}`] = ""
         else
           this.node.properties[`wic${i}`] = this.wicsForNode[i];
+      } else {
+        // Remove WIC properties that don't exist on this platform
+        delete this.node.properties[`wic${i}`];
       }
     }
   }
