@@ -406,3 +406,15 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.mat-mdc-menu-p
     }
   }
 }
+
+/* Hidden link labels - invisible by default, revealed on hover */
+.link-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+g.link:hover .link-hidden {
+  opacity: 1;
+  pointer-events: auto;
+}
