@@ -12,7 +12,7 @@
         </div>
       </div>
 
-      <form [formGroup]="loginForm">
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
         <mat-form-field>
           <input matInput formControlName="username" placeholder="Username" />
           <mat-error *ngIf="loginForm.get('username').hasError('required')">You must enter username</mat-error>

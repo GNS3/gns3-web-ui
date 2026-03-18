@@ -127,12 +127,13 @@ export class TemplateComponent implements OnInit, OnDestroy {
       const svgRect = svgElement ? svgElement.getBoundingClientRect() : { left: 0, top: 0 };
       const k = this.context.transformation.k;
 
+      const origin = this.context.getZeroZeroTransformationPoint();
       let nodeAddedEvent: NodeAddedEvent = {
         template: template,
         controller: 'local',
         numberOfNodes: 1,
-        x: (dropClientX - svgRect.left - this.context.size.width / 2 - this.context.transformation.x) / k - width / 2,
-        y: (dropClientY - svgRect.top - this.context.size.height / 2 - this.context.transformation.y) / k,
+        x: (dropClientX - svgRect.left - origin.x - this.context.transformation.x) / k - width / 2,
+        y: (dropClientY - svgRect.top - origin.y - this.context.transformation.y) / k,
       };
       this.onNodeCreation.emit(nodeAddedEvent);
     });
