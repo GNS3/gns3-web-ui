@@ -86,7 +86,7 @@ mat-menu-panel {
 /* Link hover effects - simple line thickening */
 .ethernet_link,
 .serial_link {
-  transition: stroke-width 0.2s ease-in-out, stroke 0.2s ease-in-out;
+  transition: stroke-width 0.2s ease-in-out, stroke 0.2s ease-in-out, stroke-opacity 0.2s ease-in-out;
 }
 
 .ethernet_link:hover,
@@ -94,4 +94,17 @@ mat-menu-panel {
   stroke-width: 4px !important;
   cursor: pointer;
   stroke: #ff0000 !important;
+  stroke-opacity: 1 !important;
+}
+
+/* Hidden link labels - invisible by default, revealed on hover */
+.link-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease-in-out;
+}
+
+g.link:hover .link-hidden {
+  opacity: 1;
+  pointer-events: auto;
 }

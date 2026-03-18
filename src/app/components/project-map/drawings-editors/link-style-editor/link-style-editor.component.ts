@@ -24,7 +24,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
   project: Project;
   link: Link;
   formGroup: UntypedFormGroup;
-  borderTypes = ["Solid", "Dash", "Dot", "Dash Dot", "Dash Dot Dot"];
+  borderTypes = ["Invisible", "Solid", "Dash", "Dot", "Dash Dot", "Dash Dot Dot"];
   linkTypes = ["Straight", "Bezier", "Flowchart", "StateMachine"];
   private readonly linkTypeValues = ["straight", "bezier", "flowchart", "statemachine"];
   bezierCurvinessMin = StyleTranslator.BEZIER_CURVINESS_MIN;
@@ -78,13 +78,13 @@ export class LinkStyleEditorDialogComponent implements OnInit {
     const width = this.link.link_style?.width !== undefined ? this.link.link_style.width : 2;
     this.formGroup.controls['width'].setValue(width);
 
-    let type = this.borderTypes[0];
+    let type = this.borderTypes[1];
     if (
       this.link.link_style?.type !== undefined
-      && this.link.link_style.type >= 1
-      && this.link.link_style.type <= this.borderTypes.length
+      && this.link.link_style.type >= 0
+      && this.link.link_style.type < this.borderTypes.length
     ) {
-        type = this.borderTypes[this.link.link_style.type - 1];
+        type = this.borderTypes[this.link.link_style.type];
     }
     this.formGroup.controls['type'].setValue(type);
 
@@ -221,7 +221,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
       this.link.link_style.color = this.formGroup.controls['color'].value;
       this.link.link_style.width = this.formGroup.controls['width'].value;
 
-      this.link.link_style.type = this.borderTypes.indexOf(this.formGroup.controls['type'].value) + 1;
+      this.link.link_style.type = this.borderTypes.indexOf(this.formGroup.controls['type'].value);
       this.link.link_style.link_type = this.normalizeLinkType(this.formGroup.controls['linkType'].value);
       this.link.link_style.bezier_curviness = this.normalizeCurvinessByLinkType(
         this.link.link_style.link_type,

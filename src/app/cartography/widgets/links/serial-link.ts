@@ -194,6 +194,12 @@ export class SerialLinkWidget implements Widget {
       .attr('stroke-dasharray', (datum) => {
         return StyleTranslator.getLinkStyle(datum.style);
       })
+      .attr('stroke-opacity', (datum) => {
+        return datum.style.type === 0 ? 0 : 1;
+      })
+      .attr('pointer-events', (datum) => {
+        return datum.style.type === 0 ? 'stroke' : null;
+      })
       .attr('d', (serial) => {
         if (serial.useLegacySerialPattern) {
           return this.getLegacySerialPath(serial.source, serial.target);
