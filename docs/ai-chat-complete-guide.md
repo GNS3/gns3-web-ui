@@ -148,8 +148,8 @@ User Input → ChatInputArea
 
 | Technology | Version/Library | Purpose |
 |------------|-----------------|---------|
-| Angular | 17.x | Frontend framework |
-| RxJS | 7.x | Reactive programming & State management |
+| Angular | 14.3.0 | Frontend framework |
+| RxJS | 6.6.7 | Reactive programming & State management |
 | Material Design | - | UI components (MatDialog, MatSnackBar) |
 | ngx-markdown | - | Markdown rendering |
 | ngx-json-viewer | - | JSON viewing |
