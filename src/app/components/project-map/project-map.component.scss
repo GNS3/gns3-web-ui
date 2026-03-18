@@ -394,8 +394,13 @@ line.selected {
 svg.map image:hover,
 svg.map image.chosen,
 g.selected {
-  // Performance optimized: replaced grayscale filter with opacity (no GPU-heavy filter)
-  opacity: 1;
+  -webkit-filter: grayscale(100%);
+  -moz-filter: grayscale(100%);
+  -ms-filter: grayscale(100%);
+  -o-filter: grayscale(100%);
+  filter: grayscale(100%);
+  filter: gray;
+  filter: url('#grayscale'); /* Chrome doesn't support CSS filters on SVG */
 }
 
 path.serial_link.selected {
