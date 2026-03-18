@@ -669,6 +669,33 @@ The AI Chat components use CSS variables for theme adaptation:
 - Custom colors for JSON viewer in dark mode
 - Dialog styling adapts to theme
 
+### 9.1 Theme Application
+
+**AI Chat Container Theme Classes**:
+```html
+<div class="ai-chat-container"
+     [class.dark-theme]="!isLightThemeEnabled"
+     [class.light-theme]="isLightThemeEnabled"
+     ...>
+```
+
+**Key Points**:
+- AI Chat follows the **global theme setting**, independent of map background theme
+- Font colors automatically adapt based on applied theme class:
+  - Dark theme: White text (`rgba(255, 255, 255, 0.85)`)
+  - Light theme: Dark text (`rgba(0, 0, 0, 0.87)`)
+- Material Design CSS variables provide consistent theming across all components
+
+**Theme Resolution**:
+```typescript
+// In ai-chat.component.ts (line 82-84)
+this.themeService.getActualTheme() === 'light'
+  ? (this.isLightThemeEnabled = true)
+  : (this.isLightThemeEnabled = false);
+```
+
+**Important**: AI Chat uses `getActualTheme()` which returns the global theme, not `getActualMapTheme()` which considers map background settings. This ensures AI Chat remains readable regardless of map background.
+
 ---
 
 ## 10. API Reference
@@ -747,6 +774,15 @@ The AI Chat components use CSS variables for theme adaptation:
 ---
 
 ## 12. Changelog
+
+### v1.1 (2026-03-18)
+
+**Bug Fixes**:
+- ✅ Fixed AI Chat theme class application
+  - Changed from custom `lightTheme` class to standard global theme classes (`.dark-theme` / `.light-theme`)
+  - Ensures proper font color rendering in all theme combinations
+  - AI Chat now correctly follows global theme setting, independent of map background theme
+  - Fixed issue where fonts appeared dark when global theme is dark + map background is set to always light
 
 ### v1.0 (2026-03-10)
 
