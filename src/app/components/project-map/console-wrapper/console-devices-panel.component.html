@@ -1,9 +1,10 @@
-<div class="console-devices-panel" [class.collapsed]="collapsed">
+<div class="console-devices-panel" [class.collapsed]="collapsed" [ngClass]="{ lightTheme: isLightTheme }">
   <!-- Panel Header -->
   <div class="panel-header"
        (mousedown)="$event.stopPropagation()"
        (click)="togglePanel()"
        [class.clickable]="true"
+       [ngClass]="{ lightTheme: isLightTheme }"
        title="Click to toggle panel">
     <div class="header-title">
       <mat-icon class="panel-icon">devices</mat-icon>

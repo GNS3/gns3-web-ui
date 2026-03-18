@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, ChangeDetectorRef, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { Subject } from 'rxjs';
@@ -17,6 +17,7 @@ import { NodesDataSource } from '../../../cartography/datasources/nodes-datasour
 })
 export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
   @Output() deviceSelected = new EventEmitter<Node>();
+  @Input() isLightTheme: boolean = false;
 
   nodes: Node[] = [];
   collapsed = true;

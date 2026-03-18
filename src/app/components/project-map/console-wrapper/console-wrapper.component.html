@@ -11,7 +11,7 @@
 
   <div class="console-content">
     <!-- Devices Panel -->
-    <app-console-devices-panel (deviceSelected)="onDeviceSelected($event)"></app-console-devices-panel>
+    <app-console-devices-panel [isLightTheme]="isLightThemeEnabled" (deviceSelected)="onDeviceSelected($event)"></app-console-devices-panel>
 
     <!-- Console Area -->
     <div class="console-area">

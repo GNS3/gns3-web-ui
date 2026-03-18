@@ -197,58 +197,56 @@
 }
 
 // Light theme adjustments
-:host-context(.lightTheme) {
-  .console-devices-panel {
-    background-color: #ffffff;
-    border-right-color: #e0e0e0;
+.console-devices-panel.lightTheme {
+  background-color: #ffffff;
+  border-right-color: #e0e0e0;
+}
+
+.console-devices-panel.lightTheme .panel-header {
+  background-color: #f5f5f5;
+  border-bottom-color: #e0e0e0;
+
+  &.clickable:hover {
+    background-color: #eeeeee;
   }
 
-  .panel-header {
-    background-color: #f5f5f5;
-    border-bottom-color: #e0e0e0;
-
-    &.clickable:hover {
-      background-color: #eeeeee;
-    }
-
-    &.clickable:active {
-      background-color: #e0e0e0;
-    }
+  &.clickable:active {
+    background-color: #e0e0e0;
   }
+}
 
-  .header-title {
-    color: rgba(0, 0, 0, 0.87);
+.console-devices-panel.lightTheme .header-title {
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.console-devices-panel.lightTheme .panel-icon {
+  color: #0097a7;
+}
+
+.console-devices-panel.lightTheme .device-item {
+  background: #f5f5f5;
+
+  &:hover {
+    background: #eeeeee;
   }
+}
 
-  .panel-icon {
-    color: #0097a7;
-  }
+.console-devices-panel.lightTheme .device-name {
+  color: rgba(0, 0, 0, 0.87);
+}
 
-  .device-item {
-    background: #f5f5f5;
-
-    &:hover {
-      background: #eeeeee;
-    }
-  }
-
-  .device-name {
-    color: rgba(0, 0, 0, 0.87);
-  }
-
-  .device-icon {
-    &.disabled {
-      color: rgba(0, 0, 0, 0.40);
-    }
-  }
-
-  .empty-icon {
+.console-devices-panel.lightTheme .device-icon {
+  &.disabled {
     color: rgba(0, 0, 0, 0.40);
   }
+}
 
-  .empty-text {
-    color: rgba(0, 0, 0, 0.60);
-  }
+.console-devices-panel.lightTheme .empty-icon {
+  color: rgba(0, 0, 0, 0.40);
+}
+
+.console-devices-panel.lightTheme .empty-text {
+  color: rgba(0, 0, 0, 0.60);
 }
 
 // Responsive design for mobile

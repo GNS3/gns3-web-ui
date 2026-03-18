@@ -14,9 +14,7 @@ app-chat-message-list markdown li p {
   margin: 0 !important;
 }
 
-body {
-  background-color: #e8ecef;
-}
+/* body background-color is now controlled dynamically by ThemeService and applyMapBackground() */
 
 img.logo-header {
   width: 50px;

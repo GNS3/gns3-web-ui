@@ -3,14 +3,42 @@
 ## Document Information
 
 **Created**: 2026-03-10
-**Updated**: 2026-03-14
+**Updated**: 2026-03-18
 **Status**: ✅ **Completed**
-**Version**: 1.8.0
+**Version**: 1.9.0
 **Author**: Development Team
 
 ---
 
 ## Version History
+
+### v1.9.0 (2026-03-18)
+
+**Bug Fixes**:
+- ✅ Fix sidebar light theme not applying due to `isolation: isolate` blocking `:host-context()`
+- ✅ Fix project map background always showing light color due to fixed `body` background in global styles
+
+**Improvements**:
+- ✅ Refactor sidebar theme implementation to use direct property binding (like header)
+- ✅ Replace `:host-context(.lightTheme)` with `[ngClass]="{ lightTheme: isLightTheme }"`
+- ✅ Add `@Input() isLightTheme` to `ConsoleDevicesPanelComponent`
+- ✅ Remove `isolation: isolate` from `.console-area` to allow theme propagation
+- ✅ Remove fixed `body { background-color: #e8ecef }` from global styles
+- ✅ Background color now controlled dynamically by `ThemeService` and `applyMapBackground()`
+
+**Technical Details**:
+- **Old Implementation**: Sidebar used `:host-context(.lightTheme)` which was blocked by `isolation: isolate`
+- **New Implementation**: Sidebar uses `[ngClass]="{ lightTheme: isLightTheme }"` with explicit `@Input` property
+- **Consistency**: Sidebar now matches header implementation pattern
+- **Reliability**: Theme switching works reliably regardless of DOM structure
+
+**Files Modified**:
+- `src/styles.scss` - Removed fixed body background-color
+- `src/app/components/project-map/console-wrapper/console-devices-panel.component.ts` - Added `@Input() isLightTheme`
+- `src/app/components/project-map/console-wrapper/console-devices-panel.component.html` - Added `ngClass` bindings
+- `src/app/components/project-map/console-wrapper/console-devices-panel.component.scss` - Changed from `:host-context()` to class selectors
+- `src/app/components/project-map/console-wrapper/console-wrapper.component.html` - Pass `isLightThemeEnabled` to sidebar
+- `src/app/components/project-map/console-wrapper/console-wrapper.component.scss` - Removed `isolation: isolate`
 
 ### v1.8.0 (2026-03-14)
 

@@ -248,6 +248,6 @@ input:focus {
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  isolation: isolate;
+  /* isolation: isolate;  ← Removed to allow theme propagation to devices panel */
 }
 

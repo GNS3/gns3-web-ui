@@ -12,7 +12,7 @@
 docs/
 ├── ai-chat-complete-guide.md             # ⭐ Complete AI Chat implementation guide
 ├── ai-profile-management.md              # AI Profile / LLM Model Configuration management
-├── console-devices-panel-implementation.md # Console devices panel docs (v1.8.0)
+├── console-devices-panel-implementation.md # Console devices panel docs (v1.9.0)
 ├── dialog-style-isolation-guide.md       # Dialog style isolation using panelClass
 ├── electron-removal-migration-guide.md   # Electron removal and migration guide
 ├── window-boundary-service.md            # Window boundary service documentation
@@ -29,7 +29,7 @@ docs/
 |----------|-------------|
 | [ai-chat-complete-guide.md](./ai-chat-complete-guide.md) | ⭐ Complete AI Chat implementation guide |
 | [ai-profile-management.md](./ai-profile-management.md) | AI Profile / LLM Model Configuration management |
-| [console-devices-panel-implementation.md](./console-devices-panel-implementation.md) | Console devices panel (v1.8.0) |
+| [console-devices-panel-implementation.md](./console-devices-panel-implementation.md) | Console devices panel (v1.9.0) |
 | [dialog-style-isolation-guide.md](./dialog-style-isolation-guide.md) | Dialog style isolation using panelClass |
 | [electron-removal-migration-guide.md](./electron-removal-migration-guide.md) | Electron removal and migration guide |
 | [window-boundary-service.md](./window-boundary-service.md) | Window boundary service |
@@ -59,6 +59,15 @@ docs/
 ## 📝 Recent Updates
 
 ### 2026-03-18
+- ✅ **Console Devices Panel v1.9.0**: Fix light theme and project map background issues
+  - Fix sidebar light theme not applying due to `isolation: isolate` blocking `:host-context()`
+  - Refactor sidebar theme implementation to use direct property binding (like header)
+  - Replace `:host-context(.lightTheme)` with `[ngClass]="{ lightTheme: isLightTheme }"`
+  - Add `@Input() isLightTheme` to `ConsoleDevicesPanelComponent`
+  - Remove `isolation: isolate` from `.console-area` to allow theme propagation
+  - Fix project map background always showing light color
+  - Remove fixed `body { background-color: #e8ecef }` from global styles
+  - Background color now controlled dynamically by `ThemeService` and `applyMapBackground()`
 - ✅ **Window Boundary Service Documentation**: Fixed documentation consistency with code implementation
   - Added missing `resetConfig()` method documentation
   - Updated `isValidSize()` method signature to use `unknown` type (matches actual implementation)
