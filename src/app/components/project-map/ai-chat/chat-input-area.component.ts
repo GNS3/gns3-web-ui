@@ -3,8 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
+import { LLMModelConfigWithSource } from '@models/ai-profile';
+import { getModelDisplayName as getModelDisplayNameUtil, shortenModelName } from '@utils/ai-profile.util';
 
 /**
  * AI Chat Input Area Component
@@ -40,6 +44,19 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
             <mat-icon class="loading-spinner">refresh</mat-icon>
           </ng-template>
         </button>
+
+        <!-- Model Selector Chip -->
+        <button
+          class="model-selector-chip"
+          [matMenuTriggerFor]="modelMenu"
+          [disabled]="disabled || !modelConfigs || modelConfigs.length === 0"
+          [title]="getFullModelDisplayName()"
+          matRipple
+        >
+          <mat-icon class="chip-icon">psychology</mat-icon>
+          <span class="chip-text">{{ getCurrentModelDisplayName() }}</span>
+          <mat-icon class="chip-arrow">expand_more</mat-icon>
+        </button>
       </div>
 
       <div class="input-footer" *ngIf="showCharCount">
@@ -48,6 +65,22 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
         <span class="char-max">{{ maxLength }}</span>
       </div>
     </div>
+
+    <!-- Model Selection Menu -->
+    <mat-menu #modelMenu="matMenu" xPosition="before">
+      <div class="model-menu-header">Select AI Model</div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item *ngFor="let config of modelConfigs" (click)="selectModel(config)" [class.selected]="config.config_id === currentModelId">
+        <mat-icon>{{ config.config_id === currentModelId ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+        <span class="model-name">{{ getModelDisplayName(config) }}</span>
+        <span class="model-source" *ngIf="config.source === 'group'">Group</span>
+      </button>
+      <mat-divider *ngIf="!modelConfigs || modelConfigs.length === 0"></mat-divider>
+      <button mat-menu-item *ngIf="!modelConfigs || modelConfigs.length === 0" disabled>
+        <mat-icon>error_outline</mat-icon>
+        <span>No models configured</span>
+      </button>
+    </mat-menu>
   `,
   styles: [`
     .chat-input-area {
@@ -121,6 +154,88 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 
     .chat-textarea::-webkit-scrollbar-thumb:hover {
       background: var(--mat-app-outline);
+    }
+
+    .model-selector-chip {
+      flex-shrink: 0;
+      height: 36px;
+      min-width: 100px;
+      max-width: 200px;
+      padding: 0 12px;
+      border: none;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #00bcd4, #0097a7);
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(0, 188, 212, 0.3);
+      position: relative;
+      overflow: hidden;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .model-selector-chip::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: 18px;
+    }
+
+    .model-selector-chip:hover:not(:disabled) {
+      box-shadow: 0 4px 12px rgba(0, 188, 212, 0.5);
+      background: linear-gradient(135deg, #00bcd4, #00838f);
+      transform: translateY(-1px);
+
+      &::before {
+        opacity: 1;
+      }
+    }
+
+    .model-selector-chip:active:not(:disabled) {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px rgba(0, 188, 212, 0.3);
+    }
+
+    .model-selector-chip:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .chip-icon {
+      width: 16px;
+      height: 16px;
+      font-size: 16px;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .chip-text {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: white;
+      line-height: 1;
+    }
+
+    .chip-arrow {
+      width: 18px;
+      height: 18px;
+      font-size: 18px;
+      color: white;
+      flex-shrink: 0;
     }
 
     .send-button {
@@ -221,6 +336,32 @@ import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
       opacity: 0.7;
       margin: 0 2px;
     }
+
+    /* Model menu styles */
+    .model-menu-header {
+      padding: 12px 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--mat-app-on-surface-variant);
+    }
+
+    .model-name {
+      flex: 1;
+      font-size: 14px;
+    }
+
+    .model-source {
+      font-size: 11px;
+      color: var(--mat-app-primary);
+      background: rgba(var(--mat-app-primary-rgb), 0.1);
+      padding: 2px 8px;
+      border-radius: 12px;
+      margin-left: 8px;
+    }
+
+    button.mat-menu-item.selected {
+      background: rgba(var(--mat-app-primary-rgb), 0.1);
+    }
   `]
 })
 export class ChatInputAreaComponent implements OnInit, OnDestroy {
@@ -230,8 +371,13 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
   @Input() showCharCount = false;
   @Input() warningThreshold = 0.9; // 90% length triggers warning
 
+  // Model selector inputs
+  @Input() modelConfigs: LLMModelConfigWithSource[] = [];
+  @Input() currentModelId: string | null = null;
+
   @Output() messageSent = new EventEmitter<string>();
   @Output() inputChanged = new EventEmitter<string>();
+  @Output() modelSelected = new EventEmitter<LLMModelConfigWithSource>();
 
   @ViewChild('messageInput', { static: true }) messageInput!: ElementRef<HTMLTextAreaElement>;
 
@@ -357,5 +503,61 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.adjustTextareaHeight();
     }, 0);
+  }
+
+  /**
+   * Get current model display name (short version for chip)
+   * @returns Short model name
+   */
+  getCurrentModelDisplayName(): string {
+    if (!this.modelConfigs || this.modelConfigs.length === 0) {
+      return 'Model';
+    }
+
+    // Find current model config
+    const currentConfig = this.modelConfigs.find(c => c.config_id === this.currentModelId);
+    if (currentConfig) {
+      // Return just the model name (short version)
+      return shortenModelName(currentConfig.config.model);
+    }
+
+    // If no current model, return first model or default
+    return shortenModelName(this.modelConfigs[0].config.model);
+  }
+
+  /**
+   * Get full model display name (for tooltip)
+   * @returns Full model name with domain
+   */
+  getFullModelDisplayName(): string {
+    if (!this.modelConfigs || this.modelConfigs.length === 0) {
+      return 'No model configured';
+    }
+
+    // Find current model config
+    const currentConfig = this.modelConfigs.find(c => c.config_id === this.currentModelId);
+    if (currentConfig) {
+      return getModelDisplayNameUtil(currentConfig);
+    }
+
+    // If no current model, return first model or default
+    return getModelDisplayNameUtil(this.modelConfigs[0]);
+  }
+
+  /**
+   * Get model display name (wrapper for template)
+   * @param config Model config
+   * @returns Display name
+   */
+  getModelDisplayName(config: LLMModelConfigWithSource): string {
+    return getModelDisplayNameUtil(config);
+  }
+
+  /**
+   * Select model and emit event
+   * @param config Model config to select
+   */
+  selectModel(config: LLMModelConfigWithSource): void {
+    this.modelSelected.emit(config);
   }
 }

@@ -2,8 +2,8 @@
 
 > Complete documentation for GNS3 Web UI AI Chat functionality
 
-**Version**: v1.0
-**Last Updated**: 2026-03-10
+**Version**: v1.2
+**Last Updated**: 2026-03-19
 **Status**: ✅ Implemented
 
 ---
@@ -50,6 +50,8 @@ src/app/
 │   └── ai-profiles.service.ts           # Profile management
 ├── stores/
 │   └── ai-chat.store.ts                 # State management (RxJS)
+├── utils/
+│   └── ai-profile.util.ts               # AI profile utility functions
 └── models/
     └── ai-chat.interface.ts             # Data interfaces
 ```
@@ -72,6 +74,7 @@ src/app/
 | **JSON Viewer** | Interactive JSON data viewer | ✅ |
 | **Confirmation Dialog** | Secondary confirmation for dangerous operations | ✅ |
 | **Panel State Persistence** | Window position/size saved to localStorage | ✅ |
+| **Model Selector** | Switch between configured LLM models | ✅ |
 
 ### 2.2 Message Types
 
@@ -292,14 +295,107 @@ closeDialog()
 **Files**: `chat-input-area.component.ts`
 
 **Responsibilities**:
-- Message input field
-- Send button
-- Clear history button
+- Message input field with auto-resize textarea
+- Send button with loading state
+- Model selector chip with dropdown menu
 - Input state management
+
+**Key Features**:
+- **Auto-resize Textarea**: Dynamically adjusts height based on content (48px-200px)
+- **Keyboard Shortcuts**: Ctrl/Cmd+Enter to send messages
+- **Model Selector**: Display and switch between configured LLM models
+  - Chip-style button with cyan gradient
+  - Shows shortened model name (e.g., "Gemini 2.5 Flash")
+  - Hover tooltip displays full name with domain (e.g., "gemini-2.5-flash (api.google.com)")
+  - Dropdown menu lists all available models with checkmark for current selection
+  - Clicking a model sets it as default via API
+- **Model Name Display Logic**:
+  - Removes provider prefix (e.g., "google/", "meta-llama/")
+  - Replaces hyphens and underscores with spaces
+  - Capitalizes first letter of each word
+  - Extracts domain from base_url for platform identification
+  - Examples:
+    - "google/gemini-2.5-flash" → "Gemini 2.5 Flash"
+    - "meta-llama/llama-3.1-70b" → "Llama 3.1 70b"
+    - "openai/gpt-4o" → "Gpt 4o"
+
+**Inputs**:
+- `placeholder`: Input placeholder text
+- `disabled`: Disable input (during streaming)
+- `maxLength`: Maximum message length (default: 4000)
+- `showCharCount`: Show character count
+- `warningThreshold`: Character count warning threshold (default: 0.9)
+- `modelConfigs`: Array of available LLM model configurations
+- `currentModelId`: ID of currently selected model
+
+**Outputs**:
+- `messageSent`: Emitted when user sends a message
+- `inputChanged`: Emitted on input change
+- `modelSelected`: Emitted when user selects a different model
 
 ---
 
-### 4.6 ToolCallDisplayComponent
+### 4.6 AI Profile Utility Functions
+
+**File**: `utils/ai-profile.util.ts`
+
+**Purpose**: Centralized utility functions for processing AI model configurations
+
+**Exported Functions**:
+
+#### `getModelDisplayName(config: LLMModelConfigWithSource): string`
+
+Extracts domain from `base_url` and formats model name with domain.
+
+**Returns**: Display name in format `"model (domain)"`
+
+**Examples**:
+```typescript
+getModelDisplayName(config)
+// Returns: "gemini-2.5-flash (api.google.com)"
+// Returns: "gpt-4o (openrouter.com)"
+```
+
+**Features**:
+- Extracts hostname from `base_url` using URL API
+- Removes `www.` prefix and port numbers
+- Falls back to `provider` if URL parsing fails
+
+---
+
+#### `shortenModelName(model: string): string`
+
+Removes provider prefix and formats model name to title case.
+
+**Examples**:
+```typescript
+shortenModelName("google/gemini-2.5-flash")
+// Returns: "Gemini 2.5 Flash"
+
+shortenModelName("meta-llama/llama-3.1-70b")
+// Returns: "Llama 3.1 70b"
+
+shortenModelName("openai/gpt-4o")
+// Returns: "Gpt 4o"
+```
+
+**Features**:
+- Removes provider prefix (e.g., `google/`, `meta-llama/`)
+- Replaces hyphens and underscores with spaces
+- Capitalizes first letter of each word
+
+---
+
+**Why Utility Functions?**
+- ✅ **DRY Principle**: Eliminates code duplication across components
+- ✅ **Single Source of Truth**: Model name formatting logic in one place
+- ✅ **Easy Testing**: Pure functions can be unit tested independently
+- ✅ **Reusability**: Can be used by any component that needs model display names
+- ✅ **Maintainability**: Changes to formatting logic only need to be made once
+
+---
+
+### 4.7 ToolCallDisplayComponent
 
 **Files**: `tool-call-display.component.ts`
 
@@ -310,7 +406,7 @@ closeDialog()
 
 ---
 
-### 4.7 ConfirmationDialogComponent
+### 4.8 ConfirmationDialogComponent
 
 **Files**: `confirmation-dialog.component.ts` (standalone component)
 
@@ -714,7 +810,16 @@ this.themeService.getActualTheme() === 'light'
 | PUT | `/projects/{project_id}/chat/sessions/{session_id}/pin` | Pin session |
 | DELETE | `/projects/{project_id}/chat/sessions/{session_id}/pin` | Unpin session |
 
-### 10.2 SSE Event Types
+### 10.2 AI Profiles Endpoints
+
+**Base URL**: `{protocol}://{host}:{port}/v3`
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/access/users/{user_id}/llm-model-configs` | Get all LLM model configs for user |
+| PUT | `/access/users/{user_id}/llm-model-configs/default/{config_id}` | Set default model config |
+
+### 10.3 SSE Event Types
 
 | Event Type | Description |
 |------------|-------------|
@@ -775,6 +880,41 @@ this.themeService.getActualTheme() === 'light'
 
 ## 12. Changelog
 
+### v1.2 (2026-03-19)
+
+**New Features**:
+- ✅ Added LLM model selector in chat input area
+  - Chip-style button with cyan gradient positioned next to send button
+  - Displays shortened model name (e.g., "Gemini 2.5 Flash")
+  - Hover tooltip shows full model name with domain (e.g., "gemini-2.5-flash (api.google.com)")
+  - Dropdown menu lists all configured models with visual checkmark for current selection
+  - Model selection sets as default via API call
+  - Intelligent model name formatting:
+    - Removes provider prefix (google/, meta-llama/, etc.)
+    - Replaces hyphens and underscores with spaces
+    - Capitalizes first letter of each word
+    - Extracts domain from base_url for platform identification
+  - Examples: "google/gemini-2.5-flash" → "Gemini 2.5 Flash (api.google.com)"
+- ✅ Added AI Profiles API integration
+  - GET /v3/access/users/{user_id}/llm-model-configs - Fetch all configured models
+  - PUT /v3/access/users/{user_id}/llm-model-configs/default/{config_id} - Set default model
+- ✅ Added model configuration loading on chat initialization
+- ✅ Added user feedback via MatSnackBar on model switch
+
+**Code Quality Improvements**:
+- ✅ Extracted utility functions to `utils/ai-profile.util.ts`
+  - `getModelDisplayName()` - Format model name with domain
+  - `shortenModelName()` - Shorten and format model name for display
+  - Eliminates ~60 lines of duplicate code across components
+  - Improves maintainability and testability
+- ✅ Added `@utils/*` path mapping in tsconfig.app.json
+- ✅ Updated documentation with utility functions section
+
+**Documentation**:
+- ✅ Added model selector feature documentation
+- ✅ Added AI Profiles API endpoints reference
+- ✅ Added utility functions documentation (section 4.6)
+
 ### v1.1 (2026-03-18)
 
 **Bug Fixes**:
@@ -825,4 +965,4 @@ this.themeService.getActualTheme() === 'light'
 ---
 
 **Maintained By**: Development Team
-**Last Updated**: 2026-03-10
+**Last Updated**: 2026-03-19

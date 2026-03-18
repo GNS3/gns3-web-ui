@@ -8,7 +8,8 @@
       "@services/*": ["app/services/*"],
       "@resolvers/*": ["app/resolvers/*"],
       "@filters/*": ["app/filters/*"],
-      "@models/*": ["app/models/*"]
+      "@models/*": ["app/models/*"],
+      "@utils/*": ["app/utils/*"]
     },
     "types": []
   },

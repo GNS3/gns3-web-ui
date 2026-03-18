@@ -8,11 +8,15 @@ import { environment } from '../../../../environments/environment';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { ChatMessage, ChatSession, ChatEvent, ToolCall, ToolResult } from '@models/ai-chat.interface';
+import { LLMModelConfigWithSource } from '@models/ai-profile';
 import { AiChatService } from '@services/ai-chat.service';
 import { ControllerService } from '@services/controller.service';
+import { AiProfilesService } from '@services/ai-profiles.service';
+import { LoginService } from '@services/login.service';
 import { AiChatStore } from '../../../stores/ai-chat.store';
 import { ThemeService } from '@services/theme.service';
 import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.service';
+import { getModelDisplayName, shortenModelName } from '@utils/ai-profile.util';
 
 /**
  * AI Chat Main Component
@@ -50,6 +54,11 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   currentSessionId: string | null = null;
   currentMessages: ChatMessage[] = [];
 
+  // LLM Model Configuration
+  modelConfigs: LLMModelConfigWithSource[] = [];
+  currentModelId: string | null = null;
+  isLoadingModels = false;
+
   // Tool call accumulation state
   private currentToolCalls = new Map<string, ToolCall>();
   private currentAssistantMessage: ChatMessage | null = null;
@@ -63,6 +72,8 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   constructor(
     private aiChatService: AiChatService,
     private controllerService: ControllerService,
+    private aiProfilesService: AiProfilesService,
+    private loginService: LoginService,
     private aiChatStore: AiChatStore,
     private snackBar: MatSnackBar,
     private cdr: ChangeDetectorRef,
@@ -142,6 +153,9 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
     // Load sessions list
     this.loadSessions();
+
+    // Load model configurations
+    this.loadModelConfigs();
   }
 
   /**
@@ -1194,5 +1208,94 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       cancelAnimationFrame(this.dragRafId);
       this.dragRafId = null;
     }
+  }
+
+  /**
+   * Load user's LLM model configurations
+   */
+  private loadModelConfigs(): void {
+    if (!this.controller) {
+      return;
+    }
+
+    this.isLoadingModels = true;
+    this.cdr.markForCheck();
+
+    // Get current user
+    this.loginService.getLoggedUser(this.controller).then((user: any) => {
+      if (!user) {
+        this.isLoadingModels = false;
+        this.cdr.markForCheck();
+        return;
+      }
+
+      this.aiProfilesService.getConfigs(this.controller, user.user_id).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
+        next: (response) => {
+          this.modelConfigs = response.configs || [];
+          this.currentModelId = response.default_config?.config_id || null;
+          this.isLoadingModels = false;
+          this.cdr.markForCheck();
+        },
+        error: (error) => {
+          this.logError('Failed to load model configs:', error);
+          this.modelConfigs = [];
+          this.currentModelId = null;
+          this.isLoadingModels = false;
+          this.cdr.markForCheck();
+        }
+      });
+    }).catch((error) => {
+      this.logError('Failed to get logged user:', error);
+      this.isLoadingModels = false;
+      this.cdr.markForCheck();
+    });
+  }
+
+  /**
+   * Handle model selection
+   * @param config Selected model configuration
+   */
+  onModelSelected(config: LLMModelConfigWithSource): void {
+    if (!this.controller) {
+      return;
+    }
+
+    // Get current user
+    this.loginService.getLoggedUser(this.controller).then((user: any) => {
+      if (!user) {
+        this.showError('Failed to get user information');
+        return;
+      }
+
+      this.aiProfilesService.setDefaultConfig(
+        this.controller,
+        user.user_id,
+        config.config_id
+      ).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
+        next: (updatedConfig) => {
+          this.currentModelId = updatedConfig.config_id;
+          this.cdr.markForCheck();
+
+          // Show success message
+          const modelName = shortenModelName(config.config.model);
+          this.snackBar.open(`Switched to ${modelName}`, 'Close', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom'
+          });
+        },
+        error: (error) => {
+          this.logError('Failed to set default model:', error);
+          this.showError('Failed to switch model');
+        }
+      });
+    }).catch((error) => {
+      this.logError('Failed to get logged user:', error);
+      this.showError('Failed to get user information');
+    });
   }
 }

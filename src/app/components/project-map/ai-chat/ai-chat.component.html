@@ -109,7 +109,10 @@
       <div class="chat-input">
         <app-chat-input-area
           [disabled]="isStreaming"
-          (messageSent)="onMessageSent($event)">
+          [modelConfigs]="modelConfigs"
+          [currentModelId]="currentModelId"
+          (messageSent)="onMessageSent($event)"
+          (modelSelected)="onModelSelected($event)">
         </app-chat-input-area>
       </div>
     </div>
