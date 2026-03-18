@@ -28,7 +28,7 @@ export class SerialLinkWidget implements Widget {
   private defaultSerialLinkStyle : LinkStyle = {
     color: "#800000",
     width: 2,
-    type: 0,
+    type: 1,
     link_type: StyleTranslator.DEFAULT_LINK_TYPE,
     bezier_curviness: StyleTranslator.BEZIER_CURVINESS_DEFAULT,
     flowchart_roundness: StyleTranslator.FLOWCHART_ROUNDNESS_DEFAULT,

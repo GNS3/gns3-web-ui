@@ -42,13 +42,17 @@ export class StyleTranslator {
     static readonly FLOWCHART_ROUNDNESS_STEP = EVE_FLOWCHART_ROUNDNESS_STEP;
 
     static getLinkStyle(linkStyle: LinkStyle) {
-        if (linkStyle.type == 1) {
+        // Qt::PenStyle-compatible: 1=Solid, 2=Dash, 3=Dot, 4=DashDot, 5=DashDotDot
+        if (linkStyle.type == 2) {
             return `10, 10`
         }
-        if (linkStyle.type == 2) {
+        if (linkStyle.type == 3) {
             return `${linkStyle.width}, ${linkStyle.width}`
         }
-        if (linkStyle.type == 3) {
+        if (linkStyle.type == 4) {
+            return `20, 10, ${linkStyle.width}, 10`
+        }
+        if (linkStyle.type == 5) {
             return `20, 10, ${linkStyle.width}, ${linkStyle.width}, ${linkStyle.width}, 10`
         }
         return `0, 0`
