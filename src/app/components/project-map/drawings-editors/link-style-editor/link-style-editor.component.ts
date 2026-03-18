@@ -106,10 +106,10 @@ export class LinkStyleEditorDialogComponent implements OnInit {
     let type = this.borderTypes[0];
     if (
       this.link.link_style?.type !== undefined
-      && this.link.link_style.type >= 0
-      && this.link.link_style.type < this.borderTypes.length
+      && this.link.link_style.type >= 1
+      && this.link.link_style.type <= this.borderTypes.length
     ) {
-      type = this.borderTypes[this.link.link_style.type];
+      type = this.borderTypes[this.link.link_style.type - 1];
     }
     this.formGroup.controls['type'].setValue(type);
 
@@ -246,8 +246,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
       this.link.link_style.color = this.formGroup.controls['color'].value;
       this.link.link_style.width = this.formGroup.controls['width'].value;
 
-      let type = this.borderTypes.indexOf(this.formGroup.controls['type'].value);
-      this.link.link_style.type = type;
+      this.link.link_style.type = this.borderTypes.indexOf(this.formGroup.controls['type'].value) + 1;
       this.link.link_style.link_type = this.normalizeLinkType(this.formGroup.controls['linkType'].value);
       this.link.link_style.bezier_curviness = this.normalizeCurvinessByLinkType(
         this.link.link_style.link_type,

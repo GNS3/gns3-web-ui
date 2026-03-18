@@ -9,7 +9,7 @@ describe('StyleTranslator', () => {
     return {
       color: '#000000',
       width: 2,
-      type: 0,
+      type: 1,
       link_type: linkType,
       bezier_curviness: 150,
       flowchart_roundness: 0,
@@ -326,5 +326,35 @@ describe('StyleTranslator', () => {
     expect(basePath.endsWith('110,20')).toBeTrue();
     expect(variedPath.startsWith('M10,20')).toBeTrue();
     expect(variedPath.endsWith('110,20')).toBeTrue();
+  });
+
+  it('should return solid dash style for Qt SolidLine type', () => {
+    const style = { ...createLinkStyle(), type: 1 };
+    expect(StyleTranslator.getLinkStyle(style)).toEqual('0, 0');
+  });
+
+  it('should return dash pattern for Qt DashLine type', () => {
+    const style = { ...createLinkStyle(), type: 2 };
+    expect(StyleTranslator.getLinkStyle(style)).toEqual('10, 10');
+  });
+
+  it('should return dot pattern for Qt DotLine type', () => {
+    const style = { ...createLinkStyle(), type: 3, width: 2 };
+    expect(StyleTranslator.getLinkStyle(style)).toEqual('2, 2');
+  });
+
+  it('should return dash-dot pattern for Qt DashDotLine type', () => {
+    const style = { ...createLinkStyle(), type: 4, width: 2 };
+    expect(StyleTranslator.getLinkStyle(style)).toEqual('20, 10, 2, 10');
+  });
+
+  it('should return dash-dot-dot pattern for Qt DashDotDotLine type', () => {
+    const style = { ...createLinkStyle(), type: 5, width: 2 };
+    expect(StyleTranslator.getLinkStyle(style)).toEqual('20, 10, 2, 2, 2, 10');
+  });
+
+  it('should treat legacy type 0 as solid', () => {
+    const style = { ...createLinkStyle(), type: 0 };
+    expect(StyleTranslator.getLinkStyle(style)).toEqual('0, 0');
   });
 });

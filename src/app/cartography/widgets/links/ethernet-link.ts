@@ -27,7 +27,7 @@ export class EthernetLinkWidget implements Widget {
   private readonly defaultEthernetLinkStyle: LinkStyle = {
     color: '#000000',
     width: 2,
-    type: 0,
+    type: 1,
     link_type: StyleTranslator.DEFAULT_LINK_TYPE,
     bezier_curviness: StyleTranslator.BEZIER_CURVINESS_DEFAULT,
     flowchart_roundness: StyleTranslator.FLOWCHART_ROUNDNESS_DEFAULT,
