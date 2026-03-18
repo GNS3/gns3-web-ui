@@ -195,7 +195,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private aiChatStore: AiChatStore,
     // private cfr: ComponentFactoryResolver,
     // private injector: Injector,
-    private viewContainerRef: ViewContainerRef
+    private viewContainerRef: ViewContainerRef,
+    private ngZone: NgZone
   ) {}
 
   // constructor(private viewContainerRef: ViewContainerRef) {}
@@ -461,7 +462,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     Mousetrap.bind('del', (event: Event) => {
       event.preventDefault();
-      this.deleteItems();
+      this.ngZone.run(() => this.deleteItems());
     });
   }
 
@@ -681,14 +682,16 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public centerView() {
     if (this.project) {
-      let scrollX: number =
-        this.project.scene_width - document.documentElement.clientWidth > 0
-          ? (this.project.scene_width - document.documentElement.clientWidth) / 2
-          : 0;
-      let scrollY: number =
-        this.project.scene_height - document.documentElement.clientHeight > 0
-          ? (this.project.scene_height - document.documentElement.clientHeight) / 2
-          : 0;
+      const ctx = this.mapChild?.context;
+      const viewportWidth  = document.documentElement.clientWidth;
+      const viewportHeight = document.documentElement.clientHeight;
+      // With an asymmetric canvas the scene origin sits at (centerX, centerY)
+      // in SVG space. Scrolling to centerX - halfViewport puts the origin in
+      // the middle of the screen, which is the natural "home" position.
+      const svgCenterX = ctx ? (ctx.centerX !== null ? ctx.centerX : ctx.size.width  / 2) : this.project.scene_width  / 2;
+      const svgCenterY = ctx ? (ctx.centerY !== null ? ctx.centerY : ctx.size.height / 2) : this.project.scene_height / 2;
+      const scrollX = Math.max(0, svgCenterX - viewportWidth  / 2);
+      const scrollY = Math.max(0, svgCenterY - viewportHeight / 2);
 
       window.scrollTo(scrollX, scrollY);
     } else {
