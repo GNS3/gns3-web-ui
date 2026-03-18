@@ -81,7 +81,6 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // 响应窗口大小变化
     this.nodeConsoleService.consoleResized.subscribe((ev) => {
       this.style = { width: `${ev.width}px`, height: `${ev.height - 70}px` };
       this.changeDetectorRef.detectChanges();
