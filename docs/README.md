@@ -2,7 +2,7 @@
 
 > Complete documentation index for GNS3 Web UI project
 
-**Last Updated**: 2026-03-14
+**Last Updated**: 2026-03-18
 
 ---
 
@@ -58,6 +58,13 @@ docs/
 
 ## 📝 Recent Updates
 
+### 2026-03-18
+- ✅ **Window Boundary Service Documentation**: Fixed documentation consistency with code implementation
+  - Added missing `resetConfig()` method documentation
+  - Updated `isValidSize()` method signature to use `unknown` type (matches actual implementation)
+  - Documented type conversion behavior for unknown inputs
+  - Verified service usage in 2 components: AI Chat and Console Wrapper
+
 ### 2026-03-14
 - ✅ **Electron Removal**: Removed Electron desktop application support
   - Application is now web-only (browser-based)
@@ -92,4 +99,4 @@ docs/
 
 ---
 
-*Last Updated: 2026-03-14*
+*Last Updated: 2026-03-18*
