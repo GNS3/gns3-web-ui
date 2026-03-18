@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Node } from '../cartography/models/node';
-import { Port } from '../models/port';
-import{ Controller } from '../models/controller';
+import { Port } from '@models/port';
+import { Controller } from '@models/controller';
 
 @Injectable()
 export class InfoService {
-  getInfoAboutNode(node: Node, controller:Controller ): string[] {
+  getInfoAboutNode(node: Node, controller: Controller ): string[] {
     let infoList: string[] = [];
     if (node.node_type === 'cloud') {
       infoList.push(`Cloud ${node.name} is always on.`);
@@ -39,14 +39,17 @@ export class InfoService {
     if (node.console_type !== 'none' && node.console_type !== 'null') {
       infoList.push(`Console is on port ${node.console} and type is ${node.console_type}.`);
     }
-    infoList = infoList.concat(this.getInfoAboutPorts(node.ports));
+    node.ports.forEach((port) => {
+      infoList.push(`Port ${port.name} is ${port.link_type}.`);
+    });
+    //infoList = infoList.concat(this.getInfoAboutPorts(node.ports));
     return infoList;
   }
 
   getInfoAboutPorts(ports: Port[]): string {
     let response: string = `Ports: `;
     ports.forEach((port) => {
-      response += `link_type: ${port.link_type},
+      response += `link_type: ${port.link_type},\n
                         name: ${port.name}; `;
     });
     response = response.substring(0, response.length - 2);

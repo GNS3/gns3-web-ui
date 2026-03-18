@@ -8,24 +8,26 @@
         [routerLink]="['/controller', controller.id, 'management', 'groups']">
         <mat-icon aria-label="Back to group management">keyboard_arrow_left</mat-icon>
       </a>
-      <h1 class="col">Groups {{group.name}} details</h1>
+      <h1 class="col">Group {{group.name}}</h1>
     </div>
     <mat-tab-group>
       <mat-tab label="Details" class="details">
         <div>
           <div>
-            <mat-form-field>
-              <mat-label>Group name:</mat-label>
-              <input matInput type="text" [ngModel]="group.name">
-            </mat-form-field>
+            <form [formGroup]="editGroupForm" class="input-field">
+              <mat-form-field>
+                <mat-label>Group name:</mat-label>
+                <input matInput type="text" formControlName="groupname">
+              </mat-form-field>
+            </form>
           </div>
 
           <div>
-            <mat-checkbox [checked]="group.is_builtin" disabled>Is build in</mat-checkbox>
+            <mat-checkbox [checked]="group.is_builtin" disabled>Is built-in</mat-checkbox>
           </div>
           <div mat-dialog-actions class="button-div">
             <button mat-button (click)="onUpdate()" tabindex="2" mat-raised-button color="primary"
-                    [disabled]="!editGroupForm.valid">
+                    [disabled]="!editGroupForm.valid || group.is_builtin">
               Update Group
             </button>
           </div>
@@ -47,7 +49,7 @@
             </mat-form-field>
           </div>
           <div *ngFor="let user of members | membersFilter: searchMembers | paginator: pageEvent">
-            <a href="/controller/{{controller.id}}/management/users/{{user.user_id}}">
+            <a [routerLink]="['/controller', controller.id, 'management','users', user.user_id]">
               <div>{{user.username}}</div>
             </a>
             <mat-icon class="clickable" (click)="openRemoveUserDialog(user)">delete</mat-icon>
@@ -56,15 +58,34 @@
                          [pageSizeOptions]="[5, 20, 50, 100]"></mat-paginator>
         </div>
       </mat-tab>
-      <mat-tab label="Roles">
-        <div><button mat-button (click)="openAddRoleDialog()" ><mat-icon>group_add</mat-icon></button></div>
-        <div *ngFor="let role of roles" class="roles">
-          <div>{{role.name}}</div>
-          <div>
-            <button mat-button (click)="openRemoveRoleDialog(role)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </div>
+      <mat-tab label="ACEs">
+        <div class="default-content">
+          <table mat-table [dataSource]="aceDatasource" class="mat-elevation-z8">
+
+            <ng-container matColumnDef="endpoint">
+              <th mat-header-cell *matHeaderCellDef> Endpoint </th>
+              <td mat-cell *matCellDef="let element">{{element.endpoint_name}}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="role">
+              <th mat-header-cell *matHeaderCellDef > Role </th>
+              <td mat-cell *matCellDef="let element"> {{element.role_name}} </td>
+            </ng-container>
+            <ng-container matColumnDef="propagate">
+              <th mat-header-cell *matHeaderCellDef > Propagate </th>
+              <td mat-cell *matCellDef="let element"> {{element.propagate}} </td>
+            </ng-container>
+            <ng-container matColumnDef="allowed">
+              <th mat-header-cell *matHeaderCellDef> Allowed </th>
+              <td mat-cell *matCellDef="let element"> {{element.allowed}} </td>
+            </ng-container>
+
+
+            <tr mat-header-row *matHeaderRowDef="aceDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: aceDisplayedColumns;"></tr>
+
+
+          </table>
         </div>
       </mat-tab>
     </mat-tab-group>

@@ -1,11 +1,9 @@
 import {ApiInformationService, IPathDict} from "@services/ApiInformation/api-information.service";
 import {HttpClient} from "@angular/common/http";
 import {fakeAsync, TestBed, tick} from "@angular/core/testing";
-import {DisplayPathPipe} from "@components/permissions-management/display-path.pipe";
 import {Observable, of, ReplaySubject} from "rxjs";
 import {Controller} from "@models/controller";
 import {getTestController} from "@services/testing";
-import {Methods} from "@models/api/permission";
 import {ApiInformationCache} from "@services/ApiInformation/ApiInformationCache";
 import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
 
@@ -24,48 +22,6 @@ describe('ApiInformationService', () => {
     apiService = TestBed.inject(ApiInformationService);
     controller = getTestController();
   });
-
-  describe('ApiInformationService.getMethods() tests', () => {
-    it('create an instance', () => {
-      expect(apiService).toBeTruthy();
-    });
-
-    it('Should return methods for /projects/{project_id}', fakeAsync(() => {
-      let res: Methods[];
-      const mockGetPath: IPathDict[] = [{
-        methods: ['GET', 'DELETE', 'PUT'],
-        originalPath: '/v3/projects/{project_id}',
-        path: '/projects/{project_id}',
-        subPaths: ['projects', '{project_id}'],
-      }, {
-        methods: ['GET', 'POST'],
-        originalPath: '/v3/projects/{project_id}/nodes',
-        path: '/projects/{project_id}/nodes',
-        subPaths: ['projects', '{project_id}', 'nodes'],
-      }];
-      spyOn(apiService, 'getPath').and.returnValue(of(mockGetPath));
-      apiService.getMethods('/projects/{project_id}').subscribe(data => {
-        res = data;
-      });
-      tick();
-      expect(res).toContain(Methods.GET)
-      expect(res).toContain(Methods.PUT)
-      expect(res).toContain(Methods.POST)
-    }));
-
-    it('Should return empty array if no data available', fakeAsync(() => {
-      let res: Methods[];
-      const mockGetPath: IPathDict[] = [];
-      spyOn(apiService, 'getPath').and.returnValue(of(mockGetPath));
-      apiService.getMethods('/projects/{project_id}').subscribe(data => {
-        res = data;
-      });
-      tick();
-      expect(res.length).toBe(0);
-    }));
-
-
-  })
 
   describe('ApiInformationService.getPath() tests', () => {
 

@@ -8,7 +8,7 @@
           </button>
         </div>
         <div class="col col-md-11">
-          <h1 class="col">IOU device configuration</h1>
+          <h1 class="col">IOU device template configuration</h1>
         </div>
       </div>
     </div>
@@ -48,6 +48,19 @@
             />
           </mat-form-field>
           <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br /><br />
+          <mat-form-field class="form-field tags-field">
+            <mat-label>Tags</mat-label>
+            <mat-chip-list #chipList>
+              <mat-chip *ngFor="let tag of iouTemplate?.tags" (removed)="removeTag(tag)">
+                {{ tag }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+            </mat-chip-list>
+            <input matInput placeholder="Add tags"
+                   [matChipInputFor]="chipList"
+                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                   (matChipInputTokenEnd)="addTag($event)" />
+          </mat-form-field>
           <mat-form-field class="form-field">
             <mat-select
               [ngModelOptions]="{ standalone: true }"
@@ -61,7 +74,7 @@
           </mat-form-field>
           <input
             type="file"
-            accept=".bin"
+            accept=".bin, .image, .iol"
             #file
             class="nonvisible"
             (change)="uploadImageFile($event)"
@@ -109,11 +122,11 @@
         ><br />
         <mat-checkbox [(ngModel)]="iouTemplate.use_default_iou_values"> Use default IOU values for memories </mat-checkbox>
         <mat-form-field class="form-field" *ngIf="!iouTemplate.use_default_iou_values">
-          <input matInput type="number" [(ngModel)]="iouTemplate.ram" placeholder="RAM size" />
+          <input matInput type="number" min="1" [(ngModel)]="iouTemplate.ram" placeholder="RAM size" />
           <span matSuffix>MB</span>
         </mat-form-field>
         <mat-form-field class="form-field" *ngIf="!iouTemplate.use_default_iou_values">
-          <input matInput type="number" [(ngModel)]="iouTemplate.nvram" placeholder="NVRAM size" />
+          <input matInput type="number" min="1" [(ngModel)]="iouTemplate.nvram" placeholder="NVRAM size" />
           <span matSuffix>KB</span>
         </mat-form-field>
       </mat-expansion-panel>

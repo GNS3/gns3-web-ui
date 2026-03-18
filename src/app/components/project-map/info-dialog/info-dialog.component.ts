@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../cartography/models/node';
-import{ Controller } from '../../../models/controller';
-import { InfoService } from '../../../services/info.service';
+import { Controller } from '@models/controller';
+import { InfoService } from '@services/info.service';
 
 @Component({
   selector: 'app-info-dialog',
@@ -10,7 +10,7 @@ import { InfoService } from '../../../services/info.service';
   styleUrls: ['./info-dialog.component.scss'],
 })
 export class InfoDialogComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() node: Node;
   infoList: string[] = [];
   usage: string = '';

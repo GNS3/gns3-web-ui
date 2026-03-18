@@ -4,7 +4,7 @@
       <h5>Would you like to automatically install appliances for this image?</h5>
     </div>
     <div class="col-md-2 txt-align">
-      <button mat-button (click)="dialogRef.close()">
+      <button mat-button (click)="closeDialog()">
         <mat-icon>close</mat-icon>
       </button>
     </div>
@@ -17,10 +17,10 @@
       [value]="install_appliance"
       (change)="selectInstallApplianceOption($event)"
     >
-      <mat-radio-button value="true" class="instal-appliances-button" [checked]="install_appliance">
+      <mat-radio-button [value]="true" class="instal-appliances-button" [checked]="install_appliance">
         Yes
       </mat-radio-button>
-      <mat-radio-button value="false" class="instal-appliances-button" [checked]="!install_appliance">
+      <mat-radio-button [value]="false" class="instal-appliances-button" [checked]="!install_appliance">
         No
       </mat-radio-button>
     </mat-radio-group>
@@ -32,74 +32,28 @@
 
 <div *ngIf="isInstallAppliance">
   <div class="row" style="display: flex">
-    <div class="col-md-6">
-      <h5 *ngIf="uploaderImage.queue.length <= 0">Please Select image</h5>
-      <p *ngIf="uploaderImage.queue.length > 0"class="uploaded-text">Uploaded image details</p>
+    <div class="col-md-8">
+      <h5>Select image file(s) to upload</h5>
+      <p class="background-hint">
+        <mat-icon class="hint-icon">info_outline</mat-icon>
+        Uploads run in the background — you can navigate away freely.
+      </p>
     </div>
-    <div class="col-md-4 txt-align" *ngIf="uploaderImage.queue.length <= 0">
+    <div class="col-md-2 txt-align">
       <input
         type="file"
-        accept=".bin,.image,.qcow2,.vmdk"
+        accept=".bin,.image,.iol,.qcow2,.vmdk"
         multiple
-        #file
+        #fileInput
         class="non-visible"
-        ng2FileSelect
-        [uploader]="uploaderImage"
-        (onFileSelected)="uploadImageFile($event)"
+        (change)="onFilesSelected($event)"
       />
-      <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
+      <button mat-raised-button color="primary" (click)="fileInput.click()" class="file-button">Browse</button>
     </div>
-    <div class="{{uploaderImage.queue.length > 0 ? 'col-md-6 txt-align' : 'col-md-2 txt-align'}}  ">
-      <button mat-button (click)="dialogRef.close()">
+    <div class="col-md-2 txt-align">
+      <button mat-button (click)="closeDialog()">
         <mat-icon>close</mat-icon>
       </button>
     </div>
-  </div>
-
-
-  <div class="row" *ngFor="let img of uploaderImage.queue; let i = index">
-    <div class="{{img.isError || img.isUploaded ? 'col-md-10' : 'col-md-6'}}">
-      <mat-title [ngClass]="{ 'uploaded-error-text': img.isError }">
-        {{ i + 1 }}. {{ img.isError ? 'Image ' : '' }} {{ img?.some?.name }}
-        {{ img.isError ? ' already exists' : '' }}
-      </mat-title>
-    </div>
-    <div class="{{img.isError || img.isUploaded ? 'col-md-1' : 'col-md-4'}}"  *ngIf="!img.isUploaded">
-      <mat-progress-bar
-        mode="determinate"
-        *ngIf="img?.some?.name === uploadProgress.some?.name"
-        [value]="uploadProgress.progress"
-        aria-valuemin="0"
-        aria-valuemax="100"
-      ></mat-progress-bar>
-      <mat-progress-bar
-        mode="determinate"
-        *ngIf="img?.some?.name !== uploadProgress.some?.name && !img.isUploaded"
-        [value]="0"
-        aria-valuemin="0"
-        aria-valuemax="100"
-      >
-      </mat-progress-bar>
-    </div>
-    <div class="{{img.isError || img.isUploaded ? 'col-md-1' : 'col-md-2'}}"
-      *ngIf="img?.some?.name === uploadProgress.some?.name && img.isReady && !img.isUploaded"
-    >
-      {{ uploadProgress.progress + ' %' }}
-    </div>
-    <div
-      class="col-md-2"
-      *ngIf="img?.some?.name !== uploadProgress.some?.name && img.isReady && !uploadProgress.isUploaded"
-    >
-      {{ '0 %' }}
-    </div>
-  </div>
-  <div mat-dialog-actions align="end" *ngIf="uploaderImage.queue.length > 0 && !uploadProgress.isUploaded">
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="uploaderImage.queue.length > 0 ? cancelUploading() : dialogRef.close(false)"
-    >
-      Cancel
-    </button>
   </div>
 </div>

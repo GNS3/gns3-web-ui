@@ -5,14 +5,14 @@ import { ProjectService } from '@services/project.service';
 import { ElectronService } from 'ngx-electron';
 import { Subscription } from 'rxjs';
 import { ProgressService } from '../../common/progress/progress.service';
-import { NewTemplateDialogComponent } from '../../components/project-map/new-template-dialog/new-template-dialog.component';
-import { Controller } from '../../models/controller';
-import { Project } from '../../models/project';
-import { ControllerManagementService } from '../../services/controller-management.service';
-import { ControllerService } from '../../services/controller.service';
-import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
-import { ToasterService } from '../../services/toaster.service';
-import { version } from './../../version';
+import { NewTemplateDialogComponent } from '@components/project-map/new-template-dialog/new-template-dialog.component';
+import { Controller } from '@models/controller';
+import { Project } from '@models/project';
+import { ControllerManagementService } from '@services/controller-management.service';
+import { ControllerService } from '@services/controller.service';
+import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.service';
+import { ToasterService } from '@services/toaster.service';
+import { version } from '../../version';
 
 @Component({
   selector: 'app-default-layout',
@@ -25,6 +25,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public uiVersion = version;
   public isLoginPage = false;
   public routeSubscription;
+  public currentYear = new Date().getFullYear();
 
   controllerStatusSubscription: Subscription;
   shouldStopControllersOnClosing = true;
@@ -88,7 +89,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
   goToDocumentation() {
     this.controllerService.get(+this.controllerId).then((controller: Controller) => {
-      (window as any).open(`http://${controller.host}:${controller.port}/docs`);
+      (window as any).open(`${controller.protocol}//${controller.host}:${controller.port}/docs`);
     });
   }
 

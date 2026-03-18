@@ -9,8 +9,8 @@ import { NodesEventSource } from '../../../cartography/events/nodes-event-source
 import { MapNode } from '../../../cartography/models/map/map-node';
 import { MapPort } from '../../../cartography/models/map/map-port';
 import { DrawingLineWidget } from '../../../cartography/widgets/drawing-line';
-import { NodeSelectInterfaceComponent } from '../../../components/project-map/node-select-interface/node-select-interface.component';
-import { Link } from '../../../models/link';
+import { NodeSelectInterfaceComponent } from '@components/project-map/node-select-interface/node-select-interface.component';
+import { Link } from '@models/link';
 
 @Component({
   selector: 'app-draw-link-tool',

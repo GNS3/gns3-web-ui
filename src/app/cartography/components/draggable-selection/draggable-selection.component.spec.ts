@@ -1,7 +1,7 @@
 import { EventEmitter } from '@angular/core';
 import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { select } from 'd3-selection';
-import { MapSettingsService } from '../../../services/mapsettings.service';
+import { MapSettingsService } from '@services/mapsettings.service';
 import { DraggableDrag, DraggableEnd, DraggableStart } from '../../events/draggable';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { LinksEventSource } from '../../events/links-event-source';
@@ -63,6 +63,7 @@ describe('DraggableSelectionComponent', () => {
 
     const nodesWidgetStub = {
       redrawNode: () => {},
+      updateNodePosition: () => {},
       draggable: {
         start: nodesStartEventEmitter,
         drag: nodesDragEventEmitter,
@@ -169,7 +170,7 @@ describe('DraggableSelectionComponent', () => {
     }));
 
     it('should update node position when dragging', fakeAsync(() => {
-      spyOn(nodesWidgetStub, 'redrawNode');
+      spyOn(nodesWidgetStub, 'updateNodePosition');
       selectionManagerStub.setSelected([node]);
 
       const dragEvent = new DraggableDrag<MapNode>(node);
@@ -178,7 +179,7 @@ describe('DraggableSelectionComponent', () => {
 
       nodesWidgetStub.draggable.drag.emit(dragEvent);
       tick();
-      expect(nodesWidgetStub.redrawNode).toHaveBeenCalledWith(select(fixture.componentInstance.svg), node);
+      expect(nodesWidgetStub.updateNodePosition).toHaveBeenCalledWith(select(fixture.componentInstance.svg), node);
       expect(node.x).toEqual(11);
       expect(node.y).toEqual(22);
     }));

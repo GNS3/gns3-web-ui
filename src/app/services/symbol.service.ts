@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Template } from '../models/template';
+import { Template } from '@models/template';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { shareReplay } from 'rxjs/operators';
 import { Node } from '../cartography/models/node';
-import{ Controller } from '../models/controller';
-import { Symbol } from '../models/symbol';
+import { Controller } from '@models/controller';
+import { Symbol } from '@models/symbol';
 import { HttpController } from './http-controller.service';
 import { environment } from 'environments/environment';
 
@@ -14,6 +14,8 @@ const CACHE_SIZE = 1;
 export class SymbolService {
   public symbols: BehaviorSubject<Symbol[]> = new BehaviorSubject<Symbol[]>([]);
   private cache: Observable<Symbol[]>;
+  private dimensionsCache = new Map<string, Observable<SymbolDimension>>();
+  private blobUrlCache = new Map<string, Observable<string>>();
   private maximumSymbolSize: number = 80;
 
   constructor(private httpController: HttpController) {}
@@ -26,9 +28,34 @@ export class SymbolService {
     return this.symbols.getValue().find((symbol: Symbol) => symbol.symbol_id === symbol_id);
   }
 
-  getDimensions(controller:Controller , symbol_id: string): Observable<SymbolDimension> {
-    const encoded_uri = encodeURI(symbol_id);
-    return this.httpController.get(controller, `/symbols/${encoded_uri}/dimensions`);
+  getDimensions(controller: Controller, symbol_id: string): Observable<SymbolDimension> {
+    const cacheKey = `${controller.host}:${controller.port}:${symbol_id}`;
+    if (!this.dimensionsCache.has(cacheKey)) {
+      const encoded_uri = encodeURI(symbol_id);
+      this.dimensionsCache.set(
+        cacheKey,
+        this.httpController.get<SymbolDimension>(controller, `/symbols/${encoded_uri}/dimensions`).pipe(shareReplay(1))
+      );
+    }
+    return this.dimensionsCache.get(cacheKey);
+  }
+
+  getSymbolBlobUrl(symbolRawUrl: string): Observable<string> {
+    if (!this.blobUrlCache.has(symbolRawUrl)) {
+      this.blobUrlCache.set(
+        symbolRawUrl,
+        new Observable<string>((observer) => {
+          fetch(symbolRawUrl)
+            .then((response) => response.blob())
+            .then((blob) => {
+              observer.next(URL.createObjectURL(blob));
+              observer.complete();
+            })
+            .catch((err) => observer.error(err));
+        }).pipe(shareReplay(1))
+      );
+    }
+    return this.blobUrlCache.get(symbolRawUrl);
   }
 
   scaleDimensionsForNode(node: Node): SymbolDimension {
@@ -43,16 +70,16 @@ export class SymbolService {
     return this.symbols.getValue().find((symbol: Symbol) => symbol.filename === symbol_filename);
   }
 
-  add(controller:Controller , symbolName: string, symbol: string) {
+  add(controller: Controller, symbolName: string, symbol: string) {
     this.cache = null;
     return this.httpController.post(controller, `/symbols/${symbolName}/raw`, symbol);
   }
 
-  load(controller:Controller ): Observable<Symbol[]> {
+  load(controller: Controller ): Observable<Symbol[]> {
     return this.httpController.get<Symbol[]>(controller, '/symbols');
   }
 
-  list(controller:Controller ) {
+  list(controller: Controller ) {
     if (!this.cache) {
       this.cache = this.load(controller).pipe(shareReplay(CACHE_SIZE));
     }
@@ -60,12 +87,12 @@ export class SymbolService {
     return this.cache;
   }
 
-  raw(controller:Controller , symbol_id: string) {
+  raw(controller: Controller, symbol_id: string) {
     const encoded_uri = encodeURI(symbol_id);
     return this.httpController.getText(controller, `/symbols/${encoded_uri}/raw`);
   }
 
-  getSymbolFromTemplate(controller:Controller , template: Template) {
+  getSymbolFromTemplate(controller: Controller, template: Template) {
     return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/symbols/${template.symbol}/raw`;
   }
 }

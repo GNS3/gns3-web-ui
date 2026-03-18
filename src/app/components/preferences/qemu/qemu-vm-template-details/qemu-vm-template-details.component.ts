@@ -1,14 +1,16 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { QemuBinary } from '../../../../models/qemu/qemu-binary';
-import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
-import{ Controller } from '../../../../models/controller';
-import { QemuTemplate } from '../../../../models/templates/qemu-template';
-import { QemuConfigurationService } from '../../../../services/qemu-configuration.service';
-import { QemuService } from '../../../../services/qemu.service';
-import { ControllerService } from '../../../../services/controller.service';
-import { ToasterService } from '../../../../services/toaster.service';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { QemuBinary } from '@models/qemu/qemu-binary';
+import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
+import { Controller } from '@models/controller';
+import { QemuTemplate } from '@models/templates/qemu-template';
+import { QemuConfigurationService } from '@services/qemu-configuration.service';
+import { QemuService } from '@services/qemu.service';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
 
 @Component({
@@ -17,10 +19,11 @@ import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-ada
   styleUrls: ['./qemu-vm-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class QemuVmTemplateDetailsComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   qemuTemplate: QemuTemplate;
   isSymbolSelectionOpened: boolean = false;
   consoleTypes: string[] = [];
+  auxConsoleTypes: string[] = [];
   diskInterfaces: string[] = [];
   networkTypes = [];
   bootPriorities = [];
@@ -33,6 +36,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   generalSettingsForm: UntypedFormGroup;
   selectPlatform: string[] = [];
   selectedPlatform: string;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
 
   @ViewChild('customAdaptersConfigurator')
@@ -57,12 +61,15 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       this.getConfiguration();
       this.qemuService.getTemplate(this.controller, template_id).subscribe((qemuTemplate: QemuTemplate) => {
         this.qemuTemplate = qemuTemplate;
+        if (!this.qemuTemplate.tags) {
+          this.qemuTemplate.tags = [];
+        }
         this.fillCustomAdapters();
       });
     });
@@ -72,6 +79,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
   getConfiguration() {
     this.consoleTypes = this.configurationService.getConsoleTypes();
+    this.auxConsoleTypes = this.configurationService.getAuxConsoleTypes();
     this.diskInterfaces = this.configurationService.getDiskInterfaces();
     this.networkTypes = this.configurationService.getNetworkTypes();
     this.bootPriorities = this.configurationService.getBootPriorities();
@@ -139,7 +147,19 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
   onSave() {
     if (this.generalSettingsForm.invalid) {
-      this.toasterService.error(`Fill all required fields`);
+      const missingFields: string[] = [];
+
+      if (this.generalSettingsForm.get('templateName').invalid) {
+        missingFields.push('Template name');
+      }
+      if (this.generalSettingsForm.get('defaultName').invalid) {
+        missingFields.push('Default name format');
+      }
+      if (this.generalSettingsForm.get('symbol').invalid) {
+        missingFields.push('Symbol');
+      }
+
+      this.toasterService.error(`Missing required fields: ${missingFields.join(', ')}`);
     } else {
       if (!this.activateCpuThrottling) {
         this.qemuTemplate.cpu_throttling = 0;
@@ -159,5 +179,32 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   symbolChanged(chosenSymbol: string) {
     this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
     this.qemuTemplate.symbol = chosenSymbol;
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.qemuTemplate) {
+      if (!this.qemuTemplate.tags) {
+        this.qemuTemplate.tags = [];
+      }
+      this.qemuTemplate.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.qemuTemplate.tags) {
+      return;
+    }
+    const index = this.qemuTemplate.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.qemuTemplate.tags.splice(index, 1);
+    }
   }
 }

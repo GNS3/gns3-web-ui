@@ -11,23 +11,23 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import{ Controller } from '../../../../models/controller';
-import { VmwareTemplate } from '../../../../models/templates/vmware-template';
-import { ControllerService } from '../../../../services/controller.service';
-import { MockedControllerService } from '../../../../services/controller.service.spec';
-import { ToasterService } from '../../../../services/toaster.service';
-import { MockedToasterService } from '../../../../services/toaster.service.spec';
-import { VmwareConfigurationService } from '../../../../services/vmware-configuration.service';
-import { VmwareService } from '../../../../services/vmware.service';
+import { Controller } from '@models/controller';
+import { VmwareTemplate } from '@models/templates/vmware-template';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
+import { VmwareConfigurationService } from '@services/vmware-configuration.service';
+import { VmwareService } from '@services/vmware.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VmwareTemplateDetailsComponent } from './vmware-template-details.component';
 
 export class MockedVmwareService {
-  public getTemplate(controller:Controller , template_id: string) {
+  public getTemplate(controller: Controller, template_id: string) {
     return of({} as VmwareTemplate);
   }
 
-  public saveTemplate(controller:Controller , vmwareTemplate: VmwareTemplate) {
+  public saveTemplate(controller: Controller, vmwareTemplate: VmwareTemplate) {
     return of(vmwareTemplate);
   }
 }

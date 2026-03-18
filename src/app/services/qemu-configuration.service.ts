@@ -39,6 +39,10 @@ export class QemuConfigurationService {
     return ['telnet', 'vnc', 'spice', 'spice+agent', 'none'];
   }
 
+  getAuxConsoleTypes() {
+    return ['telnet', 'none'];
+  }
+
   getDiskInterfaces() {
     return ['ide', 'sata', 'scsi', 'sd', 'mtd', 'floppy', 'pflash', 'virtio', 'nvme', 'none'];
   }
@@ -63,6 +67,7 @@ export class QemuConfigurationService {
       { value: 'i82559er', name: 'Intel i82559ER Ethernet' },
       { value: 'i82562', name: 'Intel i82562 Ethernet' },
       { value: 'i82801', name: 'Intel i82801 Ethernet' },
+      { value: 'igb', name: 'Intel 82576 Gigabit Ethernet' },
       { value: 'ne2k_pci', name: 'NE2000 Ethernet' },
       { value: 'pcnet', name: 'AMD PCNet Ethernet' },
       { value: 'rocker', name: 'Rocker L2 switch device' },
@@ -70,34 +75,6 @@ export class QemuConfigurationService {
       { value: 'virtio-net-pci', name: 'Paravirtualized Network I/O' },
       { value: 'vmxnet3', name: 'VMWare Paravirtualized Ethernet v3' },
     ];
-
-    // let networkTypes = [
-    //   'e1000',
-    //   'e1000-82544gc',
-    //   'e1000-82545em',
-    //   'e1000e',
-    //   'rocker',
-    //   'Intel Gigabit Ethernet',
-    //   'i82550',
-    //   'i82551',
-    //   'i82557a',
-    //   'i82557b',
-    //   'i82557c',
-    //   'i82558a',
-    //   'i82558b',
-    //   'i82559a',
-    //   'i82559b',
-    //   'i82559c',
-    //   'i82559er',
-    //   'i82562',
-    //   'i82801',
-    //   'ne2k_pci',
-    //   'pcnet',
-    //   'rtl8139',
-    //   'virtio',
-    //   'virtio-net-pci',
-    //   'vmxnet3',
-    // ];
 
     return networkTypes;
   }
@@ -140,5 +117,9 @@ export class QemuConfigurationService {
     let priorities = ['realtime', 'very high', 'high', 'normal', 'low', 'very low'];
 
     return priorities;
+  }
+
+  getMacAddrRegex() {
+    return /^([0-9a-fA-F]{2}[:]){5}([0-9a-fA-F]{2})$/;
   }
 }

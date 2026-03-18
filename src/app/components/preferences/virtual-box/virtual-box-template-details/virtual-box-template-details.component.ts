@@ -1,13 +1,15 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
-import{ Controller } from '../../../../models/controller';
-import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
-import { ControllerService } from '../../../../services/controller.service';
-import { ToasterService } from '../../../../services/toaster.service';
-import { VirtualBoxConfigurationService } from '../../../../services/virtual-box-configuration.service';
-import { VirtualBoxService } from '../../../../services/virtual-box.service';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
+import { Controller } from '@models/controller';
+import { VirtualBoxTemplate } from '@models/templates/virtualbox-template';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
+import { VirtualBoxConfigurationService } from '@services/virtual-box-configuration.service';
+import { VirtualBoxService } from '@services/virtual-box.service';
 import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
 
 @Component({
@@ -16,9 +18,10 @@ import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-ada
   styleUrls: ['./virtual-box-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class VirtualBoxTemplateDetailsComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   virtualBoxTemplate: VirtualBoxTemplate;
   isSymbolSelectionOpened: boolean = false;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
   onCloseOptions = [];
   categories = [];
@@ -57,7 +60,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       this.getConfiguration();
@@ -65,6 +68,9 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
         .getTemplate(this.controller, template_id)
         .subscribe((virtualBoxTemplate: VirtualBoxTemplate) => {
           this.virtualBoxTemplate = virtualBoxTemplate;
+          if (!this.virtualBoxTemplate.tags) {
+            this.virtualBoxTemplate.tags = [];
+          }
           this.fillCustomAdapters();
         });
     });
@@ -139,5 +145,32 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   symbolChanged(chosenSymbol: string) {
     this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
     this.virtualBoxTemplate.symbol = chosenSymbol;
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.virtualBoxTemplate) {
+      if (!this.virtualBoxTemplate.tags) {
+        this.virtualBoxTemplate.tags = [];
+      }
+      this.virtualBoxTemplate.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.virtualBoxTemplate.tags) {
+      return;
+    }
+    const index = this.virtualBoxTemplate.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.virtualBoxTemplate.tags.splice(index, 1);
+    }
   }
 }

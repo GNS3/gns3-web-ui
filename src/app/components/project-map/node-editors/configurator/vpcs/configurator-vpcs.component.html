@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Configurator for node {{ name }}</h1>
+<h1 mat-dialog-title>Configurator for VPCS node {{ name }}</h1>
 
 <div class="modal-form-container">
   <div class="content">
@@ -7,6 +7,19 @@
         <form [formGroup]="inputForm">
           <mat-form-field class="form-field">
             <input matInput type="text" [(ngModel)]="node.name" formControlName="name" placeholder="Name" />
+          </mat-form-field>
+          <mat-form-field class="form-field tags-field">
+            <mat-label>Tags</mat-label>
+            <mat-chip-list #chipList>
+              <mat-chip *ngFor="let tag of node?.tags" (removed)="removeTag(tag)">
+                {{ tag }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+            </mat-chip-list>
+            <input matInput placeholder="Add tags"
+                   [matChipInputFor]="chipList"
+                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                   (matChipInputTokenEnd)="addTag($event)" />
           </mat-form-field>
           <mat-form-field class="select">
             <mat-select

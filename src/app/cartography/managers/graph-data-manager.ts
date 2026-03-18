@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Link } from '../../models/link';
-import { Symbol } from '../../models/symbol';
+import { Link } from '@models/link';
+import { Symbol } from '@models/symbol';
 import { DrawingToMapDrawingConverter } from '../converters/map/drawing-to-map-drawing-converter';
 import { LinkToMapLinkConverter } from '../converters/map/link-to-map-link-converter';
 import { NodeToMapNodeConverter } from '../converters/map/node-to-map-node-converter';
@@ -45,7 +45,6 @@ export class GraphDataManager {
 
   public setLinks(links: Link[]) {
     if (links) {
-      console.log("from set links");
       const mapLinks = links.map((l) => this.linkToMapLink.convert(l));
       this.mapLinksDataSource.set(mapLinks);
 
@@ -89,7 +88,6 @@ export class GraphDataManager {
   private onDataUpdate() {
     this.layersManager.clear();
     this.layersManager.setNodes(this.getNodes());
-    console.log(this.getLinks());
     this.layersManager.setLinks(this.getLinks());
     this.layersManager.setDrawings(this.getDrawings());
   }
@@ -101,12 +99,15 @@ export class GraphDataManager {
     });
 
     this.getLinks().forEach((link: MapLink) => {
-      const source_id = link.nodes[0].nodeId;
-      const target_id = link.nodes[1].nodeId;
-      if (source_id in nodes_by_id) {
+      if (!link.nodes || link.nodes.length < 2) {
+        return;
+      }
+      const source_id = link.nodes[0]?.nodeId;
+      const target_id = link.nodes[1]?.nodeId;
+      if (source_id && source_id in nodes_by_id) {
         link.source = nodes_by_id[source_id];
       }
-      if (target_id in nodes_by_id) {
+      if (target_id && target_id in nodes_by_id) {
         link.target = nodes_by_id[target_id];
       }
 

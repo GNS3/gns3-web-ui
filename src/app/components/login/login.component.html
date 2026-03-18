@@ -12,7 +12,7 @@
         </div>
       </div>
 
-      <form [formGroup]="loginForm">
+      <form [formGroup]="loginForm" (ngSubmit)="login()">
         <mat-form-field>
           <input matInput formControlName="username" placeholder="Username" />
           <mat-error *ngIf="loginForm.get('username').hasError('required')">You must enter username</mat-error>
@@ -24,7 +24,7 @@
       </form>
       <mat-checkbox
         [disabled]="!isRememberMe"
-        [checked]="isRememberMeCheked"
+        [checked]="isRememberMeChecked"
         class="margin-left"
         color="primary"
         (change)="rememberMe($event)"
@@ -37,6 +37,10 @@
 
     <div class="errorMessage">
       <mat-error *ngIf="loginError">Authentication was unsuccessful</mat-error>
+    </div>
+
+    <div class="errorMessage">
+      <mat-error *ngIf="loginError">The default username and password is admin</mat-error>
     </div>
   </div>
 </div>

@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { QemuImg } from '../../../../../../models/qemu/qemu-img';
-import{ Controller } from '../../../../../../models/controller';
-import { NodeService } from '../../../../../../services/node.service';
-import { QemuService } from '../../../../../../services/qemu.service';
-import { ToasterService } from '../../../../../../services/toaster.service';
+import { QemuImg } from '@models/qemu/qemu-img';
+import { Controller } from '@models/controller';
+import { NodeService } from '@services/node.service';
+import { QemuService } from '@services/qemu.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-qemu-image-creator',
@@ -13,7 +13,7 @@ import { ToasterService } from '../../../../../../services/toaster.service';
   styleUrls: ['../../configurator.component.scss'],
 })
 export class QemuImageCreatorComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   qemuImg: QemuImg;
 
   formatOptions: string[] = ['qcow2', 'qcow', 'vhd', 'vdi', 'vmdk', 'raw'];

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ComputeStatistics } from '../../../models/computeStatistics';
+import { ComputeStatistics } from '@models/computeStatistics';
 
 @Component({
   selector: 'app-status-chart',

@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
-import { ProjectService } from '../../../services/project.service';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { ProjectService } from '@services/project.service';
 
 @Component({
   selector: 'app-choose-name-dialog',
@@ -10,7 +10,7 @@ import { ProjectService } from '../../../services/project.service';
   styleUrls: ['./choose-name-dialog.component.scss'],
 })
 export class ChooseNameDialogComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
   name: string;
 

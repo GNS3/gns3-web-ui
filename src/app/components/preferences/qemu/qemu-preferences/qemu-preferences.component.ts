@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import{ Controller } from '../../../../models/controller';
-import { QemuSettings } from '../../../../models/settings/qemu-settings';
-import { ControllerSettingsService } from '../../../../services/controller-settings.service';
-import { ControllerService } from '../../../../services/controller.service';
-import { ToasterService } from '../../../../services/toaster.service';
+import { Controller } from '@models/controller';
+import { QemuSettings } from '@models/settings/qemu-settings';
+import { ControllerSettingsService } from '@services/controller-settings.service';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-qemu-preferences',
@@ -12,7 +12,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./qemu-preferences.component.scss'],
 })
 export class QemuPreferencesComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   settings: QemuSettings;
 
   constructor(
@@ -24,7 +24,7 @@ export class QemuPreferencesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       this.controllerSettingsService.getSettingsForQemu(this.controller).subscribe((settings: QemuSettings) => {

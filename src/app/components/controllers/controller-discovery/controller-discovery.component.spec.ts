@@ -2,13 +2,13 @@ import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testin
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { Observable } from 'rxjs/Rx';
-import{ Controller } from '../../../models/controller';
-import { Version } from '../../../models/version';
-import { ControllerDatabase } from '../../../services/controller.database';
-import { ControllerService } from '../../../services/controller.service';
-import { MockedControllerService } from '../../../services/controller.service.spec';
-import { VersionService } from '../../../services/version.service';
-import { MockedVersionService } from '../../../services/version.service.spec';
+import { Controller } from '@models/controller';
+import { Version } from '@models/version';
+import { ControllerDatabase } from '@services/controller.database';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
+import { VersionService } from '@services/version.service';
+import { MockedVersionService } from '@services/version.service.spec';
 import { ControllerDiscoveryComponent } from './controller-discovery.component';
 
 xdescribe('ControllerDiscoveryComponent', () => {
@@ -112,7 +112,7 @@ describe('discovery', () => {
 });
 
 describe('discoverFirstAvailableController', () => {
-  let controller:Controller ;
+  let controller: Controller;
 
   beforeEach(function () {
     controller = new Controller  ();
@@ -142,7 +142,7 @@ describe('discoverFirstAvailableController', () => {
 });
 
 describe('accepting and ignoring found controller', () => {
-  let controller:Controller ;
+  let controller: Controller;
   beforeEach(() => {
     controller = new Controller  ();
     (controller.host = '199.111.111.1'), (controller.port = 3333);

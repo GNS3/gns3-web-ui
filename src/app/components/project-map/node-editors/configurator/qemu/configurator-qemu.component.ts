@@ -1,15 +1,17 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
-import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
-import { QemuBinary } from '../../../../../models/qemu/qemu-binary';
-import { QemuImage } from '../../../../../models/qemu/qemu-image';
-import{ Controller } from '../../../../../models/controller';
-import { NodeService } from '../../../../../services/node.service';
-import { QemuConfigurationService } from '../../../../../services/qemu-configuration.service';
-import { QemuService } from '../../../../../services/qemu.service';
-import { ToasterService } from '../../../../../services/toaster.service';
+import { CustomAdaptersTableComponent } from '@components/preferences/common/custom-adapters-table/custom-adapters-table.component';
+import { QemuBinary } from '@models/qemu/qemu-binary';
+import { QemuImage } from '@models/qemu/qemu-image';
+import { Controller } from '@models/controller';
+import { NodeService } from '@services/node.service';
+import { QemuConfigurationService } from '@services/qemu-configuration.service';
+import { QemuService } from '@services/qemu.service';
+import { ToasterService } from '@services/toaster.service';
 import { QemuImageCreatorComponent } from './qemu-image-creator/qemu-image-creator.component';
 
 @Component({
@@ -18,10 +20,11 @@ import { QemuImageCreatorComponent } from './qemu-image-creator/qemu-image-creat
   styleUrls: ['../configurator.component.scss'],
 })
 export class ConfiguratorDialogQemuComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   node: Node;
   name: string;
   generalSettingsForm: UntypedFormGroup;
+  networkSettingsForm: UntypedFormGroup;
   consoleTypes: string[] = [];
   onCloseOptions = [];
   bootPriorities = [];
@@ -31,6 +34,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   networkTypes = [];
   qemuImages: QemuImage[] = [];
   selectPlatform: string[] = [];
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
   private conf = {
     autoFocus: false,
@@ -54,12 +58,19 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
       name: new UntypedFormControl('', Validators.required),
       ram: new UntypedFormControl('', Validators.required),
     });
+
+    this.networkSettingsForm = this.formBuilder.group({
+      mac_address: new UntypedFormControl('', Validators.pattern(this.qemuConfigurationService.getMacAddrRegex())),
+    });
   }
 
   ngOnInit() {
     this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = node.name;
+      if (!this.node.tags) {
+        this.node.tags = [];
+      }
       this.getConfiguration();
     });
 
@@ -103,16 +114,16 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   }
 
   onSaveClick() {
-    if (this.generalSettingsForm.valid) {
-      this.node.custom_adapters = [];
-      this.customAdapters.adapters.forEach((n) => {
-        this.node.custom_adapters.push({
-          adapter_number: n.adapter_number,
-          adapter_type: n.adapter_type,
-        });
-      });
-
-      this.node.properties.adapters = this.node.custom_adapters.length;
+    if (this.generalSettingsForm.valid && this.networkSettingsForm.valid) {
+      // this.node.custom_adapters = [];
+      // this.customAdapters.adapters.forEach((n) => {
+      //   this.node.custom_adapters.push({
+      //     adapter_number: n.adapter_number,
+      //     adapter_type: n.adapter_type,
+      //   });
+      // });
+      //
+      // this.node.properties.adapters = this.node.custom_adapters.length;
 
       this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
@@ -125,5 +136,32 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
 
   onCancelClick() {
     this.dialogRef.close();
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.node) {
+      if (!this.node.tags) {
+        this.node.tags = [];
+      }
+      this.node.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.node.tags) {
+      return;
+    }
+    const index = this.node.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.node.tags.splice(index, 1);
+    }
   }
 }

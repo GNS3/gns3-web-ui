@@ -31,7 +31,8 @@
                             "spark-md5",
                             "xterm",
                             "xterm-addon-attach",
-                            "xterm-addon-fit"
+                            "xterm-addon-fit",
+                            "ipaddr.js"
                         ],
                         "outputPath": "dist",
                         "index": "src/index.html",

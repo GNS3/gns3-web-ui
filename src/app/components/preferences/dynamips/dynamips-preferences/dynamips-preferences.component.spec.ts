@@ -9,12 +9,12 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ControllerSettingsService } from '../../../../services/controller-settings.service';
-import { MockedControllerSettingsService } from '../../../../services/controller-settings.service.spec';
-import { ControllerService } from '../../../../services/controller.service';
-import { MockedControllerService } from '../../../../services/controller.service.spec';
-import { ToasterService } from '../../../../services/toaster.service';
-import { MockedToasterService } from '../../../../services/toaster.service.spec';
+import { ControllerSettingsService } from '@services/controller-settings.service';
+import { MockedControllerSettingsService } from '@services/controller-settings.service.spec';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { DynamipsPreferencesComponent } from './dynamips-preferences.component';
 

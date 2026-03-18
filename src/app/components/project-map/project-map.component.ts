@@ -2,6 +2,7 @@ import {
   ChangeDetectorRef,
   Component,
   ComponentRef,
+  NgZone,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -12,10 +13,10 @@ import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
-import { ExportPortableProjectComponent } from '../../components/export-portable-project/export-portable-project.component';
+import { ExportPortableProjectComponent } from '@components/export-portable-project/export-portable-project.component';
 import { environment } from 'environments/environment';
 import * as Mousetrap from 'mousetrap';
-import { from, Observable, Subscription } from 'rxjs';
+import { forkJoin, from, Observable, Subscription } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
@@ -60,24 +61,25 @@ import { SerialLinkWidget } from '../../cartography/widgets/links/serial-link';
 import { NodeWidget } from '../../cartography/widgets/node';
 import { ProgressService } from '../../common/progress/progress.service';
 import { ProjectWebServiceHandler } from '../../handlers/project-web-service-handler';
-import { Link } from '../../models/link';
-import { Project } from '../../models/project';
-import{ Controller } from '../../models/controller';
-import { Symbol } from '../../models/symbol';
-import { DrawingService } from '../../services/drawing.service';
-import { MapScaleService } from '../../services/mapScale.service';
-import { MapSettingsService } from '../../services/mapsettings.service';
-import { NodeService } from '../../services/node.service';
-import { NodeConsoleService } from '../../services/nodeConsole.service';
-import { NotificationService } from '../../services/notification.service';
-import { ProjectService } from '../../services/project.service';
-import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
-import { ControllerService } from '../../services/controller.service';
-import { Settings, SettingsService } from '../../services/settings.service';
-import { SymbolService } from '../../services/symbol.service';
-import { ThemeService } from '../../services/theme.service';
-import { ToasterService } from '../../services/toaster.service';
-import { ToolsService } from '../../services/tools.service';
+import { Link } from '@models/link';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { Symbol } from '@models/symbol';
+import { DrawingService } from '@services/drawing.service';
+import { LinkService } from '@services/link.service';
+import { MapScaleService } from '@services/mapScale.service';
+import { MapSettingsService } from '@services/mapsettings.service';
+import { NodeService } from '@services/node.service';
+import { NodeConsoleService } from '@services/nodeConsole.service';
+import { NotificationService } from '@services/notification.service';
+import { ProjectService } from '@services/project.service';
+import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.service';
+import { ControllerService } from '@services/controller.service';
+import { Settings, SettingsService } from '@services/settings.service';
+import { SymbolService } from '@services/symbol.service';
+import { ThemeService } from '@services/theme.service';
+import { ToasterService } from '@services/toaster.service';
+import { ToolsService } from '@services/tools.service';
 import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-dialog/add-blank-project-dialog.component';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { EditProjectDialogComponent } from '../projects/edit-project-dialog/edit-project-dialog.component';
@@ -104,7 +106,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public drawings: Drawing[] = [];
   public symbols: Symbol[] = [];
   public project: Project;
-  public controller:Controller ;
+  public controller: Controller;
   public projectws: WebSocket;
   public ws: WebSocket;
   public isProjectMapMenuVisible: boolean = false;
@@ -128,10 +130,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   protected settings: Settings;
   private inReadOnlyMode = false;
-  private scrollX: number = 0;
-  private scrollY: number = 0;
-  private scrollEnabled: boolean = false;
   public isLightThemeEnabled: boolean = false;
+  public isGlobalLightTheme: boolean = false;
 
   @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
   @ViewChild(D3MapComponent) mapChild: D3MapComponent;
@@ -145,6 +145,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private controllerService: ControllerService,
     private projectService: ProjectService,
     private nodeService: NodeService,
+    private linkService: LinkService,
     public drawingService: DrawingService,
     private progressService: ProgressService,
     private projectWebServiceHandler: ProjectWebServiceHandler,
@@ -189,7 +190,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private cd: ChangeDetectorRef,
     // private cfr: ComponentFactoryResolver,
     // private injector: Injector,
-    private viewContainerRef: ViewContainerRef
+    private viewContainerRef: ViewContainerRef,
+    private ngZone: NgZone
   ) {}
 
   // constructor(private viewContainerRef: ViewContainerRef) {}
@@ -212,17 +214,20 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.addSubscriptions();
     this.addKeyboardListeners();
 
+    this.themeService.mapThemeChanged.subscribe((value: string) => {
+      this.isLightThemeEnabled = value === 'light';
+      this.applyMapBackground(this.isLightThemeEnabled);
+    });
+
     this.themeService.themeChanged.subscribe((value: string) => {
-      this.themeService.getActualTheme() === 'light'
-        ? (this.isLightThemeEnabled = true)
-        : (this.isLightThemeEnabled = false);
+      this.isGlobalLightTheme = value === 'light-theme';
     });
   }
 
   getSettings() {
-    this.themeService.getActualTheme() === 'light'
-      ? (this.isLightThemeEnabled = true)
-      : (this.isLightThemeEnabled = false);
+    this.isLightThemeEnabled = this.themeService.getActualMapTheme() === 'light';
+    this.isGlobalLightTheme = this.themeService.getActualTheme() === 'light';
+    this.applyMapBackground(this.isLightThemeEnabled);
     this.cd.detectChanges();
 
     this.settings = this.settingsService.getAll();
@@ -253,12 +258,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   addSubscriptions() {
     this.projectMapSubscription.add(
-      this.mapSettingsService.mapRenderedEmitter.subscribe((value: boolean) => {
-        if (this.scrollEnabled) this.centerCanvas();
-      })
-    );
-
-    this.projectMapSubscription.add(
       this.drawingsDataSource.changes.subscribe((drawings: Drawing[]) => {
         this.drawings = drawings;
         this.mapChangeDetectorRef.detectChanges();
@@ -268,19 +267,57 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.projectMapSubscription.add(
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
         if (!this.controller) return;
-        nodes.forEach(async (node: Node) => {
-          node.symbol_url = `${this.controller.protocol}//${this.controller.host}:${this.controller.port}/${environment.current_version}/symbols/${node.symbol}/raw`;
 
+        const nodesToLoad = nodes.filter((node: Node) => !node.symbol_url);
+
+        // Fetch dimensions for any node with unknown size
+        nodesToLoad.forEach((node: Node) => {
           if (node.width == 0 && node.height == 0) {
-            let symbolDimensions = await this.symbolService.getDimensions(this.controller, node.symbol).toPromise();
-            node.width = symbolDimensions.width;
-            node.height = symbolDimensions.height;
+            this.symbolService.getDimensions(this.controller, node.symbol).subscribe((symbolDimensions) => {
+              node.width = symbolDimensions.width;
+              node.height = symbolDimensions.height;
+            });
           }
         });
 
-        this.nodes = nodes;
-        if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
-        this.mapChangeDetectorRef.detectChanges();
+        if (nodesToLoad.length === 0) {
+          this.nodes = nodes;
+          if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
+          this.mapChangeDetectorRef.detectChanges();
+          return;
+        }
+
+        // Build a map from node -> rawUrl for all nodes that need loading
+        const nodeRawUrlMap = new Map<Node, string>();
+        nodesToLoad.forEach((node: Node) => {
+          nodeRawUrlMap.set(
+            node,
+            `${this.controller.protocol}//${this.controller.host}:${this.controller.port}/${environment.current_version}/symbols/${node.symbol}/raw`
+          );
+        });
+
+        // Deduplicate: only 1 fetch per unique symbol URL (shareReplay(1) in getSymbolBlobUrl handles concurrent callers)
+        const uniqueRawUrls = [...new Set(nodeRawUrlMap.values())];
+        forkJoin(uniqueRawUrls.map((url) => this.symbolService.getSymbolBlobUrl(url))).subscribe(
+          (blobUrls: string[]) => {
+            const blobUrlMap = new Map(uniqueRawUrls.map((url, i) => [url, blobUrls[i]]));
+            nodesToLoad.forEach((node: Node) => {
+              node.symbol_url = blobUrlMap.get(nodeRawUrlMap.get(node));
+            });
+            this.nodes = nodes;
+            if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
+            this.mapChangeDetectorRef.detectChanges();
+          },
+          () => {
+            // Fallback to raw URLs if blob fetch fails
+            nodesToLoad.forEach((node: Node) => {
+              node.symbol_url = nodeRawUrlMap.get(node);
+            });
+            this.nodes = nodes;
+            if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
+            this.mapChangeDetectorRef.detectChanges();
+          }
+        );
       })
     );
 
@@ -333,7 +370,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
       from(this.controllerService.get(controller_id))
         .pipe(
-          mergeMap((controller:Controller ) => {
+          mergeMap((controller: Controller ) => {
             if (!controller) this.router.navigate(['/controllers']);
             this.controller = controller;
             return this.projectService.get(controller, paramMap.get('project_id')).pipe(
@@ -421,7 +458,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     Mousetrap.bind('del', (event: Event) => {
       event.preventDefault();
-      this.deleteItems();
+      this.ngZone.run(() => this.deleteItems());
     });
   }
 
@@ -439,6 +476,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             const node = this.mapNodeToNode.convert(item);
             this.nodeService.delete(this.controller, node).subscribe((data) => {
               this.toasterService.success('Node has been deleted');
+            });
+          });
+          
+        selected
+          .filter((item) => item instanceof MapLink)
+          .forEach((item: MapLink) => {
+            const link = this.mapLinkToLink.convert(item);
+            this.linkService.deleteLink(this.controller, link).subscribe(() => {
+              this.toasterService.success('Link has been deleted');
             });
           });
 
@@ -504,33 +550,33 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     const onLinkContextMenu = this.linkWidget.onContextMenu.subscribe((eventLink: LinkContextMenu) => {
       const link = this.mapLinkToLink.convert(eventLink.link);
-      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.pageY, eventLink.event.pageX);
+      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.clientY, eventLink.event.clientX);
     });
 
     const onEthernetLinkContextMenu = this.ethernetLinkWidget.onContextMenu.subscribe((eventLink: LinkContextMenu) => {
       const link = this.mapLinkToLink.convert(eventLink.link);
-      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.pageY, eventLink.event.pageX);
+      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.clientY, eventLink.event.clientX);
     });
 
     const onSerialLinkContextMenu = this.serialLinkWidget.onContextMenu.subscribe((eventLink: LinkContextMenu) => {
       const link = this.mapLinkToLink.convert(eventLink.link);
-      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.pageY, eventLink.event.pageX);
+      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.clientY, eventLink.event.clientX);
     });
 
     const onNodeContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
       const node = this.mapNodeToNode.convert(eventNode.node);
-      this.contextMenu.openMenuForNode(node, eventNode.event.pageY, eventNode.event.pageX);
+      this.contextMenu.openMenuForNode(node, eventNode.event.clientY, eventNode.event.clientX);
     });
 
     const onDrawingContextMenu = this.drawingsWidget.onContextMenu.subscribe((eventDrawing: DrawingContextMenu) => {
       const drawing = this.mapDrawingToDrawing.convert(eventDrawing.drawing);
-      this.contextMenu.openMenuForDrawing(drawing, eventDrawing.event.pageY, eventDrawing.event.pageX);
+      this.contextMenu.openMenuForDrawing(drawing, eventDrawing.event.clientY, eventDrawing.event.clientX);
     });
 
     const onLabelContextMenu = this.labelWidget.onContextMenu.subscribe((eventLabel: LabelContextMenu) => {
       const label = this.mapLabelToLabel.convert(eventLabel.label);
       const node = this.nodes.find((n) => n.node_id === eventLabel.label.nodeId);
-      this.contextMenu.openMenuForLabel(label, node, eventLabel.event.screenY - 60, eventLabel.event.screenX);
+      this.contextMenu.openMenuForLabel(label, node, eventLabel.event.clientY, eventLabel.event.clientX);
     });
 
     const onInterfaceLabelContextMenu = this.interfaceLabelWidget.onContextMenu.subscribe(
@@ -540,8 +586,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         this.contextMenu.openMenuForInterfaceLabel(
           linkNode,
           link,
-          eventInterfaceLabel.event.pageY,
-          eventInterfaceLabel.event.pageX
+          eventInterfaceLabel.event.clientY,
+          eventInterfaceLabel.event.clientX
         );
       }
     );
@@ -567,7 +613,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         }
       });
 
-      this.contextMenu.openMenuForListOfElements(drawings, nodes, labels, links, event.pageY, event.pageX);
+      this.contextMenu.openMenuForListOfElements(drawings, nodes, labels, links, event.clientY, event.clientX);
     });
 
     this.projectMapSubscription.add(onLinkContextMenu);
@@ -585,9 +631,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     if (!nodeAddedEvent) {
       return;
     }
-
-    nodeAddedEvent.x = nodeAddedEvent.x / this.mapScaleService.getScale();
-    nodeAddedEvent.y = nodeAddedEvent.y / this.mapScaleService.getScale();
 
     this.progressService.activate();
     this.nodeService
@@ -633,162 +676,18 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       );
   }
 
-  public fitInView() {
-    this.drawings.forEach((drawing) => {
-      let splittedSvg = drawing.svg.split('"');
-      let height: number = parseInt(splittedSvg[1], 10);
-      let width: number = parseInt(splittedSvg[3], 10);
-
-      drawing.element = {
-        width: width,
-        height: height,
-      };
-    });
-
-    if (this.nodes.length === 0 && this.drawings.length === 0) {
-      return;
-    }
-    let minX: number, maxX: number, minY: number, maxY: number;
-
-    let borderedNodes: BorderedNode[] = [];
-    this.nodes.forEach((n) => {
-      let borderedNode: BorderedNode = new BorderedNode();
-      borderedNode.node = n;
-      borderedNode.top = n.y;
-      borderedNode.left = n.x;
-      borderedNode.bottom = n.y + n.height;
-      borderedNode.right = n.x + n.width;
-
-      if (n.y + n.label.y < borderedNode.top) {
-        borderedNode.top = n.y + n.label.y;
-      }
-
-      if (n.x + n.label.x < borderedNode.left) {
-        borderedNode.left = n.x + n.label.x;
-      }
-
-      if (n.y + n.label.y > borderedNode.bottom) {
-        borderedNode.bottom = n.y + n.label.y;
-      }
-
-      if (n.x + n.label.x > borderedNode.right) {
-        borderedNode.right = n.x + n.label.x;
-      }
-
-      borderedNodes.push(borderedNode);
-    });
-
-    let nodeMinX = borderedNodes.sort((n, m) => n.left - m.left)[0];
-    let nodeMaxX = borderedNodes.sort((n, m) => n.right - m.right)[borderedNodes.length - 1];
-    let nodeMinY = borderedNodes.sort((n, m) => n.top - m.top)[0];
-    let nodeMaxY = borderedNodes.sort((n, m) => n.bottom - m.bottom)[borderedNodes.length - 1];
-
-    let borderedDrawings: BorderedDrawing[] = [];
-    this.drawings.forEach((n) => {
-      let borderedDrawing: BorderedDrawing = new BorderedDrawing();
-      borderedDrawing.drawing = n;
-      borderedDrawing.top = n.y;
-      borderedDrawing.left = n.x;
-      borderedDrawing.bottom = n.y + n.element.height;
-      borderedDrawing.right = n.x + n.element.width;
-
-      borderedDrawings.push(borderedDrawing);
-    });
-
-    let drawingMinX = borderedDrawings.sort((n, m) => n.left - m.left)[0];
-    let drawingMaxX = borderedDrawings.sort((n, m) => n.right - m.right)[borderedDrawings.length - 1];
-    let drawingMinY = borderedDrawings.sort((n, m) => n.top - m.top)[0];
-    let drawingMaxY = borderedDrawings.sort((n, m) => n.bottom - m.bottom)[borderedDrawings.length - 1];
-
-    if (drawingMinX && nodeMinX) {
-      if (nodeMinX.left < drawingMinX.left) {
-        minX = nodeMinX.left;
-      } else {
-        minX = drawingMinX.left;
-      }
-
-      if (nodeMaxX.right > drawingMaxX.right) {
-        maxX = nodeMaxX.right;
-      } else {
-        maxX = drawingMaxX.right;
-      }
-
-      if (nodeMinY.top < drawingMinY.top) {
-        minY = nodeMinY.top;
-      } else {
-        minY = drawingMinY.top;
-      }
-
-      if (nodeMaxY.bottom > drawingMaxY.bottom) {
-        maxY = nodeMaxY.bottom;
-      } else {
-        maxY = drawingMaxY.bottom;
-      }
-    } else if (nodeMinX && !drawingMinX) {
-      minX = nodeMinX.left;
-      maxX = nodeMaxX.right;
-      minY = nodeMinY.top;
-      maxY = nodeMaxY.bottom;
-    } else if (drawingMinX && !nodeMinX) {
-      minX = drawingMinX.left;
-      maxX = drawingMaxX.right;
-      minY = drawingMinY.top;
-      maxY = drawingMaxY.bottom;
-    } else {
-      minX = 0;
-      maxX = 0;
-      minY = 0;
-      maxY = 0;
-    }
-
-    let margin: number = 20;
-    minX = minX - margin;
-    maxX = maxX + margin;
-    minY = minY - margin;
-    maxY = maxY + margin;
-
-    let windowWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-    let windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-    let widthOfAreaToShow = maxX - minX;
-    let heightOfAreaToShow = maxY - minY;
-    let widthToSceneWidthRatio = widthOfAreaToShow / windowWidth;
-    let heightToSceneHeightRatio = heightOfAreaToShow / windowHeight;
-
-    let scale = 1 / Math.max(widthToSceneWidthRatio, heightToSceneHeightRatio);
-
-    if (scale !== this.mapScaleService.currentScale) {
-      this.mapScaleService.setScale(scale);
-      this.project.scene_width = this.project.scene_width * scale;
-      this.project.scene_height = this.project.scene_height * scale;
-      if (heightToSceneHeightRatio < widthOfAreaToShow) {
-        this.scrollX = minX * scale - (windowWidth - widthOfAreaToShow * scale) / 2 + this.project.scene_width / 2;
-        this.scrollY = minY * scale + this.project.scene_height / 2;
-      } else {
-        this.scrollX = minX * scale + this.project.scene_width / 2;
-        this.scrollY = minY * scale - (windowHeight - heightOfAreaToShow * scale) / 2 + this.project.scene_height / 2;
-      }
-    } else {
-      this.scrollX = minX * scale + this.project.scene_width / 2;
-      this.scrollY = minY * scale + this.project.scene_height / 2;
-    }
-    this.scrollEnabled = true;
-  }
-
-  public centerCanvas() {
-    window.scrollTo(this.scrollX, this.scrollY);
-    this.scrollEnabled = false;
-  }
-
   public centerView() {
     if (this.project) {
-      let scrollX: number =
-        this.project.scene_width - document.documentElement.clientWidth > 0
-          ? (this.project.scene_width - document.documentElement.clientWidth) / 2
-          : 0;
-      let scrollY: number =
-        this.project.scene_height - document.documentElement.clientHeight > 0
-          ? (this.project.scene_height - document.documentElement.clientHeight) / 2
-          : 0;
+      const ctx = this.mapChild?.context;
+      const viewportWidth  = document.documentElement.clientWidth;
+      const viewportHeight = document.documentElement.clientHeight;
+      // With an asymmetric canvas the scene origin sits at (centerX, centerY)
+      // in SVG space. Scrolling to centerX - halfViewport puts the origin in
+      // the middle of the screen, which is the natural "home" position.
+      const svgCenterX = ctx ? (ctx.centerX !== null ? ctx.centerX : ctx.size.width  / 2) : this.project.scene_width  / 2;
+      const svgCenterY = ctx ? (ctx.centerY !== null ? ctx.centerY : ctx.size.height / 2) : this.project.scene_height / 2;
+      const scrollX = Math.max(0, svgCenterX - viewportWidth  / 2);
+      const scrollY = Math.max(0, svgCenterY - viewportHeight / 2);
 
       window.scrollTo(scrollX, scrollY);
     } else {
@@ -883,7 +782,17 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public toggleSnapToGrid(enabled: boolean) {
+    const previousValue = this.project.snap_to_grid;
     this.project.snap_to_grid = enabled;
+    this.projectService.update(this.controller, this.project).subscribe(
+      (project: Project) => {
+        this.project.snap_to_grid = project.snap_to_grid;
+      },
+      () => {
+        this.project.snap_to_grid = previousValue;
+        this.toasterService.error('Cannot update project settings');
+      }
+    );
   }
 
   private showMessage(msg) {
@@ -1086,7 +995,17 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     instance.project = this.project;
   }
 
+  private applyMapBackground(isLight: boolean): void {
+    const color = isLight ? '#e8ecef' : '#18242b';
+    document.body.style.backgroundColor = color;
+    document.documentElement.style.backgroundColor = color;
+  }
+ 
   public ngOnDestroy() {
+    const globalColor = this.themeService.getActualTheme() === 'light' ? '#e8ecef' : '#18242b';
+    document.body.style.backgroundColor = globalColor;
+    document.documentElement.style.backgroundColor = globalColor;
+ 
     this.nodeConsoleService.openConsoles = 0;
     this.title.setTitle('GNS3 Web UI');
 
@@ -1102,20 +1021,4 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     }
     this.projectMapSubscription.unsubscribe();
   }
-}
-
-export class BorderedNode {
-  top: number;
-  left: number;
-  bottom: number;
-  right: number;
-  node: Node;
-}
-
-export class BorderedDrawing {
-  top: number;
-  left: number;
-  bottom: number;
-  right: number;
-  drawing: Drawing;
 }

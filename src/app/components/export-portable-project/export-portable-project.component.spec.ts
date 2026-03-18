@@ -7,10 +7,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ProjectService } from '../../services/project.service';
-import { MockedProjectService } from '../../services/project.service.spec';
-import { ToasterService } from '../../services/toaster.service';
-import { MockedToasterService } from '../../services/toaster.service.spec';
+import { ProjectService } from '@services/project.service';
+import { MockedProjectService } from '@services/project.service.spec';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
 import { ExportPortableProjectComponent } from './export-portable-project.component';
 
 describe('ExportPortableProjectComponent', () => {

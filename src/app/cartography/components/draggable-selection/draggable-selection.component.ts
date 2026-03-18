@@ -1,7 +1,7 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { select } from 'd3-selection';
 import { merge, Subscription } from 'rxjs';
-import { MapSettingsService } from '../../../services/mapsettings.service';
+import { MapSettingsService } from '@services/mapsettings.service';
 import { DraggableDrag, DraggableEnd, DraggableStart } from '../../events/draggable';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { DraggedDataEvent } from '../../events/event-source';
@@ -102,7 +102,7 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
           node.x += evt.dx;
           node.y += evt.dy;
 
-          this.nodesWidget.redrawNode(svg, node);
+          this.nodesWidget.updateNodePosition(svg, node);
 
           const links = this.graphDataManager
             .getLinks()

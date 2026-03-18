@@ -7,7 +7,7 @@
         </button>
       </div>
       <div class="col col-md-11">
-        <h1 class="col">QEMU VM configuration</h1>
+        <h1 class="col">QEMU VM template configuration</h1>
       </div>
     </div>
   </div>
@@ -54,6 +54,19 @@
             </mat-option>
           </mat-select>
         </mat-form-field>
+        <mat-form-field class="form-field tags-field">
+          <mat-label>Tags</mat-label>
+          <mat-chip-list #chipList>
+            <mat-chip *ngFor="let tag of qemuTemplate?.tags" (removed)="removeTag(tag)">
+              {{ tag }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+          </mat-chip-list>
+          <input matInput placeholder="Add tags"
+                 [matChipInputFor]="chipList"
+                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                 (matChipInputTokenEnd)="addTag($event)" />
+        </mat-form-field>
         <mat-form-field class="form-field">
           <mat-select placeholder="Platform" [(ngModel)]="qemuTemplate.platform">
             <mat-option *ngFor="let platform of selectPlatform" [value]="platform">
@@ -62,11 +75,11 @@
           </mat-select>
         </mat-form-field>
         <mat-form-field class="form-field">
-          <input matInput type="number" [(ngModel)]="qemuTemplate.ram" placeholder="RAM" />
+          <input matInput type="number" min="1" [(ngModel)]="qemuTemplate.ram" placeholder="RAM" />
           <span matSuffix>MB</span>
         </mat-form-field>
         <mat-form-field class="form-field">
-          <input matInput type="number" [(ngModel)]="qemuTemplate.cpus" placeholder="vCPUs" />
+          <input matInput type="number" min="1" [(ngModel)]="qemuTemplate.cpus" placeholder="vCPUs" />
         </mat-form-field>
 
         <mat-form-field class="form-field">
@@ -86,6 +99,13 @@
         <mat-form-field class="select">
           <mat-select placeholder="Console type" [(ngModel)]="qemuTemplate.console_type">
             <mat-option *ngFor="let type of consoleTypes" [value]="type">
+              {{ type }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="select">
+          <mat-select placeholder="Auxiliary console type" [(ngModel)]="qemuTemplate.aux_type">
+            <mat-option *ngFor="let type of auxConsoleTypes" [value]="type">
               {{ type }}
             </mat-option>
           </mat-select>
@@ -178,7 +198,7 @@
           <mat-panel-title> Network </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-form-field class="form-field">
-          <input matInput type="number" [(ngModel)]="qemuTemplate.adapters" placeholder="Adapters" />
+          <input matInput type="number" min="0" [(ngModel)]="qemuTemplate.adapters" placeholder="Adapters" />
         </mat-form-field>
         <mat-form-field class="form-field">
           <input matInput type="text" [(ngModel)]="qemuTemplate.first_port_name" placeholder="First port name" />
@@ -187,7 +207,7 @@
           <input matInput type="text" [(ngModel)]="qemuTemplate.port_name_format" placeholder="Name format" />
         </mat-form-field>
         <mat-form-field class="form-field">
-          <input matInput type="number" [(ngModel)]="qemuTemplate.port_segment_size" placeholder="Segment size" />
+          <input matInput type="number" min="0" [(ngModel)]="qemuTemplate.port_segment_size" placeholder="Segment size" />
         </mat-form-field>
         <mat-form-field class="form-field">
           <input matInput type="text" [(ngModel)]="qemuTemplate.mac_address" placeholder="Base MAC" />
@@ -275,6 +295,9 @@
           <mat-card-title></mat-card-title>
           <mat-card-subtitle> Additional settings </mat-card-subtitle>
           <mat-card-content>
+            <mat-form-field class="form-field">
+              <input matInput type="text" [(ngModel)]="qemuTemplate.qemu_path" placeholder="Custom Qemu binary path" />
+            </mat-form-field>
             <mat-form-field class="form-field">
               <input matInput type="text" [(ngModel)]="qemuTemplate.options" placeholder="Options" />
             </mat-form-field>

@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import{ Controller } from '../../../../models/controller';
-import { DockerTemplate } from '../../../../models/templates/docker-template';
-import { DockerService } from '../../../../services/docker.service';
-import { ControllerService } from '../../../../services/controller.service';
+import { Controller } from '@models/controller';
+import { DockerTemplate } from '@models/templates/docker-template';
+import { DockerService } from '@services/docker.service';
+import { ControllerService } from '@services/controller.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
 @Component({
@@ -12,7 +12,7 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
   styleUrls: ['./docker-templates.component.scss', '../../preferences.component.scss'],
 })
 export class DockerTemplatesComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   dockerTemplates: DockerTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
@@ -25,7 +25,7 @@ export class DockerTemplatesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
       this.getTemplates();
     });

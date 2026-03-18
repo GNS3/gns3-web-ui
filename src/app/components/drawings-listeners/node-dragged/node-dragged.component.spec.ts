@@ -5,7 +5,7 @@ import { DraggedDataEvent } from '../../../cartography/events/event-source';
 import { NodesEventSource } from '../../../cartography/events/nodes-event-source';
 import { MapLabel } from '../../../cartography/models/map/map-label';
 import { MapNode } from '../../../cartography/models/map/map-node';
-import { NodeService } from '../../../services/node.service';
+import { NodeService } from '@services/node.service';
 import { MockedNodesDataSource, MockedNodeService } from '../../project-map/project-map.component.spec';
 import { NodeDraggedComponent } from './node-dragged.component';
 
@@ -59,6 +59,7 @@ describe('NodeDraggedComponent', () => {
       portNameFormat: 'samplePortNameFormat',
       portSegmentSize: 0,
       ports: [],
+      properties: undefined,
       projectId: 'sampleProjectId',
       status: 'sampleStatus',
       symbol: 'sampleSymbol',

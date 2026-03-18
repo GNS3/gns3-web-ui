@@ -9,8 +9,8 @@ import { EllipseElementFactory } from '../../../cartography/helpers/drawings-fac
 import { LineElementFactory } from '../../../cartography/helpers/drawings-factory/line-element-factory';
 import { RectangleElementFactory } from '../../../cartography/helpers/drawings-factory/rectangle-element-factory';
 import { TextElementFactory } from '../../../cartography/helpers/drawings-factory/text-element-factory';
-import { Project } from '../../../models/project';
-import { DrawingService } from '../../../services/drawing.service';
+import { Project } from '@models/project';
+import { DrawingService } from '@services/drawing.service';
 import { MockedDrawingsDataSource, MockedDrawingService } from '../../project-map/project-map.component.spec';
 import { DrawingAddedComponent } from './drawing-added.component';
 

@@ -56,14 +56,13 @@ export class TextComponent implements OnInit, DoCheck {
   }
 
   calculateTransformation() {
-    if (this.textRef != undefined) {
-      const tspans = this.textRef.nativeElement.getElementsByTagName('tspan');
-      if (tspans.length > 0) {
-        const height = this.textRef.nativeElement.getBBox().height / tspans.length;
-        return `translate(${TextComponent.MARGIN}, ${height - TextComponent.MARGIN})`;
-      }
-      return '';
+    if (this.textRef != undefined && this.text) {
+      const bbox = this.textRef.nativeElement.getBBox();
+      const expectedHeight = Number(this.text.height);
+      const yOffset = isFinite(expectedHeight) ? expectedHeight / 2 - (bbox.y + bbox.height / 2) : 0;
+      return `translate(0, ${yOffset})`;
     }
+    return '';
   }
 
   getLines(text: string) {

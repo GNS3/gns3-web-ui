@@ -1,7 +1,20 @@
 <div class="content" [ngClass]="{ shadowed: isSymbolSelectionOpened }">
   <div class="default-header">
     <div class="row">
-      <h1 class="col">Dynamips IOS Router configuration</h1>
+      <div class="col-md-1">
+        <button
+        *ngIf="controller"
+        class="top-button"
+        class="cancel-button"
+        (click)="goBack()"
+        mat-button
+      >
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+      <div class="col-md-11">
+        <h1 class="col">IOS router template configuration</h1>
+      </div>
     </div>
   </div>
   <div class="default-content" *ngIf="iosTemplate">
@@ -31,8 +44,10 @@
           </mat-form-field>
           <mat-label>Platform - {{ iosTemplate.platform }}</mat-label
           ><br /><br />
+          <div *ngIf="iosTemplate.chassis">
           <mat-label>Chassis - {{ iosTemplate.chassis }}</mat-label
           ><br /><br />
+          </div>
           <mat-form-field class="form-field">
             <input
               matInput
@@ -54,6 +69,19 @@
               </mat-option>
             </mat-select>
           </mat-form-field>
+          <mat-form-field class="form-field tags-field">
+            <mat-label>Tags</mat-label>
+            <mat-chip-list #chipList>
+              <mat-chip *ngFor="let tag of iosTemplate?.tags" (removed)="removeTag(tag)">
+                {{ tag }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+            </mat-chip-list>
+            <input matInput placeholder="Add tags"
+                   [matChipInputFor]="chipList"
+                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                   (matChipInputTokenEnd)="addTag($event)" />
+          </mat-form-field>
           <mat-form-field class="form-field">
             <input
               matInput
@@ -71,6 +99,7 @@
               [(ngModel)]="iosTemplate.startup_config"
               placeholder="Initial startup-config"
             />
+            <mat-hint>Filename only (e.g. ios-startup-config.txt)</mat-hint>
           </mat-form-field>
           <mat-form-field class="form-field">
             <input
@@ -80,10 +109,18 @@
               [(ngModel)]="iosTemplate.private_config"
               placeholder="Initial private-config"
             />
+            <mat-hint>Filename only (e.g. ios-private-config.txt)</mat-hint>
           </mat-form-field>
         </form>
         <mat-form-field class="select">
           <mat-select placeholder="Console type" [(ngModel)]="iosTemplate.console_type">
+            <mat-option *ngFor="let type of consoleTypes" [value]="type">
+              {{ type }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="select">
+          <mat-select placeholder="Auxiliary console type" [(ngModel)]="iosTemplate.aux_type">
             <mat-option *ngFor="let type of consoleTypes" [value]="type">
               {{ type }}
             </mat-option>
@@ -97,32 +134,49 @@
         </mat-expansion-panel-header>
         <form [formGroup]="memoryForm">
           <mat-form-field class="form-field">
-            <input matInput type="number" formControlName="ram" [(ngModel)]="iosTemplate.ram" placeholder="RAM size" />
+            <input
+              matInput
+              type="number"
+              min="32"
+              step="32"
+              formControlName="ram"
+              [(ngModel)]="iosTemplate.ram"
+              placeholder="RAM size"
+            />
             <span matSuffix>MB</span>
           </mat-form-field>
           <mat-form-field class="form-field">
             <input
               matInput
               type="number"
+              min="32"
+              step="32"
               formControlName="nvram"
               [(ngModel)]="iosTemplate.nvram"
               placeholder="NVRAM size"
             />
             <span matSuffix>MB</span>
           </mat-form-field>
-          <mat-form-field class="form-field">
+          <mat-form-field class="form-field" *ngIf="['c1700', 'c2600', 'c2691', 'c3600', 'c3725', 'c3745'].includes(iosTemplate.platform)">
             <input
               matInput
               type="number"
+              min="0"
+              max="100"
+              step="5"
               formControlName="iomemory"
               [(ngModel)]="iosTemplate.iomem"
               placeholder="I/O memory"
             />
+            <mat-hint>Percentage of RAM for I/O memory</mat-hint>
           </mat-form-field>
+          <br /><br />
           <mat-form-field class="form-field">
             <input
               matInput
               type="number"
+              min="0"
+              step="4"
               formControlName="disk0"
               [(ngModel)]="iosTemplate.disk0"
               placeholder="PCMCIA disk0"
@@ -132,6 +186,8 @@
             <input
               matInput
               type="number"
+              min="0"
+              step="4"
               formControlName="disk1"
               [(ngModel)]="iosTemplate.disk1"
               placeholder="PCMCIA disk1"
@@ -147,59 +203,48 @@
           <mat-panel-title> Slots </mat-panel-title>
         </mat-expansion-panel-header>
         <h6>Adapters</h6>
-        <div *ngIf="iosTemplate.chassis && chassis[iosTemplate.platform]">
-          <div *ngFor="let index of [0, 1, 2, 3, 4, 5, 6, 7]">
+        <div *ngFor="let index of [0, 1, 2, 3, 4, 5, 6]">
+          <ng-container *ngIf="adapterMatrix[iosTemplate.platform] && adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''] && adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index]">
             <mat-select
               placeholder="Slot {{ index }}"
               [(ngModel)]="networkAdaptersForTemplate[index]"
               [ngModelOptions]="{ standalone: true }"
-              *ngIf="networkAdapters[iosTemplate.chassis][index]"
-            >
-              <mat-option *ngFor="let option of networkAdapters[iosTemplate.chassis][index]" [value]="option">
-                {{ option }}
-              </mat-option>
-            </mat-select>
-          </div>
-        </div>
-        <div *ngIf="iosTemplate.platform && !chassis[iosTemplate.platform]">
-          <div *ngFor="let index of [0, 1, 2, 3, 4, 5, 6, 7]">
-            <mat-select
-              placeholder="Slot {{ index }}"
-              [(ngModel)]="networkAdaptersForTemplate[index]"
-              [ngModelOptions]="{ standalone: true }"
-              *ngIf="networkAdaptersForPlatform[iosTemplate.platform][index]"
             >
               <mat-option
-                *ngFor="let option of networkAdaptersForPlatform[iosTemplate.platform][index]"
+                *ngIf="adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index].length > 1 &&
+                !adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index][0].startsWith('C7200')"
+                [value]=""
+              >
+                {{ "" }}
+              </mat-option>
+              <mat-option
+                *ngFor="let option of adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index]"
                 [value]="option"
               >
                 {{ option }}
               </mat-option>
             </mat-select>
+          </ng-container>
+        </div>
+        <br />
+        <div *ngIf="wicMatrix[iosTemplate.platform]">
+          <h6>WICs</h6>
+          <div *ngFor="let index of [0, 1, 2]">
+            <ng-container *ngIf="wicMatrix[iosTemplate.platform] && wicMatrix[iosTemplate.platform][index]">
+              <mat-select
+                placeholder="WIC {{ index }}"
+                [(ngModel)]="wicsForTemplate[index]"
+                [ngModelOptions]="{ standalone: true }"
+              >
+                <mat-option [value]="">
+                  {{ "" }}
+                </mat-option>
+                <mat-option *ngFor="let option of wicMatrix[iosTemplate.platform][index]" [value]="option">
+                  {{ option }}
+                </mat-option>
+              </mat-select>
+            </ng-container>
           </div>
-        </div>
-        <br /><br />
-        <h6>WICs</h6>
-        <div *ngIf="iosTemplate.wic0 || iosTemplate.wic0 === ''">
-          <mat-select placeholder="WIC 0" [(ngModel)]="iosTemplate.wic0" [ngModelOptions]="{ standalone: true }">
-            <mat-option *ngFor="let option of networkModules[iosTemplate.platform][0]" [value]="option">
-              {{ option }}
-            </mat-option>
-          </mat-select>
-        </div>
-        <div *ngIf="iosTemplate.wic1 || iosTemplate.wic1 === ''">
-          <mat-select placeholder="WIC 1" [(ngModel)]="iosTemplate.wic1" [ngModelOptions]="{ standalone: true }">
-            <mat-option *ngFor="let option of networkModules[iosTemplate.platform][1]" [value]="option">
-              {{ option }}
-            </mat-option>
-          </mat-select>
-        </div>
-        <div *ngIf="iosTemplate.wic2 || iosTemplate.wic2 === ''">
-          <mat-select placeholder="WIC 2" [(ngModel)]="iosTemplate.wic2" [ngModelOptions]="{ standalone: true }">
-            <mat-option *ngFor="let option of networkModules[iosTemplate.platform][2]" [value]="option">
-              {{ option }}
-            </mat-option>
-          </mat-select>
         </div>
       </mat-expansion-panel>
       <mat-expansion-panel>
@@ -218,27 +263,33 @@
           </mat-form-field>
           <mat-form-field class="form-field">
             <input
-              [ngModelOptions]="{ standalone: true }"
               matInput
+              formControlName="mac_addr"
               type="text"
               [(ngModel)]="iosTemplate.mac_addr"
-              placeholder="Base MAC"
+              placeholder="Base MAC (format: xxxx.xxxx.xxxx)"
             />
+            <mat-hint>Example: aaaa.bbbb.cccc (leave empty to let the server allocate a MAC address).</mat-hint>
           </mat-form-field>
+          <button mat-button class="generateButton" (click)="generateBaseMAC()">Generate Base MAC</button>
+          <br /><br />
           <mat-form-field class="form-field">
             <input
-              [ngModelOptions]="{ standalone: true }"
               matInput
+              formControlName="idlepc"
               type="text"
               [(ngModel)]="iosTemplate.idlepc"
               placeholder="Idle-PC"
             />
           </mat-form-field>
+          <button mat-button class="idlePCFinderButton" (click)="findIdlePC()">Idle-PC finder</button><br /><br />
           <mat-form-field class="form-field">
             <input
               matInput
               formControlName="idlemax"
               type="number"
+              min="100"
+              step="100"
               [(ngModel)]="iosTemplate.idlemax"
               placeholder="Idlemax"
             />
@@ -248,6 +299,8 @@
               matInput
               formControlName="idlesleep"
               type="number"
+              min="1"
+              step="10"
               [(ngModel)]="iosTemplate.idlesleep"
               placeholder="Idlesleep"
             />
@@ -257,6 +310,8 @@
               matInput
               formControlName="execarea"
               type="number"
+              min="0"
+              step="4"
               [(ngModel)]="iosTemplate.exec_area"
               placeholder="Exec area"
             />

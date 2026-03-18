@@ -1,79 +1,80 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { BundledControllerFinderComponent } from './components/bundled-controller-finder/bundled-controller-finder.component';
-import { DirectLinkComponent } from './components/direct-link/direct-link.component';
-import { HelpComponent } from './components/help/help.component';
-import { InstalledSoftwareComponent } from './components/installed-software/installed-software.component';
-import { LoginComponent } from './components/login/login.component';
-import { PageNotFoundComponent } from './components/page-not-found/page-not-found.component';
-import { BuiltInPreferencesComponent } from './components/preferences/built-in/built-in-preferences.component';
-import { CloudNodesAddTemplateComponent } from './components/preferences/built-in/cloud-nodes/cloud-nodes-add-template/cloud-nodes-add-template.component';
-import { CloudNodesTemplateDetailsComponent } from './components/preferences/built-in/cloud-nodes/cloud-nodes-template-details/cloud-nodes-template-details.component';
-import { CloudNodesTemplatesComponent } from './components/preferences/built-in/cloud-nodes/cloud-nodes-templates/cloud-nodes-templates.component';
-import { EthernetHubsAddTemplateComponent } from './components/preferences/built-in/ethernet-hubs/ethernet-hubs-add-template/ethernet-hubs-add-template.component';
-import { EthernetHubsTemplateDetailsComponent } from './components/preferences/built-in/ethernet-hubs/ethernet-hubs-template-details/ethernet-hubs-template-details.component';
-import { EthernetHubsTemplatesComponent } from './components/preferences/built-in/ethernet-hubs/ethernet-hubs-templates/ethernet-hubs-templates.component';
-import { EthernetSwitchesAddTemplateComponent } from './components/preferences/built-in/ethernet-switches/ethernet-switches-add-template/ethernet-switches-add-template.component';
-import { EthernetSwitchesTemplateDetailsComponent } from './components/preferences/built-in/ethernet-switches/ethernet-switches-template-details/ethernet-switches-template-details.component';
-import { EthernetSwitchesTemplatesComponent } from './components/preferences/built-in/ethernet-switches/ethernet-switches-templates/ethernet-switches-templates.component';
-import { AddDockerTemplateComponent } from './components/preferences/docker/add-docker-template/add-docker-template.component';
-import { CopyDockerTemplateComponent } from './components/preferences/docker/copy-docker-template/copy-docker-template.component';
-import { DockerTemplateDetailsComponent } from './components/preferences/docker/docker-template-details/docker-template-details.component';
-import { DockerTemplatesComponent } from './components/preferences/docker/docker-templates/docker-templates.component';
-import { AddIosTemplateComponent } from './components/preferences/dynamips/add-ios-template/add-ios-template.component';
-import { CopyIosTemplateComponent } from './components/preferences/dynamips/copy-ios-template/copy-ios-template.component';
-import { IosTemplateDetailsComponent } from './components/preferences/dynamips/ios-template-details/ios-template-details.component';
-import { IosTemplatesComponent } from './components/preferences/dynamips/ios-templates/ios-templates.component';
-import { AddIouTemplateComponent } from './components/preferences/ios-on-unix/add-iou-template/add-iou-template.component';
-import { CopyIouTemplateComponent } from './components/preferences/ios-on-unix/copy-iou-template/copy-iou-template.component';
-import { IouTemplateDetailsComponent } from './components/preferences/ios-on-unix/iou-template-details/iou-template-details.component';
-import { IouTemplatesComponent } from './components/preferences/ios-on-unix/iou-templates/iou-templates.component';
-import { PreferencesComponent } from './components/preferences/preferences.component';
-import { AddQemuVmTemplateComponent } from './components/preferences/qemu/add-qemu-vm-template/add-qemu-vm-template.component';
-import { CopyQemuVmTemplateComponent } from './components/preferences/qemu/copy-qemu-vm-template/copy-qemu-vm-template.component';
-import { QemuVmTemplateDetailsComponent } from './components/preferences/qemu/qemu-vm-template-details/qemu-vm-template-details.component';
-import { QemuVmTemplatesComponent } from './components/preferences/qemu/qemu-vm-templates/qemu-vm-templates.component';
-import { AddVirtualBoxTemplateComponent } from './components/preferences/virtual-box/add-virtual-box-template/add-virtual-box-template.component';
-import { VirtualBoxTemplateDetailsComponent } from './components/preferences/virtual-box/virtual-box-template-details/virtual-box-template-details.component';
-import { VirtualBoxTemplatesComponent } from './components/preferences/virtual-box/virtual-box-templates/virtual-box-templates.component';
-import { AddVmwareTemplateComponent } from './components/preferences/vmware/add-vmware-template/add-vmware-template.component';
-import { VmwareTemplateDetailsComponent } from './components/preferences/vmware/vmware-template-details/vmware-template-details.component';
-import { VmwareTemplatesComponent } from './components/preferences/vmware/vmware-templates/vmware-templates.component';
-import { AddVpcsTemplateComponent } from './components/preferences/vpcs/add-vpcs-template/add-vpcs-template.component';
-import { VpcsTemplateDetailsComponent } from './components/preferences/vpcs/vpcs-template-details/vpcs-template-details.component';
-import { VpcsTemplatesComponent } from './components/preferences/vpcs/vpcs-templates/vpcs-templates.component';
-import { ProjectMapComponent } from './components/project-map/project-map.component';
-import { ProjectsComponent } from './components/projects/projects.component';
-import { ControllersComponent } from './components/controllers/controllers.component';
-import { ConsoleComponent } from './components/settings/console/console.component';
-import { SettingsComponent } from './components/settings/settings.component';
-import { ListOfSnapshotsComponent } from './components/snapshots/list-of-snapshots/list-of-snapshots.component';
-import { SystemStatusComponent } from './components/system-status/system-status.component';
-import { WebConsoleFullWindowComponent } from './components/web-console-full-window/web-console-full-window.component';
+import { BundledControllerFinderComponent } from '@components/bundled-controller-finder/bundled-controller-finder.component';
+import { DirectLinkComponent } from '@components/direct-link/direct-link.component';
+import { HelpComponent } from '@components/help/help.component';
+import { InstalledSoftwareComponent } from '@components/installed-software/installed-software.component';
+import { LoginComponent } from '@components/login/login.component';
+import { PageNotFoundComponent } from '@components/page-not-found/page-not-found.component';
+import { BuiltInPreferencesComponent } from '@components/preferences/built-in/built-in-preferences.component';
+import { CloudNodesAddTemplateComponent } from '@components/preferences/built-in/cloud-nodes/cloud-nodes-add-template/cloud-nodes-add-template.component';
+import { CloudNodesTemplateDetailsComponent } from '@components/preferences/built-in/cloud-nodes/cloud-nodes-template-details/cloud-nodes-template-details.component';
+import { CloudNodesTemplatesComponent } from '@components/preferences/built-in/cloud-nodes/cloud-nodes-templates/cloud-nodes-templates.component';
+import { EthernetHubsAddTemplateComponent } from '@components/preferences/built-in/ethernet-hubs/ethernet-hubs-add-template/ethernet-hubs-add-template.component';
+import { EthernetHubsTemplateDetailsComponent } from '@components/preferences/built-in/ethernet-hubs/ethernet-hubs-template-details/ethernet-hubs-template-details.component';
+import { EthernetHubsTemplatesComponent } from '@components/preferences/built-in/ethernet-hubs/ethernet-hubs-templates/ethernet-hubs-templates.component';
+import { EthernetSwitchesAddTemplateComponent } from '@components/preferences/built-in/ethernet-switches/ethernet-switches-add-template/ethernet-switches-add-template.component';
+import { EthernetSwitchesTemplateDetailsComponent } from '@components/preferences/built-in/ethernet-switches/ethernet-switches-template-details/ethernet-switches-template-details.component';
+import { EthernetSwitchesTemplatesComponent } from '@components/preferences/built-in/ethernet-switches/ethernet-switches-templates/ethernet-switches-templates.component';
+import { AddDockerTemplateComponent } from '@components/preferences/docker/add-docker-template/add-docker-template.component';
+import { CopyDockerTemplateComponent } from '@components/preferences/docker/copy-docker-template/copy-docker-template.component';
+import { DockerTemplateDetailsComponent } from '@components/preferences/docker/docker-template-details/docker-template-details.component';
+import { DockerTemplatesComponent } from '@components/preferences/docker/docker-templates/docker-templates.component';
+import { AddIosTemplateComponent } from '@components/preferences/dynamips/add-ios-template/add-ios-template.component';
+import { CopyIosTemplateComponent } from '@components/preferences/dynamips/copy-ios-template/copy-ios-template.component';
+import { IosTemplateDetailsComponent } from '@components/preferences/dynamips/ios-template-details/ios-template-details.component';
+import { IosTemplatesComponent } from '@components/preferences/dynamips/ios-templates/ios-templates.component';
+import { AddIouTemplateComponent } from '@components/preferences/ios-on-unix/add-iou-template/add-iou-template.component';
+import { CopyIouTemplateComponent } from '@components/preferences/ios-on-unix/copy-iou-template/copy-iou-template.component';
+import { IouTemplateDetailsComponent } from '@components/preferences/ios-on-unix/iou-template-details/iou-template-details.component';
+import { IouTemplatesComponent } from '@components/preferences/ios-on-unix/iou-templates/iou-templates.component';
+import { PreferencesComponent } from '@components/preferences/preferences.component';
+import { AddQemuVmTemplateComponent } from '@components/preferences/qemu/add-qemu-vm-template/add-qemu-vm-template.component';
+import { CopyQemuVmTemplateComponent } from '@components/preferences/qemu/copy-qemu-vm-template/copy-qemu-vm-template.component';
+import { QemuVmTemplateDetailsComponent } from '@components/preferences/qemu/qemu-vm-template-details/qemu-vm-template-details.component';
+import { QemuVmTemplatesComponent } from '@components/preferences/qemu/qemu-vm-templates/qemu-vm-templates.component';
+import { AddVirtualBoxTemplateComponent } from '@components/preferences/virtual-box/add-virtual-box-template/add-virtual-box-template.component';
+import { VirtualBoxTemplateDetailsComponent } from '@components/preferences/virtual-box/virtual-box-template-details/virtual-box-template-details.component';
+import { VirtualBoxTemplatesComponent } from '@components/preferences/virtual-box/virtual-box-templates/virtual-box-templates.component';
+import { AddVmwareTemplateComponent } from '@components/preferences/vmware/add-vmware-template/add-vmware-template.component';
+import { VmwareTemplateDetailsComponent } from '@components/preferences/vmware/vmware-template-details/vmware-template-details.component';
+import { VmwareTemplatesComponent } from '@components/preferences/vmware/vmware-templates/vmware-templates.component';
+import { AddVpcsTemplateComponent } from '@components/preferences/vpcs/add-vpcs-template/add-vpcs-template.component';
+import { VpcsTemplateDetailsComponent } from '@components/preferences/vpcs/vpcs-template-details/vpcs-template-details.component';
+import { VpcsTemplatesComponent } from '@components/preferences/vpcs/vpcs-templates/vpcs-templates.component';
+import { ProjectMapComponent } from '@components/project-map/project-map.component';
+import { ProjectsComponent } from '@components/projects/projects.component';
+import { ControllersComponent } from '@components/controllers/controllers.component';
+import { ConsoleComponent } from '@components/settings/console/console.component';
+import { SettingsComponent } from '@components/settings/settings.component';
+import { ListOfSnapshotsComponent } from '@components/snapshots/list-of-snapshots/list-of-snapshots.component';
+import { SystemStatusComponent } from '@components/system-status/system-status.component';
+import { WebConsoleFullWindowComponent } from '@components/web-console-full-window/web-console-full-window.component';
 import { ConsoleGuard } from './guards/console-guard';
 import { LoginGuard } from './guards/login-guard';
 import { DefaultLayoutComponent } from './layouts/default-layout/default-layout.component';
-import { ControllerResolve } from './resolvers/controller-resolve';
-import { UserManagementComponent } from './components/user-management/user-management.component';
-import { LoggedUserComponent } from './components/users/logged-user/logged-user.component';
-import { ImageManagerComponent } from './components/image-manager/image-manager.component';
-import { UserDetailComponent } from "./components/user-management/user-detail/user-detail.component";
-import { UserDetailResolver } from "./resolvers/user-detail.resolver";
-import { ManagementComponent } from "./components/management/management.component";
-import { PermissionResolver } from "./resolvers/permission.resolver";
-import { UserGroupsResolver } from "./resolvers/user-groups.resolver";
-import { UserPermissionsResolver } from "./resolvers/user-permissions.resolver";
-import { GroupManagementComponent } from "./components/group-management/group-management.component";
-import { RoleManagementComponent } from "./components/role-management/role-management.component";
-import { PermissionsManagementComponent } from "./components/permissions-management/permissions-management.component";
-import { GroupDetailsComponent } from "./components/group-details/group-details.component";
-import { GroupMembersResolver } from "./resolvers/group-members.resolver";
-import { GroupResolver } from "./resolvers/group.resolver";
-import { GroupRoleResolver } from "./resolvers/group-role.resolver";
-import { RoleDetailComponent } from "./components/role-management/role-detail/role-detail.component";
-import { RoleDetailResolver } from "./resolvers/role-detail.resolver";
-import { RolePermissionsComponent } from "./components/role-management/role-detail/role-permissions/role-permissions.component";
-import { UserPermissionsComponent } from "./components/user-management/user-detail/user-permissions/user-permissions.component";
+import { ControllerResolve } from '@resolvers/controller-resolve';
+import { UserManagementComponent } from '@components/user-management/user-management.component';
+import { LoggedUserComponent } from '@components/users/logged-user/logged-user.component';
+import { ImageManagerComponent } from '@components/image-manager/image-manager.component';
+import { UserDetailComponent } from "@components/user-management/user-detail/user-detail.component";
+import { UserDetailResolver } from "@resolvers/user-detail.resolver";
+import { ManagementComponent } from "@components/management/management.component";
+import { UserGroupsResolver } from "@resolvers/user-groups.resolver";
+import { GroupManagementComponent } from "@components/group-management/group-management.component";
+import { RoleManagementComponent } from "@components/role-management/role-management.component";
+import { GroupDetailsComponent } from "@components/group-details/group-details.component";
+import { GroupMembersResolver } from "@resolvers/group-members.resolver";
+import { GroupResolver } from "@resolvers/group.resolver";
+import { GroupRoleResolver } from "@resolvers/group-role.resolver";
+import { RoleDetailComponent } from "@components/role-management/role-detail/role-detail.component";
+import { RoleDetailResolver } from "@resolvers/role-detail.resolver";
+import { AclManagementComponent } from "@components/acl-management/acl-management.component";
+import { ResourcePoolsManagementComponent } from "@components/resource-pools-management/resource-pools-management.component";
+import { ResourcePoolDetailsComponent } from "@components/resource-pool-details/resource-pool-details.component";
+import { ResourcePoolsResolver } from "@resolvers/resource-pools.resolver";
+import { GroupAcesResolver } from "@resolvers/group-ace.resolver.ts.resolver";
+import { UserAcesResolver } from "@resolvers/user-aces.resolver";
 
 const routes: Routes = [
   {
@@ -85,7 +86,7 @@ const routes: Routes = [
       { path: 'bundled', component: BundledControllerFinderComponent },
       { path: 'controller/:controller_id/login', component: LoginComponent },
       { path: 'controller/:controller_id/loggeduser', component: LoggedUserComponent },
-      {path : 'controller/:controller_id/image-manager', component: ImageManagerComponent},
+      { path : 'controller/:controller_id/image-manager', component: ImageManagerComponent},
       {
         path: 'controller/:controller_id/projects',
         component: ProjectsComponent,
@@ -102,8 +103,17 @@ const routes: Routes = [
         resolve: {
           user: UserDetailResolver,
           groups: UserGroupsResolver,
-          permissions: UserPermissionsResolver,
+          aces: UserAcesResolver,
           controller: ControllerResolve},
+      },
+      {
+        path: 'controller/:controller_id/management/pools/:pool_id',
+        component: ResourcePoolDetailsComponent,
+        canActivate: [LoginGuard],
+        resolve: {
+          pool: ResourcePoolsResolver,
+          controller: ControllerResolve
+        }
       },
       { path: 'installed-software', component: InstalledSoftwareComponent },
       { path: 'controller/:controller_id/systemstatus', component: SystemStatusComponent, canActivate: [LoginGuard] },
@@ -239,8 +249,12 @@ const routes: Routes = [
             component: RoleManagementComponent
           },
           {
-            path: 'permissions',
-            component: PermissionsManagementComponent
+            path: "pools",
+            component: ResourcePoolsManagementComponent
+          },
+          {
+            path: 'ACL',
+            component: AclManagementComponent
           }
         ]
       },
@@ -251,7 +265,7 @@ const routes: Routes = [
           members: GroupMembersResolver,
           controller: ControllerResolve,
           group: GroupResolver,
-          roles: GroupRoleResolver
+          aces: GroupAcesResolver
         }
       },
       {
@@ -262,25 +276,6 @@ const routes: Routes = [
           controller: ControllerResolve
         }
       },
-      {
-        path: 'controller/:controller_id/management/roles/:role_id/permissions',
-        component: RolePermissionsComponent,
-        resolve: {
-          role: RoleDetailResolver,
-          controller: ControllerResolve,
-          permissions: PermissionResolver
-        }
-      },
-      {
-        path: 'controller/:controller_id/management/users/:user_id/permissions',
-        component: UserPermissionsComponent,
-        resolve: {
-          user: UserDetailResolver,
-          userPermissions: UserPermissionsResolver,
-          controller: ControllerResolve,
-          permissions: PermissionResolver
-        }
-      }
     ],
   },
   {

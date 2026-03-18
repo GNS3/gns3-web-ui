@@ -12,11 +12,11 @@
 */
 import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
-import {ControllerService} from "../../services/controller.service";
-import {ToasterService} from "../../services/toaster.service";
-import {GroupService} from "../../services/group.service";
-import {Controller} from "../../models/controller";
-import {Group} from "../../models/groups/group";
+import {ControllerService} from "@services/controller.service";
+import {ToasterService} from "@services/toaster.service";
+import {GroupService} from "@services/group.service";
+import {Controller} from "@models/controller";
+import {Group} from "@models/groups/group";
 import {MatSort, Sort} from "@angular/material/sort";
 import {MatDialog} from "@angular/material/dialog";
 import {AddGroupDialogComponent} from "@components/group-management/add-group-dialog/add-group-dialog.component";

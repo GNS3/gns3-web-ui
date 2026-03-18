@@ -2,10 +2,12 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ElectronService, NgxElectronModule } from 'ngx-electron';
 import { AppComponent } from './app.component';
 import { ProgressService } from './common/progress/progress.service';
-import { SettingsService } from './services/settings.service';
+import { SettingsService } from '@services/settings.service';
+import { AppTestingModule } from './testing/app-testing/app-testing.module';
 
 import createSpyObj = jasmine.createSpyObj;
 // import 'jasmine';
@@ -19,7 +21,7 @@ describe('AppComponent', () => {
   beforeEach(async() => {
     await TestBed.configureTestingModule({
       declarations: [AppComponent],
-      imports: [RouterTestingModule, MatIconModule, NgxElectronModule],
+      imports: [RouterTestingModule, MatIconModule, HttpClientTestingModule, NgxElectronModule, AppTestingModule],
       providers: [SettingsService, ProgressService],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

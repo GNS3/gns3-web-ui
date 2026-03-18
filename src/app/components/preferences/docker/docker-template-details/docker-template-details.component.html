@@ -7,7 +7,7 @@
         </button>
       </div>
       <div class="col col-md-11">
-        <h1 class="col">Docker image configuration</h1>
+        <h1 class="col">Docker container template configuration</h1>
       </div>
     </div>
   </div>
@@ -57,6 +57,19 @@
             />
           </mat-form-field>
           <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br /><br />
+          <mat-form-field class="form-field tags-field">
+            <mat-label>Tags</mat-label>
+            <mat-chip-list #chipList>
+              <mat-chip *ngFor="let tag of dockerTemplate?.tags" (removed)="removeTag(tag)">
+                {{ tag }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+            </mat-chip-list>
+            <input matInput placeholder="Add tags"
+                   [matChipInputFor]="chipList"
+                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                   (matChipInputTokenEnd)="addTag($event)" />
+          </mat-form-field>
           <mat-form-field class="form-field">
             <input
               matInput
@@ -64,6 +77,15 @@
               [ngModelOptions]="{ standalone: true }"
               [(ngModel)]="dockerTemplate.start_command"
               placeholder="Start command"
+            />
+          </mat-form-field>
+          <mat-form-field class="form-field">
+            <input
+              matInput
+              type="text"
+              [ngModelOptions]="{ standalone: true }"
+              [(ngModel)]="dockerTemplate.mac_address"
+              placeholder="Base MAC"
             />
           </mat-form-field>
           <mat-form-field class="form-field">
@@ -82,6 +104,17 @@
               [(ngModel)]="dockerTemplate.console_type"
             >
               <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                {{ type }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field class="select">
+            <mat-select
+              [ngModelOptions]="{ standalone: true }"
+              placeholder="Auxiliary console type"
+              [(ngModel)]="dockerTemplate.aux_type"
+            >
+              <mat-option *ngFor="let type of auxConsoleTypes" [value]="type">
                 {{ type }}
               </mat-option>
             </mat-select>

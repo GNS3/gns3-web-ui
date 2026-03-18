@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
-import{ Controller } from '../../../../../models/controller';
-import { DockerConfigurationService } from '../../../../../services/docker-configuration.service';
-import { NodeService } from '../../../../../services/node.service';
-import { ToasterService } from '../../../../../services/toaster.service';
+import { Controller } from '@models/controller';
+import { DockerConfigurationService } from '@services/docker-configuration.service';
+import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
 import { ConfigureCustomAdaptersDialogComponent } from './configure-custom-adapters/configure-custom-adapters.component';
 import { EditNetworkConfigurationDialogComponent } from './edit-network-configuration/edit-network-configuration.component';
 import { NonNegativeValidator } from '../../../../../validators/non-negative-validator';
@@ -16,11 +18,13 @@ import { NonNegativeValidator } from '../../../../../validators/non-negative-val
   styleUrls: ['../configurator.component.scss'],
 })
 export class ConfiguratorDialogDockerComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   node: Node;
   name: string;
   generalSettingsForm: UntypedFormGroup;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
+  auxConsoleTypes: string[] = [];
   consoleResolutions: string[] = ['2560x1440', '1920x1080', '1680x1050', '1440x900', '1366x768', '1280x1024', '1280x800', '1024x768', '800x600', '640x480'];
   private conf = {
     autoFocus: false,
@@ -41,6 +45,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
       this.generalSettingsForm = this.formBuilder.group({
           name: new UntypedFormControl('', Validators.required),
           adapter: new UntypedFormControl('', Validators.required),
+          mac_address: new UntypedFormControl('', Validators.pattern(this.dockerConfigurationService.getMacAddrRegex())),
           memory: new UntypedFormControl('', nonNegativeValidator.get),
           cpus: new UntypedFormControl('', nonNegativeValidator.get),
           startCommand: new UntypedFormControl(''),
@@ -55,11 +60,15 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
           this.name = node.name;
           this.getConfiguration();
           if (!this.node.properties.cpus) this.node.properties.cpus = 0.0;
+          if (!this.node.tags) {
+              this.node.tags = [];
+          }
       });
   }
 
   getConfiguration() {
     this.consoleTypes = this.dockerConfigurationService.getConsoleTypes();
+    this.auxConsoleTypes = this.dockerConfigurationService.getAuxConsoleTypes();
   }
 
   configureCustomAdapters() {
@@ -89,5 +98,32 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
 
   onCancelClick() {
     this.dialogReference.close();
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.node) {
+      if (!this.node.tags) {
+        this.node.tags = [];
+      }
+      this.node.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.node.tags) {
+      return;
+    }
+    const index = this.node.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.node.tags.splice(index, 1);
+    }
   }
 }

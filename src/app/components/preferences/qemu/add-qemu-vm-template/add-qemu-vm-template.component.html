@@ -46,7 +46,7 @@
               </mat-select> </mat-form-field
             ><br />
             <mat-form-field class="form-field">
-              <input matInput type="number" placeholder="RAM" formControlName="ramMemory" ngDefaultControl />
+              <input matInput type="number" min="1" placeholder="RAM" formControlName="ramMemory" ngDefaultControl />
               <span matSuffix>MB</span>
             </mat-form-field>
           </form>
@@ -60,6 +60,20 @@
               [ngModelOptions]="{ standalone: true }"
             >
               <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                {{ type }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </mat-step>
+
+        <mat-step label="Auxiliary console type" [completed]="qemuTemplate.aux_type">
+          <mat-form-field class="form-field">
+            <mat-select
+              placeholder="Auxiliary console type"
+              [(ngModel)]="qemuTemplate.aux_type"
+              [ngModelOptions]="{ standalone: true }"
+            >
+              <mat-option *ngFor="let type of auxConsoleTypes" [value]="type">
                 {{ type }}
               </mat-option>
             </mat-select>

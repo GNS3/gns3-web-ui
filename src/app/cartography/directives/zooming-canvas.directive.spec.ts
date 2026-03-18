@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { MapScaleService } from '../../services/mapScale.service';
+import { MapScaleService } from '@services/mapScale.service';
 import { MovingEventSource } from '../events/moving-event-source';
 import { Context } from '../models/context';
 import { ZoomingCanvasDirective } from './zooming-canvas.directive';

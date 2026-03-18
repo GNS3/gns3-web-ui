@@ -11,7 +11,7 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 import {Pipe, PipeTransform} from '@angular/core';
-import {Group} from "../models/groups/group";
+import {Group} from "@models/groups/group";
 import {MatTableDataSource} from "@angular/material/table";
 
 @Pipe({

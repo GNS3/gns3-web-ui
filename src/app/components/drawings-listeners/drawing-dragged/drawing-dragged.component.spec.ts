@@ -5,7 +5,7 @@ import { DrawingsEventSource } from '../../../cartography/events/drawings-event-
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
 import { DrawingElement } from '../../../cartography/models/drawings/drawing-element';
 import { MapDrawing } from '../../../cartography/models/map/map-drawing';
-import { DrawingService } from '../../../services/drawing.service';
+import { DrawingService } from '@services/drawing.service';
 import { MockedDrawingsDataSource, MockedDrawingService } from '../../project-map/project-map.component.spec';
 import { DrawingDraggedComponent } from './drawing-dragged.component';
 

@@ -6,12 +6,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MapSettingsService } from '../../services/mapsettings.service';
-import { SettingsService } from '../../services/settings.service';
-import { ConsoleService } from '../../services/settings/console.service';
-import { ToasterService } from '../../services/toaster.service';
-import { MockedToasterService } from '../../services/toaster.service.spec';
-import { UpdatesService } from '../../services/updates.service';
+import { MapSettingsService } from '@services/mapsettings.service';
+import { SettingsService } from '@services/settings.service';
+import { ConsoleService } from '@services/settings/console.service';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
+import { UpdatesService } from '@services/updates.service';
 import { autoSpy } from '../project-map/console-wrapper/console-wrapper.component.spec';
 import { SettingsComponent } from './settings.component';
 

@@ -1,13 +1,15 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
-import{ Controller } from '../../../../models/controller';
-import { VmwareTemplate } from '../../../../models/templates/vmware-template';
-import { ControllerService } from '../../../../services/controller.service';
-import { ToasterService } from '../../../../services/toaster.service';
-import { VmwareConfigurationService } from '../../../../services/vmware-configuration.service';
-import { VmwareService } from '../../../../services/vmware.service';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
+import { Controller } from '@models/controller';
+import { VmwareTemplate } from '@models/templates/vmware-template';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
+import { VmwareConfigurationService } from '@services/vmware-configuration.service';
+import { VmwareService } from '@services/vmware.service';
 import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
 
 @Component({
@@ -16,12 +18,13 @@ import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-ada
   styleUrls: ['./vmware-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class VmwareTemplateDetailsComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   vmwareTemplate: VmwareTemplate;
   generalSettingsForm: UntypedFormGroup;
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
   isConfiguratorOpened: boolean = false;
   isSymbolSelectionOpened: boolean = false;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
   categories = [];
   onCloseOptions = [];
@@ -49,12 +52,15 @@ export class VmwareTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       this.getConfiguration();
       this.vmwareService.getTemplate(this.controller, template_id).subscribe((vmwareTemplate: VmwareTemplate) => {
         this.vmwareTemplate = vmwareTemplate;
+        if (!this.vmwareTemplate.tags) {
+          this.vmwareTemplate.tags = [];
+        }
         this.fillCustomAdapters();
       });
     });
@@ -126,5 +132,32 @@ export class VmwareTemplateDetailsComponent implements OnInit {
 
   symbolChanged(chosenSymbol: string) {
     this.vmwareTemplate.symbol = chosenSymbol;
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.vmwareTemplate) {
+      if (!this.vmwareTemplate.tags) {
+        this.vmwareTemplate.tags = [];
+      }
+      this.vmwareTemplate.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.vmwareTemplate.tags) {
+      return;
+    }
+    const index = this.vmwareTemplate.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.vmwareTemplate.tags.splice(index, 1);
+    }
   }
 }

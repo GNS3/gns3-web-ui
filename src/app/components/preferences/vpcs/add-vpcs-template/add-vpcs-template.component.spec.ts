@@ -10,26 +10,26 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import{ Controller } from '../../../../models/controller';
-import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
-import { ComputeService } from '../../../../services/compute.service';
-import { ControllerService } from '../../../../services/controller.service';
-import { MockedControllerService } from '../../../../services/controller.service.spec';
-import { TemplateMocksService } from '../../../../services/template-mocks.service';
-import { ToasterService } from '../../../../services/toaster.service';
-import { MockedToasterService } from '../../../../services/toaster.service.spec';
-import { VpcsService } from '../../../../services/vpcs.service';
+import { Controller } from '@models/controller';
+import { VpcsTemplate } from '@models/templates/vpcs-template';
+import { ComputeService } from '@services/compute.service';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
+import { TemplateMocksService } from '@services/template-mocks.service';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
+import { VpcsService } from '@services/vpcs.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { AddVpcsTemplateComponent } from './add-vpcs-template.component';
 
 export class MockedComputeService {
-  getComputes(controller:Controller ) {
+  getComputes(controller: Controller ) {
     return of([]);
   }
 }
 
 export class MockedVpcsService {
-  public addTemplate(controller:Controller , vpcsTemplate: VpcsTemplate) {
+  public addTemplate(controller: Controller, vpcsTemplate: VpcsTemplate) {
     return of(vpcsTemplate);
   }
 }
@@ -86,7 +86,7 @@ describe('AddVpcsTemplateComponent', () => {
     spyOn(mockedVpcsService, 'addTemplate').and.returnValue(of({} as VpcsTemplate));
     component.templateName = 'sample name';
     component.templateNameForm.controls['templateName'].setValue('template name');
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 
@@ -97,7 +97,7 @@ describe('AddVpcsTemplateComponent', () => {
     spyOn(mockedVpcsService, 'addTemplate').and.returnValue(of({} as VpcsTemplate));
     spyOn(mockedToasterService, 'error');
     component.templateName = ' ';
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 

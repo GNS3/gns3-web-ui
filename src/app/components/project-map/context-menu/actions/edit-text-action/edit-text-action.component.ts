@@ -3,10 +3,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Label } from '../../../../../cartography/models/label';
 import { Node } from '../../../../../cartography/models/node';
-import { Link } from '../../../../../models/link';
-import { LinkNode } from '../../../../../models/link-node';
-import { Project } from '../../../../../models/project';
-import{ Controller } from '../../../../../models/controller';
+import { Link } from '@models/link';
+import { LinkNode } from '@models/link-node';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
 import { TextEditorDialogComponent } from '../../../drawings-editors/text-editor/text-editor.component';
 
 @Component({
@@ -14,7 +14,7 @@ import { TextEditorDialogComponent } from '../../../drawings-editors/text-editor
   templateUrl: './edit-text-action.component.html',
 })
 export class EditTextActionComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
   @Input() drawing: Drawing;
   @Input() node: Node;

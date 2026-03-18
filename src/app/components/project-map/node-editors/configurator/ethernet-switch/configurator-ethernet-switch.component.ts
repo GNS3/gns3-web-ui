@@ -1,12 +1,14 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
-import { PortsComponent } from '../../../../../components/preferences/common/ports/ports.component';
-import{ Controller } from '../../../../../models/controller';
-import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
-import { NodeService } from '../../../../../services/node.service';
-import { ToasterService } from '../../../../../services/toaster.service';
+import { PortsComponent } from '@components/preferences/common/ports/ports.component';
+import { Controller } from '@models/controller';
+import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
+import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-configurator-ethernet-switch',
@@ -15,11 +17,12 @@ import { ToasterService } from '../../../../../services/toaster.service';
 })
 export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
   @ViewChild(PortsComponent) portsComponent: PortsComponent;
-  controller:Controller ;
+  controller: Controller;
   node: Node;
   name: string;
   inputForm: UntypedFormGroup;
   consoleTypes: string[] = [];
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
   constructor(
     public dialogRef: MatDialogRef<ConfiguratorDialogEthernetSwitchComponent>,
@@ -38,6 +41,9 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
       this.node = node;
       this.name = this.node.name;
       this.getConfiguration();
+      if (!this.node.tags) {
+        this.node.tags = [];
+      }
     });
   }
 
@@ -59,5 +65,32 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
 
   onCancelClick() {
     this.dialogRef.close();
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.node) {
+      if (!this.node.tags) {
+        this.node.tags = [];
+      }
+      this.node.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.node.tags) {
+      return;
+    }
+    const index = this.node.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.node.tags.splice(index, 1);
+    }
   }
 }

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { CustomAdapter } from '../../../../models/qemu/qemu-custom-adapter';
+import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 
 @Component({
   selector: 'app-custom-adapters-table',

@@ -13,14 +13,14 @@ import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
-import { DateFilter } from '../../../filters/dateFilter.pipe';
-import { NameFilter } from '../../../filters/nameFilter.pipe';
-import{ Controller } from '../../../models/controller';
-import { Snapshot } from '../../../models/snapshot';
-import { ControllerResolve } from '../../../resolvers/controller-resolve';
-import { SnapshotService } from '../../../services/snapshot.service';
-import { ToasterService } from '../../../services/toaster.service';
-import { MockedToasterService } from '../../../services/toaster.service.spec';
+import { DateFilter } from '@filters/dateFilter.pipe';
+import { NameFilter } from '@filters/nameFilter.pipe';
+import { Controller } from '@models/controller';
+import { Snapshot } from '@models/snapshot';
+import { ControllerResolve } from '@resolvers/controller-resolve';
+import { SnapshotService } from '@services/snapshot.service';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
 import { ListOfSnapshotsComponent } from './list-of-snapshots.component';
 
 export class MockedActivatedRoute {
@@ -47,15 +47,15 @@ export class MockedActivatedRoute {
 }
 
 export class MockedSnapshotService {
-  public list(controller:Controller , project_id: string) {
+  public list(controller: Controller, project_id: string) {
     return of([]);
   }
 
-  public delete(controller:Controller , project_id: string, snapshot_id: string) {
+  public delete(controller: Controller, project_id: string, snapshot_id: string) {
     return of({});
   }
 
-  public restore(controller:Controller , project_id: string, snapshot_id: string) {
+  public restore(controller: Controller, project_id: string, snapshot_id: string) {
     return of({});
   }
 }

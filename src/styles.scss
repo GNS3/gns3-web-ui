@@ -62,8 +62,6 @@ mat-menu-panel {
   max-width: unset !important;
   background-color: grey;
   color: #ffffff;
-  background-color: grey;
-  color: #ffffff;
   white-space: pre-line;
   font-size: 12px !important;
   font-family: monospace;
@@ -73,14 +71,27 @@ mat-menu-panel {
   overflow: initial !important;
 }
 .mat-tab-body.mat-tab-body-active {
- 
+
   overflow-y: clip !important;
 
 }
 .mat-tab-label {
   padding: 0 10px !important;
   min-width: 152px !important;
-} 
+}
 .mat-tab-header-pagination-controls-enabled .mat-tab-header-pagination {
   display: none !important;
+}
+
+/* Link hover effects - simple line thickening */
+.ethernet_link,
+.serial_link {
+  transition: stroke-width 0.2s ease-in-out, stroke 0.2s ease-in-out;
+}
+
+.ethernet_link:hover,
+.serial_link:hover {
+  stroke-width: 4px !important;
+  cursor: pointer;
+  stroke: #ff0000 !important;
 }

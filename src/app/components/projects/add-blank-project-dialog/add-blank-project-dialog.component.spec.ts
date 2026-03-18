@@ -7,10 +7,10 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
 import { of } from 'rxjs/internal/observable/of';
-import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
-import { ProjectService } from '../../../services/project.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { ProjectService } from '@services/project.service';
+import { ToasterService } from '@services/toaster.service';
 import { AddBlankProjectDialogComponent } from './add-blank-project-dialog.component';
 
 export class MockedProjectService {
@@ -53,7 +53,7 @@ export class MockedProjectService {
 describe('AddBlankProjectDialogComponent', () => {
   let component: AddBlankProjectDialogComponent;
   let fixture: ComponentFixture<AddBlankProjectDialogComponent>;
-  let controller:Controller ;
+  let controller: Controller;
   let router = {
     navigate: jasmine.createSpy('navigate'),
   };

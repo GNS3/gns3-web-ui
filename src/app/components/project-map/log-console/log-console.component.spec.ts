@@ -5,18 +5,19 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatMenuModule } from '@angular/material/menu';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ToasterService } from '../../../services/toaster.service';
+import { ToasterService } from '@services/toaster.service';
+import { ProtocolHandlerService } from '@services/protocol-handler.service';
 import { of } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { ProjectWebServiceHandler, WebServiceMessage } from '../../../handlers/project-web-service-handler';
-import{ Controller } from '../../../models/controller';
-import { HttpController, ControllerErrorHandler } from '../../../services/http-controller.service';
-import { NodeService } from '../../../services/node.service';
-import { NodeConsoleService } from '../../../services/nodeConsole.service';
+import { Controller } from '@models/controller';
+import { HttpController, ControllerErrorHandler } from '@services/http-controller.service';
+import { NodeService } from '@services/node.service';
+import { NodeConsoleService } from '@services/nodeConsole.service';
 import { MockedNodesDataSource, MockedNodeService } from '../project-map.component.spec';
 import { LogConsoleComponent } from './log-console.component';
 import { LogEventsDataSource } from './log-events-datasource';
-import { MapSettingsService } from '../../../services/mapsettings.service';
+import { MapSettingsService } from '@services/mapsettings.service';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 export class MockedProjectWebServiceHandler {
@@ -38,6 +39,7 @@ describe('LogConsoleComponent', () => {
   let nodeConsoleService: NodeConsoleService;
   let mapSettingsService: MapSettingsService;
   let toasterService: ToasterService;
+  let protocolHandlerService: ProtocolHandlerService;
 
   let httpController = new HttpController({} as HttpClient, {} as ControllerErrorHandler);
 
@@ -52,6 +54,7 @@ describe('LogConsoleComponent', () => {
         { provide: HttpController, useValue: httpController },
         NodeConsoleService,
         ToasterService,
+        ProtocolHandlerService,
         MapSettingsService
       ],
       declarations: [LogConsoleComponent],
@@ -59,6 +62,7 @@ describe('LogConsoleComponent', () => {
     }).compileComponents();
 
     toasterService = TestBed.inject(ToasterService);
+    protocolHandlerService = TestBed.inject(ProtocolHandlerService);
     mapSettingsService = TestBed.inject(MapSettingsService);
     nodeConsoleService = TestBed.inject(NodeConsoleService);
   });
@@ -66,7 +70,7 @@ describe('LogConsoleComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(LogConsoleComponent);
     component = fixture.componentInstance;
-    component.controller = { location: 'local' } as Controller ;
+    component.controller = { location: 'local' } as Controller;
     fixture.detectChanges();
   });
 

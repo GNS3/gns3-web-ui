@@ -1,7 +1,7 @@
 import { DataSource } from '@angular/cdk/table';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { InstalledSoftwareService } from '../../services/installed-software.service';
+import { InstalledSoftwareService } from '@services/installed-software.service';
 
 @Component({
   selector: 'app-installed-software',

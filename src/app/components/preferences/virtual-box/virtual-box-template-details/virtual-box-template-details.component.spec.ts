@@ -11,23 +11,23 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import{ Controller } from '../../../../models/controller';
-import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
-import { ControllerService } from '../../../../services/controller.service';
-import { MockedControllerService } from '../../../../services/controller.service.spec';
-import { ToasterService } from '../../../../services/toaster.service';
-import { MockedToasterService } from '../../../../services/toaster.service.spec';
-import { VirtualBoxConfigurationService } from '../../../../services/virtual-box-configuration.service';
-import { VirtualBoxService } from '../../../../services/virtual-box.service';
+import { Controller } from '@models/controller';
+import { VirtualBoxTemplate } from '@models/templates/virtualbox-template';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
+import { VirtualBoxConfigurationService } from '@services/virtual-box-configuration.service';
+import { VirtualBoxService } from '@services/virtual-box.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VirtualBoxTemplateDetailsComponent } from './virtual-box-template-details.component';
 
 export class MockedVirtualBoxService {
-  public getTemplate(controller:Controller , template_id: string) {
+  public getTemplate(controller: Controller, template_id: string) {
     return of({} as VirtualBoxTemplate);
   }
 
-  public saveTemplate(controller:Controller , virtualBoxTemplate: VirtualBoxTemplate) {
+  public saveTemplate(controller: Controller, virtualBoxTemplate: VirtualBoxTemplate) {
     return of(virtualBoxTemplate);
   }
 }

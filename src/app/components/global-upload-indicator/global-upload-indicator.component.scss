@@ -1,0 +1,188 @@
+.upload-indicator-container {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 320px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  z-index: 2000;
+  overflow: hidden;
+  font-size: 13px;
+}
+
+:host-context(.dark-theme) .upload-indicator-container {
+  background: #2e2e2e;
+  color: #e0e0e0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+:host-context(.dark-theme) .upload-indicator-header {
+  background: #263238;
+
+  &:hover {
+    background: #37474f;
+  }
+}
+
+.upload-indicator-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  cursor: pointer;
+  background: #1565c0;
+  color: #fff;
+  user-select: none;
+
+  &:hover {
+    background: #0d47a1;
+  }
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.upload-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+  flex-shrink: 0;
+}
+
+.header-title {
+  font-weight: 500;
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.header-progress {
+  width: 60px;
+}
+
+.toggle-icon {
+  font-size: 20px;
+  height: 20px;
+  width: 20px;
+}
+
+.upload-list {
+  max-height: 280px;
+  overflow-y: auto;
+  padding: 4px 0;
+}
+
+.upload-item {
+  padding: 8px 12px 4px;
+  transition: opacity 0.4s ease, max-height 0.4s ease;
+  opacity: 1;
+
+  &.dismissing {
+    opacity: 0;
+  }
+}
+
+.upload-item-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.file-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+  flex-shrink: 0;
+
+  &.status-uploading {
+    color: #1565c0;
+  }
+  &.status-done {
+    color: #2e7d32;
+  }
+  &.status-error {
+    color: #c62828;
+  }
+  &.status-canceled {
+    color: #757575;
+  }
+}
+
+.upload-item-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+
+  &:hover .filename {
+    text-decoration: underline;
+  }
+}
+
+.filename {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-text {
+  font-size: 11px;
+  color: #666;
+
+  &.status-done {
+    color: #2e7d32;
+  }
+  &.status-error {
+    color: #c62828;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  &.status-canceled {
+    color: #757575;
+  }
+}
+
+:host-context(.dark-theme) .status-text {
+  color: #aaa;
+}
+
+:host-context(.dark-theme) .file-icon.status-uploading {
+  color: #90caf9;
+}
+
+.cancel-btn {
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 16px;
+    height: 16px;
+    width: 16px;
+  }
+}
+
+.item-progress {
+  margin-top: 4px;
+  height: 3px;
+  border-radius: 2px;
+}

@@ -2,6 +2,25 @@
   justify-content: space-between;
   display: flex;
   padding: 10px;
+   
+  &--map {
+    flex-direction: column;
+    border-top: 1px solid rgba(128, 128, 128, 0.3);
+    margin-top: 8px;
+    padding-top: 16px;
+    gap: 8px;
+  }
+ 
+  &__label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+ 
+  &__radio-group {
+    display: flex;
+    gap: 16px;
+  }
 }
 
 .fullWidth {

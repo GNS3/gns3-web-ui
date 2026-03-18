@@ -5,7 +5,7 @@ import { LinksDataSource } from '../cartography/datasources/links-datasource';
 import { NodesDataSource } from '../cartography/datasources/nodes-datasource';
 import { Drawing } from '../cartography/models/drawing';
 import { Node } from '../cartography/models/node';
-import { Link } from '../models/link';
+import { Link } from '@models/link';
 import { ProjectWebServiceHandler, WebServiceMessage } from './project-web-service-handler';
 
 describe('ProjectWebServiceHandler', () => {

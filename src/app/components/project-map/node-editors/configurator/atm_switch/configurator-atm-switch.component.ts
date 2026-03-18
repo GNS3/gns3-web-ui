@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
-import{ Controller } from '../../../../../models/controller';
-import { NodeService } from '../../../../../services/node.service';
-import { ToasterService } from '../../../../../services/toaster.service';
+import { Controller } from '@models/controller';
+import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-configurator-atm-switch',
@@ -12,7 +12,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   styleUrls: ['../configurator.component.scss', '../../../../preferences/preferences.component.scss'],
 })
 export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   node: Node;
   name: string;
   nameForm: UntypedFormGroup;

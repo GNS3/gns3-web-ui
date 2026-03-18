@@ -6,19 +6,20 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ProjectService } from '../../services/project.service';
-import { MockedProjectService } from '../../services/project.service.spec';
+import { ProjectService } from '@services/project.service';
+import { MockedProjectService } from '@services/project.service.spec';
 import { ElectronService } from 'ngx-electron';
 import { Subject } from 'rxjs';
 import { ProgressComponent } from '../../common/progress/progress.component';
 import { ProgressService } from '../../common/progress/progress.service';
-import { ControllerManagementService, ControllerStateEvent } from '../../services/controller-management.service';
-import { ControllerService } from '../../services/controller.service';
-import { ControllerErrorHandler, HttpController } from '../../services/http-controller.service';
-import { RecentlyOpenedProjectService } from '../../services/recentlyOpenedProject.service';
-import { ToasterService } from '../../services/toaster.service';
-import { MockedToasterService } from '../../services/toaster.service.spec';
+import { ControllerManagementService, ControllerStateEvent } from '@services/controller-management.service';
+import { ControllerService } from '@services/controller.service';
+import { ControllerErrorHandler, HttpController } from '@services/http-controller.service';
+import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.service';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
 import { DefaultLayoutComponent } from './default-layout.component';
+import { AppTestingModule } from 'app/testing/app-testing/app-testing.module';
 
 class ElectronServiceMock {
   public isElectronApp: boolean;
@@ -52,6 +53,7 @@ describe('DefaultLayoutComponent', () => {
         HttpClientModule,
         RouterTestingModule,
         MatProgressSpinnerModule,
+        AppTestingModule,
       ],
       providers: [
         {

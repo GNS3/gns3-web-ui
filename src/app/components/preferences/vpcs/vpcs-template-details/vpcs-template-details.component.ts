@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import{ Controller } from '../../../../models/controller';
-import { VpcsTemplate } from '../../../../models/templates/vpcs-template';
-import { ControllerService } from '../../../../services/controller.service';
-import { ToasterService } from '../../../../services/toaster.service';
-import { VpcsConfigurationService } from '../../../../services/vpcs-configuration.service';
-import { VpcsService } from '../../../../services/vpcs.service';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { Controller } from '@models/controller';
+import { VpcsTemplate } from '@models/templates/vpcs-template';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
+import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
+import { VpcsService } from '@services/vpcs.service';
 
 @Component({
   selector: 'app-vpcs-template-details',
@@ -14,10 +16,11 @@ import { VpcsService } from '../../../../services/vpcs.service';
   styleUrls: ['./vpcs-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class VpcsTemplateDetailsComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   vpcsTemplate: VpcsTemplate;
   inputForm: UntypedFormGroup;
   isSymbolSelectionOpened: boolean = false;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
   categories = [];
 
@@ -41,12 +44,15 @@ export class VpcsTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       this.getConfiguration();
       this.vpcsService.getTemplate(this.controller, template_id).subscribe((vpcsTemplate: VpcsTemplate) => {
         this.vpcsTemplate = vpcsTemplate;
+        if (!this.vpcsTemplate.tags) {
+          this.vpcsTemplate.tags = [];
+        }
       });
     });
   }
@@ -77,5 +83,32 @@ export class VpcsTemplateDetailsComponent implements OnInit {
   symbolChanged(chosenSymbol: string) {
     this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
     this.vpcsTemplate.symbol = chosenSymbol;
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.vpcsTemplate) {
+      if (!this.vpcsTemplate.tags) {
+        this.vpcsTemplate.tags = [];
+      }
+      this.vpcsTemplate.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.vpcsTemplate.tags) {
+      return;
+    }
+    const index = this.vpcsTemplate.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.vpcsTemplate.tags.splice(index, 1);
+    }
   }
 }

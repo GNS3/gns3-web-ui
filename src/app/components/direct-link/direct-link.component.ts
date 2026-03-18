@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import{ Controller } from '../../models/controller';
-import { ControllerDatabase } from '../../services/controller.database';
-import { ControllerService } from '../../services/controller.service';
-import { ToasterService } from '../../services/toaster.service';
+import { Controller } from '@models/controller';
+import { ControllerDatabase } from '@services/controller.database';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-direct-link',
@@ -72,7 +72,7 @@ export class DirectLinkComponent implements OnInit {
       return;
     }
 
-    let controllerToAdd:Controller  = new Controller  ();
+    let controllerToAdd: Controller  = new Controller  ();
     controllerToAdd.host = this.controllerIp;
     controllerToAdd.port = this.controllerPort;
 
@@ -80,7 +80,7 @@ export class DirectLinkComponent implements OnInit {
     controllerToAdd.location = this.controllerForm.get('location').value;
     controllerToAdd.protocol = this.controllerForm.get('protocol').value;
 
-    this.controllerService.create(controllerToAdd).then((addedController:Controller ) => {
+    this.controllerService.create(controllerToAdd).then((addedController: Controller ) => {
       this.router.navigate(['/controller', addedController.id, 'project', this.projectId]);
     });
   }

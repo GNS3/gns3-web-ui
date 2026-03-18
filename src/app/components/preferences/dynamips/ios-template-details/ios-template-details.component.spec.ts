@@ -10,23 +10,25 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import{ Controller } from '../../../../models/controller';
-import { IosTemplate } from '../../../../models/templates/ios-template';
-import { IosConfigurationService } from '../../../../services/ios-configuration.service';
-import { IosService } from '../../../../services/ios.service';
-import { ControllerService } from '../../../../services/controller.service';
-import { MockedControllerService } from '../../../../services/controller.service.spec';
-import { ToasterService } from '../../../../services/toaster.service';
-import { MockedToasterService } from '../../../../services/toaster.service.spec';
+import { Controller } from '@models/controller';
+import { IosTemplate } from '@models/templates/ios-template';
+import { IosConfigurationService } from '@services/ios-configuration.service';
+import { IosService } from '@services/ios.service';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { IosTemplateDetailsComponent } from './ios-template-details.component';
+import { MockedProgressService } from "@components/project-map/project-map.component.spec";
+import {ProgressService} from "../../../../common/progress/progress.service";
 
 export class MockedIosService {
-  public getTemplate(controller:Controller , template_id: string) {
+  public getTemplate(controller: Controller, template_id: string) {
     return of({} as IosTemplate);
   }
 
-  public saveTemplate(controller:Controller , iosTemplate: IosTemplate) {
+  public saveTemplate(controller: Controller, iosTemplate: IosTemplate) {
     return of(iosTemplate);
   }
 }
@@ -38,6 +40,7 @@ describe('IosTemplateDetailsComponent', () => {
   let mockedControllerService = new MockedControllerService();
   let mockedIosService = new MockedIosService();
   let mockedToasterService = new MockedToasterService();
+  let mockedProgressService = new MockedProgressService()
   let activatedRoute = new MockedActivatedRoute().get();
 
   beforeEach(async() => {
@@ -61,6 +64,7 @@ describe('IosTemplateDetailsComponent', () => {
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: IosService, useValue: mockedIosService },
         { provide: ToasterService, useValue: mockedToasterService },
+        { provide: ProgressService, useValue: mockedProgressService },
         { provide: IosConfigurationService, useClass: IosConfigurationService },
       ],
       declarations: [IosTemplateDetailsComponent],
@@ -94,9 +98,10 @@ describe('IosTemplateDetailsComponent', () => {
     component.advancedForm.controls['idlemax'].setValue('0');
     component.advancedForm.controls['idlesleep'].setValue('0');
     component.advancedForm.controls['execarea'].setValue('0');
-
+    component.advancedForm.controls['idlepc'].setValue('0x0');
+    component.advancedForm.controls['mac_addr'].setValue('');
+    spyOn(component, 'saveSlotsData').and.returnValue();
     component.onSave();
-
     expect(mockedIosService.saveTemplate).toHaveBeenCalled();
   });
 });

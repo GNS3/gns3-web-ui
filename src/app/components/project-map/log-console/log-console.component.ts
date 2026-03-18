@@ -15,17 +15,19 @@ import { NodesDataSource } from '../../../cartography/datasources/nodes-datasour
 import { Drawing } from '../../../cartography/models/drawing';
 import { Node } from '../../../cartography/models/node';
 import { ProjectWebServiceHandler } from '../../../handlers/project-web-service-handler';
-import { Link } from '../../../models/link';
-import { LogEvent } from '../../../models/logEvent';
-import { Port } from '../../../models/port';
-import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
-import { HttpController } from '../../../services/http-controller.service';
-import { NodeService } from '../../../services/node.service';
-import { NodeConsoleService } from '../../../services/nodeConsole.service';
-import { ThemeService } from '../../../services/theme.service';
+import { Link } from '@models/link';
+import { LogEvent } from '@models/logEvent';
+import { Port } from '@models/port';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { HttpController } from '@services/http-controller.service';
+import { NodeService } from '@services/node.service';
+import { NodeConsoleService } from '@services/nodeConsole.service';
+import { ProtocolHandlerService } from '@services/protocol-handler.service';
+import { ThemeService } from '@services/theme.service';
 import { version } from '../../../version';
 import { LogEventsDataSource } from './log-events-datasource';
+import * as ipaddr from 'ipaddr.js';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,7 +36,7 @@ import { LogEventsDataSource } from './log-events-datasource';
   styleUrls: ['./log-console.component.scss'],
 })
 export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
 
   @ViewChild('console') console: ElementRef;
@@ -69,6 +71,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     private projectWebServiceHandler: ProjectWebServiceHandler,
     private nodeService: NodeService,
     private nodesDataSource: NodesDataSource,
+    private protocolHandlerService: ProtocolHandlerService,
     private logEventsDataSource: LogEventsDataSource,
     private httpService: HttpController,
     private themeService: ThemeService,
@@ -224,20 +227,24 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         } else if (this.regexConsole.test(this.command)) {
           if (node.status === 'started') {
             this.showCommand(`Launching console for node ${splittedCommand[1]}...`);
+            var host = node.console_host;
+            if (ipaddr.IPv6.isValid(host)) {
+               host = `[${host}]`;
+            }
             if (node.console_type === 'telnet') {
-              location.assign(
-                `gns3+telnet://${node.console_host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
+              this.protocolHandlerService.open(
+                `gns3+telnet://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
             } else if (node.console_type === 'vnc') {
-              location.assign(
-                `gns3+vnc://${node.console_host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
+              this.protocolHandlerService.open(
+                `gns3+vnc://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
             } else if (node.console_type.startsWith('spice')) {
-              location.assign(
-                `gns3+spice://${node.console_host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
+              this.protocolHandlerService.open(
+                `gns3+spice://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
             } else if (node.console_type.startsWith('http')) {
-               window.open(`${node.console_type}://${node.console_host}:${node.console}`);
+               window.open(`${node.console_type}://${host}:${node.console}`);
             } else {
               this.showCommand('Supported console types are: telnet, vnc, spice and spice+agent');
             }

@@ -1,10 +1,10 @@
-<h1 mat-dialog-title>Configurator for node {{ name }}</h1>
+<h1 mat-dialog-title>Configurator for Frame-Relay switch {{ name }}</h1>
 
 <div class="modal-form-container">
   <div class="content">
     <div class="default-content">
       <mat-card>
-        <table *ngIf="nodeMappingsDataSource.length" class="table" mat-table [dataSource]="nodeMappingsDataSource">
+        <table *ngIf="nodeMappingsDataSource.length" mat-table [dataSource]="nodeMappingsDataSource">
           <ng-container matColumnDef="portIn">
             <th mat-header-cell *matHeaderCellDef>Port : DLCI</th>
             <td mat-cell *matCellDef="let element">{{ element.portIn }}</td>
@@ -43,16 +43,17 @@
         <form [formGroup]="inputForm">
           Source
           <mat-form-field class="form-field">
-            <input matInput type="number" [(ngModel)]="sourcePort" formControlName="sourcePort" placeholder="Port" />
+            <input matInput type="number" min="0" [(ngModel)]="sourcePort" formControlName="sourcePort" placeholder="Port" />
           </mat-form-field>
           <mat-form-field class="form-field">
-            <input matInput type="number" [(ngModel)]="sourceDlci" formControlName="sourceDlci" placeholder="DLCI" />
+            <input matInput type="number" min="1" [(ngModel)]="sourceDlci" formControlName="sourceDlci" placeholder="DLCI" />
           </mat-form-field>
           Destination
           <mat-form-field class="form-field">
             <input
               matInput
               type="number"
+              min="0"
               [(ngModel)]="destinationPort"
               formControlName="destinationPort"
               placeholder="Port"
@@ -62,6 +63,7 @@
             <input
               matInput
               type="number"
+              min="1"
               [(ngModel)]="destinationDlci"
               formControlName="destinationDlci"
               placeholder="DLCI"

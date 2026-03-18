@@ -10,21 +10,21 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import{ Controller } from '../../../../../models/controller';
-import { CloudTemplate } from '../../../../../models/templates/cloud-template';
-import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { ComputeService } from '../../../../../services/compute.service';
-import { ControllerService } from '../../../../../services/controller.service';
-import { MockedControllerService } from '../../../../../services/controller.service.spec';
-import { TemplateMocksService } from '../../../../../services/template-mocks.service';
-import { ToasterService } from '../../../../../services/toaster.service';
-import { MockedToasterService } from '../../../../../services/toaster.service.spec';
+import { Controller } from '@models/controller';
+import { CloudTemplate } from '@models/templates/cloud-template';
+import { BuiltInTemplatesService } from '@services/built-in-templates.service';
+import { ComputeService } from '@services/compute.service';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
+import { TemplateMocksService } from '@services/template-mocks.service';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
 import { MockedComputeService } from '../../../../preferences/vpcs/add-vpcs-template/add-vpcs-template.component.spec';
 import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { CloudNodesAddTemplateComponent } from './cloud-nodes-add-template.component';
 
 export class MockedBuiltInTemplatesService {
-  public addTemplate(controller:Controller , cloudTemplate: CloudTemplate) {
+  public addTemplate(controller: Controller, cloudTemplate: CloudTemplate) {
     return of(cloudTemplate);
   }
 }
@@ -80,7 +80,7 @@ describe('CloudNodesAddTemplateComponent', () => {
   it('should call add template', () => {
     spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as CloudTemplate));
     component.templateName = 'sample name';
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
     component.formGroup.controls['templateName'].setValue('template name');
 
     component.addTemplate();
@@ -92,7 +92,7 @@ describe('CloudNodesAddTemplateComponent', () => {
     spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as CloudTemplate));
     spyOn(mockedToasterService, 'error');
     component.templateName = '';
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 

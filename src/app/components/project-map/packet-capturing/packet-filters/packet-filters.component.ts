@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { Filter } from '../../../../models/filter';
-import { FilterDescription } from '../../../../models/filter-description';
-import { Link } from '../../../../models/link';
-import { Message } from '../../../../models/message';
-import { Project } from '../../../../models/project';
-import{ Controller } from '../../../../models/controller';
-import { LinkService } from '../../../../services/link.service';
+import { Filter } from '@models/filter';
+import { FilterDescription } from '@models/filter-description';
+import { Link } from '@models/link';
+import { Message } from '@models/message';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { LinkService } from '@services/link.service';
 import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
 
 @Component({
@@ -15,7 +15,7 @@ import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
   styleUrls: ['./packet-filters.component.scss'],
 })
 export class PacketFiltersDialogComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   project: Project;
   link: Link;
   filters: Filter;

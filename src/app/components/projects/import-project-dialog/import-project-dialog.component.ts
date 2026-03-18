@@ -1,13 +1,13 @@
 import { Component, EventEmitter, Inject, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ToasterService } from '../../../services/toaster.service';
+import { ToasterService } from '@services/toaster.service';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { v4 as uuid } from 'uuid';
-import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
-import { ControllerResponse } from '../../../models/controllerResponse';
-import { ProjectService } from '../../../services/project.service';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { ControllerResponse } from '@models/controllerResponse';
+import { ProjectService } from '@services/project.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { ProjectNameValidator } from '../models/projectNameValidator';
 import { UploadServiceService } from '../../../common/uploading-processbar/upload-service.service';
@@ -23,7 +23,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 export class ImportProjectDialogComponent implements OnInit {
   uploader: FileUploader;
   uploadProgress: number = 0;
-  controller:Controller ;
+  controller: Controller;
   isImportEnabled: boolean = false;
   isFinishEnabled: boolean = false;
   isDeleteVisible: boolean = false;

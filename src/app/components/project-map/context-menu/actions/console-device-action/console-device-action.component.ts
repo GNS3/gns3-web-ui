@@ -1,18 +1,18 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../../../cartography/models/node';
-import{ Controller } from '../../../../../models/controller';
-import { NodeService } from '../../../../../services/node.service';
-import { ControllerService } from '../../../../../services/controller.service';
-import { SettingsService } from '../../../../../services/settings.service';
-import { ToasterService } from '../../../../../services/toaster.service';
+import { Controller } from '@models/controller';
+import { NodeService } from '@services/node.service';
+import { ControllerService } from '@services/controller.service';
+import { SettingsService } from '@services/settings.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-console-device-action',
   templateUrl: './console-device-action.component.html',
 })
 export class ConsoleDeviceActionComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() nodes: Node[];
 
   constructor(

@@ -10,13 +10,14 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
 import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
-import { Link } from '../../../../models/link';
-import { LinkService } from '../../../../services/link.service';
-import { PacketCaptureService } from '../../../../services/packet-capture.service';
-import { ToasterService } from '../../../../services/toaster.service';
-import { MockedToasterService } from '../../../../services/toaster.service.spec';
+import { Link } from '@models/link';
+import { LinkService } from '@services/link.service';
+import { PacketCaptureService } from '@services/packet-capture.service';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
 import { MockedLinkService, MockedNodesDataSource } from '../../project-map.component.spec';
 import { StartCaptureDialogComponent } from './start-capture.component';
+import { ProtocolHandlerService } from '@services/protocol-handler.service';
 
 describe('StartCaptureDialogComponent', () => {
   let component: StartCaptureDialogComponent;
@@ -25,6 +26,8 @@ describe('StartCaptureDialogComponent', () => {
   let mockedToasterService = new MockedToasterService();
   let mockedLinkService = new MockedLinkService();
   let mockedNodesDataSource = new MockedNodesDataSource();
+  let protocolHandlerService: ProtocolHandlerService;
+
   let dialogRef = {
     close: jasmine.createSpy('close'),
   };
@@ -49,10 +52,12 @@ describe('StartCaptureDialogComponent', () => {
         { provide: LinkService, useValue: mockedLinkService },
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
         { provide: PacketCaptureService },
+         ProtocolHandlerService,
       ],
       declarations: [StartCaptureDialogComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
+    protocolHandlerService = TestBed.inject(ProtocolHandlerService);
   });
 
   beforeEach(() => {

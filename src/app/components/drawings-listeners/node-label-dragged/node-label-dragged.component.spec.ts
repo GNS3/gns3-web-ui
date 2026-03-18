@@ -8,7 +8,7 @@ import { CssFixer } from '../../../cartography/helpers/css-fixer';
 import { FontBBoxCalculator } from '../../../cartography/helpers/font-bbox-calculator';
 import { FontFixer } from '../../../cartography/helpers/font-fixer';
 import { MapLabel } from '../../../cartography/models/map/map-label';
-import { NodeService } from '../../../services/node.service';
+import { NodeService } from '@services/node.service';
 import { MockedNodesDataSource, MockedNodeService } from '../../project-map/project-map.component.spec';
 import { NodeLabelDraggedComponent } from './node-label-dragged.component';
 

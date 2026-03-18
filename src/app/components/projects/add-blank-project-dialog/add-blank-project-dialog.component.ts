@@ -3,10 +3,10 @@ import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } 
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
-import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
-import { ProjectService } from '../../../services/project.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { ProjectService } from '@services/project.service';
+import { ToasterService } from '@services/toaster.service';
 import { projectNameAsyncValidator } from '../../../validators/project-name-async-validator';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { ProjectNameValidator } from '../models/projectNameValidator';
@@ -18,7 +18,7 @@ import { ProjectNameValidator } from '../models/projectNameValidator';
   providers: [ProjectNameValidator],
 })
 export class AddBlankProjectDialogComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   projectNameForm: UntypedFormGroup;
   uuid: string;
   onAddProject = new EventEmitter<string>();
@@ -75,7 +75,12 @@ export class AddBlankProjectDialogComponent implements OnInit {
         this.dialogRef.close();
         this.toasterService.success(`Project ${project.name} added`);
         this.router.navigate(['/controller', this.controller.id, 'project', project.project_id]);
-      });
+      },
+      (error) => {
+          this.toasterService.error("Cannot create new project");
+          console.log(error);
+      }
+    );
   }
 
   onKeyDown(event) {

@@ -2,14 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
-import { Compute } from '../../../../../models/compute';
-import{ Controller } from '../../../../../models/controller';
-import { CloudTemplate } from '../../../../../models/templates/cloud-template';
-import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { ComputeService } from '../../../../../services/compute.service';
-import { ControllerService } from '../../../../../services/controller.service';
-import { TemplateMocksService } from '../../../../../services/template-mocks.service';
-import { ToasterService } from '../../../../../services/toaster.service';
+import { Compute } from '@models/compute';
+import { Controller } from '@models/controller';
+import { CloudTemplate } from '@models/templates/cloud-template';
+import { BuiltInTemplatesService } from '@services/built-in-templates.service';
+import { ComputeService } from '@services/compute.service';
+import { ControllerService } from '@services/controller.service';
+import { TemplateMocksService } from '@services/template-mocks.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-cloud-nodes-add-template',
@@ -17,7 +17,7 @@ import { ToasterService } from '../../../../../services/toaster.service';
   styleUrls: ['./cloud-nodes-add-template.component.scss', '../../../preferences.component.scss'],
 })
 export class CloudNodesAddTemplateComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   templateName: string = '';
   formGroup: UntypedFormGroup;
   isLocalComputerChosen: boolean = true;
@@ -39,7 +39,7 @@ export class CloudNodesAddTemplateComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
     });
   }

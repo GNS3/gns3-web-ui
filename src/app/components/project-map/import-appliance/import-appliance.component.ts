@@ -1,17 +1,17 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { environment } from 'environments/environment';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
-import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
-import { DockerTemplate } from '../../../models/templates/docker-template';
-import { IosTemplate } from '../../../models/templates/ios-template';
-import { IouTemplate } from '../../../models/templates/iou-template';
-import { QemuTemplate } from '../../../models/templates/qemu-template';
-import { DockerService } from '../../../services/docker.service';
-import { IosService } from '../../../services/ios.service';
-import { IouService } from '../../../services/iou.service';
-import { QemuService } from '../../../services/qemu.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { DockerTemplate } from '@models/templates/docker-template';
+import { IosTemplate } from '@models/templates/ios-template';
+import { IouTemplate } from '@models/templates/iou-template';
+import { QemuTemplate } from '@models/templates/qemu-template';
+import { DockerService } from '@services/docker.service';
+import { IosService } from '@services/ios.service';
+import { IouService } from '@services/iou.service';
+import { QemuService } from '@services/qemu.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-import-appliance',
@@ -20,7 +20,7 @@ import { ToasterService } from '../../../services/toaster.service';
 })
 export class ImportApplianceComponent implements OnInit {
   @Input('project') project: Project;
-  @Input('controller') controller:Controller ;
+  @Input('controller') controller: Controller;
   uploader: FileUploader;
   template;
 
@@ -142,7 +142,7 @@ export class ImportApplianceComponent implements OnInit {
       }
       this.template = template;
 
-      const url = this.getUploadPath(this.controller, template.template_type, name);
+      const url = this.getUploadPath(this.controller, name);
       this.uploader.queue.forEach((elem) => (elem.url = url));
       const itemToUpload = this.uploader.queue[0];
       this.uploader.uploadItem(itemToUpload);
@@ -150,7 +150,7 @@ export class ImportApplianceComponent implements OnInit {
     fileReader.readAsText(file);
   }
 
-  private getUploadPath(controller:Controller , emulator: string, filename: string) {
-    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/${emulator}/images/${filename}`;
+  private getUploadPath(controller: Controller, filename: string) {
+    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${filename}`;
   }
 }

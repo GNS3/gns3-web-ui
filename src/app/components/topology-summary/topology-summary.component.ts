@@ -4,13 +4,13 @@ import { Subscription } from 'rxjs';
 import { LinksDataSource } from '../../cartography/datasources/links-datasource';
 import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
 import { Node } from '../../cartography/models/node';
-import { Compute } from '../../models/compute';
-import { Project } from '../../models/project';
-import { ProjectStatistics } from '../../models/project-statistics';
-import{ Controller } from '../../models/controller';
-import { ComputeService } from '../../services/compute.service';
-import { ProjectService } from '../../services/project.service';
-import { ThemeService } from '../../services/theme.service';
+import { Compute } from '@models/compute';
+import { Project } from '@models/project';
+import { ProjectStatistics } from '@models/project-statistics';
+import { Controller } from '@models/controller';
+import { ComputeService } from '@services/compute.service';
+import { ProjectService } from '@services/project.service';
+import { ThemeService } from '@services/theme.service';
 
 @Component({
   selector: 'app-topology-summary',
@@ -19,7 +19,7 @@ import { ThemeService } from '../../services/theme.service';
   changeDetection: ChangeDetectionStrategy.Default,
 })
 export class TopologySummaryComponent implements OnInit, OnDestroy {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
 
   @Output() closeTopologySummary = new EventEmitter<boolean>();

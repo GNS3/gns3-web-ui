@@ -87,6 +87,18 @@
           </mat-select>
         </mat-step>
 
+        <mat-step label="Auxiliary console type" [completed]="dockerTemplate.aux_type">
+          <mat-select
+            placeholder="Auxiliary console type"
+            [ngModelOptions]="{ standalone: true }"
+            [(ngModel)]="dockerTemplate.aux_type"
+          >
+            <mat-option *ngFor="let type of auxConsoleTypes" [value]="type">
+              {{ type }}
+            </mat-option>
+          </mat-select>
+        </mat-step>
+
         <mat-step label="Environment">
           <mat-form-field class="form-field">
             <textarea matInput type="text" [(ngModel)]="dockerTemplate.environment"></textarea>

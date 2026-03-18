@@ -2,13 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../../../cartography/models/node';
-import{ Controller } from '../../../../../models/controller';
-import { NodeService } from '../../../../../services/node.service';
-import { ControllerService } from '../../../../../services/controller.service';
-import { MockedControllerService } from '../../../../../services/controller.service.spec';
-import { SettingsService } from '../../../../../services/settings.service';
-import { ToasterService } from '../../../../../services/toaster.service';
-import { MockedToasterService } from '../../../../../services/toaster.service.spec';
+import { Controller } from '@models/controller';
+import { NodeService } from '@services/node.service';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
+import { SettingsService } from '@services/settings.service';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
 import { MockedNodeService } from '../../../project-map.component.spec';
 import { ConsoleDeviceActionComponent } from './console-device-action.component';
 
@@ -16,7 +16,7 @@ describe('ConsoleDeviceActionComponent', () => {
   let component: ConsoleDeviceActionComponent;
   let fixture: ComponentFixture<ConsoleDeviceActionComponent>;
   let electronService;
-  let controller:Controller ;
+  let controller: Controller;
   let settingsService: SettingsService;
   let mockedControllerService: MockedControllerService;
   let mockedToaster: MockedToasterService;
@@ -37,7 +37,7 @@ describe('ConsoleDeviceActionComponent', () => {
     mockedControllerService = new MockedControllerService();
     mockedToaster = new MockedToasterService();
 
-    controller = { host: 'localhost', port: 222 } as Controller ;
+    controller = { host: 'localhost', port: 222 } as Controller;
   });
 
   beforeEach(async() => {

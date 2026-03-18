@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../cartography/models/node';
-import { Project } from '../../../../models/project';
-import{ Controller } from '../../../../models/controller';
-import { NodeService } from '../../../../services/node.service';
-import { ToasterService } from '../../../../services/toaster.service';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-config-editor',
@@ -12,7 +12,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./config-editor.component.scss'],
 })
 export class ConfigEditorDialogComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   project: Project;
   node: Node;
 

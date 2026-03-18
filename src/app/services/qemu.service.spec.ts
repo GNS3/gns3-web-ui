@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { inject, TestBed } from '@angular/core/testing';
 import { environment } from 'environments/environment';
-import{ Controller } from '../models/controller';
-import { QemuTemplate } from '../models/templates/qemu-template';
+import { Controller } from '@models/controller';
+import { QemuTemplate } from '@models/templates/qemu-template';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpController } from './http-controller.service';
 import { QemuService } from './qemu.service';
@@ -13,7 +13,7 @@ describe('QemuService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let httpController: HttpController;
-  let controller:Controller ;
+  let controller: Controller;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -47,6 +47,7 @@ describe('QemuService', () => {
       compute_id: 'local',
       console_auto_start: false,
       console_type: 'telnet',
+      aux_type: 'none',
       cpu_throttling: 0,
       cpus: 1,
       custom_adapters: [],
@@ -73,6 +74,7 @@ describe('QemuService', () => {
       port_segment_size: 0,
       process_priority: 'normal',
       qemu_path: '',
+      tags: [],
       ram: 256,
       symbol: 'qemu_guest',
       template_id: '1',
@@ -102,6 +104,7 @@ describe('QemuService', () => {
       compute_id: 'local',
       console_auto_start: false,
       console_type: 'telnet',
+      aux_type: 'none',
       cpu_throttling: 0,
       cpus: 1,
       custom_adapters: [],
@@ -128,6 +131,7 @@ describe('QemuService', () => {
       port_segment_size: 0,
       process_priority: 'normal',
       qemu_path: '',
+      tags: [],
       ram: 256,
       symbol: 'qemu_guest',
       template_id: '',

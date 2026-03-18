@@ -19,4 +19,5 @@ export class IouTemplate {
   template_type: string;
   usage: string;
   use_default_iou_values: boolean;
+  tags: string[];
 }

@@ -1,0 +1,30 @@
+.idlePCFinderButton {
+  width: 100%;
+}
+
+.generateButton {
+  width: 100%;
+}
+
+.tags-field {
+  ::ng-deep .mat-form-field-wrapper {
+    .mat-form-field-flex {
+      .mat-form-field-infix {
+        width: 100% !important;
+        min-width: 400px;
+        display: flex !important;
+        flex-wrap: wrap !important;
+      }
+    }
+  }
+
+  ::ng-deep .mat-chip-list {
+    flex-wrap: wrap !important;
+    width: 100%;
+  }
+
+  ::ng-deep input.mat-input-element {
+    min-width: 200px !important;
+    flex: 1 1 200px !important;
+  }
+}

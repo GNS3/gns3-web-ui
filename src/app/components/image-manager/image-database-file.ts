@@ -1,35 +1,90 @@
 
-
-import { DataSource, SelectionModel } from '@angular/cdk/collections';
+import { DataSource } from '@angular/cdk/collections';
 import { MatSort } from '@angular/material/sort';
-import { BehaviorSubject, Observable, Subscription, merge } from 'rxjs';
+import { BehaviorSubject, Observable, merge } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Image } from '../../models/images';
+import { Image } from '@models/images';
 
+export type ImageUploadStatus = 'queued' | 'uploading' | 'uploaded' | 'error' | 'canceled';
+
+export interface ImageTableRow extends Partial<Image> {
+  rowType: 'image' | 'upload';
+  tempId?: string;
+  uploadProgress?: number;
+  uploadStatus?: ImageUploadStatus;
+  errorMessage?: string;
+}
 
 export class imageDatabase {
-  dataChange: BehaviorSubject<Image[]> = new BehaviorSubject<Image[]>([]);
-  get data(): Image[] {
+  dataChange: BehaviorSubject<ImageTableRow[]> = new BehaviorSubject<ImageTableRow[]>([]);
+
+  get data(): ImageTableRow[] {
     return this.dataChange.value;
   }
 
-  public addImages(fileData: Image[]) {
+  public addImages(fileData: ImageTableRow[]) {
     this.dataChange.next(fileData);
   }
-
 }
 
-export class imageDataSource extends DataSource<Image> {
-  constructor(private controllerDatabase: imageDatabase) {
+export class imageDataSource extends DataSource<ImageTableRow> {
+  private filterChange: BehaviorSubject<string> = new BehaviorSubject<string>('');
+
+  constructor(private controllerDatabase: imageDatabase, private sort?: MatSort) {
     super();
   }
 
-  connect(): Observable<Image[]> {
-    return merge(this.controllerDatabase.dataChange).pipe(
+  setFilter(filter: string) {
+    this.filterChange.next((filter || '').trim().toLowerCase());
+  }
+
+  connect(): Observable<ImageTableRow[]> {
+    const sortChanges = this.sort ? this.sort.sortChange : new BehaviorSubject(null);
+    return merge(this.controllerDatabase.dataChange, sortChanges, this.filterChange).pipe(
       map(() => {
-        return this.controllerDatabase.data;
+        let data = this.controllerDatabase.data.slice();
+        const filter = this.filterChange.value;
+
+        if (filter) {
+          data = data.filter((row: ImageTableRow) => {
+            const searchable = [
+              row.filename,
+              row.image_type,
+              row.image_size,
+              row.created_at,
+              row.uploadStatus,
+            ]
+              .map((value) => String(value || '').toLowerCase())
+              .join(' ');
+            return searchable.includes(filter);
+          });
+        }
+
+        if (!this.sort || !this.sort.active || this.sort.direction === '') {
+          return data;
+        }
+
+        return data.sort((a: ImageTableRow, b: ImageTableRow) => {
+          const valueA = this.getSortValue(a, this.sort.active);
+          const valueB = this.getSortValue(b, this.sort.active);
+          return (valueA < valueB ? -1 : 1) * (this.sort.direction === 'asc' ? 1 : -1);
+        });
       })
     );
+  }
+
+  private getSortValue(row: ImageTableRow, active: string): any {
+    const value = row[active];
+    if (active === 'image_size') {
+      return Number(value || 0);
+    }
+
+    if (active === 'created_at' || active === 'updated_at') {
+      const parsed = Date.parse(String(value || ''));
+      return isNaN(parsed) ? 0 : parsed;
+    }
+
+    return String(value || '').toLowerCase();
   }
 
   disconnect() { }

@@ -7,15 +7,15 @@ import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/up
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { Subscription } from 'rxjs';
 import { v4 as uuid } from 'uuid';
-import { Compute } from '../../../../models/compute';
-import { IouImage } from '../../../../models/iou/iou-image';
-import{ Controller } from '../../../../models/controller';
-import { IouTemplate } from '../../../../models/templates/iou-template';
-import { ComputeService } from '../../../../services/compute.service';
-import { IouService } from '../../../../services/iou.service';
-import { ControllerService } from '../../../../services/controller.service';
-import { TemplateMocksService } from '../../../../services/template-mocks.service';
-import { ToasterService } from '../../../../services/toaster.service';
+import { Compute } from '@models/compute';
+import { IouImage } from '@models/iou/iou-image';
+import { Controller } from '@models/controller';
+import { IouTemplate } from '@models/templates/iou-template';
+import { ComputeService } from '@services/compute.service';
+import { IouService } from '@services/iou.service';
+import { ControllerService } from '@services/controller.service';
+import { TemplateMocksService } from '@services/template-mocks.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-add-iou-template',
@@ -23,7 +23,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./add-iou-template.component.scss', '../../preferences.component.scss'],
 })
 export class AddIouTemplateComponent implements OnInit, OnDestroy {
-  controller:Controller ;
+  controller: Controller;
   iouTemplate: IouTemplate;
   isRemoteComputerChosen: boolean = false;
   newImageSelected: boolean = false;
@@ -85,7 +85,7 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
     };
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
       this.getImages();
       this.templateMocksService.getIouTemplate().subscribe((iouTemplate: IouTemplate) => {

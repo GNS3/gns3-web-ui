@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import{ Controller } from '../../../../models/controller';
-import { TemplateService } from '../../../../services/template.service';
-import { ToasterService } from '../../../../services/toaster.service';
+import { Controller } from '@models/controller';
+import { TemplateService } from '@services/template.service';
+import { ToasterService } from '@services/toaster.service';
 import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 
 @Component({
@@ -11,7 +11,7 @@ import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog
   styleUrls: ['./delete-template.component.scss'],
 })
 export class DeleteTemplateComponent {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Output() deleteEvent = new EventEmitter<string>();
 
   constructor(

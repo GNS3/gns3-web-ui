@@ -11,23 +11,23 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import{ Controller } from '../../../../../models/controller';
-import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
-import { BuiltInTemplatesConfigurationService } from '../../../../../services/built-in-templates-configuration.service';
-import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { ControllerService } from '../../../../../services/controller.service';
-import { MockedControllerService } from '../../../../../services/controller.service.spec';
-import { ToasterService } from '../../../../../services/toaster.service';
-import { MockedToasterService } from '../../../../../services/toaster.service.spec';
+import { Controller } from '@models/controller';
+import { EthernetHubTemplate } from '@models/templates/ethernet-hub-template';
+import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
+import { BuiltInTemplatesService } from '@services/built-in-templates.service';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { EthernetHubsTemplateDetailsComponent } from './ethernet-hubs-template-details.component';
 
 export class MockedBuiltInTemplatesService {
-  public getTemplate(controller:Controller , template_id: string) {
+  public getTemplate(controller: Controller, template_id: string) {
     return of({ ports_mapping: [] } as EthernetHubTemplate);
   }
 
-  public saveTemplate(controller:Controller , cloudTemplate: EthernetHubTemplate) {
+  public saveTemplate(controller: Controller, cloudTemplate: EthernetHubTemplate) {
     return of(cloudTemplate);
   }
 }

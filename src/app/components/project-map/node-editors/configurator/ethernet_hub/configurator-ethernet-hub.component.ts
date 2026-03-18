@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
-import{ Controller } from '../../../../../models/controller';
-import { NodeService } from '../../../../../services/node.service';
-import { ToasterService } from '../../../../../services/toaster.service';
-import { VpcsConfigurationService } from '../../../../../services/vpcs-configuration.service';
+import { Controller } from '@models/controller';
+import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
+import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
 
 @Component({
   selector: 'app-configurator-ethernet-hub',
@@ -13,13 +15,14 @@ import { VpcsConfigurationService } from '../../../../../services/vpcs-configura
   styleUrls: ['../configurator.component.scss'],
 })
 export class ConfiguratorDialogEthernetHubComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   node: Node;
   numberOfPorts: number;
   inputForm: UntypedFormGroup;
   consoleTypes: string[] = [];
   categories = [];
   name: string;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
   constructor(
     public dialogRef: MatDialogRef<ConfiguratorDialogEthernetHubComponent>,
@@ -39,6 +42,9 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
       this.name = this.node.name;
       this.numberOfPorts = this.node.ports.length;
       this.getConfiguration();
+      if (!this.node.tags) {
+        this.node.tags = [];
+      }
     });
   }
 
@@ -68,5 +74,32 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
 
   onCancelClick() {
     this.dialogRef.close();
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.node) {
+      if (!this.node.tags) {
+        this.node.tags = [];
+      }
+      this.node.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.node.tags) {
+      return;
+    }
+    const index = this.node.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.node.tags.splice(index, 1);
+    }
   }
 }

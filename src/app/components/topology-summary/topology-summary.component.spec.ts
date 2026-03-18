@@ -11,16 +11,16 @@ import { of } from 'rxjs';
 import { LinksDataSource } from '../../cartography/datasources/links-datasource';
 import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
 import { Node } from '../../cartography/models/node';
-import { Project } from '../../models/project';
-import{ Controller } from '../../models/controller';
-import { ComputeService } from '../../services/compute.service';
-import { ProjectService } from '../../services/project.service';
-import { MockedProjectService } from '../../services/project.service.spec';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { ComputeService } from '@services/compute.service';
+import { ProjectService } from '@services/project.service';
+import { MockedProjectService } from '@services/project.service.spec';
 import { MockedLinksDataSource, MockedNodesDataSource } from '../project-map/project-map.component.spec';
 import { TopologySummaryComponent } from './topology-summary.component';
 
 export class MockedComputeService {
-  getComputes(controller:Controller ) {
+  getComputes(controller: Controller ) {
     return of([]);
   }
 }

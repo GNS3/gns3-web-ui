@@ -1,4 +1,4 @@
-import { Link } from '../../models/link';
+import { Link } from '@models/link';
 import { LinksDataSource } from './links-datasource';
 
 describe('LinksDataSource', () => {

@@ -4,9 +4,9 @@ import { inject, TestBed } from '@angular/core/testing';
 import { environment } from 'environments/environment';
 import { Label } from '../cartography/models/label';
 import { Node } from '../cartography/models/node';
-import { Project } from '../models/project';
-import{ Controller } from '../models/controller';
-import { Template } from '../models/template';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { Template } from '@models/template';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpController } from './http-controller.service';
 import { NodeService } from './node.service';
@@ -17,7 +17,7 @@ describe('NodeService', () => {
   let httpTestingController: HttpTestingController;
   let httpController: HttpController;
   let service: NodeService;
-  let controller:Controller ;
+  let controller: Controller;
 
   beforeEach(() => {
     TestBed.configureTestingModule({

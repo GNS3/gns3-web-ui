@@ -1,12 +1,14 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
-import { CustomAdaptersTableComponent } from '../../../../../components/preferences/common/custom-adapters-table/custom-adapters-table.component';
-import{ Controller } from '../../../../../models/controller';
-import { NodeService } from '../../../../../services/node.service';
-import { ToasterService } from '../../../../../services/toaster.service';
-import { VirtualBoxConfigurationService } from '../../../../../services/virtual-box-configuration.service';
+import { CustomAdaptersTableComponent } from '@components/preferences/common/custom-adapters-table/custom-adapters-table.component';
+import { Controller } from '@models/controller';
+import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
+import { VirtualBoxConfigurationService } from '@services/virtual-box-configuration.service';
 
 @Component({
   selector: 'app-configurator-virtualbox',
@@ -14,12 +16,13 @@ import { VirtualBoxConfigurationService } from '../../../../../services/virtual-
   styleUrls: ['../configurator.component.scss'],
 })
 export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   node: Node;
   name: string;
   generalSettingsForm: UntypedFormGroup;
   consoleTypes: string[] = [];
   onCloseOptions = [];
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
   networkTypes = [];
@@ -44,6 +47,9 @@ export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
       this.node = node;
       this.name = node.name;
       this.getConfiguration();
+      if (!this.node.tags) {
+        this.node.tags = [];
+      }
     });
   }
 
@@ -76,5 +82,32 @@ export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
 
   onCancelClick() {
     this.dialogRef.close();
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.node) {
+      if (!this.node.tags) {
+        this.node.tags = [];
+      }
+      this.node.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.node.tags) {
+      return;
+    }
+    const index = this.node.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.node.tags.splice(index, 1);
+    }
   }
 }

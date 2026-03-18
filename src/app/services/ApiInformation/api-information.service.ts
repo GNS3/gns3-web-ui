@@ -14,7 +14,6 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {Observable, of, ReplaySubject} from "rxjs";
 import {map, switchMap, take, tap} from "rxjs/operators";
-import {Methods} from "app/models/api/permission";
 import {HttpController} from "app/services/http-controller.service";
 import {Controller} from "app/models/controller";
 import {GetObjectIdHelper} from "@services/ApiInformation/GetObjectIdHelper";
@@ -145,22 +144,6 @@ export class ApiInformationService {
       }) as unknown as IPathDict[];
   }
 
-  /**
-   * Return availables methods for a path
-   * @param path '/v3/projects/{project_id} => ['GET', 'POST', 'PUT']
-   */
-  getMethods(path: string): Observable<Methods[]> {
-    return this.getPath(path)
-      .pipe(
-        map((data: IPathDict[]) => {
-          const availableMethods = new Set<string>();
-          data.forEach((p: IPathDict) => {
-            p.methods.forEach(method => availableMethods.add(method));
-          });
-          return Array.from(availableMethods) as Methods[];
-        }),
-      );
-  }
 
   /**
    * return a list of matching path

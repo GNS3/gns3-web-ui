@@ -3,64 +3,64 @@ import { Observable } from 'rxjs';
 import 'rxjs/add/operator/map';
 import { Label } from '../cartography/models/label';
 import { Node } from '../cartography/models/node';
-import { Project } from '../models/project';
-import{ Controller } from '../models/controller';
-import { Template } from '../models/template';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { Template } from '@models/template';
 import { HttpController } from './http-controller.service';
 
 @Injectable()
 export class NodeService {
   constructor(private httpController: HttpController) {}
 
-  getNodeById(controller:Controller , projectId: string, nodeId: string) {
+  getNodeById(controller: Controller, projectId: string, nodeId: string) {
     return this.httpController.get(controller, `/projects/${projectId}/nodes/${nodeId}`);
   }
 
-  isolate(controller:Controller , node: Node) {
+  isolate(controller: Controller, node: Node) {
     return this.httpController.post<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}/isolate`, {});
   }
 
-  unisolate(controller:Controller , node: Node) {
+  unisolate(controller: Controller, node: Node) {
     return this.httpController.post<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}/unisolate`, {});
   }
 
-  start(controller:Controller , node: Node) {
+  start(controller: Controller, node: Node) {
     return this.httpController.post<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}/start`, {});
   }
 
-  startAll(controller:Controller , project: Project) {
+  startAll(controller: Controller, project: Project) {
     return this.httpController.post(controller, `/projects/${project.project_id}/nodes/start`, {});
   }
 
-  stop(controller:Controller , node: Node) {
+  stop(controller: Controller, node: Node) {
     return this.httpController.post<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}/stop`, {});
   }
 
-  stopAll(controller:Controller , project: Project) {
+  stopAll(controller: Controller, project: Project) {
     return this.httpController.post(controller, `/projects/${project.project_id}/nodes/stop`, {});
   }
 
-  suspend(controller:Controller , node: Node) {
+  suspend(controller: Controller, node: Node) {
     return this.httpController.post<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}/suspend`, {});
   }
 
-  suspendAll(controller:Controller , project: Project) {
+  suspendAll(controller: Controller, project: Project) {
     return this.httpController.post(controller, `/projects/${project.project_id}/nodes/suspend`, {});
   }
 
-  reload(controller:Controller , node: Node) {
+  reload(controller: Controller, node: Node) {
     return this.httpController.post<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}/reload`, {});
   }
 
-  reloadAll(controller:Controller , project: Project) {
+  reloadAll(controller: Controller, project: Project) {
     return this.httpController.post(controller, `/projects/${project.project_id}/nodes/reload`, {});
   }
-  resetAllNodes(controller:Controller , project: Project) {
+  resetAllNodes(controller: Controller, project: Project) {
     return this.httpController.post(controller, `/projects/${project.project_id}/nodes/console/reset`, {});
   }
 
   createFromTemplate(
-    controller:Controller ,
+    controller: Controller,
     project: Project,
     template: Template,
     x: number,
@@ -81,7 +81,7 @@ export class NodeService {
     });
   }
 
-  updatePosition(controller:Controller , project: Project, node: Node, x: number, y: number): Observable<Node> {
+  updatePosition(controller: Controller, project: Project, node: Node, x: number, y: number): Observable<Node> {
     let xPosition: number = Math.round(x);
     let yPosition: number = Math.round(y);
 
@@ -99,7 +99,7 @@ export class NodeService {
     });
   }
 
-  updateLabel(controller:Controller , node: Node, label: Label): Observable<Node> {
+  updateLabel(controller: Controller, node: Node, label: Label): Observable<Node> {
     return this.httpController.put<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`, {
       label: {
         rotation: label.rotation,
@@ -111,13 +111,13 @@ export class NodeService {
     });
   }
 
-  updateSymbol(controller:Controller , node: Node, changedSymbol: string): Observable<Node> {
+  updateSymbol(controller: Controller, node: Node, changedSymbol: string): Observable<Node> {
     return this.httpController.put<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`, {
       symbol: changedSymbol,
     });
   }
 
-  update(controller:Controller , node: Node): Observable<Node> {
+  update(controller: Controller, node: Node): Observable<Node> {
     return this.httpController.put<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`, {
       x: Math.round(node.x),
       y: Math.round(node.y),
@@ -125,31 +125,53 @@ export class NodeService {
     });
   }
 
-  updateNode(controller:Controller , node: Node): Observable<Node> {
+  updateNode(controller: Controller, node: Node): Observable<Node> {
     return this.httpController.put<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`, {
       console_type: node.console_type,
       console_auto_start: node.console_auto_start,
       locked: node.locked,
       name: node.name,
       properties: node.properties,
+      tags: node.tags,
     });
   }
 
-  updateNodeWithCustomAdapters(controller:Controller , node: Node): Observable<Node> {
+  updateNodeWithCustomAdapters(controller: Controller, node: Node): Observable<Node> {
+    // Filter out null values from custom_adapters for QEMU nodes
+    const filtered_custom_adapters = node.custom_adapters ? node.custom_adapters.map(adapter => {
+      const filteredAdapter: any = {
+        adapter_number: adapter.adapter_number,
+        adapter_type: adapter.adapter_type
+      };
+
+      // Only include port_name if it's not null
+      if (adapter.port_name !== null && adapter.port_name !== undefined) {
+        filteredAdapter.port_name = adapter.port_name;
+      }
+
+      // Only include mac_address if it's not null
+      if (adapter.mac_address !== null && adapter.mac_address !== undefined) {
+        filteredAdapter.mac_address = adapter.mac_address;
+      }
+
+      return filteredAdapter;
+    }) : [];
+
     return this.httpController.put<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`, {
       console_type: node.console_type,
       console_auto_start: node.console_auto_start,
-      custom_adapters: node.custom_adapters,
+      custom_adapters: filtered_custom_adapters,
       name: node.name,
       properties: node.properties,
+      tags: node.tags,
     });
   }
 
-  delete(controller:Controller , node: Node) {
+  delete(controller: Controller, node: Node) {
     return this.httpController.delete<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`);
   }
 
-  duplicate(controller:Controller , node: Node) {
+  duplicate(controller: Controller, node: Node) {
     return this.httpController.post(controller, `/projects/${node.project_id}/nodes/${node.node_id}/duplicate`, {
       x: node.x + 10,
       y: node.y + 10,
@@ -157,7 +179,7 @@ export class NodeService {
     });
   }
 
-  getNode(controller:Controller , node: Node) {
+  getNode(controller: Controller, node: Node) {
     return this.httpController.get(controller, `/projects/${node.project_id}/nodes/${node.node_id}`);
   }
 
@@ -165,7 +187,7 @@ export class NodeService {
     return `putty.exe -telnet \%h \%p -wt \"\%d\" -gns3 5 -skin 4`;
   }
 
-  getNetworkConfiguration(controller:Controller , node: Node) {
+  getNetworkConfiguration(controller: Controller, node: Node) {
     return this.httpController.get(
       controller,
       `/projects/${node.project_id}/nodes/${node.node_id}/files/etc/network/interfaces`,
@@ -173,7 +195,7 @@ export class NodeService {
     );
   }
 
-  saveNetworkConfiguration(controller:Controller , node: Node, configuration: string) {
+  saveNetworkConfiguration(controller: Controller, node: Node, configuration: string) {
     return this.httpController.post(
       controller,
       `/projects/${node.project_id}/nodes/${node.node_id}/files/etc/network/interfaces`,
@@ -181,7 +203,7 @@ export class NodeService {
     );
   }
 
-  getStartupConfiguration(controller:Controller , node: Node) {
+  getStartupConfiguration(controller: Controller, node: Node) {
     let urlPath: string = `/projects/${node.project_id}/nodes/${node.node_id}`;
 
     if (node.node_type === 'vpcs') {
@@ -189,25 +211,25 @@ export class NodeService {
     } else if (node.node_type === 'iou') {
       urlPath += '/files/startup-config.cfg';
     } else if (node.node_type === 'dynamips') {
-      urlPath += `/files/configs/i${node.node_id}_startup-config.cfg`;
+      urlPath += `/files/configs/i${node.properties.dynamips_id}_startup-config.cfg`;
     }
 
     return this.httpController.get(controller, urlPath, { responseType: 'text' as 'json' });
   }
 
-  getPrivateConfiguration(controller:Controller , node: Node) {
+  getPrivateConfiguration(controller: Controller, node: Node) {
     let urlPath: string = `/projects/${node.project_id}/nodes/${node.node_id}`;
 
     if (node.node_type === 'iou') {
       urlPath += '/files/private-config.cfg';
     } else if (node.node_type === 'dynamips') {
-      urlPath += `/files/configs/i${node.node_id}_private-config.cfg`;
+      urlPath += `/files/configs/i${node.properties.dynamips_id}_private-config.cfg`;
     }
 
     return this.httpController.get(controller, urlPath, { responseType: 'text' as 'json' });
   }
 
-  saveConfiguration(controller:Controller , node: Node, configuration: string) {
+  saveConfiguration(controller: Controller, node: Node, configuration: string) {
     let urlPath: string = `/projects/${node.project_id}/nodes/${node.node_id}`;
 
     if (node.node_type === 'vpcs') {
@@ -215,21 +237,29 @@ export class NodeService {
     } else if (node.node_type === 'iou') {
       urlPath += '/files/startup-config.cfg';
     } else if (node.node_type === 'dynamips') {
-      urlPath += `/files/configs/i${node.node_id}_startup-config.cfg`;
+      urlPath += `/files/configs/i${node.properties.dynamips_id}_startup-config.cfg`;
     }
 
     return this.httpController.post(controller, urlPath, configuration);
   }
 
-  savePrivateConfiguration(controller:Controller , node: Node, configuration: string) {
+  savePrivateConfiguration(controller: Controller, node: Node, configuration: string) {
     let urlPath: string = `/projects/${node.project_id}/nodes/${node.node_id}`;
 
     if (node.node_type === 'iou') {
       urlPath += '/files/private-config.cfg';
     } else if (node.node_type === 'dynamips') {
-      urlPath += `/files/configs/i${node.node_id}_private-config.cfg`;
+      urlPath += `/files/configs/i${node.properties.dynamips_id}_private-config.cfg`;
     }
 
     return this.httpController.post(controller, urlPath, configuration);
+  }
+
+  getIdlePCProposals(controller: Controller, node: Node) {
+    return this.httpController.get(controller, `/projects/${node.project_id}/nodes/${node.node_id}/dynamips/idlepc_proposals`);
+  }
+
+  getAutoIdlePC(controller: Controller, node: Node) {
+    return this.httpController.get(controller, `/projects/${node.project_id}/nodes/${node.node_id}/dynamips/auto_idlepc`);
   }
 }

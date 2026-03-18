@@ -15,15 +15,21 @@ import {ActivatedRoute} from "@angular/router";
 import {Controller} from "@models/controller";
 import {Group} from "@models/groups/group";
 import {User} from "@models/users/user";
-import {UntypedFormControl, UntypedFormGroup} from "@angular/forms";
+import {UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {MatDialog} from "@angular/material/dialog";
 import {AddUserToGroupDialogComponent} from "@components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component";
 import {RemoveToGroupDialogComponent} from "@components/group-details/remove-to-group-dialog/remove-to-group-dialog.component";
 import {GroupService} from "@services/group.service";
 import {ToasterService} from "@services/toaster.service";
 import {PageEvent} from "@angular/material/paginator";
+import {ACE, ACEDetailed, AceType} from "@models/api/ACE";
+import {UserService} from "@services/user.service";
+import {RoleService} from "@services/role.service";
 import {Role} from "@models/api/role";
-import {AddRoleToGroupComponent} from "@components/group-details/add-role-to-group/add-role-to-group.component";
+import {AclService} from "@services/acl.service";
+import {Endpoint} from "@models/api/endpoint";
+import {interval} from "rxjs";
+import {MatTableDataSource} from "@angular/material/table";
 
 @Component({
   selector: 'app-group-details',
@@ -37,32 +43,49 @@ export class GroupDetailsComponent implements OnInit {
   editGroupForm: UntypedFormGroup;
   pageEvent: PageEvent | undefined;
   searchMembers: string;
-  roles: Role[];
+  aces: ACE[];
+  aceDatasource = new MatTableDataSource<ACEDetailed>();
+  public aceDisplayedColumns = ['endpoint', 'role', 'propagate', 'allowed'];
 
   constructor(private route: ActivatedRoute,
               private dialog: MatDialog,
               private groupService: GroupService,
-              private toastService: ToasterService) {
+              private toastService: ToasterService,
+              private aclService: AclService,
+              private roleService: RoleService) {
 
-    this.editGroupForm = new UntypedFormGroup({
-      groupname: new UntypedFormControl(''),
-    });
 
-    this.route.data.subscribe((d: { controller: Controller; group: Group, members: User[], roles: Role[] }) => {
+
+    this.route.data.subscribe((d: { controller: Controller; group: Group, members: User[], aces: ACE[] }) => {
 
       this.controller = d.controller;
       this.group = d.group;
-      this.roles = d.roles;
+      this.aces = d.aces;
       this.members = d.members.sort((a: User, b: User) => a.username.toLowerCase().localeCompare(b.username.toLowerCase()));
-      this.editGroupForm.setValue({groupname: this.group.name});
+      this.editGroupForm = new UntypedFormGroup({
+        groupname: new UntypedFormControl(this.group.name, [Validators.required]),
+      });
     });
+
+
   }
 
   ngOnInit(): void {
+    this.roleService.get(this.controller).subscribe((roles: Role[]) => {
+      this.aclService.getEndpoints(this.controller).subscribe((endps: Endpoint[]) => {
+        this.aceDatasource.data = this.aces.map((ace: ACE) => {
+          const endpoint = endps.filter((endp: Endpoint) => endp.endpoint === ace.path)[0]
+          const role = roles.filter((r: Role) => r.role_id === ace.role_id)[0]
+          return {...ace, endpoint_name: endpoint.name, role_name: role.name}
+        })
+      })
+    })
 
   }
 
   onUpdate() {
+    this.group.name = this.editGroupForm.get('groupname').value
+    console.log(this.editGroupForm.get('groupname'))
     this.groupService.update(this.controller, this.group)
       .subscribe(() => {
         this.toastService.success(`group updated`);
@@ -72,18 +95,6 @@ export class GroupDetailsComponent implements OnInit {
       });
   }
 
-  openAddRoleDialog() {
-    this.dialog
-      .open<AddRoleToGroupComponent>(AddRoleToGroupComponent,
-        {
-          width: '700px', height: '500px',
-          data: {controller: this.controller, group: this.group}
-        })
-      .afterClosed()
-      .subscribe(() => {
-        this.reloadRoles();
-      });
-  }
   openAddUserDialog() {
     this.dialog
       .open<AddUserToGroupDialogComponent>(AddUserToGroupDialogComponent,
@@ -117,24 +128,6 @@ export class GroupDetailsComponent implements OnInit {
   }
 
 
-  openRemoveRoleDialog(role: Role) {
-    this.dialog.open<RemoveToGroupDialogComponent>(RemoveToGroupDialogComponent,
-      {width: '500px', height: '200px', data: {name: role.name}})
-      .afterClosed()
-      .subscribe((confirm: string) => {
-        if (confirm) {
-          this.groupService.removeRole(this.controller, this.group, role)
-            .subscribe(() => {
-                this.toastService.success(`Role ${role.name} was removed`);
-                this.reloadRoles();
-              },
-              (error) => {
-                this.toastService.error(`Error while removing role ${role.name} from ${this.group.name}`);
-                console.log(error);
-              });
-        }
-      });
-  }
 
   reloadMembers() {
     this.groupService.getGroupMember(this.controller, this.group.user_group_id)
@@ -143,10 +136,4 @@ export class GroupDetailsComponent implements OnInit {
       });
   }
 
-  reloadRoles() {
-    this.groupService.getGroupRole(this.controller, this.group.user_group_id)
-      .subscribe((roles: Role[]) => {
-        this.roles = roles;
-      });
-  }
 }

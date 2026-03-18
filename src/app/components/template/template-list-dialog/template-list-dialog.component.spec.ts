@@ -2,8 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpController } from '../../../services/http-controller.service';
+import { HttpController } from '@services/http-controller.service';
 import { MockedControllerService } from 'app/services/controller.service.spec';
 import { TemplateMocksService } from 'app/services/template-mocks.service';
 import { TemplateService } from 'app/services/template.service';
@@ -11,6 +15,7 @@ import { ToasterService } from 'app/services/toaster.service';
 import { MockedToasterService } from 'app/services/toaster.service.spec';
 import { NonNegativeValidator } from 'app/validators/non-negative-validator';
 import { TemplateListDialogComponent } from './template-list-dialog.component';
+import {TemplateFilter} from "@filters/templateFilter.pipe";
 
 
 
@@ -20,8 +25,8 @@ describe('TemplateListDialogComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TemplateListDialogComponent],
-      imports: [ReactiveFormsModule, FormsModule,RouterTestingModule],
+      declarations: [TemplateListDialogComponent, TemplateFilter],
+      imports: [ReactiveFormsModule, FormsModule, RouterTestingModule, MatFormFieldModule, MatInputModule, MatSelectModule, NoopAnimationsModule],
       providers: [
         { provide: TemplateService, useClass: TemplateMocksService },
         { provide: ToasterService, useValue: MockedToasterService },

@@ -7,7 +7,7 @@
         </button>
       </div>
       <div class="col col-md-11">
-      <h1 class="col">VMware VM configuration</h1>
+      <h1 class="col">VMware VM template configuration</h1>
       </div>
     </div>
   </div>
@@ -46,6 +46,19 @@
             />
           </mat-form-field>
           <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br /><br />
+          <mat-form-field class="form-field tags-field">
+            <mat-label>Tags</mat-label>
+            <mat-chip-list #chipList>
+              <mat-chip *ngFor="let tag of vmwareTemplate?.tags" (removed)="removeTag(tag)">
+                {{ tag }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+            </mat-chip-list>
+            <input matInput placeholder="Add tags"
+                   [matChipInputFor]="chipList"
+                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                   (matChipInputTokenEnd)="addTag($event)" />
+          </mat-form-field>
           <mat-form-field class="form-field">
             <mat-select
               placeholder="Category"
@@ -95,7 +108,7 @@
           <mat-panel-title> Network </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-form-field class="form-field">
-          <input matInput type="number" [(ngModel)]="vmwareTemplate.adapters" placeholder="Adapters" />
+          <input matInput type="number" min="0" [(ngModel)]="vmwareTemplate.adapters" placeholder="Adapters" />
         </mat-form-field>
         <mat-form-field class="form-field">
           <input matInput type="text" [(ngModel)]="vmwareTemplate.first_port_name" placeholder="First port name" />
@@ -104,7 +117,7 @@
           <input matInput type="text" [(ngModel)]="vmwareTemplate.port_name_format" placeholder="Name format" />
         </mat-form-field>
         <mat-form-field class="form-field">
-          <input matInput type="number" [(ngModel)]="vmwareTemplate.port_segment_size" placeholder="Segment size" />
+          <input matInput type="number" min="0" [(ngModel)]="vmwareTemplate.port_segment_size" placeholder="Segment size" />
         </mat-form-field>
         <mat-form-field class="form-field">
           <mat-select placeholder="Type" [(ngModel)]="vmwareTemplate.adapter_type">

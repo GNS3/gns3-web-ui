@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import{ Controller } from '../../../../models/controller';
-import { IosTemplate } from '../../../../models/templates/ios-template';
-import { IosConfigurationService } from '../../../../services/ios-configuration.service';
-import { IosService } from '../../../../services/ios.service';
-import { ControllerService } from '../../../../services/controller.service';
-import { ToasterService } from '../../../../services/toaster.service';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { Controller } from '@models/controller';
+import { IosTemplate } from '@models/templates/ios-template';
+import { IosConfigurationService } from '@services/ios-configuration.service';
+import { IosService } from '@services/ios.service';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
+import { ProgressService } from "../../../../common/progress/progress.service";
 
 @Component({
   selector: 'app-ios-template-details',
@@ -14,22 +17,22 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./ios-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class IosTemplateDetailsComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   iosTemplate: IosTemplate;
-
   isSymbolSelectionOpened: boolean = false;
-
-  networkAdaptersForTemplate: string[] = [];
   platforms: string[] = [];
   consoleTypes: string[] = [];
+  categories = [];
   platformsWithEtherSwitchRouterOption = {};
   platformsWithChassis = {};
   chassis = {};
   defaultRam = {};
   defaultNvram = {};
-  networkAdapters = {};
-  networkAdaptersForPlatform = {};
-  networkModules = {};
+  networkAdaptersForTemplate: string[] = [];
+  wicsForTemplate: string[] = [];
+  adapterMatrix = {};
+  wicMatrix = {};
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
   generalSettingsForm: UntypedFormGroup;
   memoryForm: UntypedFormGroup;
@@ -42,6 +45,7 @@ export class IosTemplateDetailsComponent implements OnInit {
     private toasterService: ToasterService,
     private formBuilder: UntypedFormBuilder,
     private iosConfigurationService: IosConfigurationService,
+    private progressService: ProgressService,
     private router: Router
   ) {
     this.generalSettingsForm = this.formBuilder.group({
@@ -55,7 +59,7 @@ export class IosTemplateDetailsComponent implements OnInit {
     this.memoryForm = this.formBuilder.group({
       ram: new UntypedFormControl('', Validators.required),
       nvram: new UntypedFormControl('', Validators.required),
-      iomemory: new UntypedFormControl('', Validators.required),
+      iomemory: new UntypedFormControl(''),
       disk0: new UntypedFormControl('', Validators.required),
       disk1: new UntypedFormControl('', Validators.required),
     });
@@ -65,63 +69,180 @@ export class IosTemplateDetailsComponent implements OnInit {
       idlemax: new UntypedFormControl('', Validators.required),
       idlesleep: new UntypedFormControl('', Validators.required),
       execarea: new UntypedFormControl('', Validators.required),
+      idlepc: new UntypedFormControl('', Validators.pattern(this.iosConfigurationService.getIdlepcRegex())),
+      mac_addr: new UntypedFormControl('', Validators.pattern(this.iosConfigurationService.getMacAddrRegex())),
     });
   }
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       this.getConfiguration();
       this.iosService.getTemplate(this.controller, template_id).subscribe((iosTemplate: IosTemplate) => {
         this.iosTemplate = iosTemplate;
-
-        this.fillAdaptersData();
+        if (!this.iosTemplate.tags) {
+          this.iosTemplate.tags = [];
+        }
+        this.fillSlotsData();
       });
     });
   }
 
   getConfiguration() {
-    this.networkModules = this.iosConfigurationService.getNetworkModules();
-    this.networkAdaptersForPlatform = this.iosConfigurationService.getNetworkAdaptersForPlatform();
-    this.networkAdapters = this.iosConfigurationService.getNetworkAdapters();
     this.platforms = this.iosConfigurationService.getAvailablePlatforms();
     this.platformsWithEtherSwitchRouterOption = this.iosConfigurationService.getPlatformsWithEtherSwitchRouterOption();
     this.platformsWithChassis = this.iosConfigurationService.getPlatformsWithChassis();
     this.chassis = this.iosConfigurationService.getChassis();
     this.defaultRam = this.iosConfigurationService.getDefaultRamSettings();
     this.consoleTypes = this.iosConfigurationService.getConsoleTypes();
+    this.categories = this.iosConfigurationService.getCategories();
+    this.adapterMatrix = this.iosConfigurationService.getAdapterMatrix();
+    this.wicMatrix = this.iosConfigurationService.getWicMatrix();
   }
 
-  fillAdaptersData() {
-    if (this.iosTemplate.slot0) this.networkAdaptersForTemplate[0] = this.iosTemplate.slot0;
-    if (this.iosTemplate.slot1) this.networkAdaptersForTemplate[1] = this.iosTemplate.slot1;
-    if (this.iosTemplate.slot2) this.networkAdaptersForTemplate[2] = this.iosTemplate.slot2;
-    if (this.iosTemplate.slot3) this.networkAdaptersForTemplate[3] = this.iosTemplate.slot3;
-    if (this.iosTemplate.slot4) this.networkAdaptersForTemplate[4] = this.iosTemplate.slot4;
-    if (this.iosTemplate.slot5) this.networkAdaptersForTemplate[5] = this.iosTemplate.slot5;
-    if (this.iosTemplate.slot6) this.networkAdaptersForTemplate[6] = this.iosTemplate.slot6;
-    if (this.iosTemplate.slot7) this.networkAdaptersForTemplate[7] = this.iosTemplate.slot7;
+  findIdlePC() {
+    let data = {
+      "image": this.iosTemplate.image,
+      "platform": this.iosTemplate.platform,
+      "ram": this.iosTemplate.ram
+    };
+    this.progressService.activate();
+    this.iosService.findIdlePC(this.controller, data).subscribe((result: any) => {
+      this.progressService.deactivate();
+      if (result.idlepc !== null) {
+        this.iosTemplate.idlepc = result.idlepc;
+        this.toasterService.success(`Idle-PC value found: ${result.idlepc}`);
+      }
+    },
+      (error) => {
+        this.progressService.deactivate();
+        this.toasterService.error(`Error while finding an idle-PC value`);
+      }
+      );
   }
 
-  completeAdaptersData() {
-    if (this.networkAdaptersForTemplate[0]) this.iosTemplate.slot0 = this.networkAdaptersForTemplate[0];
-    if (this.networkAdaptersForTemplate[1]) this.iosTemplate.slot1 = this.networkAdaptersForTemplate[1];
-    if (this.networkAdaptersForTemplate[2]) this.iosTemplate.slot2 = this.networkAdaptersForTemplate[2];
-    if (this.networkAdaptersForTemplate[3]) this.iosTemplate.slot3 = this.networkAdaptersForTemplate[3];
-    if (this.networkAdaptersForTemplate[4]) this.iosTemplate.slot4 = this.networkAdaptersForTemplate[4];
-    if (this.networkAdaptersForTemplate[5]) this.iosTemplate.slot5 = this.networkAdaptersForTemplate[5];
-    if (this.networkAdaptersForTemplate[6]) this.iosTemplate.slot6 = this.networkAdaptersForTemplate[6];
-    if (this.networkAdaptersForTemplate[7]) this.iosTemplate.slot7 = this.networkAdaptersForTemplate[7];
+  generateBaseMAC() {
+    // Generate a random MAC address in format xxxx.xxxx.xxxx
+    const hexChars = '0123456789abcdef';
+    let mac = '';
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 4; j++) {
+        mac += hexChars[Math.floor(Math.random() * 16)];
+      }
+      if (i < 2) {
+        mac += '.';
+      }
+    }
+    this.iosTemplate.mac_addr = mac;
+    this.toasterService.success(`Base MAC generated: ${mac}`);
+  }
+
+  fillSlotsData() {
+
+    // load network adapters
+    for (let i = 0; i <= 6; i++) {
+      if (this.iosTemplate[`slot${i}`]) {
+        this.networkAdaptersForTemplate[i] = this.iosTemplate[`slot${i}`];
+      }
+    }
+
+    // load WICs
+    for (let i = 0; i <= 3; i++) {
+      if (this.iosTemplate[`wic${i}`]) {
+        this.wicsForTemplate[i] = this.iosTemplate[`wic${i}`];
+      }
+    }
+  }
+
+  saveSlotsData() {
+
+    // save network adapters
+    for (let i = 0; i <= 6; i++) {
+      const slotAdapters = this.adapterMatrix?.[this.iosTemplate.platform]?.[this.iosTemplate.chassis || '']?.[i];
+      if (slotAdapters) {
+        if (this.networkAdaptersForTemplate[i] === undefined)
+          this.iosTemplate[`slot${i}`] = ""
+        else
+          this.iosTemplate[`slot${i}`] = this.networkAdaptersForTemplate[i];
+      } else {
+        // Remove slot properties that don't exist on this platform/chassis
+        delete this.iosTemplate[`slot${i}`];
+      }
+    }
+
+    // save WICs
+    for (let i = 0; i <= 3; i++) {
+      const wicAdapters = this.wicMatrix?.[this.iosTemplate.platform]?.[i];
+      if (wicAdapters) {
+        if (this.wicsForTemplate[i] === undefined)
+          this.iosTemplate[`wic${i}`] = ""
+        else
+          this.iosTemplate[`wic${i}`] = this.wicsForTemplate[i];
+      } else {
+        // Remove WIC properties that don't exist on this platform
+        delete this.iosTemplate[`wic${i}`];
+      }
+    }
   }
 
   onSave() {
     if (this.generalSettingsForm.invalid || this.memoryForm.invalid || this.advancedForm.invalid) {
-      this.toasterService.error(`Fill all required fields`);
+      const missingFields: string[] = [];
+
+      // Check general settings form
+      if (this.generalSettingsForm.get('templateName').invalid) {
+        missingFields.push('Template name');
+      }
+      if (this.generalSettingsForm.get('defaultName').invalid) {
+        missingFields.push('Default name format');
+      }
+      if (this.generalSettingsForm.get('symbol').invalid) {
+        missingFields.push('Symbol');
+      }
+      if (this.generalSettingsForm.get('path').invalid) {
+        missingFields.push('IOS image path');
+      }
+      if (this.generalSettingsForm.get('initialConfig').invalid) {
+        missingFields.push('Initial startup-config');
+      }
+
+      // Check memory form
+      if (this.memoryForm.get('ram').invalid) {
+        missingFields.push('RAM size');
+      }
+      if (this.memoryForm.get('nvram').invalid) {
+        missingFields.push('NVRAM size');
+      }
+      if (this.memoryForm.get('disk0').invalid) {
+        missingFields.push('PCMCIA disk0');
+      }
+      if (this.memoryForm.get('disk1').invalid) {
+        missingFields.push('PCMCIA disk1');
+      }
+
+      // Check advanced form
+      if (this.advancedForm.get('systemId').invalid) {
+        missingFields.push('System ID');
+      }
+      if (this.advancedForm.get('mac_addr').invalid) {
+        missingFields.push('Base MAC (format: xxxx.xxxx.xxxx)');
+      }
+      if (this.advancedForm.get('idlemax').invalid) {
+        missingFields.push('Idlemax');
+      }
+      if (this.advancedForm.get('idlesleep').invalid) {
+        missingFields.push('Idlesleep');
+      }
+      if (this.advancedForm.get('execarea').invalid) {
+        missingFields.push('Exec area');
+      }
+
+      this.toasterService.error(`Missing required fields: ${missingFields.join(', ')}`);
     } else {
-      this.completeAdaptersData();
+      this.saveSlotsData();
 
       this.iosService.saveTemplate(this.controller, this.iosTemplate).subscribe((iosTemplate: IosTemplate) => {
         this.toasterService.success('Changes saved');
@@ -140,5 +261,32 @@ export class IosTemplateDetailsComponent implements OnInit {
   symbolChanged(chosenSymbol: string) {
     this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
     this.iosTemplate.symbol = chosenSymbol;
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.iosTemplate) {
+      if (!this.iosTemplate.tags) {
+        this.iosTemplate.tags = [];
+      }
+      this.iosTemplate.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.iosTemplate.tags) {
+      return;
+    }
+    const index = this.iosTemplate.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.iosTemplate.tags.splice(index, 1);
+    }
   }
 }

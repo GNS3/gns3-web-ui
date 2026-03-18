@@ -12,6 +12,20 @@
                 <input matInput formControlName="name" type="text" [(ngModel)]="node.name" placeholder="Name" />
               </mat-form-field>
 
+              <mat-form-field class="form-field tags-field">
+                <mat-label>Tags</mat-label>
+                <mat-chip-list #chipList>
+                  <mat-chip *ngFor="let tag of node?.tags" (removed)="removeTag(tag)">
+                    {{ tag }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                </mat-chip-list>
+                <input matInput placeholder="Add tags"
+                       [matChipInputFor]="chipList"
+                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                       (matChipInputTokenEnd)="addTag($event)" />
+              </mat-form-field>
+
               <mat-form-field class="form-field">
                 <input
                   matInput
@@ -33,17 +47,27 @@
               </mat-form-field>
 
               <mat-form-field class="form-field">
-                  <input formControlName="memory" matInput type="number" [(ngModel)]="node.properties.memory" placeholder="Maximum memory">
+                <input
+                  matInput
+                  formControlName="mac_address"
+                  type="text"
+                  [(ngModel)]="node.properties.mac_address"
+                  placeholder="Base MAC"
+                />
+              </mat-form-field>
+
+              <mat-form-field class="form-field">
+                  <input formControlName="memory" matInput type="number" min="0" [(ngModel)]="node.properties.memory" placeholder="Maximum memory">
                   <span matSuffix>MB</span>
               </mat-form-field>
 
               <mat-form-field class="form-field">
-                  <input formControlName="cpus" matInput type="number" [(ngModel)]="node.properties.cpus" placeholder="Maximum CPUs">
+                  <input formControlName="cpus" matInput type="number" min="0" [(ngModel)]="node.properties.cpus" placeholder="Maximum CPUs">
               </mat-form-field>
 
-              <button mat-button class="form-field" (click)="configureCustomAdapters()">
-                  Configure custom adapters
-              </button>
+<!--              <button mat-button class="form-field" (click)="configureCustomAdapters()">-->
+<!--                  Configure custom adapters-->
+<!--              </button>-->
 
               <mat-form-field class="select">
                 <mat-select
@@ -52,6 +76,17 @@
                   [(ngModel)]="node.console_type"
                 >
                   <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                    {{ type }}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field class="select">
+                <mat-select
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="Auxiliary console type"
+                  [(ngModel)]="node.aux_type"
+                >
+                  <mat-option *ngFor="let type of auxConsoleTypes" [value]="type">
                     {{ type }}
                   </mat-option>
                 </mat-select>

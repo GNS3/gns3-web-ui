@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import{ Controller } from '../../../../../models/controller';
-import { EthernetHubTemplate } from '../../../../../models/templates/ethernet-hub-template';
-import { BuiltInTemplatesService } from '../../../../../services/built-in-templates.service';
-import { ControllerService } from '../../../../../services/controller.service';
+import { Controller } from '@models/controller';
+import { EthernetHubTemplate } from '@models/templates/ethernet-hub-template';
+import { BuiltInTemplatesService } from '@services/built-in-templates.service';
+import { ControllerService } from '@services/controller.service';
 import { DeleteTemplateComponent } from '../../../common/delete-template-component/delete-template.component';
 
 @Component({
@@ -12,7 +12,7 @@ import { DeleteTemplateComponent } from '../../../common/delete-template-compone
   styleUrls: ['./ethernet-hubs-templates.component.scss', '../../../preferences.component.scss'],
 })
 export class EthernetHubsTemplatesComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   ethernetHubsTemplates: EthernetHubTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
 
@@ -24,7 +24,7 @@ export class EthernetHubsTemplatesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
       this.getTemplates();
     });

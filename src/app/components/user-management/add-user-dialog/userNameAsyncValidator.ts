@@ -10,11 +10,11 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Controller} from "../../../models/controller";
+import {Controller} from "@models/controller";
 import {UntypedFormControl} from "@angular/forms";
 import {timer} from "rxjs";
 import {map, switchMap} from "rxjs/operators";
-import {UserService} from "../../../services/user.service";
+import {UserService} from "@services/user.service";
 
 export const userNameAsyncValidator = (controller: Controller, userService: UserService, except: string = '') => {
   return (control: UntypedFormControl) => {

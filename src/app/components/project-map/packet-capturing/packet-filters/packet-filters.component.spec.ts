@@ -9,8 +9,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { of } from 'rxjs';
-import { Link } from '../../../../models/link';
-import { LinkService } from '../../../../services/link.service';
+import { Link } from '@models/link';
+import { LinkService } from '@services/link.service';
 import { MockedLinkService } from '../../project-map.component.spec';
 import { PacketFiltersDialogComponent } from './packet-filters.component';
 

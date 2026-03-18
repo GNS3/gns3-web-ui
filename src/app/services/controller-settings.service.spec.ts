@@ -1,18 +1,18 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { inject, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import{ Controller } from '../models/controller';
-import { QemuSettings } from '../models/settings/qemu-settings';
+import { Controller } from '@models/controller';
+import { QemuSettings } from '@models/settings/qemu-settings';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
 import { HttpController } from './http-controller.service';
 import { ControllerSettingsService } from './controller-settings.service';
 
 export class MockedControllerSettingsService {
-  getSettingsForQemu(controller:Controller ) {
+  getSettingsForQemu(controller: Controller ) {
     return of([]);
   }
 
-  updateSettingsForQemu(controller:Controller , qemuSettings: QemuSettings) {
+  updateSettingsForQemu(controller: Controller, qemuSettings: QemuSettings) {
     return of([]);
   }
 }

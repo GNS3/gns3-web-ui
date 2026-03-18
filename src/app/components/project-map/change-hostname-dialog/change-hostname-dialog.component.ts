@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../cartography/models/node';
-import{ Controller } from '../../../models/controller';
-import { NodeService } from '../../../services/node.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { Controller } from '@models/controller';
+import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-change-hostname-dialog-component',
@@ -12,7 +12,7 @@ import { ToasterService } from '../../../services/toaster.service';
   styleUrls: ['./change-hostname-dialog.component.scss'],
 })
 export class ChangeHostnameDialogComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   node: Node;
   inputForm: UntypedFormGroup;
   name: string;

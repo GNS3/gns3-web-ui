@@ -5,9 +5,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
-import { ConsoleService } from '../../../services/settings/console.service';
-import { ToasterService } from '../../../services/toaster.service';
-import { MockedToasterService } from '../../../services/toaster.service.spec';
+import { ConsoleService } from '@services/settings/console.service';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
 import { ConsoleComponent } from './console.component';
 
 describe('ConsoleComponent', () => {

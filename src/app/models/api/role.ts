@@ -1,4 +1,4 @@
-import {Permission} from "./permission";
+import {Privilege} from "@models/api/Privilege";
 
 export interface Role {
   name: string;
@@ -7,5 +7,5 @@ export interface Role {
   updated_at: string;
   role_id: string;
   is_builtin: boolean;
-  permissions: Permission[];
+  privileges: Privilege[];
 }

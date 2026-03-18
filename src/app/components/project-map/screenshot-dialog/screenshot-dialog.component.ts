@@ -3,7 +3,7 @@ import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } 
 import { MatDialogRef } from '@angular/material/dialog';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { ElectronService } from 'ngx-electron';
-import { ToasterService } from '../../../services/toaster.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-screenshot-dialog',

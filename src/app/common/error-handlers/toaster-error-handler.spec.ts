@@ -1,8 +1,8 @@
 import { Injector } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { SettingsService } from '../../services/settings.service';
-import { ToasterService } from '../../services/toaster.service';
-import { MockedToasterService } from '../../services/toaster.service.spec';
+import { SettingsService } from '@services/settings.service';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
 import { SentryErrorHandler } from './sentry-error-handler';
 import { ToasterErrorHandler } from './toaster-error-handler';
 

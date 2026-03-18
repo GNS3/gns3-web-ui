@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import{ Controller } from '../models/controller';
+import { Controller } from '@models/controller';
 import { Subject } from 'rxjs';
 import { Node } from '../cartography/models/node';
 import { Router } from '@angular/router';
@@ -66,13 +66,13 @@ export class NodeConsoleService {
     return this.defaultConsoleHeight / this.defaultNumberOfRows;
   }
 
-  getUrl(controller:Controller , node: Node) {
+  getUrl(controller: Controller, node: Node) {
     let protocol:string = "ws"
 	  if (controller.protocol === "https:") {
 		  protocol = "wss"
 	  }
 
-    return `${protocol}://${controller.host}:${controller.port}/${environment.current_version}/projects/${node.project_id}/nodes/${node.node_id}/console/ws`
+    return `${protocol}://${controller.host}:${controller.port}/${environment.current_version}/projects/${node.project_id}/nodes/${node.node_id}/console/ws?token=${controller.authToken}`
   }
 
   openConsolesForAllNodesInWidget(nodes: Node[]) {

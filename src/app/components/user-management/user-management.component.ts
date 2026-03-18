@@ -11,6 +11,7 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {Location}  from '@angular/common';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Controller} from "@models/controller";
 import {MatSort} from "@angular/material/sort";
@@ -49,7 +50,8 @@ export class UserManagementComponent implements OnInit {
     private progressService: ProgressService,
     private controllerService: ControllerService,
     public dialog: MatDialog,
-    private toasterService: ToasterService) { }
+    private toasterService: ToasterService,
+    private location: Location) { }
 
   ngOnInit() {
     const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');
@@ -88,6 +90,8 @@ export class UserManagementComponent implements OnInit {
       },
       (error) => {
         this.progressService.setError(error);
+        this.toasterService.error(`Cannot open the user management page`);
+        this.location.back();
       }
     );
   }

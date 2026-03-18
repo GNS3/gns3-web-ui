@@ -1,0 +1,11 @@
+.container {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.multiline-tooltip {
+  background-color: grey;
+  color: #ffffff;
+  white-space: pre-line;
+}

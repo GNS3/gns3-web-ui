@@ -10,8 +10,8 @@ import { LineElementFactory } from '../../../cartography/helpers/drawings-factor
 import { RectangleElementFactory } from '../../../cartography/helpers/drawings-factory/rectangle-element-factory';
 import { TextElementFactory } from '../../../cartography/helpers/drawings-factory/text-element-factory';
 import { Context } from '../../../cartography/models/context';
-import { Project } from '../../../models/project';
-import { DrawingService } from '../../../services/drawing.service';
+import { Project } from '@models/project';
+import { DrawingService } from '@services/drawing.service';
 import { MockedDrawingsDataSource, MockedDrawingService } from '../../project-map/project-map.component.spec';
 import { TextAddedComponent } from './text-added.component';
 

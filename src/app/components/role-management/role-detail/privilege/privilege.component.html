@@ -1,0 +1,42 @@
+<link rel="stylesheet" href="privilege.component.scss">
+<div class="privileges">
+  <div class="header">
+    <div class="title">Privileges</div>
+    <div *ngIf="!disable">
+      <button mat-button *ngIf="!editMode">
+        <mat-icon (click)="editMode = true">edit</mat-icon>
+      </button>
+      <button *ngIf="editMode" mat-raised-button color="warn" (click)="editMode = false">Cancel</button>
+      <button *ngIf="editMode" mat-raised-button color="primary" (click)="close()">Update</button>
+    </div>
+  </div>
+  <div *ngFor="let privilegeName of privileges | groupPrivileges">
+    <div *ngIf="editMode; else normalMode">
+      <div class="privilege">
+        <div class="key">{{privilegeName.key}}:</div>
+        <div class="values">
+          <div class="box" *ngFor="let privilegeVerb of privilegeName.values">
+            <mat-checkbox
+              (change)="onPrivilegeChange($event.checked, privilegeVerb.privilege)"
+              [checked]="ownedPrivilegesList.includes(privilegeVerb.privilege.privilege_id)"></mat-checkbox>
+            <div
+              [ngClass]="{add: changer.isAdded(privilegeVerb.privilege.privilege_id), delete: changer.isDeleted(privilegeVerb.privilege.privilege_id)}">
+              {{privilegeVerb.verb}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <ng-template #normalMode>
+      <div class="privilege" *ngIf="ownedPrivilegesName.includes(privilegeName.key)">
+        <div class="key">{{privilegeName.key}}:</div>
+        <div class="values">
+          <div *ngFor="let privilegeVerb of privilegeName.values">
+            <div [ngClass]="{box: ownedPrivilegesList.includes(privilegeVerb.privilege.privilege_id)}"
+                 *ngIf="ownedPrivilegesList.includes(privilegeVerb.privilege.privilege_id)">{{privilegeVerb.verb}}</div>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>
+

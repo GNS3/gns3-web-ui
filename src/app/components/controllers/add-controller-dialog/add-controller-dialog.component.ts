@@ -2,9 +2,9 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ElectronService } from 'ngx-electron';
-import { Controller } from '../../../models/controller';
-import { ControllerService } from '../../../services/controller.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { Controller } from '@models/controller';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-add-controller-dialog',
@@ -16,6 +16,9 @@ export class AddControllerDialogComponent implements OnInit {
     { key: 'https:', name: 'HTTPS' },
   ];
   locations = [];
+  connectionError: string = '';
+  canAddAnyway = false;
+  isCheckingConnection = false;
 
   controllerForm = new UntypedFormGroup({
     name: new UntypedFormControl('', [Validators.required]),
@@ -124,21 +127,40 @@ export class AddControllerDialogComponent implements OnInit {
       return;
     }
 
-    const controller:Controller  = Object.assign({}, this.controllerForm.value);
+    this.connectionError = '';
+    this.canAddAnyway = false;
+    this.isCheckingConnection = true;
+
+    const controller: Controller  = Object.assign({}, this.controllerForm.value);
     this.controllerService.checkControllerVersion(controller).subscribe(
       (controllerInfo) => {
+        this.isCheckingConnection = false;
         if (controllerInfo.version.split('.')[0] >= 3) {
           this.dialogRef.close(controller);
           this.toasterService.success(`Controller ${controller.name} added.`);
         } else {
-          this.dialogRef.close();
+          this.connectionError = 'Controller version is not supported.';
+          this.canAddAnyway = true;
           this.toasterService.error(`Controller version is not supported.`);
         }
       },
       (error) => {
+        this.isCheckingConnection = false;
+        this.connectionError = 'Cannot connect to the controller. It appears offline.';
+        this.canAddAnyway = true;
         this.toasterService.error('Cannot connect to the controller: ' + error);
       }
     );
+  }
+
+  onAddAnywayClick(): void {
+    if (!this.controllerForm.valid) {
+      return;
+    }
+
+    const controller: Controller = Object.assign({}, this.controllerForm.value);
+    this.dialogRef.close(controller);
+    this.toasterService.warning(`Controller ${controller.name} added in offline mode.`);
   }
 
   onNoClick(): void {

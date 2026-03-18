@@ -2,11 +2,11 @@ import { Component, Input, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ProgressDialogComponent } from '../../../common/progress-dialog/progress-dialog.component';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
-import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
-import { Snapshot } from '../../../models/snapshot';
-import { SnapshotService } from '../../../services/snapshot.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { Snapshot } from '@models/snapshot';
+import { SnapshotService } from '@services/snapshot.service';
+import { ToasterService } from '@services/toaster.service';
 import { CreateSnapshotDialogComponent } from '../create-snapshot-dialog/create-snapshot-dialog.component';
 
 @Component({
@@ -16,7 +16,7 @@ import { CreateSnapshotDialogComponent } from '../create-snapshot-dialog/create-
 })
 export class SnapshotMenuItemComponent implements OnInit {
   @Input('project') project: Project;
-  @Input('controller') controller:Controller ;
+  @Input('controller') controller: Controller;
 
   constructor(
     private dialog: MatDialog,

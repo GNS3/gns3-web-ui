@@ -1,15 +1,15 @@
 import { Component, DoCheck, OnInit, ViewEncapsulation } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthResponse } from '../../models/authResponse';
-import{ Controller } from '../../models/controller';
-import { Version } from '../../models/version';
-import { LoginService } from '../../services/login.service';
-import { ControllerDatabase } from '../../services/controller.database';
-import { ControllerService } from '../../services/controller.service';
-import { ThemeService } from '../../services/theme.service';
-import { ToasterService } from '../../services/toaster.service';
-import { VersionService } from '../../services/version.service';
+import { AuthResponse } from '@models/authResponse';
+import { Controller } from '@models/controller';
+import { Version } from '@models/version';
+import { LoginService } from '@services/login.service';
+import { ControllerDatabase } from '@services/controller.database';
+import { ControllerService } from '@services/controller.service';
+import { ThemeService } from '@services/theme.service';
+import { ToasterService } from '@services/toaster.service';
+import { VersionService } from '@services/version.service';
 
 @Component({
   selector: 'app-login',
@@ -18,13 +18,13 @@ import { VersionService } from '../../services/version.service';
   encapsulation: ViewEncapsulation.None,
 })
 export class LoginComponent implements OnInit, DoCheck {
-  private controller:Controller ;
+  private controller: Controller;
   public version: string;
   public isLightThemeEnabled: boolean = false;
   public loginError: boolean = false;
   public returnUrl: string = '';
   public isRememberMe: boolean = false;
-  public isRememberMeCheked: boolean = false;
+  public isRememberMeChecked: boolean = false;
 
   loginForm = new UntypedFormGroup({
     username: new UntypedFormControl('', [Validators.required]),
@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit, DoCheck {
   async ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       if (controller.authToken) {
@@ -65,7 +65,7 @@ export class LoginComponent implements OnInit, DoCheck {
     if (getCurrentUser && getCurrentUser.isRememberMe) {
       this.loginForm.get('username').setValue(getCurrentUser.username);
       this.loginForm.get('password').setValue(getCurrentUser.password);
-      this.isRememberMeCheked = getCurrentUser.isRememberMe;
+      this.isRememberMeChecked = getCurrentUser.isRememberMe;
     }
   }
 
@@ -94,6 +94,7 @@ export class LoginComponent implements OnInit, DoCheck {
         }
       },
       (error) => {
+        this.isRememberMe = false;
         this.loginError = true;
       }
     );
@@ -101,13 +102,13 @@ export class LoginComponent implements OnInit, DoCheck {
 
   rememberMe(ev) {
     if (ev.checked) {
-      let curren_user = {
+      let current_user = {
         username: this.loginForm.get('username').value,
         password: this.loginForm.get('password').value,
         isRememberMe: ev.checked,
       };
-      this.isRememberMeCheked = ev.checked;
-      localStorage.setItem(`isRememberMe`, JSON.stringify(curren_user));
+      this.isRememberMeChecked = ev.checked;
+      localStorage.setItem(`isRememberMe`, JSON.stringify(current_user));
     } else {
       localStorage.removeItem(`isRememberMe`);
       this.loginForm.reset();

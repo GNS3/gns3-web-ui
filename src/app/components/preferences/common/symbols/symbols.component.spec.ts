@@ -9,8 +9,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import { SearchFilter } from '../../../../filters/searchFilter.pipe';
-import { SymbolService } from '../../../../services/symbol.service';
+import { SearchFilter } from '@filters/searchFilter.pipe';
+import { SymbolService } from '@services/symbol.service';
 import { SymbolsComponent } from './symbols.component';
 
 export class MockedSymbolService {

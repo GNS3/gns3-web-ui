@@ -1,5 +1,5 @@
 <header>
-  <mat-toolbar color="primary"  *ngIf="router.url != '/controllers'">
+  <mat-toolbar color="primary">
     <button mat-icon-button *ngIf="!isLoginPage && router.url == '/controllers'">
       <mat-icon svgIcon="gns3"></mat-icon>
     </button>
@@ -90,4 +90,4 @@
 
 <app-progress></app-progress>
 
-<footer class="footer mat-app-background">GNS3 Web UI &copy; 2022 - v{{ uiVersion }}</footer>
+<footer class="footer mat-app-background">GNS3 Web-UI &copy;2018-{{ currentYear }} v{{ uiVersion }}</footer>

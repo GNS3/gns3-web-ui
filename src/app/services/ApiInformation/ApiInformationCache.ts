@@ -1,5 +1,5 @@
 import {IApiData} from "./IApiData";
-import {Controller} from "../../models/controller";
+import {Controller} from "@models/controller";
 import {IExtraParams} from "./IExtraParams";
 import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
 

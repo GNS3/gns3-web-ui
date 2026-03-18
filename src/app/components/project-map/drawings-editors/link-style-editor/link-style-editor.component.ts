@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Link } from '../../../../models/link';
-import { Project } from '../../../../models/project';
-import{ Controller } from '../../../../models/controller';
-import { ToasterService } from '../../../../services/toaster.service';
+import { Link } from '@models/link';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { ToasterService } from '@services/toaster.service';
 import { NonNegativeValidator } from '../../../../validators/non-negative-validator';
-import { LinkService } from '../../../../services/link.service';
+import { LinkService } from '@services/link.service';
 import { LinksDataSource } from '../../../../cartography/datasources/links-datasource';
 import { LinksEventSource } from '../../../../cartography/events/links-event-source';
 import { LinkToMapLinkConverter } from '../../../../cartography/converters/map/link-to-map-link-converter';
@@ -17,7 +17,7 @@ import { LinkToMapLinkConverter } from '../../../../cartography/converters/map/l
   styleUrls: ['./link-style-editor.component.scss'],
 })
 export class LinkStyleEditorDialogComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   project: Project;
   link: Link;
   formGroup: UntypedFormGroup;
@@ -41,16 +41,16 @@ export class LinkStyleEditorDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (!this.link.link_style?.color) {
-        this.formGroup.controls['color'].setValue("#000000");
-    } else {
-        this.formGroup.controls['color'].setValue(this.link.link_style.color);
-    }
+    // Use the canonical default color per link type so CSS can handle theme conversion.
+    // Saving a theme-adjusted color would lock the cable permanently, breaking switching.
+    const defaultColor = this.link.link_type === 'serial' ? '#800000' : '#000000';
+    this.formGroup.controls['color'].setValue(this.link.link_style?.color ?? defaultColor);
 
-    this.formGroup.controls['width'].setValue(this.link.link_style.width);
+    const width = this.link.link_style?.width !== undefined ? this.link.link_style.width : 2;
+    this.formGroup.controls['width'].setValue(width);
 
     let type = this.borderTypes[0];
-    if (this.link.link_style?.type) {
+    if (this.link.link_style?.type !== undefined) {
         type = this.borderTypes[this.link.link_style.type];
     }
     this.formGroup.controls['type'].setValue(type);

@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
-import { QemuBinary } from '../../../../models/qemu/qemu-binary';
-import{ Controller } from '../../../../models/controller';
-import { QemuTemplate } from '../../../../models/templates/qemu-template';
-import { QemuService } from '../../../../services/qemu.service';
-import { ControllerService } from '../../../../services/controller.service';
-import { ToasterService } from '../../../../services/toaster.service';
+import { QemuBinary } from '@models/qemu/qemu-binary';
+import { Controller } from '@models/controller';
+import { QemuTemplate } from '@models/templates/qemu-template';
+import { QemuService } from '@services/qemu.service';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-copy-qemu-virtual-machine-template',
@@ -15,7 +15,7 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./copy-qemu-vm-template.component.scss', '../../preferences.component.scss'],
 })
 export class CopyQemuVmTemplateComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   templateName: string = '';
   qemuTemplate: QemuTemplate;
   nameForm: UntypedFormGroup;
@@ -36,7 +36,7 @@ export class CopyQemuVmTemplateComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       this.qemuService.getTemplate(this.controller, template_id).subscribe((qemuTemplate: QemuTemplate) => {

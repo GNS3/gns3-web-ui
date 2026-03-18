@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Configurator for node {{ name }}</h1>
+<h1 mat-dialog-title>Configurator for Qemu VM {{ name }}</h1>
 
 <div class="modal-form-container">
   <div class="content">
@@ -10,6 +10,19 @@
             <form [formGroup]="generalSettingsForm">
               <mat-form-field class="form-field">
                 <input matInput type="text" formControlName="name" [(ngModel)]="node.name" placeholder="Name" />
+              </mat-form-field>
+              <mat-form-field class="form-field tags-field">
+                <mat-label>Tags</mat-label>
+                <mat-chip-list #chipList>
+                  <mat-chip *ngFor="let tag of node?.tags" (removed)="removeTag(tag)">
+                    {{ tag }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                </mat-chip-list>
+                <input matInput placeholder="Add tags"
+                       [matChipInputFor]="chipList"
+                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                       (matChipInputTokenEnd)="addTag($event)" />
               </mat-form-field>
               <mat-form-field class="form-field">
                 <mat-select placeholder="Platform" [(ngModel)]="node.properties.platform"  [ngModelOptions]="{ standalone: true }">
@@ -30,7 +43,7 @@
               </mat-form-field>
             </form>
             <mat-form-field class="form-field">
-              <input matInput type="number" [(ngModel)]="node.properties.cpus" placeholder="vCPUs" />
+              <input matInput type="number" min="1" [(ngModel)]="node.properties.cpus" placeholder="vCPUs" />
             </mat-form-field>
 
             <mat-form-field class="form-field">
@@ -50,6 +63,13 @@
             <mat-form-field class="select">
               <mat-select placeholder="Console type" [(ngModel)]="node.console_type">
                 <mat-option *ngFor="let type of consoleTypes" [value]="type">
+                  {{ type }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="select">
+              <mat-select placeholder="Auxiliary console type" [(ngModel)]="node.aux_type">
+                <mat-option *ngFor="let type of auxConsoleTypes" [value]="type">
                   {{ type }}
                 </mat-option>
               </mat-select>
@@ -145,15 +165,43 @@
           </mat-tab>
           <mat-tab label="Network">
             <br />
-            <br /><mat-checkbox [(ngModel)]="node.properties.replicate_network_connection_state">
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                min=0
+                type="number"
+                [(ngModel)]="node.properties.adapters"
+                placeholder="Adapters"
+              />
+            </mat-form-field>
+            <form [formGroup]="networkSettingsForm">
+              <mat-form-field class="form-field">
+                <input
+                  matInput
+                  formControlName="mac_address"
+                  type="text"
+                  [(ngModel)]="node.properties.mac_address"
+                  placeholder="Base MAC"
+                />
+              </mat-form-field>
+            </form>
+            <mat-select placeholder="Type" [(ngModel)]="node.properties.adapter_type">
+              <mat-option *ngFor="let type of networkTypes" [value]="type.value">
+                {{ type.name }} ({{ type.value }})
+              </mat-option>
+            </mat-select>
+<!--            <button mat-button class="form-field" (click)="setCustomAdaptersConfiguratorState(true)">-->
+<!--              Configure custom adapters-->
+<!--            </button>-->
+            <br /><br /><mat-checkbox [(ngModel)]="node.properties.replicate_network_connection_state">
               Replicate network connection state
             </mat-checkbox>
-            <app-custom-adapters-table
-              #customAdapters
-              [networkTypes]="networkTypes"
-              [displayedColumns]="displayedColumns"
-              [adapters]="node.ports"
-            ></app-custom-adapters-table>
+<!--            <app-custom-adapters-table-->
+<!--              #customAdapters-->
+<!--              [networkTypes]="networkTypes"-->
+<!--              [displayedColumns]="displayedColumns"-->
+<!--              [adapters]="node.ports"-->
+<!--            ></app-custom-adapters-table>-->
           </mat-tab>
           <mat-tab label="Advanced">
             <mat-card>
@@ -234,6 +282,9 @@
               <mat-card-title></mat-card-title>
               <mat-card-subtitle> Additional settings </mat-card-subtitle>
               <mat-card-content>
+                <mat-form-field class="form-field">
+                  <input matInput type="text" [(ngModel)]="node.properties.qemu_path" placeholder="Qemu binary path" />
+                </mat-form-field>
                 <mat-form-field class="form-field">
                   <input matInput type="text" [(ngModel)]="node.properties.options" placeholder="Options" />
                 </mat-form-field>

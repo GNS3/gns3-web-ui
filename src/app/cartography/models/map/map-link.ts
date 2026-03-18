@@ -1,8 +1,8 @@
-import { Filter } from '../../../models/filter';
+import { Filter } from '@models/filter';
 import { Indexed } from '../../datasources/map-datasource';
 import { MapLinkNode } from './map-link-node';
 import { MapNode } from './map-node';
-import { LinkStyle } from '../../../models/link-style';
+import { LinkStyle } from '@models/link-style';
 
 export class MapLink implements Indexed {
   id: string;
@@ -23,6 +23,7 @@ export class MapLink implements Indexed {
 
   isSelected = false; // this is not from controller
   isMultiplied = false; // this is not from controller
+  parallelLinksCount = 1; // this is not from controller
   x: number; // this is not from controller
   y: number; // this is not from controller
 }

@@ -14,12 +14,12 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { environment } from 'environments/environment';
 import { FileItem, FileSelectDirective, FileUploadModule } from 'ng2-file-upload';
 import { of } from 'rxjs/internal/observable/of';
-import { Project } from '../../../models/project';
-import{ Controller } from '../../../models/controller';
-import { ProjectService } from '../../../services/project.service';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
+import { ProjectService } from '@services/project.service';
 import { ImportProjectDialogComponent } from './import-project-dialog.component';
-import { ToasterService } from '../../../services/toaster.service';
-import { MockedToasterService } from '../../../services/toaster.service.spec';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 
@@ -51,11 +51,11 @@ export class MockedProjectService {
     return of(this.projects);
   }
 
-  getUploadPath(controller:Controller , uuid: string, project_name: string) {
+  getUploadPath(controller: Controller, uuid: string, project_name: string) {
     return `http://${controller.host}:${controller.port}/${environment.current_version}/projects/${uuid}/import?name=${project_name}`;
   }
 
-  getExportPath(controller:Controller , project: Project) {
+  getExportPath(controller: Controller, project: Project) {
     return `http://${controller.host}:${controller.port}/${environment.current_version}/projects/${project.project_id}/export`;
   }
 }
@@ -63,7 +63,7 @@ export class MockedProjectService {
 describe('ImportProjectDialogComponent', () => {
   let component: ImportProjectDialogComponent;
   let fixture: ComponentFixture<ImportProjectDialogComponent>;
-  let controller:Controller ;
+  let controller: Controller;
   let debugElement: DebugElement;
   let fileSelectDirective: FileSelectDirective;
   let mockedToasterService = new MockedToasterService()

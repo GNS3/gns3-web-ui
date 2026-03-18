@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { MapSettingsService } from '../../services/mapsettings.service';
-import { Settings, SettingsService } from '../../services/settings.service';
-import { ConsoleService } from '../../services/settings/console.service';
-import { ThemeService } from '../../services/theme.service';
-import { ToasterService } from '../../services/toaster.service';
-import { UpdatesService } from '../../services/updates.service';
+import { MapSettingsService } from '@services/mapsettings.service';
+import { Settings, SettingsService } from '@services/settings.service';
+import { ConsoleService } from '@services/settings/console.service';
+import { ThemeService } from '@services/theme.service';
+import { ToasterService } from '@services/toaster.service';
+import { UpdatesService } from '@services/updates.service';
 
 @Component({
   selector: 'app-settings',
@@ -16,6 +16,7 @@ export class SettingsComponent implements OnInit {
   integrateLinksLabelsToLinks: boolean;
   openReadme: boolean;
   openConsolesInWidget: boolean;
+  mapTheme: string;
 
   constructor(
     private settingsService: SettingsService,
@@ -31,12 +32,13 @@ export class SettingsComponent implements OnInit {
     this.integrateLinksLabelsToLinks = this.mapSettingsService.integrateLinkLabelsToLinks;
     this.openReadme = this.mapSettingsService.openReadme;
     this.openConsolesInWidget = this.mapSettingsService.openConsolesInWidget;
+    this.mapTheme = this.themeService.savedMapTheme;
   }
 
   save() {
     this.settingsService.setAll(this.settings);
     this.toaster.success('Settings have been saved.');
-    
+
     this.mapSettingsService.toggleIntegrateInterfaceLabels(this.integrateLinksLabelsToLinks);
     this.mapSettingsService.toggleOpenReadme(this.openReadme);
     this.mapSettingsService.toggleOpenConsolesInWidget(this.openConsolesInWidget);
@@ -46,6 +48,11 @@ export class SettingsComponent implements OnInit {
     this.themeService.setDarkMode(value);
   }
 
+    setMapTheme(theme: 'light' | 'dark' | 'auto') {
+    this.mapTheme = theme;
+    this.themeService.setMapTheme(theme);
+  }
+ 
   checkForUpdates() {
     window.open('https://gns3.com/software');
   }

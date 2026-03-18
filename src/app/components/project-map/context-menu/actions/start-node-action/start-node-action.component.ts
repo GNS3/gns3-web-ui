@@ -1,15 +1,15 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Node } from '../../../../../cartography/models/node';
-import{ Controller } from '../../../../../models/controller';
-import { NodeService } from '../../../../../services/node.service';
-import { ToasterService } from '../../../../../services/toaster.service';
+import { Controller } from '@models/controller';
+import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-start-node-action',
   templateUrl: './start-node-action.component.html',
 })
 export class StartNodeActionComponent implements OnInit, OnChanges {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() nodes: Node[];
   isNodeWithStoppedStatus: boolean;
 

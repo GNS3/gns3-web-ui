@@ -1,7 +1,7 @@
 <div class="content" *ngIf="isReady; else loading">
   <div class="default-header">
     <div class="row">
-      <h1 class="col">User Management</h1>
+      <h1 class="col">Users</h1>
       <button class="col" mat-raised-button color="primary" (click)="deleteMultiple()" class="add-button"
               [disabled]="selection.selected.length == 0">
         Delete Users

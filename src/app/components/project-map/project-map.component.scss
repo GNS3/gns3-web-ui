@@ -14,7 +14,43 @@ g.node:hover {
 }
 
 .project-map {
-  background-color: #e8ecef;
+  background-color: #18242b;
+  min-height: 100vh;
+  min-width: 100vw;
+
+  .label {
+    fill: #ffffff !important;
+  }
+
+  &:not(.lightTheme) {
+    // Dark mode: make default black ethernet cables visible as white
+    path.ethernet_link[stroke="#000000"] {
+      stroke: #ffffff;
+    }
+
+    // Dark mode: brighten default dark-red serial cables so they're visible
+    path.serial_link[stroke="#800000"] {
+      stroke: #e05555;
+    }
+
+    // Dark mode: drawing cable line is white
+    g.drawing-line-tool path {
+      stroke: #ffffff;
+    }
+  }
+
+  &.lightTheme {
+    background-color: #e8ecef;
+
+    .label {
+      fill: #000000 !important;
+    }
+
+    // Light mode: drawing cable line is black
+    g.drawing-line-tool path {
+      stroke: #000000;
+    }
+  }
 }
 
 #project-titlebar {
@@ -204,6 +240,13 @@ img {
 
 .lightTheme {
   color: black !important;
+
+  // When the map canvas is light but the toolbar/titlebar are in dark mode,
+  // reset the inherited black color back to white so their icons stay visible.
+  #project-titlebar:not(.lightTheme),
+  #project-toolbar:not(.lightTheme) {
+    color: white !important;
+  }
 }
 
 .darkTheme {
@@ -327,7 +370,11 @@ g.selected {
   filter: url('#grayscale'); /* Chrome doesn't support CSS filters on SVG */
 }
 
-path.selected {
+path.serial_link.selected {
+  stroke: darkred;
+}
+
+path.ethernet_link:hover {
   stroke: darkred;
 }
 
@@ -382,8 +429,15 @@ g.node text,
 .context-menu-items .mat-menu-item:focus {
   background: none;
 }
-.light-theme .context-menu-items .mat-menu-item:hover {
-  background-color: rgba(153, 152, 152, 0.795) !important;
+
+.context-menu-items .mat-menu-item.cdk-focused:not(:hover),
+.context-menu-items .mat-menu-item.cdk-program-focused:not(:hover),
+.context-menu-items .mat-menu-item.cdk-keyboard-focused:not(:hover) {
+  background: none !important;
+}
+
+.context-menu-items .mat-menu-item:hover {
+  background-color: #DC143C !important;
 }
 
 .visible {

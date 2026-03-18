@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
-import{ Controller } from '../../../../../models/controller';
-import { NodeService } from '../../../../../services/node.service';
+import { Controller } from '@models/controller';
+import { NodeService } from '@services/node.service';
 import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog.component';
 
 @Component({
@@ -10,7 +10,7 @@ import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog
   templateUrl: './export-config-action.component.html',
 })
 export class ExportConfigActionComponent {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() node: Node;
 
   constructor(private nodeService: NodeService, private dialog: MatDialog) {}

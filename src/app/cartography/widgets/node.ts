@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { event, select } from 'd3-selection';
-import { MapSettingsService } from '../../services/mapsettings.service';
+import { MapSettingsService } from '@services/mapsettings.service';
 import { ClickedDataEvent } from '../events/event-source';
 import { NodeClicked, NodeContextMenu } from '../events/nodes';
 import { NodesEventSource } from '../events/nodes-event-source';
@@ -86,7 +86,11 @@ export class NodeWidget implements Widget {
         event.preventDefault();
         self.onContextConsoleMenu.emit(new NodeContextMenu(event, n));
       })
-      .attr('xnode:href', (n: MapNode) => n.symbolUrl)
+      .each(function (n: MapNode) {
+        if ((this as Element).getAttribute('href') !== n.symbolUrl) {
+          (this as Element).setAttribute('href', n.symbolUrl);
+        }
+      })
       .attr('width', (n: MapNode) => {
         if (!n.width) return 60;
         return n.width;

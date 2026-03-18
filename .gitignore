@@ -2,17 +2,16 @@
 
 # compiled output
 /.angular
-/dist
 /tmp
 /out-tsc
 /ng-dist
+/dist
 /build
 /scripts/tmp
 /scripts/env
 /scripts/build
 /scripts/dist
 /env
-/.angular
 
 # dependencies
 /node_modules
@@ -38,6 +37,7 @@
 /connect.lock
 /coverage
 /libpeerconnection.log
+*.log
 npm-debug.log
 testem.log
 /typings

@@ -11,24 +11,24 @@ import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import * as SparkMD5 from 'spark-md5';
 import { v4 as uuid } from 'uuid';
 import { ProgressService } from '../../../common/progress/progress.service';
-import { InformationDialogComponent } from '../../../components/dialogs/information-dialog.component';
-import { Appliance, Image, Version } from '../../../models/appliance';
-import { Project } from '../../../models/project';
-import { QemuBinary } from '../../../models/qemu/qemu-binary';
-import{ Controller } from '../../../models/controller';
-import { Template } from '../../../models/template';
-import { DockerTemplate } from '../../../models/templates/docker-template';
-import { IosTemplate } from '../../../models/templates/ios-template';
-import { IouTemplate } from '../../../models/templates/iou-template';
-import { QemuTemplate } from '../../../models/templates/qemu-template';
-import { ApplianceService } from '../../../services/appliances.service';
-import { ComputeService } from '../../../services/compute.service';
-import { DockerService } from '../../../services/docker.service';
-import { IosService } from '../../../services/ios.service';
-import { IouService } from '../../../services/iou.service';
-import { QemuService } from '../../../services/qemu.service';
-import { TemplateService } from '../../../services/template.service';
-import { ToasterService } from '../../../services/toaster.service';
+import { InformationDialogComponent } from '@components/dialogs/information-dialog/information-dialog.component';
+import { Appliance, Image, Version } from '@models/appliance';
+import { Project } from '@models/project';
+import { QemuBinary } from '@models/qemu/qemu-binary';
+import { Controller } from '@models/controller';
+import { Template } from '@models/template';
+import { DockerTemplate } from '@models/templates/docker-template';
+import { IosTemplate } from '@models/templates/ios-template';
+import { IouTemplate } from '@models/templates/iou-template';
+import { QemuTemplate } from '@models/templates/qemu-template';
+import { ApplianceService } from '@services/appliances.service';
+import { ComputeService } from '@services/compute.service';
+import { DockerService } from '@services/docker.service';
+import { IosService } from '@services/ios.service';
+import { IouService } from '@services/iou.service';
+import { QemuService } from '@services/qemu.service';
+import { TemplateService } from '@services/template.service';
+import { ToasterService } from '@services/toaster.service';
 import { ApplianceInfoDialogComponent } from './appliance-info-dialog/appliance-info-dialog.component';
 import { TemplateNameDialogComponent } from './template-name-dialog/template-name-dialog.component';
 import { UploadServiceService } from '../../../common/uploading-processbar/upload-service.service';
@@ -47,7 +47,7 @@ import { environment } from 'environments/environment';
   ],
 })
 export class NewTemplateDialogComponent implements OnInit {
-  @Input() controller:Controller ;
+  @Input() controller: Controller;
   @Input() project: Project;
 
   uploader: FileUploader;
@@ -179,7 +179,7 @@ export class NewTemplateDialogComponent implements OnInit {
       status: number,
       headers: ParsedResponseHeaders
     ) => {
-      this.toasterService.error('An error has occured because image already exists');
+      this.toasterService.error('An error has occurred because image already exists');
       this.progressService.deactivate();
       this.uploaderImage.clearQueue();
     };
@@ -190,7 +190,7 @@ export class NewTemplateDialogComponent implements OnInit {
       status: number,
       headers: ParsedResponseHeaders
     ) => {
-      this.toasterService.success('Image imported succesfully');
+      this.toasterService.success('Image successfully imported');
       this.refreshImages();
       this.progressService.deactivate();
       this.uploaderImage.clearQueue();
@@ -266,7 +266,7 @@ export class NewTemplateDialogComponent implements OnInit {
       if (appliance.iou) emulator = 'iou';
       if (appliance.qemu) emulator = 'qemu';
 
-      const url = this.applianceService.getUploadPath(this.controller, emulator, fileName);
+      const url = this.applianceService.getUploadPath(this.controller, fileName);
       this.uploader.queue.forEach((elem) => (elem.url = url));
 
       const itemToUpload = this.uploader.queue[0];
@@ -341,8 +341,6 @@ export class NewTemplateDialogComponent implements OnInit {
     dialogRef.componentInstance.appliance = object;
   }
 
-
-
   importImage(event, imageName) {
     this.computeChecksumMd5(event.target.files[0], false).then((output) => {
       let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === imageName)[0];
@@ -359,22 +357,21 @@ export class NewTemplateDialogComponent implements OnInit {
                     The MD5 sum is ${output} and should be ${imageToInstall.md5sum}. Do you want to accept it at your own risks?`;
         dialogRef.afterClosed().subscribe((answer: boolean) => {
           if (answer) {
-            this.importImageFile(event);
+            this.importImageFile(event, imageName);
             this.openSnackBar()
           } else {
             this.uploaderImage.clearQueue();
           }
         });
       } else {
-        this.importImageFile(event);
+        this.importImageFile(event, imageName);
         this.openSnackBar()
       }
     });
   }
 
-  importImageFile(event) {
+  importImageFile(event, imageName) {
     let name = event.target.files[0].name.split('-')[0];
-    let fileName = event.target.files[0].name;
     let file = event.target.files[0];
     let fileReader: FileReader = new FileReader();
     let emulator;
@@ -384,7 +381,7 @@ export class NewTemplateDialogComponent implements OnInit {
       if (this.applianceToInstall.dynamips) emulator = 'dynamips';
       if (this.applianceToInstall.iou) emulator = 'iou';
 
-      const url = this.applianceService.getUploadPath(this.controller, emulator, fileName);
+      const url = this.applianceService.getUploadPath(this.controller, imageName);
       this.uploaderImage.queue.forEach((elem) => (elem.url = url));
 
       const itemToUpload = this.uploaderImage.queue[0];
@@ -393,7 +390,8 @@ export class NewTemplateDialogComponent implements OnInit {
       this.uploaderImage.uploadItem(itemToUpload);
     };
 
-    fileReader.readAsText(file);
+    //fileReader.readAsText(file); //web browser out ouf memory when upload large image file
+    fileReader.onloadend(undefined);
   }
 
   cancelUploading() {
@@ -415,23 +413,6 @@ export class NewTemplateDialogComponent implements OnInit {
     }
 
     return false;
-  }
-
-  checkImages(version: Version): boolean {
-    if (version.images.hdb_disk_image) {
-      if (
-        this.checkImageFromVersion(version.images.hda_disk_image) &&
-        this.checkImageFromVersion(version.images.hdb_disk_image)
-      )
-        return true;
-      return false;
-    }
-
-    if (this.checkImageFromVersion(version.images.hda_disk_image)) {
-      return true;
-    } else {
-      return false;
-    }
   }
 
   openConfirmationDialog(message: string, link: string) {
@@ -480,19 +461,26 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   createIouTemplate(image: Image) {
+
+    let iou_image = image.filename;
+    let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === iou_image)[0];
+    let imageToUse = this.iouImages.filter((n) => n.checksum === imageToInstall.md5sum);
+    if (imageToUse.length > 0) {
+      iou_image = imageToUse[0].filename; // use the image name from the controller
+    }
+
     let iouTemplate: IouTemplate = new IouTemplate();
     iouTemplate.nvram = this.applianceToInstall.iou.nvram;
     iouTemplate.ram = this.applianceToInstall.iou.ram;
     iouTemplate.ethernet_adapters = this.applianceToInstall.iou.ethernet_adapters;
     iouTemplate.serial_adapters = this.applianceToInstall.iou.serial_adapters;
     iouTemplate.startup_config = this.applianceToInstall.iou.startup_config;
-    iouTemplate.builtin = this.applianceToInstall.builtin;
     iouTemplate.category = this.getCategory();
     iouTemplate.default_name_format = this.applianceToInstall.default_name_format;
     iouTemplate.symbol = this.applianceToInstall.symbol;
     iouTemplate.compute_id = 'local';
     iouTemplate.template_id = uuid();
-    iouTemplate.path = image.filename;
+    iouTemplate.path = iou_image;
     iouTemplate.template_type = 'iou';
 
     const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
@@ -520,6 +508,14 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   createIosTemplate(image: Image) {
+
+    let ios_image = image.filename;
+    let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === ios_image)[0];
+    let imageToUse = this.iosImages.filter((n) => n.checksum === imageToInstall.md5sum);
+    if (imageToUse.length > 0) {
+      ios_image = imageToUse[0].filename; // use the image name from the controller
+    }
+
     let iosTemplate: IosTemplate = new IosTemplate();
     iosTemplate.chassis = this.applianceToInstall.dynamips.chassis;
     iosTemplate.nvram = this.applianceToInstall.dynamips.nvram;
@@ -534,13 +530,12 @@ export class NewTemplateDialogComponent implements OnInit {
     iosTemplate.slot5 = this.applianceToInstall.dynamips.slot5;
     iosTemplate.slot6 = this.applianceToInstall.dynamips.slot6;
     iosTemplate.slot7 = this.applianceToInstall.dynamips.slot7;
-    iosTemplate.builtin = this.applianceToInstall.builtin;
     iosTemplate.category = this.getCategory();
     iosTemplate.default_name_format = this.applianceToInstall.default_name_format;
     iosTemplate.symbol = this.applianceToInstall.symbol;
     iosTemplate.compute_id = 'local';
     iosTemplate.template_id = uuid();
-    iosTemplate.image = image.filename;
+    iosTemplate.image = ios_image;
     iosTemplate.template_type = 'dynamips';
 
     const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
@@ -572,7 +567,6 @@ export class NewTemplateDialogComponent implements OnInit {
     let dockerTemplate: DockerTemplate = new DockerTemplate();
     dockerTemplate.adapters = this.applianceToInstall.docker.adapters;
     dockerTemplate.console_type = this.applianceToInstall.docker.console_type;
-    dockerTemplate.builtin = this.applianceToInstall.builtin;
     dockerTemplate.category = this.getCategory();
     dockerTemplate.default_name_format = this.applianceToInstall.default_name_format;
     dockerTemplate.symbol = this.applianceToInstall.symbol;
@@ -606,12 +600,19 @@ export class NewTemplateDialogComponent implements OnInit {
     });
   }
 
-  createQemuTemplateFromVersion(version: Version) {
-    if (!this.checkImages(version)) {
-      this.toasterService.error('Please install required images first');
-      return;
-    }
+  findControllerImageName(image_name) {
 
+      if (image_name) {
+        let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === image_name)[0];
+        let imageToUse = this.qemuImages.filter((n) => n.checksum === imageToInstall.md5sum);
+        if (imageToUse.length > 0) {
+          image_name = imageToUse[0].filename; // use the image name from the controller
+        }
+      }
+      return image_name;
+  }
+
+  createQemuTemplateFromVersion(version: Version) {
     let qemuTemplate: QemuTemplate = new QemuTemplate();
     qemuTemplate.ram = this.applianceToInstall.qemu.ram;
     qemuTemplate.adapters = this.applianceToInstall.qemu.adapters;
@@ -622,7 +623,6 @@ export class NewTemplateDialogComponent implements OnInit {
     qemuTemplate.hdb_disk_interface = this.applianceToInstall.qemu.hdb_disk_interface;
     qemuTemplate.hdc_disk_interface = this.applianceToInstall.qemu.hdc_disk_interface;
     qemuTemplate.hdd_disk_interface = this.applianceToInstall.qemu.hdd_disk_interface;
-    qemuTemplate.builtin = this.applianceToInstall.builtin;
     qemuTemplate.category = this.getCategory();
     qemuTemplate.first_port_name = this.applianceToInstall.first_port_name;
     qemuTemplate.port_name_format = this.applianceToInstall.port_name_format;
@@ -631,11 +631,11 @@ export class NewTemplateDialogComponent implements OnInit {
     qemuTemplate.symbol = this.applianceToInstall.symbol;
     qemuTemplate.compute_id = 'local';
     qemuTemplate.template_id = uuid();
-    qemuTemplate.hda_disk_image = version.images.hda_disk_image;
-    qemuTemplate.hdb_disk_image = version.images.hdb_disk_image;
-    qemuTemplate.hdc_disk_image = version.images.hdc_disk_image;
-    qemuTemplate.hdd_disk_image = version.images.hdd_disk_image;
-    qemuTemplate.cdrom_image = version.images.cdrom_image;
+    qemuTemplate.hda_disk_image = this.findControllerImageName(version.images.hda_disk_image);
+    qemuTemplate.hdb_disk_image = this.findControllerImageName(version.images.hdb_disk_image);
+    qemuTemplate.hdc_disk_image = this.findControllerImageName(version.images.hdc_disk_image);
+    qemuTemplate.hdd_disk_image = this.findControllerImageName(version.images.hdd_disk_image);
+    qemuTemplate.cdrom_image = this.findControllerImageName(version.images.cdrom_image);
     qemuTemplate.template_type = 'qemu';
     qemuTemplate.usage = this.applianceToInstall.usage;
     qemuTemplate.platform = this.applianceToInstall.qemu.arch;

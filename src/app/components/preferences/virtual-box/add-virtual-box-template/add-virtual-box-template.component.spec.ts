@@ -10,23 +10,23 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import{ Controller } from '../../../../models/controller';
-import { VirtualBoxTemplate } from '../../../../models/templates/virtualbox-template';
-import { ControllerService } from '../../../../services/controller.service';
-import { MockedControllerService } from '../../../../services/controller.service.spec';
-import { TemplateMocksService } from '../../../../services/template-mocks.service';
-import { ToasterService } from '../../../../services/toaster.service';
-import { MockedToasterService } from '../../../../services/toaster.service.spec';
-import { VirtualBoxService } from '../../../../services/virtual-box.service';
+import { Controller } from '@models/controller';
+import { VirtualBoxTemplate } from '@models/templates/virtualbox-template';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
+import { TemplateMocksService } from '@services/template-mocks.service';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
+import { VirtualBoxService } from '@services/virtual-box.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { AddVirtualBoxTemplateComponent } from './add-virtual-box-template.component';
 
 export class MockedVirtualBoxService {
-  public addTemplate(controller:Controller , virtualBoxTemplate: VirtualBoxTemplate) {
+  public addTemplate(controller: Controller, virtualBoxTemplate: VirtualBoxTemplate) {
     return of(virtualBoxTemplate);
   }
 
-  public getVirtualMachines(controller:Controller ) {
+  public getVirtualMachines(controller: Controller ) {
     return of([]);
   }
 }
@@ -106,7 +106,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
     };
     component.virtualBoxTemplate = {} as VirtualBoxTemplate;
     component.selectedVM = template;
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
     component.vmForm.controls['vm'].setValue('virtual machine');
 
     component.addTemplate();
@@ -116,7 +116,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
 
   it('should not call save template when virtual machine is not selected', () => {
     spyOn(mockedVirtualBoxService, 'addTemplate').and.returnValue(of({} as VirtualBoxTemplate));
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 

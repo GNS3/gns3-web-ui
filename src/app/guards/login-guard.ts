@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
 import { LoginService } from '@services/login.service';
-import{ Controller } from '../models/controller';
-import { ControllerService } from '../services/controller.service';
+import { Controller } from '@models/controller';
+import { ControllerService } from '@services/controller.service';
 
 @Injectable()
 export class LoginGuard implements CanActivate {
@@ -15,7 +15,7 @@ export class LoginGuard implements CanActivate {
     try {
       await this.loginService.getLoggedUser(controller);
     } catch (e) {}
-    return this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    return this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       if (controller.authToken && !controller.tokenExpired) {
         return true;
       }

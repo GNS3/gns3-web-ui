@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import{ Controller } from '../../../../models/controller';
-import { ControllerService } from '../../../../services/controller.service';
+import { Controller } from '@models/controller';
+import { ControllerService } from '@services/controller.service';
 
 @Component({
   selector: 'app-vpcs-preferences',
@@ -9,7 +9,7 @@ import { ControllerService } from '../../../../services/controller.service';
   styleUrls: ['./vpcs-preferences.component.scss'],
 })
 export class VpcsPreferencesComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   vpcsExecutable: string;
 
   constructor(private route: ActivatedRoute, private controllerService: ControllerService) {}
@@ -17,7 +17,7 @@ export class VpcsPreferencesComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
 
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
     });
   }

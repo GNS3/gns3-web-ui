@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Template } from '../models/template';
+import { Template } from '@models/template';
 import { Observable, of } from 'rxjs';
-import { CloudTemplate } from '../models/templates/cloud-template';
-import { DockerTemplate } from '../models/templates/docker-template';
-import { EthernetHubTemplate } from '../models/templates/ethernet-hub-template';
-import { EthernetSwitchTemplate } from '../models/templates/ethernet-switch-template';
-import { IosTemplate } from '../models/templates/ios-template';
-import { IouTemplate } from '../models/templates/iou-template';
-import { QemuTemplate } from '../models/templates/qemu-template';
-import { VirtualBoxTemplate } from '../models/templates/virtualbox-template';
-import { VmwareTemplate } from '../models/templates/vmware-template';
-import { VpcsTemplate } from '../models/templates/vpcs-template';
+import { CloudTemplate } from '@models/templates/cloud-template';
+import { DockerTemplate } from '@models/templates/docker-template';
+import { EthernetHubTemplate } from '@models/templates/ethernet-hub-template';
+import { EthernetSwitchTemplate } from '@models/templates/ethernet-switch-template';
+import { IosTemplate } from '@models/templates/ios-template';
+import { IouTemplate } from '@models/templates/iou-template';
+import { QemuTemplate } from '@models/templates/qemu-template';
+import { VirtualBoxTemplate } from '@models/templates/virtualbox-template';
+import { VmwareTemplate } from '@models/templates/vmware-template';
+import { VpcsTemplate } from '@models/templates/vpcs-template';
 
 @Injectable()
 export class TemplateMocksService {
@@ -27,6 +27,7 @@ export class TemplateMocksService {
       compute_id: 'local',
       console_auto_start: false,
       console_type: 'telnet',
+      aux_type: 'none',
       cpu_throttling: 0,
       cpus: 1,
       custom_adapters: [],
@@ -61,6 +62,7 @@ export class TemplateMocksService {
       replicate_network_connection_state: true,
       tpm: false,
       uefi: false,
+      tags: [],
     };
 
     return of(template);
@@ -79,6 +81,7 @@ export class TemplateMocksService {
       symbol: 'vpcs_guest',
       template_id: '',
       template_type: 'vpcs',
+      tags: [],
     };
 
     return of(template);
@@ -109,6 +112,7 @@ export class TemplateMocksService {
       usage: '',
       use_any_adapter: false,
       vmname: '',
+      tags: [],
     };
 
     return of(template);
@@ -126,6 +130,7 @@ export class TemplateMocksService {
       symbol: 'cloud',
       template_id: '',
       template_type: 'cloud',
+      tags: [],
     } as CloudTemplate;
 
     return of(template);
@@ -142,6 +147,7 @@ export class TemplateMocksService {
       symbol: 'hub',
       template_id: '',
       template_type: 'ethernet_hub',
+      tags: [],
     };
 
     return of(template);
@@ -159,6 +165,7 @@ export class TemplateMocksService {
       symbol: 'ethernet_switch',
       template_id: '',
       template_type: 'ethernet_switch',
+      tags: [],
     };
 
     return of(template);
@@ -172,6 +179,7 @@ export class TemplateMocksService {
       compute_id: 'local',
       console_auto_start: false,
       console_type: 'telnet',
+      aux_type: 'none',
       default_name_format: 'R{0}',
       disk0: 0,
       disk1: 0,
@@ -194,6 +202,7 @@ export class TemplateMocksService {
       template_id: '',
       template_type: 'dynamips',
       usage: '',
+      tags: [],
     };
 
     return of(template);
@@ -223,6 +232,7 @@ export class TemplateMocksService {
       usage: '',
       use_any_adapter: false,
       vmx_path: '',
+      tags: [],
     };
 
     return of(template);
@@ -239,6 +249,8 @@ export class TemplateMocksService {
       console_http_port: 80,
       console_resolution: '1024x768',
       console_type: 'telnet',
+      aux_type: 'none',
+      mac_address: '',
       custom_adapters: [],
       default_name_format: '{name}-{0}',
       environment: '',
@@ -250,6 +262,7 @@ export class TemplateMocksService {
       template_id: '',
       template_type: 'docker',
       usage: '',
+      tags: [],
     };
 
     return of(template);
@@ -277,6 +290,7 @@ export class TemplateMocksService {
       template_type: 'iou',
       usage: '',
       use_default_iou_values: true,
+      tags: [],
     };
 
     return of(template);

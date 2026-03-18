@@ -6,10 +6,10 @@ import { Terminal } from 'xterm';
 import { AttachAddon } from 'xterm-addon-attach';
 import { FitAddon } from 'xterm-addon-fit';
 import { Node } from '../../cartography/models/node';
-import{ Controller } from '../../models/controller';
-import { NodeService } from '../../services/node.service';
-import { NodeConsoleService } from '../../services/nodeConsole.service';
-import { ControllerService } from '../../services/controller.service';
+import { Controller } from '@models/controller';
+import { NodeService } from '@services/node.service';
+import { NodeConsoleService } from '@services/nodeConsole.service';
+import { ControllerService } from '@services/controller.service';
 
 @Component({
   encapsulation: ViewEncapsulation.None,
@@ -22,7 +22,7 @@ export class WebConsoleFullWindowComponent implements OnInit {
   private projectId: string;
   private nodeId: string;
   private subscriptions: Subscription = new Subscription();
-  private controller:Controller ;
+  private controller: Controller;
   private node: Node;
 
   public term: Terminal = new Terminal();
@@ -59,7 +59,7 @@ export class WebConsoleFullWindowComponent implements OnInit {
       this.fitAddon.fit();
     });
 
-    this.controllerService.get(+this.controllerId).then((controller:Controller ) => {
+    this.controllerService.get(+this.controllerId).then((controller: Controller ) => {
       this.controller = controller;
       this.nodeService.getNodeById(this.controller, this.projectId, this.nodeId).subscribe((node: Node) => {
         this.node = node;

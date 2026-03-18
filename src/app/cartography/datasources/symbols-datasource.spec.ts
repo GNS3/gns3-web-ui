@@ -1,4 +1,4 @@
-import { Symbol } from '../../models/symbol';
+import { Symbol } from '@models/symbol';
 import { SymbolsDataSource } from './symbols-datasource';
 
 describe('SymbolsDataSource', () => {

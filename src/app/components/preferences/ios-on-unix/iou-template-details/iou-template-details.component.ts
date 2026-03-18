@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import{ Controller } from '../../../../models/controller';
-import { IouTemplate } from '../../../../models/templates/iou-template';
-import { IouConfigurationService } from '../../../../services/iou-configuration.service';
-import { IouService } from '../../../../services/iou.service';
-import { ControllerService } from '../../../../services/controller.service';
-import { ToasterService } from '../../../../services/toaster.service';
+import { MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { Controller } from '@models/controller';
+import { IouTemplate } from '@models/templates/iou-template';
+import { IouConfigurationService } from '@services/iou-configuration.service';
+import { IouService } from '@services/iou.service';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-iou-template-details',
@@ -14,11 +16,12 @@ import { ToasterService } from '../../../../services/toaster.service';
   styleUrls: ['./iou-template-details.component.scss', '../../preferences.component.scss'],
 })
 export class IouTemplateDetailsComponent implements OnInit {
-  controller:Controller ;
+  controller: Controller;
   iouTemplate: IouTemplate;
 
   isSymbolSelectionOpened: boolean = false;
   defaultSettings: boolean = true;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
   consoleTypes: string[] = [];
   consoleResolutions: string[] = [];
@@ -53,12 +56,15 @@ export class IouTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller:Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
       this.getConfiguration();
       this.iouService.getTemplate(this.controller, template_id).subscribe((iouTemplate: IouTemplate) => {
         this.iouTemplate = iouTemplate;
+        if (!this.iouTemplate.tags) {
+          this.iouTemplate.tags = [];
+        }
       });
     });
   }
@@ -93,5 +99,32 @@ export class IouTemplateDetailsComponent implements OnInit {
   symbolChanged(chosenSymbol: string) {
     this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
     this.iouTemplate.symbol = chosenSymbol;
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+
+    if (value && this.iouTemplate) {
+      if (!this.iouTemplate.tags) {
+        this.iouTemplate.tags = [];
+      }
+      this.iouTemplate.tags.push(value);
+    }
+
+    // Clear the input value
+    if (event.chipInput) {
+      event.chipInput.clear();
+    }
+  }
+
+  removeTag(tag: string): void {
+    if (!this.iouTemplate.tags) {
+      return;
+    }
+    const index = this.iouTemplate.tags.indexOf(tag);
+
+    if (index >= 0) {
+      this.iouTemplate.tags.splice(index, 1);
+    }
   }
 }

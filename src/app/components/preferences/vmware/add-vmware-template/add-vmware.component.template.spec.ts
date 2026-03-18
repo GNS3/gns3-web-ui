@@ -10,24 +10,24 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
-import{ Controller } from '../../../../models/controller';
-import { VmwareTemplate } from '../../../../models/templates/vmware-template';
-import { VmwareVm } from '../../../../models/vmware/vmware-vm';
-import { ControllerService } from '../../../../services/controller.service';
-import { MockedControllerService } from '../../../../services/controller.service.spec';
-import { TemplateMocksService } from '../../../../services/template-mocks.service';
-import { ToasterService } from '../../../../services/toaster.service';
-import { MockedToasterService } from '../../../../services/toaster.service.spec';
-import { VmwareService } from '../../../../services/vmware.service';
+import { Controller } from '@models/controller';
+import { VmwareTemplate } from '@models/templates/vmware-template';
+import { VmwareVm } from '@models/vmware/vmware-vm';
+import { ControllerService } from '@services/controller.service';
+import { MockedControllerService } from '@services/controller.service.spec';
+import { TemplateMocksService } from '@services/template-mocks.service';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
+import { VmwareService } from '@services/vmware.service';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { AddVmwareTemplateComponent } from './add-vmware-template.component';
 
 export class MockedVmwareService {
-  public addTemplate(controller:Controller , vmwareTemplate: VmwareTemplate) {
+  public addTemplate(controller: Controller, vmwareTemplate: VmwareTemplate) {
     return of(vmwareTemplate);
   }
 
-  public getVirtualMachines(controller:Controller ) {
+  public getVirtualMachines(controller: Controller ) {
     return of([]);
   }
 }
@@ -87,7 +87,7 @@ describe('AddVmwareTemplateComponent', () => {
 
     component.vmwareTemplate = {} as VmwareTemplate;
     component.selectedVM = template;
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
     component.templateNameForm.controls['templateName'].setValue('template name');
 
     component.addTemplate();
@@ -97,7 +97,7 @@ describe('AddVmwareTemplateComponent', () => {
 
   it('should not call save template when virtual machine is not selected', () => {
     spyOn(mockedVmwareService, 'addTemplate').and.returnValue(of({} as VmwareTemplate));
-    component.controller = { id: 1 } as Controller ;
+    component.controller = { id: 1 } as Controller;
 
     component.addTemplate();
 
