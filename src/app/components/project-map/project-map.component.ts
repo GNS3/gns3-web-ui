@@ -2,6 +2,7 @@ import {
   ChangeDetectorRef,
   Component,
   ComponentRef,
+  NgZone,
   HostListener,
   OnDestroy,
   OnInit,
@@ -482,7 +483,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
               this.toasterService.success('Node has been deleted');
             });
           });
-          
+
         selected
           .filter((item) => item instanceof MapLink)
           .forEach((item: MapLink) => {
