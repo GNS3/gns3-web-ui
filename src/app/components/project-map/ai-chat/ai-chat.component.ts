@@ -287,7 +287,8 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       ).subscribe({
         error: (error) => {
           this.logError('Failed to load sessions:', error);
-          this.showError('Failed to load sessions');
+          // Display the actual error message from server
+          this.showError(error || 'Failed to load sessions');
         }
       });
     });
@@ -532,7 +533,8 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         error: (error) => {
           this.logError('Chat stream error:', error);
           this.aiChatStore.setStreamingState(false);
-          this.showError('Chat error occurred');
+          // Display the actual error message from server
+          this.showError(error || 'Chat error occurred');
         },
         complete: () => {
           this.aiChatStore.setStreamingState(false);
@@ -839,13 +841,36 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
   /**
    * Show error using Material Snackbar
-   * @param error Error message
+   * @param error Error message or error object
    */
-  private showError(error: string): void {
-    this.aiChatStore.setError(error);
+  private showError(error: string | any): void {
+    // Extract error message if it's an object
+    let errorMessage = error;
+    if (typeof error !== 'string') {
+      // It's an object (HttpErrorResponse), extract the message
+      // Prioritize server response body message
+      if (error.error?.message) {
+        errorMessage = error.error.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      } else if (error.statusText) {
+        errorMessage = error.statusText;
+      } else {
+        errorMessage = 'An unknown error occurred';
+      }
+    }
+
+    // Truncate error message if too long (max 300 characters)
+    const maxLength = 300;
+    let displayMessage = errorMessage;
+    if (typeof displayMessage === 'string' && displayMessage.length > maxLength) {
+      displayMessage = displayMessage.substring(0, maxLength) + '...';
+    }
+
+    this.aiChatStore.setError(errorMessage);
 
     // Parse and format error message for user-friendly display
-    const friendlyMessage = this.parseErrorMessage(error);
+    const friendlyMessage = this.parseErrorMessage(displayMessage);
 
     // Show error using Material Snackbar
     this.snackBar.open(friendlyMessage, 'Close', {

@@ -66,9 +66,27 @@ export class AiChatService {
         headers: headersObj,
         body: JSON.stringify(request)
       })
-      .then(response => {
+      .then(async (response) => {
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          // Try to read error message from response body
+          let errorMessage = `HTTP error! status: ${response.status}`;
+          try {
+            const errorData = await response.json();
+            if (errorData.message) {
+              errorMessage = errorData.message;
+            }
+          } catch (e) {
+            // If response is not JSON, use status text
+            if (response.statusText) {
+              errorMessage = response.statusText;
+            }
+          }
+          // Create an error object with server response structure
+          const error: any = new Error(errorMessage);
+          error.status = response.status;
+          error.statusText = response.statusText;
+          error.error = { message: errorMessage };
+          throw error;
         }
 
         if (!response.body) {
@@ -145,7 +163,8 @@ export class AiChatService {
       })
       .catch(error => {
         console.error('Fetch error:', error);
-        observer.error(this.createChatError(error));
+        // Pass the original error - component will extract the message
+        observer.error(error);
       })
       .finally(() => {
         this.isStreaming.next(false);
@@ -158,7 +177,7 @@ export class AiChatService {
     }).pipe(
       catchError(error => {
         this.isStreaming.next(false);
-        return throwError(() => this.createChatError(error));
+        return throwError(error);
       })
     );
   }
@@ -177,7 +196,8 @@ export class AiChatService {
     ).pipe(
       catchError(error => {
         console.error('Failed to get sessions:', error);
-        return throwError(() => error);
+        // Pass through the original error - it contains the server response
+        return throwError(error);
       })
     );
   }
