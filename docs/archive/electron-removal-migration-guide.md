@@ -1,9 +1,33 @@
-# Electron Removal - Migration Guide
+# ⚠️ HISTORICAL DOCUMENT - OUTDATED
+
+## Document Status
+
+**Status**: ❌ **Superseded / Outdated**
+**Reason**: Electron has been re-integrated into the project (2026-03-18)
+**Current Documentation**: See [ELECTRON.md](../ELECTRON.md) for up-to-date Electron integration guide
+**Archive Date**: 2026-03-18
+
+---
+
+## Historical Context
+
+This document described the removal of Electron desktop application support from GNS3 Web UI. The migration was completed but later **reversed** when Electron was re-integrated to support local tool integration (Wireshark, RDP, etc.).
+
+**Why Electron was re-added:**
+- Local tool integration (Wireshark, RDP client) requires desktop capabilities
+- User demand for native desktop application experience
+- Security improvements in Electron 22.x series
+- Better integration with GNS3 server running locally
+
+---
+
+# Electron Removal - Migration Guide (Historical)
 
 ## Document Information
 
 **Created**: 2026-03-14
-**Status**: ✅ **Completed**
+**Status**: ✅ **Completed** (Historical)
+**Superseded By**: [ELECTRON.md](../ELECTRON.md)
 **Version**: 1.0.0
 **Author**: Development Team
 

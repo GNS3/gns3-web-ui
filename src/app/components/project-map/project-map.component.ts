@@ -1046,7 +1046,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.highlightedNodeId = nodeId;
 
-    // Highlight the selected node with pulse animation
+    // Highlight the selected node
     const nodeElement = d3.select(`g.node[node_id="${nodeId}"]`);
     if (!nodeElement.empty()) {
       nodeElement.classed('console-highlight', true);
@@ -1057,7 +1057,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       if (link && (link.source?.id === nodeId || link.target?.id === nodeId)) {
         d3.select(this).classed('console-highlight', true);
 
-        // Highlight the other node connected by this link (without pulse)
+        // Highlight the other node connected by this link
         const otherNodeId = link.source?.id === nodeId ? link.target?.id : link.source?.id;
         if (otherNodeId) {
           const otherNodeElement = d3.select(`g.node[node_id="${otherNodeId}"]`);

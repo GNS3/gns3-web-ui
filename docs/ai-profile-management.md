@@ -2,8 +2,8 @@
 
 > Complete documentation for LLM Model Configuration management in GNS3 Web UI
 
-**Version**: v1.0
-**Last Updated**: 2026-03-14
+**Version**: v1.2
+**Last Updated**: 2026-03-18
 **Status**: ✅ Implemented
 
 ---
@@ -17,8 +17,10 @@
 5. [Form Validation](#5-form-validation)
 6. [Provider Presets](#6-provider-presets)
 7. [Custom Fields](#7-custom-fields)
-8. [Security Considerations](#8-security-considerations)
-9. [Changelog](#9-changelog)
+8. [Advanced Implementation Details](#8-advanced-implementation-details)
+9. [Security Considerations](#9-security-considerations)
+10. [Changelog](#10-changelog)
+11. [Future Enhancements](#11-future-enhancements)
 
 ---
 
@@ -269,9 +271,51 @@ Users can:
 
 ---
 
-## 8. Security Considerations
+## 8. Advanced Implementation Details
 
-### 8.1 API Key Handling
+### 8.1 Optimistic Locking
+
+**Purpose**: Prevent concurrent modification conflicts when multiple users edit the same configuration.
+
+**Implementation**:
+- `UpdateLLMModelConfigRequest` includes an optional `expected_version` field
+- Server validates the version before applying updates
+- Returns `409 Conflict` if version mismatch occurs
+- Clients automatically refresh data and notify users
+
+**Usage**:
+```typescript
+// Include expected_version when updating
+const updateRequest: UpdateLLMModelConfigRequest = {
+  name: 'Updated Name',
+  expected_version: config.version  // Current version from fetch
+};
+```
+
+### 8.2 Conflict Resolution
+
+**HTTP 409 Conflict Handling**:
+
+**Scenarios**:
+- Concurrent edits to the same configuration
+- Version mismatch during update operations
+- Default configuration conflicts
+
+**Client Behavior**:
+1. Detect `409` status code in error response
+2. Automatically reload configuration list
+3. Display warning message: "Data has been modified by another user, auto-refreshed"
+4. User can retry operation with fresh data
+
+**Implementation Location**:
+- `AiProfileTabComponent.handleConflict()` (src/app/components/user-management/user-detail/ai-profile-tab/ai-profile-tab.component.ts)
+- `GroupAiProfileTabComponent.handleConflict()` (src/app/components/group-details/group-ai-profile-tab/group-ai-profile-tab.component.ts)
+
+---
+
+## 9. Security Considerations
+
+### 9.1 API Key Handling
 
 **Server Behavior**:
 - API keys are encrypted on the server
@@ -283,7 +327,7 @@ Users can:
 - Edit mode: API key is optional (empty = keep existing)
 - Clear visual indication when a key exists but is hidden
 
-### 8.2 Configuration Inheritance
+### 9.2 Configuration Inheritance
 
 **User Access**:
 - Users can view and use inherited group configurations
@@ -297,7 +341,29 @@ Users can:
 
 ---
 
-## 9. Changelog
+## 10. Changelog
+
+### v1.2 (2026-03-18)
+
+**Code Cleanup**:
+- ✅ Removed all legacy API methods from `AiProfilesService`
+  - Removed `/profiles` endpoints (user and group)
+  - Removed legacy methods: `getProfiles`, `createProfile`, `updateProfile`, etc.
+- ✅ Removed legacy type definitions from `ai-profile.ts`
+  - Removed `AiProfile`, `AiProfilesResponse`, `CreateProfileRequest`, etc.
+- ✅ Cleaned up unused imports in component files
+- ✅ Updated documentation to remove legacy API references
+
+**Breaking Change**: Legacy `/profiles` API endpoints no longer supported in frontend code.
+
+### v1.1 (2026-03-18)
+
+**Documentation Updates**:
+- ✅ Added Section 8: Advanced Implementation Details
+- ✅ Documented optimistic locking mechanism with `expected_version`
+- ✅ Documented legacy API compatibility layer (later removed in v1.2)
+- ✅ Documented HTTP 409 conflict resolution handling
+- ✅ Updated table of contents and section numbering
 
 ### v1.0 (2026-03-14)
 
@@ -324,7 +390,7 @@ Users can:
 
 ---
 
-## 10. Future Enhancements
+## 11. Future Enhancements
 
 **Potential Features**:
 - [ ] Configuration templates
@@ -337,4 +403,4 @@ Users can:
 ---
 
 **Maintained By**: Development Team
-**Last Updated**: 2026-03-14
+**Last Updated**: 2026-03-18 (v1.2)

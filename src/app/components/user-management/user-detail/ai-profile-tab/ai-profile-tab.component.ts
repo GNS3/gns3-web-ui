@@ -10,13 +10,7 @@ import {
   LLMModelConfigWithSource,
   LLMModelConfigInheritedResponse,
   CreateLLMModelConfigRequest,
-  UpdateLLMModelConfigRequest,
-  // Legacy types
-  AiProfile,
-  AiProfilesResponse,
-  CreateProfileRequest,
-  UpdateProfileRequest,
-  SetActiveProfileRequest
+  UpdateLLMModelConfigRequest
 } from '@models/ai-profile';
 
 import { AiProfilesService } from '@services/ai-profiles.service';

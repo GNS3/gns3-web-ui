@@ -92,6 +92,12 @@ Updates the boundary configuration with partial values.
 this.boundaryService.setConfig({ topOffset: 64 });
 ```
 
+#### resetConfig()
+```typescript
+resetConfig(): void
+```
+Resets the boundary configuration to default values.
+
 #### constrainDragPosition()
 ```typescript
 constrainDragPosition(
@@ -141,13 +147,13 @@ Validates and constrains window position to ensure it's completely within viewpo
 
 #### isValidSize()
 ```typescript
-isValidSize(width: number, height: number): boolean
+isValidSize(width: unknown, height: unknown): boolean
 ```
-Checks if the given dimensions are valid according to the boundary configuration.
+Checks if the given dimensions are valid according to the boundary configuration. Accepts number, string, or unknown types and handles type conversion internally.
 
 **Parameters**:
-- `width`: Width to validate
-- `height`: Height to validate
+- `width`: Width to validate (supports number, string, or unknown types)
+- `height`: Height to validate (supports number, string, or unknown types)
 
 **Returns**: `true` if valid, `false` otherwise
 

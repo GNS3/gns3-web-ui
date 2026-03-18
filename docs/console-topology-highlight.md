@@ -20,6 +20,7 @@ The highlight is automatically cleared when:
 - User switches to another device
 - User closes the Console window
 - User opens a different project
+- User presses ESC key
 
 ## Implementation Details
 
@@ -64,6 +65,13 @@ Added two output events:
 Key methods:
 - `onDeviceSelected(nodeId)`: Highlights the selected node, connected links, and connected nodes
 - `clearConsoleHighlight()`: Removes all highlight classes
+- `onEscapeKey()`: Clears highlight when ESC key is pressed
+
+State management:
+- `highlightedNodeId`: Private property that tracks the currently highlighted node ID
+  - Set when a device is selected
+  - Used to efficiently clear only the previously highlighted elements
+  - Reset to `null` when highlight is cleared
 
 #### 3. CSS Styles (Performance Optimized)
 

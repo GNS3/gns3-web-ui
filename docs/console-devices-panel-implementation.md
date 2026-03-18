@@ -139,6 +139,12 @@ The Console Devices Panel is a sidebar feature added to the GNS3 Console window,
 
 A sidebar displayed on the left side of the Console window showing all console-capable devices in the current project.
 
+**Device Filtering**:
+- Only shows devices with embedded console support
+- Excludes devices with `console_type === 'none'` (no console)
+- Excludes devices with `console_type === 'vnc'` (uses standalone VNC viewer window)
+- Excludes devices with `console_type.startsWith('http')` (HTTP/HTTPS browsers use popup windows)
+
 **Specifications**:
 - **Width**: 200px (expanded), 48px (collapsed)
 - **Default State**: Collapsed
@@ -287,9 +293,9 @@ console-wrapper/
 ├── console-wrapper.component.ts           # Main container (modified)
 ├── console-wrapper.component.html         # Template (modified)
 ├── console-wrapper.component.scss         # Styles (modified)
-└── console-devices-panel.component.ts     # NEW: Device sidebar
-    ├── console-devices-panel.component.html   # NEW: Template
-    └── console-devices-panel.component.scss   # NEW: Styles
+├── console-devices-panel.component.ts     # NEW: Device sidebar
+├── console-devices-panel.component.html   # NEW: Template
+└── console-devices-panel.component.scss   # NEW: Styles
 ```
 
 ### Data Flow
@@ -298,12 +304,16 @@ console-wrapper/
 NodesDataSource (all project nodes)
     ↓
 ConsoleDevicesPanelComponent
-    ↓ Filters: console_type !== 'none'
+    ↓ Filters: console_type !== 'none' && !== 'vnc' && !startsWith('http')
+    ↓ (Exclude VNC and HTTP/HTTPS - they use standalone windows)
     ↓ Sort: started first, then alphabetically
     ↓ Display: Device list with status indicators
     ↓ User clicks device
     ↓
 ConsoleWrapperComponent.addTab()
+    ↓ Check: Is VNC node?
+    ├─ Yes → Skip (VNC uses standalone popup windows)
+    └─ No  → Continue
     ↓ Check: Does tab already exist?
     ├─ Yes → Switch to existing tab
     └─ No  → Create new tab & focus xterm
@@ -316,7 +326,7 @@ ConsoleWrapperComponent.addTab()
 **Responsibilities**:
 - Subscribe to `NodesDataSource.changes` for node list updates
 - Subscribe to `NodesDataSource.itemChanged` for individual node updates
-- Filter console-capable devices (`console_type !== 'none'`)
+- Filter console-capable devices (exclude `none`, `vnc`, and `http` types)
 - Sort devices (running first, alphabetical)
 - Display device list with status colors
 - Emit `deviceSelected` event on device click
@@ -326,6 +336,7 @@ ConsoleWrapperComponent.addTab()
 ngOnInit(): Subscribe to data source changes
 isDeviceStarted(node: Node): boolean: Check if node.status === 'started'
 getStatusColor(status: string): string: Return color for status
+getStatusLabel(status: string): string: Return human-readable label (Running, Stopped, etc.)
 onDeviceClick(node: Node): void: Emit deviceSelected event
 togglePanel(): void: Toggle panel collapse/expand state
 private sortNodes(): void: Sort by status and name
@@ -351,16 +362,21 @@ switchToTab(index: number): void          // Switch tab and auto-focus xterm
 **Tab Management** (Enhanced):
 ```typescript
 addTab(node: Node, selectAfterAdding: boolean): void {
+  // Skip VNC nodes - they use standalone popup windows, not embedded console
+  if (node.console_type === 'vnc') {
+    return;
+  }
+
   // Check if node already exists in tabs
   const existingIndex = this.nodes.findIndex(n => n.node_id === node.node_id);
 
   if (existingIndex >= 0) {
     // Switch to existing tab
-    this.selected.setValue(existingIndex + 1);
+    this.selected.setValue(existingIndex);
   } else {
     // Create new tab
     this.nodes.push(node);
-    this.selected.setValue(this.nodes.length);
+    this.selected.setValue(this.nodes.length - 1);
     this.consoleService.openConsoles++;
   }
 }
@@ -591,8 +607,9 @@ ngOnDestroy(): void {
 
 1. **Shortcut Scope**: Alt+1-9 only works when Console window is activated
 2. **Maximum Tabs**: Alt+1-9 supports up to 8 device consoles
-3. **GNS3 Console**: Alt+1 switches to log console (not xterm)
+3. **GNS3 Console**: Alt+9 switches to log console (not xterm)
 4. **Web Environment**: Requires window focus (not when browser tab is inactive)
+5. **VNC/HTTP Devices**: Devices with VNC or HTTP console types are not shown in the devices panel as they use standalone popup windows
 
 ---
 
@@ -634,8 +651,8 @@ ngOnDestroy(): void {
 - [x] xterm auto-focuses on tab creation
 
 #### Keyboard Shortcuts
-- [x] Alt+1 switches to GNS3 console
-- [x] Alt+2-9 switch to device tabs
+- [x] Alt+1-8 switch to device console tabs
+- [x] Alt+9 switches to GNS3 console
 - [x] Shortcuts work when console is active
 - [x] Shortcuts don't work when console is inactive
 - [x] Visual feedback shows active state
@@ -745,6 +762,6 @@ ngOnDestroy(): void {
 
 ---
 
-**Document Version**: 1.7.0
-**Last Updated**: 2026-03-10
+**Document Version**: 1.8.0
+**Last Updated**: 2026-03-14
 **Maintainer**: Development Team
