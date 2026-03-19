@@ -39,7 +39,7 @@ import { ThemeService } from '@services/theme.service';
           <!-- AI assistant message -->
           <div class="message assistant-message" *ngIf="message.role === 'assistant'">
             <div class="message-avatar assistant-avatar">
-              <span class="avatar-text">AI</span>
+              <img src="assets/gns3_icon.svg" alt="GNS3" class="avatar-logo" />
             </div>
             <div class="message-content assistant-content">
               <div class="message-bubble assistant-bubble" [class.streaming]="isStreaming && message === lastAssistantMessage">

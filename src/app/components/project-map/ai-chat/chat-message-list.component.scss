@@ -91,6 +91,13 @@
 .assistant-avatar {
   background: linear-gradient(135deg, #0ea5e9, #06b6d4);
   color: white;
+  overflow: hidden;
+}
+
+.avatar-logo {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
 }
 
 .tool-avatar {
