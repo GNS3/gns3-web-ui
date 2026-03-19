@@ -111,8 +111,10 @@
           [disabled]="isStreaming"
           [modelConfigs]="modelConfigs"
           [currentModelId]="currentModelId"
+          [currentCopilotMode]="currentCopilotMode"
           (messageSent)="onMessageSent($event)"
-          (modelSelected)="onModelSelected($event)">
+          (modelSelected)="onModelSelected($event)"
+          (copilotModeSelected)="onCopilotModeSelected($event)">
         </app-chat-input-area>
       </div>
     </div>

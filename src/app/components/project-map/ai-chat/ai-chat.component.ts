@@ -8,7 +8,7 @@ import { environment } from '../../../../environments/environment';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { ChatMessage, ChatSession, ChatEvent, ToolCall, ToolResult } from '@models/ai-chat.interface';
-import { LLMModelConfigWithSource } from '@models/ai-profile';
+import { LLMModelConfigWithSource, CopilotMode } from '@models/ai-profile';
 import { AiChatService } from '@services/ai-chat.service';
 import { ControllerService } from '@services/controller.service';
 import { AiProfilesService } from '@services/ai-profiles.service';
@@ -57,6 +57,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   // LLM Model Configuration
   modelConfigs: LLMModelConfigWithSource[] = [];
   currentModelId: string | null = null;
+  currentCopilotMode: CopilotMode = 'teaching_assistant';
   isLoadingModels = false;
 
   // Tool call accumulation state
@@ -1235,6 +1236,8 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         next: (response) => {
           this.modelConfigs = response.configs || [];
           this.currentModelId = response.default_config?.config_id || null;
+          // Load copilot mode from default config
+          this.currentCopilotMode = response.default_config?.config?.copilot_mode || 'teaching_assistant';
           this.isLoadingModels = false;
           this.cdr.markForCheck();
         },
@@ -1278,6 +1281,8 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       ).subscribe({
         next: (updatedConfig) => {
           this.currentModelId = updatedConfig.config_id;
+          // Update copilot mode from the newly set default config
+          this.currentCopilotMode = updatedConfig.config?.copilot_mode || 'teaching_assistant';
           this.cdr.markForCheck();
 
           // Show success message
@@ -1291,6 +1296,54 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         error: (error) => {
           this.logError('Failed to set default model:', error);
           this.showError('Failed to switch model');
+        }
+      });
+    }).catch((error) => {
+      this.logError('Failed to get logged user:', error);
+      this.showError('Failed to get user information');
+    });
+  }
+
+  /**
+   * Handle copilot mode selection
+   * @param mode Selected copilot mode
+   */
+  onCopilotModeSelected(mode: CopilotMode): void {
+    if (!this.controller || !this.currentModelId) {
+      return;
+    }
+
+    // Get current user
+    this.loginService.getLoggedUser(this.controller).then((user: any) => {
+      if (!user) {
+        this.showError('Failed to get user information');
+        return;
+      }
+
+      // Update the current default config with new copilot mode
+      this.aiProfilesService.updateConfig(
+        this.controller,
+        user.user_id,
+        this.currentModelId,
+        { copilot_mode: mode }
+      ).pipe(
+        takeUntil(this.destroy$)
+      ).subscribe({
+        next: (updatedConfig) => {
+          this.currentCopilotMode = updatedConfig.config?.copilot_mode || 'teaching_assistant';
+          this.cdr.markForCheck();
+
+          // Show success message
+          const modeName = mode === 'teaching_assistant' ? 'Teaching Assistant' : 'Lab Automation';
+          this.snackBar.open(`Switched to ${modeName} mode`, 'Close', {
+            duration: 3000,
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom'
+          });
+        },
+        error: (error) => {
+          this.logError('Failed to update copilot mode:', error);
+          this.showError('Failed to switch copilot mode');
         }
       });
     }).catch((error) => {

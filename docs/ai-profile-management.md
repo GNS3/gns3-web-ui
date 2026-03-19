@@ -246,6 +246,52 @@ Configuration names must be unique within the same scope (user or group). The di
 
 Users can select "Custom model name..." from the preset dropdown to manually enter any model name.
 
+### 6.4 Copilot Mode
+
+**Purpose**: Configure the AI assistant's operational mode in GNS3 AI Chat.
+
+**Available Modes**:
+
+| Mode | Value | Description |
+|------|-------|-------------|
+| **Teaching Assistant** | `teaching_assistant` | Diagnostics only - Provides guidance, analysis, and explanations without making configuration changes |
+| **Lab Automation** | `lab_automation_assistant` | Full configuration access - Can analyze, modify, and manage GNS3 project configurations |
+
+**Usage**:
+- Set when creating or editing a model configuration
+- Optional field (defaults to `teaching_assistant` if not specified)
+- Can be changed dynamically in AI Chat interface
+- Mode preference persists with the model configuration
+- Different models can have different copilot modes
+
+**UI Location**:
+- **AI Profile Dialog**: Dropdown selector in the configuration form
+- **AI Chat**: Model selector menu > Copilot Mode section (bottom)
+
+**Example**:
+```typescript
+{
+  copilot_mode: 'teaching_assistant'  // or 'lab_automation_assistant'
+}
+```
+
+### 6.5 Context Strategy
+
+**Purpose**: Configure how the AI manages context window usage when approaching token limits.
+
+**Available Strategies**:
+
+| Strategy | Value | Context Usage | Description |
+|----------|-------|---------------|-------------|
+| **Conservative** | `conservative` | 60% of limit | Truncates earlier, safer for long conversations |
+| **Balanced** | `balanced` | 75% of limit | Default balance between context length and safety |
+| **Aggressive** | `aggressive` | 85% of limit | Maximizes context at risk of hitting limits |
+
+**Usage**:
+- Optional field (defaults to `balanced` if not specified)
+- Determines when to start truncating message history
+- Helps prevent exceeding model's context window
+
 ---
 
 ## 7. Custom Fields
