@@ -486,24 +486,22 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
    * This is called when the menu opens via menuOpened event
    */
   ensureMenuTheme(): void {
-    setTimeout(() => {
+    // Use requestAnimationFrame for more reliable DOM timing
+    requestAnimationFrame(() => {
       const overlayElement = this.overlayContainer.getContainerElement();
-      const themeClass = this.currentTheme.endsWith('-theme') ? this.currentTheme : this.currentTheme + '-theme';
+      const themeClass = this.currentTheme.endsWith('-theme') ? this.currentTheme : `${this.currentTheme}-theme`;
 
-      // Ensure overlay container has the correct theme class
-      if (!overlayElement.classList.contains(themeClass)) {
-        overlayElement.classList.remove('dark-theme', 'light-theme', 'dark', 'light');
-        overlayElement.classList.add(themeClass);
-        overlayElement.classList.add(this.currentTheme === 'dark-theme' ? 'dark' : 'light');
-      }
+      // Clean and apply correct theme class to overlay container
+      overlayElement.classList.remove('dark-theme', 'light-theme', 'dark', 'light');
+      overlayElement.classList.add(themeClass);
 
-      // Directly apply theme class to menu panel (key step!)
+      // Apply theme class to menu panel
       const panels = overlayElement.querySelectorAll('.mat-menu-panel');
       panels.forEach(panel => {
         panel.classList.remove('dark-theme', 'light-theme');
         panel.classList.add(themeClass);
       });
-    }, 0);
+    });
   }
 
   ngOnDestroy() {

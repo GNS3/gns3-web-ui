@@ -90,24 +90,22 @@ ngOnInit() {
 
 ```typescript
 ensureMenuTheme(): void {
-  setTimeout(() => {
+  // Use requestAnimationFrame for more reliable DOM timing
+  requestAnimationFrame(() => {
     const overlayElement = this.overlayContainer.getContainerElement();
-    const themeClass = this.currentTheme.endsWith('-theme') ? this.currentTheme : this.currentTheme + '-theme';
+    const themeClass = this.currentTheme.endsWith('-theme') ? this.currentTheme : `${this.currentTheme}-theme`;
 
-    // Ensure overlay container has the correct theme class
-    if (!overlayElement.classList.contains(themeClass)) {
-      overlayElement.classList.remove('dark-theme', 'light-theme', 'dark', 'light');
-      overlayElement.classList.add(themeClass);
-      overlayElement.classList.add(this.currentTheme === 'dark-theme' ? 'dark' : 'light');
-    }
+    // Clean and apply correct theme class to overlay container
+    overlayElement.classList.remove('dark-theme', 'light-theme', 'dark', 'light');
+    overlayElement.classList.add(themeClass);
 
-    // Directly apply theme class to menu panel (key step!)
+    // Apply theme class to menu panel
     const panels = overlayElement.querySelectorAll('.mat-menu-panel');
     panels.forEach(panel => {
       panel.classList.remove('dark-theme', 'light-theme');
       panel.classList.add(themeClass);
     });
-  }, 0);
+  });
 }
 ```
 
@@ -120,8 +118,8 @@ ensureMenuTheme(): void {
 | Step | Purpose | Why It Matters |
 |------|---------|----------------|
 | Listen to `menuOpened` event | Execute immediately after menu panel creation | Avoid timing issues |
-| Use `setTimeout(..., 0)` | Ensure DOM is fully rendered | Let menu panel finish creation |
-| Check overlay container | Ensure parent has correct theme classes | Provide base style inheritance |
+| Use `requestAnimationFrame` | Ensure DOM is fully rendered | More reliable than setTimeout, waits for next paint frame |
+| Clean and apply theme classes | Remove old classes and add current theme | Prevents class conflicts and ensures correct styling |
 | **Directly add classes to panel** | **Apply styles without relying on inheritance** | **Core solution** |
 
 ### Why Direct Class Application Works
@@ -239,7 +237,8 @@ ensureMenuTheme() applies new light theme classes
 
 ### ✅ DO
 - Apply theme classes in `menuOpened` event
-- Use `setTimeout` to ensure DOM rendering is complete
+- Use `requestAnimationFrame` for reliable DOM timing (preferred over setTimeout)
+- Clean existing theme classes before adding new ones
 - Directly manipulate menu panel element's classList
 - Use `takeUntil` to manage subscription lifecycle
 
