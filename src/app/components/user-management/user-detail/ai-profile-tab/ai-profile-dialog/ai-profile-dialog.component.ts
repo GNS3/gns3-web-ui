@@ -30,6 +30,7 @@ export interface ProviderPreset {
   baseUrl: string;
   models: string[];
   defaultTemperature?: number;
+  modelContextLimits?: { [modelId: string]: number };
 }
 
 // Provider presets (exactly from FlowNet-Lab)
@@ -55,15 +56,26 @@ export const PROVIDER_PRESETS: ProviderPreset[] = [
       'openai/gpt-4o',
       'google/gemini-2.5-flash'
     ],
-    defaultTemperature: 0.3
+    defaultTemperature: 0.3,
+    modelContextLimits: {
+      'deepseek/deepseek-v3.2': 128,
+      'x-ai/grok-3': 128,
+      'anthropic/claude-sonnet-4': 200,
+      'z-ai/glm-4.7': 200,
+      'openai/gpt-4o': 128,
+      'google/gemini-2.5-flash': 1000
+    }
   },
   {
     id: 'deepseek',
     label: 'DeepSeek',
     provider: 'deepseek',
     baseUrl: 'https://api.deepseek.com/v1',
-    models: ['deepseek-chat', 'deepseek-coder'],
-    defaultTemperature: 0.3
+    models: ['deepseek-chat'],
+    defaultTemperature: 0.3,
+    modelContextLimits: {
+      'deepseek-chat': 128
+    }
   }
 ];
 
@@ -107,11 +119,39 @@ export class AiProfileDialogComponent implements OnInit {
   existingNames: string[];
   customFields: CustomField[] = [];
 
+  // Mode switching
+  configMode: 'basic' | 'custom' = 'basic';
+
   // Provider presets
   providerPresets = PROVIDER_PRESETS;
   selectedPresetId: string = 'custom';
   selectedPreset: ProviderPreset | null = null;
   useCustomModel: boolean = false;
+
+  // Supported providers for Custom Mode
+  supportedProviders = [
+    { value: 'openai', label: 'OpenAI' },
+    { value: 'anthropic', label: 'Anthropic' },
+    { value: 'google', label: 'Google' },
+    { value: 'aws', label: 'AWS Bedrock' },
+    { value: 'ollama', label: 'Ollama' },
+    { value: 'deepseek', label: 'DeepSeek' },
+    { value: 'xai', label: 'xAI' }
+  ];
+
+  // Default base URLs for providers
+  providerDefaultUrls: { [key: string]: string } = {
+    'openai': 'https://api.openai.com/v1',
+    'anthropic': 'https://api.anthropic.com',
+    'google': 'https://generativelanguage.googleapis.com',
+    'deepseek': 'https://api.deepseek.com/v1',
+    'xai': 'https://api.x.ai'
+  };
+
+  // Get non-custom presets for Basic Mode
+  get basicModePresets(): ProviderPreset[] {
+    return this.providerPresets.filter(preset => preset.id !== 'custom');
+  }
 
   // Enums for template access
   modelTypes = MODEL_TYPES;
@@ -170,6 +210,20 @@ export class AiProfileDialogComponent implements OnInit {
       // Try to find matching preset
       this.detectPresetFromConfig();
     }
+
+    // Watch for provider changes to auto-fill base URL in Custom mode
+    this.form.get('provider')?.valueChanges.subscribe(providerValue => {
+      // Only auto-fill in Custom mode (not when using presets)
+      if (this.selectedPresetId === 'custom' && providerValue) {
+        const defaultUrl = this.providerDefaultUrls[providerValue];
+        const baseUrlControl = this.form.get('base_url');
+
+        // Add null check for base_url control
+        if (defaultUrl && baseUrlControl && !baseUrlControl.value) {
+          baseUrlControl.setValue(defaultUrl);
+        }
+      }
+    });
   }
 
   private createForm(): FormGroup {
@@ -240,8 +294,14 @@ export class AiProfileDialogComponent implements OnInit {
 
       // Set first model as default
       if (this.selectedPreset.models.length > 0) {
-        this.form.get('model')?.setValue(this.selectedPreset.models[0]);
+        const firstModel = this.selectedPreset.models[0];
+        this.form.get('model')?.setValue(firstModel);
         this.useCustomModel = false;
+
+        // Set context limit for the first model
+        if (this.selectedPreset.modelContextLimits && this.selectedPreset.modelContextLimits[firstModel]) {
+          this.form.get('context_limit')?.setValue(this.selectedPreset.modelContextLimits[firstModel]);
+        }
       }
 
       // Set default temperature from preset
@@ -278,6 +338,11 @@ export class AiProfileDialogComponent implements OnInit {
     } else {
       this.useCustomModel = false;
       this.form.get('model')?.setValue(modelValue);
+
+      // Set context limit for the selected model
+      if (this.selectedPreset && this.selectedPreset.modelContextLimits && this.selectedPreset.modelContextLimits[modelValue]) {
+        this.form.get('context_limit')?.setValue(this.selectedPreset.modelContextLimits[modelValue]);
+      }
     }
   }
 
@@ -429,5 +494,29 @@ export class AiProfileDialogComponent implements OnInit {
    */
   onCancel(): void {
     this.dialogRef.close();
+  }
+
+  /**
+   * Handle mode change between Basic and Custom
+   */
+  onModeChange(newMode: 'basic' | 'custom'): void {
+    if (newMode === 'basic') {
+      // When switching to basic mode, set default values if not already set
+      if (!this.form.get('temperature')?.value) {
+        this.form.patchValue({ temperature: 0.7 });
+      }
+      if (!this.form.get('context_limit')?.value) {
+        this.form.patchValue({ context_limit: 128 });
+      }
+      if (!this.form.get('context_strategy')?.value) {
+        this.form.patchValue({ context_strategy: 'balanced' });
+      }
+      if (!this.form.get('copilot_mode')?.value) {
+        this.form.patchValue({ copilot_mode: 'teaching_assistant' });
+      }
+      if (!this.form.get('model_type')?.value) {
+        this.form.patchValue({ model_type: 'text' });
+      }
+    }
   }
 }

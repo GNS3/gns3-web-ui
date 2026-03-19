@@ -311,6 +311,7 @@ import { AddRoleToGroupComponent } from '@components/group-details/add-role-to-g
 import {MatFormFieldModule} from "@angular/material/form-field";
 import { ChangeUserPasswordComponent } from '@components/user-management/user-detail/change-user-password/change-user-password.component';
 import {MatMenuModule} from "@angular/material/menu";
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
 import { ImageManagerComponent } from '@components/image-manager/image-manager.component';
 import { AddImageDialogComponent } from '@components/image-manager/add-image-dialog/add-image-dialog.component';
 import { DeleteAllImageFilesDialogComponent } from '@components/image-manager/deleteallfiles-dialog/deleteallfiles-dialog.component';
@@ -612,6 +613,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         MatSlideToggleModule,
         MatCheckboxModule,
         MatAutocompleteModule,
+        MatButtonToggleModule,
         CdkAccordionModule,
         CdkTreeModule,
         MarkdownModule.forRoot({

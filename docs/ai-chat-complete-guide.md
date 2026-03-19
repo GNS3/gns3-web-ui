@@ -75,6 +75,7 @@ src/app/
 | **Confirmation Dialog** | Secondary confirmation for dangerous operations | ✅ |
 | **Panel State Persistence** | Window position/size saved to localStorage | ✅ |
 | **Model Selector** | Switch between configured LLM models | ✅ |
+| **Copilot Mode** | Switch between Teaching Assistant and Lab Automation modes | ✅ |
 
 ### 2.2 Message Types
 
@@ -318,6 +319,14 @@ closeDialog()
     - "google/gemini-2.5-flash" → "Gemini 2.5 Flash"
     - "meta-llama/llama-3.1-70b" → "Llama 3.1 70b"
     - "openai/gpt-4o" → "Gpt 4o"
+- **Copilot Mode Selector**: Switch between AI assistant modes
+  - Located in model selector dropdown menu (bottom section)
+  - Two available modes:
+    - **Teaching Assistant**: Diagnostics only - Provides guidance and analysis
+    - **Lab Automation**: Full configuration access - Can make configuration changes
+  - Visual indication of current mode with checkmark icon
+  - Mode preference persists with model configuration
+  - Changing mode updates current model's copilot_mode setting via API
 
 **Inputs**:
 - `placeholder`: Input placeholder text
@@ -327,11 +336,13 @@ closeDialog()
 - `warningThreshold`: Character count warning threshold (default: 0.9)
 - `modelConfigs`: Array of available LLM model configurations
 - `currentModelId`: ID of currently selected model
+- `currentCopilotMode`: Current copilot mode (`'teaching_assistant'` | `'lab_automation_assistant'`)
 
 **Outputs**:
 - `messageSent`: Emitted when user sends a message
 - `inputChanged`: Emitted on input change
 - `modelSelected`: Emitted when user selects a different model
+- `copilotModeSelected`: Emitted when user switches copilot mode
 
 ---
 

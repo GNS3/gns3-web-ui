@@ -7,7 +7,7 @@ import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
-import { LLMModelConfigWithSource } from '@models/ai-profile';
+import { LLMModelConfigWithSource, CopilotMode } from '@models/ai-profile';
 import { getModelDisplayName as getModelDisplayNameUtil, shortenModelName } from '@utils/ai-profile.util';
 
 /**
@@ -80,6 +80,26 @@ import { getModelDisplayName as getModelDisplayNameUtil, shortenModelName } from
         <mat-icon>error_outline</mat-icon>
         <span>No models configured</span>
       </button>
+
+      <!-- Copilot Mode Section -->
+      <mat-divider *ngIf="modelConfigs && modelConfigs.length > 0"></mat-divider>
+      <div class="copilot-mode-section" *ngIf="modelConfigs && modelConfigs.length > 0">
+        <div class="copilot-mode-header">Copilot Mode</div>
+        <button mat-menu-item class="copilot-mode-item" (click)="selectCopilotMode('teaching_assistant')" [class.selected]="currentCopilotMode === 'teaching_assistant'">
+          <mat-icon>{{ currentCopilotMode === 'teaching_assistant' ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+          <div class="mode-info">
+            <span class="mode-name">Teaching Assistant</span>
+            <span class="mode-description">Diagnostics only</span>
+          </div>
+        </button>
+        <button mat-menu-item class="copilot-mode-item" (click)="selectCopilotMode('lab_automation_assistant')" [class.selected]="currentCopilotMode === 'lab_automation_assistant'">
+          <mat-icon>{{ currentCopilotMode === 'lab_automation_assistant' ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+          <div class="mode-info">
+            <span class="mode-name">Lab Automation</span>
+            <span class="mode-description">Full configuration access</span>
+          </div>
+        </button>
+      </div>
     </mat-menu>
   `,
   styles: [`
@@ -362,6 +382,50 @@ import { getModelDisplayName as getModelDisplayNameUtil, shortenModelName } from
     button.mat-menu-item.selected {
       background: rgba(var(--mat-app-primary-rgb), 0.1);
     }
+
+    /* Copilot Mode Section Styles */
+    .copilot-mode-section {
+      padding: 0;
+    }
+
+    .copilot-mode-header {
+      padding: 12px 16px 8px 16px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--mat-app-on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .copilot-mode-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 16px;
+      min-height: 48px;
+    }
+
+    .copilot-mode-item .mode-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      flex: 1;
+    }
+
+    .copilot-mode-item .mode-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--mat-app-on-surface);
+      line-height: 1.2;
+    }
+
+    .copilot-mode-item .mode-description {
+      font-size: 11px;
+      color: var(--mat-app-on-surface-variant);
+      opacity: 0.8;
+      line-height: 1.2;
+      margin-top: 1px;
+    }
   `]
 })
 export class ChatInputAreaComponent implements OnInit, OnDestroy {
@@ -374,10 +438,12 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
   // Model selector inputs
   @Input() modelConfigs: LLMModelConfigWithSource[] = [];
   @Input() currentModelId: string | null = null;
+  @Input() currentCopilotMode: CopilotMode = 'teaching_assistant';
 
   @Output() messageSent = new EventEmitter<string>();
   @Output() inputChanged = new EventEmitter<string>();
   @Output() modelSelected = new EventEmitter<LLMModelConfigWithSource>();
+  @Output() copilotModeSelected = new EventEmitter<CopilotMode>();
 
   @ViewChild('messageInput', { static: true }) messageInput!: ElementRef<HTMLTextAreaElement>;
 
@@ -559,5 +625,13 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
    */
   selectModel(config: LLMModelConfigWithSource): void {
     this.modelSelected.emit(config);
+  }
+
+  /**
+   * Select copilot mode and emit event
+   * @param mode Copilot mode to select
+   */
+  selectCopilotMode(mode: CopilotMode): void {
+    this.copilotModeSelected.emit(mode);
   }
 }
