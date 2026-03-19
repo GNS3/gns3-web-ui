@@ -394,13 +394,8 @@ line.selected {
 svg.map image:hover,
 svg.map image.chosen,
 g.selected {
-  -webkit-filter: grayscale(100%);
-  -moz-filter: grayscale(100%);
-  -ms-filter: grayscale(100%);
-  -o-filter: grayscale(100%);
-  filter: grayscale(100%);
-  filter: gray;
-  filter: url('#grayscale'); /* Chrome doesn't support CSS filters on SVG */
+  // Use SVG filter for better performance with SVG elements
+  filter: url('#grayscale');
 }
 
 path.serial_link.selected {
@@ -500,7 +495,6 @@ mat-menu-panel {
 
 g.node.console-highlight {
   // Selected node - red glow only (no border color change)
-  will-change: filter;
   filter: drop-shadow(0 0 5px #ef4444);
 
   .node_body {
@@ -522,7 +516,6 @@ g.node.console-highlight {
 
 // Connected node highlight (static highlight, performance optimized)
 g.node.console-highlight-connected {
-  will-change: filter;
   filter: drop-shadow(0 0 3px #3b82f6);
 
   .node_body {

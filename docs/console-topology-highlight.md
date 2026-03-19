@@ -115,7 +115,7 @@ The highlight feature has been optimized for minimal GPU usage:
 
 1. **No Animations**: Removed breathing animation and link dash animation
 2. **Static Filters**: Using static `drop-shadow` instead of animated filters
-3. **will-change Hints**: Added `will-change: filter` for better rendering performance
+3. **No will-change**: Avoided `will-change: filter` to prevent GPU memory leaks from dynamic class additions/removals
 4. **Glow Effects Only**: Changed from colored borders + glow to glow only (preserves node appearance)
 
 ### Memory Leak Prevention
