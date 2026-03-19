@@ -393,7 +393,6 @@ import { getModelDisplayName as getModelDisplayNameUtil, shortenModelName } from
       font-size: 12px;
       font-weight: 500;
       color: var(--mat-app-on-surface-variant);
-      text-transform: uppercase;
       letter-spacing: 0.5px;
     }
 
