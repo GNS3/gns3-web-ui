@@ -617,7 +617,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         CdkAccordionModule,
         CdkTreeModule,
         MarkdownModule.forRoot({
-            sanitize: SecurityContext.HTML
+            sanitize: SecurityContext.NONE
         }),
     ],
     providers: [
