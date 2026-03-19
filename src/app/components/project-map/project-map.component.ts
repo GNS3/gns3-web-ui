@@ -298,13 +298,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         nodesToLoad.forEach((node: Node) => {
           nodeRawUrlMap.set(
             node,
-            `${this.controller.protocol}//${this.controller.host}:${this.controller.port}/${environment.current_version}/symbols/${node.symbol}/raw`
+            `/symbols/${node.symbol}/raw`
           );
         });
 
         // Deduplicate: only 1 fetch per unique symbol URL (shareReplay(1) in getSymbolBlobUrl handles concurrent callers)
         const uniqueRawUrls = [...new Set(nodeRawUrlMap.values())];
-        forkJoin(uniqueRawUrls.map((url) => this.symbolService.getSymbolBlobUrl(url))).subscribe(
+        forkJoin(uniqueRawUrls.map((url) => this.symbolService.getSymbolBlobUrl(this.controller, url))).subscribe(
           (blobUrls: string[]) => {
             const blobUrlMap = new Map(uniqueRawUrls.map((url, i) => [url, blobUrls[i]]));
             nodesToLoad.forEach((node: Node) => {
@@ -317,7 +317,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           () => {
             // Fallback to raw URLs if blob fetch fails
             nodesToLoad.forEach((node: Node) => {
-              node.symbol_url = nodeRawUrlMap.get(node);
+              node.symbol_url = `${this.controller.protocol}//${this.controller.host}:${this.controller.port}/${environment.current_version}${nodeRawUrlMap.get(node)}`;
             });
             this.nodes = nodes;
             if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
