@@ -217,6 +217,10 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   onResizeEnd(event: ResizeEvent): void {
+    // Check if current positioning uses bottom instead of top
+    const currentStyle = this.style as WindowStyle;
+    const usesBottomPositioning = currentStyle.bottom !== undefined && currentStyle.top === undefined;
+
     // Use boundary service to constrain size
     const constrained = this.boundaryService.constrainResizeSize(
       event.rectangle.width || this.resizedWidth,
@@ -225,13 +229,26 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
       event.rectangle.top
     );
 
-    this.style = {
-      position: 'fixed',
-      left: `${constrained.left}px`,
-      top: `${constrained.top}px`,
-      width: `${constrained.width}px`,
-      height: `${constrained.height}px`,
-    };
+    // Preserve positioning mode (bottom vs top) to avoid window jumping
+    if (usesBottomPositioning) {
+      // Convert top to bottom: bottom = window.innerHeight - top - height
+      const bottom = window.innerHeight - constrained.top! - constrained.height;
+      this.style = {
+        position: 'fixed',
+        left: `${constrained.left}px`,
+        bottom: `${bottom}px`,
+        width: `${constrained.width}px`,
+        height: `${constrained.height}px`,
+      };
+    } else {
+      this.style = {
+        position: 'fixed',
+        left: `${constrained.left}px`,
+        top: `${constrained.top}px`,
+        width: `${constrained.width}px`,
+        height: `${constrained.height}px`,
+      };
+    }
 
     this.styleInside = {
       height: `${constrained.height - 60}px`,
