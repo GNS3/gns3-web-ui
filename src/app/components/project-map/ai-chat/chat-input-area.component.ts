@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, Input, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
+import { Component, Output, EventEmitter, Input, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,6 +9,8 @@ import { Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs/operators';
 import { LLMModelConfigWithSource, CopilotMode } from '@models/ai-profile';
 import { getModelDisplayName as getModelDisplayNameUtil, shortenModelName } from '@utils/ai-profile.util';
+import { ThemeService } from '@services/theme.service';
+import { OverlayContainer } from '@angular/cdk/overlay';
 
 /**
  * AI Chat Input Area Component
@@ -48,7 +50,9 @@ import { getModelDisplayName as getModelDisplayNameUtil, shortenModelName } from
         <!-- Model Selector Chip -->
         <button
           class="model-selector-chip"
+          #menuTrigger="matMenuTrigger"
           [matMenuTriggerFor]="modelMenu"
+          (menuOpened)="ensureMenuTheme()"
           [disabled]="disabled || !modelConfigs || modelConfigs.length === 0"
           [title]="getFullModelDisplayName()"
           matRipple
@@ -445,16 +449,60 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
   @Output() copilotModeSelected = new EventEmitter<CopilotMode>();
 
   @ViewChild('messageInput', { static: true }) messageInput!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('menuTrigger') menuTrigger!: MatMenuTrigger;
 
   message = '';
   textareaHeight = 48; // Initial height
   private destroy$ = new Subject<void>();
   private previousMessageLength = 0;
+  private currentTheme: string = '';
+
+  constructor(
+    private themeService: ThemeService,
+    private cdr: ChangeDetectorRef,
+    private overlayContainer: OverlayContainer
+  ) {
+    this.currentTheme = this.themeService.savedTheme;
+  }
 
   ngOnInit() {
     // Initialize textarea height after view is ready
     setTimeout(() => {
       this.adjustTextareaHeight();
+    }, 0);
+
+    // Subscribe to theme changes to close menu when theme switches
+    this.themeService.themeChanged.pipe(takeUntil(this.destroy$)).subscribe((theme) => {
+      this.currentTheme = theme;
+      // Close menu if open to force re-render with new theme
+      if (this.menuTrigger && this.menuTrigger.menuOpen) {
+        this.menuTrigger.closeMenu();
+      }
+    });
+  }
+
+  /**
+   * Ensure menu overlay has correct theme classes when opened
+   * This is called when the menu opens via menuOpened event
+   */
+  ensureMenuTheme(): void {
+    setTimeout(() => {
+      const overlayElement = this.overlayContainer.getContainerElement();
+      const themeClass = this.currentTheme.endsWith('-theme') ? this.currentTheme : this.currentTheme + '-theme';
+
+      // Ensure overlay container has the correct theme class
+      if (!overlayElement.classList.contains(themeClass)) {
+        overlayElement.classList.remove('dark-theme', 'light-theme', 'dark', 'light');
+        overlayElement.classList.add(themeClass);
+        overlayElement.classList.add(this.currentTheme === 'dark-theme' ? 'dark' : 'light');
+      }
+
+      // Directly apply theme class to menu panel (key step!)
+      const panels = overlayElement.querySelectorAll('.mat-menu-panel');
+      panels.forEach(panel => {
+        panel.classList.remove('dark-theme', 'light-theme');
+        panel.classList.add(themeClass);
+      });
     }, 0);
   }
 
