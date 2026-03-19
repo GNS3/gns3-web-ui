@@ -80,20 +80,30 @@
         </mat-hint>
       </mat-form-field>
 
+      <!-- Copilot Mode -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Copilot Mode</mat-label>
+        <mat-select formControlName="copilot_mode">
+          <mat-option *ngFor="let mode of copilotModes" [value]="mode.value">
+            {{ mode.label }}
+          </mat-option>
+        </mat-select>
+        <mat-hint>{{ getCopilotModeDescription() }}</mat-hint>
+      </mat-form-field>
+
+      <!-- Copilot Mode Info -->
+      <div class="mode-info">
+        <mat-icon class="info-icon">info</mat-icon>
+        <p>
+          <strong>Teaching Assistant:</strong> Diagnostics and suggestions only. <strong>Lab Automation Assistant:</strong> Full configuration access.
+        </p>
+      </div>
+
       <!-- Default Configuration Checkbox -->
       <div class="checkbox-section">
         <mat-checkbox formControlName="is_default" color="primary">
           Set as default configuration
         </mat-checkbox>
-      </div>
-
-      <!-- Basic Mode Info -->
-      <div class="mode-info">
-        <mat-icon class="info-icon">info</mat-icon>
-        <p>
-          <strong>Basic Mode</strong> uses optimized presets. Want to customize temperature, context limit, or other parameters?
-          Switch to <strong>Custom Mode</strong> above.
-        </p>
       </div>
     </div>
 
@@ -163,9 +173,13 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Model Provider</mat-label>
-      <input matInput formControlName="provider" placeholder="Auto-filled from preset" [disabled]="isPresetSelected">
+      <mat-select formControlName="provider" [disabled]="isPresetSelected" placeholder="Select provider">
+        <mat-option *ngFor="let provider of supportedProviders" [value]="provider.value">
+          {{ provider.label }}
+        </mat-option>
+      </mat-select>
       <mat-error>Provider is required</mat-error>
-      <mat-hint>Compatible with: openai / anthropic / google / aws / ollama / deepseek / xai, or providers with OpenAI-compatible API</mat-hint>
+      <mat-hint>For providers with OpenAI-compatible API, select "OpenAI" and customize the Base URL below</mat-hint>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
@@ -245,6 +259,10 @@
         <button mat-icon-button (click)="addCustomField()">
           <mat-icon>add_circle</mat-icon>
         </button>
+      </div>
+
+      <div class="section-description">
+        <p class="reserved-field-hint">Reserved field for future use. Additional parameters may be supported in later versions.</p>
       </div>
 
       <div class="custom-fields-list" *ngIf="customFields.length > 0; else emptyCustomFields">

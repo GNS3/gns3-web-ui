@@ -128,6 +128,26 @@ export class AiProfileDialogComponent implements OnInit {
   selectedPreset: ProviderPreset | null = null;
   useCustomModel: boolean = false;
 
+  // Supported providers for Custom Mode
+  supportedProviders = [
+    { value: 'openai', label: 'OpenAI' },
+    { value: 'anthropic', label: 'Anthropic' },
+    { value: 'google', label: 'Google' },
+    { value: 'aws', label: 'AWS Bedrock' },
+    { value: 'ollama', label: 'Ollama' },
+    { value: 'deepseek', label: 'DeepSeek' },
+    { value: 'xai', label: 'xAI' }
+  ];
+
+  // Default base URLs for providers
+  providerDefaultUrls: { [key: string]: string } = {
+    'openai': 'https://api.openai.com/v1',
+    'anthropic': 'https://api.anthropic.com',
+    'google': 'https://generativelanguage.googleapis.com',
+    'deepseek': 'https://api.deepseek.com/v1',
+    'xai': 'https://api.x.ai'
+  };
+
   // Get non-custom presets for Basic Mode
   get basicModePresets(): ProviderPreset[] {
     return this.providerPresets.filter(preset => preset.id !== 'custom');
@@ -190,6 +210,20 @@ export class AiProfileDialogComponent implements OnInit {
       // Try to find matching preset
       this.detectPresetFromConfig();
     }
+
+    // Watch for provider changes to auto-fill base URL in Custom mode
+    this.form.get('provider')?.valueChanges.subscribe(providerValue => {
+      // Only auto-fill in Custom mode (not when using presets)
+      if (this.selectedPresetId === 'custom' && providerValue) {
+        const defaultUrl = this.providerDefaultUrls[providerValue];
+        const baseUrlControl = this.form.get('base_url');
+
+        // Add null check for base_url control
+        if (defaultUrl && baseUrlControl && !baseUrlControl.value) {
+          baseUrlControl.setValue(defaultUrl);
+        }
+      }
+    });
   }
 
   private createForm(): FormGroup {
