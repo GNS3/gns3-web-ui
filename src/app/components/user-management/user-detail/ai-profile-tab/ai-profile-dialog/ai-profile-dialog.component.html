@@ -4,10 +4,105 @@
 
 <mat-dialog-content>
   <form [formGroup]="form" class="config-form">
-    <!-- Basic Configuration Section -->
-    <div class="section-header">
-      <h3>Basic Configuration</h3>
+    <!-- Mode Selector -->
+    <div class="mode-selector">
+      <mat-button-toggle-group [(value)]="configMode" (change)="onModeChange($event.value)">
+        <mat-button-toggle value="basic">
+          <mat-icon>stars</mat-icon>
+          <span>Basic Mode</span>
+        </mat-button-toggle>
+        <mat-button-toggle value="custom">
+          <mat-icon>tune</mat-icon>
+          <span>Custom Mode</span>
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+      <button mat-icon-button matTooltip="Basic Mode: Select preset models | Custom Mode: Full control over all parameters" class="help-icon">
+        <mat-icon>help_outline</mat-icon>
+      </button>
     </div>
+
+    <!-- Basic Mode -->
+    <div *ngIf="configMode === 'basic'" class="basic-mode">
+      <div class="section-header">
+        <h3>Quick Setup</h3>
+      </div>
+
+      <!-- Configuration Name -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Configuration Name</mat-label>
+        <input matInput formControlName="name" placeholder="e.g.: my-gpt4-config">
+        <mat-error *ngIf="hasError('name')">{{ getErrorMessage('name') }}</mat-error>
+        <mat-hint>A name to identify this configuration</mat-hint>
+      </mat-form-field>
+
+      <!-- Provider Preset Selection -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Select LLM Provider</mat-label>
+        <mat-select [value]="selectedPresetId" (selectionChange)="onPresetChange($event.value)">
+          <mat-option *ngFor="let preset of basicModePresets" [value]="preset.id">
+            {{ preset.label }}
+          </mat-option>
+        </mat-select>
+        <mat-hint>Select a preset to auto-configure</mat-hint>
+      </mat-form-field>
+
+      <!-- Model Selection (when preset is selected and not custom) -->
+      <mat-form-field appearance="outline" class="full-width" *ngIf="selectedPreset && selectedPresetId !== 'custom' && !useCustomModel">
+        <mat-label>Model Name</mat-label>
+        <mat-select [value]="form.get('model')?.value" (selectionChange)="onModelChange($event.value)">
+          <mat-option *ngFor="let model of selectedPreset.models" [value]="model">
+            {{ model }}
+          </mat-option>
+        </mat-select>
+        <mat-hint>Select a model from the list</mat-hint>
+      </mat-form-field>
+
+      <!-- Custom Model Input (when Custom preset is selected or "Custom model name..." is chosen) -->
+      <mat-form-field appearance="outline" class="full-width" *ngIf="selectedPresetId === 'custom' || useCustomModel">
+        <mat-label>Model Name</mat-label>
+        <input matInput formControlName="model" placeholder="Enter model name">
+        <mat-error *ngIf="!form.get('model')?.value">Model name is required</mat-error>
+        <mat-hint>Enter your model name (e.g., gpt-4o, claude-3-5-sonnet-20241022)</mat-hint>
+      </mat-form-field>
+
+      <!-- API Key -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>API Key</mat-label>
+        <input matInput formControlName="api_key" type="password" [placeholder]="mode === 'edit' ? 'Leave empty to keep existing key' : ''">
+        <mat-error *ngIf="hasError('api_key')">{{ getErrorMessage('api_key') }}</mat-error>
+        <mat-hint>
+          <ng-container *ngIf="mode === 'edit'">
+            <span class="existing-key-hint">A saved API key exists for this configuration. Leave empty to keep it, or enter a new key to update.</span>
+          </ng-container>
+          <ng-container *ngIf="mode === 'create'">
+            API key will be encrypted on the server. Minimum length: 10 characters
+          </ng-container>
+        </mat-hint>
+      </mat-form-field>
+
+      <!-- Default Configuration Checkbox -->
+      <div class="checkbox-section">
+        <mat-checkbox formControlName="is_default" color="primary">
+          Set as default configuration
+        </mat-checkbox>
+      </div>
+
+      <!-- Basic Mode Info -->
+      <div class="mode-info">
+        <mat-icon class="info-icon">info</mat-icon>
+        <p>
+          <strong>Basic Mode</strong> uses optimized presets. Want to customize temperature, context limit, or other parameters?
+          Switch to <strong>Custom Mode</strong> above.
+        </p>
+      </div>
+    </div>
+
+    <!-- Custom Mode -->
+    <div *ngIf="configMode === 'custom'" class="custom-mode">
+      <!-- Basic Configuration Section -->
+      <div class="section-header">
+        <h3>Basic Configuration</h3>
+      </div>
 
     <!-- Configuration Name -->
     <mat-form-field appearance="outline" class="full-width">
@@ -25,13 +120,15 @@
           {{ type.label }} <span class="option-hint">- {{ type.description }}</span>
         </mat-option>
       </mat-select>
-      <mat-hint>Select the type of model</mat-hint>
+      <mat-hint>
+        <span class="warning-hint">Reserved field. Currently only 'text' model type is supported by the backend. Other options are for future use.</span>
+      </mat-hint>
     </mat-form-field>
 
     <!-- Provider Preset Selection -->
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Select LLM Provider</mat-label>
-      <mat-select (selectionChange)="onPresetChange($event.value)">
+      <mat-select [value]="selectedPresetId" (selectionChange)="onPresetChange($event.value)">
         <mat-option *ngFor="let preset of providerPresets" [value]="preset.id">
           {{ preset.label }}
         </mat-option>
@@ -42,7 +139,7 @@
     <!-- Model Selection (when preset is selected and not custom) -->
     <mat-form-field appearance="outline" class="full-width" *ngIf="selectedPreset && selectedPresetId !== 'custom' && !useCustomModel">
       <mat-label>Model Name</mat-label>
-      <mat-select (selectionChange)="onModelChange($event.value)">
+      <mat-select [value]="form.get('model')?.value" (selectionChange)="onModelChange($event.value)">
         <mat-option *ngFor="let model of selectedPreset.models" [value]="model">
           {{ model }}
         </mat-option>
@@ -68,7 +165,7 @@
       <mat-label>Model Provider</mat-label>
       <input matInput formControlName="provider" placeholder="Auto-filled from preset" [disabled]="isPresetSelected">
       <mat-error>Provider is required</mat-error>
-      <mat-hint>Provider name (e.g., openai, anthropic, deepseek)</mat-hint>
+      <mat-hint>Compatible with: openai / anthropic / google / aws / ollama / deepseek / xai, or providers with OpenAI-compatible API</mat-hint>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
@@ -174,6 +271,7 @@
           <p>No custom fields. Click the + button to add advanced parameters like max_tokens, etc.</p>
         </div>
       </ng-template>
+    </div>
     </div>
   </form>
 </mat-dialog-content>
