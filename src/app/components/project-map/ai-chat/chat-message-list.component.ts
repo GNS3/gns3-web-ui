@@ -26,7 +26,7 @@ import { ThemeService } from '@services/theme.service';
           <!-- User message -->
           <div class="message user-message" *ngIf="message.role === 'user'">
             <div class="message-avatar user-avatar">
-              <mat-icon>person</mat-icon>
+              <span class="avatar-text">Y</span>
             </div>
             <div class="message-content user-content">
               <div class="message-bubble user-bubble">
