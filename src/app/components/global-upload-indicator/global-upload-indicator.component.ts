@@ -1,6 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatButtonModule } from '@angular/material/button';
 import { ImageUploadEvent, ImageUploadSessionService } from '@services/image-upload-session.service';
 
 interface UploadRow extends ImageUploadEvent {
@@ -9,17 +13,19 @@ interface UploadRow extends ImageUploadEvent {
 }
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-global-upload-indicator',
   templateUrl: './global-upload-indicator.component.html',
   styleUrls: ['./global-upload-indicator.component.scss'],
+  imports: [CommonModule, MatIconModule, MatProgressBarModule, MatButtonModule],
 })
 export class GlobalUploadIndicatorComponent implements OnInit, OnDestroy {
+  private imageUploadSessionService = inject(ImageUploadSessionService);
+  private router = inject(Router);
+
   uploads = new Map<string, UploadRow>();
   isExpanded = true;
   private subscription: Subscription;
-
-  constructor(private imageUploadSessionService: ImageUploadSessionService, private router: Router) {}
 
   ngOnInit() {
     this.subscription = this.imageUploadSessionService.events$.subscribe((event: ImageUploadEvent) => {
@@ -49,7 +55,7 @@ export class GlobalUploadIndicatorComponent implements OnInit, OnDestroy {
     this.imageUploadSessionService.requestCancel(tempId);
   }
 
-    navigateToFile(row: UploadRow, event: MouseEvent) {
+  navigateToFile(row: UploadRow, event: MouseEvent) {
     event.stopPropagation();
     if (!row.controller_id) return;
     this.router.navigate(['/controller', row.controller_id, 'image-manager'], {

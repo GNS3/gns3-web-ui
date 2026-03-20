@@ -578,7 +578,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         AiProfileDialogComponent,
         ConfirmDialogComponent,
         GroupAiProfileTabComponent,
-        GlobalUploadIndicatorComponent,
     ],
     imports: [
         BrowserModule,
@@ -598,6 +597,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         IsolateNodeActionComponent,
         UnisolateNodeActionComponent,
         ConsoleDeviceActionComponent,
+        GlobalUploadIndicatorComponent,
         CdkTableModule,
         CartographyModule,
         FileUploadModule,
