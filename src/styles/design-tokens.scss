@@ -1,0 +1,333 @@
+/**
+ * GNS3 Design Tokens
+ *
+ * Central design system tokens that can be used across the application.
+ * These tokens are based on Material Design 3 principles and GNS3 brand guidelines.
+ *
+ * Usage:
+ *   @import 'design-tokens';
+ *   .my-component {
+ *     padding: var(--gns3-spacing-md);
+ *     border-radius: var(--gns3-radius-lg);
+ *   }
+ */
+
+:root {
+  // =============================================
+  // Color Tokens
+  // =============================================
+
+  // Primary Brand Colors
+  --gns3-primary: #0097a7;
+  --gns3-primary-light: #00bcd4;
+  --gns3-primary-dark: #006064;
+
+  // Secondary Brand Colors
+  --gns3-secondary: #263238;
+  --gns3-secondary-light: #37474f;
+  --gns3-secondary-dark: #102027;
+
+  // Background Colors
+  --gns3-bg-dark: #20313b;
+  --gns3-bg-dark-elevated: #263238;
+  --gns3-bg-light: #e8ecef;
+  --gns3-bg-light-elevated: #ffffff;
+
+  // Surface Colors
+  --gns3-surface-dark: #263238;
+  --gns3-surface-dark-variant: #37474f;
+  --gns3-surface-light: #ffffff;
+  --gns3-surface-light-variant: #f5f5f5;
+
+  // Text Colors
+  --gns3-text-dark-high: rgba(255, 255, 255, 0.87);
+  --gns3-text-dark-medium: rgba(255, 255, 255, 0.60);
+  --gns3-text-dark-disabled: rgba(255, 255, 255, 0.38);
+  --gns3-text-light-high: rgba(0, 0, 0, 0.87);
+  --gns3-text-light-medium: rgba(0, 0, 0, 0.60);
+  --gns3-text-light-disabled: rgba(0, 0, 0, 0.38);
+
+  // Semantic Colors
+  --gns3-color-success: #4caf50;
+  --gns3-color-warning: #ff9800;
+  --gns3-color-error: #f44336;
+  --gns3-color-info: #2196f3;
+
+  // =============================================
+  // Typography Tokens
+  // =============================================
+
+  // Font Families
+  --gns3-font-family-base: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --gns3-font-family-mono: 'Courier New', 'Roboto Mono', monospace;
+
+  // Font Sizes (px)
+  --gns3-font-size-xs: 12px;
+  --gns3-font-size-sm: 14px;
+  --gns3-font-size-base: 16px;
+  --gns3-font-size-lg: 18px;
+  --gns3-font-size-xl: 20px;
+  --gns3-font-size-2xl: 24px;
+  --gns3-font-size-3xl: 30px;
+  --gns3-font-size-4xl: 36px;
+
+  // Font Weights
+  --gns3-font-weight-light: 300;
+  --gns3-font-weight-normal: 400;
+  --gns3-font-weight-medium: 500;
+  --gns3-font-weight-semibold: 600;
+  --gns3-font-weight-bold: 700;
+
+  // Line Heights
+  --gns3-line-height-tight: 1.25;
+  --gns3-line-height-normal: 1.5;
+  --gns3-line-height-relaxed: 1.75;
+
+  // Letter Spacing
+  --gns3-letter-spacing-tight: -0.025em;
+  --gns3-letter-spacing-normal: 0;
+  --gns3-letter-spacing-wide: 0.025em;
+
+  // =============================================
+  // Spacing Tokens (4px base unit)
+  // =============================================
+
+  --gns3-spacing-0: 0;
+  --gns3-spacing-px: 1px;
+  --gns3-spacing-0_5: 2px;
+  --gns3-spacing-1: 4px;
+  --gns3-spacing-2: 8px;
+  --gns3-spacing-3: 12px;
+  --gns3-spacing-4: 16px;
+  --gns3-spacing-5: 20px;
+  --gns3-spacing-6: 24px;
+  --gns3-spacing-8: 32px;
+  --gns3-spacing-10: 40px;
+  --gns3-spacing-12: 48px;
+  --gns3-spacing-16: 64px;
+  --gns3-spacing-20: 80px;
+  --gns3-spacing-24: 96px;
+
+  // Semantic spacing aliases
+  --gns3-spacing-xs: var(--gns3-spacing-1);
+  --gns3-spacing-sm: var(--gns3-spacing-2);
+  --gns3-spacing-md: var(--gns3-spacing-3);
+  --gns3-spacing-lg: var(--gns3-spacing-4);
+  --gns3-spacing-xl: var(--gns3-spacing-6);
+  --gns3-spacing-2xl: var(--gns3-spacing-8);
+  --gns3-spacing-3xl: var(--gns3-spacing-12);
+
+  // =============================================
+  // Border Radius Tokens
+  // =============================================
+
+  --gns3-radius-none: 0;
+  --gns3-radius-xs: 2px;
+  --gns3-radius-sm: 4px;
+  --gns3-radius-md: 8px;
+  --gns3-radius-lg: 12px;
+  --gns3-radius-xl: 16px;
+  --gns3-radius-2xl: 24px;
+  --gns3-radius-3xl: 32px;
+  --gns3-radius-full: 9999px;
+
+  // =============================================
+  // Shadow Tokens
+  // =============================================
+
+  --gns3-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --gns3-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --gns3-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --gns3-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --gns3-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --gns3-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --gns3-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+
+  // Colored shadows
+  --gns3-shadow-primary: 0 4px 14px 0 rgba(0, 151, 167, 0.39);
+  --gns3-shadow-error: 0 4px 14px 0 rgba(244, 67, 54, 0.39);
+
+  // =============================================
+  // Layout Tokens
+  // =============================================
+
+  // Container widths
+  --gns3-container-sm: 640px;
+  --gns3-container-md: 768px;
+  --gns3-container-lg: 1024px;
+  --gns3-container-xl: 1280px;
+  --gns3-container-2xl: 1536px;
+
+  // Toolbar
+  --gns3-toolbar-height: 60px;
+  --gns3-toolbar-height-mobile: 56px;
+  --gns3-toolbar-padding: 20px;
+
+  // Sidebar
+  --gns3-sidebar-width: 280px;
+  --gns3-sidebar-width-collapsed: 72px;
+
+  // Header
+  --gns3-header-height: 48px;
+  --gns3-header-height-mobile: 56px;
+
+  // Footer
+  --gns3-footer-height: 56px;
+
+  // =============================================
+  // Z-Index Scale
+  // =============================================
+
+  --gns3-z-dropdown: 1000;
+  --gns3-z-sticky: 1020;
+  --gns3-z-fixed: 1030;
+  --gns3-z-modal-backdrop: 1040;
+  --gns3-z-modal: 1050;
+  --gns3-z-popover: 1060;
+  --gns3-z-tooltip: 1070;
+  --gns3-z-notification: 1080;
+  --gns3-z-critical: 9999;
+
+  // =============================================
+  // Animation Tokens
+  // =============================================
+
+  // Durations
+  --gns3-duration-instant: 50ms;
+  --gns3-duration-fast: 150ms;
+  --gns3-duration-normal: 300ms;
+  --gns3-duration-slow: 500ms;
+  --gns3-duration-slower: 750ms;
+
+  // Easing functions
+  --gns3-easing-linear: linear;
+  --gns3-easing-ease: ease;
+  --gns3-easing-ease-in: ease-in;
+  --gns3-easing-ease-out: ease-out;
+  --gns3-easing-ease-in-out: ease-in-out;
+  --gns3-easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --gns3-easing-in: cubic-bezier(0.4, 0, 1, 1);
+  --gns3-easing-out: cubic-bezier(0, 0, 0.2, 1);
+  --gns3-easing-in-out: cubic-bezier(0.4, 0, 0.6, 1);
+  --gns3-easing-sharp: cubic-bezier(0.4, 0, 0.6, 1);
+
+  // =============================================
+  // Breakpoint Tokens
+  // =============================================
+
+  --gns3-breakpoint-xs: 0;
+  --gns3-breakpoint-sm: 600px;
+  --gns3-breakpoint-md: 960px;
+  --gns3-breakpoint-lg: 1280px;
+  --gns3-breakpoint-xl: 1920px;
+
+  // =============================================
+  // Component-Specific Tokens
+  // =============================================
+
+  // AI Chat
+  --gns3-ai-chat-sidebar-width: 280px;
+  --gns3-ai-chat-sidebar-collapsed-width: 48px;
+  --gns3-ai-chat-header-height: 48px;
+  --gns3-ai-chat-button-size: 40px;
+  --gns3-ai-chat-icon-size: 20px;
+  --gns3-ai-chat-minimized-size: 56px;
+
+  // Buttons
+  --gns3-button-height: 36px;
+  --gns3-button-height-small: 32px;
+  --gns3-button-height-large: 40px;
+  --gns3-button-icon-size: 18px;
+  --gns3-button-padding-horizontal: 16px;
+
+  // Inputs
+  --gns3-input-height: 56px;
+  --gns3-input-height-small: 40px;
+  --gns3-input-padding-horizontal: 16px;
+
+  // Cards
+  --gns3-card-padding: 16px;
+  --gns3-card-border-radius: 8px;
+
+  // Dialogs
+  --gns3-dialog-max-width-sm: 400px;
+  --gns3-dialog-max-width-md: 600px;
+  --gns3-dialog-max-width-lg: 800px;
+  --gns3-dialog-padding: 24px;
+}
+
+// =============================================
+// Light Theme Overrides
+// =============================================
+
+.theme-light {
+  --gns3-bg-dark: #ffffff;
+  --gns3-bg-dark-elevated: #f5f5f5;
+  --gns3-surface-dark: #ffffff;
+  --gns3-surface-dark-variant: #e0e0e0;
+
+  // Update text colors for light theme
+  --gns3-text-dark-high: var(--gns3-text-light-high);
+  --gns3-text-dark-medium: var(--gns3-text-light-medium);
+  --gns3-text-dark-disabled: var(--gns3-text-light-disabled);
+}
+
+// =============================================
+// Mixins (if needed in component styles)
+// =============================================
+
+@mixin gns3-button-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--gns3-button-height);
+  padding: 0 var(--gns3-button-padding-horizontal);
+  border-radius: var(--gns3-radius-md);
+  font-weight: var(--gns3-font-weight-medium);
+  font-size: var(--gns3-font-size-sm);
+  transition: all var(--gns3-duration-normal) var(--gns3-easing-default);
+  cursor: pointer;
+  border: none;
+  outline: none;
+
+  &:focus-visible {
+    outline: 2px solid var(--gns3-primary);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+@mixin gns3-card-base {
+  background-color: var(--mat-app-surface-color);
+  border-radius: var(--gns3-card-border-radius);
+  padding: var(--gns3-card-padding);
+  box-shadow: var(--gns3-shadow-sm);
+  transition: box-shadow var(--gns3-duration-normal) var(--gns3-easing-default);
+
+  &:hover {
+    box-shadow: var(--gns3-shadow-md);
+  }
+}
+
+@mixin gns3-input-base {
+  height: var(--gns3-input-height);
+  padding: 0 var(--gns3-input-padding-horizontal);
+  border: 1px solid var(--mat-app-outline-color);
+  border-radius: var(--gns3-radius-md);
+  font-size: var(--gns3-font-size-base);
+  transition: border-color var(--gns3-duration-fast) var(--gns3-easing-default);
+
+  &:focus {
+    border-color: var(--gns3-primary);
+    outline: none;
+  }
+
+  &:disabled {
+    background-color: var(--mat-app-surface-variant-color);
+    cursor: not-allowed;
+  }
+}

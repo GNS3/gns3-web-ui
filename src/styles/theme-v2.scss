@@ -1,0 +1,443 @@
+/**
+ * GNS3 Web UI - Angular Material 14+ Theme System
+ *
+ * This file implements the new Angular Material theming system using:
+ * - MDC Web components
+ * - CSS Custom Properties (CSS Variables)
+ * - mat.define-theme() API
+ *
+ * Migration from: src/theme.scss (legacy system)
+ * Author: Frontend Team
+ * Created: 2026-03-20
+ */
+
+@use '@angular/material' as mat;
+@use '@angular/material/core' as mat-core;
+
+// =============================================
+// 1. Define GNS3 Themes
+// =============================================
+
+/**
+ * Dark Theme (Default)
+ * Matches GNS3's traditional dark color scheme
+ */
+$gns3-dark-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: dark,
+      primary: mat.$cyan-palette,
+      tertiary: mat.$blue-grey-palette,
+      primary-tone: 700, // GNS3 cyan #0097a7
+    ),
+    density: 0,
+    typography: (
+      brand-family: 'Roboto',
+      bold-weight: 500,
+      medium-weight: 400,
+      regular-weight: 400,
+    ),
+  )
+);
+
+/**
+ * Light Theme
+ * For users who prefer a light interface
+ */
+$gns3-light-theme: mat.define-theme(
+  (
+    color: (
+      theme-type: light,
+      primary: mat.$cyan-palette,
+      tertiary: mat.$blue-grey-palette,
+      primary-tone: 700,
+    ),
+    density: 0,
+    typography: (
+      brand-family: 'Roboto',
+      bold-weight: 500,
+    ),
+  )
+);
+
+// =============================================
+// 2. Apply Default Theme (Dark)
+// =============================================
+
+:root {
+  // Apply Material Design theme to all components
+  @include mat.all-component-themes($gns3-dark-theme);
+
+  // =============================================
+  // 3. GNS3 Custom Design Tokens
+  // =============================================
+
+  // Brand Colors
+  --gns3-cyan: #0097a7;
+  --gns3-cyan-light: #00bcd4;
+  --gns3-cyan-dark: #006064;
+  --gns3-dark-bg: #20313b;
+  --gns3-light-bg: #e8ecef;
+  --gns3-surface: #263238;
+
+  // Spacing Scale (4px base unit)
+  --gns3-spacing-xs: 4px;
+  --gns3-spacing-sm: 8px;
+  --gns3-spacing-md: 12px;
+  --gns3-spacing-lg: 16px;
+  --gns3-spacing-xl: 24px;
+  --gns3-spacing-2xl: 32px;
+  --gns3-spacing-3xl: 48px;
+
+  // Border Radius Scale
+  --gns3-radius-xs: 2px;
+  --gns3-radius-sm: 4px;
+  --gns3-radius-md: 8px;
+  --gns3-radius-lg: 12px;
+  --gns3-radius-xl: 16px;
+  --gns3-radius-full: 9999px;
+
+  // Layout Dimensions
+  --gns3-toolbar-height: 60px;
+  --gns3-toolbar-padding: 20px;
+  --gns3-sidebar-width: 280px;
+  --gns3-header-height: 48px;
+  --gns3-footer-height: 56px;
+
+  // Z-index Scale
+  --gns3-z-dropdown: 1000;
+  --gns3-z-sticky: 1020;
+  --gns3-z-fixed: 1030;
+  --gns3-z-modal-backdrop: 1040;
+  --gns3-z-modal: 1050;
+  --gns3-z-popover: 1060;
+  --gns3-z-tooltip: 1070;
+  --gns3-z-notification: 1080;
+
+  // Animation Durations
+  --gns3-duration-fast: 150ms;
+  --gns3-duration-normal: 300ms;
+  --gns3-duration-slow: 500ms;
+
+  // Animation Easing
+  --gns3-easing-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --gns3-easing-in: cubic-bezier(0.4, 0, 1, 1);
+  --gns3-easing-out: cubic-bezier(0, 0, 0.2, 1);
+  --gns3-easing-in-out: cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+// =============================================
+// 4. Light Theme Override
+// =============================================
+
+.theme-light {
+  @include mat.all-component-themes($gns3-light-theme);
+
+  // Override custom tokens for light theme
+  --gns3-dark-bg: #ffffff;
+  --gns3-light-bg: #f5f5f5;
+  --gns3-surface: #ffffff;
+}
+
+// =============================================
+// 5. Global Style Overrides
+// =============================================
+
+// Custom Scrollbar Styles
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--mat-app-background-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--mat-app-outline-variant-color);
+  border-radius: 4px;
+
+  &:hover {
+    background: var(--mat-app-primary-color);
+  }
+}
+
+// Firefox Scrollbar
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--mat-app-outline-variant-color)
+               var(--mat-app-background-color);
+}
+
+// Markdown Content Styles
+app-chat-message-list,
+markdown,
+.markdown {
+  color: var(--mat-app-text-color);
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--mat-app-on-surface-color);
+    margin-top: var(--gns3-spacing-md);
+    margin-bottom: var(--gns3-spacing-sm);
+  }
+
+  p {
+    margin: var(--gns3-spacing-xs) 0;
+    line-height: 1.6;
+  }
+
+  ul,
+  ol {
+    margin: var(--gns3-spacing-xs) 0;
+    padding-left: var(--gns3-spacing-lg);
+  }
+
+  li {
+    margin: var(--gns3-spacing-xs) 0;
+  }
+
+  code {
+    background-color: var(--mat-app-surface-variant-color);
+    color: var(--mat-app-text-color);
+    padding: 2px 6px;
+    border-radius: var(--gns3-radius-xs);
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+  }
+
+  pre {
+    background-color: var(--mat-app-surface-variant-color);
+    padding: var(--gns3-spacing-md);
+    border-radius: var(--gns3-radius-md);
+    overflow-x: auto;
+    margin: var(--gns3-spacing-md) 0;
+
+    code {
+      background-color: transparent;
+      padding: 0;
+    }
+  }
+
+  a {
+    color: var(--mat-app-primary-color);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  blockquote {
+    border-left: 4px solid var(--mat-app-primary-color);
+    padding-left: var(--gns3-spacing-md);
+    margin: var(--gns3-spacing-md) 0;
+    color: var(--mat-app-on-surface-variant-color);
+  }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: var(--gns3-spacing-md) 0;
+
+    th,
+    td {
+      border: 1px solid var(--mat-app-outline-variant-color);
+      padding: var(--gns3-spacing-sm);
+    }
+
+    th {
+      background-color: var(--mat-app-surface-container-low-color);
+      font-weight: 500;
+    }
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+// =============================================
+// 6. Utility Classes
+// =============================================
+
+// Text Utilities
+.text-primary {
+  color: var(--mat-app-primary-color) !important;
+}
+
+.text-secondary {
+  color: var(--mat-app-on-surface-variant-color) !important;
+}
+
+.text-error {
+  color: var(--mat-app-error-color) !important;
+}
+
+.text-success {
+  color: var(--mat-app-tertiary-color) !important;
+}
+
+// Background Utilities
+.bg-primary {
+  background-color: var(--mat-app-primary-color) !important;
+}
+
+.bg-surface {
+  background-color: var(--mat-app-surface-color) !important;
+}
+
+.bg-error {
+  background-color: var(--mat-app-error-color) !important;
+}
+
+// Spacing Utilities
+.mt-xs {
+  margin-top: var(--gns3-spacing-xs) !important;
+}
+
+.mt-sm {
+  margin-top: var(--gns3-spacing-sm) !important;
+}
+
+.mt-md {
+  margin-top: var(--gns3-spacing-md) !important;
+}
+
+.mt-lg {
+  margin-top: var(--gns3-spacing-lg) !important;
+}
+
+.mb-xs {
+  margin-bottom: var(--gns3-spacing-xs) !important;
+}
+
+.mb-sm {
+  margin-bottom: var(--gns3-spacing-sm) !important;
+}
+
+.mb-md {
+  margin-bottom: var(--gns3-spacing-md) !important;
+}
+
+.mb-lg {
+  margin-bottom: var(--gns3-spacing-lg) !important;
+}
+
+.p-xs {
+  padding: var(--gns3-spacing-xs) !important;
+}
+
+.p-sm {
+  padding: var(--gns3-spacing-sm) !important;
+}
+
+.p-md {
+  padding: var(--gns3-spacing-md) !important;
+}
+
+.p-lg {
+  padding: var(--gns3-spacing-lg) !important;
+}
+
+// Border Radius Utilities
+.rounded-sm {
+  border-radius: var(--gns3-radius-sm) !important;
+}
+
+.rounded-md {
+  border-radius: var(--gns3-radius-md) !important;
+}
+
+.rounded-lg {
+  border-radius: var(--gns3-radius-lg) !important;
+}
+
+.rounded-full {
+  border-radius: var(--gns3-radius-full) !important;
+}
+
+// Shadow Utilities
+.shadow-sm {
+  box-shadow: var(--mdc-elevated-card-container-elevation) !important;
+}
+
+.shadow-md {
+  box-shadow: var(--mdc-elevated-card-container-elevation) !important;
+}
+
+.shadow-lg {
+  box-shadow: var(--mdc-elevated-card-container-elevation) !important;
+}
+
+// =============================================
+// 7. Component-Specific Overrides
+// =============================================
+
+// AI Chat specific styles
+.ai-chat-container {
+  // Ensure AI Chat uses Material variables
+  background-color: var(--mat-app-surface-container-low-color);
+  color: var(--mat-app-on-surface-color);
+}
+
+// Project Map specific styles
+.project-map {
+  background-color: var(--mat-app-background-color);
+
+  .label {
+    fill: var(--mat-app-on-surface-color);
+  }
+}
+
+// =============================================
+// 8. Print Styles
+// =============================================
+
+@media print {
+  // Use light theme for better print quality
+  :root {
+    @include mat.all-component-themes($gns3-light-theme);
+  }
+
+  // Hide non-essential elements
+  .no-print,
+  .mat-toolbar,
+  .mat-sidenav {
+    display: none !important;
+  }
+}
+
+// =============================================
+// 9. Accessibility Improvements
+// =============================================
+
+// Focus Styles
+*:focus-visible {
+  outline: 2px solid var(--mat-app-primary-color);
+  outline-offset: 2px;
+}
+
+// Reduced Motion
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+// High Contrast Mode
+@media (prefers-contrast: high) {
+  :root {
+    --mat-app-outline-color: #ffffff;
+    --mat-app-outline-variant-color: #ffffff;
+  }
+}

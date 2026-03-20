@@ -49,10 +49,17 @@
                         "styles": [
                             "node_modules/bootstrap/dist/css/bootstrap.min.css",
                             "node_modules/notosans-fontface/css/notosans-fontface.min.css",
-                            "src/styles.scss",
                             "src/theme.scss",
+                            "src/styles/theme-v2.scss",
+                            "src/styles/design-tokens.scss",
+                            "src/styles.scss",
                             "src/tailwind-markdown.scss"
                         ],
+                        "stylePreprocessorOptions": {
+                            "includePaths": [
+                                "src/styles"
+                            ]
+                        },
                         "scripts": [],
                         "vendorChunk": true,
                         "extractLicenses": false,
