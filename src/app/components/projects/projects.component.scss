@@ -1,13 +1,20 @@
+/**
+ * GNS3 Projects Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .import-button {
-  height: 40px;
+  height: var(--gns3-spacing-lg, 40px);
   width: 160px;
-  margin: 20px 0 20px 20px;
+  margin: var(--gns3-spacing-md, 20px) 0 var(--gns3-spacing-md, 20px) var(--gns3-spacing-md, 20px);
 }
 
 .add-button {
-  height: 40px;
+  height: var(--gns3-spacing-lg, 40px);
   width: 160px;
-  margin: 20px 0 20px 20px;
+  margin: var(--gns3-spacing-md, 20px) 0 var(--gns3-spacing-md, 20px) var(--gns3-spacing-md, 20px);
 }
 
 .full-width {
@@ -22,6 +29,7 @@
   align-items: center;
   flex-wrap: wrap;
 }
+
 table {
   width: 100%;
 }
@@ -30,7 +38,7 @@ table {
 //   justify-content: center;
 // }
 
-.action{
+.action {
   justify-content: center;
 }
 
@@ -67,7 +75,7 @@ table {
   .row {
     align-items: stretch;
     flex-direction: column;
-    gap: 10px;
+    gap: var(--gns3-spacing-sm, 10px);
   }
 
   .row h1 {
@@ -86,11 +94,11 @@ table {
 }
 
 .table-link {
-  transition: transform 0.2s ease;
+  transition: transform var(--gns3-duration-fast, 0.2s) ease;
   display: inline-block;
   transform-origin: left center;
-  padding: 2px 4px;
-  margin: -2px -4px;
+  padding: var(--gns3-spacing-xs, 2px) var(--gns3-spacing-xs, 4px);
+  margin: calc(var(--gns3-spacing-xs, 2px) * -1) calc(var(--gns3-spacing-xs, 4px) * -1);
 }
 
 .table-link:hover {
@@ -99,7 +107,7 @@ table {
 
 /* Table action buttons hover effect */
 mat-cell .mat-icon-button {
-  transition: transform 0.2s ease;
+  transition: transform var(--gns3-duration-fast, 0.2s) ease;
 }
 
 mat-cell .mat-icon-button:hover {
