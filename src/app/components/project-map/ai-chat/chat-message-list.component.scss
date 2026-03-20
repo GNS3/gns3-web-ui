@@ -11,7 +11,7 @@
   padding: var(--gns3-spacing-lg);
   background-color: var(--mat-app-background-color);
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--mat-app-primary-color) / 0.3, transparent) transparent;
+  scrollbar-color: rgba(0, 151, 167, 0.3) transparent;
 }
 
 /* Enhanced WebKit scrollbar styling */
@@ -27,8 +27,8 @@
 .chat-message-list::-webkit-scrollbar-thumb {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--mat-app-primary-color) / 0.4, transparent),
-    color-mix(in srgb, var(--mat-app-primary-light) / 0.3, transparent)
+    rgba(0, 151, 167, 0.4),
+    rgba(0, 188, 212, 0.3)
   );
   border-radius: var(--gns3-radius-full);
   border: 2px solid transparent;
@@ -39,18 +39,18 @@
 .chat-message-list::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--mat-app-primary-color) / 0.6, transparent),
-    color-mix(in srgb, var(--mat-app-primary-light) / 0.5, transparent)
+    rgba(0, 151, 167, 0.6),
+    rgba(0, 188, 212, 0.5)
   );
   background-clip: padding-box;
-  border: 2px solid color-mix(in srgb, var(--mat-app-primary-color) / 0.1, transparent);
+  border: 2px solid rgba(0, 151, 167, 0.1);
 }
 
 .chat-message-list::-webkit-scrollbar-thumb:active {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--mat-app-primary-color) / 0.8, transparent),
-    color-mix(in srgb, var(--mat-app-primary-light) / 0.7, transparent)
+    rgba(0, 151, 167, 0.8),
+    rgba(0, 188, 212, 0.7)
   );
   background-clip: padding-box;
 }
@@ -150,7 +150,7 @@
   background: linear-gradient(135deg, var(--mat-app-primary-color), #7c4dff);
   color: var(--mat-app-on-primary-color);
   border-bottom-right-radius: var(--gns3-radius-sm);
-  box-shadow: 0 2px 8px color-mix(in srgb, #7c4dff / 0.3, transparent);
+  box-shadow: 0 2px 8px rgba(124, 77, 255, 0.3);
   position: relative;
   overflow: hidden;
 
@@ -165,7 +165,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--mat-app-on-primary-color) / 0.1, transparent),
+      rgba(255, 255, 255, 0.1),
       transparent
     );
     transition: left var(--gns3-duration-slow) var(--gns3-easing-default);
@@ -185,7 +185,7 @@
   color: var(--mat-app-on-surface-color);
   border-bottom-left-radius: var(--gns3-radius-sm);
   box-shadow: var(--gns3-shadow-sm);
-  border: 1px solid color-mix(in srgb, var(--mat-app-primary-color) / 0.1, transparent);
+  border: 1px solid rgba(0, 151, 167, 0.1);
   position: relative;
   overflow: hidden;
 
@@ -200,7 +200,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      color-mix(in srgb, var(--mat-app-primary-color) / 0.5, transparent),
+      rgba(0, 151, 167, 0.5),
       transparent
     );
     opacity: 0;
@@ -240,8 +240,8 @@
 .system-bubble {
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--gns3-color-warning) / 0.1, transparent),
-    color-mix(in srgb, var(--gns3-color-warning) / 0.1, transparent)
+    rgba(255, 152, 0, 0.1),
+    rgba(255, 152, 0, 0.1)
   );
   color: var(--mat-app-on-surface-variant-color);
   text-align: center;
@@ -249,7 +249,7 @@
   padding: var(--gns3-spacing-sm) var(--gns3-spacing-lg);
   border-radius: var(--gns3-radius-xl);
   margin: 0 auto;
-  border: 1px solid color-mix(in srgb, var(--gns3-color-warning) / 0.3, transparent);
+  border: 1px solid rgba(255, 152, 0, 0.3);
 }
 
 .error-bubble {
@@ -275,7 +275,7 @@
 }
 
 .message-text code {
-  background-color: color-mix(in srgb, var(--mat-app-on-surface-color) / 0.1, transparent);
+  background-color: rgba(255, 255, 255, 0.1);
   padding: 2px 6px;
   border-radius: var(--gns3-radius-sm);
   font-family: var(--gns3-font-family-mono);
@@ -283,7 +283,7 @@
 }
 
 .message-text pre {
-  background-color: color-mix(in srgb, var(--mat-app-on-surface-color) / 0.05, transparent);
+  background-color: rgba(255, 255, 255, 0.05);
   padding: var(--gns3-spacing-sm);
   border-radius: var(--gns3-radius-sm);
   overflow-x: auto;
@@ -359,10 +359,10 @@
 }
 
 .inline-tool-call:hover {
-  background: color-mix(in srgb, #0ea5e9 / 0.08, transparent);
+  background: rgba(14, 165, 233, 0.08);
   border-color: #0ea5e9;
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px color-mix(in srgb, #0ea5e9 / 0.15, transparent);
+  box-shadow: 0 3px 10px rgba(14, 165, 233, 0.15);
 }
 
 /* Tool result specific styles - green theme */
@@ -371,10 +371,10 @@
 }
 
 .inline-tool-result:hover {
-  background: color-mix(in srgb, var(--gns3-color-success) / 0.08, transparent);
+  background: rgba(76, 175, 80, 0.08);
   border-color: var(--gns3-color-success);
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px color-mix(in srgb, var(--gns3-color-success) / 0.15, transparent);
+  box-shadow: 0 3px 10px rgba(76, 175, 80, 0.15);
 }
 
 .inline-tool-call .tool-icon {
@@ -429,8 +429,8 @@
   margin: 0 auto var(--gns3-spacing-xl);
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, #6366f1 / 0.1, transparent),
-    color-mix(in srgb, #3f51b5 / 0.1, transparent)
+    rgba(99, 102, 241, 0.1),
+    rgba(63, 81, 181, 0.1)
   );
   border-radius: 50%;
   animation: pulse 2s ease-in-out infinite;
@@ -564,7 +564,7 @@
 }
 
 .light-theme .message-text pre {
-  background-color: color-mix(in srgb, var(--mat-app-on-surface-color) / 0.05, transparent);
+  background-color: rgba(255, 255, 255, 0.05);
   color: var(--gns3-text-light-high);
 }
 

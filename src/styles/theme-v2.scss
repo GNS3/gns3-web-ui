@@ -1,77 +1,77 @@
 /**
- * GNS3 Web UI - Angular Material 14+ Theme System
+ * GNS3 Web UI - Angular Material 14 Theme System
  *
- * This file implements the new Angular Material theming system using:
+ * This file implements the theme system using Angular 14 compatible APIs:
  * - MDC Web components
  * - CSS Custom Properties (CSS Variables)
- * - mat.define-theme() API
+ * - Legacy mat-palette and mat-theme APIs
  *
  * Migration from: src/theme.scss (legacy system)
  * Author: Frontend Team
  * Created: 2026-03-20
  */
 
-@use '@angular/material' as mat;
-@use '@angular/material/core' as mat-core;
+@import '@angular/material/theming';
 
 // =============================================
-// 1. Define GNS3 Themes
+// 1. Define GNS3 Themes (Angular 14 compatible)
 // =============================================
 
-/**
- * Dark Theme (Default)
- * Matches GNS3's traditional dark color scheme
- */
-$gns3-dark-theme: mat.define-theme(
-  (
-    color: (
-      theme-type: dark,
-      primary: mat.$cyan-palette,
-      tertiary: mat.$blue-grey-palette,
-      primary-tone: 700, // GNS3 cyan #0097a7
-    ),
-    density: 0,
-    typography: (
-      brand-family: 'Roboto',
-      bold-weight: 500,
-      medium-weight: 400,
-      regular-weight: 400,
-    ),
-  )
-);
+// Define custom palettes
+$gns3-primary: mat-palette($mat-cyan, 700, 500, 900);
+$gns3-accent: mat-palette($mat-blue-grey, A200, A100, A700);
+$gns3-warn: mat-palette($mat-red, 700);
 
-/**
- * Light Theme
- * For users who prefer a light interface
- */
-$gns3-light-theme: mat.define-theme(
-  (
-    color: (
-      theme-type: light,
-      primary: mat.$cyan-palette,
-      tertiary: mat.$blue-grey-palette,
-      primary-tone: 700,
-    ),
-    density: 0,
-    typography: (
-      brand-family: 'Roboto',
-      bold-weight: 500,
-    ),
-  )
-);
+// Dark theme
+$gns3-dark-theme: mat-dark-theme($gns3-primary, $gns3-accent, $gns3-warn);
+
+// Light theme
+$gns3-light-theme: mat-light-theme($gns3-primary, $gns3-accent, $gns3-warn);
 
 // =============================================
 // 2. Apply Default Theme (Dark)
 // =============================================
 
+// Include all component themes
+@include mat-core-theme($gns3-dark-theme);
+@include mat-autocomplete-theme($gns3-dark-theme);
+@include mat-badge-theme($gns3-dark-theme);
+@include mat-bottom-sheet-theme($gns3-dark-theme);
+@include mat-button-theme($gns3-dark-theme);
+@include mat-button-toggle-theme($gns3-dark-theme);
+@include mat-card-theme($gns3-dark-theme);
+@include mat-checkbox-theme($gns3-dark-theme);
+@include mat-chips-theme($gns3-dark-theme);
+@include mat-table-theme($gns3-dark-theme);
+@include mat-datepicker-theme($gns3-dark-theme);
+@include mat-dialog-theme($gns3-dark-theme);
+@include mat-divider-theme($gns3-dark-theme);
+@include mat-expansion-panel-theme($gns3-dark-theme);
+@include mat-form-field-theme($gns3-dark-theme);
+@include mat-grid-list-theme($gns3-dark-theme);
+@include mat-icon-theme($gns3-dark-theme);
+@include mat-input-theme($gns3-dark-theme);
+@include mat-list-theme($gns3-dark-theme);
+@include mat-menu-theme($gns3-dark-theme);
+@include mat-paginator-theme($gns3-dark-theme);
+@include mat-progress-bar-theme($gns3-dark-theme);
+@include mat-progress-spinner-theme($gns3-dark-theme);
+@include mat-radio-theme($gns3-dark-theme);
+@include mat-select-theme($gns3-dark-theme);
+@include mat-sidenav-theme($gns3-dark-theme);
+@include mat-slide-toggle-theme($gns3-dark-theme);
+@include mat-slider-theme($gns3-dark-theme);
+@include mat-stepper-theme($gns3-dark-theme);
+@include mat-tabs-theme($gns3-dark-theme);
+@include mat-toolbar-theme($gns3-dark-theme);
+@include mat-tooltip-theme($gns3-dark-theme);
+@include mat-snack-bar-theme($gns3-dark-theme);
+
+// =============================================
+// 3. GNS3 Custom Design Tokens
+// =============================================
+
 :root {
-  // Apply Material Design theme to all components
-  @include mat.all-component-themes($gns3-dark-theme);
-
-  // =============================================
-  // 3. GNS3 Custom Design Tokens
-  // =============================================
-
   // Brand Colors
   --gns3-cyan: #0097a7;
   --gns3-cyan-light: #00bcd4;
@@ -124,14 +124,56 @@ $gns3-light-theme: mat.define-theme(
   --gns3-easing-in: cubic-bezier(0.4, 0, 1, 1);
   --gns3-easing-out: cubic-bezier(0, 0, 0.2, 1);
   --gns3-easing-in-out: cubic-bezier(0.4, 0, 0.6, 1);
+
+  // Component-specific tokens
+  --gns3-ai-chat-sidebar-width: 280px;
+  --gns3-ai-chat-sidebar-collapsed-width: 48px;
+  --gns3-ai-chat-header-height: 48px;
+  --gns3-ai-chat-button-size: 40px;
+  --gns3-ai-chat-icon-size: 20px;
+  --gns3-ai-chat-minimized-size: 56px;
 }
 
 // =============================================
 // 4. Light Theme Override
 // =============================================
 
-.theme-light {
-  @include mat.all-component-themes($gns3-light-theme);
+.theme-light,
+.light-theme {
+  // Include all component themes for light theme
+  @include mat-core-theme($gns3-light-theme);
+  @include mat-autocomplete-theme($gns3-light-theme);
+  @include mat-badge-theme($gns3-light-theme);
+  @include mat-bottom-sheet-theme($gns3-light-theme);
+  @include mat-button-theme($gns3-light-theme);
+  @include mat-button-toggle-theme($gns3-light-theme);
+  @include mat-card-theme($gns3-light-theme);
+  @include mat-checkbox-theme($gns3-light-theme);
+  @include mat-chips-theme($gns3-light-theme);
+  @include mat-table-theme($gns3-light-theme);
+  @include mat-datepicker-theme($gns3-light-theme);
+  @include mat-dialog-theme($gns3-light-theme);
+  @include mat-divider-theme($gns3-light-theme);
+  @include mat-expansion-panel-theme($gns3-light-theme);
+  @include mat-form-field-theme($gns3-light-theme);
+  @include mat-grid-list-theme($gns3-light-theme);
+  @include mat-icon-theme($gns3-light-theme);
+  @include mat-input-theme($gns3-light-theme);
+  @include mat-list-theme($gns3-light-theme);
+  @include mat-menu-theme($gns3-light-theme);
+  @include mat-paginator-theme($gns3-light-theme);
+  @include mat-progress-bar-theme($gns3-light-theme);
+  @include mat-progress-spinner-theme($gns3-light-theme);
+  @include mat-radio-theme($gns3-light-theme);
+  @include mat-select-theme($gns3-light-theme);
+  @include mat-sidenav-theme($gns3-light-theme);
+  @include mat-slide-toggle-theme($gns3-light-theme);
+  @include mat-slider-theme($gns3-light-theme);
+  @include mat-stepper-theme($gns3-light-theme);
+  @include mat-tabs-theme($gns3-light-theme);
+  @include mat-toolbar-theme($gns3-light-theme);
+  @include mat-tooltip-theme($gns3-light-theme);
+  @include mat-snack-bar-theme($gns3-light-theme);
 
   // Override custom tokens for light theme
   --gns3-dark-bg: #ffffff;
@@ -150,30 +192,29 @@ $gns3-light-theme: mat.define-theme(
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--mat-app-background-color);
+  background: rgba(0, 0, 0, 0.1);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--mat-app-outline-variant-color);
+  background: rgba(0, 151, 167, 0.5);
   border-radius: 4px;
 
   &:hover {
-    background: var(--mat-app-primary-color);
+    background: rgba(0, 151, 167, 0.7);
   }
 }
 
 // Firefox Scrollbar
 * {
   scrollbar-width: thin;
-  scrollbar-color: var(--mat-app-outline-variant-color)
-               var(--mat-app-background-color);
+  scrollbar-color: rgba(0, 151, 167, 0.5) rgba(0, 0, 0, 0.1);
 }
 
 // Markdown Content Styles
 app-chat-message-list,
 markdown,
 .markdown {
-  color: var(--mat-app-text-color);
+  color: rgba(255, 255, 255, 0.87);
 
   h1,
   h2,
@@ -181,7 +222,7 @@ markdown,
   h4,
   h5,
   h6 {
-    color: var(--mat-app-on-surface-color);
+    color: rgba(255, 255, 255, 0.87);
     margin-top: var(--gns3-spacing-md);
     margin-bottom: var(--gns3-spacing-sm);
   }
@@ -202,8 +243,8 @@ markdown,
   }
 
   code {
-    background-color: var(--mat-app-surface-variant-color);
-    color: var(--mat-app-text-color);
+    background-color: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.87);
     padding: 2px 6px;
     border-radius: var(--gns3-radius-xs);
     font-family: 'Courier New', monospace;
@@ -211,7 +252,7 @@ markdown,
   }
 
   pre {
-    background-color: var(--mat-app-surface-variant-color);
+    background-color: rgba(255, 255, 255, 0.05);
     padding: var(--gns3-spacing-md);
     border-radius: var(--gns3-radius-md);
     overflow-x: auto;
@@ -224,7 +265,7 @@ markdown,
   }
 
   a {
-    color: var(--mat-app-primary-color);
+    color: #00bcd4;
     text-decoration: none;
 
     &:hover {
@@ -233,10 +274,10 @@ markdown,
   }
 
   blockquote {
-    border-left: 4px solid var(--mat-app-primary-color);
+    border-left: 4px solid #00bcd4;
     padding-left: var(--gns3-spacing-md);
     margin: var(--gns3-spacing-md) 0;
-    color: var(--mat-app-on-surface-variant-color);
+    color: rgba(255, 255, 255, 0.7);
   }
 
   table {
@@ -246,12 +287,12 @@ markdown,
 
     th,
     td {
-      border: 1px solid var(--mat-app-outline-variant-color);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       padding: var(--gns3-spacing-sm);
     }
 
     th {
-      background-color: var(--mat-app-surface-container-low-color);
+      background-color: rgba(255, 255, 255, 0.05);
       font-weight: 500;
     }
   }
@@ -268,32 +309,32 @@ markdown,
 
 // Text Utilities
 .text-primary {
-  color: var(--mat-app-primary-color) !important;
+  color: #00bcd4 !important;
 }
 
 .text-secondary {
-  color: var(--mat-app-on-surface-variant-color) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 
 .text-error {
-  color: var(--mat-app-error-color) !important;
+  color: #f44336 !important;
 }
 
 .text-success {
-  color: var(--mat-app-tertiary-color) !important;
+  color: #4caf50 !important;
 }
 
 // Background Utilities
 .bg-primary {
-  background-color: var(--mat-app-primary-color) !important;
+  background-color: #0097a7 !important;
 }
 
 .bg-surface {
-  background-color: var(--mat-app-surface-color) !important;
+  background-color: #263238 !important;
 }
 
 .bg-error {
-  background-color: var(--mat-app-error-color) !important;
+  background-color: #f44336 !important;
 }
 
 // Spacing Utilities
@@ -364,45 +405,58 @@ markdown,
 
 // Shadow Utilities
 .shadow-sm {
-  box-shadow: var(--mdc-elevated-card-container-elevation) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
 }
 
 .shadow-md {
-  box-shadow: var(--mdc-elevated-card-container-elevation) !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
 }
 
 .shadow-lg {
-  box-shadow: var(--mdc-elevated-card-container-elevation) !important;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1) !important;
 }
 
 // =============================================
-// 7. Component-Specific Overrides
-// =============================================
-
-// AI Chat specific styles
-.ai-chat-container {
-  // Ensure AI Chat uses Material variables
-  background-color: var(--mat-app-surface-container-low-color);
-  color: var(--mat-app-on-surface-color);
-}
-
-// Project Map specific styles
-.project-map {
-  background-color: var(--mat-app-background-color);
-
-  .label {
-    fill: var(--mat-app-on-surface-color);
-  }
-}
-
-// =============================================
-// 8. Print Styles
+// 7. Print Styles
 // =============================================
 
 @media print {
   // Use light theme for better print quality
-  :root {
-    @include mat.all-component-themes($gns3-light-theme);
+  .theme-light,
+  .light-theme {
+    @include mat-core-theme($gns3-light-theme);
+    @include mat-autocomplete-theme($gns3-light-theme);
+    @include mat-badge-theme($gns3-light-theme);
+    @include mat-bottom-sheet-theme($gns3-light-theme);
+    @include mat-button-theme($gns3-light-theme);
+    @include mat-button-toggle-theme($gns3-light-theme);
+    @include mat-card-theme($gns3-light-theme);
+    @include mat-checkbox-theme($gns3-light-theme);
+    @include mat-chips-theme($gns3-light-theme);
+    @include mat-table-theme($gns3-light-theme);
+    @include mat-datepicker-theme($gns3-light-theme);
+    @include mat-dialog-theme($gns3-light-theme);
+    @include mat-divider-theme($gns3-light-theme);
+    @include mat-expansion-panel-theme($gns3-light-theme);
+    @include mat-form-field-theme($gns3-light-theme);
+    @include mat-grid-list-theme($gns3-light-theme);
+    @include mat-icon-theme($gns3-light-theme);
+    @include mat-input-theme($gns3-light-theme);
+    @include mat-list-theme($gns3-light-theme);
+    @include mat-menu-theme($gns3-light-theme);
+    @include mat-paginator-theme($gns3-light-theme);
+    @include mat-progress-bar-theme($gns3-light-theme);
+    @include mat-progress-spinner-theme($gns3-light-theme);
+    @include mat-radio-theme($gns3-light-theme);
+    @include mat-select-theme($gns3-light-theme);
+    @include mat-sidenav-theme($gns3-light-theme);
+    @include mat-slide-toggle-theme($gns3-light-theme);
+    @include mat-slider-theme($gns3-light-theme);
+    @include mat-stepper-theme($gns3-light-theme);
+    @include mat-tabs-theme($gns3-light-theme);
+    @include mat-toolbar-theme($gns3-light-theme);
+    @include mat-tooltip-theme($gns3-light-theme);
+    @include mat-snack-bar-theme($gns3-light-theme);
   }
 
   // Hide non-essential elements
@@ -410,34 +464,5 @@ markdown,
   .mat-toolbar,
   .mat-sidenav {
     display: none !important;
-  }
-}
-
-// =============================================
-// 9. Accessibility Improvements
-// =============================================
-
-// Focus Styles
-*:focus-visible {
-  outline: 2px solid var(--mat-app-primary-color);
-  outline-offset: 2px;
-}
-
-// Reduced Motion
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-// High Contrast Mode
-@media (prefers-contrast: high) {
-  :root {
-    --mat-app-outline-color: #ffffff;
-    --mat-app-outline-variant-color: #ffffff;
   }
 }

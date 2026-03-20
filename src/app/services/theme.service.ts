@@ -43,6 +43,10 @@ export class ThemeService {
   private currentTheme: ThemeType = 'dark';
   private currentMapTheme: MapThemeType = 'auto';
 
+  // Public properties for backward compatibility
+  public savedTheme: string = 'dark';
+  public savedMapTheme: string = 'auto';
+
   constructor(
     @Inject(DOCUMENT) private document: Document,
     @Inject(DEFAULT_THEME_TOKEN) defaultTheme: ThemeType
@@ -50,10 +54,12 @@ export class ThemeService {
     // Initialize theme from localStorage or use default
     const savedTheme = localStorage.getItem('theme') as ThemeType | null;
     this.currentTheme = savedTheme || defaultTheme;
+    this.savedTheme = this.currentTheme; // Sync public property
 
     // Initialize map theme
     const savedMapTheme = localStorage.getItem('mapTheme') as MapThemeType | null;
     this.currentMapTheme = savedMapTheme || 'auto';
+    this.savedMapTheme = this.currentMapTheme; // Sync public property
 
     // Apply theme on initialization
     this.applyTheme(this.currentTheme);
@@ -90,6 +96,7 @@ export class ThemeService {
    */
   setTheme(theme: ThemeType): void {
     this.currentTheme = theme;
+    this.savedTheme = theme; // Update public property
     this.applyTheme(theme);
     this.saveThemePreference(theme);
 
@@ -119,6 +126,7 @@ export class ThemeService {
    */
   setMapTheme(theme: MapThemeType): void {
     this.currentMapTheme = theme;
+    this.savedMapTheme = theme; // Update public property
     localStorage.setItem('mapTheme', theme);
 
     // Emit the actual theme (resolving 'auto')
