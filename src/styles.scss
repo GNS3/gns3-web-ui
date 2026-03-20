@@ -1,6 +1,13 @@
-/* GitHub Markdown styles - removed */
+/**
+ * GNS3 Web UI - Global Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
 
-/* Global markdown list fix */
+/* =============================================
+// Global markdown list fix
+// ============================================= */
 app-chat-message-list markdown p,
 app-chat-message-list markdown ul,
 app-chat-message-list markdown ol,
@@ -16,39 +23,62 @@ app-chat-message-list markdown li p {
 
 /* body background-color is now controlled dynamically by ThemeService and applyMapBackground() */
 
+/* =============================================
+// Logo and Link Styles
+// ============================================= */
 img.logo-header {
-  width: 50px;
+  width: var(--gns3-logo-size, 50px);
 }
 
 a.table-link {
-  color: #0097a7;
+  color: var(--mat-app-primary-color);
+  transition: color var(--gns3-duration-fast) var(--gns3-easing-default);
+
+  &:hover {
+    color: var(--mat-app-primary-color);
+    filter: brightness(1.2);
+  }
 }
 
+/* =============================================
+// Snackbar Styles
+// ============================================= */
 .snackabar-success {
-  background: #0097a7 !important;
-  color: white !important;
+  background: var(--mat-app-primary-color) !important;
+  color: var(--mat-app-on-primary-color) !important;
+  font-weight: var(--gns3-font-weight-medium);
 }
+
 .uplaoding-file-snackabar {
-  background: #263238 !important;
-  color: white !important;
+  background: var(--gns3-surface) !important;
+  color: var(--mat-app-on-surface-color) !important;
   max-width: 80% !important;
+  font-weight: var(--gns3-font-weight-medium);
 }
 
 .snackbar-warning {
-  background: rgb(197, 199, 64) !important;
-  color: white !important;
+  background: var(--gns3-color-warning, rgb(197, 199, 64)) !important;
+  color: var(--mat-app-on-warning-color, #ffffff) !important;
+  font-weight: var(--gns3-font-weight-medium);
 }
 
 .snackbar-error {
-  background: #b00020 !important;
-  color: white !important;
+  background: var(--mat-app-error-color) !important;
+  color: var(--mat-app-on-error-color) !important;
   white-space: pre-wrap !important;
+  font-weight: var(--gns3-font-weight-medium);
 }
 
+/* =============================================
+// Dialog Styles
+// ============================================= */
 .mat-dialog-actions {
-  margin-bottom: -12px !important;
+  margin-bottom: calc(-1 * var(--gns3-spacing-md)) !important;
 }
 
+/* =============================================
+// Form Field Styles
+// ============================================= */
 @-moz-document url-prefix() {
   .temporaryElement {
     line-height: 1.4em;
@@ -63,128 +93,152 @@ app-root {
   width: 100%;
 }
 
+/* =============================================
+// Menu Styles
+// ============================================= */
 mat-menu-panel {
   min-height: 0px;
 }
 
+/* =============================================
+// Tooltip Styles
+// ============================================= */
 .custom-tooltip {
-  background-color: grey;
-  color: #ffffff;
+  background-color: var(--mat-app-tooltip-container-color);
+  color: var(--mat-app-on-tooltip-container-color);
 }
 
 .permission-tooltip {
   max-width: unset !important;
-  background-color: grey;
-  color: #ffffff;
+  background-color: var(--mat-app-tooltip-container-color);
+  color: var(--mat-app-on-tooltip-container-color);
   white-space: pre-line;
-  font-size: 12px !important;
-  font-family: monospace;
+  font-size: var(--gns3-font-size-xs) !important;
+  font-family: var(--gns3-font-family-mono);
 }
+
+/* =============================================
+// Tab Styles
+// ============================================= */
 .mat-tab-body-content {
   height: 100%;
   overflow: initial !important;
 }
+
 .mat-tab-body.mat-tab-body-active {
-
   overflow-y: clip !important;
+}
 
-}
 .mat-tab-label {
-  padding: 0 10px !important;
-  min-width: 152px !important;
+  padding: 0 var(--gns3-spacing-sm) !important;
+  min-width: var(--gns3-tab-min-width, 152px) !important;
 }
+
 .mat-tab-header-pagination-controls-enabled .mat-tab-header-pagination {
   display: none !important;
 }
 
-/* Link hover effects - simple line thickening */
+/* =============================================
+// Link Hover Effects (Map Links)
+// ============================================= */
 .ethernet_link,
 .serial_link {
-  transition: stroke-width 0.2s ease-in-out, stroke 0.2s ease-in-out;
+  transition: stroke-width var(--gns3-duration-fast) var(--gns3-easing-default),
+              stroke var(--gns3-duration-fast) var(--gns3-easing-default);
 }
 
 .ethernet_link:hover,
 .serial_link:hover {
-  stroke-width: 4px !important;
+  stroke-width: var(--gns3-link-hover-width, 4px) !important;
   cursor: pointer;
-  stroke: #ff0000 !important;
+  stroke: var(--mat-app-error-color) !important;
 }
 
-/* ============================================================================
- * Material overlays z-index fix
+/* =============================================
+// Material Overlays Z-Index Fix
+// ============================================= */
+/*
  * AI Chat container uses z-index: 1000
  * Material overlays use default z-index: 1000
  * Session Menu (1300) and Confirm Dialog (1400) are set via ZIndexService
- * ============================================================================ */
+ */
 
-/* ============================================================================
- * AI Chat Session Menu Icon Colors
- * Target SVG icons (.menu-item-icon) inside Material menus
- * ============================================================================ */
+/* =============================================
+// AI Chat Session Menu Icon Colors
+// Target SVG icons (.menu-item-icon) inside Material menus
+// ============================================= */
 
-/* Dark theme (default) - white icons for AI Chat menus */
+/* Dark theme (default) - high contrast icons for AI Chat menus */
 .mat-menu-panel .menu-item-icon {
-  fill: rgba(255, 255, 255, 0.87) !important;
+  fill: var(--mat-app-on-surface-color) !important;
   flex-shrink: 0;
   vertical-align: middle;
+  transition: fill var(--gns3-duration-fast) var(--gns3-easing-default);
 }
 
 /* Fix alignment: menu items with icons */
 .mat-menu-panel .mat-menu-item {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--gns3-spacing-md);
 }
 
 .mat-menu-panel .delete-icon {
-  fill: #f44336 !important;
+  fill: var(--mat-app-error-color) !important;
 }
 
 .mat-menu-panel .mat-menu-item:hover .menu-item-icon {
-  fill: #10a37f !important;
+  fill: var(--gns3-color-success, #10a37f) !important;
 }
 
 .mat-menu-panel .mat-menu-item:hover .delete-icon {
-  fill: #f44336 !important;
+  fill: var(--mat-app-error-color) !important;
+  filter: brightness(1.2);
 }
 
 /* Light theme override */
-.lightTheme .mat-menu-panel .menu-item-icon {
-  fill: rgba(0, 0, 0, 0.87) !important;
+.lightTheme .mat-menu-panel .menu-item-icon,
+.theme-light .mat-menu-panel .menu-item-icon {
+  fill: var(--mat-app-on-surface-color) !important;
 }
 
-.lightTheme .mat-menu-panel .delete-icon {
+.lightTheme .mat-menu-panel .delete-icon,
+.theme-light .mat-menu-panel .delete-icon {
   fill: #d32f2f !important;
 }
 
-.lightTheme .mat-menu-panel .mat-menu-item:hover .menu-item-icon {
-  fill: #0097a7 !important;
+.lightTheme .mat-menu-panel .mat-menu-item:hover .menu-item-icon,
+.theme-light .mat-menu-panel .mat-menu-item:hover .menu-item-icon {
+  fill: var(--mat-app-primary-color) !important;
 }
 
-/* ============================================================================
- * AI Chat Sidebar Icon Colors (Session List Component)
- * These icons are inside AI Chat container but need global styles
- * ============================================================================ */
+/* =============================================
+// AI Chat Sidebar Icon Colors (Session List Component)
+// These icons are inside AI Chat container but need global styles
+// ============================================= */
 
 /* Menu icon (three dots) in session list */
 .ai-chat-container .menu-icon,
 .mat-menu-panel .menu-icon {
-  fill: rgba(255, 255, 255, 0.7) !important;
+  fill: var(--mat-app-on-surface-variant-color) !important;
+  transition: fill var(--gns3-duration-fast) var(--gns3-easing-default);
 }
 
 /* Session list icon (New Chat +) */
 .ai-chat-container .session-list-icon {
-  fill: rgba(255, 255, 255, 0.87) !important;
+  fill: var(--mat-app-on-surface-color) !important;
+  transition: fill var(--gns3-duration-fast) var(--gns3-easing-default);
 }
 
 /* Session icon (chat bubble) */
 .ai-chat-container .session-icon {
   fill: rgba(255, 255, 255, 0.6) !important;
+  transition: fill var(--gns3-duration-fast) var(--gns3-easing-default);
 }
 
 /* Pin icon */
 .ai-chat-container .pin-icon {
-  fill: #10a37f !important;
+  fill: var(--gns3-color-success, #10a37f) !important;
 }
 
 /* No sessions icon */
@@ -196,38 +250,46 @@ mat-menu-panel {
 .ai-chat-container .new-session-button:hover .session-list-icon,
 .ai-chat-container .session-item:hover .session-icon,
 .ai-chat-container .session-menu-button:hover .menu-icon {
-  fill: rgba(255, 255, 255, 1) !important;
+  fill: var(--mat-app-on-surface-color) !important;
 }
 
 /* Light theme override for sidebar icons */
 .lightTheme .ai-chat-container .menu-icon,
 .lightTheme .ai-chat-container .session-list-icon,
-.lightTheme .ai-chat-container .session-icon {
+.lightTheme .ai-chat-container .session-icon,
+.theme-light .ai-chat-container .menu-icon,
+.theme-light .ai-chat-container .session-list-icon,
+.theme-light .ai-chat-container .session-icon {
   fill: rgba(0, 0, 0, 0.6) !important;
 }
 
-.lightTheme .ai-chat-container .pin-icon {
-  fill: #0097a7 !important;
+.lightTheme .ai-chat-container .pin-icon,
+.theme-light .ai-chat-container .pin-icon {
+  fill: var(--mat-app-primary-color) !important;
 }
 
-.lightTheme .ai-chat-container .no-sessions-icon {
+.lightTheme .ai-chat-container .no-sessions-icon,
+.theme-light .ai-chat-container .no-sessions-icon {
   fill: rgba(0, 0, 0, 0.3) !important;
 }
 
 .lightTheme .ai-chat-container .new-session-button:hover .session-list-icon,
 .lightTheme .ai-chat-container .session-item:hover .session-icon,
-.lightTheme .ai-chat-container .session-menu-button:hover .menu-icon {
+.lightTheme .ai-chat-container .session-menu-button:hover .menu-icon,
+.theme-light .ai-chat-container .new-session-button:hover .session-list-icon,
+.theme-light .ai-chat-container .session-item:hover .session-icon,
+.theme-light .ai-chat-container .session-menu-button:hover .menu-icon {
   fill: rgba(0, 0, 0, 0.87) !important;
 }
 
-/* ============================================================================
- * Fix SVG and text alignment in AI Chat buttons
- * ============================================================================ */
+/* =============================================
+// Fix SVG and text alignment in AI Chat buttons
+// ============================================= */
 
 .ai-chat-container .new-session-button .mat-button-wrapper {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--gns3-spacing-sm);
 }
 
 .ai-chat-container .session-list-icon {
@@ -235,9 +297,9 @@ mat-menu-panel {
   vertical-align: middle;
 }
 
-/* ============================================================================
- * Confirmation Dialog - Outer transparent, inner with color
- * ============================================================================ */
+/* =============================================
+// Confirmation Dialog - Outer transparent, inner with color
+// ============================================= */
 
 .confirmation-dialog-panel {
   /* Material Dialog Container - transparent */
