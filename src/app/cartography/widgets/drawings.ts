@@ -81,11 +81,11 @@ export class DrawingsWidget implements Widget {
     let bottomEdge: number;
     let isReflectedVertical: boolean = false;
     let bottom = drag()
-      .on('start', (datum: MapDrawing) => {
+      .on('start', (event: any, datum: MapDrawing) => {
         document.body.style.cursor = 'ns-resize';
         topEdge = datum.y;
       })
-      .on('drag', (datum: MapDrawing) => {
+      .on('drag', (event: any, datum: MapDrawing) => {
         const evt = event;
 
         if (!isReflectedVertical) {
@@ -142,12 +142,12 @@ export class DrawingsWidget implements Widget {
       });
 
     let top = drag()
-      .on('start', (datum: MapDrawing) => {
-        y = event().sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y);
+      .on('start', (event: any, datum: MapDrawing) => {
+        y = event.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y);
         bottomEdge = y + datum.element.height;
         document.body.style.cursor = 'ns-resize';
       })
-      .on('drag', (datum: MapDrawing) => {
+      .on('drag', (event: any, datum: MapDrawing) => {
         const evt = event;
 
         if (!isReflectedVertical) {
@@ -209,12 +209,12 @@ export class DrawingsWidget implements Widget {
     let leftEdge: number;
     let isReflectedHorizontal: boolean = false;
     let right = drag()
-      .on('start', (datum: MapDrawing) => {
-        x = event().sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x);
+      .on('start', (event: any, datum: MapDrawing) => {
+        x = event.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x);
         leftEdge = x + datum.element.width;
         document.body.style.cursor = 'ew-resize';
       })
-      .on('drag', (datum: MapDrawing) => {
+      .on('drag', (event: any, datum: MapDrawing) => {
         const evt = event;
 
         if (!isReflectedHorizontal) {
@@ -270,11 +270,11 @@ export class DrawingsWidget implements Widget {
       });
 
     let left = drag()
-      .on('start', (datum: MapDrawing) => {
+      .on('start', (event: any, datum: MapDrawing) => {
         document.body.style.cursor = 'ew-resize';
         rightEdge = datum.x;
       })
-      .on('drag', (datum: MapDrawing) => {
+      .on('drag', (event: any, datum: MapDrawing) => {
         const evt = event;
 
         if (!isReflectedHorizontal) {
@@ -333,7 +333,7 @@ export class DrawingsWidget implements Widget {
       .on('start', () => {
         document.body.style.cursor = 'move';
       })
-      .on('drag', (datum: MapDrawing) => {
+      .on('drag', (event: any, datum: MapDrawing) => {
         const evt = event;
         datum.element.width += evt.dx;
         datum.element.height += evt.dy;
@@ -350,7 +350,7 @@ export class DrawingsWidget implements Widget {
       .on('start', () => {
         document.body.style.cursor = 'move';
       })
-      .on('drag', (datum: MapDrawing) => {
+      .on('drag', (event: any, datum: MapDrawing) => {
         const evt = event;
         datum.element.width += evt.dx;
         datum.element.height += evt.dy;

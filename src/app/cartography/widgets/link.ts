@@ -45,7 +45,7 @@ export class LinkWidget implements Widget {
         );
       })
       .append<SVGGElement>('g')
-      .on('contextmenu', (datum: MapLink) => {
+      .on('contextmenu', (event: any, datum: MapLink) => {
         const evt = event;
         this.onContextMenu.emit(new LinkContextMenu(evt, datum));
       })
@@ -68,7 +68,7 @@ export class LinkWidget implements Widget {
         );
       })
       .append<SVGGElement>('g')
-      .on('contextmenu', (datum: MapLink) => {
+      .on('contextmenu', (event: any, datum: MapLink) => {
         const evt = event;
         this.onContextMenu.emit(new LinkContextMenu(evt, datum));
       })
@@ -91,7 +91,7 @@ export class LinkWidget implements Widget {
         );
       })
       .append<SVGGElement>('g')
-      .on('contextmenu', (datum: MapLink) => {
+      .on('contextmenu', (event: any, datum: MapLink) => {
         const evt = event;
         this.onContextMenu.emit(new LinkContextMenu(evt, datum));
       })
@@ -116,7 +116,7 @@ export class LinkWidget implements Widget {
         );
       })
       .append<SVGGElement>('g')
-      .on('contextmenu', (datum: MapLink) => {
+      .on('contextmenu', (event: any, datum: MapLink) => {
         const evt = event;
         this.onContextMenu.emit(new LinkContextMenu(evt, datum));
       })

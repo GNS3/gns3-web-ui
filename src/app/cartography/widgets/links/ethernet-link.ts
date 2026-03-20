@@ -59,7 +59,7 @@ export class EthernetLinkWidget implements Widget {
       .append<SVGPathElement>('path')
       .attr('class', 'ethernet_link')
       .attr('fill', 'none')
-      .on('contextmenu', (datum) => {
+      .on('contextmenu', (event: any, datum) => {
         let link: MapLink = (datum as unknown) as MapLink;
         const evt = event;
         this.onContextMenu.emit(new LinkContextMenu(evt, link));

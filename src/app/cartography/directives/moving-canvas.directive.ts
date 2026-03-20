@@ -34,8 +34,8 @@ export class MovingCanvasDirective implements OnInit, OnDestroy {
         const canvas = view.selectAll<SVGGElement, Context>('g.canvas').data([this.context]);
 
         canvas.attr('transform', () => {
-          this.context.transformation.x = this.context.transformation.x + event().movementX;
-          this.context.transformation.y = this.context.transformation.y + event().movementY;
+          this.context.transformation.x = this.context.transformation.x + event.movementX;
+          this.context.transformation.y = this.context.transformation.y + event.movementY;
 
           const xTrans = this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x;
           const yTrans = this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y;

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { mouse } from 'd3-selection';
+import { pointer } from 'd3-selection';
 import { line } from 'd3-shape';
 import { Context } from '../models/context';
 import { DrawingLine } from '../models/drawing-line';
@@ -21,9 +21,9 @@ export class DrawingLineWidget {
     this.drawingLine.start = new Point(x, y);
     this.drawingLine.end = new Point(x, y);
 
-    const over = function (this, d, i) {
+    const over = function (event: any, d, i) {
       const node = self.selection.select<SVGGElement>('g.canvas').node();
-      const coordinates = mouse(node);
+      const coordinates = pointer(event, node);
       self.drawingLine.end.x = coordinates[0];
       self.drawingLine.end.y = coordinates[1];
       self.draw(null, null);

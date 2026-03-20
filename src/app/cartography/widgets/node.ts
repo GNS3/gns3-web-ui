@@ -1,4 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
+import { select } from 'd3-selection';
 
 import { MapSettingsService } from '@services/mapsettings.service';
 import { ClickedDataEvent } from '../events/event-source';
@@ -35,8 +36,8 @@ export class NodeWidget implements Widget {
     const node_body_merge = node_body
       .merge(node_body_enter)
       .classed('selected', (n: MapNode) => this.selectionManager.isSelected(n))
-      .on('click', (node: MapNode) => {
-        this.nodesEventSource.clicked.emit(new ClickedDataEvent<MapNode>(node, event().pageX, event().pageY));
+      .on('click', (event: any, node: MapNode) => {
+        this.nodesEventSource.clicked.emit(new ClickedDataEvent<MapNode>(node, event.pageX, event.pageY));
       });
 
     node_body_merge.select('.layer_label_wrapper').remove();
@@ -78,11 +79,11 @@ export class NodeWidget implements Widget {
     // update image of node
     node_body_merge
       .select<SVGImageElement>('image')
-      .on('contextmenu', function (n: MapNode, i: number) {
+      .on('contextmenu', function (event: any, n: MapNode, i: number) {
         event.preventDefault();
         self.onContextMenu.emit(new NodeContextMenu(event, n));
       })
-      .on('dblclick', function (n: MapNode, i: number) {
+      .on('dblclick', function (event: any, n: MapNode, i: number) {
         event.preventDefault();
         self.onContextConsoleMenu.emit(new NodeContextMenu(event, n));
       })

@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { event, mouse, select } from 'd3-selection';
+import { select, pointer } from 'd3-selection';
 import { Subject } from 'rxjs';
 import { SelectionEventSource } from '../events/selection-event-source';
 import { Context } from '../models/context';
@@ -28,33 +28,33 @@ export class SelectionTool {
   private activate(selection) {
     const self = this;
 
-    selection.on('mousedown', function () {
+    selection.on('mousedown', function (event: any) {
       // prevent deselection on right click
-      if (event().button == 2) {
+      if (event.button == 2) {
         selection.on('contextmenu', () => {
           event.preventDefault();
         });
 
-        self.contextMenuOpened.emit(event());
+        self.contextMenuOpened.emit(event);
         return;
       }
 
       const subject = select(window);
       const parent = this.parentElement;
 
-      const start = self.transformation(mouse(parent));
+      const start = self.transformation(pointer(parent, event));
       self.startSelection(start);
 
       // clear selection
       selection.selectAll(SelectionTool.SELECTABLE_CLASS).classed('selected', false);
 
       subject
-        .on('mousemove.selection', function () {
-          const end = self.transformation(mouse(parent));
+        .on('mousemove.selection', function (event: any) {
+          const end = self.transformation(pointer(parent, event));
           self.moveSelection(start, end);
         })
-        .on('mouseup.selection', function () {
-          const end = self.transformation(mouse(parent));
+        .on('mouseup.selection', function (event: any) {
+          const end = self.transformation(pointer(parent, event));
           self.endSelection(start, end);
           subject.on('mousemove.selection', null).on('mouseup.selection', null);
         });

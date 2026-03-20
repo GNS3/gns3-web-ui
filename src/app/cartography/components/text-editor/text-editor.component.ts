@@ -78,8 +78,8 @@ export class TextEditorComponent implements OnInit, OnDestroy {
 
   activateTextAdding() {
     let addTextListener = (event: MouseEvent) => {
-      this.leftPosition = event().pageX.toString() + 'px';
-      this.topPosition = event().pageY.toString() + 'px';
+      this.leftPosition = event.pageX.toString() + 'px';
+      this.topPosition = event.pageY.toString() + 'px';
       this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'initial');
       this.renderer.setStyle(
         this.temporaryTextElement.nativeElement,
@@ -93,8 +93,8 @@ export class TextEditorComponent implements OnInit, OnDestroy {
         this.drawingsEventSource.textAdded.emit(
           new TextAddedDataEvent(
             this.temporaryTextElement.nativeElement.innerText.replace(/\n$/, ''),
-            event().pageX,
-            event().pageY
+            event.pageX,
+            event.pageY
           )
         );
         this.deactivateTextAdding();

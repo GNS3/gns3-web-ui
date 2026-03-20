@@ -31,11 +31,11 @@ export class ZoomingCanvasDirective implements OnInit, OnDestroy {
 
   addListener() {
     this.wheelListener = (event: WheelEvent) => {
-      event().stopPropagation();
+      event.stopPropagation();
       event.preventDefault();
 
-      let zoom = event().deltaY;
-      zoom = event().deltaMode === 0 ? zoom / 100 : zoom / 3;
+      let zoom = event.deltaY;
+      zoom = event.deltaMode === 0 ? zoom / 100 : zoom / 3;
 
       const view = select(this.element.nativeElement);
       const canvas = view.selectAll<SVGGElement, Context>('g.canvas').data([this.context]);

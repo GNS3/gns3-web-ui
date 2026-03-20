@@ -40,7 +40,7 @@ export class MovingTool {
   private activate(selection: SVGSelection) {
     const self = this;
 
-    const onZoom = function (this: SVGSVGElement) {
+    const onZoom = function (this: SVGSVGElement, event: D3ZoomEvent<SVGSVGElement, any>) {
       const canvas = selection.select<SVGGElement>('g.canvas');
       const e: D3ZoomEvent<SVGSVGElement, any> = event;
       canvas.attr('transform', () => {
@@ -56,7 +56,7 @@ export class MovingTool {
     };
 
     // disable zooming on wheel
-    this.zoom.filter(() => {
+    this.zoom.filter((event: any) => {
       const e: D3ZoomEvent<SVGSVGElement, any> = event;
       return e.type === 'mousedown';
     });
