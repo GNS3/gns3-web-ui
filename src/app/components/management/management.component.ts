@@ -10,7 +10,8 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatTabNavPanel } from '@angular/material/tabs';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Controller} from "@models/controller";
 import {ControllerService} from "@services/controller.service";
@@ -26,6 +27,8 @@ export class ManagementComponent implements OnInit {
   controller: Controller;
   links = ['users', 'groups', 'roles', 'pools', 'ACL'];
   activeLink: string = this.links[0];
+
+  @ViewChild('tabPanel') tabPanel: MatTabNavPanel | undefined;
 
   constructor(
     private route: ActivatedRoute,

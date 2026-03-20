@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {Location}  from '@angular/common';
 import {ActivatedRoute, Router} from "@angular/router";
 import {Controller} from "@models/controller";
@@ -31,7 +31,8 @@ import {ControllerService} from "@services/controller.service";
   standalone: false,
   selector: 'app-user-management',
   templateUrl: './user-management.component.html',
-  styleUrls: ['./user-management.component.scss']
+  styleUrls: ['./user-management.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserManagementComponent implements OnInit {
   controller: Controller;
@@ -52,7 +53,9 @@ export class UserManagementComponent implements OnInit {
     private controllerService: ControllerService,
     public dialog: MatDialog,
     private toasterService: ToasterService,
-    private location: Location) { }
+    private location: Location,
+    private cd: ChangeDetectorRef
+  ) { }
 
   ngOnInit() {
     const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');
@@ -88,6 +91,7 @@ export class UserManagementComponent implements OnInit {
       (users: User[]) => {
         this.isReady = true;
         this.dataSource.data = users;
+        this.cd.markForCheck();
       },
       (error) => {
         this.progressService.setError(error);
