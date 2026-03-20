@@ -1,85 +1,163 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { path } from 'd3-path';
 import { event } from 'd3-selection';
 import { LinkContextMenu } from '../../events/event-source';
 import { MapLink } from '../../models/map/map-link';
 import { SVGSelection } from '../../models/types';
 import { Widget } from '../widget';
 import { LinkStyle } from '@models/link-style';
-import { StyleTranslator} from './style-translator';
+import { ConnectorOrientation, StyleTranslator } from './style-translator';
+import { BezierLinkLayout } from './bezier-link-layout';
 
 class SerialLinkPath {
   constructor(
+    public link: MapLink,
     public source: [number, number],
-    public source_angle: [number, number],
-    public target_angle: [number, number],
     public target: [number, number],
-    public style: LinkStyle
+    public style: LinkStyle,
+    public bezierVariation: number = 0,
+    public useLegacySerialPattern: boolean = false,
+    public sourceOrientation?: ConnectorOrientation,
+    public targetOrientation?: ConnectorOrientation
   ) {}
 }
 
 @Injectable()
 export class SerialLinkWidget implements Widget {
   public onContextMenu = new EventEmitter<LinkContextMenu>();
+  private readonly bezierLayout = new BezierLinkLayout();
   private defaultSerialLinkStyle : LinkStyle = {
     color: "#800000",
     width: 2,
-    type: 0
+    type: 1,
+    link_type: StyleTranslator.DEFAULT_LINK_TYPE,
+    bezier_curviness: StyleTranslator.BEZIER_CURVINESS_DEFAULT,
+    flowchart_roundness: StyleTranslator.FLOWCHART_ROUNDNESS_DEFAULT,
   };
 
   constructor() {}
 
+  private resolveContextMenuLink(arg1: unknown, arg2: unknown): MapLink | undefined {
+    const candidates = [arg2, arg1];
+
+    for (const candidate of candidates) {
+      if (!candidate || typeof candidate !== 'object') {
+        continue;
+      }
+
+      const maybePath = candidate as Partial<SerialLinkPath>;
+      if (maybePath.link) {
+        return maybePath.link;
+      }
+
+      const maybeMapLink = candidate as Partial<MapLink>;
+      if (typeof maybeMapLink.id === 'string' && Array.isArray(maybeMapLink.nodes)) {
+        return maybeMapLink as MapLink;
+      }
+    }
+
+    return undefined;
+  }
+
+  private getLegacySerialPath(source: [number, number], target: [number, number]) {
+    const dx = target[0] - source[0];
+    const dy = target[1] - source[1];
+    const vectorAngle = Math.atan2(dy, dx);
+    const rotatedVectorAngle = vectorAngle - Math.PI / 4;
+    const rotatedVectorX = Math.cos(rotatedVectorAngle);
+    const rotatedVectorY = Math.sin(rotatedVectorAngle);
+    const zigZagAmplitude = 15;
+    const middleX = source[0] + dx / 2;
+    const middleY = source[1] + dy / 2;
+
+    const angleSource: [number, number] = [
+      middleX + zigZagAmplitude * rotatedVectorX,
+      middleY + zigZagAmplitude * rotatedVectorY,
+    ];
+    const angleTarget: [number, number] = [
+      middleX - zigZagAmplitude * rotatedVectorX,
+      middleY - zigZagAmplitude * rotatedVectorY,
+    ];
+
+    return `M${source[0]},${source[1]}L${angleSource[0]},${angleSource[1]}L${angleTarget[0]},${angleTarget[1]}L${target[0]},${target[1]}`;
+  }
+
   private linkToSerialLink(link: MapLink) {
-    const source = {
-      x: link.source.x + link.source.width / 2,
-      y: link.source.y + link.source.height / 2,
+    const normalizedLinkType = StyleTranslator.normalizeLinkType(link.link_style?.link_type);
+    const sourceCenter: [number, number] = [link.source.x + link.source.width / 2, link.source.y + link.source.height / 2];
+    const targetCenter: [number, number] = [link.target.x + link.target.width / 2, link.target.y + link.target.height / 2];
+    const sourceOrientation = StyleTranslator.getContinuousOrientation(sourceCenter, targetCenter);
+    const targetOrientation = StyleTranslator.getContinuousOrientation(targetCenter, sourceCenter);
+    const bezierVariation = normalizedLinkType === 'bezier'
+      ? this.bezierLayout.getVariation(link)
+      : 0;
+
+    const hasValidColor = typeof link.link_style?.color === 'string' && link.link_style.color.length > 0;
+    const hasValidWidth =
+      typeof link.link_style?.width === 'number' && link.link_style.width >= this.defaultSerialLinkStyle.width;
+
+    const style: LinkStyle = {
+      color: hasValidColor ? link.link_style.color : this.defaultSerialLinkStyle.color,
+      width: hasValidWidth ? link.link_style.width : this.defaultSerialLinkStyle.width,
+      type: link.link_style?.type !== undefined ? link.link_style.type : this.defaultSerialLinkStyle.type,
+      link_type: normalizedLinkType,
+      bezier_curviness:
+        normalizedLinkType === 'statemachine'
+          ? StyleTranslator.normalizeStateMachineCurviness(link.link_style?.bezier_curviness)
+          : StyleTranslator.normalizeBezierCurviness(link.link_style?.bezier_curviness),
+      flowchart_roundness: StyleTranslator.normalizeFlowchartRoundness(link.link_style?.flowchart_roundness),
     };
-    const target = {
-      x: link.target.x + link.target.width / 2,
-      y: link.target.y + link.target.height / 2,
-    };
 
-    const dx = target.x - source.x;
-    const dy = target.y - source.y;
+    let sourcePoint = sourceCenter;
+    let targetPoint = targetCenter;
 
-    const vector_angle = Math.atan2(dy, dx);
-    const rot_angle = -Math.PI / 4.0;
-    const vect_rot = [Math.cos(vector_angle + rot_angle), Math.sin(vector_angle + rot_angle)];
+    if (normalizedLinkType === 'bezier') {
+      sourcePoint = this.bezierLayout.getEndpointPoint(
+        sourceCenter,
+        sourceOrientation,
+        this.bezierLayout.getRenderEndpointOrder(link, 0)
+      );
+      targetPoint = this.bezierLayout.getEndpointPoint(
+        targetCenter,
+        targetOrientation,
+        this.bezierLayout.getRenderEndpointOrder(link, 1)
+      );
 
-    const angle_source: [number, number] = [
-      source.x + dx / 2.0 + 15 * vect_rot[0],
-      source.y + dy / 2.0 + 15 * vect_rot[1],
-    ];
+      const majorAnchor = StyleTranslator.getEffectiveBezierMajorAnchor(style.bezier_curviness, bezierVariation);
+      const curveSideDirection = StyleTranslator.getBezierSideSign(
+        sourcePoint,
+        targetPoint,
+        majorAnchor,
+        sourceOrientation,
+        targetOrientation
+      );
 
-    const angle_target: [number, number] = [
-      target.x - dx / 2.0 - 15 * vect_rot[0],
-      target.y - dy / 2.0 - 15 * vect_rot[1],
-    ];
-
-    const hasValidColor = link.link_style && link.link_style.color;
-    const hasValidWidth = link.link_style?.width && link.link_style.width >= this.defaultSerialLinkStyle.width;
-
-    const style: LinkStyle = hasValidColor
-      ? {
-          color: link.link_style.color,
-          width: hasValidWidth ? link.link_style.width : this.defaultSerialLinkStyle.width,
-          type: link.link_style.type !== undefined ? link.link_style.type : this.defaultSerialLinkStyle.type
-        }
-      : {
-          color: this.defaultSerialLinkStyle.color,
-          width: hasValidWidth ? link.link_style.width : this.defaultSerialLinkStyle.width,
-          type: link.link_style?.type !== undefined ? link.link_style.type : this.defaultSerialLinkStyle.type
-        };
+      this.bezierLayout.applyLabelRenderOffsets(
+        link,
+        sourcePoint,
+        targetPoint,
+        curveSideDirection,
+        majorAnchor
+      );
+    } else {
+      this.bezierLayout.clearLabelRenderOffsets(link);
+    }
 
     return new SerialLinkPath(
-      [source.x, source.y],
-      angle_source,
-      angle_target,
-      [target.x, target.y],
-      style);
+      link,
+      sourcePoint,
+      targetPoint,
+      style,
+      bezierVariation,
+      normalizedLinkType === StyleTranslator.DEFAULT_LINK_TYPE,
+      sourceOrientation,
+      targetOrientation
+    );
   }
 
   public draw(view: SVGSelection) {
+    const linksInView = view.data() as MapLink[];
+    this.bezierLayout.buildEndpointOrder(Array.isArray(linksInView) ? linksInView : []);
+
     const link = view.selectAll<SVGPathElement, SerialLinkPath>('path.serial_link').data((l) => {
       if (l.linkType === 'serial') {
         return [this.linkToSerialLink(l)];
@@ -91,25 +169,21 @@ export class SerialLinkWidget implements Widget {
       .enter()
       .append<SVGPathElement>('path')
       .attr('class', 'serial_link')
-      .attr('fill', 'none')
-      .on('contextmenu', (datum) => {
-        let link: MapLink = (datum as unknown) as MapLink;
+      .on('contextmenu', (arg1: unknown, arg2: unknown) => {
         const evt = event;
+        const link = this.resolveContextMenuLink(arg1, arg2);
+        if (!link) {
+          return;
+        }
         this.onContextMenu.emit(new LinkContextMenu(evt, link));
-      })
-      .attr('stroke', (datum) => {
-        return datum.style.color;
-      })
-      .attr('stroke-width', (datum) => {
-        return datum.style.width;
-      })
-      .attr('stroke-dasharray', (datum) => {
-        return StyleTranslator.getLinkStyle(datum.style);
       });
 
     const link_merge = link.merge(link_enter);
 
     link_merge
+      .attr('transform', (datum) => {
+        return StyleTranslator.getLinkTransform(datum.style);
+      })
       .attr('fill', 'none')
       .attr('stroke', (datum) => {
         return datum.style.color;
@@ -120,13 +194,26 @@ export class SerialLinkWidget implements Widget {
       .attr('stroke-dasharray', (datum) => {
         return StyleTranslator.getLinkStyle(datum.style);
       })
+      .attr('stroke-opacity', (datum) => {
+        return datum.style.type === 0 ? 0 : 1;
+      })
+      .attr('pointer-events', (datum) => {
+        return datum.style.type === 0 ? 'stroke' : null;
+      })
       .attr('d', (serial) => {
-        const line_generator = path();
-        line_generator.moveTo(serial.source[0], serial.source[1]);
-        line_generator.lineTo(serial.source_angle[0], serial.source_angle[1]);
-        line_generator.lineTo(serial.target_angle[0], serial.target_angle[1]);
-        line_generator.lineTo(serial.target[0], serial.target[1]);
-        return line_generator.toString();
+        if (serial.useLegacySerialPattern) {
+          return this.getLegacySerialPath(serial.source, serial.target);
+        }
+
+        return StyleTranslator.getLinkPath(serial.source, serial.target, serial.style, {
+          bezierVariation: serial.bezierVariation,
+          sourceOrientation: serial.sourceOrientation,
+          targetOrientation: serial.targetOrientation,
+          flowchartDistance:
+            typeof serial.link.distance === 'number' && !Number.isNaN(serial.link.distance)
+              ? serial.link.distance
+              : 0,
+        });
       });
   }
 }

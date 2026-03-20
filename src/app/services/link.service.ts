@@ -63,11 +63,25 @@ export class LinkService {
   }
 
   updateLink(controller: Controller, link: Link) {
-    return this.httpController.put<Link>(controller, `/projects/${link.project_id}/links/${link.link_id}`, link);
+    const payload: Pick<Partial<Link>, 'nodes' | 'filters' | 'suspend'> = {};
+
+    if (link.nodes !== undefined) {
+      payload.nodes = link.nodes;
+    }
+    if (link.filters !== undefined) {
+      payload.filters = link.filters;
+    }
+    if (link.suspend !== undefined) {
+      payload.suspend = link.suspend;
+    }
+
+    return this.httpController.put<Link>(controller, `/projects/${link.project_id}/links/${link.link_id}`, payload);
   }
 
   updateLinkStyle(controller: Controller, link: Link) {
-    return this.httpController.put<Link>(controller, `/projects/${link.project_id}/links/${link.link_id}`, link);
+    return this.httpController.put<Link>(controller, `/projects/${link.project_id}/links/${link.link_id}`, {
+      link_style: link.link_style,
+    });
   }
 
   getAvailableFilters(controller: Controller, link: Link) {

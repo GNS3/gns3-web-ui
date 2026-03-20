@@ -26,6 +26,20 @@ export class InterfaceLabelWidget {
     private mapSettings: MapSettingsManager
   ) {}
 
+  private getRenderedLabelX(labelNode: MapLinkNode) {
+    const renderOffsetX = this.selectionManager.isSelected(labelNode)
+      ? 0
+      : labelNode.bezierRenderOffsetX || 0;
+    return labelNode.label.x + renderOffsetX;
+  }
+
+  private getRenderedLabelY(labelNode: MapLinkNode) {
+    const renderOffsetY = this.selectionManager.isSelected(labelNode)
+      ? 0
+      : labelNode.bezierRenderOffsetY || 0;
+    return labelNode.label.y + renderOffsetY;
+  }
+
   public setEnabled(enabled) {
     this.enabled = enabled;
   }
@@ -35,10 +49,13 @@ export class InterfaceLabelWidget {
 
     const link_node_position = selection
       .selectAll<SVGGElement, MapLinkNode>('g.link_node_position')
-      .data((link: MapLink) => [
-        [link.source, link.nodes[0]],
-        [link.target, link.nodes[1]],
-      ]);
+      .data((link: MapLink) => {
+        const linkHidden = link.link_style?.type === 0;
+        return [
+          [link.source, link.nodes[0], linkHidden],
+          [link.target, link.nodes[1], linkHidden],
+        ];
+      });
 
     const enter_link_node_position = link_node_position
       .enter()
@@ -47,13 +64,17 @@ export class InterfaceLabelWidget {
 
     const merge_link_node_position = link_node_position.merge(enter_link_node_position);
 
-    merge_link_node_position.attr('transform', (nodeAndMapLinkNode: [MapNode, MapLinkNode]) => {
-      return `translate(${nodeAndMapLinkNode[0].x}, ${nodeAndMapLinkNode[0].y})`;
-    });
+    merge_link_node_position
+      .attr('transform', (nodeAndMapLinkNode: [MapNode, MapLinkNode, boolean]) => {
+        return `translate(${nodeAndMapLinkNode[0].x}, ${nodeAndMapLinkNode[0].y})`;
+      })
+      .classed('link-hidden', (nodeAndMapLinkNode: [MapNode, MapLinkNode, boolean]) => {
+        return nodeAndMapLinkNode[2];
+      });
 
     const labels = merge_link_node_position
-      .selectAll<SVGGElement, [MapNode, MapLinkNode]>('g.interface_label_container')
-      .data((nodeAndMapLinkNode: [MapNode, MapLinkNode]) => {
+      .selectAll<SVGGElement, [MapNode, MapLinkNode, boolean]>('g.interface_label_container')
+      .data((nodeAndMapLinkNode: [MapNode, MapLinkNode, boolean]) => {
         if (this.enabled) {
           return [nodeAndMapLinkNode[1]];
         }
@@ -85,10 +106,12 @@ export class InterfaceLabelWidget {
         styles = this.fontFixer.fixStyles(styles);
         return styles;
       })
-      .attr('x', (l: MapLinkNode) => l.label.x)
-      .attr('y', (l: MapLinkNode) => l.label.y)
+      .attr('x', (l: MapLinkNode) => this.getRenderedLabelX(l))
+      .attr('y', (l: MapLinkNode) => this.getRenderedLabelY(l))
       .attr('transform', (l: MapLinkNode) => {
-        return `rotate(${l.label.rotation}, ${l.label.x}, ${l.label.y})`;
+        const renderedX = this.getRenderedLabelX(l);
+        const renderedY = this.getRenderedLabelY(l);
+        return `rotate(${l.label.rotation}, ${renderedX}, ${renderedY})`;
       });
 
     // update surrounding rect

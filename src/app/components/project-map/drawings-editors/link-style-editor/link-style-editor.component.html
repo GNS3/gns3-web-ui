@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Style editor</h1>
+<h1 mat-dialog-title>Link Style Editor</h1>
 
 <div class="modal-form-container">
   <form [formGroup]="formGroup">
@@ -20,9 +20,41 @@
     </mat-form-field>
 
     <mat-form-field class="form-field">
-        <mat-select placeholder="Type" formControlName="type">
-            <mat-option *ngFor="let type of borderTypes" [value]="type"> {{ type }} </mat-option>
-        </mat-select>
+      <mat-label>Line style</mat-label>
+      <mat-select formControlName="type">
+        <mat-option *ngFor="let type of borderTypes" [value]="type">{{ type }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="form-field">
+      <mat-label>Link type</mat-label>
+      <mat-select formControlName="linkType">
+        <mat-option *ngFor="let linkType of linkTypes" [value]="linkType">{{ linkType }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="form-field bezier-curviness-field" *ngIf="isCurvinessSelected()">
+      <input
+        matInput
+        formControlName="bezierCurviness"
+        placeholder="Curviness"
+        type="number"
+        [min]="curvinessMin"
+        [max]="curvinessMax"
+        [step]="curvinessStep"
+      />
+    </mat-form-field>
+
+    <mat-form-field class="form-field flowchart-roundness-field" *ngIf="isFlowchartSelected()">
+      <input
+        matInput
+        formControlName="flowchartRoundness"
+        placeholder="Round"
+        type="number"
+        [min]="flowchartRoundnessMin"
+        [max]="flowchartRoundnessMax"
+        [step]="flowchartRoundnessStep"
+      />
     </mat-form-field>
   </form>
 </div>
