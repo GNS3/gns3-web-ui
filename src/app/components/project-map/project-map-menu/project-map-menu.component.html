@@ -1,6 +1,7 @@
 <button
   matTooltip="Add a note"
   matTooltipClass="custom-tooltip"
+  matTooltipPosition="left"
   mat-icon-button
   class="menu-button"
   (click)="addDrawing('text')"
@@ -17,6 +18,7 @@
 <button
   matTooltip="Insert a picture"
   matTooltipClass="custom-tooltip"
+  matTooltipPosition="left"
   mat-icon-button
   class="menu-button"
   (click)="file.click()"
@@ -26,6 +28,7 @@
 <button
   matTooltip="Draw a rectangle"
   matTooltipClass="custom-tooltip"
+  matTooltipPosition="left"
   mat-icon-button
   class="menu-button"
   (click)="addDrawing('rectangle')"
@@ -35,6 +38,7 @@
 <button
   matTooltip="Draw an ellipse"
   matTooltipClass="custom-tooltip"
+  matTooltipPosition="left"
   mat-icon-button
   class="menu-button"
   (click)="addDrawing('ellipse')"
@@ -45,6 +49,7 @@
   *ngIf="!isLightThemeEnabled"
   matTooltip="Draw a line"
   matTooltipClass="custom-tooltip"
+  matTooltipPosition="left"
   mat-icon-button
   class="menu-button"
   (click)="addDrawing('line')"
@@ -64,6 +69,7 @@
   *ngIf="isLightThemeEnabled"
   matTooltip="Draw a line"
   matTooltipClass="custom-tooltip"
+  matTooltipPosition="left"
   mat-icon-button
   class="menu-button"
   (click)="addDrawing('line')"
@@ -82,6 +88,7 @@
 <button
   matTooltip="Lock or unlock all items"
   matTooltipClass="custom-tooltip"
+  matTooltipPosition="left"
   mat-icon-button
   class="menu-button"
   (click)="changeLockValue()"
@@ -91,11 +98,25 @@
 <button
   matTooltip="Take a screenshot"
   matTooltipClass="custom-tooltip"
+  matTooltipPosition="left"
   mat-icon-button
   class="menu-button"
   (click)="takeScreenshot()"
 >
   <mat-icon [ngClass]="{ unmarkedLight: !isLocked && isLightThemeEnabled }">photo_camera</mat-icon>
+</button>
+<button
+  matTooltip="AI Assistant"
+  matTooltipClass="custom-tooltip"
+  matTooltipPosition="left"
+  mat-icon-button
+  class="menu-button ai-chat-button"
+  [class.ai-active]="isAIChatOpen && !isAIMinimized"
+  [class.ai-minimized]="isAIChatOpen && isAIMinimized"
+  (click)="openAIChat()"
+>
+  <span class="ai-icon">AI</span>
+  <span *ngIf="isAIChatOpen && isAIMinimized" class="ai-minimize-indicator"></span>
 </button>
 <app-drawing-added
   [controller]="controller"

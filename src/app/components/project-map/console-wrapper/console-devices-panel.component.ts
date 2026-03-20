@@ -1,0 +1,136 @@
+import { Component, OnInit, OnDestroy, Output, EventEmitter, ChangeDetectorRef, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { Node } from '../../../cartography/models/node';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+
+/**
+ * Console Devices Panel Component
+ * Displays a list of console-capable devices in the sidebar
+ */
+@Component({
+  selector: 'app-console-devices-panel',
+  templateUrl: './console-devices-panel.component.html',
+  styleUrls: ['./console-devices-panel.component.scss']
+})
+export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
+  @Output() deviceSelected = new EventEmitter<Node>();
+  @Input() isLightTheme: boolean = false;
+
+  nodes: Node[] = [];
+  collapsed = true;
+
+  private destroy$ = new Subject<void>();
+
+  constructor(
+    private nodesDataSource: NodesDataSource,
+    private cdr: ChangeDetectorRef
+  ) {}
+
+  ngOnInit(): void {
+    // Subscribe to all nodes changes
+    this.nodesDataSource.changes.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((nodes: Node[]) => {
+      // Filter out nodes without console and VNC/HTTP/HTTPS nodes (they use standalone popup windows)
+      this.nodes = nodes.filter(n => {
+        const noConsole = n.console_type === 'none' || !n.console_type;
+        const isVnc = n.console_type === 'vnc';
+        const isHttp = n.console_type && n.console_type.startsWith('http');
+        return !noConsole && !isVnc && !isHttp;
+      });
+      this.sortNodes();
+      this.cdr.markForCheck();
+    });
+
+    // Subscribe to individual node updates
+    this.nodesDataSource.itemChanged.pipe(
+      takeUntil(this.destroy$)
+    ).subscribe((node: Node) => {
+      const index = this.nodes.findIndex(n => n.node_id === node.node_id);
+      if (index >= 0) {
+        this.nodes[index] = node;
+        this.sortNodes();
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /**
+   * Check if device is started
+   */
+  isDeviceStarted(node: Node): boolean {
+    return node.status === 'started';
+  }
+
+  /**
+   * Sort nodes: started devices first, then by name
+   */
+  private sortNodes(): void {
+    this.nodes.sort((a, b) => {
+      // First, sort by status (started first)
+      const aStarted = a.status === 'started';
+      const bStarted = b.status === 'started';
+
+      if (aStarted && !bStarted) {
+        return -1;
+      }
+      if (!aStarted && bStarted) {
+        return 1;
+      }
+
+      // Then, sort by name alphabetically
+      return a.name.localeCompare(b.name);
+    });
+  }
+
+  /**
+   * Get status color
+   */
+  getStatusColor(status: string): string {
+    const colorMap = {
+      started: '#22c55e',
+      starting: '#eab308',
+      stopped: '#6b7280',
+      suspended: '#f97316',
+      errored: '#ef4444'
+    };
+    return colorMap[status] || '#6b7280';
+  }
+
+  /**
+   * Handle device click
+   */
+  onDeviceClick(node: Node): void {
+    this.deviceSelected.emit(node);
+  }
+
+  /**
+   * Toggle panel collapse/expand
+   */
+  togglePanel(): void {
+    this.collapsed = !this.collapsed;
+    this.cdr.markForCheck();
+  }
+
+  /**
+   * Get status label
+   */
+  getStatusLabel(status: string): string {
+    const labelMap = {
+      started: 'Running',
+      starting: 'Starting',
+      stopped: 'Stopped',
+      suspended: 'Suspended',
+      errored: 'Error'
+    };
+    return labelMap[status] || 'Unknown';
+  }
+}

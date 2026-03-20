@@ -1,5 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 
@@ -11,11 +10,12 @@ export class OpenFileExplorerActionComponent implements OnInit {
   @Input() controller: Controller;
   @Input() node: Node;
 
-  constructor(private electronService: ElectronService) {}
+  constructor() {}
 
   ngOnInit() {}
 
   open() {
-    this.electronService.shell.openPath(this.node.node_directory);
+    // Opening file explorer is not supported in web mode
+    console.log('Opening file explorer is only supported in Electron mode');
   }
 }

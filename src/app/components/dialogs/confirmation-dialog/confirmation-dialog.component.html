@@ -1,0 +1,21 @@
+<div class="dialog-container">
+  <div class="dialog-header">
+    <mat-icon class="dialog-icon warning-icon">warning</mat-icon>
+    <h2 class="dialog-title">{{ title }}</h2>
+  </div>
+
+  <div class="dialog-content">
+    <p class="dialog-message">{{ data.message }}</p>
+  </div>
+
+  <div class="dialog-actions">
+    <button mat-button (click)="onNoClick()" class="cancel-button">
+      <mat-icon class="button-icon">close</mat-icon>
+      <span>{{ cancelButtonText }}</span>
+    </button>
+    <button mat-raised-button (click)="onYesClick()" color="warn" class="confirm-button">
+      <mat-icon class="button-icon">check_circle</mat-icon>
+      <span>{{ confirmButtonText }}</span>
+    </button>
+  </div>
+</div>

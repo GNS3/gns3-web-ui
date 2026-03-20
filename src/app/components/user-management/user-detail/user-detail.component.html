@@ -111,6 +111,13 @@
           </table>
         </div>
       </mat-tab>
+
+      <mat-tab label="AI Profiles">
+        <app-ai-profile-tab
+          [controller]="controller"
+          [user]="user">
+        </app-ai-profile-tab>
+      </mat-tab>
     </mat-tab-group>
 
   </div>

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { NodeService } from '@services/node.service';
 import { select } from 'd3-selection';
@@ -19,6 +19,7 @@ import { Screenshot, ScreenshotDialogComponent } from '../screenshot-dialog/scre
 import { ProjectMapLockConfirmationDialogComponent } from './project-map-lock-confirmation-dialog/project-map-lock-confirmation-dialog.component';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { AiChatStore } from '../../../stores/ai-chat.store';
 @Component({
   selector: 'app-project-map-menu',
   templateUrl: './project-map-menu.component.html',
@@ -28,6 +29,7 @@ import { NodesDataSource } from '../../../cartography/datasources/nodes-datasour
 export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   @Input() project: Project;
   @Input() controller: Controller;
+  @Output() aiChatOpened = new EventEmitter<void>();
   private nodes: Node[] = [];
   private drawing: Drawing[] = [];
 
@@ -41,7 +43,10 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   };
   public isLocked: boolean = false;
   public isLightThemeEnabled: boolean = false;
+  public isAIChatOpen: boolean = false;
+  public isAIMinimized: boolean = false;
   private projectSubscription: Subscription;
+  private aiChatStateSubscription: Subscription;
   constructor(
     private toolsService: ToolsService,
     private mapSettingsService: MapSettingsService,
@@ -53,6 +58,8 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     private nodeService : NodeService,
     private nodesDataSource: NodesDataSource,
     private drawingsDataSource: DrawingsDataSource,
+    private aiChatStore: AiChatStore,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -65,6 +72,14 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       }
     });
     this.getAllNodesAndDrawingStatus();
+
+    // Subscribe to AI Chat panel state
+    this.aiChatStateSubscription = this.aiChatStore.getPanelState().subscribe(panelState => {
+      this.isAIChatOpen = panelState.isOpen;
+      this.isAIMinimized = panelState.isMinimized;
+      // Trigger change detection for OnPush strategy
+      this.cdr.markForCheck();
+    });
   }
 
   getCssClassForIcon(type: string) {
@@ -112,9 +127,10 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       }
       let svgString = splittedSvg.join();
 
-      let placeholder = document.createElement('div');
-      placeholder.innerHTML = svgString;
-      let element = placeholder.firstChild;
+      // Use DOMParser instead of innerHTML to avoid XSS warnings
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(svgString, 'image/svg+xml');
+      const element = doc.documentElement;
 
       svg.saveSvgAsPng(element, `${screenshotProperties.name}.png`);
     } else {
@@ -275,5 +291,28 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     // this.projectSubscription.unsubscribe();
+    if (this.aiChatStateSubscription) {
+      this.aiChatStateSubscription.unsubscribe();
+    }
+  }
+
+  /**
+   * Open AI Chat panel
+   */
+  public openAIChat() {
+    if (!this.project || !this.controller) {
+      return;
+    }
+
+    if (!this.isAIChatOpen) {
+      // First click: open the panel (emit event to parent)
+      this.aiChatOpened.emit();
+    } else if (this.isAIMinimized) {
+      // Panel is minimized: restore it
+      this.aiChatStore.restorePanel();
+    } else {
+      // Panel is open: minimize it
+      this.aiChatStore.minimizePanel();
+    }
   }
 }

@@ -1,0 +1,335 @@
+.config-form {
+  min-width: 400px;
+  max-width: 700px;
+
+  .full-width {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+
+  .section-header {
+    margin-top: 16px;
+    margin-bottom: 16px;
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 600;
+      color: #1976d2;
+    }
+  }
+
+  .row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    .half-width {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  // Checkbox section
+  .checkbox-section {
+    margin: 16px 0;
+
+    mat-checkbox {
+      display: block;
+    }
+
+    ::ng-deep .mat-checkbox-layout {
+      display: block;
+    }
+
+    .checkbox-hint {
+      display: block;
+      margin-top: 8px;
+      margin-left: 28px;
+      font-size: 13px;
+      color: #757575;
+    }
+  }
+
+  .option-hint {
+    color: #757575;
+    font-size: 12px;
+  }
+
+  .existing-key-hint {
+    color: #1976d2;
+    font-size: 13px;
+  }
+
+  .warning-hint {
+    color: #757575;
+    font-size: 13px;
+  }
+
+  .custom-fields-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #e0e0e0;
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+
+      h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 500;
+        color: #424242;
+      }
+
+      button {
+        width: 40px;
+        height: 40px;
+        padding: 8px;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+
+        &::before {
+          content: '';
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          background-color: currentColor;
+          opacity: 0;
+          transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          transform: scale(0.75);
+        }
+
+        mat-icon {
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+          transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          z-index: 1;
+        }
+
+        &:hover::before {
+          opacity: 1;
+          background-color: #e3f2fd;
+        }
+
+        &:hover mat-icon {
+          color: #1976d2;
+          transform: scale(1.1);
+        }
+      }
+    }
+
+    .section-description {
+      margin-bottom: 16px;
+
+      .reserved-field-hint {
+        margin: 0;
+        font-size: 13px;
+        color: #757575;
+        font-style: italic;
+      }
+    }
+
+    .custom-fields-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .custom-field-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+
+        .field-key {
+          flex: 1;
+          min-width: 150px;
+        }
+
+        .field-value {
+          flex: 1;
+          min-width: 150px;
+        }
+
+        button {
+          margin-top: 12px;
+          width: 40px;
+          height: 40px;
+          padding: 8px;
+          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+          border-radius: 50%;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+
+          &::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background-color: currentColor;
+            opacity: 0;
+            transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(0.75);
+          }
+
+          mat-icon {
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 1;
+          }
+
+          &.delete-btn:hover::before {
+            opacity: 1;
+            background-color: #ffebee;
+          }
+
+          &:hover mat-icon {
+            transform: scale(1.1);
+          }
+        }
+      }
+    }
+
+    .empty-custom-fields {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      color: #757575;
+      text-align: center;
+
+      .empty-icon {
+        font-size: 40px;
+        margin-bottom: 8px;
+        opacity: 0.5;
+      }
+
+      p {
+        margin: 0;
+        font-size: 14px;
+      }
+    }
+  }
+
+  // Mode Selector
+  .mode-selector {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding: 8px 0;
+
+    mat-button-toggle-group {
+      flex: 1;
+      display: flex;
+
+      ::ng-deep .mat-button-toggle {
+        flex: 1;
+
+        .mat-button-toggle-button {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 8px 16px;
+
+          mat-icon {
+            font-size: 20px;
+            height: 20px;
+            width: 20px;
+          }
+
+          span {
+            font-size: 14px;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+
+    .help-icon {
+      flex-shrink: 0;
+      mat-icon {
+        font-size: 20px;
+        height: 20px;
+        width: 20px;
+        color: #757575;
+      }
+
+      &:hover mat-icon {
+        color: #1976d2;
+      }
+    }
+  }
+
+  // Basic Mode
+  .basic-mode {
+    .model-option {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.4;
+
+      .model-name {
+        font-weight: 500;
+        font-size: 14px;
+      }
+
+      .model-desc {
+        font-size: 12px;
+        color: #757575;
+        margin-top: 2px;
+      }
+    }
+
+    .mode-info {
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      margin-top: 16px;
+      background: #ffffff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+
+      .info-icon {
+        flex-shrink: 0;
+        color: #757575;
+        font-size: 20px;
+        height: 20px;
+        width: 20px;
+        margin-top: 2px;
+      }
+
+      p {
+        margin: 0;
+        font-size: 13px;
+        color: #616161;
+        line-height: 1.5;
+
+        strong {
+          font-weight: 500;
+          color: #424242;
+        }
+      }
+    }
+  }
+
+  // Custom Mode
+  .custom-mode {
+    // Inherits all existing styles
+  }
+}

@@ -6,6 +6,7 @@ import { QemuImg } from '@models/qemu/qemu-img';
 import { Controller } from '@models/controller';
 import { QemuTemplate } from '@models/templates/qemu-template';
 import { HttpController } from './http-controller.service';
+import { environment } from 'environments/environment';
 
 @Injectable()
 export class QemuService {
@@ -20,7 +21,7 @@ export class QemuService {
   }
 
   getImagePath(controller: Controller, filename: string): string {
-    return `${controller.protocol}//${controller.host}:${controller.port}/images/upload/${filename}`;
+    return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${filename}`;
   }
 
 

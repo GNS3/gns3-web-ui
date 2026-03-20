@@ -11,6 +11,7 @@ import { DeleteAllImageFilesDialogComponent } from './deleteallfiles-dialog/dele
 import { ImageTableRow, imageDataSource, imageDatabase } from "./image-database-file";
 import { QuestionDialogComponent } from "@components/dialogs/question-dialog/question-dialog.component";
 import { MatSort, MatSortable } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
 import { Subscription } from 'rxjs';
 import { ImageUploadEvent, ImageUploadSessionService } from '@services/image-upload-session.service';
 
@@ -37,8 +38,14 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   highlightedFilename: string | null = null;
   private highlightTimer: ReturnType<typeof setTimeout>;
 
+  // Pagination properties
+  pageSizeOptions: number[] = [5, 10, 25, 50, 100];
+  defaultPageSize = 10;
+  currentPage = 0;
+
   displayedColumns = ['select', 'filename', 'image_type', 'image_size', 'created_at', 'delete'];
   @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
   constructor(
     private imageService: ImageManagerService,
@@ -58,7 +65,14 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
         start: 'asc',
       });
     }
-    this.dataSource = new imageDataSource(this.imageDatabase, this.sort);
+
+    // Initialize paginator
+    if (this.paginator) {
+      this.paginator.pageIndex = this.currentPage;
+      this.paginator.pageSize = this.defaultPageSize;
+    }
+
+    this.dataSource = new imageDataSource(this.imageDatabase, this.sort, this.paginator);
     this.dataRowsSubscription = this.dataSource.connect().subscribe((rows: ImageTableRow[]) => {
       this.displayedRows = rows || [];
     });
@@ -111,9 +125,17 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
     );
   }
 
+  onPageEvent(event: any) {
+    this.currentPage = event.pageIndex;
+  }
+
   onSearchChange(value: string) {
     if (this.dataSource) {
       this.dataSource.setFilter(value);
+      // Reset to first page when searching
+      if (this.paginator) {
+        this.paginator.pageIndex = 0;
+      }
     }
   }
 

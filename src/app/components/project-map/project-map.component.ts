@@ -3,6 +3,7 @@ import {
   Component,
   ComponentRef,
   NgZone,
+  HostListener,
   OnDestroy,
   OnInit,
   ViewChild,
@@ -19,6 +20,7 @@ import * as Mousetrap from 'mousetrap';
 import { forkJoin, from, Observable, Subscription } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
+import * as d3 from 'd3';
 import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
 import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
 import { MapLinkNodeToLinkNodeConverter } from '../../cartography/converters/map/map-link-node-to-link-node-converter';
@@ -93,6 +95,7 @@ import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles
 import { NewTemplateDialogComponent } from './new-template-dialog/new-template-dialog.component';
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { ProjectReadmeComponent } from './project-readme/project-readme.component';
+import { AiChatStore } from '../../stores/ai-chat.store';
 
 @Component({
   selector: 'app-project-map',
@@ -118,6 +121,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public gridVisibility: boolean = false;
   public toolbarVisibility: boolean = true;
   public symbolScaling: boolean = true;
+  public isAIChatVisible: boolean = false;
   private instance: ComponentRef<TopologySummaryComponent>;
   // private instance: any
 
@@ -131,6 +135,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   protected settings: Settings;
   private inReadOnlyMode = false;
   public isLightThemeEnabled: boolean = false;
+  private highlightedNodeId: string = null;
   public isGlobalLightTheme: boolean = false;
 
   @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
@@ -188,6 +193,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     private nodeConsoleService: NodeConsoleService,
     private symbolService: SymbolService,
     private cd: ChangeDetectorRef,
+    private aiChatStore: AiChatStore,
     // private cfr: ComponentFactoryResolver,
     // private injector: Injector,
     private viewContainerRef: ViewContainerRef,
@@ -292,13 +298,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         nodesToLoad.forEach((node: Node) => {
           nodeRawUrlMap.set(
             node,
-            `${this.controller.protocol}//${this.controller.host}:${this.controller.port}/${environment.current_version}/symbols/${node.symbol}/raw`
+            `/symbols/${node.symbol}/raw`
           );
         });
 
         // Deduplicate: only 1 fetch per unique symbol URL (shareReplay(1) in getSymbolBlobUrl handles concurrent callers)
         const uniqueRawUrls = [...new Set(nodeRawUrlMap.values())];
-        forkJoin(uniqueRawUrls.map((url) => this.symbolService.getSymbolBlobUrl(url))).subscribe(
+        forkJoin(uniqueRawUrls.map((url) => this.symbolService.getSymbolBlobUrl(this.controller, url))).subscribe(
           (blobUrls: string[]) => {
             const blobUrlMap = new Map(uniqueRawUrls.map((url, i) => [url, blobUrls[i]]));
             nodesToLoad.forEach((node: Node) => {
@@ -311,7 +317,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           () => {
             // Fallback to raw URLs if blob fetch fails
             nodesToLoad.forEach((node: Node) => {
-              node.symbol_url = nodeRawUrlMap.get(node);
+              node.symbol_url = `${this.controller.protocol}//${this.controller.host}:${this.controller.port}/${environment.current_version}${nodeRawUrlMap.get(node)}`;
             });
             this.nodes = nodes;
             if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
@@ -323,7 +329,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.projectMapSubscription.add(
       this.linksDataSource.changes.subscribe((links: Link[]) => {
-        console.log('from project map component');
         this.links = links;
         this.mapChangeDetectorRef.detectChanges();
       })
@@ -478,7 +483,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
               this.toasterService.success('Node has been deleted');
             });
           });
-          
+
         selected
           .filter((item) => item instanceof MapLink)
           .forEach((item: MapLink) => {
@@ -745,6 +750,46 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.mapSettingsService.toggleLogConsole(this.isConsoleVisible);
   }
 
+  /**
+   * Handle AI Chat opened event
+   */
+  public onAIChatOpened() {
+    // Get current panel state
+    const panelState = this.aiChatStore.getPanelStateValue();
+
+    // Open panel in store to update state
+    this.aiChatStore.openPanel();
+
+    // If AI Chat is already visible and minimized, restore it via store
+    if (this.isAIChatVisible && panelState.isMinimized) {
+      this.aiChatStore.restorePanel();
+    }
+
+    // Make AI Chat visible
+    this.isAIChatVisible = true;
+  }
+
+  /**
+   * Close AI Chat panel and reset state when leaving project
+   * This ensures clean state when returning to project
+   */
+  public onLeaveProject() {
+    this.closeAIChat();
+    // Reset panel state
+    this.aiChatStore.setPanelState({
+      isOpen: false,
+      isMinimized: false,
+      isMaximized: false
+    });
+  }
+
+  /**
+   * Close AI Chat panel
+   */
+  public closeAIChat() {
+    this.isAIChatVisible = false;
+  }
+
   public toggleShowTopologySummary(visible: boolean) {
     this.isTopologySummaryVisible = visible;
     this.mapSettingsService.toggleTopologySummary(this.isTopologySummaryVisible);
@@ -995,17 +1040,97 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     instance.project = this.project;
   }
 
+  /**
+   * Handle device selection from console devices panel
+   * Highlights the selected node and its connected links in the topology
+   */
+  public onDeviceSelected(nodeId: string): void {
+    // Clear previous highlight first
+    this.clearConsoleHighlight();
+
+    this.highlightedNodeId = nodeId;
+
+    // Highlight the selected node
+    const nodeElement = d3.select(`g.node[node_id="${nodeId}"]`);
+    if (!nodeElement.empty()) {
+      nodeElement.classed('console-highlight', true);
+    }
+
+    // Highlight connected links and their connected nodes
+    d3.selectAll('g.link_body').each(function(link: any) {
+      if (link && (link.source?.id === nodeId || link.target?.id === nodeId)) {
+        d3.select(this).classed('console-highlight', true);
+
+        // Highlight the other node connected by this link
+        const otherNodeId = link.source?.id === nodeId ? link.target?.id : link.source?.id;
+        if (otherNodeId) {
+          const otherNodeElement = d3.select(`g.node[node_id="${otherNodeId}"]`);
+          if (!otherNodeElement.empty()) {
+            otherNodeElement.classed('console-highlight-connected', true);
+          }
+        }
+      }
+    });
+  }
+
+  /**
+   * Clear console device highlight
+   */
+  public clearConsoleHighlight(): void {
+    const nodeId = this.highlightedNodeId;
+    if (nodeId) {
+      // Remove highlight from selected node
+      const nodeElement = d3.select(`g.node[node_id="${nodeId}"]`);
+      if (!nodeElement.empty()) {
+        nodeElement.classed('console-highlight', false);
+      }
+
+      // Remove highlight from connected links and their nodes
+      d3.selectAll('g.link_body').each(function(link: any) {
+        if (link && (link.source?.id === nodeId || link.target?.id === nodeId)) {
+          d3.select(this).classed('console-highlight', false);
+
+          // Remove highlight from the other connected node
+          const otherNodeId = link.source?.id === nodeId ? link.target?.id : link.source?.id;
+          if (otherNodeId) {
+            const otherNodeElement = d3.select(`g.node[node_id="${otherNodeId}"]`);
+            if (!otherNodeElement.empty()) {
+              otherNodeElement.classed('console-highlight-connected', false);
+            }
+          }
+        }
+      });
+
+      this.highlightedNodeId = null;
+    }
+  }
+
+  /**
+   * Handle ESC key to clear highlight
+   */
+  @HostListener('window:keydown.escape')
+  onEscapeKey(): void {
+    this.clearConsoleHighlight();
+  }
+
+  /**
+   * Apply map background color based on theme
+   */
   private applyMapBackground(isLight: boolean): void {
     const color = isLight ? '#e8ecef' : '#18242b';
     document.body.style.backgroundColor = color;
     document.documentElement.style.backgroundColor = color;
   }
- 
-  public ngOnDestroy() {
+
+  public ngOnDestroy(): void {
+    // Close AI Chat when leaving project
+    this.onLeaveProject();
+
+    // Reset background color
     const globalColor = this.themeService.getActualTheme() === 'light' ? '#e8ecef' : '#18242b';
     document.body.style.backgroundColor = globalColor;
     document.documentElement.style.backgroundColor = globalColor;
- 
+
     this.nodeConsoleService.openConsoles = 0;
     this.title.setTitle('GNS3 Web UI');
 

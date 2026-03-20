@@ -1,103 +1,112 @@
-const electron = require('electron');
-const app = electron.app;
-const BrowserWindow = electron.BrowserWindow;
+const { app, BrowserWindow, ipcMain, shell } = require('electron');
 const path = require('path');
-const url = require('url');
-const yargs = require('yargs');
 
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
+// IPC Handlers
+const registerWiresharkHandler = require('./ipc-handlers/wireshark-handler');
+const registerRdpHandler = require('./ipc-handlers/rdp-handler');
+const registerCaptureHandler = require('./ipc-handlers/capture-handler');
+const registerSystemHandlers = require('./ipc-handlers/system-handlers');
+
 let mainWindow;
-let isDev = false;
 
-const argv = yargs
-  .describe('m', 'Maximizes window on startup.')
-  .boolean('m')
-  .describe('e', 'Environment, `dev` for developer mode and when not specified then production mode.')
-  .choices('e', ['dev', null])
-  .describe('d', 'Enable developer tools.')
-  .boolean('d')
-  .argv;
-
-if (argv.e == 'dev') {
-  isDev = true;
-}
-
-
-function createWindow () {
-  // Create the browser window.
+function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1400,
+    height: 900,
     webPreferences: {
-      nodeIntegration: true, 
-      preload: path.join(__dirname, 'sentry.js')
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js')
     }
   });
 
-  // and load the index.html of the app.
-
-  if(isDev) {
-    mainWindow.loadURL('http://localhost:4200/');
-  }
-  else {
-    mainWindow.loadURL(url.format({
-      pathname: path.join(__dirname, 'dist/index.html'),
-      protocol: 'file:',
-      slashes: true
-    }));
-    mainWindow.maximize();
-  }
-
-  if(argv.d) {
-    // Open the DevTools.
+  // Development: Connect to Angular dev server
+  // Production: Load packaged Angular files
+  if (process.env.NODE_ENV === 'development') {
+    mainWindow.loadURL('http://localhost:4200');
+    // Open DevTools in development
     mainWindow.webContents.openDevTools();
+  } else {
+    mainWindow.loadFile(path.join(__dirname, 'dist/index.html'));
   }
 
-  if(argv.m) {
-    mainWindow.maximize();
-  }
-
-  // Emitted when the window is closed.
-  mainWindow.on('closed',async function () {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
+  mainWindow.on('closed', () => {
     mainWindow = null;
-  });
-
-
-  // forward event to renderer
-  electron.ipcMain.on('local-server-status-events', (event) => {
-    mainWindow.webContents.send('local-server-status-events', event);
   });
 }
 
-// This method will be called when Electron has finished
-// initialization and is ready to create browser windows.
-// Some APIs can only be used after this event occurs.
-app.on('ready', createWindow);
+// Register all IPC handlers
+function registerHandlers() {
+  registerWiresharkHandler(ipcMain);
+  registerRdpHandler(ipcMain);
+  registerCaptureHandler(ipcMain);
+  registerSystemHandlers(ipcMain);
+}
 
-// app.on('ready', createServerProc);
-// app.on('will-quit', exitServerProc);
+// ============================================
+// App Event Handlers
+// ============================================
 
-// Quit when all windows are closed.
-app.on('window-all-closed', function () {
-  // On OS X it is common for applications and their menu bar
-  // to stay active until the user quits explicitly with Cmd + Q
+app.on('ready', () => {
+  createWindow();
+  registerHandlers();
+});
+
+app.on('window-all-closed', () => {
+  // On macOS, keep app running even when all windows are closed
   if (process.platform !== 'darwin') {
-    app.quit()
+    app.quit();
   }
 });
 
-app.on('activate', function () {
-  // On OS X it's common to re-create a window in the app when the
-  // dock icon is clicked and there are no other windows open.
+app.on('activate', () => {
+  // On macOS, recreate window when dock icon is clicked
   if (mainWindow === null) {
     createWindow();
   }
 });
 
+// Handle new windows - differentiate internal vs external links
+let newWindowId = 0;
+app.on('web-contents-created', (event, contents) => {
+  contents.on('new-window', (event, navigationUrl) => {
+    event.preventDefault();
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
+    console.log(`[Debug] New window requested: ${navigationUrl}`);
+
+    // Check if it's an internal link (Web UI related)
+    const isInternalLink = navigationUrl.includes('/static/') ||
+                          navigationUrl.includes('/console') ||
+                          navigationUrl.includes('/web-ui') ||
+                          navigationUrl.startsWith('http://localhost') ||
+                          navigationUrl.startsWith('http://127.0.0.1') ||
+                          navigationUrl.startsWith('file://') ||
+                          navigationUrl.endsWith('.html');
+
+    if (isInternalLink) {
+      // Open internal links in Electron with DevTools for debugging
+      const newWindow = new BrowserWindow({
+        width: 1200,
+        height: 800,
+        webPreferences: {
+          nodeIntegration: false,
+          contextIsolation: true,
+          preload: path.join(__dirname, 'preload.js')
+        }
+      });
+
+      newWindowId++;
+      console.log(`[Debug] Opening internal window ${newWindowId}: ${navigationUrl}`);
+
+      newWindow.loadURL(navigationUrl);
+
+      newWindow.on('closed', () => {
+        console.log(`[Debug] Internal window ${newWindowId} closed`);
+      });
+    } else {
+      // Open external links in system browser
+      console.log(`[Debug] Opening external link in browser: ${navigationUrl}`);
+      shell.openExternal(navigationUrl);
+    }
+  });
+});

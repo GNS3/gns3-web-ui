@@ -1,12 +1,13 @@
 import { Component, AfterViewInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
 import { ProjectService } from '@services/project.service';
-import { marked } from 'marked';
 import { ElementRef } from '@angular/core';
 import { Renderer2 } from '@angular/core';
 import { ViewChild } from '@angular/core';
+import { marked } from 'marked';
 
 @Component({
   selector: 'app-project-readme',
@@ -17,12 +18,14 @@ export class ProjectReadmeComponent implements AfterViewInit {
   controller: Controller;
   project: Project;
   @ViewChild('text', {static: false}) text: ElementRef;
+  readmeHtml: SafeHtml | string = '';
 
   constructor(
     public dialogRef: MatDialogRef<ProjectReadmeComponent>,
     private projectService: ProjectService,
     private elementRef: ElementRef,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngAfterViewInit() {
@@ -31,10 +34,8 @@ export class ProjectReadmeComponent implements AfterViewInit {
     this.projectService.getReadmeFile(this.controller, this.project.project_id).subscribe(file => {
         if (file) {
             markdown = file;
-            setTimeout(function(){
-                const markdownHtml = marked(markdown);
-                document.getElementById('text').innerHTML = markdownHtml;
-            }, 1000);
+            const markdownHtml = marked(markdown) as string;
+            this.readmeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownHtml);
         }
     });
   }

@@ -3,7 +3,7 @@
     <div class="row">
       <h1 class="col">Access Control List (ACL)</h1>
       <button class="col" mat-raised-button color="primary" (click)="deleteMultiple()" class="add-ace-button" [disabled]="selection.selected.length == 0">
-        Delete selected ACEs
+        Delete Selected
       </button>
       <button class="col" mat-raised-button color="primary" (click)="addACE()" class="add-ace-button">
         Add ACE
@@ -76,7 +76,7 @@
 
       <ng-container matColumnDef="delete">
         <th mat-header-cell *matHeaderCellDef> </th>
-        <td mat-cell *matCellDef="let element"><button mat-button (click)="onDelete(element)"><mat-icon>delete</mat-icon></button></td>
+        <td mat-cell *matCellDef="let element"><button mat-icon-button (click)="onDelete(element)" color="warn" class="delete-btn"><mat-icon>delete</mat-icon></button></td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

@@ -3,10 +3,10 @@
     <div class="row">
       <h1 class="col">Groups</h1>
       <button class="col" mat-raised-button color="primary" (click)="onDelete(selection.selected)" class="add-group-button" [disabled]="selection.selected.length == 0">
-        Delete selected groups
+        Delete Selected
       </button>
       <button class="col" mat-raised-button color="primary" (click)="addGroup()" class="add-group-button">
-        Add group
+        Add Group
       </button>
     </div>
   </div>
@@ -59,7 +59,7 @@
 
       <ng-container matColumnDef="delete">
         <th mat-header-cell *matHeaderCellDef> </th>
-        <td mat-cell *matCellDef="let element"><button mat-button (click)="onDelete([element])"><mat-icon>delete</mat-icon></button></td>
+        <td mat-cell *matCellDef="let element"><button mat-icon-button (click)="onDelete([element])" color="warn" class="delete-btn"><mat-icon>delete</mat-icon></button></td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

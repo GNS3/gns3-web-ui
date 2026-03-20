@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
 import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
+import { MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
 import { ThemeService } from '@services/theme.service';
 
 @Component({
@@ -13,10 +14,14 @@ export class ConfirmationBottomSheetComponent implements OnInit {
 
   constructor(
     private bottomSheetRef: MatBottomSheetRef<ConfirmationBottomSheetComponent>,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    @Inject(MAT_BOTTOM_SHEET_DATA) public data: { message: string }
   ) {}
 
   ngOnInit() {
+    if (this.data && this.data.message) {
+      this.message = this.data.message;
+    }
     this.themeService.getActualTheme() === 'light'
       ? (this.isLightThemeEnabled = true)
       : (this.isLightThemeEnabled = false);

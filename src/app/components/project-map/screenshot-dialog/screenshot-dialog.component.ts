@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DeviceDetectorService } from 'ngx-device-detector';
-import { ElectronService } from 'ngx-electron';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
@@ -19,13 +18,12 @@ export class ScreenshotDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<ScreenshotDialogComponent>,
     private toasterService: ToasterService,
     private formBuilder: UntypedFormBuilder,
-    private electronService: ElectronService,
     private deviceService: DeviceDetectorService
   ) {
     this.nameForm = this.formBuilder.group({
       screenshotName: new UntypedFormControl(`screenshot-${Date.now()}`, [Validators.required]),
     });
-    this.isPngAvailable = this.electronService.isWindows || this.deviceService.getDeviceInfo().os === 'Windows';
+    this.isPngAvailable = this.deviceService.getDeviceInfo().os === 'Windows';
   }
 
   ngOnInit() {}

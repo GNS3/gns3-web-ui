@@ -4,15 +4,14 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { ElectronService } from 'ngx-electron';
 import { Node } from '../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
+import { VncConsoleService } from '@services/vnc-console.service';
 import { ProjectService } from '@services/project.service';
 import { ConsoleService } from '@services/settings/console.service';
 import { ToasterService } from '@services/toaster.service';
-import { MockedToasterService } from '@services/toaster.service.spec';
 import { MockedProjectService } from '../../projects/add-blank-project-dialog/add-blank-project-dialog.component.spec';
 import { ConsoleDeviceActionBrowserComponent } from '../context-menu/actions/console-device-action-browser/console-device-action-browser.component';
 import { ConsoleDeviceActionComponent } from '../context-menu/actions/console-device-action/console-device-action.component';
@@ -33,20 +32,16 @@ describe('ContextConsoleMenuComponent', () => {
   };
 
   beforeEach(async () => {
-    const electronMock = {
-      isElectronApp: true,
-    };
-
     await TestBed.configureTestingModule({
       imports: [MatMenuModule, BrowserModule, MatSnackBarModule],
       providers: [
         { provide: ChangeDetectorRef },
         { provide: ProjectService, useClass: MockedProjectService },
-        { provide: ElectronService, useValue: electronMock },
         { provide: MapSettingsService, useValue: mapSettingsService },
         { provide: ConsoleService },
         { provide: Router, useValue: router },
         NodeConsoleService,
+        { provide: VncConsoleService, useValue: {} },
         ToasterService,
         MapSettingsService
       ],
@@ -70,9 +65,6 @@ it('should create', () => {
   expect(component).toBeTruthy();
 });
 
-it('should define property if running in electron ', () => {
-  expect(component.isElectronApp).toBeTruthy();
-});
 
 it('should open menu if there is no default settings', () => {
   let spy = spyOn(component.contextConsoleMenu, 'openMenu');

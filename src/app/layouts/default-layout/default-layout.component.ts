@@ -2,7 +2,6 @@ import { Component, HostListener, OnDestroy, OnInit, ViewEncapsulation } from '@
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ProjectService } from '@services/project.service';
-import { ElectronService } from 'ngx-electron';
 import { Subscription } from 'rxjs';
 import { ProgressService } from '../../common/progress/progress.service';
 import { NewTemplateDialogComponent } from '@components/project-map/new-template-dialog/new-template-dialog.component';
@@ -38,7 +37,6 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   private projectMapSubscription: Subscription = new Subscription();
 
   constructor(
-    private electronService: ElectronService,
     private recentlyOpenedProjectService: RecentlyOpenedProjectService,
     private controllerManagement: ControllerManagementService,
     private toasterService: ToasterService,
@@ -67,7 +65,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
     this.recentlyOpenedProjectId = this.recentlyOpenedProjectService.getProjectId();
     this.controllerIdProjectList = this.recentlyOpenedProjectService.getcontrollerIdProjectList();
 
-    this.isInstalledSoftwareAvailable = this.electronService.isElectronApp;
+    this.isInstalledSoftwareAvailable = false; // Web application
 
     // attach to notification stream when any of running local controllers experienced issues
     this.controllerStatusSubscription = this.controllerManagement.controllerStatusChanged.subscribe(
@@ -83,8 +81,8 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
       }
     );
 
-    // stop controllers only when in Electron
-    this.shouldStopControllersOnClosing = this.electronService.isElectronApp;
+    // stop controllers only when in Electron (not applicable for web)
+    this.shouldStopControllersOnClosing = false;
   }
 
   goToDocumentation() {

@@ -12,6 +12,10 @@ directories:
 files:
   - dist
   - main.js
+  - preload.js
+  - ipc-handlers/**/*.js
+  - utils/**/*.js
+  - services/**/*.js
   - renderer.js
   - sentry.js
   - installed-software.js

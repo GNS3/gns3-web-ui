@@ -1,0 +1,13 @@
+/* Tailwind CSS for Markdown rendering only */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Markdown specific styles using Tailwind Typography */
+.markdown-prose {
+  @apply prose prose-sm max-w-none;
+}
+
+.markdown-prose-dark {
+  @apply prose prose-sm max-w-none dark:prose-invert;
+}

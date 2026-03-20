@@ -1,13 +1,19 @@
 .main {
   display: flex;
-  justify-content: space-around;
+  gap: 24px;
 }
 
 .details {
-  width: 30vw;
+  width: 300px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+app-privilege {
+  flex: 1;
+  min-width: 0;
 }
 
 

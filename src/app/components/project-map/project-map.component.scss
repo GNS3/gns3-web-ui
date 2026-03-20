@@ -103,6 +103,11 @@ g.node:hover {
     border-radius: 18px;
     background: none;
     font-size: 20px;
+    transition: transform 0.2s ease;
+  }
+
+  .menu-button:hover {
+    transform: scale(1.3);
   }
 
   .add-menu-button mat-icon {
@@ -155,6 +160,11 @@ g.node:hover {
     border-radius: 18px;
     background: none;
     margin: 2px 0px;
+    transition: transform 0.2s ease;
+  }
+
+  .menu-button:hover {
+    transform: scale(1.3);
   }
 
   .zoom-button {
@@ -167,10 +177,15 @@ g.node:hover {
     background: none;
     margin: 2px 0px;
     color: white;
+    transition: transform 0.2s ease;
 
     mat-icon {
       font-size: 24px !important;
     }
+  }
+
+  .zoom-button:hover {
+    transform: scale(1.3);
   }
 
   .reset-zoom-button {
@@ -183,18 +198,36 @@ g.node:hover {
     background: none;
     margin: 2px 0px;
     color: white;
+    transition: transform 0.2s ease;
 
     mat-icon {
       font-size: 18px !important;
     }
   }
 
+  .reset-zoom-button:hover {
+    transform: scale(1.3);
+  }
+
   .selection-button {
     margin-bottom: 0px !important;
+    transition: transform 0.2s ease;
+  }
+
+  .selection-button:hover {
+    transform: scale(1.3);
   }
 
   .snapshot-button mat-icon {
     font-size: 16px;
+  }
+
+  .snapshot-button {
+    transition: transform 0.2s ease;
+  }
+
+  .snapshot-button:hover {
+    transform: scale(1.3);
   }
 
   .section {
@@ -361,13 +394,8 @@ line.selected {
 svg.map image:hover,
 svg.map image.chosen,
 g.selected {
-  -webkit-filter: grayscale(100%);
-  -moz-filter: grayscale(100%);
-  -ms-filter: grayscale(100%);
-  -o-filter: grayscale(100%);
-  filter: grayscale(100%);
-  filter: gray;
-  filter: url('#grayscale'); /* Chrome doesn't support CSS filters on SVG */
+  // Use SVG filter for better performance with SVG elements
+  filter: url('#grayscale');
 }
 
 path.serial_link.selected {
@@ -459,3 +487,67 @@ mat-menu-panel {
 .marked {
   color: #0097a7 !important;
 }
+
+/* ============================================================================
+ * Console Device Highlight Styles
+ * Highlight selected console device and its connected links in topology
+ * ============================================================================ */
+
+g.node.console-highlight {
+  // Selected node - red glow only (no border color change)
+  filter: drop-shadow(0 0 5px #ef4444);
+
+  .node_body {
+    // No stroke color change - keep original node border color
+    // Only add red glow effect
+    stroke-width: 5px;
+  }
+
+  // Exclude label from stroke effect - keep original color
+  .layer_label,
+  .layer_label_wrapper,
+  .label_container,
+  .label,
+  text {
+    stroke: none !important;
+    fill: inherit !important;
+  }
+}
+
+// Connected node highlight (static highlight, performance optimized)
+g.node.console-highlight-connected {
+  filter: drop-shadow(0 0 3px #3b82f6);
+
+  .node_body {
+    // No stroke color change - keep original node border color
+    // Only add blue glow effect
+    stroke-width: 3px;
+  }
+
+  // Exclude label from stroke effect - keep original color
+  .layer_label,
+  .layer_label_wrapper,
+  .label_container,
+  .label,
+  text {
+    stroke: none !important;
+    fill: inherit !important;
+  }
+}
+
+g.link_body.console-highlight {
+  // Performance optimized: removed animation, using static red color
+  > path.ethernet_link,
+  > path.serial_link {
+    stroke: #ef4444 !important;
+    stroke-width: 4px !important;
+    // No animation, no dash - solid red line
+  }
+
+  // Force label text to keep original color using !important on fill attribute
+  .status_label text {
+    fill: #111111 !important;
+  }
+}
+
+// Performance optimized: removed linkDashAnimation (no longer used)

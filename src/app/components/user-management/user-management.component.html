@@ -41,20 +41,19 @@
           <mat-header-cell *matHeaderCellDef mat-sort-header> Username</mat-header-cell>
           <mat-cell *matCellDef="let row">
             <a [routerLink]="['/controller', controller.id, 'management','users', row.user_id]"
-               class="table-link" [matTooltip]="row.username">{{ row.username }}</a>
+               class="table-link">{{ row.username }}</a>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="full_name">
           <mat-header-cell *matHeaderCellDef mat-sort-header> Full Name</mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <div [matTooltip]="row.full_name" matTooltipClass="custom-tooltip"
-                 class="overflow-col">{{ row.full_name }}</div>
+            <div class="overflow-col">{{ row.full_name }}</div>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="email">
           <mat-header-cell *matHeaderCellDef mat-sort-header> Mail</mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <div [matTooltip]="row.email" matTooltipClass="custom-tooltip" class="overflow-col">{{ row.email }}</div>
+            <div class="overflow-col">{{ row.email }}</div>
           </mat-cell>
         </ng-container>
         <ng-container matColumnDef="is_active">
@@ -74,7 +73,7 @@
         <ng-container matColumnDef="delete">
           <mat-header-cell *matHeaderCellDef class="small-col"></mat-header-cell>
           <mat-cell *matCellDef="let row" class="small-col">
-            <button mat-button (click)="onDelete(row)">
+            <button mat-icon-button (click)="onDelete(row)" color="warn" class="delete-btn">
               <mat-icon>delete</mat-icon>
             </button>
           </mat-cell>

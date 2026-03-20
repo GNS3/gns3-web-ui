@@ -3,18 +3,16 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CdkTableModule } from '@angular/cdk/table';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { ErrorHandler, NgModule } from '@angular/core';
+import { ErrorHandler, NgModule, SecurityContext } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DragAndDropModule } from 'angular-draggable-droppable';
 import { ResizableModule } from 'angular-resizable-element';
-import { D3Service } from 'd3-ng2-service';
+// import { D3Service } from 'd3-ng2-service';
 import { NgCircleProgressModule } from 'ng-circle-progress';
 import { FileUploadModule } from 'ng2-file-upload';
-import { NgxChildProcessModule } from 'ngx-childprocess';
-import { NgxElectronModule } from 'ngx-electron';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CartographyModule } from './cartography/cartography.module';
@@ -101,6 +99,7 @@ import { VpcsTemplatesComponent } from '@components/preferences/vpcs/vpcs-templa
 import { ChangeHostnameDialogComponent } from '@components/project-map/change-hostname-dialog/change-hostname-dialog.component';
 import { ChangeSymbolDialogComponent } from '@components/project-map/change-symbol-dialog/change-symbol-dialog.component';
 import { ConsoleWrapperComponent } from '@components/project-map/console-wrapper/console-wrapper.component';
+import { ConsoleDevicesPanelComponent } from '@components/project-map/console-wrapper/console-devices-panel.component';
 import { ContextConsoleMenuComponent } from '@components/project-map/context-console-menu/context-console-menu.component';
 import { AlignHorizontallyActionComponent } from '@components/project-map/context-menu/actions/align-horizontally/align-horizontally.component';
 import { AlignVerticallyActionComponent } from '@components/project-map/context-menu/actions/align_vertically/align-vertically.component';
@@ -179,6 +178,11 @@ import { StartCaptureDialogComponent } from '@components/project-map/packet-capt
 import { ProjectMapMenuComponent } from '@components/project-map/project-map-menu/project-map-menu.component';
 import { ProjectMapComponent } from '@components/project-map/project-map.component';
 import { ProjectReadmeComponent } from '@components/project-map/project-readme/project-readme.component';
+import { AiChatComponent } from '@components/project-map/ai-chat/ai-chat.component';
+import { ChatSessionListComponent } from '@components/project-map/ai-chat/chat-session-list.component';
+import { ChatMessageListComponent } from '@components/project-map/ai-chat/chat-message-list.component';
+import { ChatInputAreaComponent } from '@components/project-map/ai-chat/chat-input-area.component';
+import { ToolDetailsDialogComponent } from '@components/project-map/ai-chat/tool-details-dialog.component';
 import { ScreenshotDialogComponent } from '@components/project-map/screenshot-dialog/screenshot-dialog.component';
 import { WebConsoleComponent } from '@components/project-map/web-console/web-console.component';
 import { AddBlankProjectDialogComponent } from '@components/projects/add-blank-project-dialog/add-blank-project-dialog.component';
@@ -243,6 +247,7 @@ import { MapSettingsService } from '@services/mapsettings.service';
 import { NodeService } from '@services/node.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { NotificationService } from '@services/notification.service';
+import { VncConsoleService } from '@services/vnc-console.service';
 import { PacketCaptureService } from '@services/packet-capture.service';
 import { PlatformService } from '@services/platform.service';
 import { ProjectService } from '@services/project.service';
@@ -273,7 +278,6 @@ import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
 import { VpcsService } from '@services/vpcs.service';
 import { NonNegativeValidator } from './validators/non-negative-validator';
 import { RotationValidator } from './validators/rotation-validator';
-import { MarkedDirective } from './directives/marked.directive';
 import { LoginComponent } from '@components/login/login.component';
 import { LoginService } from '@services/login.service';
 import { HttpRequestsInterceptor } from './interceptors/http.interceptor';
@@ -302,10 +306,12 @@ import { DeleteRoleDialogComponent } from '@components/role-management/delete-ro
 import { RoleDetailComponent } from '@components/role-management/role-detail/role-detail.component';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatAutocompleteModule} from "@angular/material/autocomplete";;
+import { MarkdownModule } from 'ngx-markdown';
 import { AddRoleToGroupComponent } from '@components/group-details/add-role-to-group/add-role-to-group.component';
 import {MatFormFieldModule} from "@angular/material/form-field";
 import { ChangeUserPasswordComponent } from '@components/user-management/user-detail/change-user-password/change-user-password.component';
 import {MatMenuModule} from "@angular/material/menu";
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
 import { ImageManagerComponent } from '@components/image-manager/image-manager.component';
 import { AddImageDialogComponent } from '@components/image-manager/add-image-dialog/add-image-dialog.component';
 import { DeleteAllImageFilesDialogComponent } from '@components/image-manager/deleteallfiles-dialog/deleteallfiles-dialog.component';
@@ -330,6 +336,10 @@ import { DeleteResourcePoolComponent } from '@components/resource-pools-manageme
 import { ResourcePoolsFilterPipe } from '@components/resource-pools-management/resource-pools-filter.pipe';
 import { ResourcePoolDetailsComponent } from '@components/resource-pool-details/resource-pool-details.component';
 import { DeleteResourceConfirmationDialogComponent } from '@components/resource-pool-details/delete-resource-confirmation-dialog/delete-resource-confirmation-dialog.component';
+import { AiProfileTabComponent } from '@components/user-management/user-detail/ai-profile-tab/ai-profile-tab.component';
+import { AiProfileDialogComponent } from '@components/user-management/user-detail/ai-profile-tab/ai-profile-dialog/ai-profile-dialog.component';
+import { ConfirmDialogComponent } from '@components/user-management/user-detail/ai-profile-tab/ai-profile-dialog/confirm-dialog/confirm-dialog.component';
+import { GroupAiProfileTabComponent } from '@components/group-details/group-ai-profile-tab/group-ai-profile-tab.component';
 import { GlobalUploadIndicatorComponent } from '@components/global-upload-indicator/global-upload-indicator.component';
 
 @NgModule({
@@ -510,6 +520,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         AutoIdlePcActionComponent,
         WebConsoleComponent,
         ConsoleWrapperComponent,
+        ConsoleDevicesPanelComponent,
         HttpConsoleNewTabActionComponent,
         WebConsoleFullWindowComponent,
         NewTemplateDialogComponent,
@@ -517,7 +528,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         ChangeHostnameDialogComponent,
         ApplianceInfoDialogComponent,
         ReadmeEditorComponent,
-        MarkedDirective,
         InformationDialogComponent,
         QuestionDialogComponent,
         TemplateNameDialogComponent,
@@ -525,6 +535,10 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         EditNetworkConfigurationDialogComponent,
         UserManagementComponent,
         ProjectReadmeComponent,
+        AiChatComponent,
+        ChatSessionListComponent,
+        ChatMessageListComponent,
+        ChatInputAreaComponent,
         AddGroupDialogComponent,
         GroupFilterPipe,
         GroupManagementComponent,
@@ -570,6 +584,10 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         ResourcePoolsFilterPipe,
         ResourcePoolDetailsComponent,
         DeleteResourceConfirmationDialogComponent,
+        AiProfileTabComponent,
+        AiProfileDialogComponent,
+        ConfirmDialogComponent,
+        GroupAiProfileTabComponent,
         GlobalUploadIndicatorComponent,
     ],
     imports: [
@@ -579,9 +597,9 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         FormsModule,
         ReactiveFormsModule,
         BrowserAnimationsModule,
+        ToolDetailsDialogComponent,
         CdkTableModule,
         CartographyModule,
-        NgxElectronModule,
         FileUploadModule,
         MatSidenavModule,
         MatFormFieldModule,
@@ -589,22 +607,25 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         ResizableModule,
         DragAndDropModule,
         DragDropModule,
-        NgxChildProcessModule,
         MATERIAL_IMPORTS,
         NgCircleProgressModule.forRoot(),
         OverlayModule,
         MatSlideToggleModule,
         MatCheckboxModule,
         MatAutocompleteModule,
+        MatButtonToggleModule,
         CdkAccordionModule,
         CdkTreeModule,
+        MarkdownModule.forRoot({
+            sanitize: SecurityContext.NONE
+        }),
     ],
     providers: [
         SettingsService,
         { provide: ErrorHandler, useClass: ToasterErrorHandler },
         { provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true },
         VersionService,
-        D3Service,
+        // D3Service, // Removed - triggers JIT in Electron
         ProjectService,
         SymbolService,
         ControllerService,
@@ -667,6 +688,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         ThemeService,
         GoogleAnalyticsService,
         NodeConsoleService,
+        VncConsoleService,
         ControllerResolve,
         LoginGuard,
         ConsoleGuard,

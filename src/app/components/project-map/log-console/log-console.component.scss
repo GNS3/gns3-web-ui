@@ -1,11 +1,9 @@
 .consoleWrapper {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  height: 180px;
-  width: 600px;
-  background: #263238;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: #000000;
   color: white;
   overflow: hidden;
   font-size: 12px;
@@ -33,35 +31,44 @@
 
 .consoleHeader {
   width: 100%;
-  height: 40px;
+  height: 32px;
   font-size: 12px;
   overflow: hidden;
   display: flex;
-  padding: 2px;
+  padding: 4px 8px;
   justify-content: space-between;
+  background: #1a1a1a;
+  flex-shrink: 0;
 }
 
 .console {
-  width: 596px;
-  height: 120px;
-  overflow-y: scroll;
-  padding: 2px;
-  color: #dbd5d5;
-  scrollbar-color: darkgrey #263238;
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  color: #f0f0f0;
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.4;
+  scrollbar-color: darkgrey #1a1a1a;
   scrollbar-width: thin;
+  background: #000000;
 }
 
 .consoleInput {
   width: 100%;
-  height: 30px;
-  padding: 2px;
+  height: 32px;
+  padding: 4px 8px;
   display: flex;
+  background: #1a1a1a;
+  flex-shrink: 0;
 }
 
 .commandLine {
   background-color: transparent;
-  color: white;
+  color: #f0f0f0;
   border: none;
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+  font-size: 13px;
 }
 
 .inputIcon {
