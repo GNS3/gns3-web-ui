@@ -142,27 +142,27 @@
                 "serve": {
                     "builder": "@angular-devkit/build-angular:dev-server",
                     "options": {
-                        "browserTarget": "gns3-web-ui:build"
+                        "buildTarget": "gns3-web-ui:build"
                     },
                     "configurations": {
                         "production": {
-                            "browserTarget": "gns3-web-ui:build:production"
+                            "buildTarget": "gns3-web-ui:build:production"
                         },
                         "electronProd": {
-                            "browserTarget": "gns3-web-ui:build:electronProd"
+                            "buildTarget": "gns3-web-ui:build:electronProd"
                         },
                         "electronDev": {
-                            "browserTarget": "gns3-web-ui:build:electronDev"
+                            "buildTarget": "gns3-web-ui:build:electronDev"
                         },
                         "githubProd": {
-                            "browserTarget": "gns3-web-ui:build:githubProd"
+                            "buildTarget": "gns3-web-ui:build:githubProd"
                         }
                     }
                 },
                 "extract-i18n": {
                     "builder": "@angular-devkit/build-angular:extract-i18n",
                     "options": {
-                        "browserTarget": "gns3-web-ui:build"
+                        "buildTarget": "gns3-web-ui:build"
                     }
                 },
                 "test": {
@@ -215,7 +215,7 @@
                     "builder": "@angular-devkit/build-angular:protractor",
                     "options": {
                         "protractorConfig": "./protractor.conf.js",
-                        "devServerTarget": "gns3-web-ui:serve"
+                        "serveTarget": "gns3-web-ui:serve"
                     }
                 },
                 "lint": {
