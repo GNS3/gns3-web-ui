@@ -1,4 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { Link } from '@models/link';
 import { Project } from '@models/project';
@@ -6,16 +9,17 @@ import { Controller } from '@models/controller';
 import { StartCaptureDialogComponent } from '../../../packet-capturing/start-capture/start-capture.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-start-capture-action',
   templateUrl: './start-capture-action.component.html',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
 })
 export class StartCaptureActionComponent {
+  private dialog = inject(MatDialog);
+
   @Input() controller: Controller;
   @Input() project: Project;
   @Input() link: Link;
-
-  constructor(private dialog: MatDialog) {}
 
   startCapture() {
     const dialogRef = this.dialog.open(StartCaptureDialogComponent, {
