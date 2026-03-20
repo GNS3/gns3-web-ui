@@ -3,7 +3,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CdkTableModule } from '@angular/cdk/table';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { ErrorHandler, NgModule, SecurityContext } from '@angular/core';
+import { ErrorHandler, NgModule, SecurityContext, provideZonelessChangeDetection } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { BrowserModule, Title } from '@angular/platform-browser';
@@ -621,6 +621,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         }),
     ],
     providers: [
+        provideZonelessChangeDetection(),
         SettingsService,
         { provide: ErrorHandler, useClass: ToasterErrorHandler },
         { provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true },
