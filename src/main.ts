@@ -1,5 +1,5 @@
 import '@angular/compiler';
-import { ApplicationRef, enableProdMode } from '@angular/core';
+import { ApplicationRef, enableProdMode, provideZonelessChangeDetection } from '@angular/core';
 import { enableDebugTools } from '@angular/platform-browser';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { AppModule } from './app/app.module';
@@ -10,7 +10,11 @@ if (environment.production) {
 }
 
 platformBrowserDynamic()
-  .bootstrapModule(AppModule)
+  .bootstrapModule(AppModule, {
+    providers: [
+      provideZonelessChangeDetection()
+    ]
+  })
   .then((moduleRef) => {
     const applicationRef = moduleRef.injector.get(ApplicationRef);
     const componentRef = applicationRef.components[0];
