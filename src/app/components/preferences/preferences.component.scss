@@ -1,64 +1,43 @@
 /**
  * GNS3 Preferences Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
  */
 
-table {
-  width: 100%;
-}
-
 .listcontainer {
-  padding-left: 0px !important;
-  padding-right: 0px !important;
+  padding-left: 0;
+  padding-right: 0;
 }
 
-.top-button {
-  height: var(--gns3-spacing-lg, 36px);
-  margin-top: var(--gns3-spacing-md, 22px);
-}
-
-.choose-symbol-button {
-  height: var(--gns3-spacing-lg, 36px);
-  margin-top: var(--gns3-spacing-md, 22px);
+.top-button,
+.choose-symbol-button,
+.cancel-button {
+  height: var(--gns3-spacing-lg);
+  margin-top: var(--gns3-spacing-md);
 }
 
 .cancel-button {
-  height: var(--gns3-spacing-lg, 36px);
-  margin-top: var(--gns3-spacing-md, 22px);
-  margin-right: var(--gns3-spacing-sm, 10px);
+  margin-right: var(--gns3-spacing-sm);
 }
 
-.form-field {
-  width: 100%;
-}
-
-.select {
+.form-field,
+.select,
+.configButton,
+.symbolSelectionButton {
   width: 100%;
 }
 
 .shadowed {
   display: none;
-  transition: var(--gns3-duration-normal, 0.25s);
+  transition: var(--gns3-duration-normal);
 }
 
 .nonvisible {
   display: none;
 }
 
-.configButton {
-  width: 100%;
-}
-
 .configHideButton {
   margin-left: 80%;
   width: 20%;
-  margin-bottom: var(--gns3-spacing-sm, 10px);
-}
-
-.symbolSelectionButton {
-  width: 100%;
+  margin-bottom: var(--gns3-spacing-sm);
 }
 
 .list-item {
@@ -69,39 +48,35 @@ table {
   width: 95%;
 }
 
-.delete-button {
+.delete-button,
+.menu-button {
   width: 10%;
   outline: none;
 }
 
 .menu-button {
   width: 5%;
-  outline: none !important;
 }
 
 th {
-  border: 0px !important;
+  border: 0;
 }
 
 th.mat-header-cell {
-  padding-bottom: var(--gns3-spacing-md, 15px);
+  padding-bottom: var(--gns3-spacing-md);
 }
 
 td.mat-cell {
-  padding-top: var(--gns3-spacing-md, 15px);
+  padding-top: var(--gns3-spacing-md);
 }
 
 .radio-button {
   width: 50%;
-  padding-top: var(--gns3-spacing-md, 20px);
+  padding-top: var(--gns3-spacing-md);
 }
 
 .radio-group {
-  margin-bottom: var(--gns3-spacing-md, 20px);
-}
-
-.file-button {
-  width: 18%;
+  margin-bottom: var(--gns3-spacing-md);
 }
 
 .file-name-form-field {
