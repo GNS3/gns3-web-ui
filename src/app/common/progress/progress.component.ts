@@ -11,7 +11,7 @@ import { ProgressService } from './progress.service';
 })
 export class ProgressComponent implements OnInit, OnDestroy {
   visible = false;
-  error: any;
+  error: any = null;  // Initialize to null instead of undefined
   routerSubscription: Subscription;
 
   constructor(private progressService: ProgressService, private router: Router) {}

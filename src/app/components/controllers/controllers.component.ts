@@ -1,5 +1,5 @@
 import { DataSource } from '@angular/cdk/collections';
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, NgZone } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSort, MatSortable } from '@angular/material/sort';
@@ -18,6 +18,7 @@ import { AddControllerDialogComponent } from './add-controller-dialog/add-contro
   selector: 'app-controller-list',
   templateUrl: './controllers.component.html',
   styleUrls: ['./controllers.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ControllersComponent implements OnInit, OnDestroy {
   dataSource: ControllerDataSource;
@@ -40,7 +41,8 @@ export class ControllersComponent implements OnInit, OnDestroy {
     private changeDetector: ChangeDetectorRef,
     private bottomSheet: MatBottomSheet,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private ngZone: NgZone
   ) { }
 
   getControllers() {
@@ -61,6 +63,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
       });
 
       this.controllerDatabase.addControllers(controllers);
+      this.changeDetector.markForCheck();
 
       controllers.forEach((controller) => {
         this.updateControllerOnlineStatus(controller);
@@ -101,14 +104,17 @@ export class ControllersComponent implements OnInit, OnDestroy {
       if (controllerStatus.status === 'starting') {
         controller.status = 'starting';
         this.startingTimestamps.set(controller.name, Date.now());
+        this.changeDetector.markForCheck();
       }
       if (controllerStatus.status === 'stopped') {
         controller.status = 'stopped';
         this.startingTimestamps.delete(controller.name);
+        this.changeDetector.markForCheck();
       }
       if (controllerStatus.status === 'errored') {
         controller.status = 'stopped';
         this.startingTimestamps.delete(controller.name);
+        this.changeDetector.markForCheck();
       }
       if (controllerStatus.status === 'started') {
         const startedAt = this.startingTimestamps.get(controller.name) || Date.now();
@@ -119,9 +125,9 @@ export class ControllersComponent implements OnInit, OnDestroy {
           const timeout = setTimeout(() => {
             controller.status = 'running';
             this.controllerDatabase.update(controller);
-            this.changeDetector.detectChanges();
             this.startingTimeouts.delete(controller.name);
             this.startingTimestamps.delete(controller.name);
+            this.changeDetector.markForCheck();
           }, delay);
           this.startingTimeouts.set(controller.name, timeout);
           return;
@@ -129,9 +135,9 @@ export class ControllersComponent implements OnInit, OnDestroy {
 
         controller.status = 'running';
         this.startingTimestamps.delete(controller.name);
+        this.controllerDatabase.update(controller);
+        this.changeDetector.markForCheck();
       }
-      this.controllerDatabase.update(controller);
-      this.changeDetector.detectChanges();
     });
   }
 
@@ -169,6 +175,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
           created.status = 'stopped';
           this.controllerDatabase.addController(created);
           this.updateControllerOnlineStatus(created);
+          this.changeDetector.markForCheck();
         });
       }
     });
@@ -194,10 +201,12 @@ export class ControllersComponent implements OnInit, OnDestroy {
       (controllerInfo) => {
         controller.status = controllerInfo.version.split('.')[0] >= 3 ? 'running' : 'stopped';
         this.controllerDatabase.update(controller);
+        this.changeDetector.markForCheck();
       },
       () => {
         controller.status = 'stopped';
         this.controllerDatabase.update(controller);
+        this.changeDetector.markForCheck();
       }
     );
   }
@@ -217,6 +226,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
       if (result) {
         this.controllerService.delete(controller).then(() => {
           this.controllerDatabase.remove(controller);
+          this.changeDetector.markForCheck();
         });
       }
     });
@@ -229,7 +239,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
 
     controller.status = 'starting';
     this.controllerDatabase.update(controller);
-    this.changeDetector.detectChanges();
+    this.changeDetector.markForCheck();
 
     await this.controllerManagement.start(controller);
   }

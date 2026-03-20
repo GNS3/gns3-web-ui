@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Controller } from '@models/controller';
 import { IosTemplate } from '@models/templates/ios-template';
@@ -12,6 +12,7 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
   selector: 'app-ios-templates',
   templateUrl: './ios-templates.component.html',
   styleUrls: ['./ios-templates.component.scss', '../../preferences.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IosTemplatesComponent implements OnInit {
   controller: Controller;
@@ -22,13 +23,15 @@ export class IosTemplatesComponent implements OnInit {
     private route: ActivatedRoute,
     private controllerService: ControllerService,
     private iosService: IosService,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
+      this.cd.markForCheck();
       this.getTemplates();
     });
   }
@@ -36,6 +39,7 @@ export class IosTemplatesComponent implements OnInit {
   getTemplates() {
     this.iosService.getTemplates(this.controller).subscribe((templates: IosTemplate[]) => {
       this.iosTemplates = templates.filter((elem) => elem.template_type === 'dynamips' && !elem.builtin);
+      this.cd.markForCheck();
     });
   }
 

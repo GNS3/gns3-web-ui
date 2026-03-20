@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ComponentRef,
@@ -103,6 +104,7 @@ import { AiChatStore } from '../../stores/ai-chat.store';
   encapsulation: ViewEncapsulation.None,
   templateUrl: './project-map.component.html',
   styleUrls: ['./project-map.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectMapComponent implements OnInit, OnDestroy {
   public nodes: Node[] = [];
@@ -379,6 +381,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           mergeMap((controller: Controller ) => {
             if (!controller) this.router.navigate(['/controllers']);
             this.controller = controller;
+            this.cd.markForCheck();
             return this.projectService.get(controller, paramMap.get('project_id')).pipe(
               map((project) => {
                 return project;
@@ -387,6 +390,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           }),
           mergeMap((project: Project) => {
             this.project = project;
+            this.cd.markForCheck();
             if (!project) this.router.navigate(['/controllers']);
 
             this.projectService.open(this.controller, this.project.project_id);
@@ -408,13 +412,16 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         .subscribe(
           (project: Project) => {
             this.onProjectLoad(project);
+            this.cd.markForCheck();
             if (this.mapSettingsService.openReadme) this.showReadme();
           },
           (error) => {
             this.progressService.setError(error);
+            this.cd.markForCheck();
           },
           () => {
             this.progressService.deactivate();
+            this.cd.markForCheck();
           }
         );
     });

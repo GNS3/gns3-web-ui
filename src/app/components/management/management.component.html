@@ -4,6 +4,8 @@
      routerLink="./{{link}}"
      routerLinkActive
      [active]="rla.isActive"
+     [tabPanel]="tabPanel"
      #rla="routerLinkActive">{{link.charAt(0).toUpperCase() + link.slice(1)}} </a>
 </nav>
+<mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
 <router-outlet></router-outlet>

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Controller } from '@models/controller';
@@ -9,6 +9,7 @@ import { ToasterService } from '@services/toaster.service';
   standalone: false,
   selector: 'app-add-controller-dialog',
   templateUrl: 'add-controller-dialog.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddControllerDialogComponent implements OnInit {
   protocols = [
@@ -34,6 +35,7 @@ export class AddControllerDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<AddControllerDialogComponent>,
     private controllerService: ControllerService,
     private toasterService: ToasterService,
+    private changeDetector: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
@@ -103,6 +105,7 @@ export class AddControllerDialogComponent implements OnInit {
     this.connectionError = '';
     this.canAddAnyway = false;
     this.isCheckingConnection = true;
+    this.changeDetector.markForCheck();
 
     const controller: Controller  = Object.assign({}, this.controllerForm.value);
     this.controllerService.checkControllerVersion(controller).subscribe(
@@ -116,12 +119,14 @@ export class AddControllerDialogComponent implements OnInit {
           this.canAddAnyway = true;
           this.toasterService.error(`Controller version is not supported.`);
         }
+        this.changeDetector.markForCheck();
       },
       (error) => {
         this.isCheckingConnection = false;
         this.connectionError = 'Cannot connect to the controller. It appears offline.';
         this.canAddAnyway = true;
         this.toasterService.error('Cannot connect to the controller: ' + error);
+        this.changeDetector.markForCheck();
       }
     );
   }
