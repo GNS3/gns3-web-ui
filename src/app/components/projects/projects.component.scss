@@ -1,25 +1,11 @@
 /**
  * GNS3 Projects Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
  */
 
-.import-button {
-  width: 160px;
-  margin: var(--gns3-spacing-md, 20px) 0 var(--gns3-spacing-md, 20px) var(--gns3-spacing-md, 20px);
-}
-
+.import-button,
 .add-button {
   width: 160px;
-  margin: var(--gns3-spacing-md, 20px) 0 var(--gns3-spacing-md, 20px) var(--gns3-spacing-md, 20px);
-}
-
-.full-width {
-  width: 100%;
-  max-width: 940px;
-  margin: 0 auto;
-  display: block;
+  margin: var(--gns3-spacing-md) 0;
 }
 
 .row {
@@ -28,29 +14,8 @@
   flex-wrap: wrap;
 }
 
-table {
-  width: 100%;
-}
-
-// mat-header-cell, mat-cell {
-//   justify-content: center;
-// }
-
 .action {
   justify-content: center;
-}
-
-.mat-header-row {
-  z-index: 1;
-}
-
-.mat-header-cell {
-  background: inherit;
-}
-
-.table-container {
-  overflow: visible;
-  -webkit-overflow-scrolling: touch;
 }
 
 .mat-header-row {
@@ -64,39 +29,10 @@ table {
   z-index: 3 !important;
 }
 
-@media (max-width: 768px) {
-  .table-container {
-    overflow-x: auto;
-    overflow-y: visible;
-  }
-
-  .row {
-    align-items: stretch;
-    flex-direction: column;
-    gap: var(--gns3-spacing-sm, 10px);
-  }
-
-  .row h1 {
-    margin-bottom: 0;
-  }
-
-  .add-button,
-  .import-button {
-    width: 100%;
-    margin: 0;
-  }
-
-  .action {
-    justify-content: flex-end;
-  }
-}
-
 .table-link {
-  transition: transform var(--gns3-duration-fast, 0.2s) ease;
+  transition: transform var(--gns3-duration-fast) ease;
   display: inline-block;
   transform-origin: left center;
-  padding: var(--gns3-spacing-xs, 2px) var(--gns3-spacing-xs, 4px);
-  margin: calc(var(--gns3-spacing-xs, 2px) * -1) calc(var(--gns3-spacing-xs, 4px) * -1);
   color: var(--mat-app-primary-color);
   text-decoration: none;
 
@@ -106,11 +42,16 @@ table {
   }
 }
 
-/* Table action buttons hover effect */
-mat-cell .mat-icon-button {
-  transition: transform var(--gns3-duration-fast, 0.2s) ease;
-}
+@media (max-width: 768px) {
+  .row {
+    align-items: stretch;
+    flex-direction: column;
+    gap: var(--gns3-spacing-sm);
+  }
 
-mat-cell .mat-icon-button:hover {
-  transform: scale(1.25);
+  .add-button,
+  .import-button {
+    width: 100%;
+    margin: 0;
+  }
 }

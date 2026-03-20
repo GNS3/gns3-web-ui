@@ -1,45 +1,22 @@
 /**
  * GNS3 Controllers Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
  */
 
 .buttons-bar {
-  padding-top: 0px;
+  padding-top: 0;
 }
 
 .button {
-  margin: var(--gns3-spacing-md, 20px) !important;
-}
-
-table {
-  width: 100%;
-}
-
-.full-width {
-  width: 100%;
+  margin: var(--gns3-spacing-md) !important;
 }
 
 .controllers-search {
-  margin-top: var(--gns3-spacing-sm, 12px);
+  margin-top: var(--gns3-spacing-sm);
 }
 
-mat-header-cell, mat-cell {
+mat-header-cell,
+mat-cell {
   justify-content: center;
-}
-
-.mat-header-row {
-  z-index: 1;
-}
-
-.mat-header-cell {
-  background: inherit;
-}
-
-.table-container {
-  overflow: visible;
-  -webkit-overflow-scrolling: touch;
 }
 
 .mat-header-row {
@@ -54,11 +31,11 @@ mat-header-cell, mat-cell {
 }
 
 .status-chip {
-  border-radius: var(--gns3-radius-md, 12px);
-  font-size: var(--gns3-font-size-xs, 12px);
+  border-radius: var(--gns3-radius-md);
+  font-size: var(--gns3-font-size-xs);
   font-weight: 600;
   line-height: 1;
-  padding: 5px var(--gns3-spacing-sm, 10px);
+  padding: 5px var(--gns3-spacing-sm);
 }
 
 .status-running {
@@ -76,24 +53,10 @@ mat-header-cell, mat-cell {
   color: var(--mat-red-900);
 }
 
-@media (max-width: 768px) {
-  .table-container {
-    overflow-x: auto;
-    overflow-y: visible;
-  }
-
-  .button {
-    margin: var(--gns3-spacing-sm, 10px) 0 !important;
-    width: 100%;
-  }
-}
-
 .table-link {
-  transition: transform var(--gns3-duration-fast, 0.2s) ease;
+  transition: transform var(--gns3-duration-fast) ease;
   display: inline-block;
   transform-origin: left center;
-  padding: 2px var(--gns3-spacing-xs, 4px);
-  margin: -2px -4px;
   color: var(--mat-app-primary-color);
   text-decoration: none;
 
@@ -103,11 +66,9 @@ mat-header-cell, mat-cell {
   }
 }
 
-/* Table action buttons hover effect */
-mat-cell .mat-icon-button {
-  transition: transform var(--gns3-duration-fast, 0.2s) ease;
-}
-
-mat-cell .mat-icon-button:hover {
-  transform: scale(1.25);
+@media (max-width: 768px) {
+  .button {
+    margin: var(--gns3-spacing-sm) 0 !important;
+    width: 100%;
+  }
 }
