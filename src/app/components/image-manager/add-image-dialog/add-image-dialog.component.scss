@@ -11,31 +11,30 @@
 }
 
 .file-button {
-  margin-top: 8px;
+  margin-top: var(--gns3-spacing-sm);
 }
 
 .choose-instal-appliance {
   display: flex;
   flex-direction: row;
-  margin: 15px 0px 11px 0px;
+  margin: var(--gns3-spacing-md) 0 var(--gns3-spacing-sm);
   align-items: flex-start;
 }
 
 .instal-appliances-button {
-  margin: 11px;
+  margin: var(--gns3-spacing-sm);
 }
 
 .background-hint {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  color: #aaa;
-  margin: 4px 0 0;
+  gap: var(--gns3-spacing-xs);
+  font-size: var(--gns3-font-size-xs);
+  margin: var(--gns3-spacing-xs) 0 0;
 
   .hint-icon {
-    font-size: 14px;
-    height: 14px;
-    width: 14px;
+    font-size: var(--gns3-font-size-sm);
+    height: var(--gns3-font-size-sm);
+    width: var(--gns3-font-size-sm);
   }
 }

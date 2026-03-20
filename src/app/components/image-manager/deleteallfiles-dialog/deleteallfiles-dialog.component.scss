@@ -1,11 +1,7 @@
-.delete-text{
-  color: #0ca8c7;
-  font-size: 17px;
-  }
-
-.deleted-error-text{
-    color: #d52435;
-    font-weight: 600;
+.delete-text {
+  font-size: var(--gns3-font-size-lg);
 }
- 
-  
+
+.deleted-error-text {
+  font-weight: 600;
+}
