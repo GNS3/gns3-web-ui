@@ -1,5 +1,12 @@
+/**
+ * GNS3 Project Map Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .wrapper {
-  height: 600px;
+  height: var(--gns3-map-height, 600px);
 }
 
 app-root,
@@ -10,11 +17,11 @@ app-map {
 }
 
 g.node:hover {
-  background-color: #0097a7;
+  background-color: var(--mat-app-primary-color);
 }
 
 .project-map {
-  background-color: #18242b;
+  background-color: var(--gns3-map-bg-dark, #18242b);
   min-height: 100vh;
   min-width: 100vw;
 
@@ -30,7 +37,7 @@ g.node:hover {
 
     // Dark mode: brighten default dark-red serial cables so they're visible
     path.serial_link[stroke="#800000"] {
-      stroke: #e05555;
+      stroke: var(--gns3-serial-link-bright, #e05555);
     }
 
     // Dark mode: drawing cable line is white
@@ -39,8 +46,9 @@ g.node:hover {
     }
   }
 
-  &.lightTheme {
-    background-color: #e8ecef;
+  &.lightTheme,
+  &.theme-light {
+    background-color: var(--gns3-map-bg-light, #e8ecef);
 
     .label {
       fill: #000000 !important;
@@ -58,14 +66,15 @@ g.node:hover {
   top: 0px;
   left: 0px;
   right: 0px;
-  height: 60px;
-  padding: 0px 20px;
-  background-color: #20313b;
+  height: var(--gns3-toolbar-height, 60px);
+  padding: 0px var(--gns3-toolbar-padding, 20px);
+  background-color: var(--gns3-toolbar-bg-dark, #20313b);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--gns3-shadow-md, 3px 3px 10px rgba(0, 0, 0, 0.2));
   z-index: 2;
+  transition: background-color var(--gns3-duration-normal) var(--gns3-easing-default);
 
   .gns3-button {
     position: relative;
@@ -79,10 +88,11 @@ g.node:hover {
 
   .primary-controls {
     border-right: 1px solid rgba(255, 255, 255, 0.3);
-    padding-right: 15px;
-    margin-right: 15px;
+    padding-right: var(--gns3-spacing-md, 15px);
+    margin-right: var(--gns3-spacing-md, 15px);
 
-    &.lightTheme {
+    &.lightTheme,
+    &.theme-light {
       border-right: 1px solid black;
     }
   }
@@ -90,20 +100,20 @@ g.node:hover {
   .menu-button-group {
     display: flex;
     align-items: center;
-    height: 24px;
+    height: var(--gns3-menu-button-group-height, 24px);
   }
 
   .menu-button {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 36px;
-    width: 36px;
-    margin: 0px 8px;
-    border-radius: 18px;
+    height: var(--gns3-menu-button-height, 36px);
+    width: var(--gns3-menu-button-width, 36px);
+    margin: 0px var(--gns3-spacing-sm, 8px);
+    border-radius: var(--gns3-menu-button-radius, 18px);
     background: none;
-    font-size: 20px;
-    transition: transform 0.2s ease;
+    font-size: var(--gns3-font-size-lg, 20px);
+    transition: transform var(--gns3-duration-fast) var(--gns3-easing-default);
   }
 
   .menu-button:hover {
@@ -118,7 +128,7 @@ g.node:hover {
     background: rgba(0, 151, 167, 0.1);
 
     mat-icon {
-      color: #0097a7 !important;
+      color: var(--mat-app-primary-color) !important;
     }
   }
 
@@ -127,40 +137,42 @@ g.node:hover {
     align-items: center;
   }
 
-  &.lightTheme {
+  &.lightTheme,
+  &.theme-light {
     background-color: white !important;
 
     .selected mat-icon {
-      color: #0097a7 !important;
+      color: var(--mat-app-primary-color) !important;
     }
   }
 }
 
 #project-toolbar {
   position: fixed;
-  top: 60px;
+  top: var(--gns3-toolbar-height, 60px);
   left: 0px;
-  width: 50px;
-  margin: 20px;
-  background-color: #20313b;
-  border-radius: 6px;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
+  width: var(--gns3-toolbar-width, 50px);
+  margin: var(--gns3-spacing-lg, 20px);
+  background-color: var(--gns3-toolbar-bg-dark, #20313b);
+  border-radius: var(--gns3-radius-sm, 6px);
+  box-shadow: var(--gns3-shadow-sm, 1px 1px 10px rgba(0, 0, 0, 0.2));
   z-index: 2;
+  transition: background-color var(--gns3-duration-normal) var(--gns3-easing-default);
 
   mat-icon {
-    font-size: 20px;
+    font-size: var(--gns3-font-size-base, 20px);
   }
 
   .menu-button {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 36px;
-    width: 36px;
-    border-radius: 18px;
+    height: var(--gns3-menu-button-height, 36px);
+    width: var(--gns3-menu-button-width, 36px);
+    border-radius: var(--gns3-menu-button-radius, 18px);
     background: none;
     margin: 2px 0px;
-    transition: transform 0.2s ease;
+    transition: transform var(--gns3-duration-fast) var(--gns3-easing-default);
   }
 
   .menu-button:hover {
@@ -171,13 +183,13 @@ g.node:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 36px;
-    width: 36px;
-    border-radius: 18px;
+    height: var(--gns3-menu-button-height, 36px);
+    width: var(--gns3-menu-button-width, 36px);
+    border-radius: var(--gns3-menu-button-radius, 18px);
     background: none;
     margin: 2px 0px;
     color: white;
-    transition: transform 0.2s ease;
+    transition: transform var(--gns3-duration-fast) var(--gns3-easing-default);
 
     mat-icon {
       font-size: 24px !important;
@@ -192,13 +204,13 @@ g.node:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 36px;
-    width: 36px;
-    border-radius: 18px;
+    height: var(--gns3-menu-button-height, 36px);
+    width: var(--gns3-menu-button-width, 36px);
+    border-radius: var(--gns3-menu-button-radius, 18px);
     background: none;
     margin: 2px 0px;
     color: white;
-    transition: transform 0.2s ease;
+    transition: transform var(--gns3-duration-fast) var(--gns3-easing-default);
 
     mat-icon {
       font-size: 18px !important;
@@ -211,7 +223,7 @@ g.node:hover {
 
   .selection-button {
     margin-bottom: 0px !important;
-    transition: transform 0.2s ease;
+    transition: transform var(--gns3-duration-fast) var(--gns3-easing-default);
   }
 
   .selection-button:hover {
@@ -219,11 +231,11 @@ g.node:hover {
   }
 
   .snapshot-button mat-icon {
-    font-size: 16px;
+    font-size: var(--gns3-font-size-sm, 16px);
   }
 
   .snapshot-button {
-    transition: transform 0.2s ease;
+    transition: transform var(--gns3-duration-fast) var(--gns3-easing-default);
   }
 
   .snapshot-button:hover {
@@ -243,7 +255,8 @@ g.node:hover {
     }
   }
 
-  &.lightTheme {
+  &.lightTheme,
+  &.theme-light {
     background-color: rgba(244, 248, 252, 0.95) !important;
 
     .zoom-button {
@@ -271,18 +284,20 @@ img {
   filter: invert(1);
 }
 
-.lightTheme {
+.lightTheme,
+.theme-light {
   color: black !important;
 
   // When the map canvas is light but the toolbar/titlebar are in dark mode,
   // reset the inherited black color back to white so their icons stay visible.
-  #project-titlebar:not(.lightTheme),
-  #project-toolbar:not(.lightTheme) {
+  #project-titlebar:not(.lightTheme):not(.theme-light),
+  #project-toolbar:not(.lightTheme):not(.theme-light) {
     color: white !important;
   }
 }
 
-.darkTheme {
+.darkTheme,
+.theme-dark {
   color: white !important;
 }
 
@@ -291,9 +306,10 @@ img {
   background: transparent;
   top: 0px;
   left: 92px;
-  background: #263238;
-  height: 72px;
-  padding-top: 16px;
+  background: var(--gns3-surface, #263238);
+  height: var(--gns3-menu-wrapper-height, 72px);
+  padding-top: var(--gns3-spacing-md, 16px);
+  transition: background-color var(--gns3-duration-normal) var(--gns3-easing-default);
 
   .arrow-button {
     outline: 0 !important;
@@ -301,7 +317,7 @@ img {
 }
 
 .shadowed {
-  box-shadow: 0 4px 8px -4px rgba(0, 0, 0, 0.2), 0 6px 20px -20px rgba(0, 0, 0, 0.19);
+  box-shadow: var(--gns3-shadow-lg, 0 4px 8px -4px rgba(0, 0, 0, 0.2), 0 6px 20px -20px rgba(0, 0, 0, 0.19));
 }
 
 .non-visible {
@@ -314,24 +330,24 @@ img {
   top: 0px;
   left: 92px;
   right: 0px;
-  background: #263238;
-  height: 72px;
-  padding-top: 16px;
-  padding-bottom: 16px;
+  background: var(--gns3-surface, #263238);
+  height: var(--gns3-menu-wrapper-height, 72px);
+  padding-top: var(--gns3-spacing-md, 16px);
+  padding-bottom: var(--gns3-spacing-md, 16px);
   transition: 35s;
   width: 0;
   overflow: hidden;
-  transition: 0.15s;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  transition: var(--gns3-duration-fast, 0.15s);
+  box-shadow: var(--gns3-shadow-lg, 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19));
   display: flex;
 
   .menu-button {
     outline: 0 !important;
     transition: 0.5s;
-    margin-bottom: 16px;
+    margin-bottom: var(--gns3-spacing-md, 16px);
     width: 40px;
-    margin-right: 12px !important;
-    margin-left: 12px !important;
+    margin-right: var(--gns3-spacing-md, 12px) !important;
+    margin-left: var(--gns3-spacing-md, 12px) !important;
     background: transparent;
     padding: 0;
     border: none;
@@ -341,12 +357,12 @@ img {
   .arrow-button {
     outline: 0 !important;
     transition: 0.5s;
-    margin-bottom: 16px;
+    margin-bottom: var(--gns3-spacing-md, 16px);
   }
 }
 
 .extended {
-  width: 830px !important;
+  width: var(--gns3-menu-extended-width, 830px) !important;
   height: 100%;
   overflow: hidden;
 }
@@ -367,7 +383,7 @@ mat-divider.divider {
 }
 
 .shadow {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: var(--gns3-shadow-md, 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19));
 }
 
 .mat-drawer-backdrop.mat-drawer-shown {
@@ -388,7 +404,7 @@ mat-divider.divider {
 }
 
 line.selected {
-  stroke: #0097a7 !important;
+  stroke: var(--mat-app-primary-color) !important;
 }
 
 svg.map image:hover,
@@ -412,8 +428,8 @@ path.ethernet_link:hover {
 }
 
 .selection-line-tool .selection {
-  fill: #7ccbe1;
-  stroke: #66aec2;
+  fill: var(--gns3-selection-fill, #7ccbe1);
+  stroke: var(--gns3-selection-stroke, #66aec2);
   fill-opacity: 0.3;
   stroke-opacity: 0.7;
   stroke-width: 1;
@@ -438,14 +454,14 @@ g.node text,
 }
 
 .options-item {
-  padding-left: 15px;
-  padding-right: 15px;
+  padding-left: var(--gns3-spacing-md, 15px);
+  padding-right: var(--gns3-spacing-md, 15px);
 }
 
 .context-menu-items .mat-menu-item {
-  line-height: 24px !important;
-  height: 24px !important;
-  font-size: 13px !important;
+  line-height: var(--gns3-context-menu-line-height, 24px) !important;
+  height: var(--gns3-context-menu-height, 24px) !important;
+  font-size: var(--gns3-font-size-xs, 13px) !important;
   padding: 0 6px;
   outline: none !important;
 }
@@ -465,7 +481,7 @@ g.node text,
 }
 
 .context-menu-items .mat-menu-item:hover {
-  background-color: #DC143C !important;
+  background-color: var(--gns3-context-menu-hover, #DC143C) !important;
 }
 
 .visible {
@@ -485,17 +501,17 @@ mat-menu-panel {
 }
 
 .marked {
-  color: #0097a7 !important;
+  color: var(--mat-app-primary-color) !important;
 }
 
-/* ============================================================================
- * Console Device Highlight Styles
- * Highlight selected console device and its connected links in topology
- * ============================================================================ */
+/* =============================================
+// Console Device Highlight Styles
+// Highlight selected console device and its connected links in topology
+// ============================================= */
 
 g.node.console-highlight {
   // Selected node - red glow only (no border color change)
-  filter: drop-shadow(0 0 5px #ef4444);
+  filter: drop-shadow(0 0 5px var(--gns3-console-highlight-red, #ef4444));
 
   .node_body {
     // No stroke color change - keep original node border color
@@ -516,7 +532,7 @@ g.node.console-highlight {
 
 // Connected node highlight (static highlight, performance optimized)
 g.node.console-highlight-connected {
-  filter: drop-shadow(0 0 3px #3b82f6);
+  filter: drop-shadow(0 0 3px var(--gns3-console-highlight-blue, #3b82f6));
 
   .node_body {
     // No stroke color change - keep original node border color
@@ -539,7 +555,7 @@ g.link_body.console-highlight {
   // Performance optimized: removed animation, using static red color
   > path.ethernet_link,
   > path.serial_link {
-    stroke: #ef4444 !important;
+    stroke: var(--gns3-console-highlight-red, #ef4444) !important;
     stroke-width: 4px !important;
     // No animation, no dash - solid red line
   }
