@@ -1,3 +1,10 @@
+/**
+ * GNS3 Template Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 ::ng-deep .mat-menu-panel {
   max-width: 400px;
   max-height: 500px;
@@ -6,7 +13,7 @@
 .menu {
   width: 100%;
   overflow-y: scroll;
-  scrollbar-color: darkgrey #263238;
+  scrollbar-color: darkgrey var(--gns3-surface, #263238);
   scrollbar-width: thin;
 }
 
@@ -20,7 +27,7 @@
 
 ::-webkit-scrollbar-thumb {
   background-color: darkgrey;
-  outline: 1px solid #263238;
+  outline: 1px solid var(--gns3-surface, #263238);
 }
 
 .form-field {
@@ -42,7 +49,7 @@
 
 .templateRow {
   display: flex;
-  margin-bottom: 10px;
+  margin-bottom: var(--gns3-spacing-sm, 10px);
 }
 
 .templateText {
@@ -56,5 +63,5 @@
 
 .templateIcon {
   width: 80px !important;
-  padding: 10px;
+  padding: var(--gns3-spacing-sm, 10px);
 }

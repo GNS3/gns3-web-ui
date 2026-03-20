@@ -1,11 +1,18 @@
+/**
+ * GNS3 Console Devices Panel Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .console-devices-panel {
   display: flex;
   flex-direction: column;
   width: 200px;
   height: 100%;
-  background-color: #263238;
+  background-color: var(--gns3-surface, #263238);
   border-right: 1px solid rgba(255, 255, 255, 0.12);
-  transition: width 0.2s ease;
+  transition: width var(--gns3-duration-fast, 0.2s) ease;
 
   &.collapsed {
     width: 48px;
@@ -25,7 +32,7 @@
 
   &.clickable {
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--gns3-duration-fast, 0.2s);
   }
 
   &:hover.clickable {
@@ -41,19 +48,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--gns3-spacing-xs, 8px);
   margin: 0;
-  font-size: 14px;
+  font-size: var(--gns3-font-size-sm, 14px);
   font-weight: 500;
   color: rgba(255, 255, 255, 0.87);
 }
 
 .panel-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-  color: #0097a7;
-  transition: transform 0.2s;
+  font-size: var(--gns3-font-size-base, 20px);
+  width: var(--gns3-font-size-base, 20px);
+  height: var(--gns3-font-size-base, 20px);
+  color: var(--mat-app-primary-color, #0097a7);
+  transition: transform var(--gns3-duration-fast, 0.2s);
 }
 
 .header-title.clickable:hover .panel-icon {
@@ -65,7 +72,7 @@
 }
 
 .header-text {
-  font-size: 14px;
+  font-size: var(--gns3-font-size-sm, 14px);
   font-weight: 500;
   white-space: nowrap;
 }
@@ -74,10 +81,10 @@
 .device-list {
   flex: 1;
   overflow-y: auto;
-  padding: 8px;
+  padding: var(--gns3-spacing-xs, 8px);
 
   &::-webkit-scrollbar {
-    width: 8px;
+    width: var(--gns3-spacing-xs, 8px);
   }
 
   &::-webkit-scrollbar-track {
@@ -86,7 +93,7 @@
 
   &::-webkit-scrollbar-thumb {
     background: rgba(0, 151, 167, 0.4);
-    border-radius: 4px;
+    border-radius: var(--gns3-radius-xs, 4px);
 
     &:hover {
       background: rgba(0, 151, 167, 0.6);
@@ -98,11 +105,11 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 12px;
+  padding: var(--gns3-spacing-sm, 10px) var(--gns3-spacing-sm, 12px);
   margin-bottom: 4px;
-  border-radius: 8px;
+  border-radius: var(--gns3-radius-sm, 8px);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--gns3-duration-fast, 0.2s) ease;
   background: #2c3138;
 
   &:hover {
@@ -112,21 +119,21 @@
   }
 
   &.started {
-    border-left: 3px solid #0097a7;
+    border-left: 3px solid var(--mat-app-primary-color, #0097a7);
   }
 }
 
 .device-info {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--gns3-spacing-xs, 10px);
   flex: 1;
   min-width: 0;
 }
 
 .device-status-indicator {
-  width: 8px;
-  height: 8px;
+  width: var(--gns3-spacing-xs, 8px);
+  height: var(--gns3-spacing-xs, 8px);
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -137,7 +144,7 @@
 }
 
 .device-name {
-  font-size: 13px;
+  font-size: var(--gns3-font-size-xs, 13px);
   font-weight: 500;
   color: rgba(255, 255, 255, 0.87);
   overflow: hidden;
@@ -146,19 +153,19 @@
 }
 
 .device-status {
-  font-size: 11px;
+  font-size: var(--gns3-font-size-xs, 11px);
   margin-top: 2px;
   opacity: 0.8;
 }
 
 .device-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-  color: #0097a7;
+  font-size: var(--gns3-font-size-sm, 18px);
+  width: var(--gns3-font-size-sm, 18px);
+  height: var(--gns3-font-size-sm, 18px);
+  color: var(--mat-app-primary-color, #0097a7);
   flex-shrink: 0;
   opacity: 0.8;
-  transition: all 0.2s ease;
+  transition: all var(--gns3-duration-fast, 0.2s) ease;
 
   &.disabled {
     color: rgba(255, 255, 255, 0.60);
@@ -177,32 +184,34 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 32px 16px;
+  padding: var(--gns3-spacing-xl, 32px) var(--gns3-spacing-sm, 16px);
   text-align: center;
 }
 
 .empty-icon {
-  font-size: 48px;
-  width: 48px;
-  height: 48px;
+  font-size: var(--gns3-spacing-xl, 48px);
+  width: var(--gns3-spacing-xl, 48px);
+  height: var(--gns3-spacing-xl, 48px);
   color: rgba(255, 255, 255, 0.60);
   opacity: 0.4;
-  margin-bottom: 12px;
+  margin-bottom: var(--gns3-spacing-sm, 12px);
 }
 
 .empty-text {
-  font-size: 13px;
+  font-size: var(--gns3-font-size-xs, 13px);
   color: rgba(255, 255, 255, 0.60);
   opacity: 0.8;
 }
 
 // Light theme adjustments
-.console-devices-panel.lightTheme {
+.console-devices-panel.lightTheme,
+.console-devices-panel.theme-light {
   background-color: #ffffff;
   border-right-color: #e0e0e0;
 }
 
-.console-devices-panel.lightTheme .panel-header {
+.console-devices-panel.lightTheme .panel-header,
+.console-devices-panel.theme-light .panel-header {
   background-color: #f5f5f5;
   border-bottom-color: #e0e0e0;
 
@@ -215,15 +224,18 @@
   }
 }
 
-.console-devices-panel.lightTheme .header-title {
+.console-devices-panel.lightTheme .header-title,
+.console-devices-panel.theme-light .header-title {
   color: rgba(0, 0, 0, 0.87);
 }
 
-.console-devices-panel.lightTheme .panel-icon {
-  color: #0097a7;
+.console-devices-panel.lightTheme .panel-icon,
+.console-devices-panel.theme-light .panel-icon {
+  color: var(--mat-app-primary-color, #0097a7);
 }
 
-.console-devices-panel.lightTheme .device-item {
+.console-devices-panel.lightTheme .device-item,
+.console-devices-panel.theme-light .device-item {
   background: #f5f5f5;
 
   &:hover {
@@ -231,21 +243,25 @@
   }
 }
 
-.console-devices-panel.lightTheme .device-name {
+.console-devices-panel.lightTheme .device-name,
+.console-devices-panel.theme-light .device-name {
   color: rgba(0, 0, 0, 0.87);
 }
 
-.console-devices-panel.lightTheme .device-icon {
+.console-devices-panel.lightTheme .device-icon,
+.console-devices-panel.theme-light .device-icon {
   &.disabled {
     color: rgba(0, 0, 0, 0.40);
   }
 }
 
-.console-devices-panel.lightTheme .empty-icon {
+.console-devices-panel.lightTheme .empty-icon,
+.console-devices-panel.theme-light .empty-icon {
   color: rgba(0, 0, 0, 0.40);
 }
 
-.console-devices-panel.lightTheme .empty-text {
+.console-devices-panel.lightTheme .empty-text,
+.console-devices-panel.theme-light .empty-text {
   color: rgba(0, 0, 0, 0.60);
 }
 

@@ -1,9 +1,16 @@
+/**
+ * GNS3 Template List Dialog Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .header {
   min-height: 64px;
   display: flex;
   align-items: baseline;
   padding: 8px 24px 0;
-  font-size: 20px;
+  font-size: var(--gns3-font-size-lg, 20px);
   justify-content: space-between;
 }
 
@@ -13,7 +20,7 @@
 }
 
 .mat-form-field {
-  font-size: 16px;
+  font-size: var(--gns3-font-size-base, 16px);
   flex-grow: 1;
 }
 
@@ -22,18 +29,18 @@
 }
 
 div {
-  scrollbar-color: darkgrey #263238;
+  scrollbar-color: darkgrey var(--gns3-surface, #263238);
   scrollbar-width: thin;
 }
 
 h6 {
-  margin-top: 5px;
-  margin-bottom: 10px;
-  color: #0097a7;
+  margin-top: var(--gns3-spacing-xs, 5px);
+  margin-bottom: var(--gns3-spacing-sm, 10px);
+  color: var(--mat-app-primary-color, #0097a7);
 }
 
 mat-table {
-  scrollbar-color: darkgrey #263238;
+  scrollbar-color: darkgrey var(--gns3-surface, #263238);
   scrollbar-width: thin;
 }
 
@@ -47,7 +54,7 @@ mat-table {
 
 ::-webkit-scrollbar-thumb {
   background-color: darkgrey;
-  outline: 1px solid #263238;
+  outline: 1px solid var(--gns3-surface, #263238);
 }
 
 .filterBox {
