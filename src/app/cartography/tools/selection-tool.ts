@@ -81,11 +81,11 @@ export class SelectionTool {
 
     if (status !== 'activated' && this.enabled) {
       this.activate(selection);
-      tool.attr('activated');
+      tool.attr('status', 'activated');
     }
     if (status !== 'deactivated' && !this.enabled) {
       this.deactivate(selection);
-      tool.attr('deactivated');
+      tool.attr('status', 'deactivated');
     }
   }
 
