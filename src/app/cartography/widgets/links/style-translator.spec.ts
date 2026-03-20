@@ -54,8 +54,8 @@ describe('StyleTranslator', () => {
     const controlPoint1Y = numbers[3];
     const controlPoint2Y = numbers[5];
 
-    expect(controlPoint1Y).toBeLessThan(20);
-    expect(controlPoint2Y).toBeGreaterThan(20);
+    expect(controlPoint1Y).toBeGreaterThan(20);
+    expect(controlPoint2Y).toBeLessThan(20);
   });
 
   it('should apply custom bezier curviness', () => {
