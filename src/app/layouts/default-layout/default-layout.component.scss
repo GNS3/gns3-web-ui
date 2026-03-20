@@ -37,6 +37,18 @@ app-default-layout {
   max-width: var(--gns3-content-max-width, 940px);
   padding-top: var(--gns3-spacing-xl, 20px);
   padding-bottom: var(--gns3-spacing-xl, 20px);
+  background-color: var(--gns3-surface-light, #ffffff);
+  min-height: calc(100vh - 64px - 56px);
+}
+
+.light .default-content,
+.theme-light .default-content {
+  background-color: #ffffff;
+}
+
+.dark .default-content,
+.theme-dark .default-content {
+  background-color: var(--gns3-surface, #263238);
 }
 
 header {
