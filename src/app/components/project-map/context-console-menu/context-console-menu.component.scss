@@ -1,3 +1,10 @@
+/**
+ * GNS3 Context Console Menu Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .context-menu {
   position: absolute;
   min-height: 0px;
@@ -16,5 +23,5 @@
 }
 
 .title {
-  margin: 10px;
+  margin: var(--gns3-spacing-sm, 10px);
 }
