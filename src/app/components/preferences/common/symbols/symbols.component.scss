@@ -8,7 +8,6 @@
 .symbolsWrapper {
   height: 350px;
   overflow-y: scroll;
-  scrollbar-color: darkgrey var(--gns3-surface, #263238);
   scrollbar-width: thin;
 }
 
@@ -22,5 +21,4 @@
 
 ::-webkit-scrollbar-thumb {
   background-color: darkgrey;
-  outline: 1px solid var(--gns3-surface, #263238);
 }
