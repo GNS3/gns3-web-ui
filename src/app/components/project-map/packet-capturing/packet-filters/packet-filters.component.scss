@@ -1,3 +1,10 @@
+/**
+ * GNS3 Packet Filters Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .spacer {
   flex-grow: 1;
 }
@@ -8,22 +15,22 @@
 
 .item {
   height: 25px;
-  font-size: 10pt;
-  margin-bottom: 10px;
+  font-size: var(--gns3-font-size-base, 10pt);
+  margin-bottom: var(--gns3-spacing-sm, 10px);
 }
 
 .item-name {
-  margin-bottom: 10px;
+  margin-bottom: var(--gns3-spacing-sm, 10px);
 }
 
 .item-value {
   width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: var(--gns3-spacing-sm, 10px);
 }
 
 .input-field {
   width: 100%;
-  margin-top: 10px;
+  margin-top: var(--gns3-spacing-sm, 10px);
 }
 
 .divider {
