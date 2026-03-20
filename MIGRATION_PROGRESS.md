@@ -4,7 +4,7 @@
 
 **分支**: `refactor/angular-material-theming`
 **基础分支**: `feat/ai-profile-management`
-**完成阶段**: 4 / 8
+**完成阶段**: 4 / 8 (阶段 5 进行中，~20% 完成)
 
 ---
 
@@ -17,12 +17,12 @@
 | **阶段 2: AI Chat** | ✅ 完成 | `402982d0` | 迁移 AI Chat 组件 |
 | **阶段 3: 全局样式** | ✅ 完成 | `64762438` | 迁移 styles.scss |
 | **阶段 4: Project Map** | ✅ 完成 | `4b1293f2`, `4314021b` | 迁移地图组件 |
-| **阶段 5: 其他组件** | ⏳ 待开始 | - | 迁移剩余组件 |
+| **阶段 5: 其他组件** | 🔄 进行中 | `b72f9cc4`, `e974cab6`, `61b8a5b7` | 迁移剩余组件 (~20%) |
 | **阶段 6: 测试** | ⏳ 待开始 | - | 全面测试 |
 | **阶段 7: 文档** | ⏳ 待开始 | - | 更新文档 |
 | **阶段 8: 发布** | ⏳ 待开始 | - | 合并到主分支 |
 
-**完成度**: 50% (4/8 阶段)
+**完成度**: ~55% (4/8 阶段 + 阶段 5 的 20%)
 
 ---
 
@@ -93,6 +93,28 @@
 - ✅ 迁移控制台上下文菜单样式
 - ✅ 所有地图组件使用设计 Token
 - ✅ 支持新旧主题类名
+
+### 阶段 5: 剩余组件 (进行中，6/~50 文件)
+
+| 文件 | 改进 | 说明 |
+|------|------|------|
+| `app.component.scss` | 2 硬编码替换 | 主应用组件 |
+| `default-layout.component.scss` | 10+ 硬编码替换 | 默认布局 |
+| `confirmation-dialog.component.scss` | 15+ 硬编码替换 | 确认对话框 |
+| `nodes-menu.component.scss` | 2 硬编码替换 | 节点菜单 |
+| `console-wrapper.component.scss` | 10+ 硬编码替换 | 控制台包装器 |
+| `configurator.component.scss` | 3 硬编码替换 | 节点配置器 |
+
+**关键成就** (部分):
+- ✅ 迁移核心应用组件样式
+- ✅ 迁移布局组件样式
+- ✅ 迁移对话框组件样式
+- ✅ 迁移控制台相关组件
+- ✅ 迁移配置表单组件
+- ✅ 所有迁移组件使用设计 Token
+- ✅ 支持新旧主题类名
+
+**进度**: ~20% 完成 (6/50+ 文件)
 
 ---
 
@@ -166,6 +188,10 @@
 ## 📝 提交历史
 
 ```
+e1c4ecc9 docs: add Phase 5 partial completion report (20% complete)
+61b8a5b7 feat: migrate Phase 5.3 components to Angular Material 14 theming
+e974cab6 feat: migrate console-wrapper component to Angular Material 14 theming
+b72f9cc4 feat: migrate Phase 5.1 components to Angular Material 14 theming
 4314021b feat: migrate web-console component styles to Angular Material 14 theming
 4b1293f2 feat: migrate project-map component styles to Angular Material 14 theming
 64762438 feat: migrate global styles to Angular Material 14 theming system (Phase 3)
@@ -297,7 +323,7 @@ git push origin master
 
 ## ✨ 总结
 
-**当前状态**: 阶段 4 完成，进度 50%
+**当前状态**: 阶段 4 完成，阶段 5 进行中 (~20%)，整体进度 ~55%
 
 **已完成**:
 - ✅ 完整的迁移计划
@@ -305,14 +331,22 @@ git push origin master
 - ✅ AI Chat 组件迁移
 - ✅ 全局样式迁移
 - ✅ Project Map 组件迁移
+- ✅ 核心应用组件迁移（阶段 5 部分）
 - ✅ 零破坏性更改
 - ✅ TypeScript 类型安全
 
+**阶段 5 进展**:
+- ✅ 已迁移 6 个核心组件文件
+- ✅ 包括应用、布局、对话框、控制台等关键组件
+- ⏳ 剩余约 44 个文件待迁移
+
 **下一步**:
-- ⏳ 阶段 5: 剩余组件迁移（50+ 文件）
+- ⏳ 继续阶段 5：迁移剩余组件（或先进行阶段 6 测试）
 - ⏳ 阶段 6-8: 测试、文档、发布
 
-**预计完成时间**: 4-6 周
+**预计完成时间**:
+- 如果继续阶段 5：3-4 周
+- 如果先测试再继续：4-5 周
 
 ---
 
