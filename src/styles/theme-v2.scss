@@ -466,3 +466,33 @@ markdown,
     display: none;
   }
 }
+
+// =============================================
+// 8. Menu Style Overrides
+// =============================================
+
+.mat-menu-panel .mat-menu-item:not([disabled]):hover {
+  background-color: var(--mat-app-error-color);
+}
+
+.mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-program-focused,
+.mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-keyboard-focused {
+  background-color: var(--mat-app-error-color);
+}
+
+.light-theme .mat-menu-panel .mat-menu-item:not([disabled]):hover,
+.light-theme .mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-program-focused,
+.light-theme .mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-keyboard-focused {
+  color: var(--mat-app-on-error-color);
+}
+
+.light-theme .mat-menu-panel .mat-menu-item:not([disabled]):hover .mat-icon,
+.light-theme .mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-program-focused .mat-icon,
+.light-theme .mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-keyboard-focused .mat-icon {
+  color: var(--mat-app-on-error-color);
+}
+
+.mat-menu-panel:not(.context-menu-items) .mat-menu-item {
+  height: var(--gns3-spacing-xl);
+  line-height: var(--gns3-spacing-xl);
+}

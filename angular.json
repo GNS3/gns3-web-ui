@@ -49,7 +49,6 @@
                         "styles": [
                             "node_modules/bootstrap/dist/css/bootstrap.min.css",
                             "node_modules/notosans-fontface/css/notosans-fontface.min.css",
-                            "src/theme.scss",
                             "src/styles/theme-v2.scss",
                             "src/styles/design-tokens.scss",
                             "src/styles.scss",
@@ -178,7 +177,7 @@
                             "node_modules/bootstrap/dist/css/bootstrap.min.css",
                             "node_modules/notosans-fontface/css/notosans-fontface.min.css",
                             "src/styles.scss",
-                            "src/theme.scss"
+                            "src/styles/theme-v2.scss"
                         ],
                         "sourceMap": false,
                         "assets": [
