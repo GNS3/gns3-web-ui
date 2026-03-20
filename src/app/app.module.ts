@@ -128,6 +128,7 @@ import { OpenFileExplorerActionComponent } from '@components/project-map/context
 import { PacketFiltersActionComponent } from '@components/project-map/context-menu/actions/packet-filters-action/packet-filters-action.component';
 import { ReloadNodeActionComponent } from '@components/project-map/context-menu/actions/reload-node-action/reload-node-action.component';
 import { ResumeLinkActionComponent } from '@components/project-map/context-menu/actions/resume-link-action/resume-link-action.component';
+import { ResetLinkActionComponent } from '@components/project-map/context-menu/actions/reset-link/reset-link-action.component';
 import { ShowNodeActionComponent } from '@components/project-map/context-menu/actions/show-node-action/show-node-action.component';
 import { StartCaptureOnStartedLinkActionComponent } from '@components/project-map/context-menu/actions/start-capture-on-started-link/start-capture-on-started-link.component';
 import { StartCaptureActionComponent } from '@components/project-map/context-menu/actions/start-capture/start-capture-action.component';
@@ -367,8 +368,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         EditStyleActionComponent,
         EditLinkStyleActionComponent,
         EditTextActionComponent,
-        DeleteActionComponent,
-        DuplicateActionComponent,
         PacketFiltersActionComponent,
         StartCaptureActionComponent,
         StopCaptureActionComponent,
@@ -454,7 +453,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         CustomAdaptersComponent,
         NodesMenuComponent,
         AdbutlerComponent,
-        ShowNodeActionComponent,
         ConsoleComponent,
         NodesMenuComponent,
         ProjectMapMenuComponent,
@@ -492,7 +490,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         QemuImageCreatorComponent,
         ChooseNameDialogComponent,
         StartCaptureOnStartedLinkActionComponent,
-        LockActionComponent,
         NavigationDialogComponent,
         ScreenshotDialogComponent,
         PageNotFoundComponent,
@@ -506,12 +503,10 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         SystemStatusComponent,
         OpenFileExplorerActionComponent,
         HttpConsoleActionComponent,
-        IdlePcActionComponent,
         AutoIdlePcActionComponent,
         WebConsoleComponent,
         ConsoleWrapperComponent,
         ConsoleDevicesPanelComponent,
-        HttpConsoleNewTabActionComponent,
         WebConsoleFullWindowComponent,
         NewTemplateDialogComponent,
         ChangeHostnameActionComponent,
@@ -598,6 +593,13 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         UnisolateNodeActionComponent,
         ConsoleDeviceActionComponent,
         GlobalUploadIndicatorComponent,
+        HttpConsoleNewTabActionComponent,
+        ResetLinkActionComponent,
+        LockActionComponent,
+        IdlePcActionComponent,
+        ShowNodeActionComponent,
+        DuplicateActionComponent,
+        DeleteActionComponent,
         CdkTableModule,
         CartographyModule,
         FileUploadModule,

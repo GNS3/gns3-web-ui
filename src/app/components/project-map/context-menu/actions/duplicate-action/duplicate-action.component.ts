@@ -1,4 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../../../cartography/models/drawing';
@@ -10,23 +13,22 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-duplicate-action',
   templateUrl: './duplicate-action.component.html',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
 })
 export class DuplicateActionComponent {
+  private nodeService = inject(NodeService);
+  private nodesDataSource = inject(NodesDataSource);
+  private drawingService = inject(DrawingService);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private toasterService = inject(ToasterService);
+
   @Input() controller: Controller;
   @Input() project: Project;
   @Input() drawings: Drawing[];
   @Input() nodes: Node[];
-
-  constructor(
-    private nodeService: NodeService,
-    private nodesDataSource: NodesDataSource,
-    private drawingService: DrawingService,
-    private drawingsDataSource: DrawingsDataSource,
-    private toasterService: ToasterService
-  ) {}
 
   duplicate() {
     for (let node of this.nodes) {

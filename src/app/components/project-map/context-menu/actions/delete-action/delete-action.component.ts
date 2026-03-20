@@ -1,4 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { ConfirmationBottomSheetComponent } from 'app/components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
@@ -14,26 +17,25 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-delete-action',
   templateUrl: './delete-action.component.html',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
 })
 export class DeleteActionComponent implements OnInit {
+  private toasterService = inject(ToasterService);
+  private nodesDataSource = inject(NodesDataSource);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private linksDataSource = inject(LinksDataSource);
+  private nodeService = inject(NodeService);
+  private drawingService = inject(DrawingService);
+  private linkService = inject(LinkService);
+  private bottomSheet = inject(MatBottomSheet);
+
   @Input() controller: Controller;
   @Input() nodes: Node[];
   @Input() drawings: Drawing[];
   @Input() links: Link[];
-
-  constructor(
-    private toasterService: ToasterService,
-    private nodesDataSource: NodesDataSource,
-    private drawingsDataSource: DrawingsDataSource,
-    private linksDataSource: LinksDataSource,
-    private nodeService: NodeService,
-    private drawingService: DrawingService,
-    private linkService: LinkService,
-    private bottomSheet: MatBottomSheet
-  ) {}
 
   ngOnInit() {}
 

@@ -1,4 +1,8 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { CommonModule } from '@angular/common';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../../../cartography/models/drawing';
@@ -9,23 +13,22 @@ import { NodeService } from '@services/node.service';
 import { ProjectService } from '@services/project.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-lock-action',
   templateUrl: './lock-action.component.html',
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatMenuModule],
 })
 export class LockActionComponent implements OnChanges {
+  private nodesDataSource = inject(NodesDataSource);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private nodeService = inject(NodeService);
+  private drawingService = inject(DrawingService);
+  private projectService = inject(ProjectService);
+
   @Input() controller: Controller;
   @Input() nodes: Node[];
   @Input() drawings: Drawing[];
   command: string;
-
-  constructor(
-    private nodesDataSource: NodesDataSource,
-    private drawingsDataSource: DrawingsDataSource,
-    private nodeService: NodeService,
-    private drawingService: DrawingService,
-    private projectService: ProjectService
-  ) {}
 
   ngOnChanges() {
     if (this.nodes.length === 1 && this.drawings.length === 0) {

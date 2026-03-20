@@ -1,4 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { VncConsoleService } from '@services/vnc-console.service';
 import { ToasterService } from '@services/toaster.service';
@@ -7,20 +10,19 @@ import { Controller } from '@models/controller';
 import { Router } from '@angular/router';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-http-console-new-tab-action',
   templateUrl: './http-console-new-tab-action.component.html',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
 })
 export class HttpConsoleNewTabActionComponent implements OnInit {
+  private nodeConsoleService = inject(NodeConsoleService);
+  private vncConsoleService = inject(VncConsoleService);
+  private toasterService = inject(ToasterService);
+  private router = inject(Router);
+
   @Input() controller: Controller;
   @Input() nodes: Node[];
-
-  constructor(
-    private nodeConsoleService: NodeConsoleService,
-    private vncConsoleService: VncConsoleService,
-    private toasterService: ToasterService,
-    private router: Router
-  ) {}
 
   ngOnInit() {}
 
