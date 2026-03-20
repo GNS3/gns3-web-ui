@@ -23,7 +23,7 @@
               matInput
               type="text"
               formControlName="templateName"
-              [(ngModel)]="qemuTemplate.name"
+              
               placeholder="Template name"
             />
           </mat-form-field>
@@ -32,7 +32,7 @@
               matInput
               type="text"
               formControlName="defaultName"
-              [(ngModel)]="qemuTemplate.default_name_format"
+              
               placeholder="Default name format"
             />
           </mat-form-field>
@@ -41,14 +41,14 @@
               matInput
               type="text"
               formControlName="symbol"
-              [(ngModel)]="qemuTemplate.symbol"
+              
               placeholder="Symbol"
             />
           </mat-form-field>
         </form>
         <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br /><br />
         <mat-form-field class="form-field">
-          <mat-select placeholder="Category" [(ngModel)]="qemuTemplate.category">
+          <mat-select placeholder="Category" >
             <mat-option *ngFor="let category of categories" [value]="category[1]">
               {{ category[0] }}
             </mat-option>
@@ -68,49 +68,49 @@
                  (matChipInputTokenEnd)="addTag($event)" />
         </mat-form-field>
         <mat-form-field class="form-field">
-          <mat-select placeholder="Platform" [(ngModel)]="qemuTemplate.platform">
+          <mat-select placeholder="Platform" >
             <mat-option *ngFor="let platform of selectPlatform" [value]="platform">
               {{ platform }}
             </mat-option>
           </mat-select>
         </mat-form-field>
         <mat-form-field class="form-field">
-          <input matInput type="number" min="1" [(ngModel)]="qemuTemplate.ram" placeholder="RAM" />
+          <input matInput type="number" min="1"  placeholder="RAM" />
           <span matSuffix>MB</span>
         </mat-form-field>
         <mat-form-field class="form-field">
-          <input matInput type="number" min="1" [(ngModel)]="qemuTemplate.cpus" placeholder="vCPUs" />
+          <input matInput type="number" min="1"  placeholder="vCPUs" />
         </mat-form-field>
 
         <mat-form-field class="form-field">
-          <mat-select placeholder="Boot priority" [(ngModel)]="qemuTemplate.boot_priority">
+          <mat-select placeholder="Boot priority" >
             <mat-option *ngFor="let priority of bootPriorities" [value]="priority[1]">
               {{ priority[0] }}
             </mat-option>
           </mat-select>
         </mat-form-field>
         <mat-form-field class="form-field">
-          <mat-select placeholder="On close" [(ngModel)]="qemuTemplate.on_close">
+          <mat-select placeholder="On close" >
             <mat-option *ngFor="let option of onCloseOptions" [value]="option[1]">
               {{ option[0] }}
             </mat-option>
           </mat-select>
         </mat-form-field>
         <mat-form-field class="select">
-          <mat-select placeholder="Console type" [(ngModel)]="qemuTemplate.console_type">
+          <mat-select placeholder="Console type" >
             <mat-option *ngFor="let type of consoleTypes" [value]="type">
               {{ type }}
             </mat-option>
           </mat-select>
         </mat-form-field>
         <mat-form-field class="select">
-          <mat-select placeholder="Auxiliary console type" [(ngModel)]="qemuTemplate.aux_type">
+          <mat-select placeholder="Auxiliary console type" >
             <mat-option *ngFor="let type of auxConsoleTypes" [value]="type">
               {{ type }}
             </mat-option>
           </mat-select>
         </mat-form-field>
-        <mat-checkbox [(ngModel)]="qemuTemplate.console_auto_start"> Auto start console </mat-checkbox>
+        <mat-checkbox > Auto start console </mat-checkbox>
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
@@ -121,10 +121,10 @@
           <mat-card-subtitle> HDA (Primary Master) </mat-card-subtitle>
           <mat-card-content>
             <mat-form-field class="form-field">
-              <input matInput [(ngModel)]="qemuTemplate.hda_disk_image" placeholder="Disk image" />
+              <input matInput  placeholder="Disk image" />
             </mat-form-field>
             <mat-form-field class="form-field">
-              <mat-select placeholder="Disk interface" [(ngModel)]="qemuTemplate.hda_disk_interface">
+              <mat-select placeholder="Disk interface" >
                 <mat-option *ngFor="let interface of diskInterfaces" [value]="interface">
                   {{ interface }}
                 </mat-option>
@@ -137,10 +137,10 @@
           <mat-card-subtitle> HDB (Primary Slave) </mat-card-subtitle>
           <mat-card-content>
             <mat-form-field class="form-field">
-              <input matInput [(ngModel)]="qemuTemplate.hdb_disk_image" placeholder="Disk image" />
+              <input matInput  placeholder="Disk image" />
             </mat-form-field>
             <mat-form-field class="form-field">
-              <mat-select placeholder="Disk interface" [(ngModel)]="qemuTemplate.hdb_disk_interface">
+              <mat-select placeholder="Disk interface" >
                 <mat-option *ngFor="let interface of diskInterfaces" [value]="interface">
                   {{ interface }}
                 </mat-option>
@@ -153,10 +153,10 @@
           <mat-card-subtitle> HDC (Secondary Master) </mat-card-subtitle>
           <mat-card-content>
             <mat-form-field class="form-field">
-              <input matInput [(ngModel)]="qemuTemplate.hdc_disk_image" placeholder="Disk image" />
+              <input matInput  placeholder="Disk image" />
             </mat-form-field>
             <mat-form-field class="form-field">
-              <mat-select placeholder="Disk interface" [(ngModel)]="qemuTemplate.hdc_disk_interface">
+              <mat-select placeholder="Disk interface" >
                 <mat-option *ngFor="let interface of diskInterfaces" [value]="interface">
                   {{ interface }}
                 </mat-option>
@@ -169,10 +169,10 @@
           <mat-card-subtitle> HDD (Secondary Slave) </mat-card-subtitle>
           <mat-card-content>
             <mat-form-field class="form-field">
-              <input matInput [(ngModel)]="qemuTemplate.hdd_disk_image" placeholder="Disk image" />
+              <input matInput  placeholder="Disk image" />
             </mat-form-field>
             <mat-form-field class="form-field">
-              <mat-select placeholder="Disk interface" [(ngModel)]="qemuTemplate.hdd_disk_interface">
+              <mat-select placeholder="Disk interface" >
                 <mat-option *ngFor="let interface of diskInterfaces" [value]="interface">
                   {{ interface }}
                 </mat-option>
@@ -189,7 +189,7 @@
           <button mat-raised-button color="primary" (click)="filecdrom.click()" class="file-button">Browse</button>
           <input type="file" #filecdrom class="nonvisible" (change)="uploadCdromImageFile($event)" />
           <mat-form-field class="file-name-form-field">
-            <input matInput type="text" [(ngModel)]="qemuTemplate.cdrom_image" placeholder="Image" />
+            <input matInput type="text"  placeholder="Image" />
           </mat-form-field>
         </div>
       </mat-expansion-panel>
@@ -198,29 +198,29 @@
           <mat-panel-title> Network </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-form-field class="form-field">
-          <input matInput type="number" min="0" [(ngModel)]="qemuTemplate.adapters" placeholder="Adapters" />
+          <input matInput type="number" min="0"  placeholder="Adapters" />
         </mat-form-field>
         <mat-form-field class="form-field">
-          <input matInput type="text" [(ngModel)]="qemuTemplate.first_port_name" placeholder="First port name" />
+          <input matInput type="text"  placeholder="First port name" />
         </mat-form-field>
         <mat-form-field class="form-field">
-          <input matInput type="text" [(ngModel)]="qemuTemplate.port_name_format" placeholder="Name format" />
+          <input matInput type="text"  placeholder="Name format" />
         </mat-form-field>
         <mat-form-field class="form-field">
-          <input matInput type="number" min="0" [(ngModel)]="qemuTemplate.port_segment_size" placeholder="Segment size" />
+          <input matInput type="number" min="0"  placeholder="Segment size" />
         </mat-form-field>
         <mat-form-field class="form-field">
-          <input matInput type="text" [(ngModel)]="qemuTemplate.mac_address" placeholder="Base MAC" />
+          <input matInput type="text"  placeholder="Base MAC" />
         </mat-form-field>
         <mat-form-field class="form-field">
-          <mat-select placeholder="Type" [(ngModel)]="qemuTemplate.adapter_type">
+          <mat-select placeholder="Type" >
             <mat-option *ngFor="let type of networkTypes" [value]="type.value">{{type.name}} ({{type.value}}) </mat-option>
           </mat-select>
         </mat-form-field>
         <button mat-button class="configButton" (click)="setCustomAdaptersConfiguratorState(true)">
           Configure custom adapters</button
         ><br />
-        <mat-checkbox [(ngModel)]="qemuTemplate.replicate_network_connection_state"> Replicate network connection state </mat-checkbox>
+        <mat-checkbox > Replicate network connection state </mat-checkbox>
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
@@ -234,7 +234,7 @@
               <button mat-raised-button color="primary" (click)="fileinitrd.click()" class="file-button">Browse</button>
               <input type="file" #fileinitrd class="nonvisible" (change)="uploadInitrdFile($event)" />
               <mat-form-field class="file-name-form-field">
-                <input matInput type="text" [(ngModel)]="qemuTemplate.initrd" placeholder="Initial RAM disk (initrd)" />
+                <input matInput type="text"  placeholder="Initial RAM disk (initrd)" />
               </mat-form-field>
             </div>
             <div>
@@ -243,14 +243,14 @@
               </button>
               <input type="file" #filekernelimage class="nonvisible" (change)="uploadKernelImageFile($event)" />
               <mat-form-field class="file-name-form-field">
-                <input matInput type="text" [(ngModel)]="qemuTemplate.kernel_image" placeholder="Kernel image" />
+                <input matInput type="text"  placeholder="Kernel image" />
               </mat-form-field>
             </div>
             <mat-form-field class="form-field">
               <input
                 matInput
                 type="text"
-                [(ngModel)]="qemuTemplate.kernel_command_line"
+                
                 placeholder="Kernel command line"
               />
             </mat-form-field>
@@ -264,7 +264,7 @@
               <button mat-raised-button color="primary" (click)="filebios.click()" class="file-button">Browse</button>
               <input type="file" #filebios class="nonvisible" (change)="uploadBiosFile($event)" />
               <mat-form-field class="file-name-form-field">
-                <input matInput type="text" [(ngModel)]="qemuTemplate.bios_image" placeholder="Bios image" />
+                <input matInput type="text"  placeholder="Bios image" />
               </mat-form-field>
             </div>
           </mat-card-content>
@@ -278,12 +278,12 @@
               <input
                 matInput
                 type="number"
-                [(ngModel)]="qemuTemplate.cpu_throttling"
+                
                 placeholder="Perecentage of CPU allowed"
               />
             </mat-form-field>
             <mat-form-field class="form-field">
-              <mat-select placeholder="Process priority" [(ngModel)]="qemuTemplate.process_priority">
+              <mat-select placeholder="Process priority" >
                 <mat-option *ngFor="let priority of priorities" [value]="priority">
                   {{ priority }}
                 </mat-option>
@@ -296,14 +296,14 @@
           <mat-card-subtitle> Additional settings </mat-card-subtitle>
           <mat-card-content>
             <mat-form-field class="form-field">
-              <input matInput type="text" [(ngModel)]="qemuTemplate.qemu_path" placeholder="Custom Qemu binary path" />
+              <input matInput type="text"  placeholder="Custom Qemu binary path" />
             </mat-form-field>
             <mat-form-field class="form-field">
-              <input matInput type="text" [(ngModel)]="qemuTemplate.options" placeholder="Options" />
+              <input matInput type="text"  placeholder="Options" />
             </mat-form-field>
-            <mat-checkbox [(ngModel)]="qemuTemplate.linked_clone"> Use as a linked base VM </mat-checkbox>
-            <br /><mat-checkbox [(ngModel)]="qemuTemplate.tpm"> Enable the Trusted Platform Module (TPM)</mat-checkbox>
-            <br /><mat-checkbox [(ngModel)]="qemuTemplate.uefi"> Enable the UEFI boot mode </mat-checkbox>
+            <mat-checkbox > Use as a linked base VM </mat-checkbox>
+            <br /><mat-checkbox > Enable the Trusted Platform Module (TPM)</mat-checkbox>
+            <br /><mat-checkbox > Enable the UEFI boot mode </mat-checkbox>
           </mat-card-content>
         </mat-card>
       </mat-expansion-panel>
@@ -312,7 +312,7 @@
           <mat-panel-title> Usage </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-form-field class="form-field">
-          <textarea matInput type="text" [(ngModel)]="qemuTemplate.usage"></textarea>
+          <textarea matInput type="text" ></textarea>
         </mat-form-field>
       </mat-expansion-panel>
     </mat-accordion>
