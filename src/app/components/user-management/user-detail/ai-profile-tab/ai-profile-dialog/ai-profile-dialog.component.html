@@ -190,7 +190,7 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>API Key</mat-label>
-      <input matInput formControlName="api_key" type="password" [placeholder]="mode === 'edit' ? 'Leave empty to keep existing key' : ''">
+      <input matInput formControlName="api_key" type="password" autocomplete="off" [placeholder]="mode === 'edit' ? 'Leave empty to keep existing key' : ''">
       <mat-error *ngIf="hasError('api_key')">{{ getErrorMessage('api_key') }}</mat-error>
       <mat-hint>
         <ng-container *ngIf="mode === 'edit'">
