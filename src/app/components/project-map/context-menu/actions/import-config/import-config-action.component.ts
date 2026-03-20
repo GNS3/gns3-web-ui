@@ -21,6 +21,8 @@ export class ImportConfigActionComponent {
   constructor(private nodeService: NodeService, private toasterService: ToasterService, private dialog: MatDialog) {}
 
   triggerClick() {
+    // 重置 fileInput，确保 change 事件可以再次触发
+    this.fileInput.nativeElement.value = '';
     if (this.node.node_type !== 'vpcs') {
       const dialogRef = this.dialog.open(ConfigDialogComponent, {
         width: '500px',
@@ -48,13 +50,25 @@ export class ImportConfigActionComponent {
       }
 
       if (this.configType === 'startup-config') {
-        this.nodeService.saveConfiguration(this.controller, this.node, content).subscribe(() => {
-          this.toasterService.success(`Configuration for node ${this.node.name} imported.`);
+        this.nodeService.saveConfiguration(this.controller, this.node, content).subscribe({
+          next: () => {
+            this.toasterService.success(`Configuration for node ${this.node.name} imported.`);
+          },
+          error: (error) => {
+            this.toasterService.error(error.error?.message || 'Failed to import startup configuration');
+          },
         });
       } else if (this.configType === 'private-config') {
-        this.nodeService.savePrivateConfiguration(this.controller, this.node, content).subscribe(() => {
-          this.toasterService.success(`Configuration for node ${this.node.name} imported.`);
+        this.nodeService.savePrivateConfiguration(this.controller, this.node, content).subscribe({
+          next: () => {
+            this.toasterService.success(`Configuration for node ${this.node.name} imported.`);
+          },
+          error: (error) => {
+            this.toasterService.error(error.error?.message || 'Failed to import private configuration');
+          },
         });
+      } else {
+        this.toasterService.error('No configuration type selected');
       }
     };
     fileReader.readAsText(file);

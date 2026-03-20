@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
 import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog.component';
 
 @Component({
@@ -14,12 +15,21 @@ export class ExportConfigActionComponent {
   @Input() controller: Controller;
   @Input() node: Node;
 
-  constructor(private nodeService: NodeService, private dialog: MatDialog) {}
+  constructor(
+    private nodeService: NodeService,
+    private dialog: MatDialog,
+    private toasterService: ToasterService
+  ) {}
 
   exportConfig() {
     if (this.node.node_type === 'vpcs') {
-      this.nodeService.getStartupConfiguration(this.controller, this.node).subscribe((config: any) => {
-        this.downloadByHtmlTag(config);
+      this.nodeService.getStartupConfiguration(this.controller, this.node).subscribe({
+        next: (config: any) => {
+          this.downloadByHtmlTag(config);
+        },
+        error: (error) => {
+          this.toasterService.error(error.error?.message || 'Failed to export configuration');
+        },
       });
     } else {
       const dialogRef = this.dialog.open(ConfigDialogComponent, {
@@ -30,12 +40,22 @@ export class ExportConfigActionComponent {
       let instance = dialogRef.componentInstance;
       dialogRef.afterClosed().subscribe((configType: string) => {
         if (configType === 'startup-config') {
-          this.nodeService.getStartupConfiguration(this.controller, this.node).subscribe((config: any) => {
-            this.downloadByHtmlTag(config);
+          this.nodeService.getStartupConfiguration(this.controller, this.node).subscribe({
+            next: (config: any) => {
+              this.downloadByHtmlTag(config);
+            },
+            error: (error) => {
+              this.toasterService.error(error.error?.message || 'Failed to export startup configuration');
+            },
           });
         } else if (configType === 'private-config') {
-          this.nodeService.getPrivateConfiguration(this.controller, this.node).subscribe((config: any) => {
-            this.downloadByHtmlTag(config);
+          this.nodeService.getPrivateConfiguration(this.controller, this.node).subscribe({
+            next: (config: any) => {
+              this.downloadByHtmlTag(config);
+            },
+            error: (error) => {
+              this.toasterService.error(error.error?.message || 'Failed to export private configuration');
+            },
           });
         }
       });
