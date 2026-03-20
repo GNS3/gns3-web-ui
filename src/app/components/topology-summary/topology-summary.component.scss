@@ -1,8 +1,5 @@
 /**
  * GNS3 Topology Summary Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
  */
 
 @media screen and (max-width: 600px) {
@@ -16,26 +13,26 @@ mat-tab-group {
 }
 
 .summaryWrapper {
-  box-shadow: var(--gns3-shadow-lg, 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19));
+  box-shadow: var(--gns3-shadow-lg);
   position: fixed;
   top: 60px;
-  right: 0px;
+  right: 0;
   height: 400px;
   width: 320px;
-  background: var(--gns3-surface, #263238);
+  background: var(--gns3-surface);
   color: white;
   overflow: hidden;
-  font-size: var(--gns3-font-size-xs, 12px);
-  margin: var(--gns3-spacing-md, 20px);
-  border-radius: var(--gns3-radius-sm, 8px);
+  font-size: var(--gns3-font-size-xs);
+  margin: var(--gns3-spacing-md);
+  border-radius: var(--gns3-radius-sm);
 }
 
 .summaryWrapper.lightTheme,
 .summaryWrapper.theme-light {
   background-color: rgba(244, 248, 252, 0.95);
   color: black;
-  margin: var(--gns3-spacing-md, 20px);
-  border-radius: var(--gns3-radius-sm, 8px);
+  margin: var(--gns3-spacing-md);
+  border-radius: var(--gns3-radius-sm);
 }
 
 .summaryHeaderMenu {
@@ -49,48 +46,48 @@ mat-tab-group {
 
 .summaryFilters {
   height: 25px;
-  margin-left: var(--gns3-spacing-xs, 5px);
-  margin-right: var(--gns3-spacing-xs, 5px);
+  margin-left: var(--gns3-spacing-xs);
+  margin-right: var(--gns3-spacing-xs);
 }
 
 .summarySorting {
   height: 25px;
-  margin-left: var(--gns3-spacing-xs, 5px);
-  margin-right: var(--gns3-spacing-xs, 5px);
+  margin-left: var(--gns3-spacing-xs);
+  margin-right: var(--gns3-spacing-xs);
 }
 
 .tabContent {
-  padding: var(--gns3-spacing-sm, 10px);
+  padding: var(--gns3-spacing-sm);
 }
 
 .summaryContent {
   overflow: auto;
-  scrollbar-color: darkgrey var(--gns3-surface, #263238);
+  scrollbar-color: darkgrey var(--gns3-surface);
   scrollbar-width: thin;
 }
 
 .summaryContentComputes {
   max-height: 350px;
   overflow: auto;
-  scrollbar-color: darkgrey var(--gns3-surface, #263238);
+  scrollbar-color: darkgrey var(--gns3-surface);
   scrollbar-width: thin;
 }
 
 .titleButton {
-  margin-left: var(--gns3-spacing-xs, 5px);
+  margin-left: var(--gns3-spacing-xs);
   margin-top: 4px;
   outline: none;
-  border-radius: 0px;
+  border-radius: 0;
 }
 
 .marked {
-  color: var(--mat-app-primary-color, #0097a7);
-  border-bottom: 2px solid var(--mat-app-primary-color, #0097a7);
+  color: var(--mat-app-primary-color);
+  border-bottom: 2px solid var(--mat-app-primary-color);
 }
 
 .divider {
-  margin-top: var(--gns3-spacing-xs, 5px);
-  margin-bottom: var(--gns3-spacing-xs, 5px);
+  margin-top: var(--gns3-spacing-xs);
+  margin-bottom: var(--gns3-spacing-xs);
   width: 100%;
   height: 2px;
 }
@@ -99,7 +96,7 @@ mat-tab-group {
   width: 100%;
   display: flex;
   justify-content: space-between;
-  padding-right: var(--gns3-spacing-xs, 5px);
+  padding-right: var(--gns3-spacing-xs);
 
   > div {
     display: flex;
@@ -123,11 +120,11 @@ mat-tab-group {
 
 ::-webkit-scrollbar-thumb {
   background-color: darkgrey;
-  outline: 1px solid var(--gns3-surface, #263238);
+  outline: 1px solid var(--gns3-surface);
 }
 
 .radio-group-wrapper {
-  margin-top: var(--gns3-spacing-xs, 5px);
+  margin-top: var(--gns3-spacing-xs);
 }
 
 .radio-group {
@@ -137,9 +134,9 @@ mat-tab-group {
 
 .closeButton {
   cursor: pointer;
-  font-size: var(--gns3-font-size-xl, 24px);
+  font-size: var(--gns3-font-size-xl);
   margin-top: 8px;
-  margin-right: var(--gns3-spacing-xs, 5px);
+  margin-right: var(--gns3-spacing-xs);
 }
 
 .filterBox {

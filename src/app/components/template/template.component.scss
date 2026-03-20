@@ -1,11 +1,8 @@
 /**
  * GNS3 Template Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
  */
 
-::ng-deep .mat-menu-panel {
+.mat-menu-panel {
   max-width: 400px;
   max-height: 500px;
 }
@@ -13,7 +10,7 @@
 .menu {
   width: 100%;
   overflow-y: scroll;
-  scrollbar-color: darkgrey var(--gns3-surface, #263238);
+  scrollbar-color: darkgrey var(--gns3-surface);
   scrollbar-width: thin;
 }
 
@@ -27,7 +24,6 @@
 
 ::-webkit-scrollbar-thumb {
   background-color: darkgrey;
-  outline: 1px solid var(--gns3-surface, #263238);
 }
 
 .form-field {
@@ -40,7 +36,6 @@
   width: 65px;
   height: 65px;
   filter: invert(0);
-  --webkit-filter: invert(0) !important;
 }
 
 .templateList {
@@ -49,7 +44,7 @@
 
 .templateRow {
   display: flex;
-  margin-bottom: var(--gns3-spacing-sm, 10px);
+  margin-bottom: var(--gns3-spacing-sm);
 }
 
 .templateText {
@@ -62,6 +57,6 @@
 }
 
 .templateIcon {
-  width: 80px !important;
-  padding: var(--gns3-spacing-sm, 10px);
+  width: 80px;
+  padding: var(--gns3-spacing-sm);
 }

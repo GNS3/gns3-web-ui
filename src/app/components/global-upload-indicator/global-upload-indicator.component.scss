@@ -25,7 +25,7 @@
 }
 
 :host-context(.dark-theme) .upload-indicator-header {
-  background: var(--gns3-surface, #263238);
+  background: var(--gns3-surface);
 
   &:hover {
     background: #37474f;

@@ -1,8 +1,5 @@
 /**
  * GNS3 Console Wrapper Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
  */
 
 @media screen and (max-width: 700px) {
@@ -12,22 +9,22 @@
 }
 
 .consoleWrapper {
-  box-shadow: var(--gns3-shadow-lg, 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19));
+  box-shadow: var(--gns3-shadow-lg);
   position: fixed;
   bottom: 40px;
   left: 80px;
   height: 180px;
   width: 600px;
-  background: #000000 !important;
+  background: #000000;
   color: white;
   overflow: hidden;
-  font-size: var(--gns3-font-size-xs, 12px);
-  border-radius: var(--gns3-radius-sm, 8px);
+  font-size: var(--gns3-font-size-xs);
+  border-radius: var(--gns3-radius-sm);
   outline: none;
-  transition: box-shadow var(--gns3-duration-fast, 0.2s) ease;
+  transition: box-shadow var(--gns3-duration-fast) ease;
 
   &.console-active {
-    box-shadow: var(--gns3-shadow-lg, 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)),
+    box-shadow: var(--gns3-shadow-lg),
                 0 0 0 2px rgba(0, 151, 167, 0.6),
                 0 0 12px rgba(0, 151, 167, 0.3);
   }
@@ -39,19 +36,18 @@
 
 .consoleWrapper.lightTheme,
 .consoleWrapper.theme-light {
-  background: white !important;
+  background: white;
   color: black;
 }
 
 .filterButton {
   background: transparent;
-  color: white;
-  border: none;
-  margin-top: 0px;
-  outline: none;
   color: #dbd5d5;
+  border: none;
+  margin-top: 0;
+  outline: none;
   font-weight: bold;
-  padding: 0px;
+  padding: 0;
 }
 
 .consoleFiltering {
@@ -60,12 +56,12 @@
 
 .consoleHeader {
   width: 100%;
-  font-size: var(--gns3-font-size-xs, 12px);
+  font-size: var(--gns3-font-size-xs);
   overflow: hidden;
   display: flex;
   padding: 2px;
   justify-content: space-between;
-  background: var(--gns3-surface, #263238) !important;
+  background: #263238;
   cursor: grab;
   position: relative;
   z-index: 10;
@@ -79,7 +75,7 @@
 /* Enhanced hover effects for header buttons */
 .consoleHeader {
   .mat-icon-button {
-    transition: all var(--gns3-duration-fast, 0.2s) ease;
+    transition: all var(--gns3-duration-fast) ease;
     border-radius: 50%;
 
     &:hover {
@@ -118,8 +114,8 @@
 
 .lightThemeConsoleHeader,
 .theme-lightConsoleHeader {
-  background: white !important;
-  color: black !important;
+  background: white;
+  color: black;
 
   .mat-icon-button {
     &:hover {
@@ -151,32 +147,32 @@
   }
 }
 
-:host ::ng-deep .mat-tab-label {
-  height: 3rem !important;
-  min-width: 8rem !important;
+.mat-tab-label {
+  height: 3rem;
+  min-width: 8rem;
   flex-shrink: 0;
 }
 
-:host ::ng-deep .mat-tab-label.mat-tab-label-active {
+.mat-tab-label.mat-tab-label-active {
   border-bottom: 2px solid var(--mat-app-primary-color);
   box-sizing: border-box;
   font-weight: 1200;
 }
 
-:host ::ng-deep .mat-ink-bar {
-  display: none !important;
+.mat-ink-bar {
+  display: none;
 }
 
 /* Firefox tab label fix */
 @-moz-document url-prefix() {
-  :host ::ng-deep .mat-tab-label {
-    min-width: 8rem !important;
-    max-width: none !important;
+  .mat-tab-label {
+    min-width: 8rem;
+    max-width: none;
     flex: 0 0 auto;
-    width: auto !important;
+    width: auto;
   }
 
-  :host ::ng-deep .mat-tab-label-container {
+  .mat-tab-label-container {
     display: flex;
     flex-direction: row;
   }
@@ -192,7 +188,7 @@
   overflow-y: scroll;
   padding: 2px;
   color: #dbd5d5;
-  scrollbar-color: darkgrey var(--gns3-surface, #263238);
+  scrollbar-color: darkgrey #263238;
   scrollbar-width: thin;
 }
 
@@ -218,9 +214,9 @@
 }
 
 mat-icon {
-  font-size: var(--gns3-font-size-base, 20px);
-  width: var(--gns3-font-size-base, 20px);
-  height: var(--gns3-font-size-base, 20px);
+  font-size: var(--gns3-font-size-base);
+  width: var(--gns3-font-size-base);
+  height: var(--gns3-font-size-base);
 }
 
 input:focus {
@@ -237,7 +233,6 @@ input:focus {
 
 ::-webkit-scrollbar-thumb {
   background-color: darkgrey;
-  outline: 1px solid var(--gns3-surface, #263238);
 }
 
 .closeButton {
@@ -257,6 +252,4 @@ input:focus {
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  /* isolation: isolate;  ← Removed to allow theme propagation to devices panel */
 }
-

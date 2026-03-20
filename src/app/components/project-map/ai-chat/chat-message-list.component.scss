@@ -310,7 +310,7 @@
   // Performance optimized: removed animation, using static styles
   opacity: 0.9;
 
-  ::ng-deep mat-spinner circle {
+  mat-spinner circle {
     stroke: var(--mat-app-primary-color);
   }
 }

@@ -1,8 +1,5 @@
 /**
  * GNS3 List of Snapshots Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
  */
 
 .filter-field {
@@ -10,5 +7,5 @@
 }
 
 .mat-table {
-  margin: calc(var(--gns3-spacing-md, 16px) * -1) !important;
+  margin: calc(var(--gns3-spacing-md) * -1);
 }

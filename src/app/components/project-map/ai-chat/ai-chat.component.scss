@@ -502,7 +502,7 @@
 // =============================================
 // Snackbar Error Styles
 // =============================================
-::ng-deep .ai-chat-snack-error {
+.ai-chat-snack-error {
   background-color: var(--mat-app-error-color);
   color: var(--mat-app-on-error-color);
   font-weight: var(--gns3-font-weight-medium);

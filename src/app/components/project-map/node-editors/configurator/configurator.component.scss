@@ -1,8 +1,5 @@
 /**
  * GNS3 Configurator Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
  */
 
 table {
@@ -24,7 +21,7 @@ table {
 .default-content {
   max-height: 400px;
   overflow-y: scroll;
-  scrollbar-color: darkgrey var(--gns3-surface, #263238);
+  scrollbar-color: darkgrey #263238;
   scrollbar-width: thin;
 }
 
@@ -46,7 +43,7 @@ table {
 }
 
 mat-radio-button {
-  margin-right: var(--gns3-spacing-sm, 10px);
+  margin-right: var(--gns3-spacing-sm);
 }
 
 ::-webkit-scrollbar {
@@ -59,28 +56,8 @@ mat-radio-button {
 
 ::-webkit-scrollbar-thumb {
   background-color: darkgrey;
-  outline: 1px solid var(--gns3-surface, #263238);
 }
 
 .tags-field {
-  ::ng-deep .mat-form-field-wrapper {
-    .mat-form-field-flex {
-      .mat-form-field-infix {
-        width: 100% !important;
-        min-width: 400px;
-        display: flex !important;
-        flex-wrap: wrap !important;
-      }
-    }
-  }
-
-  ::ng-deep .mat-chip-list {
-    flex-wrap: wrap !important;
-    width: 100%;
-  }
-
-  ::ng-deep input.mat-input-element {
-    min-width: 200px !important;
-    flex: 1 1 200px !important;
-  }
+  width: 100%;
 }

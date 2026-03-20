@@ -1,16 +1,13 @@
 /**
  * GNS3 Readme Editor Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
  */
 
 .textWrapper {
-  height: 500px !important;
+  height: 500px;
   overflow-y: scroll;
 }
 
 .editorWrapper {
-  height: 500px !important;
+  height: 500px;
   overflow-y: scroll;
 }

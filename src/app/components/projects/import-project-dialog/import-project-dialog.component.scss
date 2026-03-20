@@ -11,9 +11,9 @@
 
 .file-button {
   width: 100%;
-  margin-top: var(--gns3-spacing-xs, 5px);
-  margin-bottom: var(--gns3-spacing-sm, 10px);
-  padding: 0px;
+  margin-top: var(--gns3-spacing-xs);
+  margin-bottom: var(--gns3-spacing-sm);
+  padding: 0;
 }
 
 .file-name-form {
@@ -41,10 +41,10 @@
 }
 
 .result-message-box {
-  margin-top: var(--gns3-spacing-sm, 10px);
+  margin-top: var(--gns3-spacing-sm);
   text-align: center;
 }
 
 .progress-bar {
-  background-color: var(--mat-app-primary-color, #0097a7);
+  background-color: var(--mat-app-primary-color);
 }

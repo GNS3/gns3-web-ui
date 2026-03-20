@@ -1,13 +1,10 @@
 /**
  * GNS3 Navigation Dialog Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
  */
 
 .dialogWrapper {
-  background-color: var(--gns3-surface, #263238);
-  padding: var(--gns3-spacing-xs, 10px) var(--gns3-spacing-md, 20px);
+  background-color: var(--gns3-surface);
+  padding: var(--gns3-spacing-xs) var(--gns3-spacing-md);
   margin-bottom: -8px;
   display: flex;
   justify-content: space-between;
@@ -16,10 +13,10 @@
 
 .dialogWrapper.lightTheme,
 .dialogWrapper.theme-light {
-  background-color: white !important;
+  background-color: white;
 }
 
 .title {
-  margin-right: var(--gns3-spacing-sm, 10px);
-  margin-left: var(--gns3-spacing-sm, 10px);
+  margin-right: var(--gns3-spacing-sm);
+  margin-left: var(--gns3-spacing-sm);
 }

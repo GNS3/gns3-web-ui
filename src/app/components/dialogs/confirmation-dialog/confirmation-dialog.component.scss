@@ -11,7 +11,7 @@
   animation: dialogSlideIn var(--gns3-duration-normal, 0.3s) ease-out;
   border-radius: var(--gns3-radius-lg, 16px);
   box-shadow: var(--gns3-shadow-xl, 0 8px 32px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.12));
-  background-color: var(--gns3-dialog-bg-dark, #2d2d2d);
+  background-color: var(--gns3-dialog-bg-dark);
 }
 
 @keyframes dialogSlideIn {
@@ -47,7 +47,7 @@
 }
 
 .warning-icon {
-  color: var(--mat-app-error-color, #f44336);
+  color: var(--mat-app-error-color);
 }
 
 .dialog-title {
@@ -119,7 +119,7 @@
 }
 
 .confirm-button {
-  background: linear-gradient(135deg, var(--mat-app-error-color, #f44336), #e53935);
+  background: linear-gradient(135deg, var(--mat-app-error-color), #e53935);
   color: white;
   border: none;
   box-shadow: 0 2px 6px rgba(244, 67, 54, 0.25);

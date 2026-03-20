@@ -1,8 +1,5 @@
 /**
  * GNS3 Project Map Menu Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
  */
 
 .non-visible {
@@ -10,22 +7,22 @@
 }
 
 .unmarked {
-  color: white !important;
+  color: white;
 }
 
 .unmarkedLight {
-  color: black !important;
+  color: black;
 }
 
 .marked {
-  color: var(--mat-app-primary-color, #0097a7) !important;
+  color: var(--mat-app-primary-color);
 }
 
 .ai-chat-button .ai-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--gns3-font-size-xs, 14px);
+  font-size: var(--gns3-font-size-xs);
   font-weight: bold;
   font-family: 'Roboto', sans-serif;
   letter-spacing: -0.5px;
@@ -39,50 +36,50 @@
 .ai-chat-button.ai-active::after {
   content: '';
   position: absolute;
-  top: var(--gns3-spacing-xs, 4px);
-  right: var(--gns3-spacing-xs, 4px);
-  width: var(--gns3-spacing-xs, 8px);
-  height: var(--gns3-spacing-xs, 8px);
+  top: var(--gns3-spacing-xs);
+  right: var(--gns3-spacing-xs);
+  width: var(--gns3-spacing-xs);
+  height: var(--gns3-spacing-xs);
   background-color: #00bcd4;
   border-radius: 50%;
-  box-shadow: 0 0 var(--gns3-spacing-sm, 6px) rgba(0, 188, 212, 0.8);
+  box-shadow: 0 0 var(--gns3-spacing-sm) rgba(0, 188, 212, 0.8);
 }
 
 /* AI Chat minimized state */
 .ai-chat-button.ai-minimized {
   position: relative;
-  background-color: rgba(0, 188, 212, 0.25) !important;
-  box-shadow: 0 0 var(--gns3-spacing-md, 16px) rgba(0, 188, 212, 0.6), inset 0 0 var(--gns3-spacing-sm, 12px) rgba(0, 188, 212, 0.4) !important;
+  background-color: rgba(0, 188, 212, 0.25);
+  box-shadow: 0 0 var(--gns3-spacing-md) rgba(0, 188, 212, 0.6), inset 0 0 var(--gns3-spacing-sm) rgba(0, 188, 212, 0.4);
   animation: pulse-minimized 1.5s ease-in-out infinite;
-  border: var(--gns3-radius-xs, 2px) solid rgba(0, 188, 212, 0.8) !important;
+  border: var(--gns3-radius-xs) solid rgba(0, 188, 212, 0.8);
 }
 
 .ai-chat-button.ai-minimized .ai-icon {
-  color: #00e5ff !important;
-  text-shadow: 0 0 var(--gns3-spacing-sm, 8px) rgba(0, 229, 255, 0.8) !important;
-  font-weight: 900 !important;
+  color: #00e5ff;
+  text-shadow: 0 0 var(--gns3-spacing-sm) rgba(0, 229, 255, 0.8);
+  font-weight: 900;
 }
 
 .ai-minimize-indicator {
   position: absolute;
-  bottom: var(--gns3-spacing-xs, 3px);
+  bottom: var(--gns3-spacing-xs);
   left: 50%;
   transform: translateX(-50%);
-  width: var(--gns3-spacing-xs, 6px);
-  height: var(--gns3-spacing-xs, 6px);
+  width: var(--gns3-spacing-xs);
+  height: var(--gns3-spacing-xs);
   background-color: #00e5ff;
   border-radius: 50%;
-  box-shadow: 0 0 var(--gns3-spacing-xs, 8px) rgba(0, 229, 255, 1);
+  box-shadow: 0 0 var(--gns3-spacing-xs) rgba(0, 229, 255, 1);
   animation: blink-indicator 1s ease-in-out infinite;
 }
 
 @keyframes pulse-minimized {
   0%, 100% {
-    box-shadow: 0 0 var(--gns3-spacing-md, 16px) rgba(0, 188, 212, 0.6), inset 0 0 var(--gns3-spacing-sm, 12px) rgba(0, 188, 212, 0.4);
+    box-shadow: 0 0 var(--gns3-spacing-md) rgba(0, 188, 212, 0.6), inset 0 0 var(--gns3-spacing-sm) rgba(0, 188, 212, 0.4);
     transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 var(--gns3-spacing-xl, 24px) rgba(0, 188, 212, 0.9), inset 0 0 var(--gns3-spacing-md, 16px) rgba(0, 188, 212, 0.6);
+    box-shadow: 0 0 var(--gns3-spacing-xl) rgba(0, 188, 212, 0.9), inset 0 0 var(--gns3-spacing-md) rgba(0, 188, 212, 0.6);
     transform: scale(1.05);
   }
 }
@@ -100,7 +97,7 @@
 
 /* Menu button hover effect */
 .menu-button {
-  transition: transform var(--gns3-duration-fast, 0.2s) ease;
+  transition: transform var(--gns3-duration-fast) ease;
 }
 
 .menu-button:hover {

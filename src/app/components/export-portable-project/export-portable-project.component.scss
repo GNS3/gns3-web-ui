@@ -1,10 +1,12 @@
 .mat-dialog-title {
-  margin: 0 0 0px;
+  margin: 0;
   display: block;
 }
+
 .mat-dialog-container {
-  padding: 14px 14px 5px 14px !important;
+  padding: 14px 14px 5px 14px;
 }
+
 .checkBox-section {
   display: flex;
   align-content: center;
@@ -15,25 +17,29 @@
 .checkBox-margin {
   margin: 0 10px;
 }
+
 .txt-align {
   text-align: end;
 }
+
 .close-btn {
   margin: 0 0 20px 40px;
 }
-.mat-data {
-  margin: 15px 0 15px 0;
-}
 
+.mat-data {
+  margin: 15px 0;
+}
 
 .input-full-width {
   width: 100%;
 }
+
 .col-data {
   text-align: left;
   align-self: self-end;
   margin-bottom: 20px;
 }
-.checkbox-row{
-  margin-top: 5px 0 5px 0;
+
+.checkbox-row {
+  margin-top: 5px 0;
 }

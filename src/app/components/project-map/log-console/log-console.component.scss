@@ -1,8 +1,5 @@
 /**
  * GNS3 Log Console Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
  */
 
 .consoleWrapper {
@@ -13,24 +10,23 @@
   background: #000000;
   color: white;
   overflow: hidden;
-  font-size: var(--gns3-font-size-xs, 12px);
+  font-size: var(--gns3-font-size-xs);
 }
 
 .consoleWrapper.lightTheme,
 .consoleWrapper.theme-light {
-  background: white !important;
+  background: white;
   color: black;
 }
 
 .filterButton {
   background: transparent;
-  color: white;
-  border: none;
-  margin-top: 0px;
-  outline: none;
   color: #dbd5d5;
+  border: none;
+  margin-top: 0;
+  outline: none;
   font-weight: bold;
-  padding: 0px;
+  padding: 0;
 }
 
 .consoleFiltering {
@@ -40,10 +36,10 @@
 .consoleHeader {
   width: 100%;
   height: 32px;
-  font-size: var(--gns3-font-size-xs, 12px);
+  font-size: var(--gns3-font-size-xs);
   overflow: hidden;
   display: flex;
-  padding: 4px 8px;
+  padding: var(--gns3-spacing-xs) var(--gns3-spacing-sm);
   justify-content: space-between;
   background: #1a1a1a;
   flex-shrink: 0;
@@ -52,10 +48,10 @@
 .console {
   flex: 1;
   overflow-y: auto;
-  padding: var(--gns3-spacing-sm, 8px);
+  padding: var(--gns3-spacing-sm);
   color: #f0f0f0;
   font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-  font-size: var(--gns3-font-size-sm, 13px);
+  font-size: var(--gns3-font-size-sm);
   line-height: 1.4;
   scrollbar-color: darkgrey #1a1a1a;
   scrollbar-width: thin;
@@ -65,7 +61,7 @@
 .consoleInput {
   width: 100%;
   height: 32px;
-  padding: 4px 8px;
+  padding: var(--gns3-spacing-xs) var(--gns3-spacing-sm);
   display: flex;
   background: #1a1a1a;
   flex-shrink: 0;
@@ -76,7 +72,7 @@
   color: #f0f0f0;
   border: none;
   font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-  font-size: var(--gns3-font-size-sm, 13px);
+  font-size: var(--gns3-font-size-sm);
 }
 
 .inputIcon {
@@ -84,9 +80,9 @@
 }
 
 mat-icon {
-  font-size: var(--gns3-font-size-base, 20px);
-  width: var(--gns3-font-size-base, 20px);
-  height: var(--gns3-font-size-base, 20px);
+  font-size: var(--gns3-font-size-base);
+  width: var(--gns3-font-size-base);
+  height: var(--gns3-font-size-base);
 }
 
 input:focus {
@@ -103,7 +99,6 @@ input:focus {
 
 ::-webkit-scrollbar-thumb {
   background-color: darkgrey;
-  outline: 1px solid var(--gns3-surface, #263238);
 }
 
 .closeButton {

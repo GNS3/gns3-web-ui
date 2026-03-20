@@ -10,9 +10,9 @@
   flex-direction: column;
   width: 200px;
   height: 100%;
-  background-color: var(--gns3-surface, #263238);
+  background-color: var(--gns3-surface);
   border-right: 1px solid rgba(255, 255, 255, 0.12);
-  transition: width var(--gns3-duration-fast, 0.2s) ease;
+  transition: width var(--gns3-duration-fast) ease;
 
   &.collapsed {
     width: 48px;
@@ -59,7 +59,7 @@
   font-size: var(--gns3-font-size-base, 20px);
   width: var(--gns3-font-size-base, 20px);
   height: var(--gns3-font-size-base, 20px);
-  color: var(--mat-app-primary-color, #0097a7);
+  color: var(--mat-app-primary-color);
   transition: transform var(--gns3-duration-fast, 0.2s);
 }
 
@@ -119,7 +119,7 @@
   }
 
   &.started {
-    border-left: 3px solid var(--mat-app-primary-color, #0097a7);
+    border-left: 3px solid var(--mat-app-primary-color);
   }
 }
 
@@ -162,7 +162,7 @@
   font-size: var(--gns3-font-size-sm, 18px);
   width: var(--gns3-font-size-sm, 18px);
   height: var(--gns3-font-size-sm, 18px);
-  color: var(--mat-app-primary-color, #0097a7);
+  color: var(--mat-app-primary-color);
   flex-shrink: 0;
   opacity: 0.8;
   transition: all var(--gns3-duration-fast, 0.2s) ease;
@@ -231,7 +231,7 @@
 
 .console-devices-panel.lightTheme .panel-icon,
 .console-devices-panel.theme-light .panel-icon {
-  color: var(--mat-app-primary-color, #0097a7);
+  color: var(--mat-app-primary-color);
 }
 
 .console-devices-panel.lightTheme .device-item,

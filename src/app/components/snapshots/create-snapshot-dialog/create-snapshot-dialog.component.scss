@@ -1,8 +1,5 @@
 /**
  * GNS3 Create Snapshot Dialog Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
  */
 
 .title-container {
@@ -17,12 +14,12 @@
 
 .top-button {
   outline: none;
-  box-shadow: none !important;
-  background: transparent !important;
+  box-shadow: none;
+  background: transparent;
 }
 
 button:focus {
-  outline: 0 !important;
-  border: 0 !important;
-  box-shadow: none !important;
+  outline: 0;
+  border: 0;
+  box-shadow: none;
 }

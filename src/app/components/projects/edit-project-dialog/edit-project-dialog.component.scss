@@ -1,8 +1,5 @@
 /**
  * GNS3 Edit Project Dialog Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
  */
 
 table {
@@ -14,13 +11,13 @@ table {
 }
 
 th {
-  border: 0px !important;
+  border: 0;
 }
 
 th.mat-header-cell {
-  padding-bottom: var(--gns3-spacing-md, 15px);
+  padding-bottom: var(--gns3-spacing-md);
 }
 
 td.mat-cell {
-  padding-top: var(--gns3-spacing-md, 15px);
+  padding-top: var(--gns3-spacing-md);
 }

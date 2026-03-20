@@ -1,8 +1,5 @@
 /**
  * GNS3 Change Symbol Dialog Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
  */
 
 .buttonWrapper {
@@ -22,31 +19,25 @@
 
 .button {
   background: border-box;
-  border-width: 0px;
+  border-width: 0;
   outline: none;
-}
-
-.buttonSelected {
-  background: var(--mat-app-primary-color, #0097a7) !important;
 }
 
 .image {
   width: 65px;
   height: 65px;
-  filter: invert(0);
-  --webkit-filter: invert(0) !important;
 }
 
 .imageSelected {
-  margin-left: 0px;
+  margin-left: 0;
 }
 
 .wrapper {
   display: grid;
   grid-template-rows: auto;
   grid-template-columns: repeat(7, 1fr);
-  grid-row-gap: var(--gns3-spacing-xl, 3em);
-  grid-column-gap: var(--gns3-spacing-sm, 1em);
+  grid-row-gap: var(--gns3-spacing-xl);
+  grid-column-gap: var(--gns3-spacing-sm);
 }
 
 .radio-selection {
@@ -54,7 +45,7 @@
 }
 
 .mat-radio-button ~ .mat-radio-button {
-  margin-left: var(--gns3-spacing-md, 16px);
+  margin-left: var(--gns3-spacing-md);
 }
 
 .non-visible {

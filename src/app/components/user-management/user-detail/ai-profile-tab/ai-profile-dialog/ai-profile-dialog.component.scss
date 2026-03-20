@@ -38,7 +38,7 @@
       display: block;
     }
 
-    ::ng-deep .mat-checkbox-layout {
+    .mat-checkbox-layout {
       display: block;
     }
 
@@ -238,7 +238,7 @@
       flex: 1;
       display: flex;
 
-      ::ng-deep .mat-button-toggle {
+      .mat-button-toggle {
         flex: 1;
 
         .mat-button-toggle-button {

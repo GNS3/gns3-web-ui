@@ -1,12 +1,9 @@
 /**
  * GNS3 Project Map Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
  */
 
 .wrapper {
-  height: var(--gns3-map-height, 600px);
+  height: var(--gns3-map-height);
 }
 
 app-root,
@@ -21,26 +18,23 @@ g.node:hover {
 }
 
 .project-map {
-  background-color: var(--gns3-map-bg-dark, #18242b);
+  background-color: var(--gns3-map-bg-dark);
   min-height: 100vh;
   min-width: 100vw;
 
   .label {
-    fill: #ffffff !important;
+    fill: #ffffff;
   }
 
   &:not(.lightTheme) {
-    // Dark mode: make default black ethernet cables visible as white
     path.ethernet_link[stroke="#000000"] {
       stroke: #ffffff;
     }
 
-    // Dark mode: brighten default dark-red serial cables so they're visible
     path.serial_link[stroke="#800000"] {
-      stroke: var(--gns3-serial-link-bright, #e05555);
+      stroke: var(--gns3-serial-link-bright);
     }
 
-    // Dark mode: drawing cable line is white
     g.drawing-line-tool path {
       stroke: #ffffff;
     }
@@ -48,13 +42,12 @@ g.node:hover {
 
   &.lightTheme,
   &.theme-light {
-    background-color: var(--gns3-map-bg-light, #e8ecef);
+    background-color: var(--gns3-map-bg-light);
 
     .label {
-      fill: #000000 !important;
+      fill: #000000;
     }
 
-    // Light mode: drawing cable line is black
     g.drawing-line-tool path {
       stroke: #000000;
     }
@@ -63,16 +56,16 @@ g.node:hover {
 
 #project-titlebar {
   position: fixed;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  height: var(--gns3-toolbar-height, 60px);
-  padding: 0px var(--gns3-toolbar-padding, 20px);
-  background-color: var(--gns3-toolbar-bg-dark, #20313b);
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--gns3-toolbar-height);
+  padding: 0 var(--gns3-toolbar-padding);
+  background-color: var(--gns3-toolbar-bg-dark);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: var(--gns3-shadow-md, 3px 3px 10px rgba(0, 0, 0, 0.2));
+  box-shadow: var(--gns3-shadow-md);
   z-index: 2;
   transition: background-color var(--gns3-duration-normal) var(--gns3-easing-default);
 
@@ -81,15 +74,15 @@ g.node:hover {
     top: -2px;
 
     mat-icon {
-      width: 30px !important;
-      height: 30px !important;
+      width: 30px;
+      height: 30px;
     }
   }
 
   .primary-controls {
     border-right: 1px solid rgba(255, 255, 255, 0.3);
-    padding-right: var(--gns3-spacing-md, 15px);
-    margin-right: var(--gns3-spacing-md, 15px);
+    padding-right: var(--gns3-spacing-md);
+    margin-right: var(--gns3-spacing-md);
 
     &.lightTheme,
     &.theme-light {
@@ -100,19 +93,19 @@ g.node:hover {
   .menu-button-group {
     display: flex;
     align-items: center;
-    height: var(--gns3-menu-button-group-height, 24px);
+    height: var(--gns3-menu-button-group-height);
   }
 
   .menu-button {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: var(--gns3-menu-button-height, 36px);
-    width: var(--gns3-menu-button-width, 36px);
-    margin: 0px var(--gns3-spacing-sm, 8px);
-    border-radius: var(--gns3-menu-button-radius, 18px);
+    height: var(--gns3-menu-button-height);
+    width: var(--gns3-menu-button-width);
+    margin: 0 var(--gns3-spacing-sm);
+    border-radius: var(--gns3-menu-button-radius);
     background: none;
-    font-size: var(--gns3-font-size-lg, 20px);
+    font-size: var(--gns3-font-size-lg);
     transition: transform var(--gns3-duration-fast) var(--gns3-easing-default);
   }
 
@@ -121,14 +114,14 @@ g.node:hover {
   }
 
   .add-menu-button mat-icon {
-    font-size: 28px !important;
+    font-size: 28px;
   }
 
   .selected {
     background: rgba(0, 151, 167, 0.1);
 
     mat-icon {
-      color: var(--mat-app-primary-color) !important;
+      color: var(--mat-app-primary-color);
     }
   }
 
@@ -139,39 +132,39 @@ g.node:hover {
 
   &.lightTheme,
   &.theme-light {
-    background-color: white !important;
+    background-color: white;
 
     .selected mat-icon {
-      color: var(--mat-app-primary-color) !important;
+      color: var(--mat-app-primary-color);
     }
   }
 }
 
 #project-toolbar {
   position: fixed;
-  top: var(--gns3-toolbar-height, 60px);
-  left: 0px;
-  width: var(--gns3-toolbar-width, 50px);
-  margin: var(--gns3-spacing-lg, 20px);
-  background-color: var(--gns3-toolbar-bg-dark, #20313b);
-  border-radius: var(--gns3-radius-sm, 6px);
-  box-shadow: var(--gns3-shadow-sm, 1px 1px 10px rgba(0, 0, 0, 0.2));
+  top: var(--gns3-toolbar-height);
+  left: 0;
+  width: var(--gns3-toolbar-width);
+  margin: var(--gns3-spacing-lg);
+  background-color: var(--gns3-toolbar-bg-dark);
+  border-radius: var(--gns3-radius-sm);
+  box-shadow: var(--gns3-shadow-sm);
   z-index: 2;
   transition: background-color var(--gns3-duration-normal) var(--gns3-easing-default);
 
   mat-icon {
-    font-size: var(--gns3-font-size-base, 20px);
+    font-size: var(--gns3-font-size-base);
   }
 
   .menu-button {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: var(--gns3-menu-button-height, 36px);
-    width: var(--gns3-menu-button-width, 36px);
-    border-radius: var(--gns3-menu-button-radius, 18px);
+    height: var(--gns3-menu-button-height);
+    width: var(--gns3-menu-button-width);
+    border-radius: var(--gns3-menu-button-radius);
     background: none;
-    margin: 2px 0px;
+    margin: 2px 0;
     transition: transform var(--gns3-duration-fast) var(--gns3-easing-default);
   }
 
@@ -183,16 +176,16 @@ g.node:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: var(--gns3-menu-button-height, 36px);
-    width: var(--gns3-menu-button-width, 36px);
-    border-radius: var(--gns3-menu-button-radius, 18px);
+    height: var(--gns3-menu-button-height);
+    width: var(--gns3-menu-button-width);
+    border-radius: var(--gns3-menu-button-radius);
     background: none;
-    margin: 2px 0px;
+    margin: 2px 0;
     color: white;
     transition: transform var(--gns3-duration-fast) var(--gns3-easing-default);
 
     mat-icon {
-      font-size: 24px !important;
+      font-size: 24px;
     }
   }
 
@@ -204,16 +197,16 @@ g.node:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: var(--gns3-menu-button-height, 36px);
-    width: var(--gns3-menu-button-width, 36px);
-    border-radius: var(--gns3-menu-button-radius, 18px);
+    height: var(--gns3-menu-button-height);
+    width: var(--gns3-menu-button-width);
+    border-radius: var(--gns3-menu-button-radius);
     background: none;
-    margin: 2px 0px;
+    margin: 2px 0;
     color: white;
     transition: transform var(--gns3-duration-fast) var(--gns3-easing-default);
 
     mat-icon {
-      font-size: 18px !important;
+      font-size: 18px;
     }
   }
 
@@ -222,7 +215,7 @@ g.node:hover {
   }
 
   .selection-button {
-    margin-bottom: 0px !important;
+    margin-bottom: 0;
     transition: transform var(--gns3-duration-fast) var(--gns3-easing-default);
   }
 
@@ -231,7 +224,7 @@ g.node:hover {
   }
 
   .snapshot-button mat-icon {
-    font-size: var(--gns3-font-size-sm, 16px);
+    font-size: var(--gns3-font-size-sm);
   }
 
   .snapshot-button {
@@ -248,7 +241,7 @@ g.node:hover {
     justify-content: center;
     align-items: center;
     border-top: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 5px 0px;
+    padding: 5px 0;
 
     &:first-child {
       border: none;
@@ -257,7 +250,7 @@ g.node:hover {
 
   &.lightTheme,
   &.theme-light {
-    background-color: rgba(244, 248, 252, 0.95) !important;
+    background-color: rgba(244, 248, 252, 0.95);
 
     .zoom-button {
       opacity: 0.7;
@@ -286,38 +279,36 @@ img {
 
 .lightTheme,
 .theme-light {
-  color: black !important;
+  color: black;
 
-  // When the map canvas is light but the toolbar/titlebar are in dark mode,
-  // reset the inherited black color back to white so their icons stay visible.
   #project-titlebar:not(.lightTheme):not(.theme-light),
   #project-toolbar:not(.lightTheme):not(.theme-light) {
-    color: white !important;
+    color: white;
   }
 }
 
 .darkTheme,
 .theme-dark {
-  color: white !important;
+  color: white;
 }
 
 #show-menu-wrapper {
   position: fixed;
   background: transparent;
-  top: 0px;
+  top: 0;
   left: 92px;
-  background: var(--gns3-surface, #263238);
-  height: var(--gns3-menu-wrapper-height, 72px);
-  padding-top: var(--gns3-spacing-md, 16px);
+  background: var(--gns3-surface);
+  height: var(--gns3-menu-wrapper-height);
+  padding-top: var(--gns3-spacing-md);
   transition: background-color var(--gns3-duration-normal) var(--gns3-easing-default);
 
   .arrow-button {
-    outline: 0 !important;
+    outline: 0;
   }
 }
 
 .shadowed {
-  box-shadow: var(--gns3-shadow-lg, 0 4px 8px -4px rgba(0, 0, 0, 0.2), 0 6px 20px -20px rgba(0, 0, 0, 0.19));
+  box-shadow: var(--gns3-shadow-lg);
 }
 
 .non-visible {
@@ -327,27 +318,27 @@ img {
 #menu-wrapper {
   position: fixed;
   background: transparent;
-  top: 0px;
+  top: 0;
   left: 92px;
-  right: 0px;
-  background: var(--gns3-surface, #263238);
-  height: var(--gns3-menu-wrapper-height, 72px);
-  padding-top: var(--gns3-spacing-md, 16px);
-  padding-bottom: var(--gns3-spacing-md, 16px);
+  right: 0;
+  background: var(--gns3-surface);
+  height: var(--gns3-menu-wrapper-height);
+  padding-top: var(--gns3-spacing-md);
+  padding-bottom: var(--gns3-spacing-md);
   transition: 35s;
   width: 0;
   overflow: hidden;
-  transition: var(--gns3-duration-fast, 0.15s);
-  box-shadow: var(--gns3-shadow-lg, 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19));
+  transition: var(--gns3-duration-fast);
+  box-shadow: var(--gns3-shadow-lg);
   display: flex;
 
   .menu-button {
-    outline: 0 !important;
+    outline: 0;
     transition: 0.5s;
-    margin-bottom: var(--gns3-spacing-md, 16px);
+    margin-bottom: var(--gns3-spacing-md);
     width: 40px;
-    margin-right: var(--gns3-spacing-md, 12px) !important;
-    margin-left: var(--gns3-spacing-md, 12px) !important;
+    margin-right: var(--gns3-spacing-md);
+    margin-left: var(--gns3-spacing-md);
     background: transparent;
     padding: 0;
     border: none;
@@ -355,14 +346,14 @@ img {
   }
 
   .arrow-button {
-    outline: 0 !important;
+    outline: 0;
     transition: 0.5s;
-    margin-bottom: var(--gns3-spacing-md, 16px);
+    margin-bottom: var(--gns3-spacing-md);
   }
 }
 
 .extended {
-  width: var(--gns3-menu-extended-width, 830px) !important;
+  width: var(--gns3-menu-extended-width);
   height: 100%;
   overflow: hidden;
 }
@@ -376,14 +367,13 @@ mat-divider.divider {
 }
 
 @-moz-document url-prefix() {
-  /** fixes gray background of drawing menu on Firefox **/
   .mat-drawer-content {
-    display: inline !important;
+    display: inline;
   }
 }
 
 .shadow {
-  box-shadow: var(--gns3-shadow-md, 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19));
+  box-shadow: var(--gns3-shadow-md);
 }
 
 .mat-drawer-backdrop.mat-drawer-shown {
@@ -391,7 +381,7 @@ mat-divider.divider {
 }
 
 .project-toolbar .mat-toolbar-multiple-rows {
-  width: auto !important;
+  width: auto;
 }
 
 .loading-spinner {
@@ -404,13 +394,12 @@ mat-divider.divider {
 }
 
 line.selected {
-  stroke: var(--mat-app-primary-color) !important;
+  stroke: var(--mat-app-primary-color);
 }
 
 svg.map image:hover,
 svg.map image.chosen,
 g.selected {
-  // Use SVG filter for better performance with SVG elements
   filter: url('#grayscale');
 }
 
@@ -428,8 +417,8 @@ path.ethernet_link:hover {
 }
 
 .selection-line-tool .selection {
-  fill: var(--gns3-selection-fill, #7ccbe1);
-  stroke: var(--gns3-selection-stroke, #66aec2);
+  fill: var(--gns3-selection-fill);
+  stroke: var(--gns3-selection-stroke);
   fill-opacity: 0.3;
   stroke-opacity: 0.7;
   stroke-width: 1;
@@ -446,7 +435,6 @@ g.node text,
   user-select: none;
 }
 
-/* Disable outline after button click */
 .project-toolbar button {
   outline: 0;
   border: none;
@@ -454,16 +442,16 @@ g.node text,
 }
 
 .options-item {
-  padding-left: var(--gns3-spacing-md, 15px);
-  padding-right: var(--gns3-spacing-md, 15px);
+  padding-left: var(--gns3-spacing-md);
+  padding-right: var(--gns3-spacing-md);
 }
 
 .context-menu-items .mat-menu-item {
-  line-height: var(--gns3-context-menu-line-height, 24px) !important;
-  height: var(--gns3-context-menu-height, 24px) !important;
-  font-size: var(--gns3-font-size-xs, 13px) !important;
+  line-height: var(--gns3-context-menu-line-height);
+  height: var(--gns3-context-menu-height);
+  font-size: var(--gns3-font-size-xs);
   padding: 0 6px;
-  outline: none !important;
+  outline: none;
 }
 
 .context-menu-items .mat-menu-item .mat-icon {
@@ -477,11 +465,11 @@ g.node text,
 .context-menu-items .mat-menu-item.cdk-focused:not(:hover),
 .context-menu-items .mat-menu-item.cdk-program-focused:not(:hover),
 .context-menu-items .mat-menu-item.cdk-keyboard-focused:not(:hover) {
-  background: none !important;
+  background: none;
 }
 
 .context-menu-items .mat-menu-item:hover {
-  background-color: var(--gns3-context-menu-hover, #DC143C) !important;
+  background-color: var(--gns3-context-menu-hover);
 }
 
 .visible {
@@ -489,81 +477,63 @@ g.node text,
 }
 
 mat-menu-panel {
-  min-height: 0px;
+  min-height: 0;
 }
 
 .unmarked {
-  color: white !important;
+  color: white;
 }
 
 .unmarkedLight {
-  color: black !important;
+  color: black;
 }
 
 .marked {
-  color: var(--mat-app-primary-color) !important;
+  color: var(--mat-app-primary-color);
 }
 
-/* =============================================
-// Console Device Highlight Styles
-// Highlight selected console device and its connected links in topology
-// ============================================= */
-
 g.node.console-highlight {
-  // Selected node - red glow only (no border color change)
-  filter: drop-shadow(0 0 5px var(--gns3-console-highlight-red, #ef4444));
+  filter: drop-shadow(0 0 5px var(--gns3-console-highlight-red));
 
   .node_body {
-    // No stroke color change - keep original node border color
-    // Only add red glow effect
     stroke-width: 5px;
   }
 
-  // Exclude label from stroke effect - keep original color
   .layer_label,
   .layer_label_wrapper,
   .label_container,
   .label,
   text {
-    stroke: none !important;
-    fill: inherit !important;
+    stroke: none;
+    fill: inherit;
   }
 }
 
-// Connected node highlight (static highlight, performance optimized)
 g.node.console-highlight-connected {
-  filter: drop-shadow(0 0 3px var(--gns3-console-highlight-blue, #3b82f6));
+  filter: drop-shadow(0 0 3px var(--gns3-console-highlight-blue));
 
   .node_body {
-    // No stroke color change - keep original node border color
-    // Only add blue glow effect
     stroke-width: 3px;
   }
 
-  // Exclude label from stroke effect - keep original color
   .layer_label,
   .layer_label_wrapper,
   .label_container,
   .label,
   text {
-    stroke: none !important;
-    fill: inherit !important;
+    stroke: none;
+    fill: inherit;
   }
 }
 
 g.link_body.console-highlight {
-  // Performance optimized: removed animation, using static red color
   > path.ethernet_link,
   > path.serial_link {
-    stroke: var(--gns3-console-highlight-red, #ef4444) !important;
-    stroke-width: 4px !important;
-    // No animation, no dash - solid red line
+    stroke: var(--gns3-console-highlight-red);
+    stroke-width: 4px;
   }
 
-  // Force label text to keep original color using !important on fill attribute
   .status_label text {
-    fill: #111111 !important;
+    fill: #111111;
   }
 }
-
-// Performance optimized: removed linkDashAnimation (no longer used)
