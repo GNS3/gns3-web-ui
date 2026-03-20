@@ -1,3 +1,10 @@
+/**
+ * GNS3 Console Wrapper Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 @media screen and (max-width: 700px) {
   .consoleWrapper {
     visibility: hidden;
@@ -5,7 +12,7 @@
 }
 
 .consoleWrapper {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: var(--gns3-shadow-lg, 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19));
   position: fixed;
   bottom: 40px;
   left: 80px;
@@ -14,13 +21,13 @@
   background: #000000 !important;
   color: white;
   overflow: hidden;
-  font-size: 12px;
-  border-radius: 8px;
+  font-size: var(--gns3-font-size-xs, 12px);
+  border-radius: var(--gns3-radius-sm, 8px);
   outline: none;
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow var(--gns3-duration-fast, 0.2s) ease;
 
   &.console-active {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19),
+    box-shadow: var(--gns3-shadow-lg, 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)),
                 0 0 0 2px rgba(0, 151, 167, 0.6),
                 0 0 12px rgba(0, 151, 167, 0.3);
   }
@@ -30,7 +37,8 @@
   }
 }
 
-.consoleWrapper.lightTheme {
+.consoleWrapper.lightTheme,
+.consoleWrapper.theme-light {
   background: white !important;
   color: black;
 }
@@ -52,12 +60,12 @@
 
 .consoleHeader {
   width: 100%;
-  font-size: 12px;
+  font-size: var(--gns3-font-size-xs, 12px);
   overflow: hidden;
   display: flex;
   padding: 2px;
   justify-content: space-between;
-  background: #263238 !important;
+  background: var(--gns3-surface, #263238) !important;
   cursor: grab;
   position: relative;
   z-index: 10;
@@ -68,10 +76,10 @@
   cursor: grabbing;
 }
 
-// Enhanced hover effects for header buttons
+/* Enhanced hover effects for header buttons */
 .consoleHeader {
   .mat-icon-button {
-    transition: all 0.2s ease;
+    transition: all var(--gns3-duration-fast, 0.2s) ease;
     border-radius: 50%;
 
     &:hover {
@@ -91,7 +99,7 @@
     }
   }
 
-  // Close button special hover effect (red tint)
+  /* Close button special hover effect (red tint) */
   .mat-icon-button[title="Close"]:hover,
   .mat-icon-button[title~="close"]:hover {
     background-color: rgba(244, 67, 54, 0.15);
@@ -108,7 +116,8 @@
   }
 }
 
-.lightThemeConsoleHeader {
+.lightThemeConsoleHeader,
+.theme-lightConsoleHeader {
   background: white !important;
   color: black !important;
 
@@ -117,7 +126,7 @@
       background-color: rgba(0, 151, 167, 0.1);
 
       mat-icon {
-        color: #0097a7;
+        color: var(--mat-app-primary-color);
         filter: none;
       }
     }
@@ -127,7 +136,7 @@
     }
   }
 
-  // Close button hover in light theme
+  /* Close button hover in light theme */
   .mat-icon-button[title="Close"]:hover,
   .mat-icon-button[title~="close"]:hover {
     background-color: rgba(244, 67, 54, 0.1);
@@ -149,7 +158,7 @@
 }
 
 :host ::ng-deep .mat-tab-label.mat-tab-label-active {
-  border-bottom: 2px solid #0097a7;
+  border-bottom: 2px solid var(--mat-app-primary-color);
   box-sizing: border-box;
   font-weight: 1200;
 }
@@ -183,7 +192,7 @@
   overflow-y: scroll;
   padding: 2px;
   color: #dbd5d5;
-  scrollbar-color: darkgrey #263238;
+  scrollbar-color: darkgrey var(--gns3-surface, #263238);
   scrollbar-width: thin;
 }
 
@@ -209,9 +218,9 @@
 }
 
 mat-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
+  font-size: var(--gns3-font-size-base, 20px);
+  width: var(--gns3-font-size-base, 20px);
+  height: var(--gns3-font-size-base, 20px);
 }
 
 input:focus {
@@ -228,14 +237,14 @@ input:focus {
 
 ::-webkit-scrollbar-thumb {
   background-color: darkgrey;
-  outline: 1px solid #263238;
+  outline: 1px solid var(--gns3-surface, #263238);
 }
 
 .closeButton {
   cursor: pointer;
 }
 
-// Console layout with devices panel
+/* Console layout with devices panel */
 .console-content {
   display: flex;
   height: 100%;
