@@ -12,6 +12,11 @@
  */
 
 @import '@angular/material/theming';
+@import '~material-design-icons/iconfont/material-icons.css';
+@import '~typeface-roboto/index.css';
+
+// Include core styles for all Material components
+@include mat-core();
 
 // =============================================
 // 1. Define GNS3 Themes (Angular 14 compatible)
