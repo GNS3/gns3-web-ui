@@ -120,7 +120,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    * Handle window resize events to keep AI Chat within viewport boundaries
    * This ensures the window stays visible when browser window is resized
    */
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onWindowResize(): void {
     // Skip if minimized or maximized
     if (this.isMinimized || this.isMaximized) {

@@ -393,7 +393,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
    * Handle window resize events to keep Console within viewport boundaries
    * This ensures the window stays visible when browser window is resized
    */
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onWindowResize(): void {
     // Skip if minimized
     if (this.isMinimized) {

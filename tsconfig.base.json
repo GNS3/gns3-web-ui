@@ -7,10 +7,10 @@
     "sourceMap": true,
     "declaration": false,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "es5",
+    "target": "ES2022",
     "types": ["jasmine", "jest", "mocha", "node"],
     "typeRoots": [
       "node_modules/@types",
