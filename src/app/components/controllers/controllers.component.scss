@@ -94,10 +94,13 @@ mat-header-cell, mat-cell {
   transform-origin: left center;
   padding: 2px var(--gns3-spacing-xs, 4px);
   margin: -2px -4px;
-}
+  color: var(--mat-app-primary-color, #0097a7);
+  text-decoration: none;
 
-.table-link:hover {
-  transform: scale(1.25);
+  &:hover {
+    text-decoration: underline;
+    transform: scale(1.25);
+  }
 }
 
 /* Table action buttons hover effect */
