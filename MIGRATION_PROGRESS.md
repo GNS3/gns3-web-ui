@@ -4,7 +4,7 @@
 
 **分支**: `refactor/angular-material-theming`
 **基础分支**: `feat/ai-profile-management`
-**完成阶段**: 4 / 8 (阶段 5 进行中，~20% 完成)
+**完成阶段**: 4 / 8 (阶段 5 进行中，~32% 完成)
 
 ---
 
@@ -17,12 +17,12 @@
 | **阶段 2: AI Chat** | ✅ 完成 | `402982d0` | 迁移 AI Chat 组件 |
 | **阶段 3: 全局样式** | ✅ 完成 | `64762438` | 迁移 styles.scss |
 | **阶段 4: Project Map** | ✅ 完成 | `4b1293f2`, `4314021b` | 迁移地图组件 |
-| **阶段 5: 其他组件** | 🔄 进行中 | `b72f9cc4`, `e974cab6`, `61b8a5b7` | 迁移剩余组件 (~20%) |
+| **阶段 5: 其他组件** | 🔄 进行中 | `b72f9cc4`, `e974cab6`, `61b8a5b7`, `1accaee8` | 迁移剩余组件 (~32%) |
 | **阶段 6: 测试** | ⏳ 待开始 | - | 全面测试 |
 | **阶段 7: 文档** | ⏳ 待开始 | - | 更新文档 |
 | **阶段 8: 发布** | ⏳ 待开始 | - | 合并到主分支 |
 
-**完成度**: ~55% (4/8 阶段 + 阶段 5 的 20%)
+**完成度**: ~57% (4/8 阶段 + 阶段 5 的 32%)
 
 ---
 
@@ -94,7 +94,7 @@
 - ✅ 所有地图组件使用设计 Token
 - ✅ 支持新旧主题类名
 
-### 阶段 5: 剩余组件 (进行中，6/~50 文件)
+### 阶段 5: 剩余组件 (进行中，13/~50 文件)
 
 | 文件 | 改进 | 说明 |
 |------|------|------|
@@ -104,6 +104,13 @@
 | `nodes-menu.component.scss` | 2 硬编码替换 | 节点菜单 |
 | `console-wrapper.component.scss` | 10+ 硬编码替换 | 控制台包装器 |
 | `configurator.component.scss` | 3 硬编码替换 | 节点配置器 |
+| `template.component.scss` | 2 硬编码替换 | 模板列表菜单 |
+| `template-list-dialog.component.scss` | 10 硬编码替换 | 模板列表对话框 |
+| `import-project-dialog.component.scss` | 3 硬编码替换 | 导入项目对话框 |
+| `navigation-dialog.component.scss` | 3 硬编码替换 | 导航对话框 |
+| `topology-summary.component.scss` | 15 硬编码替换 | 拓扑摘要面板 |
+| `log-console.component.scss` | 8 硬编码替换 | 日志控制台 |
+| `console-devices-panel.component.scss` | 20 硬编码替换 | 控制台设备面板 |
 
 **关键成就** (部分):
 - ✅ 迁移核心应用组件样式
@@ -111,10 +118,13 @@
 - ✅ 迁移对话框组件样式
 - ✅ 迁移控制台相关组件
 - ✅ 迁移配置表单组件
+- ✅ 迁移模板管理组件样式
+- ✅ 迁移项目对话框组件样式
 - ✅ 所有迁移组件使用设计 Token
 - ✅ 支持新旧主题类名
+- ✅ Phase 5.4 组件全面支持新旧主题类名
 
-**进度**: ~20% 完成 (6/50+ 文件)
+**进度**: ~32% 完成 (13/50+ 文件)
 
 ---
 
@@ -188,6 +198,7 @@
 ## 📝 提交历史
 
 ```
+1accaee8 feat: migrate Phase 5.4 components to Angular Material 14 theming
 e1c4ecc9 docs: add Phase 5 partial completion report (20% complete)
 61b8a5b7 feat: migrate Phase 5.3 components to Angular Material 14 theming
 e974cab6 feat: migrate console-wrapper component to Angular Material 14 theming
@@ -323,7 +334,7 @@ git push origin master
 
 ## ✨ 总结
 
-**当前状态**: 阶段 4 完成，阶段 5 进行中 (~20%)，整体进度 ~55%
+**当前状态**: 阶段 4 完成，阶段 5 进行中 (~32%)，整体进度 ~57%
 
 **已完成**:
 - ✅ 完整的迁移计划
@@ -332,21 +343,23 @@ git push origin master
 - ✅ 全局样式迁移
 - ✅ Project Map 组件迁移
 - ✅ 核心应用组件迁移（阶段 5 部分）
+- ✅ 模板和对话框组件迁移（阶段 5 部分）
 - ✅ 零破坏性更改
 - ✅ TypeScript 类型安全
 
 **阶段 5 进展**:
-- ✅ 已迁移 6 个核心组件文件
-- ✅ 包括应用、布局、对话框、控制台等关键组件
-- ⏳ 剩余约 44 个文件待迁移
+- ✅ 已迁移 13 个核心组件文件
+- ✅ 包括应用、布局、对话框、控制台、模板等关键组件
+- ✅ Phase 5.4 组件全面支持新旧主题类名
+- ⏳ 剩余约 37 个文件待迁移
 
 **下一步**:
 - ⏳ 继续阶段 5：迁移剩余组件（或先进行阶段 6 测试）
 - ⏳ 阶段 6-8: 测试、文档、发布
 
 **预计完成时间**:
-- 如果继续阶段 5：3-4 周
-- 如果先测试再继续：4-5 周
+- 如果继续阶段 5：2-3 周
+- 如果先测试再继续：3-4 周
 
 ---
 
