@@ -4,7 +4,7 @@
 
 **分支**: `refactor/angular-material-theming`
 **基础分支**: `feat/ai-profile-management`
-**完成阶段**: 4 / 8 (阶段 5 进行中，~32% 完成)
+**完成阶段**: 5 / 8 (阶段 6 进行中)
 
 ---
 
@@ -17,12 +17,12 @@
 | **阶段 2: AI Chat** | ✅ 完成 | `402982d0` | 迁移 AI Chat 组件 |
 | **阶段 3: 全局样式** | ✅ 完成 | `64762438` | 迁移 styles.scss |
 | **阶段 4: Project Map** | ✅ 完成 | `4b1293f2`, `4314021b` | 迁移地图组件 |
-| **阶段 5: 其他组件** | 🔄 进行中 | `b72f9cc4`, `e974cab6`, `61b8a5b7`, `1accaee8` | 迁移剩余组件 (~32%) |
-| **阶段 6: 测试** | ⏳ 待开始 | - | 全面测试 |
+| **阶段 5: 其他组件** | ✅ 完成 | `c54aec28` | 迁移剩余组件 (100%) |
+| **阶段 6: 测试** | 🔄 进行中 | - | 全面测试 |
 | **阶段 7: 文档** | ⏳ 待开始 | - | 更新文档 |
 | **阶段 8: 发布** | ⏳ 待开始 | - | 合并到主分支 |
 
-**完成度**: ~57% (4/8 阶段 + 阶段 5 的 32%)
+**完成度**: ~63% (5/8 阶段)
 
 ---
 
@@ -120,11 +120,14 @@
 - ✅ 迁移配置表单组件
 - ✅ 迁移模板管理组件样式
 - ✅ 迁移项目对话框组件样式
+- ✅ 迁移快照管理组件样式
+- ✅ 迁移绘制工具组件样式
+- ✅ 迁移首选项组件样式
 - ✅ 所有迁移组件使用设计 Token
 - ✅ 支持新旧主题类名
-- ✅ Phase 5.4 组件全面支持新旧主题类名
+- ✅ Phase 5.4+ 组件全面支持新旧主题类名
 
-**进度**: ~32% 完成 (13/50+ 文件)
+**进度**: 100% 完成 (67/50+ 文件)
 
 ---
 
@@ -198,6 +201,19 @@
 ## 📝 提交历史
 
 ```
+c54aec28 feat: complete Phase 5 migration to Angular Material 14 theming
+f4c50827 feat: migrate Phase 5 final components to Angular Material 14 theming
+07b391cb feat: migrate Phase 5.15 components to Angular Material 14 theming
+49e44804 feat: migrate Phase 5.14 components to Angular Material 14 theming
+8ebf2b95 feat: migrate Phase 5.13 components to Angular Material 14 theming
+acbbaba4 feat: migrate Phase 5.12 components to Angular Material 14 theming
+2957ff72 feat: migrate Phase 5.11 components to Angular Material 14 theming
+081c78b8 feat: migrate Phase 5.10 components to Angular Material 14 theming
+4c79c197 feat: migrate Phase 5.9 components to Angular Material 14 theming
+c9b0f7bb feat: migrate Phase 5.8 components to Angular Material 14 theming
+469762c0 feat: migrate Phase 5.7 components to Angular Material 14 theming
+375cb641 feat: migrate Phase 5.6 components to Angular Material 14 theming
+05de28e8 feat: migrate Phase 5.5 components to Angular Material 14 theming
 1accaee8 feat: migrate Phase 5.4 components to Angular Material 14 theming
 e1c4ecc9 docs: add Phase 5 partial completion report (20% complete)
 61b8a5b7 feat: migrate Phase 5.3 components to Angular Material 14 theming
@@ -334,32 +350,37 @@ git push origin master
 
 ## ✨ 总结
 
-**当前状态**: 阶段 4 完成，阶段 5 进行中 (~32%)，整体进度 ~57%
+**当前状态**: 阶段 5 完成，阶段 6 进行中，整体进度 ~63%
 
 **已完成**:
 - ✅ 完整的迁移计划
-- ✅ 新主题基础设施
+- ✅ 新主题基础设施 (500+ CSS 变量)
 - ✅ AI Chat 组件迁移
 - ✅ 全局样式迁移
 - ✅ Project Map 组件迁移
-- ✅ 核心应用组件迁移（阶段 5 部分）
-- ✅ 模板和对话框组件迁移（阶段 5 部分）
+- ✅ 剩余组件迁移 (67+ 文件)
 - ✅ 零破坏性更改
 - ✅ TypeScript 类型安全
 
-**阶段 5 进展**:
-- ✅ 已迁移 13 个核心组件文件
-- ✅ 包括应用、布局、对话框、控制台、模板等关键组件
-- ✅ Phase 5.4 组件全面支持新旧主题类名
-- ⏳ 剩余约 37 个文件待迁移
+**阶段 5 成果**:
+- ✅ 已迁移 67+ 个组件文件
+- ✅ 包括应用、布局、对话框、控制台、模板、快照、首选项等关键组件
+- ✅ 所有组件支持新旧主题类名
+- ✅ 所有硬编码值替换为设计 Token
+
+**阶段 6 (测试) 进行中**:
+- ✅ 构建验证通过
+- ✅ 主题切换功能验证通过
+- ⏳ 视觉回归测试
+- ⏳ 组件功能测试
 
 **下一步**:
-- ⏳ 继续阶段 5：迁移剩余组件（或先进行阶段 6 测试）
-- ⏳ 阶段 6-8: 测试、文档、发布
+- 🔄 阶段 6: 继续测试与验证
+- ⏳ 阶段 7: 更新文档
+- ⏳ 阶段 8: 发布准备
 
 **预计完成时间**:
-- 如果继续阶段 5：2-3 周
-- 如果先测试再继续：3-4 周
+- 阶段 6-8: 2-3 周
 
 ---
 
