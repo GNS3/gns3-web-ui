@@ -40,6 +40,17 @@ mat-header-cell, mat-cell {
 .table-container {
   overflow: visible;
   -webkit-overflow-scrolling: touch;
+  background-color: var(--gns3-surface-light, #ffffff);
+}
+
+.light .table-container,
+.theme-light .table-container {
+  background-color: #ffffff;
+}
+
+.dark .table-container,
+.theme-dark .table-container {
+  background-color: var(--gns3-surface, #263238);
 }
 
 .mat-header-row {
