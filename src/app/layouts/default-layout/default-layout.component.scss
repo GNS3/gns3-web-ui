@@ -1,3 +1,10 @@
+/**
+ * GNS3 Default Layout Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 html,
 body {
   height: 100%;
@@ -20,20 +27,20 @@ app-default-layout {
 
 .footer {
   /*flex-shrink: 0;*/
-  padding: 20px;
+  padding: var(--gns3-spacing-xl, 20px);
   margin: auto 0 0 0;
   /*background-color: #0097a7;*/
 }
 
 .default-content {
   margin: 0 auto;
-  max-width: 940px;
-  padding-top: 20px;
-  padding-bottom: 20px;
+  max-width: var(--gns3-content-max-width, 940px);
+  padding-top: var(--gns3-spacing-xl, 20px);
+  padding-bottom: var(--gns3-spacing-xl, 20px);
 }
 
 header {
-  box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12);
+  box-shadow: var(--gns3-shadow-md, 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14), 0 1px 18px 0 rgba(0, 0, 0, 0.12));
   z-index: 10;
 }
 
@@ -44,18 +51,18 @@ header {
 .default-header h1 {
   font-weight: 300;
   margin: 0;
-  font-size: 20px;
-  padding: 28px 8px;
+  font-size: var(--gns3-font-size-lg, 20px);
+  padding: 28px var(--gns3-spacing-sm, 8px);
 }
 
 .default-header {
   margin: 0 auto;
-  max-width: 940px;
+  max-width: var(--gns3-content-max-width, 940px);
   /*background-color: #0097a7;*/
 }
 
 .buttons-bar {
-  padding-top: 10px;
+  padding-top: var(--gns3-spacing-sm, 10px);
   text-align: right;
 }
 
@@ -79,12 +86,12 @@ header {
   .default-content,
   .default-header {
     max-width: 100%;
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: var(--gns3-spacing-md, 12px);
+    padding-right: var(--gns3-spacing-md, 12px);
   }
 
   .default-header h1 {
-    font-size: 18px;
+    font-size: var(--gns3-font-size-base, 18px);
     padding: 18px 0;
   }
 
@@ -93,18 +100,18 @@ header {
   }
 
   .footer {
-    font-size: 12px;
-    padding: 12px;
+    font-size: var(--gns3-font-size-xs, 12px);
+    padding: var(--gns3-spacing-md, 12px);
     text-align: center;
   }
 
   .mat-toolbar {
-    min-height: 56px;
-    padding: 0 8px;
+    min-height: var(--gns3-footer-height, 56px);
+    padding: 0 var(--gns3-spacing-sm, 8px);
   }
 
   .mat-toolbar-row,
   .mat-toolbar-single-row {
-    height: 56px;
+    height: var(--gns3-footer-height, 56px);
   }
 }

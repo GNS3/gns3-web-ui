@@ -1,10 +1,17 @@
+/**
+ * GNS3 Confirmation Dialog Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .dialog-container {
   position: relative;
   overflow: hidden;
-  animation: dialogSlideIn 0.3s ease-out;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.12);
-  background-color: #2d2d2d;
+  animation: dialogSlideIn var(--gns3-duration-normal, 0.3s) ease-out;
+  border-radius: var(--gns3-radius-lg, 16px);
+  box-shadow: var(--gns3-shadow-xl, 0 8px 32px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.12));
+  background-color: var(--gns3-dialog-bg-dark, #2d2d2d);
 }
 
 @keyframes dialogSlideIn {
@@ -22,12 +29,12 @@
 .dialog-header {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 16px 20px 12px;
+  gap: var(--gns3-spacing-sm, 10px);
+  padding: var(--gns3-spacing-lg, 16px) var(--gns3-spacing-xl, 20px) var(--gns3-spacing-md, 12px);
   background: linear-gradient(135deg, rgba(244, 67, 54, 0.06), rgba(244, 67, 54, 0.02));
   border-bottom: 1px solid rgba(244, 67, 54, 0.15);
   margin-bottom: 4px;
-  border-radius: 16px 16px 0 0;
+  border-radius: var(--gns3-radius-lg, 16px) var(--gns3-radius-lg, 16px) 0 0;
 }
 
 .dialog-icon {
@@ -40,12 +47,12 @@
 }
 
 .warning-icon {
-  color: #f44336;
+  color: var(--mat-app-error-color, #f44336);
 }
 
 .dialog-title {
-  font-size: 17px;
-  font-weight: 600;
+  font-size: var(--gns3-font-size-base, 17px);
+  font-weight: var(--gns3-font-weight-semibold, 600);
   color: var(--mat-app-on-surface);
   margin: 0;
   letter-spacing: -0.2px;
@@ -53,11 +60,11 @@
 
 /* Content */
 .dialog-content {
-  padding: 8px 20px 16px;
+  padding: var(--gns3-spacing-sm, 8px) var(--gns3-spacing-xl, 20px) var(--gns3-spacing-lg, 16px);
 }
 
 .dialog-message {
-  font-size: 14px;
+  font-size: var(--gns3-font-size-sm, 14px);
   color: var(--mat-app-on-surface-variant);
   margin: 0;
   line-height: 1.5;
@@ -66,10 +73,10 @@
 
 /* Actions */
 .dialog-actions {
-  padding: 12px 20px 20px;
+  padding: var(--gns3-spacing-md, 12px) var(--gns3-spacing-xl, 20px) var(--gns3-spacing-xl, 20px);
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: var(--gns3-spacing-sm, 10px);
 }
 
 .cancel-button,
@@ -77,11 +84,11 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 16px;
-  border-radius: 12px;
-  font-weight: 500;
-  font-size: 13px;
-  transition: all 0.2s ease;
+  padding: 7px var(--gns3-spacing-lg, 16px);
+  border-radius: var(--gns3-radius-md, 12px);
+  font-weight: var(--gns3-font-weight-medium, 500);
+  font-size: var(--gns3-font-size-xs, 13px);
+  transition: all var(--gns3-duration-fast, 0.2s) ease;
   position: relative;
   overflow: hidden;
   min-width: 70px;
@@ -89,7 +96,7 @@
 }
 
 .cancel-button {
-  color: #0097a7;
+  color: var(--mat-app-primary-color);
   background: transparent;
   border: 1px solid rgba(0, 151, 167, 0.25);
 }
@@ -106,13 +113,13 @@
 }
 
 .cancel-button .button-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
+  font-size: var(--gns3-font-size-base, 16px);
+  width: var(--gns3-font-size-base, 16px);
+  height: var(--gns3-font-size-base, 16px);
 }
 
 .confirm-button {
-  background: linear-gradient(135deg, #f44336, #e53935);
+  background: linear-gradient(135deg, var(--mat-app-error-color, #f44336), #e53935);
   color: white;
   border: none;
   box-shadow: 0 2px 6px rgba(244, 67, 54, 0.25);
@@ -144,9 +151,9 @@
 }
 
 .confirm-button .button-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
+  font-size: var(--gns3-font-size-base, 16px);
+  width: var(--gns3-font-size-base, 16px);
+  height: var(--gns3-font-size-base, 16px);
 }
 
 /* Ripple effect */
@@ -175,6 +182,6 @@
 /* Accessibility focus */
 .cancel-button:focus-visible,
 .confirm-button:focus-visible {
-  outline: 2px solid #00bcd4;
+  outline: 2px solid var(--mat-app-primary-color);
   outline-offset: 2px;
 }

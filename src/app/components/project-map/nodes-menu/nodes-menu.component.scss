@@ -1,7 +1,14 @@
+/**
+ * GNS3 Nodes Menu Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .menu-button {
-  margin: 0px 5px !important;
+  margin: 0px var(--gns3-spacing-xs, 5px) !important;
 }
 
 .marked {
-  color: #0097a7 !important;
+  color: var(--mat-app-primary-color) !important;
 }

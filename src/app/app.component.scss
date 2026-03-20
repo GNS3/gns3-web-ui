@@ -1,11 +1,20 @@
+/**
+ * GNS3 App Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 mat-menu-panel {
   min-height: 0px;
 }
 
-.dark {
-  background: #263238 !important;
+.dark,
+.theme-dark {
+  background: var(--gns3-surface, #263238) !important;
 }
 
-.light {
+.light,
+.theme-light {
   background: white !important;
 }
