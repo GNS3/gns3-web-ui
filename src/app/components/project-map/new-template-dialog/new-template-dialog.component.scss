@@ -1,5 +1,12 @@
+/**
+ * GNS3 New Template Dialog Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .radio-button {
-  margin-bottom: 30px;
+  margin-bottom: var(--gns3-spacing-xl, 30px);
 }
 
 .tableHeader {
@@ -42,35 +49,36 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-  margin-bottom: 15px;
+  margin-bottom: var(--gns3-spacing-md, 15px);
 }
 
 .list-item-inside {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  padding-left: 30px;
-  margin-bottom: 15px;
+  padding-left: var(--gns3-spacing-xl, 30px);
+  margin-bottom: var(--gns3-spacing-md, 15px);
 }
 
 .button {
-  margin-left: 10px;
+  margin-left: var(--gns3-spacing-sm, 10px);
 }
 
 .create-button {
   width: 100%;
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin-top: var(--gns3-spacing-sm, 10px);
+  margin-bottom: var(--gns3-spacing-sm, 10px);
 }
 
 .radio-button {
   width: 50%;
-  padding-top: 20px;
+  padding-top: var(--gns3-spacing-md, 20px);
 }
 
 .selection-group {
-  padding-bottom: 20px;
+  padding-bottom: var(--gns3-spacing-md, 20px);
 }
+
 .non-visible {
   display: none;
 }
