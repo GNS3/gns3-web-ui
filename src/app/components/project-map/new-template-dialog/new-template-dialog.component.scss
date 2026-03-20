@@ -38,7 +38,7 @@
 }
 
 .element-row:not(.expanded):hover {
-  background: #f5f5f5;
+  background: var(--mat-app-surface-hover);
 }
 
 .element-row.expanded {

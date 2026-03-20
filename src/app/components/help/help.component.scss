@@ -3,7 +3,8 @@
   margin-top: 20px;
 }
 a {
-  color: #f8f9fa;
+  color: var(--mat-app-on-surface-color);
+  opacity: 0.9;
   font-family: Roboto, "Helvetica Neue", sans-serif;
   font-size: 14px;
   font-weight: 400;

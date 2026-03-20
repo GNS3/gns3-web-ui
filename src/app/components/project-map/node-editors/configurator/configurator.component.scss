@@ -21,7 +21,7 @@ table {
 .default-content {
   max-height: 400px;
   overflow-y: scroll;
-  scrollbar-color: darkgrey #263238;
+  scrollbar-color: var(--mat-app-on-surface-color) var(--mat-app-surface);
   scrollbar-width: thin;
 }
 
@@ -55,7 +55,7 @@ mat-radio-button {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: darkgrey;
+  background-color: var(--mat-app-on-surface-color);
 }
 
 .tags-field {

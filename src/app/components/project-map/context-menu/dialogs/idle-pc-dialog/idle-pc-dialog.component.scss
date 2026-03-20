@@ -12,7 +12,7 @@
 }
 
 .multiline-tooltip {
-  background-color: grey;
-  color: #ffffff;
+  background-color: var(--mat-app-surface);
+  color: var(--mat-app-on-surface-color);
   white-space: pre-line;
 }

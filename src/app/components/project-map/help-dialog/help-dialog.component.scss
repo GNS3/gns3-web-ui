@@ -10,5 +10,6 @@
 }
 
 .description {
-  color: #b0bec5;
+  color: var(--mat-app-on-surface-color);
+  opacity: 0.7;
 }

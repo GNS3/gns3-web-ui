@@ -3,7 +3,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #a8ecff;
+  background-color: var(--gns3-cyan-light);
   padding-top: 10px;
   padding-bottom: 10px;
   font-size: 12px;
@@ -24,11 +24,11 @@
   position: absolute;
   top: 15px;
   right: 15px;
-  color: #000;
+  color: var(--mat-app-on-surface-color);
 }
 
 .lightTheme {
-  background-color: #ddf9ff;
+  background-color: var(--gns3-surface);
 }
 
 .hidden {
@@ -36,12 +36,12 @@
 }
 
 button {
-  background-color: #01d4ff;
+  background-color: var(--gns3-cyan);
   margin-top: 2px;
   border: none;
   outline: none;
   padding: 5px;
-  color: white;
+  color: var(--mat-app-on-surface-color);
   font-weight: bold;
   font-size: 11px;
   padding-right: 15px;
@@ -49,10 +49,10 @@ button {
   border-radius: 6px;
 
   a {
-    color: white;
+    color: var(--mat-app-on-surface-color);
   }
 }
 
 a {
-  color: #122124;
+  color: var(--mat-app-on-surface-color);
 }
