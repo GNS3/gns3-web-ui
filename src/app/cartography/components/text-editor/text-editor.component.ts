@@ -15,6 +15,7 @@ import { StyleProperty } from '@components/project-map/drawings-editors/text-edi
 import { Link } from '@models/link';
 import { Controller } from '@models/controller';
 import { LinkService } from '@services/link.service';
+import { NodeService } from '@services/node.service';
 import { MapScaleService } from '@services/mapScale.service';
 import { ToolsService } from '@services/tools.service';
 import { LinksDataSource } from '../../datasources/links-datasource';
@@ -26,6 +27,7 @@ import { SelectionManager } from '../../managers/selection-manager';
 import { Context } from '../../models/context';
 import { TextElement } from '../../models/drawings/text-element';
 import { Font } from '../../models/font';
+import { MapLabel } from '../../models/map/map-label';
 import { MapLinkNode } from '../../models/map/map-link-node';
 import { Node } from '../../models/node';
 
@@ -60,6 +62,7 @@ export class TextEditorComponent implements OnInit, OnDestroy {
     private renderer: Renderer2,
     private mapScaleService: MapScaleService,
     private linkService: LinkService,
+    private nodeService: NodeService,
     private linksDataSource: LinksDataSource,
     private nodesDataSource: NodesDataSource,
     private selectionManager: SelectionManager,
@@ -74,6 +77,7 @@ export class TextEditorComponent implements OnInit, OnDestroy {
 
     this.ngZone.runOutsideAngular(this.activateTextEditingForDrawings.bind(this));
     this.ngZone.runOutsideAngular(this.activateTextEditingForNodeLabels.bind(this));
+    this.ngZone.runOutsideAngular(this.activateTextEditingForNodeNames.bind(this));
   }
 
   activateTextAdding() {
@@ -202,6 +206,94 @@ export class TextEditorComponent implements OnInit, OnDestroy {
         this.textListener = listener;
         this.temporaryTextElement.nativeElement.addEventListener('focusout', this.textListener);
         this.temporaryTextElement.nativeElement.focus();
+      });
+  }
+
+  activateTextEditingForNodeNames() {
+    select(this.svg)
+      .selectAll<SVGGElement, MapLabel>('g.label_container')
+      .select<SVGTextElement>('text.label')
+      .on('dblclick', (label: MapLabel, index: number, textElements: SVGTextElement[]) => {
+        this.selectionManager.setSelected([]);
+
+        const temporaryText = this.temporaryTextElement.nativeElement;
+
+        this.renderer.setStyle(temporaryText, 'display', 'initial');
+        this.renderer.setStyle(
+          temporaryText,
+          'transform',
+          `scale(${this.mapScaleService.getScale()})`
+        );
+
+        const node = this.nodesDataSource.get(label.nodeId);
+        if (!node) {
+          this.renderer.setStyle(temporaryText, 'display', 'none');
+          return;
+        }
+
+        const editedTextElement = select(textElements[index]);
+        editedTextElement.attr('visibility', 'hidden');
+        editedTextElement.classed('editingMode', true);
+
+        // Anchor editor to the exact rendered label position in viewport coordinates.
+        const renderedLabelRect = textElements[index].getBoundingClientRect();
+        this.leftPosition = `${renderedLabelRect.left + window.scrollX}px`;
+        this.topPosition = `${renderedLabelRect.top + window.scrollY}px`;
+        temporaryText.innerText = node.name || label.text || '';
+
+        let isCancelled = false;
+        let isCompleted = false;
+        let keydownListener: (event: KeyboardEvent) => void;
+
+        const cleanup = () => {
+          temporaryText.removeEventListener('focusout', this.textListener);
+          temporaryText.removeEventListener('keydown', keydownListener);
+
+          editedTextElement.attr('visibility', 'visible').classed('editingMode', false);
+
+          this.innerText = '';
+          temporaryText.innerText = '';
+          this.clearStyle();
+          this.renderer.setStyle(temporaryText, 'display', 'none');
+        };
+
+        const completeNodeNameEditing = () => {
+          if (isCompleted) {
+            return;
+          }
+          isCompleted = true;
+
+          const updatedName = temporaryText.innerText.replace(/[\r\n]+/g, '').trim();
+          cleanup();
+
+          if (isCancelled || !updatedName || updatedName === node.name) {
+            return;
+          }
+
+          node.name = updatedName;
+          this.nodeService.updateNode(this.controller, node).subscribe((updatedNode: Node) => {
+            this.nodesDataSource.update(updatedNode);
+          });
+        };
+
+        this.textListener = () => {
+          completeNodeNameEditing();
+        };
+
+        keydownListener = (event: KeyboardEvent) => {
+          if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            temporaryText.blur();
+          } else if (event.key === 'Escape' || event.key === 'Esc') {
+            event.preventDefault();
+            isCancelled = true;
+            temporaryText.blur();
+          }
+        };
+
+        temporaryText.addEventListener('focusout', this.textListener);
+        temporaryText.addEventListener('keydown', keydownListener);
+        temporaryText.focus();
       });
   }
 

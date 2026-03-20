@@ -1,3 +1,26 @@
 svg {
   display: block;
 }
+
+.drawing-grid-line,
+.node-grid-line {
+  shape-rendering: crispEdges;
+}
+
+/* Dark map theme: increase contrast so both grid layers remain readable. */
+.drawing-grid-line {
+  stroke: rgba(182, 200, 214, 0.28);
+}
+
+.node-grid-line {
+  stroke: rgba(223, 235, 244, 0.52);
+}
+
+/* Light map theme keeps the original visual palette. */
+:host-context(.lightTheme) .drawing-grid-line {
+  stroke: silver;
+}
+
+:host-context(.lightTheme) .node-grid-line {
+  stroke: DarkSlateGray;
+}

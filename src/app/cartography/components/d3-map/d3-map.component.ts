@@ -326,6 +326,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.graphLayout.draw(this.svg, this.context);
     this.textEditor.activateTextEditingForDrawings();
     this.textEditor.activateTextEditingForNodeLabels();
+    this.textEditor.activateTextEditingForNodeNames();
     this.mapSettingsService.mapRenderedEmitter.emit(true);
   }
 
