@@ -1,3 +1,10 @@
+/**
+ * GNS3 Node Select Interface Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .context-menu {
   position: absolute;
 }
@@ -7,9 +14,9 @@
 }
 
 .status {
-  margin-right: 10px;
+  margin-right: var(--gns3-spacing-sm, 10px);
 }
 
 .port {
-  margin-left: 10px;
+  margin-left: var(--gns3-spacing-sm, 10px);
 }

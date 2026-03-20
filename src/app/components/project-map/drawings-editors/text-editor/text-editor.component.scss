@@ -1,16 +1,23 @@
+/**
+ * GNS3 Text Editor Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .item {
-  height: 25px;
-  font-size: 10pt;
-  margin-bottom: 10px;
+  height: var(--gns3-spacing-md, 25px);
+  font-size: var(--gns3-font-size-xs, 10pt);
+  margin-bottom: var(--gns3-spacing-sm, 10px);
 }
 
 .item-name {
-  margin-bottom: 10px;
+  margin-bottom: var(--gns3-spacing-sm, 10px);
 }
 
 .item-value {
   width: 100%;
-  margin-bottom: 10px;
+  margin-bottom: var(--gns3-spacing-sm, 10px);
 }
 
 .input-color {
@@ -28,7 +35,7 @@ input:focus {
 input[type='color'] {
   -webkit-appearance: none;
   border: none;
-  height: 25px;
+  height: var(--gns3-spacing-md, 25px);
 }
 
 input[type='color']::-webkit-color-swatch-wrapper {
