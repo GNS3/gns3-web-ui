@@ -1,6 +1,7 @@
 
 import { DataSource } from '@angular/cdk/collections';
 import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
 import { BehaviorSubject, Observable, merge } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Image } from '@models/images';
@@ -30,7 +31,11 @@ export class imageDatabase {
 export class imageDataSource extends DataSource<ImageTableRow> {
   private filterChange: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
-  constructor(private controllerDatabase: imageDatabase, private sort?: MatSort) {
+  constructor(
+    private controllerDatabase: imageDatabase,
+    private sort?: MatSort,
+    private paginator?: MatPaginator
+  ) {
     super();
   }
 
@@ -40,11 +45,13 @@ export class imageDataSource extends DataSource<ImageTableRow> {
 
   connect(): Observable<ImageTableRow[]> {
     const sortChanges = this.sort ? this.sort.sortChange : new BehaviorSubject(null);
-    return merge(this.controllerDatabase.dataChange, sortChanges, this.filterChange).pipe(
+    const pageChanges = this.paginator ? this.paginator.page : new BehaviorSubject(null);
+    return merge(this.controllerDatabase.dataChange, sortChanges, this.filterChange, pageChanges).pipe(
       map(() => {
         let data = this.controllerDatabase.data.slice();
         const filter = this.filterChange.value;
 
+        // Apply filter
         if (filter) {
           data = data.filter((row: ImageTableRow) => {
             const searchable = [
@@ -60,15 +67,30 @@ export class imageDataSource extends DataSource<ImageTableRow> {
           });
         }
 
+        // Apply sort
         if (!this.sort || !this.sort.active || this.sort.direction === '') {
-          return data;
+          // Keep original order
+        } else {
+          data = data.sort((a: ImageTableRow, b: ImageTableRow) => {
+            const valueA = this.getSortValue(a, this.sort.active);
+            const valueB = this.getSortValue(b, this.sort.active);
+            return (valueA < valueB ? -1 : 1) * (this.sort.direction === 'asc' ? 1 : -1);
+          });
         }
 
-        return data.sort((a: ImageTableRow, b: ImageTableRow) => {
-          const valueA = this.getSortValue(a, this.sort.active);
-          const valueB = this.getSortValue(b, this.sort.active);
-          return (valueA < valueB ? -1 : 1) * (this.sort.direction === 'asc' ? 1 : -1);
-        });
+        // Update paginator length
+        if (this.paginator) {
+          this.paginator.length = data.length;
+        }
+
+        // Apply pagination
+        if (this.paginator) {
+          const startIndex = this.paginator.pageIndex * this.paginator.pageSize;
+          const endIndex = startIndex + this.paginator.pageSize;
+          data = data.slice(startIndex, endIndex);
+        }
+
+        return data;
       })
     );
   }

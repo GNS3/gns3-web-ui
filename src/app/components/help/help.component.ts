@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-help',
@@ -7,15 +8,19 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./help.component.scss'],
 })
 export class HelpComponent implements OnInit {
-  thirdpartylicenses = '';
-  releasenotes = '';
+  thirdpartylicenses: SafeHtml | string = '';
+  releasenotes: SafeHtml | string = '';
 
-  constructor(private httpClient: HttpClient) {}
+  constructor(
+    private httpClient: HttpClient,
+    private sanitizer: DomSanitizer
+  ) {}
 
   ngOnInit() {
     this.httpClient.get(window.location.href + '/3rdpartylicenses.txt', { responseType: 'text' }).subscribe(
       (data) => {
-        this.thirdpartylicenses = data.replace(new RegExp('\n', 'g'), '<br />');
+        const html = data.replace(new RegExp('\n', 'g'), '<br />');
+        this.thirdpartylicenses = this.sanitizer.bypassSecurityTrustHtml(html);
       },
       (error) => {
         if (error.status === 404) {
@@ -25,7 +30,8 @@ export class HelpComponent implements OnInit {
     );
 
     this.httpClient.get('ReleaseNotes.txt', { responseType: 'text' }).subscribe((data) => {
-      this.releasenotes = data.replace(new RegExp('\n', 'g'), '<br />');
+      const html = data.replace(new RegExp('\n', 'g'), '<br />');
+      this.releasenotes = this.sanitizer.bypassSecurityTrustHtml(html);
     });
   }
 

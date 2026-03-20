@@ -5,7 +5,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSort, MatSortable } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ExportPortableProjectComponent } from '@components/export-portable-project/export-portable-project.component';
-import { ElectronService } from 'ngx-electron';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs//operators';
 import { ProgressService } from '../../common/progress/progress.service';
@@ -49,7 +48,6 @@ export class ProjectsComponent implements OnInit {
     private router: Router,
     private bottomSheet: MatBottomSheet,
     private toasterService: ToasterService,
-    private electronService: ElectronService,
     private recentlyOpenedProjectService: RecentlyOpenedProjectService
   ) {}
 

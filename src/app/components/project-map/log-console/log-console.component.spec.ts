@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { EventEmitter, NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatMenuModule } from '@angular/material/menu';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ToasterService } from '@services/toaster.service';
+import { LoginService } from '@services/login.service';
+import { ControllerService } from '@services/controller.service';
 import { ProtocolHandlerService } from '@services/protocol-handler.service';
 import { of } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
@@ -54,6 +56,8 @@ describe('LogConsoleComponent', () => {
         { provide: HttpController, useValue: httpController },
         NodeConsoleService,
         ToasterService,
+        { provide: LoginService, useValue: {} },
+        { provide: ControllerService, useValue: {} },
         ProtocolHandlerService,
         MapSettingsService
       ],

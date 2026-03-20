@@ -13,3 +13,89 @@
 .marked {
   color: #0097a7 !important;
 }
+
+.ai-chat-button .ai-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  font-family: 'Roboto', sans-serif;
+  letter-spacing: -0.5px;
+}
+
+/* AI Chat active state (window open) */
+.ai-chat-button.ai-active {
+  position: relative;
+}
+
+.ai-chat-button.ai-active::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background-color: #00bcd4;
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(0, 188, 212, 0.8);
+}
+
+/* AI Chat minimized state */
+.ai-chat-button.ai-minimized {
+  position: relative;
+  background-color: rgba(0, 188, 212, 0.25) !important;
+  box-shadow: 0 0 16px rgba(0, 188, 212, 0.6), inset 0 0 12px rgba(0, 188, 212, 0.4) !important;
+  animation: pulse-minimized 1.5s ease-in-out infinite;
+  border: 2px solid rgba(0, 188, 212, 0.8) !important;
+}
+
+.ai-chat-button.ai-minimized .ai-icon {
+  color: #00e5ff !important;
+  text-shadow: 0 0 8px rgba(0, 229, 255, 0.8) !important;
+  font-weight: 900 !important;
+}
+
+.ai-minimize-indicator {
+  position: absolute;
+  bottom: 3px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 6px;
+  height: 6px;
+  background-color: #00e5ff;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(0, 229, 255, 1);
+  animation: blink-indicator 1s ease-in-out infinite;
+}
+
+@keyframes pulse-minimized {
+  0%, 100% {
+    box-shadow: 0 0 16px rgba(0, 188, 212, 0.6), inset 0 0 12px rgba(0, 188, 212, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(0, 188, 212, 0.9), inset 0 0 16px rgba(0, 188, 212, 0.6);
+    transform: scale(1.05);
+  }
+}
+
+@keyframes blink-indicator {
+  0%, 100% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translateX(-50%) scale(1.3);
+  }
+}
+
+/* Menu button hover effect */
+.menu-button {
+  transition: transform 0.2s ease;
+}
+
+.menu-button:hover {
+  transform: scale(1.3);
+}

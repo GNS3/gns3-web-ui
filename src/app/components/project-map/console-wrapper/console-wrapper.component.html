@@ -1,50 +1,73 @@
 <div *ngIf="isDraggingEnabled" (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)">
 </div>
 <!-- Option with resizing -->
-<div class="consoleWrapper" [ngClass]="{ lightTheme: isLightThemeEnabled }" (mousedown)="toggleDragging(true)"
-  [ngStyle]="style" mwlResizable [validateResize]="validate"
+<div class="consoleWrapper" [ngClass]="{ lightTheme: isLightThemeEnabled, 'console-active': isConsoleActive }"
+  [ngStyle]="style" mwlResizable [validateResize]="validate" [resizeCursorPrecision]="6"
   [resizeEdges]="{ right: true, left: true, bottom: true, top: true }" [enableGhostResize]="true"
-  (resizeStart)="toggleDragging(false)" (resizeEnd)="onResizeEnd($event)">
+  (resizeStart)="toggleDragging(false)" (resizeEnd)="onResizeEnd($event)"
+  tabindex="0"
+  (click)="onConsoleActivate()"
+  (focus)="onConsoleActivate()">
 
-  <div class="consoleHeader" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }">
+  <div class="console-content">
+    <!-- Devices Panel -->
+    <app-console-devices-panel [isLightTheme]="isLightThemeEnabled" (deviceSelected)="onDeviceSelected($event)"></app-console-devices-panel>
+
+    <!-- Console Area -->
+    <div class="console-area">
+      <div class="consoleHeader" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
+           (mousedown)="toggleDragging(true)">
     <mat-tab-group class="tabs" [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <div class="col" style="margin-left: 20px">GNS3 console</div>
-        </ng-template>
-      </mat-tab>
-
       <mat-tab *ngFor="let node of nodes; let index = index" [label]="tab">
         <ng-template mat-tab-label>
           <div class="col" style="margin-left: 20px">{{ node.name }}</div>
           <button [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white" mat-icon-button
+            (mousedown)="$event.stopPropagation()"
             (click)="removeTab(index)">
             <mat-icon>close</mat-icon>
           </button>
         </ng-template>
       </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <div class="col" style="margin-left: 20px">GNS3 console</div>
+        </ng-template>
+      </mat-tab>
     </mat-tab-group>
 
+    <button *ngIf="!isMinimized && !isMaximized" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white"
+      mat-icon-button (mousedown)="$event.stopPropagation()" (click)="toggleMaximize()"
+      title="Maximize height">
+      <mat-icon>fullscreen</mat-icon>
+    </button>
+    <button *ngIf="isMaximized" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white"
+      mat-icon-button (mousedown)="$event.stopPropagation()" (click)="toggleMaximize()"
+      title="Restore">
+      <mat-icon>fullscreen_exit</mat-icon>
+    </button>
     <button *ngIf="!isMinimized" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white"
-      mat-icon-button (click)="minimize(true)">
+      mat-icon-button (mousedown)="$event.stopPropagation()" (click)="minimize(true)">
       <mat-icon>remove</mat-icon>
     </button>
     <button *ngIf="isMinimized" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white"
-      mat-icon-button (click)="minimize(false)">
+      mat-icon-button (mousedown)="$event.stopPropagation()" (click)="minimize(false)">
       <mat-icon>web_asset</mat-icon>
     </button>
     <button [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white" mat-icon-button
-      (click)="close()">
+      (mousedown)="$event.stopPropagation()" (click)="close()">
       <mat-icon>close</mat-icon>
     </button>
   </div>
 
-  <app-log-console [hidden]="!(selected.value === 0) || isMinimized" [controller]="controller" [project]="project">
+  <app-log-console [hidden]="!(selected.value === nodes.length) || isMinimized" [controller]="controller" [project]="project">
   </app-log-console>
 
-  <div (mouseover)="disableScroll($event)" (mouseout)="enableScroll($event)" class="xterm-console"
+  <div class="xterm-console"
     [hidden]="isMinimized" *ngFor="let node of nodes; let index = index">
-    <app-web-console [hidden]="!(selected.value === index + 1)" [controller]="controller" [node]="nodes[index]">
+    <app-web-console [hidden]="!(selected.value === index)" [controller]="controller" [node]="nodes[index]">
     </app-web-console>
   </div>
+</div>
+</div>
 </div>

@@ -79,6 +79,7 @@
             <button
               mat-icon-button
               matTooltip="Go to projects"
+              matTooltipPosition="left"
               matTooltipClass="custom-tooltip"
               (click)="openProjects(row)"
               *ngIf="getControllerStatus(row) === 'running'"
@@ -114,6 +115,7 @@
             <button
               mat-icon-button
               matTooltip="Remove controller"
+              matTooltipPosition="right"
               matTooltipClass="custom-tooltip"
               (click)="deleteController(row)"
             >
@@ -128,9 +130,6 @@
     </div>
 
     <div class="buttons-bar">
-      <button *ngIf="isElectronApp" mat-raised-button class="button" (click)="startLocalController()">
-        Start local controller
-      </button>
       <button mat-raised-button class="button" color="primary" (click)="createModal()">Add Controller</button>
     </div>
   </div>

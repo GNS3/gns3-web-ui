@@ -24,3 +24,23 @@ table {
   top: 0;
   width: 175px;
 }
+
+.delete-btn {
+  transition: transform 0.2s ease;
+}
+
+.delete-btn:hover mat-icon {
+  transform: scale(1.35);
+}
+
+.table-link {
+  transition: transform 0.2s ease;
+  display: inline-block;
+  transform-origin: left center;
+  padding: 2px 4px;
+  margin: -2px -4px;
+}
+
+.table-link:hover {
+  transform: scale(1.15);
+}

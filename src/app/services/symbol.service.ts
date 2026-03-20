@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Template } from '@models/template';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { shareReplay } from 'rxjs/operators';
+import { map, shareReplay } from 'rxjs/operators';
 import { Node } from '../cartography/models/node';
 import { Controller } from '@models/controller';
 import { Symbol } from '@models/symbol';
@@ -40,19 +40,14 @@ export class SymbolService {
     return this.dimensionsCache.get(cacheKey);
   }
 
-  getSymbolBlobUrl(symbolRawUrl: string): Observable<string> {
+  getSymbolBlobUrl(controller: Controller, symbolRawUrl: string): Observable<string> {
     if (!this.blobUrlCache.has(symbolRawUrl)) {
       this.blobUrlCache.set(
         symbolRawUrl,
-        new Observable<string>((observer) => {
-          fetch(symbolRawUrl)
-            .then((response) => response.blob())
-            .then((blob) => {
-              observer.next(URL.createObjectURL(blob));
-              observer.complete();
-            })
-            .catch((err) => observer.error(err));
-        }).pipe(shareReplay(1))
+        this.httpController.getBlob(controller, symbolRawUrl).pipe(
+          map((blob) => URL.createObjectURL(blob)),
+          shareReplay(1)
+        )
       );
     }
     return this.blobUrlCache.get(symbolRawUrl);

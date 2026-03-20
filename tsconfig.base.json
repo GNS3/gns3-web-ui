@@ -13,7 +13,8 @@
     "target": "es5",
     "types": ["jasmine", "jest", "mocha", "node"],
     "typeRoots": [
-      "node_modules/@types"
+      "node_modules/@types",
+      "src/types"
     ],
     // below is fix for angular-cli to support core-js >= 3.0
     "paths": {

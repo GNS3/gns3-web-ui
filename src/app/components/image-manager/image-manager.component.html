@@ -105,6 +105,10 @@
         <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns" [class.row-highlight]="isHighlighted(row)"></mat-row>
       </mat-table>
+      <mat-paginator
+        [pageSizeOptions]="pageSizeOptions"
+        showFirstLastButtons>
+      </mat-paginator>
     </div>
   </div>
 </div>

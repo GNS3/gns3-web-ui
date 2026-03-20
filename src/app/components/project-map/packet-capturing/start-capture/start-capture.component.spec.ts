@@ -12,6 +12,8 @@ import { of } from 'rxjs';
 import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
 import { Link } from '@models/link';
 import { LinkService } from '@services/link.service';
+import { LoginService } from '@services/login.service';
+import { ControllerService } from '@services/controller.service';
 import { PacketCaptureService } from '@services/packet-capture.service';
 import { ToasterService } from '@services/toaster.service';
 import { MockedToasterService } from '@services/toaster.service.spec';
@@ -52,7 +54,9 @@ describe('StartCaptureDialogComponent', () => {
         { provide: LinkService, useValue: mockedLinkService },
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
         { provide: PacketCaptureService },
-         ProtocolHandlerService,
+        { provide: LoginService, useValue: {} },
+        { provide: ControllerService, useValue: {} },
+        ProtocolHandlerService,
       ],
       declarations: [StartCaptureDialogComponent],
       schemas: [NO_ERRORS_SCHEMA],

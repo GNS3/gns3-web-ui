@@ -1,5 +1,4 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { ElectronService } from 'ngx-electron';
 import { Subject } from 'rxjs';
 import { Controller } from '@models/controller';
 
@@ -13,12 +12,8 @@ export interface ControllerStateEvent {
 export class ControllerManagementService implements OnDestroy {
   controllerStatusChanged = new Subject<ControllerStateEvent>();
 
-  constructor(private electronService: ElectronService) {
-    if (this.electronService.isElectronApp) {
-      this.electronService.ipcRenderer.on(this.statusChannel, (event, data) => {
-        this.controllerStatusChanged.next(data);
-      });
-    }
+  constructor() {
+    // Web application - no local controller support
   }
 
   get statusChannel() {
@@ -26,33 +21,32 @@ export class ControllerManagementService implements OnDestroy {
   }
 
   async start(controller: Controller ) {
+    // Web application - controller management is handled by the server
     var startingEvent: ControllerStateEvent = {
       controllerName: controller.name,
       status: 'starting',
       message: '',
     };
     this.controllerStatusChanged.next(startingEvent);
-    return await this.electronService.remote.require('./local-controller.js').startLocalController(controller);
+    return Promise.resolve();
   }
 
   async stop(controller: Controller ) {
-    return await this.electronService.remote.require('./local-controller.js').stopLocalController(controller);
+    // Web application - controller management is handled by the server
+    return Promise.resolve();
   }
 
   async stopAll() {
-    return await this.electronService.remote.require('./local-controller.js').stopAllLocalControllers();
+    // Web application - controller management is handled by the server
+    return Promise.resolve();
   }
 
   getRunningControllers() {
-    if (this.electronService.isElectronApp) {
-      return this.electronService.remote.require('./local-controller.js').getRunningControllers();
-    }
+    // Web application - no local controllers
     return [];
   }
 
   ngOnDestroy() {
-    if (this.electronService.isElectronApp) {
-      this.electronService.ipcRenderer.removeAllListeners(this.statusChannel);
-    }
+    // Cleanup
   }
 }

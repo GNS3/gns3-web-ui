@@ -2,7 +2,6 @@ import { ChangeDetectorRef, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { BrowserModule } from '@angular/platform-browser';
-import { ElectronService } from 'ngx-electron';
 import { Drawing } from '../../../cartography/models/drawing';
 import { RectElement } from '../../../cartography/models/drawings/rect-element';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
@@ -16,16 +15,11 @@ describe('ContextMenuComponent', () => {
   let fixture: ComponentFixture<ContextMenuComponent>;
 
   beforeEach(async() => {
-    const electronMock = {
-      isElectronApp: true,
-    };
-
     await TestBed.configureTestingModule({
       imports: [MatMenuModule, BrowserModule],
       providers: [
         { provide: ChangeDetectorRef },
         { provide: ProjectService, useClass: MockedProjectService },
-        { provide: ElectronService, useValue: electronMock },
       ],
       declarations: [ContextMenuComponent],
       schemas: [NO_ERRORS_SCHEMA],
@@ -43,9 +37,6 @@ describe('ContextMenuComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should define property if running in electron ', () => {
-    expect(component.isElectronApp).toBeTruthy();
-  });
 
   it('should reset capabilities while opening menu for drawing', () => {
     component.contextMenu = { openMenu() {} } as MatMenuTrigger;

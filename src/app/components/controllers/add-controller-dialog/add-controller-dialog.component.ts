@@ -1,7 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { ElectronService } from 'ngx-electron';
 import { Controller } from '@models/controller';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
@@ -32,7 +31,6 @@ export class AddControllerDialogComponent implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<AddControllerDialogComponent>,
-    private electronService: ElectronService,
     private controllerService: ControllerService,
     private toasterService: ToasterService,
     @Inject(MAT_DIALOG_DATA) public data: any
@@ -42,18 +40,11 @@ export class AddControllerDialogComponent implements OnInit {
     const localControllers = await this.numberOfLocalControllers();
 
     let locations = [];
-    if (this.electronService.isElectronApp && localControllers === 0) {
-      locations.push({ key: 'local', name: 'Local' });
-    }
     locations.push({ key: 'remote', name: 'Remote' });
     return locations;
   }
 
   async getDefaultLocation() {
-    const localControllers = await this.numberOfLocalControllers();
-    if (this.electronService.isElectronApp && localControllers === 0) {
-      return 'local';
-    }
     return 'remote';
   }
 
@@ -71,35 +62,16 @@ export class AddControllerDialogComponent implements OnInit {
     return 3080;
   }
 
-  async getDefaultLocalControllerPath() {
-    if (this.electronService.isElectronApp) {
-      return await this.electronService.remote.require('./local-controller.js').getLocalControllerPath();
-    }
-    return;
-  }
-
-  async getDefaultUbridgePath() {
-    if (this.electronService.isElectronApp) {
-      return await this.electronService.remote.require('./local-controller.js').getUbridgePath();
-    }
-    return;
-  }
-
   async ngOnInit() {
     this.locations = await this.getLocations();
-
-    const defaultLocalControllerPath = await this.getDefaultLocalControllerPath();
-    const defaultUbridgePath = await this.getDefaultUbridgePath();
 
     this.controllerForm.get('location').valueChanges.subscribe((location: string) => {
       const pathControl = this.controllerForm.get('path');
       const ubridgePathControl = this.controllerForm.get('ubridge_path');
 
       if (location === 'local') {
-        pathControl.setValue(defaultLocalControllerPath);
         pathControl.setValidators([Validators.required]);
 
-        ubridgePathControl.setValue(defaultUbridgePath);
         ubridgePathControl.setValidators([Validators.required]);
       } else {
         pathControl.setValue('');

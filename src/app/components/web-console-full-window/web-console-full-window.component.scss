@@ -1,0 +1,87 @@
+// xterm Context Menu Styles for Full Window Console
+.xterm-context-menu {
+  background: rgba(32, 49, 59, 0.95);
+  border: 1px solid rgba(0, 151, 167, 0.3);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(0, 0, 0, 0.05);
+  padding: 4px 0;
+  min-width: 160px;
+  max-width: 240px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-size: 13px;
+  backdrop-filter: blur(8px) saturate(120%);
+  animation: contextMenuFadeIn 0.15s ease-out;
+  cursor: default;
+  user-select: none;
+
+  .xterm-context-menu-item {
+    padding: 8px 16px;
+    color: rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    &:hover {
+      background: rgba(0, 151, 167, 0.15);
+      color: #ffffff;
+    }
+
+    &:active {
+      background: rgba(0, 151, 167, 0.25);
+      color: #ffffff;
+    }
+  }
+
+  .xterm-context-menu-separator {
+    height: 1px;
+    background: rgba(0, 151, 167, 0.3);
+    margin: 4px 0;
+  }
+}
+
+@keyframes contextMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// Dark theme - theme class applied directly to menu element
+.xterm-context-menu.dark-theme {
+  background: rgba(32, 49, 59, 0.95);
+  border-color: rgba(0, 151, 167, 0.3);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(0, 151, 167, 0.1);
+
+  .xterm-context-menu-item {
+    color: rgba(255, 255, 255, 0.9);
+
+    &:hover {
+      background: rgba(0, 151, 167, 0.15);
+      color: #ffffff;
+    }
+
+    &:active {
+      color: #ffffff;
+    }
+  }
+}
+
+// Light theme - theme class applied directly to menu element
+.xterm-context-menu.light-theme {
+  background: rgba(255, 255, 255, 0.98);
+  border-color: rgba(0, 0, 0, 0.12);
+
+  .xterm-context-menu-item {
+    color: rgba(0, 0, 0, 0.87);
+
+    &:hover {
+      background: rgba(0, 151, 167, 0.1);
+    }
+  }
+}

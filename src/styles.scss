@@ -1,6 +1,20 @@
-body {
-  background-color: #e8ecef;
+/* GitHub Markdown styles - removed */
+
+/* Global markdown list fix */
+app-chat-message-list markdown p,
+app-chat-message-list markdown ul,
+app-chat-message-list markdown ol,
+app-chat-message-list markdown li {
+  margin-top: 0.1em !important;
+  margin-bottom: 0.1em !important;
+  line-height: 1.2 !important;
 }
+
+app-chat-message-list markdown li p {
+  margin: 0 !important;
+}
+
+/* body background-color is now controlled dynamically by ThemeService and applyMapBackground() */
 
 img.logo-header {
   width: 50px;
@@ -94,4 +108,143 @@ mat-menu-panel {
   stroke-width: 4px !important;
   cursor: pointer;
   stroke: #ff0000 !important;
+}
+
+/* ============================================================================
+ * Material overlays z-index fix
+ * AI Chat container uses z-index: 1000
+ * Material overlays use default z-index: 1000
+ * Session Menu (1300) and Confirm Dialog (1400) are set via ZIndexService
+ * ============================================================================ */
+
+/* ============================================================================
+ * AI Chat Session Menu Icon Colors
+ * Target SVG icons (.menu-item-icon) inside Material menus
+ * ============================================================================ */
+
+/* Dark theme (default) - white icons for AI Chat menus */
+.mat-menu-panel .menu-item-icon {
+  fill: rgba(255, 255, 255, 0.87) !important;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* Fix alignment: menu items with icons */
+.mat-menu-panel .mat-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mat-menu-panel .delete-icon {
+  fill: #f44336 !important;
+}
+
+.mat-menu-panel .mat-menu-item:hover .menu-item-icon {
+  fill: #10a37f !important;
+}
+
+.mat-menu-panel .mat-menu-item:hover .delete-icon {
+  fill: #f44336 !important;
+}
+
+/* Light theme override */
+.lightTheme .mat-menu-panel .menu-item-icon {
+  fill: rgba(0, 0, 0, 0.87) !important;
+}
+
+.lightTheme .mat-menu-panel .delete-icon {
+  fill: #d32f2f !important;
+}
+
+.lightTheme .mat-menu-panel .mat-menu-item:hover .menu-item-icon {
+  fill: #0097a7 !important;
+}
+
+/* ============================================================================
+ * AI Chat Sidebar Icon Colors (Session List Component)
+ * These icons are inside AI Chat container but need global styles
+ * ============================================================================ */
+
+/* Menu icon (three dots) in session list */
+.ai-chat-container .menu-icon,
+.mat-menu-panel .menu-icon {
+  fill: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* Session list icon (New Chat +) */
+.ai-chat-container .session-list-icon {
+  fill: rgba(255, 255, 255, 0.87) !important;
+}
+
+/* Session icon (chat bubble) */
+.ai-chat-container .session-icon {
+  fill: rgba(255, 255, 255, 0.6) !important;
+}
+
+/* Pin icon */
+.ai-chat-container .pin-icon {
+  fill: #10a37f !important;
+}
+
+/* No sessions icon */
+.ai-chat-container .no-sessions-icon {
+  fill: rgba(255, 255, 255, 0.3) !important;
+}
+
+/* Hover effects for sidebar icons */
+.ai-chat-container .new-session-button:hover .session-list-icon,
+.ai-chat-container .session-item:hover .session-icon,
+.ai-chat-container .session-menu-button:hover .menu-icon {
+  fill: rgba(255, 255, 255, 1) !important;
+}
+
+/* Light theme override for sidebar icons */
+.lightTheme .ai-chat-container .menu-icon,
+.lightTheme .ai-chat-container .session-list-icon,
+.lightTheme .ai-chat-container .session-icon {
+  fill: rgba(0, 0, 0, 0.6) !important;
+}
+
+.lightTheme .ai-chat-container .pin-icon {
+  fill: #0097a7 !important;
+}
+
+.lightTheme .ai-chat-container .no-sessions-icon {
+  fill: rgba(0, 0, 0, 0.3) !important;
+}
+
+.lightTheme .ai-chat-container .new-session-button:hover .session-list-icon,
+.lightTheme .ai-chat-container .session-item:hover .session-icon,
+.lightTheme .ai-chat-container .session-menu-button:hover .menu-icon {
+  fill: rgba(0, 0, 0, 0.87) !important;
+}
+
+/* ============================================================================
+ * Fix SVG and text alignment in AI Chat buttons
+ * ============================================================================ */
+
+.ai-chat-container .new-session-button .mat-button-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-chat-container .session-list-icon {
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* ============================================================================
+ * Confirmation Dialog - Outer transparent, inner with color
+ * ============================================================================ */
+
+.confirmation-dialog-panel {
+  /* Material Dialog Container - transparent */
+  mat-dialog-container,
+  .mat-dialog-container {
+    background: transparent !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
 }

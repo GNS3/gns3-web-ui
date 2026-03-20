@@ -8,7 +8,6 @@ export class MapChangeDetectorRef {
   public hasBeenDrawn = false;
 
   public detectChanges() {
-    console.log('from map change detector');
     this.changesDetected.emit(true);
   }
 

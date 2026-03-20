@@ -12,7 +12,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserDynamicTestingModule } from '@angular/platform-browser-dynamic/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ElectronService } from 'ngx-electron';
 import { of } from 'rxjs';
 import { ProgressService } from '../../common/progress/progress.service';
 import { ProjectsFilter } from '@filters/projectsFilter.pipe';
@@ -36,20 +35,8 @@ xdescribe('ProjectsComponent', () => {
   let controller: Controller;
   let progressService: ProgressService;
   let mockedProjectService: MockedProjectService = new MockedProjectService();
-  let electronService;
 
   beforeEach(async () => {
-    electronService = {
-      isElectronApp: true,
-      remote: {
-        require: (file) => {
-          return {
-            openConsole() { },
-          };
-        },
-      },
-    };
-
     await TestBed.configureTestingModule({
       imports: [
         MatTableModule,
@@ -70,7 +57,6 @@ xdescribe('ProjectsComponent', () => {
         { provide: ProjectService, useValue: mockedProjectService },
         { provide: SettingsService },
         { provide: ToasterService },
-        { provide: ElectronService, useValue: electronService },
         ProgressService,
       ],
       declarations: [ProjectsComponent, ChooseNameDialogComponent, ProjectsFilter],

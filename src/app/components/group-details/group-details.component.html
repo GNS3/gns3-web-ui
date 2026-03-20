@@ -88,6 +88,13 @@
           </table>
         </div>
       </mat-tab>
+
+      <mat-tab label="AI Profiles">
+        <app-group-ai-profile-tab
+          [controller]="controller"
+          [group]="group">
+        </app-group-ai-profile-tab>
+      </mat-tab>
     </mat-tab-group>
   </div>
 </div>

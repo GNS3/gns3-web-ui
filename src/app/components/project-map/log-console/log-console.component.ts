@@ -82,14 +82,14 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.nodeConsoleService.consoleResized.subscribe((ev) => {
-      this.style = { bottom: '20px', left: '20px', width: `${ev.width}px`, height: `${ev.height - 70}px` };
+      this.style = { width: `${ev.width}px`, height: `${ev.height - 70}px` };
       this.changeDetectorRef.detectChanges();
     });
 
     this.themeService.getActualTheme() === 'light'
       ? (this.isLightThemeEnabled = true)
       : (this.isLightThemeEnabled = false);
-    this.style = { bottom: '20px', left: '20px', width: '720px', height: '340px' };
+    this.style = { width: '848px', height: '477px' };
 
     this.nodeSubscription = this.projectWebServiceHandler.nodeNotificationEmitter.subscribe((event) => {
       let node: Node = event.event as Node;
@@ -239,11 +239,11 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
               this.protocolHandlerService.open(
                 `gns3+vnc://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
-            } else if (node.console_type.startsWith('spice')) {
+            } else if (node.console_type && node.console_type.startsWith('spice')) {
               this.protocolHandlerService.open(
                 `gns3+spice://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
-            } else if (node.console_type.startsWith('http')) {
+            } else if (node.console_type && node.console_type.startsWith('http')) {
                window.open(`${node.console_type}://${host}:${node.console}`);
             } else {
               this.showCommand('Supported console types are: telnet, vnc, spice and spice+agent');

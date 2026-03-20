@@ -39,6 +39,7 @@
     <button
       matTooltip="Open menu"
       matTooltipClass="custom-tooltip"
+      matTooltipPosition="left"
       mat-icon-button
       class="gns3-button menu-button"
       [matMenuTriggerFor]="mainMenu"
@@ -52,6 +53,7 @@
         <button
           matTooltip="Add a link"
           matTooltipClass="custom-tooltip"
+          matTooltipPosition="below"
           class="menu-button"
           mat-icon-button
           [ngClass]="{ selected: tools.draw_link }"
@@ -70,6 +72,7 @@
       <button
         matTooltip="Toggle topology/controllers summary"
         matTooltipClass="custom-tooltip"
+        matTooltipPosition="left"
         [ngClass]="{
           unmarkedLight: !isTopologySummaryVisible && isGlobalLightTheme,
           marked: isTopologySummaryVisible
@@ -183,6 +186,7 @@
       <button
         matTooltip="Selection mode"
         matTooltipClass="custom-tooltip"
+        matTooltipPosition="left"
         mat-icon-button
         class="selection-button menu-button"
         [color]="tools.moving ? 'basic' : 'primary'"
@@ -193,6 +197,7 @@
       <button
         matTooltip="Pan workspace"
         matTooltipClass="custom-tooltip"
+        matTooltipPosition="left"
         class="pan-button menu-button"
         mat-icon-button
         [color]="tools.moving ? 'primary' : 'basic'"
@@ -203,6 +208,7 @@
       <button
          matTooltip="Zoom in"
          matTooltipClass="custom-tooltip"
+         matTooltipPosition="left"
          class="zoom-button"
          mat-icon-button
          (click)="zoomIn()">
@@ -211,6 +217,7 @@
       <button
          matTooltip="Reset zoom"
          matTooltipClass="custom-tooltip"
+         matTooltipPosition="left"
          class="reset-zoom-button"
          mat-icon-button
          (click)="resetZoom()">
@@ -219,6 +226,7 @@
       <button
          matTooltip="Zoom out"
          matTooltipClass="custom-tooltip"
+         matTooltipPosition="left"
          class="zoom-button"
          mat-icon-button
          (click)="zoomOut()">
@@ -226,7 +234,7 @@
       </button>
     </div>
     <div class="section">
-      <app-project-map-menu [controller]="controller" [project]="project"></app-project-map-menu>
+      <app-project-map-menu [controller]="controller" [project]="project" (aiChatOpened)="onAIChatOpened()"></app-project-map-menu>
     </div>
     <div *ngIf="!readonly" class="section">
       <app-snapshot-menu-item [controller]="controller" [project]="project"> </app-snapshot-menu-item>
@@ -249,8 +257,18 @@
       [controller]="controller"
       [project]="project"
       (closeConsole)="toggleShowConsole($event)"
+      (deviceSelected)="onDeviceSelected($event)"
+      (consoleDeactivated)="clearConsoleHighlight()"
     ></app-console-wrapper>
   </div>
+
+  <!-- AI Chat Panel -->
+  <app-ai-chat
+    *ngIf="project && isAIChatVisible"
+    [project]="project"
+    [controller]="controller"
+    (closed)="closeAIChat()">
+  </app-ai-chat>
 </div>
 
 <ng-template #topologySummaryContainer></ng-template>

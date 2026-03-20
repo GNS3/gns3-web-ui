@@ -8,7 +8,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ProjectService } from '@services/project.service';
-import { ElectronService } from 'ngx-electron';
 import { ANGULAR_MAP_DECLARATIONS } from '../../../cartography/angular-map.imports';
 import { D3MapComponent } from '../../../cartography/components/d3-map/d3-map.component';
 import { DrawingService } from '@services/drawing.service';
@@ -58,7 +57,6 @@ describe('ProjectMapMenuComponent', () => {
         { provide: SymbolService, useValue: mockedSymbolService },
         { provide: NodeService, useValue: mockedNodeService },
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
-        { provide: ElectronService },
       ],
       declarations: [ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
       schemas: [NO_ERRORS_SCHEMA],
@@ -94,9 +92,9 @@ describe('ProjectMapMenuComponent', () => {
     spyOn(mapSettingService, 'changeMapLockValue');
 
     component.changeLockValue();
-    expect(mapSettingService.changeMapLockValue).toHaveBeenCalledWith(true);;
+    expect(mapSettingService.changeMapLockValue).toHaveBeenCalledWith(true);
 
     component.changeLockValue();
-    expect(mapSettingService.changeMapLockValue).toHaveBeenCalledWith(false);;
+    expect(mapSettingService.changeMapLockValue).toHaveBeenCalledWith(false);
   });
 });

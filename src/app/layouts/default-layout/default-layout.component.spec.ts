@@ -8,7 +8,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ProjectService } from '@services/project.service';
 import { MockedProjectService } from '@services/project.service.spec';
-import { ElectronService } from 'ngx-electron';
 import { Subject } from 'rxjs';
 import { ProgressComponent } from '../../common/progress/progress.component';
 import { ProgressService } from '../../common/progress/progress.service';
@@ -21,9 +20,6 @@ import { MockedToasterService } from '@services/toaster.service.spec';
 import { DefaultLayoutComponent } from './default-layout.component';
 import { AppTestingModule } from 'app/testing/app-testing/app-testing.module';
 
-class ElectronServiceMock {
-  public isElectronApp: boolean;
-}
 
 class MockedControllerManagementService {
   public controllerStatusChanged;
@@ -33,14 +29,12 @@ class MockedControllerManagementService {
 describe('DefaultLayoutComponent', () => {
   let component: DefaultLayoutComponent;
   let fixture: ComponentFixture<DefaultLayoutComponent>;
-  let electronServiceMock: ElectronServiceMock;
   let controllerManagementService = new MockedControllerManagementService();
   let controllerService: ControllerService;
   let httpController: HttpController;
   let errorHandler: ControllerErrorHandler;
 
   beforeEach(async () => {
-    electronServiceMock = new ElectronServiceMock();
     controllerManagementService.controllerStatusChanged = new Subject<ControllerStateEvent>();
 
     await TestBed.configureTestingModule({
@@ -56,10 +50,6 @@ describe('DefaultLayoutComponent', () => {
         AppTestingModule,
       ],
       providers: [
-        {
-          provide: ElectronService,
-          useValue: electronServiceMock,
-        },
         {
           provide: ControllerManagementService,
           useValue: controllerManagementService,
@@ -98,17 +88,6 @@ describe('DefaultLayoutComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should installed software be available', () => {
-    electronServiceMock.isElectronApp = true;
-    component.ngOnInit();
-    expect(component.isInstalledSoftwareAvailable).toBeTruthy();
-  });
-
-  it('should installed software be not available', () => {
-    electronServiceMock.isElectronApp = false;
-    component.ngOnInit();
-    expect(component.isInstalledSoftwareAvailable).toBeFalsy();
-  });
 
   it('should show error when controller management service throw event', () => {
     const toaster: MockedToasterService = TestBed.get(ToasterService);
