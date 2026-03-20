@@ -1,4 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../../../cartography/models/drawing';
@@ -8,21 +11,20 @@ import { DrawingService } from '@services/drawing.service';
 import { NodeService } from '@services/node.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-move-layer-down-action',
   templateUrl: './move-layer-down-action.component.html',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
 })
 export class MoveLayerDownActionComponent implements OnInit {
+  private nodesDataSource = inject(NodesDataSource);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private nodeService = inject(NodeService);
+  private drawingService = inject(DrawingService);
+
   @Input() controller: Controller;
   @Input() nodes: Node[];
   @Input() drawings: Drawing[];
-
-  constructor(
-    private nodesDataSource: NodesDataSource,
-    private drawingsDataSource: DrawingsDataSource,
-    private nodeService: NodeService,
-    private drawingService: DrawingService
-  ) {}
 
   ngOnInit() {}
 
