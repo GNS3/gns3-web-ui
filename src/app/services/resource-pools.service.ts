@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Controller} from "@models/controller";
-import {Observable, of} from "rxjs";
+import {Observable, of, forkJoin} from "rxjs";
 import {ResourcePool} from "@models/resourcePools/ResourcePool";
 import {HttpController} from "@services/http-controller.service";
 import {Resource} from "@models/resourcePools/Resource";

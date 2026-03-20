@@ -1,6 +1,5 @@
 import { HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import import { map } from 'rxjs/operators';
 import { Controller } from '@models/controller';
 import { HttpController } from './http-controller.service';
 import { AuthResponse } from '@models/authResponse';

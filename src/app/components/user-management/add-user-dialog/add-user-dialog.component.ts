@@ -19,12 +19,10 @@ import {User} from "@models/users/user";
 import {ToasterService} from "@services/toaster.service";
 import {userNameAsyncValidator} from "@components/user-management/add-user-dialog/userNameAsyncValidator";
 import {userEmailAsyncValidator} from "@components/user-management/add-user-dialog/userEmailAsyncValidator";
-import {BehaviorSubject} from "rxjs";
+import {BehaviorSubject, Observable} from "rxjs";
 import {Group} from "@models/groups/group";
 import {GroupService} from "@services/group.service";
-import {Observable} from "rxjs/Rx";
-import {startWith} from "rxjs/operators";
-import {map} from "rxjs//operators";
+import {startWith, map} from "rxjs/operators";
 import {matchingPassword} from "@components/user-management/ConfirmPasswordValidator";
 import { HttpErrorResponse } from '@angular/common/http';
 

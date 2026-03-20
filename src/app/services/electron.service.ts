@@ -151,7 +151,15 @@ export class ElectronService {
     }
 
     return from(
-      (window as any).electronAPI.getPlatformInfo()
+      (window as any).electronAPI.getPlatformInfo() as Promise<{
+        platform: 'win32' | 'darwin' | 'linux';
+        arch: 'x64' | 'arm64';
+        versions: {
+          node: string;
+          chrome: string;
+          electron: string;
+        };
+      }>
     ).pipe(
       catchError(() => of(null))
     );

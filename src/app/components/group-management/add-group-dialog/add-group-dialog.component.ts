@@ -22,7 +22,7 @@ import {User} from "@models/users/user";
 import {UserService} from "@services/user.service";
 import {ToasterService} from "@services/toaster.service";
 import {PageEvent} from "@angular/material/paginator";
-import {Observable} from "rxjs/Rx";
+import {Observable} from "rxjs";
 import {Group} from "@models/groups/group";
 import {map, startWith} from "rxjs/operators";
 

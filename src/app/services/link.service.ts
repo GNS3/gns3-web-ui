@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import import { map } from 'rxjs/operators';
 import { Node } from '../cartography/models/node';
 import { CapturingSettings } from '@models/capturingSettings';
 import { FilterDescription } from '@models/filter-description';

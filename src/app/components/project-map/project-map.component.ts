@@ -303,7 +303,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         });
 
         // Deduplicate: only 1 fetch per unique symbol URL (shareReplay(1) in getSymbolBlobUrl handles concurrent callers)
-        const uniqueRawUrls = [...new Set(nodeRawUrlMap.values())];
+        const uniqueRawUrls = Array.from(new Set(nodeRawUrlMap.values()));
         forkJoin(uniqueRawUrls.map((url) => this.symbolService.getSymbolBlobUrl(this.controller, url))).subscribe(
           (blobUrls: string[]) => {
             const blobUrlMap = new Map(uniqueRawUrls.map((url, i) => [url, blobUrls[i]]));

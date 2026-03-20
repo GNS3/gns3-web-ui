@@ -59,12 +59,12 @@
           <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br /><br />
           <mat-form-field class="form-field tags-field">
             <mat-label>Tags</mat-label>
-            <mat-chip-list #chipList>
+            <mat-chip-grid #chipList>
               <mat-chip *ngFor="let tag of dockerTemplate?.tags" (removed)="removeTag(tag)">
                 {{ tag }}
                 <mat-icon matChipRemove>cancel</mat-icon>
               </mat-chip>
-            </mat-chip-list>
+            </mat-chip-grid>
             <input matInput placeholder="Add tags"
                    [matChipInputFor]="chipList"
                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"

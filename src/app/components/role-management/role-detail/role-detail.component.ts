@@ -20,10 +20,9 @@ import {ToasterService} from "@services/toaster.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {Privilege} from "@models/api/Privilege";
 import {PrivilegeService} from "@services/privilege.service";
-import {BehaviorSubject, Observable} from "rxjs";
+import {BehaviorSubject, Observable, forkJoin} from "rxjs";
 import {IPrivilegesChange} from "@components/role-management/role-detail/privilege/IPrivilegesChange";
 import {map} from "rxjs/operators";
-import {string} from "yargs";
 
 @Component({
   selector: 'app-role-detail',
@@ -90,8 +89,7 @@ export class RoleDetailComponent implements OnInit {
     for (const privilege of privileges.delete) {
       tasks.push(this.roleService.removePrivileges(this.controller, this.roleId, privilege));
     }
-    Observable
-      .forkJoin(tasks)
+    forkJoin(tasks)
       .subscribe(() => {
         this.roleService.getById(this.controller, this.roleId).subscribe((role: Role) => this.$role.next(role))
       });

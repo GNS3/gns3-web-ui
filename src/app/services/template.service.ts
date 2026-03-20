@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import import { map } from 'rxjs/operators';
 import { Controller } from '@models/controller';
 import { Template } from '@models/template';
 import { HttpController } from './http-controller.service';

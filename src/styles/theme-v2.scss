@@ -37,40 +37,8 @@ $gns3-light-theme: mat-light-theme($gns3-primary, $gns3-accent, $gns3-warn);
 // 2. Apply Default Theme (Dark)
 // =============================================
 
-// Include all component themes
+// Include all component themes using core theme
 @include mat-core-theme($gns3-dark-theme);
-@include mat-autocomplete-theme($gns3-dark-theme);
-@include mat-badge-theme($gns3-dark-theme);
-@include mat-bottom-sheet-theme($gns3-dark-theme);
-@include mat-button-theme($gns3-dark-theme);
-@include mat-button-toggle-theme($gns3-dark-theme);
-@include mat-card-theme($gns3-dark-theme);
-@include mat-checkbox-theme($gns3-dark-theme);
-@include mat-chips-theme($gns3-dark-theme);
-@include mat-table-theme($gns3-dark-theme);
-@include mat-datepicker-theme($gns3-dark-theme);
-@include mat-dialog-theme($gns3-dark-theme);
-@include mat-divider-theme($gns3-dark-theme);
-@include mat-expansion-panel-theme($gns3-dark-theme);
-@include mat-form-field-theme($gns3-dark-theme);
-@include mat-grid-list-theme($gns3-dark-theme);
-@include mat-icon-theme($gns3-dark-theme);
-@include mat-input-theme($gns3-dark-theme);
-@include mat-list-theme($gns3-dark-theme);
-@include mat-menu-theme($gns3-dark-theme);
-@include mat-paginator-theme($gns3-dark-theme);
-@include mat-progress-bar-theme($gns3-dark-theme);
-@include mat-progress-spinner-theme($gns3-dark-theme);
-@include mat-radio-theme($gns3-dark-theme);
-@include mat-select-theme($gns3-dark-theme);
-@include mat-sidenav-theme($gns3-dark-theme);
-@include mat-slide-toggle-theme($gns3-dark-theme);
-@include mat-slider-theme($gns3-dark-theme);
-@include mat-stepper-theme($gns3-dark-theme);
-@include mat-tabs-theme($gns3-dark-theme);
-@include mat-toolbar-theme($gns3-dark-theme);
-@include mat-tooltip-theme($gns3-dark-theme);
-@include mat-snack-bar-theme($gns3-dark-theme);
 
 // =============================================
 // 3. GNS3 Custom Design Tokens
@@ -145,40 +113,8 @@ $gns3-light-theme: mat-light-theme($gns3-primary, $gns3-accent, $gns3-warn);
 
 .theme-light,
 .light-theme {
-  // Include all component themes for light theme
+  // Include all component themes for light theme using core theme
   @include mat-core-theme($gns3-light-theme);
-  @include mat-autocomplete-theme($gns3-light-theme);
-  @include mat-badge-theme($gns3-light-theme);
-  @include mat-bottom-sheet-theme($gns3-light-theme);
-  @include mat-button-theme($gns3-light-theme);
-  @include mat-button-toggle-theme($gns3-light-theme);
-  @include mat-card-theme($gns3-light-theme);
-  @include mat-checkbox-theme($gns3-light-theme);
-  @include mat-chips-theme($gns3-light-theme);
-  @include mat-table-theme($gns3-light-theme);
-  @include mat-datepicker-theme($gns3-light-theme);
-  @include mat-dialog-theme($gns3-light-theme);
-  @include mat-divider-theme($gns3-light-theme);
-  @include mat-expansion-panel-theme($gns3-light-theme);
-  @include mat-form-field-theme($gns3-light-theme);
-  @include mat-grid-list-theme($gns3-light-theme);
-  @include mat-icon-theme($gns3-light-theme);
-  @include mat-input-theme($gns3-light-theme);
-  @include mat-list-theme($gns3-light-theme);
-  @include mat-menu-theme($gns3-light-theme);
-  @include mat-paginator-theme($gns3-light-theme);
-  @include mat-progress-bar-theme($gns3-light-theme);
-  @include mat-progress-spinner-theme($gns3-light-theme);
-  @include mat-radio-theme($gns3-light-theme);
-  @include mat-select-theme($gns3-light-theme);
-  @include mat-sidenav-theme($gns3-light-theme);
-  @include mat-slide-toggle-theme($gns3-light-theme);
-  @include mat-slider-theme($gns3-light-theme);
-  @include mat-stepper-theme($gns3-light-theme);
-  @include mat-tabs-theme($gns3-light-theme);
-  @include mat-toolbar-theme($gns3-light-theme);
-  @include mat-tooltip-theme($gns3-light-theme);
-  @include mat-snack-bar-theme($gns3-light-theme);
 
   // Override custom tokens for light theme
   --gns3-dark-bg: #ffffff;
@@ -430,38 +366,6 @@ markdown,
   .theme-light,
   .light-theme {
     @include mat-core-theme($gns3-light-theme);
-    @include mat-autocomplete-theme($gns3-light-theme);
-    @include mat-badge-theme($gns3-light-theme);
-    @include mat-bottom-sheet-theme($gns3-light-theme);
-    @include mat-button-theme($gns3-light-theme);
-    @include mat-button-toggle-theme($gns3-light-theme);
-    @include mat-card-theme($gns3-light-theme);
-    @include mat-checkbox-theme($gns3-light-theme);
-    @include mat-chips-theme($gns3-light-theme);
-    @include mat-table-theme($gns3-light-theme);
-    @include mat-datepicker-theme($gns3-light-theme);
-    @include mat-dialog-theme($gns3-light-theme);
-    @include mat-divider-theme($gns3-light-theme);
-    @include mat-expansion-panel-theme($gns3-light-theme);
-    @include mat-form-field-theme($gns3-light-theme);
-    @include mat-grid-list-theme($gns3-light-theme);
-    @include mat-icon-theme($gns3-light-theme);
-    @include mat-input-theme($gns3-light-theme);
-    @include mat-list-theme($gns3-light-theme);
-    @include mat-menu-theme($gns3-light-theme);
-    @include mat-paginator-theme($gns3-light-theme);
-    @include mat-progress-bar-theme($gns3-light-theme);
-    @include mat-progress-spinner-theme($gns3-light-theme);
-    @include mat-radio-theme($gns3-light-theme);
-    @include mat-select-theme($gns3-light-theme);
-    @include mat-sidenav-theme($gns3-light-theme);
-    @include mat-slide-toggle-theme($gns3-light-theme);
-    @include mat-slider-theme($gns3-light-theme);
-    @include mat-stepper-theme($gns3-light-theme);
-    @include mat-tabs-theme($gns3-light-theme);
-    @include mat-toolbar-theme($gns3-light-theme);
-    @include mat-tooltip-theme($gns3-light-theme);
-    @include mat-snack-bar-theme($gns3-light-theme);
   }
 
   // Hide non-essential elements

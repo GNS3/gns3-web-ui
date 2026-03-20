@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { forkJoin, from, of, Observable } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { catchError, map, mergeMap } from 'rxjs/operators';
 import { Controller, ControllerProtocol } from '@models/controller';
 import { Version } from '@models/version';
 import { ControllerDatabase } from '@services/controller.database';
@@ -90,9 +90,11 @@ export class ControllerDiscoveryComponent implements OnInit {
 
     this.defaultControllers.forEach((testController) => {
       queries.push(
-        this.isControllerAvailable(testController.host, testController.port).catch((err) => {
-          return of(null);
-        })
+        this.isControllerAvailable(testController.host, testController.port).pipe(
+          catchError((err) => {
+            return of(null);
+          })
+        )
       );
     });
 
