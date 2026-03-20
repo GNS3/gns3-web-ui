@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { marked } from 'marked';
 import { ProjectService } from '@services/project.service';
@@ -10,7 +10,8 @@ import { Project } from '@models/project';
   selector: 'app-readme-editor',
     templateUrl: './readme-editor.component.html',
     encapsulation: ViewEncapsulation.None,
-    styleUrls: ['./readme-editor.component.scss']
+    styleUrls: ['./readme-editor.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReadmeEditorComponent implements OnInit {
     @Input() controller: Controller;
@@ -20,7 +21,8 @@ export class ReadmeEditorComponent implements OnInit {
 
     constructor(
         private projectService: ProjectService,
-        private sanitizer: DomSanitizer
+        private sanitizer: DomSanitizer,
+        private cd: ChangeDetectorRef
     ) {}
 
     /**
@@ -45,12 +47,14 @@ export class ReadmeEditorComponent implements OnInit {
                 if (file) {
                     this.markdown = file;
                 }
+                this.cd.markForCheck();
             },
             error: (err) => {
                 if (err.status === 404) {
                     // File doesn't exist yet, which is fine
                     this.markdown = '';
                 }
+                this.cd.markForCheck();
             }
         });
     }
