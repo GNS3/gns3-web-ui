@@ -29,7 +29,7 @@
               matInput
               type="text"
               formControlName="templateName"
-              [(ngModel)]="iosTemplate.name"
+              
               placeholder="Template name"
             />
           </mat-form-field>
@@ -38,7 +38,7 @@
               matInput
               type="text"
               formControlName="defaultName"
-              [(ngModel)]="iosTemplate.default_name_format"
+              
               placeholder="Default name format"
             />
           </mat-form-field>
@@ -53,7 +53,7 @@
               matInput
               type="text"
               formControlName="symbol"
-              [(ngModel)]="iosTemplate.symbol"
+              
               placeholder="Symbol"
             />
           </mat-form-field>
@@ -62,7 +62,7 @@
             <mat-select
               [ngModelOptions]="{ standalone: true }"
               placeholder="Category"
-              [(ngModel)]="iosTemplate.category"
+              
             >
               <mat-option *ngFor="let category of categories" [value]="category[1]">
                 {{ category[0] }}
@@ -87,7 +87,7 @@
               matInput
               type="text"
               formControlName="path"
-              [(ngModel)]="iosTemplate.image"
+              
               placeholder="IOS image path"
             />
           </mat-form-field>
@@ -96,7 +96,7 @@
               matInput
               type="text"
               formControlName="initialConfig"
-              [(ngModel)]="iosTemplate.startup_config"
+              
               placeholder="Initial startup-config"
             />
             <mat-hint>Filename only (e.g. ios-startup-config.txt)</mat-hint>
@@ -106,27 +106,27 @@
               [ngModelOptions]="{ standalone: true }"
               matInput
               type="text"
-              [(ngModel)]="iosTemplate.private_config"
+              
               placeholder="Initial private-config"
             />
             <mat-hint>Filename only (e.g. ios-private-config.txt)</mat-hint>
           </mat-form-field>
         </form>
         <mat-form-field class="select">
-          <mat-select placeholder="Console type" [(ngModel)]="iosTemplate.console_type">
+          <mat-select placeholder="Console type" >
             <mat-option *ngFor="let type of consoleTypes" [value]="type">
               {{ type }}
             </mat-option>
           </mat-select>
         </mat-form-field>
         <mat-form-field class="select">
-          <mat-select placeholder="Auxiliary console type" [(ngModel)]="iosTemplate.aux_type">
+          <mat-select placeholder="Auxiliary console type" >
             <mat-option *ngFor="let type of consoleTypes" [value]="type">
               {{ type }}
             </mat-option>
           </mat-select>
         </mat-form-field>
-        <mat-checkbox [(ngModel)]="iosTemplate.console_auto_start"> Auto start console </mat-checkbox>
+        <mat-checkbox > Auto start console </mat-checkbox>
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
@@ -140,7 +140,7 @@
               min="32"
               step="32"
               formControlName="ram"
-              [(ngModel)]="iosTemplate.ram"
+              
               placeholder="RAM size"
             />
             <span matSuffix>MB</span>
@@ -152,7 +152,7 @@
               min="32"
               step="32"
               formControlName="nvram"
-              [(ngModel)]="iosTemplate.nvram"
+              
               placeholder="NVRAM size"
             />
             <span matSuffix>MB</span>
@@ -165,7 +165,7 @@
               max="100"
               step="5"
               formControlName="iomemory"
-              [(ngModel)]="iosTemplate.iomem"
+              
               placeholder="I/O memory"
             />
             <mat-hint>Percentage of RAM for I/O memory</mat-hint>
@@ -178,7 +178,7 @@
               min="0"
               step="4"
               formControlName="disk0"
-              [(ngModel)]="iosTemplate.disk0"
+              
               placeholder="PCMCIA disk0"
             />
           </mat-form-field>
@@ -189,12 +189,12 @@
               min="0"
               step="4"
               formControlName="disk1"
-              [(ngModel)]="iosTemplate.disk1"
+              
               placeholder="PCMCIA disk1"
             />
           </mat-form-field>
         </form>
-        <mat-checkbox [(ngModel)]="iosTemplate.auto_delete_disks">
+        <mat-checkbox >
           Automatically delete NVRAM and disk files
         </mat-checkbox>
       </mat-expansion-panel>
@@ -257,7 +257,7 @@
               matInput
               formControlName="systemId"
               type="text"
-              [(ngModel)]="iosTemplate.system_id"
+              
               placeholder="System ID"
             />
           </mat-form-field>
@@ -266,7 +266,7 @@
               matInput
               formControlName="mac_addr"
               type="text"
-              [(ngModel)]="iosTemplate.mac_addr"
+              
               placeholder="Base MAC (format: xxxx.xxxx.xxxx)"
             />
             <mat-hint>Example: aaaa.bbbb.cccc (leave empty to let the server allocate a MAC address).</mat-hint>
@@ -278,7 +278,7 @@
               matInput
               formControlName="idlepc"
               type="text"
-              [(ngModel)]="iosTemplate.idlepc"
+              
               placeholder="Idle-PC"
             />
           </mat-form-field>
@@ -290,7 +290,7 @@
               type="number"
               min="100"
               step="100"
-              [(ngModel)]="iosTemplate.idlemax"
+              
               placeholder="Idlemax"
             />
           </mat-form-field>
@@ -301,7 +301,7 @@
               type="number"
               min="1"
               step="10"
-              [(ngModel)]="iosTemplate.idlesleep"
+              
               placeholder="Idlesleep"
             />
           </mat-form-field>
@@ -312,20 +312,20 @@
               type="number"
               min="0"
               step="4"
-              [(ngModel)]="iosTemplate.exec_area"
+              
               placeholder="Exec area"
             />
           </mat-form-field>
         </form>
-        <mat-checkbox [(ngModel)]="iosTemplate.mmap"> Enable mmap support </mat-checkbox><br /><br />
-        <mat-checkbox [(ngModel)]="iosTemplate.sparsemem"> Enable sparse memory supoport </mat-checkbox>
+        <mat-checkbox > Enable mmap support </mat-checkbox><br /><br />
+        <mat-checkbox > Enable sparse memory supoport </mat-checkbox>
       </mat-expansion-panel>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title> Usage </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-form-field class="form-field">
-          <textarea matInput type="text" [(ngModel)]="iosTemplate.usage"></textarea>
+          <textarea matInput type="text" ></textarea>
         </mat-form-field>
       </mat-expansion-panel>
     </mat-accordion>
