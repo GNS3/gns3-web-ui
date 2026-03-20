@@ -97,7 +97,7 @@ describe('LinkCreatedComponent', () => {
       shortName: 'sampleShortName',
     };
     const linkCreatedDataEvent = new MapLinkCreated(mapNode, mapPort, mapNode, mapPort);
-    spyOn(mockedLinkService, 'createLink').and.returnValue(Observable.of({}));
+    spyOn(mockedLinkService, 'createLink').and.returnValue(of({}));
 
     mockedLinksEventSource.created.emit(linkCreatedDataEvent);
 

@@ -18,7 +18,7 @@ describe('ApiInformationService', () => {
       providers: [ApiInformationService, {provide: HttpClient, useValue: spy}],
     });
     httpClientSpy = TestBed.inject(HttpClient) as jasmine.SpyObj<HttpClient>
-    httpClientSpy.get.and.returnValue(new Observable());
+    httpClientSpy.get.and.returnValue(EMPTY);
     apiService = TestBed.inject(ApiInformationService);
     controller = getTestController();
   });

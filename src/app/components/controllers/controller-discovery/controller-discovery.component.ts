@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { forkJoin, from } from 'rxjs';
-import { map } from 'rxjs//operators';
-import { Observable } from 'rxjs/Rx';
+import { forkJoin, from, of, Observable } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 import { Controller, ControllerProtocol } from '@models/controller';
 import { Version } from '@models/version';
 import { ControllerDatabase } from '@services/controller.database';
@@ -92,7 +91,7 @@ export class ControllerDiscoveryComponent implements OnInit {
     this.defaultControllers.forEach((testController) => {
       queries.push(
         this.isControllerAvailable(testController.host, testController.port).catch((err) => {
-          return Observable.of(null);
+          return of(null);
         })
       );
     });
@@ -109,7 +108,9 @@ export class ControllerDiscoveryComponent implements OnInit {
     const controller = new Controller();
     controller.host = ip;
     controller.port = port;
-    return this.versionService.get(controller).flatMap((version: Version) => Observable.of(controller));
+    return this.versionService.get(controller).pipe(
+      mergeMap((version: Version) => of(controller))
+    );
   }
 
   ignore(controller: Controller) {

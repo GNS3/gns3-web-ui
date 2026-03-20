@@ -70,7 +70,7 @@ describe('NodeDraggedComponent', () => {
       z: 0,
     };
     const draggedDataEvent = new DraggedDataEvent<MapNode>(mapNode, 0, 0);
-    spyOn(mockedNodeService, 'updatePosition').and.returnValue(Observable.of());
+    spyOn(mockedNodeService, 'updatePosition').and.returnValue(of());
 
     mockedNodesEventSource.dragged.emit(draggedDataEvent);
 

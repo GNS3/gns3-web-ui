@@ -22,7 +22,7 @@ export class ResourcePoolsService {
   }
 
   get(controller: Controller, poolId: string): Observable<ResourcePool> {
-    return Observable.forkJoin([
+    return forkJoin([
       this.httpController.get<ResourcePool>(controller, `/pools/${poolId}`),
       this.httpController.get<Resource[]>(controller, `/pools/${poolId}/resources`),
     ]).pipe(map(results => {
@@ -66,7 +66,7 @@ export class ResourcePoolsService {
   private getAllNonFreeResources(controller: Controller) {
     return this.getAll(controller)
       .pipe(switchMap((resourcesPools) => {
-        return Observable.forkJoin(
+        return forkJoin(
           resourcesPools.map((r) => this.httpController.get<Resource[]>(controller, `/pools/${r.resource_pool_id}/resources`),)
         )
       }),

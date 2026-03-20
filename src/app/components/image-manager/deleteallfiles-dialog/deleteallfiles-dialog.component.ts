@@ -37,7 +37,7 @@ export class DeleteAllImageFilesDialogComponent implements OnInit {
     this.deleteData.deleteFilesPaths.forEach(pathElement => {
       calls.push(this.imageService.deleteFile(this.deleteData.controller, pathElement.filename).pipe(catchError(error => of(error))))
     });
-    Observable.forkJoin(calls).subscribe(responses => {
+    forkJoin(calls).subscribe(responses => {
       this.deleteFliesDetails = responses.filter(x => x !== null)
       this.fileNotDeleted = responses.filter(x => x === null)
       this.isUsedFiles = true;

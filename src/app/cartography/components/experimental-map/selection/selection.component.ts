@@ -1,5 +1,6 @@
 import { AfterViewInit, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Observable, Subscription} from 'rxjs';
+import { fromEvent, combineLatest, Observable, Subscription } from 'rxjs';
+import { map, mergeMap, skipUntil, take, tap, startWith } from 'rxjs/operators';
 import { Rectangle } from '../../../models/rectangle';
 
 @Component({
@@ -27,7 +28,9 @@ export class SelectionComponent implements OnInit, AfterViewInit {
   ngOnInit() {}
 
   ngAfterViewInit() {
-    const down = Observable.fromEvent(this.svg, 'mousedown').do((e: MouseEvent) => e.preventDefault());
+    const down = fromEvent(this.svg, 'mousedown').pipe(
+      tap((e: MouseEvent) => e.preventDefault())
+    );
     down.subscribe((e: MouseEvent) => {
       if (e.target !== this.svg) {
         return;
@@ -42,49 +45,61 @@ export class SelectionComponent implements OnInit, AfterViewInit {
       this.ref.detectChanges();
     });
 
-    const up = Observable.fromEvent(document, 'mouseup').do((e: MouseEvent) => {
-      e.preventDefault();
-    });
+    const up = fromEvent(document, 'mouseup').pipe(
+      tap((e: MouseEvent) => {
+        e.preventDefault();
+      })
+    );
 
-    const mouseMove = Observable.fromEvent(document, 'mousemove').do((e: MouseEvent) => e.stopPropagation());
+    const mouseMove = fromEvent(document, 'mousemove').pipe(
+      tap((e: MouseEvent) => e.stopPropagation())
+    );
 
-    const scrollWindow = Observable.fromEvent(document, 'scroll').startWith({});
+    const scrollWindow = fromEvent(document, 'scroll').pipe(
+      startWith({})
+    );
 
-    const move = Observable.combineLatest([mouseMove, scrollWindow]);
+    const move = combineLatest([mouseMove, scrollWindow]);
 
-    const drag = down.mergeMap((md: MouseEvent) => {
-      return move
-        .map(([mm, s]) => mm)
-        .do((mm: MouseEvent) => {
-          if (!this.started) {
-            return;
-          }
-          this.visible = true;
-          this.width = mm.clientX - this.startX + window.scrollX;
-          this.height = mm.clientY - this.startY + window.scrollY;
+    const drag = down.pipe(
+      mergeMap((md: MouseEvent) => {
+        return move
+          .pipe(
+            map(([mm, s]) => mm),
+            tap((mm: MouseEvent) => {
+              if (!this.started) {
+                return;
+              }
+              this.visible = true;
+              this.width = mm.clientX - this.startX + window.scrollX;
+              this.height = mm.clientY - this.startY + window.scrollY;
 
-          this.ref.detectChanges();
+              this.ref.detectChanges();
 
-          this.selectedEvent([this.startX, this.startY], [this.width, this.height]);
-        })
-        .skipUntil(
-          up.take(1).do((e: MouseEvent) => {
-            if (!this.started) {
-              return;
-            }
-            this.visible = false;
-            this.started = false;
+              this.selectedEvent([this.startX, this.startY], [this.width, this.height]);
+            }),
+            skipUntil(
+              up.pipe(
+                take(1),
+                tap((e: MouseEvent) => {
+                  if (!this.started) {
+                    return;
+                  }
+                  this.visible = false;
+                  this.started = false;
 
-            
-            this.width = e.clientX - this.startX + window.scrollX;
-            this.height = e.clientY - this.startY + window.scrollY;
+                  this.width = e.clientX - this.startX + window.scrollX;
+                  this.height = e.clientY - this.startY + window.scrollY;
 
-            this.ref.detectChanges();
-            this.selectedEvent([this.startX, this.startY], [this.width, this.height]);
-          })
-        )
-        .take(1);
-    });
+                  this.ref.detectChanges();
+                  this.selectedEvent([this.startX, this.startY], [this.width, this.height]);
+                })
+              )
+            ),
+            take(1)
+          );
+      })
+    );
 
     this.draggable = drag.subscribe((e: MouseEvent) => {
       // this.cd.detectChanges();

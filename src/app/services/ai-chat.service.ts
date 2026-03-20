@@ -177,7 +177,7 @@ export class AiChatService {
     }).pipe(
       catchError(error => {
         this.isStreaming.next(false);
-        return throwError(error);
+        return throwError(() => error);
       })
     );
   }
@@ -197,7 +197,7 @@ export class AiChatService {
       catchError(error => {
         console.error('Failed to get sessions:', error);
         // Pass through the original error - it contains the server response
-        return throwError(error);
+        return throwError(() => error);
       })
     );
   }

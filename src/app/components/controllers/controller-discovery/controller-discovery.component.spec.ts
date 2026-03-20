@@ -51,7 +51,7 @@ describe('isAvailable', () => {
     const version = new Version();
     version.version = '2.1.8';
 
-    const getVersionSpy = spyOn(mockedVersionService, 'get').and.returnValue(Observable.of(version));
+    const getVersionSpy = spyOn(mockedVersionService, 'get').and.returnValue(of(version));
 
     component.isControllerAvailable('127.0.0.1', 3080).subscribe((s) => {
       expect(s.host).toEqual('127.0.0.1');
@@ -71,7 +71,7 @@ describe('isAvailable', () => {
     controller.port = 3080;
 
     const getVersionSpy = spyOn(mockedVersionService, 'get').and.returnValue(
-      Observable.throwError(new Error('controller is unavailable'))
+      throwError(() => new Error('controller is unavailable'))
     );
     let hasExecuted = false;
 
@@ -97,7 +97,7 @@ describe('discovery', () => {
       const controller = new Controller  ();
       controller.host = ip;
       controller.port = port;
-      return Observable.of(controller);
+      return of(controller);
     });
 
     component.discovery().subscribe((discovered) => {
@@ -119,7 +119,7 @@ describe('discoverFirstAvailableController', () => {
     (controller.host = '199.111.111.1'), (controller.port = 3333);
 
     spyOn(component, 'discovery').and.callFake(() => {
-      return Observable.of([controller]);
+      return of([controller]);
     });
   });
 

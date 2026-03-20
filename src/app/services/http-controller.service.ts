@@ -93,7 +93,7 @@ export class ControllerErrorHandler {
     //  window.location.reload();
     //}
 
-    return throwError(err);
+    return throwError(() => err);
   }
 }
 

@@ -72,7 +72,7 @@ describe('InterfaceLabelDraggedComponent', () => {
     mockedLinksDataSource = TestBed.get(LinksDataSource);
 
     spyOn(mockedLinksDataSource, 'get').and.returnValue(link);
-    spyOn(mockedLinkService, 'updateNodes').and.returnValue(Observable.of({}));
+    spyOn(mockedLinkService, 'updateNodes').and.returnValue(of({}));
 
     mockedLinksEventSource.interfaceDragged.emit(interfaceLabelDraggedDataEvent);
 
