@@ -4,7 +4,7 @@
 
 **分支**: `refactor/angular-material-theming`
 **基础分支**: `feat/ai-profile-management`
-**完成阶段**: 2 / 8
+**完成阶段**: 3 / 8
 
 ---
 
@@ -15,14 +15,14 @@
 | **阶段 0: 规划** | ✅ 完成 | `53f3e9c5` | 创建迁移计划文档 |
 | **阶段 1: 基础设施** | ✅ 完成 | `a9a26d33` | 搭建新主题系统 |
 | **阶段 2: AI Chat** | ✅ 完成 | `402982d0` | 迁移 AI Chat 组件 |
-| **阶段 3: 全局样式** | ⏳ 待开始 | - | 迁移 styles.scss |
+| **阶段 3: 全局样式** | ✅ 完成 | `64762438` | 迁移 styles.scss |
 | **阶段 4: Project Map** | ⏳ 待开始 | - | 迁移地图组件 |
 | **阶段 5: 其他组件** | ⏳ 待开始 | - | 迁移剩余组件 |
 | **阶段 6: 测试** | ⏳ 待开始 | - | 全面测试 |
 | **阶段 7: 文档** | ⏳ 待开始 | - | 更新文档 |
 | **阶段 8: 发布** | ⏳ 待开始 | - | 合并到主分支 |
 
-**完成度**: 25% (2/8 阶段)
+**完成度**: 37.5% (3/8 阶段)
 
 ---
 
@@ -63,6 +63,21 @@
 - ✅ 引入 `color-mix()` 函数
 - ✅ 统一动画系统
 
+### 阶段 3: 全局样式 (1 个文件)
+
+| 文件 | 改进 | 说明 |
+|------|------|------|
+| `src/styles.scss` | 50+ 硬编码替换 | 全局样式覆盖 |
+
+**关键成就**:
+- ✅ 迁移 Snackbar 样式（success, warning, error）
+- ✅ 迁移 Menu 和 Tooltip 样式
+- ✅ 迁移 Tab 样式
+- ✅ 迁移 Link hover 效果
+- ✅ 迁移 AI Chat 图标颜色（菜单和侧边栏）
+- ✅ 所有全局覆盖使用设计 Token
+- ✅ 支持新旧主题类名（`.lightTheme` 和 `.theme-light`）
+
 ---
 
 ## 📈 技术指标
@@ -72,76 +87,74 @@
 | 指标 | 迁移前 | 迁移后 | 改进 |
 |------|--------|--------|------|
 | **CSS 变量数量** | 10 | 500+ | **+4900%** |
-| **硬编码颜色** | 100+ | 0 | **-100%** |
-| **硬编码间距** | 50+ | 0 | **-100%** |
-| **硬编码圆角** | 20+ | 0 | **-100%** |
+| **硬编码颜色** | 100+ | ~70 | **-30%** |
+| **硬编码间距** | 50+ | ~30 | **-40%** |
+| **硬编码圆角** | 20+ | ~15 | **-25%** |
 | **TypeScript 支持** | ❌ | ✅ | **新增** |
-| **主题一致性** | 低 | 高 | **显著提升** |
+| **主题一致性** | 低 | 中高 | **显著提升** |
+
+**注**: 当前仅迁移了 AI Chat 和全局样式，硬编码值将在后续阶段继续减少
 
 ### 文件统计
 
 ```
-新增文件: 5 个
+新增文件: 8 个
   - MIGRATION_PLAN.md
   - MIGRATION_GUIDE.md
   - MIGRATION_QUICK_REF.md
   - PHASE1_COMPLETE.md
   - PHASE2_COMPLETE.md
+  - PHASE3_COMPLETE.md
   - src/styles/theme-v2.scss
   - src/styles/design-tokens.scss
 
-修改文件: 3 个
+修改文件: 4 个
   - angular.json
   - src/app/services/theme.service.ts
   - src/app/components/project-map/ai-chat/ai-chat.component.scss
   - src/app/components/project-map/ai-chat/chat-message-list.component.scss
+  - src/styles.scss
 
-总代码行数: +1,500 行
-总文档行数: +2,000 行
+总代码行数: +1,700 行
+总文档行数: +2,500 行
 ```
 
 ---
 
 ## 🎯 下一步工作
 
-### 阶段 3: 全局样式迁移
+### 阶段 4: Project Map 组件迁移
 
-**目标**: 迁移 `src/styles.scss`
+**目标**: 迁移 Project Map 相关组件（3 个文件）
 
 **任务清单**:
-- [ ] 分析现有全局样式（251 行）
-- [ ] 迁移 Snackbar 样式
-  - [ ] `.snackabar-success`
-  - [ ] `.uplaoding-file-snackabar`
-  - [ ] `.snackbar-warning`
-  - [ ] `.snackbar-error`
-- [ ] 迁移 Menu 样式
-  - [ ] `.menu-item-icon`
-  - [ ] 菜单悬停效果
-- [ ] 迁移 Tooltip 样式
-  - [ ] `.custom-tooltip`
-  - [ ] `.permission-tooltip`
-- [ ] 迁移其他全局样式
-  - [ ] `.mat-dialog-actions`
-  - [ ] `.full-width-field`
-  - [ ] 等等...
+- [ ] 分析 Project Map 组件样式
+  - [ ] `project-map.component.scss` (400+ 行)
+  - [ ] `d3-map.component.scss` (200+ 行)
+  - [ ] `web-console.component.scss` (100+ 行)
+- [ ] 迁移地图容器样式
+- [ ] 迁移节点样式
+- [ ] 迁移链接样式
+- [ ] 迁移控制台样式
 
 **预期改进**:
-- 减少 `!important` 使用（当前 25+ 处）
-- 统一全局组件样式
-- 提高样式一致性
+- 统一地图和节点颜色
+- 使用主题色代替硬编码值
+- 提高深色/浅色主题一致性
 
-**预计时间**: 2-3 天
+**预计时间**: 3-4 天
 
 ---
 
 ## 📝 提交历史
 
 ```
+64762438 feat: migrate global styles to Angular Material 14 theming system (Phase 3)
 50d701b6 docs: add Phase 2 completion report
 402982d0 feat(ai-chat): migrate to Angular Material 14+ theming (Phase 2)
 c089c2da docs: add Phase 1 completion report
 a9a26d33 feat: implement Angular Material 14+ theme system (Phase 1)
+caf06d50 fix: resolve Angular 14 compatibility issues for build
 53f3e9c5 docs: add Angular Material theming migration plan and guide
 ```
 
@@ -265,21 +278,21 @@ git push origin master
 
 ## ✨ 总结
 
-**当前状态**: 阶段 2 完成，进度 25%
+**当前状态**: 阶段 3 完成，进度 37.5%
 
 **已完成**:
 - ✅ 完整的迁移计划
 - ✅ 新主题基础设施
 - ✅ AI Chat 组件迁移
+- ✅ 全局样式迁移
 - ✅ 零破坏性更改
 - ✅ TypeScript 类型安全
 
 **下一步**:
-- ⏳ 阶段 3: 全局样式迁移
-- ⏳ 阶段 4: Project Map 迁移
+- ⏳ 阶段 4: Project Map 组件迁移
 - ⏳ 阶段 5-8: 其他组件、测试、文档
 
-**预计完成时间**: 6-8 周
+**预计完成时间**: 5-7 周
 
 ---
 
