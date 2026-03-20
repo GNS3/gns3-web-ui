@@ -9,6 +9,36 @@
   padding-top: 0px;
 }
 
+// Default header and form background
+.default-header {
+  background-color: var(--gns3-surface-light, #ffffff);
+}
+
+form {
+  background-color: var(--gns3-surface-light, #ffffff);
+  padding: var(--gns3-spacing-sm, 10px) var(--gns3-spacing-md, 20px);
+}
+
+.light .default-header,
+.theme-light .default-header {
+  background-color: #ffffff;
+}
+
+.dark .default-header,
+.theme-dark .default-header {
+  background-color: var(--gns3-surface, #263238);
+}
+
+.light form,
+.theme-light form {
+  background-color: #ffffff;
+}
+
+.dark form,
+.theme-dark form {
+  background-color: var(--gns3-surface, #263238);
+}
+
 .button {
   margin: var(--gns3-spacing-md, 20px) !important;
 }
