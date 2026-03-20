@@ -27,6 +27,7 @@ export class SelectionTool {
 
   private activate(selection) {
     const self = this;
+    const svgNode = selection.node();
 
     selection.on('mousedown', function (event: any) {
       // prevent deselection on right click
@@ -40,9 +41,7 @@ export class SelectionTool {
       }
 
       const subject = select(window);
-      const parent = this.parentElement;
-
-      const start = self.transformation(pointer(parent, event));
+      const start = self.transformation(pointer(event, svgNode));
       self.startSelection(start);
 
       // clear selection
@@ -50,11 +49,11 @@ export class SelectionTool {
 
       subject
         .on('mousemove.selection', function (event: any) {
-          const end = self.transformation(pointer(parent, event));
+          const end = self.transformation(pointer(event, svgNode));
           self.moveSelection(start, end);
         })
         .on('mouseup.selection', function (event: any) {
-          const end = self.transformation(pointer(parent, event));
+          const end = self.transformation(pointer(event, svgNode));
           self.endSelection(start, end);
           subject.on('mousemove.selection', null).on('mouseup.selection', null);
         });
