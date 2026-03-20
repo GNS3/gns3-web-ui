@@ -15,7 +15,7 @@
       margin: 0;
       font-size: 18px;
       font-weight: 600;
-      color: #1976d2;
+      color: var(--mat-app-primary-color);
     }
   }
 
@@ -47,29 +47,29 @@
       margin-top: 8px;
       margin-left: 28px;
       font-size: 13px;
-      color: #757575;
+      color: var(--mat-app-on-surface-variant-color);
     }
   }
 
   .option-hint {
-    color: #757575;
+    color: var(--mat-app-on-surface-variant-color);
     font-size: 12px;
   }
 
   .existing-key-hint {
-    color: #1976d2;
+    color: var(--mat-app-primary-color);
     font-size: 13px;
   }
 
   .warning-hint {
-    color: #757575;
+    color: var(--mat-app-on-surface-variant-color);
     font-size: 13px;
   }
 
   .custom-fields-section {
     margin-top: 16px;
     padding-top: 16px;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid var(--mat-app-outline-variant-color);
 
     .section-header {
       display: flex;
@@ -81,7 +81,7 @@
         margin: 0;
         font-size: 16px;
         font-weight: 500;
-        color: #424242;
+        color: var(--mat-app-on-surface-color);
       }
 
       button {
@@ -118,11 +118,11 @@
 
         &:hover::before {
           opacity: 1;
-          background-color: #e3f2fd;
+          background-color: var(--mat-app-primary-container-color);
         }
 
         &:hover mat-icon {
-          color: #1976d2;
+          color: var(--mat-app-primary-color);
           transform: scale(1.1);
         }
       }
@@ -134,7 +134,7 @@
       .reserved-field-hint {
         margin: 0;
         font-size: 13px;
-        color: #757575;
+        color: var(--mat-app-on-surface-variant-color);
         font-style: italic;
       }
     }
@@ -194,7 +194,7 @@
 
           &.delete-btn:hover::before {
             opacity: 1;
-            background-color: #ffebee;
+            background-color: var(--mat-app-error-container-color);
           }
 
           &:hover mat-icon {
@@ -210,7 +210,7 @@
       align-items: center;
       justify-content: center;
       padding: 24px;
-      color: #757575;
+      color: var(--mat-app-on-surface-variant-color);
       text-align: center;
 
       .empty-icon {
@@ -268,11 +268,11 @@
         font-size: 20px;
         height: 20px;
         width: 20px;
-        color: #757575;
+        color: var(--mat-app-on-surface-variant-color);
       }
 
       &:hover mat-icon {
-        color: #1976d2;
+        color: var(--mat-app-primary-color);
       }
     }
   }
@@ -291,7 +291,7 @@
 
       .model-desc {
         font-size: 12px;
-        color: #757575;
+        color: var(--mat-app-on-surface-variant-color);
         margin-top: 2px;
       }
     }
@@ -301,13 +301,13 @@
       gap: 12px;
       padding: 12px;
       margin-top: 16px;
-      background: #ffffff;
-      border: 1px solid #e0e0e0;
+      background: var(--mat-app-surface-container-color);
+      border: 1px solid var(--mat-app-outline-variant-color);
       border-radius: 8px;
 
       .info-icon {
         flex-shrink: 0;
-        color: #757575;
+        color: var(--mat-app-on-surface-variant-color);
         font-size: 20px;
         height: 20px;
         width: 20px;
@@ -317,12 +317,12 @@
       p {
         margin: 0;
         font-size: 13px;
-        color: #616161;
+        color: var(--mat-app-on-surface-variant-color);
         line-height: 1.5;
 
         strong {
           font-weight: 500;
-          color: #424242;
+          color: var(--mat-app-on-surface-color);
         }
       }
     }

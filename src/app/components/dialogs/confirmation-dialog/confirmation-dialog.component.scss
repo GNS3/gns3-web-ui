@@ -8,9 +8,9 @@
 .dialog-container {
   position: relative;
   overflow: hidden;
-  animation: dialogSlideIn var(--gns3-duration-normal, 0.3s) ease-out;
-  border-radius: var(--gns3-radius-lg, 16px);
-  box-shadow: var(--gns3-shadow-xl, 0 8px 32px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.12));
+  animation: dialogSlideIn var(--gns3-duration-normal) ease-out;
+  border-radius: var(--gns3-radius-lg);
+  box-shadow: var(--gns3-shadow-xl);
   background-color: var(--gns3-dialog-bg-dark);
 }
 
@@ -29,12 +29,12 @@
 .dialog-header {
   display: flex;
   align-items: center;
-  gap: var(--gns3-spacing-sm, 10px);
-  padding: var(--gns3-spacing-lg, 16px) var(--gns3-spacing-xl, 20px) var(--gns3-spacing-md, 12px);
-  background: linear-gradient(135deg, rgba(244, 67, 54, 0.06), rgba(244, 67, 54, 0.02));
-  border-bottom: 1px solid rgba(244, 67, 54, 0.15);
+  gap: var(--gns3-spacing-sm);
+  padding: var(--gns3-spacing-lg) var(--gns3-spacing-xl) var(--gns3-spacing-md);
+  background: var(--mat-app-error-container-color);
+  border-bottom: 1px solid var(--mat-app-outline-variant-color);
   margin-bottom: 4px;
-  border-radius: var(--gns3-radius-lg, 16px) var(--gns3-radius-lg, 16px) 0 0;
+  border-radius: var(--gns3-radius-lg) var(--gns3-radius-lg) 0 0;
 }
 
 .dialog-icon {
@@ -51,8 +51,8 @@
 }
 
 .dialog-title {
-  font-size: var(--gns3-font-size-base, 17px);
-  font-weight: var(--gns3-font-weight-semibold, 600);
+  font-size: var(--gns3-font-size-base);
+  font-weight: var(--gns3-font-weight-semibold);
   color: var(--mat-app-on-surface);
   margin: 0;
   letter-spacing: -0.2px;
@@ -60,11 +60,11 @@
 
 /* Content */
 .dialog-content {
-  padding: var(--gns3-spacing-sm, 8px) var(--gns3-spacing-xl, 20px) var(--gns3-spacing-lg, 16px);
+  padding: var(--gns3-spacing-sm) var(--gns3-spacing-xl) var(--gns3-spacing-lg);
 }
 
 .dialog-message {
-  font-size: var(--gns3-font-size-sm, 14px);
+  font-size: var(--gns3-font-size-sm);
   color: var(--mat-app-on-surface-variant);
   margin: 0;
   line-height: 1.5;
@@ -73,10 +73,10 @@
 
 /* Actions */
 .dialog-actions {
-  padding: var(--gns3-spacing-md, 12px) var(--gns3-spacing-xl, 20px) var(--gns3-spacing-xl, 20px);
+  padding: var(--gns3-spacing-md) var(--gns3-spacing-xl) var(--gns3-spacing-xl);
   display: flex;
   justify-content: center;
-  gap: var(--gns3-spacing-sm, 10px);
+  gap: var(--gns3-spacing-sm);
 }
 
 .cancel-button,
@@ -84,11 +84,11 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 7px var(--gns3-spacing-lg, 16px);
-  border-radius: var(--gns3-radius-md, 12px);
-  font-weight: var(--gns3-font-weight-medium, 500);
-  font-size: var(--gns3-font-size-xs, 13px);
-  transition: all var(--gns3-duration-fast, 0.2s) ease;
+  padding: 7px var(--gns3-spacing-lg);
+  border-radius: var(--gns3-radius-md);
+  font-weight: var(--gns3-font-weight-medium);
+  font-size: var(--gns3-font-size-xs);
+  transition: all var(--gns3-duration-fast) ease;
   position: relative;
   overflow: hidden;
   min-width: 70px;
@@ -98,12 +98,12 @@
 .cancel-button {
   color: var(--mat-app-primary-color);
   background: transparent;
-  border: 1px solid rgba(0, 151, 167, 0.25);
+  border: 1px solid var(--mat-app-outline-color);
 }
 
 .cancel-button:hover {
-  background: rgba(0, 151, 167, 0.06);
-  border-color: rgba(0, 151, 167, 0.4);
+  background: var(--mat-app-primary-container-color);
+  border-color: var(--mat-app-primary-color);
   transform: translateY(-1px);
   box-shadow: 0 3px 10px rgba(0, 151, 167, 0.12);
 }
@@ -113,20 +113,21 @@
 }
 
 .cancel-button .button-icon {
-  font-size: var(--gns3-font-size-base, 16px);
-  width: var(--gns3-font-size-base, 16px);
-  height: var(--gns3-font-size-base, 16px);
+  font-size: var(--gns3-font-size-base);
+  width: var(--gns3-font-size-base);
+  height: var(--gns3-font-size-base);
 }
 
 .confirm-button {
-  background: linear-gradient(135deg, var(--mat-app-error-color), #e53935);
-  color: white;
+  background: var(--mat-app-error-color);
+  color: var(--mat-app-on-error-color);
   border: none;
   box-shadow: 0 2px 6px rgba(244, 67, 54, 0.25);
 }
 
 .confirm-button:hover {
-  background: linear-gradient(135deg, #e53935, #d32f2f);
+  background: var(--mat-app-error-color);
+  opacity: 0.9;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(244, 67, 54, 0.35);
 }
@@ -151,9 +152,9 @@
 }
 
 .confirm-button .button-icon {
-  font-size: var(--gns3-font-size-base, 16px);
-  width: var(--gns3-font-size-base, 16px);
-  height: var(--gns3-font-size-base, 16px);
+  font-size: var(--gns3-font-size-base);
+  width: var(--gns3-font-size-base);
+  height: var(--gns3-font-size-base);
 }
 
 /* Ripple effect */
@@ -166,7 +167,8 @@
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
+  background: currentColor;
+  opacity: 0.4;
   transform: translate(-50%, -50%);
   transition: width 0.6s, height 0.6s;
 }

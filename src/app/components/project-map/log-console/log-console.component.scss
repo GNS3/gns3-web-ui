@@ -7,21 +7,21 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
-  background: #000000;
-  color: white;
+  background: var(--mat-app-background-color);
+  color: var(--mat-app-on-background-color);
   overflow: hidden;
   font-size: var(--gns3-font-size-xs);
 }
 
 .consoleWrapper.lightTheme,
 .consoleWrapper.theme-light {
-  background: white;
-  color: black;
+  background: var(--mat-app-background-color);
+  color: var(--mat-app-on-background-color);
 }
 
 .filterButton {
   background: transparent;
-  color: #dbd5d5;
+  color: var(--mat-app-on-surface-variant-color);
   border: none;
   margin-top: 0;
   outline: none;
@@ -41,7 +41,7 @@
   display: flex;
   padding: var(--gns3-spacing-xs) var(--gns3-spacing-sm);
   justify-content: space-between;
-  background: #1a1a1a;
+  background: var(--gns3-surface);
   flex-shrink: 0;
 }
 
@@ -49,13 +49,13 @@
   flex: 1;
   overflow-y: auto;
   padding: var(--gns3-spacing-sm);
-  color: #f0f0f0;
+  color: var(--mat-app-on-surface-color);
   font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
   font-size: var(--gns3-font-size-sm);
   line-height: 1.4;
-  scrollbar-color: darkgrey #1a1a1a;
+  scrollbar-color: var(--mat-app-on-surface-variant-color) var(--gns3-surface);
   scrollbar-width: thin;
-  background: #000000;
+  background: var(--mat-app-background-color);
 }
 
 .consoleInput {
@@ -63,13 +63,13 @@
   height: 32px;
   padding: var(--gns3-spacing-xs) var(--gns3-spacing-sm);
   display: flex;
-  background: #1a1a1a;
+  background: var(--gns3-surface);
   flex-shrink: 0;
 }
 
 .commandLine {
   background-color: transparent;
-  color: #f0f0f0;
+  color: var(--mat-app-on-surface-color);
   border: none;
   font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
   font-size: var(--gns3-font-size-sm);
@@ -94,11 +94,11 @@ input:focus {
 }
 
 ::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: inset 0 0 6px var(--mat-app-shadow-color);
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: darkgrey;
+  background-color: var(--mat-app-on-surface-variant-color);
 }
 
 .closeButton {

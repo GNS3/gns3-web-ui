@@ -15,8 +15,8 @@
   left: 80px;
   height: 180px;
   width: 600px;
-  background: #000000;
-  color: white;
+  background: var(--mat-app-background-color);
+  color: var(--mat-app-on-background-color);
   overflow: hidden;
   font-size: var(--gns3-font-size-xs);
   border-radius: var(--gns3-radius-sm);
@@ -25,8 +25,8 @@
 
   &.console-active {
     box-shadow: var(--gns3-shadow-lg),
-                0 0 0 2px rgba(0, 151, 167, 0.6),
-                0 0 12px rgba(0, 151, 167, 0.3);
+                0 0 0 2px var(--gns3-cyan),
+                0 0 12px var(--gns3-cyan);
   }
 
   &:focus {
@@ -36,13 +36,13 @@
 
 .consoleWrapper.lightTheme,
 .consoleWrapper.theme-light {
-  background: white;
-  color: black;
+  background: var(--mat-app-background-color);
+  color: var(--mat-app-on-background-color);
 }
 
 .filterButton {
   background: transparent;
-  color: #dbd5d5;
+  color: var(--mat-app-on-surface-variant-color);
   border: none;
   margin-top: 0;
   outline: none;
@@ -61,7 +61,7 @@
   display: flex;
   padding: 2px;
   justify-content: space-between;
-  background: #263238;
+  background: var(--gns3-surface);
   cursor: grab;
   position: relative;
   z-index: 10;
@@ -79,47 +79,48 @@
     border-radius: 50%;
 
     &:hover {
-      background-color: rgba(0, 151, 167, 0.15);
+      background-color: var(--mat-app-hover-state-layer-color);
       transform: scale(1.1);
-      box-shadow: 0 2px 8px rgba(0, 151, 167, 0.2);
+      box-shadow: 0 2px 8px var(--gns3-cyan);
 
       mat-icon {
-        color: #4dd0e1;
-        filter: drop-shadow(0 0 4px rgba(0, 151, 167, 0.6));
+        color: var(--gns3-cyan-light);
+        filter: drop-shadow(0 0 4px var(--gns3-cyan));
       }
     }
 
     &:active {
       transform: scale(0.95);
-      background-color: rgba(0, 151, 167, 0.25);
+      background-color: var(--mat-app-focus-state-layer-color);
     }
   }
 
   /* Close button special hover effect (red tint) */
   .mat-icon-button[title="Close"]:hover,
   .mat-icon-button[title~="close"]:hover {
-    background-color: rgba(244, 67, 54, 0.15);
-    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.2);
+    background-color: var(--mat-app-error-container-color);
+    box-shadow: 0 2px 8px var(--mat-app-error-color);
 
     mat-icon {
-      color: #ff8a80;
-      filter: drop-shadow(0 0 4px rgba(244, 67, 54, 0.6));
+      color: var(--mat-app-error-color);
+      filter: drop-shadow(0 0 4px var(--mat-app-error-color));
     }
 
     &:active {
-      background-color: rgba(244, 67, 54, 0.25);
+      background-color: var(--mat-app-error-color);
+      opacity: 0.8;
     }
   }
 }
 
 .lightThemeConsoleHeader,
 .theme-lightConsoleHeader {
-  background: white;
-  color: black;
+  background: var(--mat-app-background-color);
+  color: var(--mat-app-on-background-color);
 
   .mat-icon-button {
     &:hover {
-      background-color: rgba(0, 151, 167, 0.1);
+      background-color: var(--mat-app-hover-state-layer-color);
 
       mat-icon {
         color: var(--mat-app-primary-color);
@@ -128,21 +129,22 @@
     }
 
     &:active {
-      background-color: rgba(0, 151, 167, 0.2);
+      background-color: var(--mat-app-focus-state-layer-color);
     }
   }
 
   /* Close button hover in light theme */
   .mat-icon-button[title="Close"]:hover,
   .mat-icon-button[title~="close"]:hover {
-    background-color: rgba(244, 67, 54, 0.1);
+    background-color: var(--mat-app-error-container-color);
 
     mat-icon {
-      color: #d32f2f;
+      color: var(--mat-app-error-color);
     }
 
     &:active {
-      background-color: rgba(244, 67, 54, 0.2);
+      background-color: var(--mat-app-error-color);
+      opacity: 0.8;
     }
   }
 }
@@ -187,13 +189,13 @@
   height: 120px;
   overflow-y: scroll;
   padding: 2px;
-  color: #dbd5d5;
-  scrollbar-color: darkgrey #263238;
+  color: var(--mat-app-on-surface-variant-color);
+  scrollbar-color: var(--mat-app-on-surface-variant-color) var(--gns3-surface);
   scrollbar-width: thin;
 }
 
 .xterm-console {
-  background: black;
+  background: var(--mat-app-background-color);
 }
 
 .consoleInput {
@@ -205,7 +207,7 @@
 
 .commandLine {
   background-color: transparent;
-  color: white;
+  color: var(--mat-app-on-background-color);
   border: none;
 }
 
@@ -228,11 +230,11 @@ input:focus {
 }
 
 ::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: inset 0 0 6px var(--mat-app-shadow-color);
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: darkgrey;
+  background-color: var(--mat-app-on-surface-variant-color);
 }
 
 .closeButton {

@@ -11,10 +11,10 @@ mat-menu-panel {
 
 .dark,
 .theme-dark {
-  background: var(--gns3-surface, #263238) !important;
+  background: var(--gns3-surface);
 }
 
 .light,
 .theme-light {
-  background: white !important;
+  background: var(--mat-app-background-color);
 }

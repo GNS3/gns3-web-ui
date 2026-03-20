@@ -58,7 +58,7 @@
     border-radius: 50%;
     border: none;
     box-shadow: var(--mdc-elevated-card-container-elevation),
-                0 0 15px rgba(0, 151, 167, 0.4);
+                0 0 15px var(--gns3-cyan);
     backdrop-filter: none;
 
     &::before {
@@ -134,7 +134,7 @@
   &:hover {
     mat-icon {
       transform: scale(1.2);
-      filter: drop-shadow(0 0 6px rgba(0, 151, 167, 0.6));
+      filter: drop-shadow(0 0 6px var(--gns3-cyan));
     }
   }
 
@@ -228,7 +228,7 @@
 
 .sidebar-title.clickable:hover .ai-logo {
   transform: scale(1.08);
-  box-shadow: 0 4px 15px rgba(0, 151, 167, 0.5);
+  box-shadow: 0 4px 15px var(--gns3-cyan);
 
   &::after {
     transform: translateX(100%);
@@ -335,7 +335,7 @@
       width: 0;
       height: 0;
       border-radius: 50%;
-      background: rgba(0, 151, 167, 0.3);
+      background: var(--gns3-cyan);
       transform: translate(-50%, -50%);
       transition: width var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing),
                   height var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing);
@@ -366,7 +366,7 @@
 
     .header-icon {
       fill: var(--mat-app-primary-color);
-      filter: drop-shadow(0 0 6px rgba(0, 151, 167, 0.8));
+      filter: drop-shadow(0 0 6px var(--gns3-cyan));
     }
   }
 
@@ -380,7 +380,7 @@
     box-shadow: 0 0 10px color-mix(in srgb, var(--mat-app-error-color) / 0.4, transparent);
 
     .header-icon {
-      fill: #ff8a80;
+      fill: var(--mat-app-error-color);
     }
   }
 }
@@ -403,7 +403,7 @@
     var(--mat-app-surface-color)
   );
   box-shadow: var(--mdc-elevated-card-container-elevation),
-              0 0 20px rgba(0, 151, 167, 0.3);
+              0 0 20px var(--gns3-cyan);
   transition: all var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing);
   animation: bounceIn var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing);
   position: relative;
@@ -421,23 +421,25 @@
     border-radius: 50%;
     background: radial-gradient(
       circle,
-      rgba(0, 151, 167, 0.3) 0%,
+      var(--gns3-cyan) 0%,
       transparent 70%
     );
+    opacity: 0.3;
     animation: pulse 2s ease-in-out infinite;
   }
 
   &:hover {
     transform: scale(1.15);
     box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-app-background-color) / 0.6, transparent),
-                0 0 30px rgba(0, 151, 167, 0.5);
+                0 0 30px var(--gns3-cyan);
 
     &::before {
       background: radial-gradient(
         circle,
-        rgba(0, 151, 167, 0.5) 0%,
+        var(--gns3-cyan) 0%,
         transparent 70%
       );
+      opacity: 0.5;
     }
   }
 

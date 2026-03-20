@@ -12,13 +12,13 @@ app-chat-message-list markdown p,
 app-chat-message-list markdown ul,
 app-chat-message-list markdown ol,
 app-chat-message-list markdown li {
-  margin-top: 0.1em !important;
-  margin-bottom: 0.1em !important;
-  line-height: 1.2 !important;
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+  line-height: 1.2;
 }
 
 app-chat-message-list markdown li p {
-  margin: 0 !important;
+  margin: 0;
 }
 
 /* body background-color is now controlled dynamically by ThemeService and applyMapBackground() */
@@ -44,28 +44,28 @@ a.table-link {
 // Snackbar Styles
 // ============================================= */
 .snackabar-success {
-  background: var(--mat-app-primary-color) !important;
-  color: var(--mat-app-on-primary-color) !important;
+  background: var(--mat-app-primary-color);
+  color: var(--mat-app-on-primary-color);
   font-weight: var(--gns3-font-weight-medium);
 }
 
 .uplaoding-file-snackabar {
-  background: var(--gns3-surface) !important;
-  color: var(--mat-app-on-surface-color) !important;
-  max-width: 80% !important;
+  background: var(--gns3-surface);
+  color: var(--mat-app-on-surface-color);
+  max-width: 80%;
   font-weight: var(--gns3-font-weight-medium);
 }
 
 .snackbar-warning {
-  background: var(--gns3-color-warning, rgb(197, 199, 64)) !important;
-  color: var(--mat-app-on-warning-color, #ffffff) !important;
+  background: var(--gns3-color-warning);
+  color: var(--mat-app-on-warning-color);
   font-weight: var(--gns3-font-weight-medium);
 }
 
 .snackbar-error {
-  background: var(--mat-app-error-color) !important;
-  color: var(--mat-app-on-error-color) !important;
-  white-space: pre-wrap !important;
+  background: var(--mat-app-error-color);
+  color: var(--mat-app-on-error-color);
+  white-space: pre-wrap;
   font-weight: var(--gns3-font-weight-medium);
 }
 
@@ -73,7 +73,7 @@ a.table-link {
 // Dialog Styles
 // ============================================= */
 .mat-dialog-actions {
-  margin-bottom: calc(-1 * var(--gns3-spacing-md)) !important;
+  margin-bottom: calc(-1 * var(--gns3-spacing-md));
 }
 
 /* =============================================
@@ -109,11 +109,11 @@ mat-menu-panel {
 }
 
 .permission-tooltip {
-  max-width: unset !important;
+  max-width: unset;
   background-color: var(--mat-app-tooltip-container-color);
   color: var(--mat-app-on-tooltip-container-color);
   white-space: pre-line;
-  font-size: var(--gns3-font-size-xs) !important;
+  font-size: var(--gns3-font-size-xs);
   font-family: var(--gns3-font-family-mono);
 }
 
@@ -122,20 +122,20 @@ mat-menu-panel {
 // ============================================= */
 .mat-tab-body-content {
   height: 100%;
-  overflow: initial !important;
+  overflow: initial;
 }
 
 .mat-tab-body.mat-tab-body-active {
-  overflow-y: clip !important;
+  overflow-y: clip;
 }
 
 .mat-tab-label {
-  padding: 0 var(--gns3-spacing-sm) !important;
-  min-width: var(--gns3-tab-min-width, 152px) !important;
+  padding: 0 var(--gns3-spacing-sm);
+  min-width: var(--gns3-tab-min-width, 152px);
 }
 
 .mat-tab-header-pagination-controls-enabled .mat-tab-header-pagination {
-  display: none !important;
+  display: none;
 }
 
 /* =============================================
@@ -149,9 +149,9 @@ mat-menu-panel {
 
 .ethernet_link:hover,
 .serial_link:hover {
-  stroke-width: var(--gns3-link-hover-width, 4px) !important;
+  stroke-width: var(--gns3-link-hover-width, 4px);
   cursor: pointer;
-  stroke: var(--mat-app-error-color) !important;
+  stroke: var(--mat-app-error-color);
 }
 
 /* =============================================
@@ -170,7 +170,7 @@ mat-menu-panel {
 
 /* Dark theme (default) - high contrast icons for AI Chat menus */
 .mat-menu-panel .menu-item-icon {
-  fill: var(--mat-app-on-surface-color) !important;
+  fill: var(--mat-app-on-surface-color);
   flex-shrink: 0;
   vertical-align: middle;
   transition: fill var(--gns3-duration-fast) var(--gns3-easing-default);
@@ -184,32 +184,32 @@ mat-menu-panel {
 }
 
 .mat-menu-panel .delete-icon {
-  fill: var(--mat-app-error-color) !important;
+  fill: var(--mat-app-error-color);
 }
 
 .mat-menu-panel .mat-menu-item:hover .menu-item-icon {
-  fill: var(--gns3-color-success, #10a37f) !important;
+  fill: var(--gns3-color-success);
 }
 
 .mat-menu-panel .mat-menu-item:hover .delete-icon {
-  fill: var(--mat-app-error-color) !important;
+  fill: var(--mat-app-error-color);
   filter: brightness(1.2);
 }
 
 /* Light theme override */
 .lightTheme .mat-menu-panel .menu-item-icon,
 .theme-light .mat-menu-panel .menu-item-icon {
-  fill: var(--mat-app-on-surface-color) !important;
+  fill: var(--mat-app-on-surface-color);
 }
 
 .lightTheme .mat-menu-panel .delete-icon,
 .theme-light .mat-menu-panel .delete-icon {
-  fill: #d32f2f !important;
+  fill: var(--mat-app-error-color);
 }
 
 .lightTheme .mat-menu-panel .mat-menu-item:hover .menu-item-icon,
 .theme-light .mat-menu-panel .mat-menu-item:hover .menu-item-icon {
-  fill: var(--mat-app-primary-color) !important;
+  fill: var(--mat-app-primary-color);
 }
 
 /* =============================================
@@ -220,37 +220,37 @@ mat-menu-panel {
 /* Menu icon (three dots) in session list */
 .ai-chat-container .menu-icon,
 .mat-menu-panel .menu-icon {
-  fill: var(--mat-app-on-surface-variant-color) !important;
+  fill: var(--mat-app-on-surface-variant-color);
   transition: fill var(--gns3-duration-fast) var(--gns3-easing-default);
 }
 
 /* Session list icon (New Chat +) */
 .ai-chat-container .session-list-icon {
-  fill: var(--mat-app-on-surface-color) !important;
+  fill: var(--mat-app-on-surface-color);
   transition: fill var(--gns3-duration-fast) var(--gns3-easing-default);
 }
 
 /* Session icon (chat bubble) */
 .ai-chat-container .session-icon {
-  fill: rgba(255, 255, 255, 0.6) !important;
+  fill: rgba(255, 255, 255, 0.6);
   transition: fill var(--gns3-duration-fast) var(--gns3-easing-default);
 }
 
 /* Pin icon */
 .ai-chat-container .pin-icon {
-  fill: var(--gns3-color-success, #10a37f) !important;
+  fill: var(--gns3-color-success);
 }
 
 /* No sessions icon */
 .ai-chat-container .no-sessions-icon {
-  fill: rgba(255, 255, 255, 0.3) !important;
+  fill: rgba(255, 255, 255, 0.3);
 }
 
 /* Hover effects for sidebar icons */
 .ai-chat-container .new-session-button:hover .session-list-icon,
 .ai-chat-container .session-item:hover .session-icon,
 .ai-chat-container .session-menu-button:hover .menu-icon {
-  fill: var(--mat-app-on-surface-color) !important;
+  fill: var(--mat-app-on-surface-color);
 }
 
 /* Light theme override for sidebar icons */
@@ -260,17 +260,17 @@ mat-menu-panel {
 .theme-light .ai-chat-container .menu-icon,
 .theme-light .ai-chat-container .session-list-icon,
 .theme-light .ai-chat-container .session-icon {
-  fill: rgba(0, 0, 0, 0.6) !important;
+  fill: rgba(0, 0, 0, 0.6);
 }
 
 .lightTheme .ai-chat-container .pin-icon,
 .theme-light .ai-chat-container .pin-icon {
-  fill: var(--mat-app-primary-color) !important;
+  fill: var(--mat-app-primary-color);
 }
 
 .lightTheme .ai-chat-container .no-sessions-icon,
 .theme-light .ai-chat-container .no-sessions-icon {
-  fill: rgba(0, 0, 0, 0.3) !important;
+  fill: rgba(0, 0, 0, 0.3);
 }
 
 .lightTheme .ai-chat-container .new-session-button:hover .session-list-icon,
@@ -279,7 +279,7 @@ mat-menu-panel {
 .theme-light .ai-chat-container .new-session-button:hover .session-list-icon,
 .theme-light .ai-chat-container .session-item:hover .session-icon,
 .theme-light .ai-chat-container .session-menu-button:hover .menu-icon {
-  fill: rgba(0, 0, 0, 0.87) !important;
+  fill: rgba(0, 0, 0, 0.87);
 }
 
 /* =============================================
@@ -305,8 +305,8 @@ mat-menu-panel {
   /* Material Dialog Container - transparent */
   mat-dialog-container,
   .mat-dialog-container {
-    background: transparent !important;
-    padding: 0 !important;
-    box-shadow: none !important;
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
   }
 }

@@ -11,7 +11,7 @@
   padding: var(--gns3-spacing-lg);
   background-color: var(--mat-app-background-color);
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 151, 167, 0.3) transparent;
+  scrollbar-color: var(--gns3-cyan) transparent;
 }
 
 /* Enhanced WebKit scrollbar styling */
@@ -27,32 +27,35 @@
 .chat-message-list::-webkit-scrollbar-thumb {
   background: linear-gradient(
     180deg,
-    rgba(0, 151, 167, 0.4),
-    rgba(0, 188, 212, 0.3)
+    var(--gns3-cyan),
+    var(--gns3-cyan-light)
   );
   border-radius: var(--gns3-radius-full);
   border: 2px solid transparent;
   background-clip: padding-box;
   transition: all var(--gns3-duration-normal) var(--gns3-easing-default);
+  opacity: 0.6;
 }
 
 .chat-message-list::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(
     180deg,
-    rgba(0, 151, 167, 0.6),
-    rgba(0, 188, 212, 0.5)
+    var(--gns3-cyan),
+    var(--gns3-cyan-light)
   );
   background-clip: padding-box;
-  border: 2px solid rgba(0, 151, 167, 0.1);
+  border: 2px solid transparent;
+  opacity: 0.8;
 }
 
 .chat-message-list::-webkit-scrollbar-thumb:active {
   background: linear-gradient(
     180deg,
-    rgba(0, 151, 167, 0.8),
-    rgba(0, 188, 212, 0.7)
+    var(--gns3-cyan),
+    var(--gns3-cyan-light)
   );
   background-clip: padding-box;
+  opacity: 1;
 }
 
 .messages-container {
@@ -103,12 +106,12 @@
 }
 
 .user-avatar {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: linear-gradient(135deg, var(--mat-app-primary-color), var(--gns3-cyan));
   color: var(--mat-app-on-primary-color);
 }
 
 .assistant-avatar {
-  background: linear-gradient(135deg, #0ea5e9, #06b6d4);
+  background: linear-gradient(135deg, var(--gns3-cyan), var(--gns3-cyan-light));
   color: var(--mat-app-on-primary-color);
   overflow: hidden;
 }
@@ -120,8 +123,8 @@
 }
 
 .tool-avatar {
-  background: linear-gradient(135deg, #ff9800, #f57c00);
-  color: var(--mat-app-on-primary-color);
+  background: linear-gradient(135deg, var(--mat-app-tertiary-color), var(--mat-app-tertiary-fixed-color));
+  color: var(--mat-app-on-tertiary-color);
 }
 
 .message-content {
@@ -147,10 +150,10 @@
 }
 
 .user-bubble {
-  background: linear-gradient(135deg, var(--mat-app-primary-color), #7c4dff);
+  background: linear-gradient(135deg, var(--mat-app-primary-color), var(--gns3-cyan-dark));
   color: var(--mat-app-on-primary-color);
   border-bottom-right-radius: var(--gns3-radius-sm);
-  box-shadow: 0 2px 8px rgba(124, 77, 255, 0.3);
+  box-shadow: 0 2px 8px var(--gns3-cyan-dark);
   position: relative;
   overflow: hidden;
 
@@ -165,9 +168,10 @@
     background: linear-gradient(
       90deg,
       transparent,
-      rgba(255, 255, 255, 0.1),
+      currentColor,
       transparent
     );
+    opacity: 0.1;
     transition: left var(--gns3-duration-slow) var(--gns3-easing-default);
   }
 
@@ -185,7 +189,7 @@
   color: var(--mat-app-on-surface-color);
   border-bottom-left-radius: var(--gns3-radius-sm);
   box-shadow: var(--gns3-shadow-sm);
-  border: 1px solid rgba(0, 151, 167, 0.1);
+  border: 1px solid var(--mat-app-outline-variant-color);
   position: relative;
   overflow: hidden;
 

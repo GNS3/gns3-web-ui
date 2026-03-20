@@ -68,7 +68,7 @@ $dark-theme: map-merge(
   @include mat-toolbar-theme($dark-background);
   @include mat-tooltip-theme($dark-theme);
   @include mat-snack-bar-theme($dark-theme);
-  color: white !important;
+  color: white;
 }
 
 // Light theme
@@ -133,28 +133,28 @@ $light-theme: map-merge(
   @include mat-snack-bar-theme($light-theme);
 }
 
-$menu-hover-background: #DC143C;
-$menu-selected-text-color: #FFFFFF;
+$menu-hover-background: var(--mat-app-error-color);
+$menu-selected-text-color: var(--mat-app-on-error-color);
 
 .mat-menu-panel .mat-menu-item:not([disabled]):hover {
-  background-color: $menu-hover-background !important;
+  background-color: $menu-hover-background;
 }
 
 .mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-program-focused,
 .mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-keyboard-focused {
-  background-color: $menu-hover-background !important;
+  background-color: $menu-hover-background;
 }
 
 .light-theme .mat-menu-panel .mat-menu-item:not([disabled]):hover,
 .light-theme .mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-program-focused,
 .light-theme .mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-keyboard-focused {
-  color: $menu-selected-text-color !important;
+  color: $menu-selected-text-color;
 }
 
 .light-theme .mat-menu-panel .mat-menu-item:not([disabled]):hover .mat-icon,
 .light-theme .mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-program-focused .mat-icon,
 .light-theme .mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-keyboard-focused .mat-icon {
-  color: $menu-selected-text-color !important;
+  color: $menu-selected-text-color;
 }
 
 .mat-menu-panel:not(.context-menu-items) .mat-menu-item {
