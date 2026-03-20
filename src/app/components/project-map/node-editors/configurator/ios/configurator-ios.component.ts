@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -14,6 +14,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-configurator-ios',
   templateUrl: './configurator-ios.component.html',
   styleUrls: ['../configurator.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfiguratorDialogIosComponent implements OnInit {
   controller: Controller;
@@ -36,7 +37,8 @@ export class ConfiguratorDialogIosComponent implements OnInit {
     public nodeService: NodeService,
     private toasterService: ToasterService,
     private formBuilder: UntypedFormBuilder,
-    private configurationService: IosConfigurationService
+    private configurationService: IosConfigurationService,
+    private cd: ChangeDetectorRef
   ) {
     this.generalSettingsForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
@@ -63,6 +65,7 @@ export class ConfiguratorDialogIosComponent implements OnInit {
       }
       this.getConfiguration();
       this.fillSlotsData();
+      this.cd.markForCheck();
     });
   }
 

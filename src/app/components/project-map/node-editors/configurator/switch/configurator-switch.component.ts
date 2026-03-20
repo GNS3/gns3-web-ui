@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
@@ -11,6 +11,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-configurator-switch',
   templateUrl: './configurator-switch.component.html',
   styleUrls: ['../configurator.component.scss', '../../../../preferences/preferences.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfiguratorDialogSwitchComponent implements OnInit {
   controller: Controller;
@@ -34,7 +35,8 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
     public dialogRef: MatDialogRef<ConfiguratorDialogSwitchComponent>,
     public nodeService: NodeService,
     private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder
+    private formBuilder: UntypedFormBuilder,
+    private cd: ChangeDetectorRef
   ) {
     this.nameForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
@@ -64,6 +66,7 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
           portOut: value,
         });
       });
+      this.cd.markForCheck();
     });
   }
 

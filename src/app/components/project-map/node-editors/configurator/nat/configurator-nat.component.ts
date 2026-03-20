@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
@@ -13,6 +13,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-configurator-nat',
   templateUrl: './configurator-nat.component.html',
   styleUrls: ['../configurator.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfiguratorDialogNatComponent implements OnInit {
   controller: Controller;
@@ -25,7 +26,8 @@ export class ConfiguratorDialogNatComponent implements OnInit {
     public dialogRef: MatDialogRef<ConfiguratorDialogNatComponent>,
     public nodeService: NodeService,
     private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder
+    private formBuilder: UntypedFormBuilder,
+    private cd: ChangeDetectorRef
   ) {
     this.generalSettingsForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
@@ -39,6 +41,7 @@ export class ConfiguratorDialogNatComponent implements OnInit {
       if (!this.node.tags) {
         this.node.tags = [];
       }
+      this.cd.markForCheck();
     });
   }
 

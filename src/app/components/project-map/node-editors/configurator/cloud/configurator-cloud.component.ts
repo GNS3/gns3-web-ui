@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
@@ -17,6 +17,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-configurator-cloud',
   templateUrl: './configurator-cloud.component.html',
   styleUrls: ['../configurator.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfiguratorDialogCloudComponent implements OnInit {
   controller: Controller;
@@ -46,7 +47,8 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
     public nodeService: NodeService,
     private toasterService: ToasterService,
     private formBuilder: UntypedFormBuilder,
-    private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService
+    private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService,
+    private cd: ChangeDetectorRef
   ) {
     this.generalSettingsForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
@@ -68,6 +70,7 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
       this.portsMappingTap = this.node.properties.ports_mapping.filter((elem) => elem.type === 'tap');
 
       this.portsMappingUdp = this.node.properties.ports_mapping.filter((elem) => elem.type === 'udp');
+      this.cd.markForCheck();
     });
   }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -15,6 +15,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-configurator-ethernet-switch',
   templateUrl: './configurator-ethernet-switch.component.html',
   styleUrls: ['../configurator.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
   @ViewChild(PortsComponent) portsComponent: PortsComponent;
@@ -30,7 +31,8 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
     public nodeService: NodeService,
     private toasterService: ToasterService,
     private formBuilder: UntypedFormBuilder,
-    private ethernetSwitchesConfigurationService: BuiltInTemplatesConfigurationService
+    private ethernetSwitchesConfigurationService: BuiltInTemplatesConfigurationService,
+    private cd: ChangeDetectorRef
   ) {
     this.inputForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
@@ -45,6 +47,7 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
       if (!this.node.tags) {
         this.node.tags = [];
       }
+      this.cd.markForCheck();
     });
   }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
@@ -15,6 +15,7 @@ import { VmwareConfigurationService } from '@services/vmware-configuration.servi
   selector: 'app-configurator-vmware',
   templateUrl: './configurator-vmware.component.html',
   styleUrls: ['../configurator.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfiguratorDialogVmwareComponent implements OnInit {
   controller: Controller;
@@ -35,7 +36,8 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
     public nodeService: NodeService,
     private toasterService: ToasterService,
     private formBuilder: UntypedFormBuilder,
-    private vmwareConfigurationService: VmwareConfigurationService
+    private vmwareConfigurationService: VmwareConfigurationService,
+    private cd: ChangeDetectorRef
   ) {
     this.generalSettingsForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
@@ -50,6 +52,7 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
       if (!this.node.tags) {
         this.node.tags = [];
       }
+      this.cd.markForCheck();
     });
   }
 

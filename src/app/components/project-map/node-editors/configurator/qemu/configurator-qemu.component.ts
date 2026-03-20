@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -19,6 +19,7 @@ import { QemuImageCreatorComponent } from './qemu-image-creator/qemu-image-creat
   selector: 'app-configurator-qemu',
   templateUrl: './configurator-qemu.component.html',
   styleUrls: ['../configurator.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfiguratorDialogQemuComponent implements OnInit {
   controller: Controller;
@@ -53,7 +54,8 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     private toasterService: ToasterService,
     private formBuilder: UntypedFormBuilder,
     private qemuService: QemuService,
-    private qemuConfigurationService: QemuConfigurationService
+    private qemuConfigurationService: QemuConfigurationService,
+    private cd: ChangeDetectorRef
   ) {
     this.generalSettingsForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
@@ -73,10 +75,12 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
         this.node.tags = [];
       }
       this.getConfiguration();
+      this.cd.markForCheck();
     });
 
     this.qemuService.getImages(this.controller).subscribe((qemuImages: QemuImage[]) => {
       this.qemuImages = qemuImages;
+      this.cd.markForCheck();
     });
     this.selectPlatform = this.qemuConfigurationService.getPlatform();
 

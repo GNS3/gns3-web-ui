@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
@@ -14,6 +14,7 @@ import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
   selector: 'app-configurator-vpcs',
   templateUrl: './configurator-vpcs.component.html',
   styleUrls: ['../configurator.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfiguratorDialogVpcsComponent implements OnInit {
   controller: Controller;
@@ -28,7 +29,8 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
     public nodeService: NodeService,
     private toasterService: ToasterService,
     private formBuilder: UntypedFormBuilder,
-    private vpcsConfigurationService: VpcsConfigurationService
+    private vpcsConfigurationService: VpcsConfigurationService,
+    private cd: ChangeDetectorRef
   ) {
     this.inputForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
@@ -43,6 +45,7 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
       if (!this.node.tags) {
         this.node.tags = [];
       }
+      this.cd.markForCheck();
     });
   }
 

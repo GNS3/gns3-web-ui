@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -15,6 +15,7 @@ import { VirtualBoxConfigurationService } from '@services/virtual-box-configurat
   selector: 'app-configurator-virtualbox',
   templateUrl: './configurator-virtualbox.component.html',
   styleUrls: ['../configurator.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
   controller: Controller;
@@ -35,7 +36,8 @@ export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
     public nodeService: NodeService,
     private toasterService: ToasterService,
     private formBuilder: UntypedFormBuilder,
-    private virtualBoxConfigurationService: VirtualBoxConfigurationService
+    private virtualBoxConfigurationService: VirtualBoxConfigurationService,
+    private cd: ChangeDetectorRef
   ) {
     this.generalSettingsForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
@@ -51,6 +53,7 @@ export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
       if (!this.node.tags) {
         this.node.tags = [];
       }
+      this.cd.markForCheck();
     });
   }
 

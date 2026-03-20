@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -17,6 +17,7 @@ import { NonNegativeValidator } from '../../../../../validators/non-negative-val
   selector: 'app-configurator-docker',
   templateUrl: './configurator-docker.component.html',
   styleUrls: ['../configurator.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfiguratorDialogDockerComponent implements OnInit {
   controller: Controller;
@@ -41,7 +42,8 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
       private formBuilder: UntypedFormBuilder,
       private dockerConfigurationService: DockerConfigurationService,
       private nonNegativeValidator: NonNegativeValidator,
-      private dialog: MatDialog
+      private dialog: MatDialog,
+      private cd: ChangeDetectorRef
   ) {
       this.generalSettingsForm = this.formBuilder.group({
           name: new UntypedFormControl('', Validators.required),
@@ -64,6 +66,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
           if (!this.node.tags) {
               this.node.tags = [];
           }
+          this.cd.markForCheck();
       });
   }
 
