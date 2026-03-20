@@ -173,7 +173,7 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Model Provider</mat-label>
-      <mat-select formControlName="provider" [disabled]="isPresetSelected" placeholder="Select provider">
+      <mat-select formControlName="provider" placeholder="Select provider">
         <mat-option *ngFor="let provider of supportedProviders" [value]="provider.value">
           {{ provider.label }}
         </mat-option>
@@ -184,7 +184,7 @@
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Base URL</mat-label>
-      <input matInput formControlName="base_url" placeholder="Auto-filled from preset" [disabled]="isPresetSelected">
+      <input matInput formControlName="base_url" placeholder="Auto-filled from preset">
       <mat-hint>API endpoint URL. Leave empty to use provider default.</mat-hint>
     </mat-form-field>
 
