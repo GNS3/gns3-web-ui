@@ -72,7 +72,7 @@
 /***************************************************************************************************
  * Zone JS is required by default for Angular itself.
  */
-// import 'zone.js'; // Removed for Zoneless change detection (Angular 21+)
+import 'zone.js';
 
 /***************************************************************************************************
  * APPLICATION IMPORTS
