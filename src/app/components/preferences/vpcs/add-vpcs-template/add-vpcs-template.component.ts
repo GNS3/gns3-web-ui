@@ -12,6 +12,7 @@ import { ToasterService } from '@services/toaster.service';
 import { VpcsService } from '@services/vpcs.service';
 
 @Component({
+  standalone: false,
   selector: 'app-add-vpcs-template',
   templateUrl: './add-vpcs-template.component.html',
   styleUrls: ['./add-vpcs-template.component.scss', '../../preferences.component.scss'],

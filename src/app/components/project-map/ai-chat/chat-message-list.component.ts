@@ -15,6 +15,7 @@ import { ThemeService } from '@services/theme.service';
  * Supports: user, assistant, system, tool_call, tool_result messages
  */
 @Component({
+  standalone: false,
   selector: 'app-chat-message-list',
   styleUrls: ['./chat-message-list.component.scss'],
   encapsulation: ViewEncapsulation.None,

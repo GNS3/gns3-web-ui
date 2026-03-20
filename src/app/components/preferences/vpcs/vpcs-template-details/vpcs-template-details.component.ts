@@ -11,6 +11,7 @@ import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
 import { VpcsService } from '@services/vpcs.service';
 
 @Component({
+  standalone: false,
   selector: 'app-vpcs-template-details',
   templateUrl: './vpcs-template-details.component.html',
   styleUrls: ['./vpcs-template-details.component.scss', '../../preferences.component.scss'],

@@ -3,7 +3,8 @@ import {ResourcePool} from "@models/resourcePools/ResourcePool";
 import {MatTableDataSource} from "@angular/material/table";
 
 @Pipe({
-    name: 'resourcePoolsFilter'
+  standalone: false,
+  name: 'resourcePoolsFilter'
 })
 export class ResourcePoolsFilterPipe implements PipeTransform {
     transform(resourcePool: MatTableDataSource<ResourcePool>, searchText: string): MatTableDataSource<ResourcePool> {

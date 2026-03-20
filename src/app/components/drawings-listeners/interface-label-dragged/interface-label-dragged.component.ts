@@ -9,6 +9,7 @@ import { Controller } from '@models/controller';
 import { LinkService } from '@services/link.service';
 
 @Component({
+  standalone: false,
   selector: 'app-interface-label-dragged',
   templateUrl: './interface-label-dragged.component.html',
   styleUrls: ['./interface-label-dragged.component.scss'],

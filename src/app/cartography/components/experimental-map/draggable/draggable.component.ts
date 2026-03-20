@@ -8,6 +8,7 @@ export class DraggableDraggedEvent {
 }
 
 @Component({
+  standalone: false,
   selector: '[app-draggable]',
   template: ` <ng-content></ng-content> `,
   styleUrls: ['./draggable.component.scss'],

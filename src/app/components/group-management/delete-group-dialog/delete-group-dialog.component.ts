@@ -15,6 +15,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {Group} from "@models/groups/group";
 
 @Component({
+  standalone: false,
   selector: 'app-delete-group-dialog',
   templateUrl: './delete-group-dialog.component.html',
   styleUrls: ['./delete-group-dialog.component.scss']

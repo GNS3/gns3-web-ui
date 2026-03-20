@@ -6,6 +6,7 @@ import { MapLink } from '../../models/map/map-link';
 import { LinksWidget } from '../../widgets/links';
 
 @Component({
+  standalone: false,
   selector: 'app-link-editing',
   templateUrl: './link-editing.component.html',
   styleUrls: ['./link-editing.component.scss'],

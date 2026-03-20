@@ -12,6 +12,7 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-docker-template-details',
   templateUrl: './docker-template-details.component.html',
   styleUrls: ['./docker-template-details.component.scss', '../../preferences.component.scss'],

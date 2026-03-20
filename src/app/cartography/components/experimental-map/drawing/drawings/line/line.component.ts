@@ -3,6 +3,7 @@ import { QtDasharrayFixer } from '../../../../../helpers/qt-dasharray-fixer';
 import { LineElement } from '../../../../../models/drawings/line-element';
 
 @Component({
+  standalone: false,
   selector: '[app-line]',
   templateUrl: './line.component.html',
   styleUrls: ['./line.component.scss'],

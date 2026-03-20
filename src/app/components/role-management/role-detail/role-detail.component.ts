@@ -25,6 +25,7 @@ import {IPrivilegesChange} from "@components/role-management/role-detail/privile
 import {map} from "rxjs/operators";
 
 @Component({
+  standalone: false,
   selector: 'app-role-detail',
   templateUrl: './role-detail.component.html',
   styleUrls: ['./role-detail.component.scss']

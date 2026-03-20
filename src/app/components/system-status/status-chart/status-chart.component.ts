@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ComputeStatistics } from '@models/computeStatistics';
 
 @Component({
+  standalone: false,
   selector: 'app-status-chart',
   templateUrl: './status-chart.component.html',
   styleUrls: ['./status-chart.component.scss'],

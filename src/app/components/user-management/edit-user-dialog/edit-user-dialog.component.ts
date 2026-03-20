@@ -21,6 +21,7 @@ import {userEmailAsyncValidator} from "@components/user-management/add-user-dial
 import {User} from "@models/users/user";
 
 @Component({
+  standalone: false,
   selector: 'app-edit-user-dialog',
   templateUrl: './edit-user-dialog.component.html',
   styleUrls: ['./edit-user-dialog.component.scss']

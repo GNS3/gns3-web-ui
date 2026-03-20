@@ -4,6 +4,7 @@ import {Resource} from "@models/resourcePools/Resource";
 import {MatDialogRef} from "@angular/material/dialog";
 
 @Component({
+  standalone: false,
   selector: 'app-delete-resource-confirmation-dialog',
   templateUrl: './delete-resource-confirmation-dialog.component.html',
   styleUrls: ['./delete-resource-confirmation-dialog.component.scss']

@@ -10,6 +10,7 @@ import { TextElement } from '../../../models/drawings/text-element';
 import { MapDrawing } from '../../../models/map/map-drawing';
 
 @Component({
+  standalone: false,
   selector: '[app-drawing]',
   templateUrl: './drawing.component.html',
   styleUrls: ['./drawing.component.scss'],

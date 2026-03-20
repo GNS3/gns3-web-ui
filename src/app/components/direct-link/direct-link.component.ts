@@ -7,6 +7,7 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-direct-link',
   templateUrl: './direct-link.component.html',
   styleUrls: ['./direct-link.component.scss'],

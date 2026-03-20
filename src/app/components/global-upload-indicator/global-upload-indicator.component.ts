@@ -9,6 +9,7 @@ interface UploadRow extends ImageUploadEvent {
 }
 
 @Component({
+  standalone: false,
   selector: 'app-global-upload-indicator',
   templateUrl: './global-upload-indicator.component.html',
   styleUrls: ['./global-upload-indicator.component.scss'],

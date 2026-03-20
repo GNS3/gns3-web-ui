@@ -7,6 +7,7 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-qemu-preferences',
   templateUrl: './qemu-preferences.component.html',
   styleUrls: ['./qemu-preferences.component.scss'],

@@ -6,6 +6,7 @@ import { ToasterService } from '@services/toaster.service';
 import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 
 @Component({
+  standalone: false,
   selector: 'app-delete-template',
   templateUrl: './delete-template.component.html',
   styleUrls: ['./delete-template.component.scss'],

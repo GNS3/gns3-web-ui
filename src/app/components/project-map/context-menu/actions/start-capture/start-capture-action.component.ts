@@ -6,6 +6,7 @@ import { Controller } from '@models/controller';
 import { StartCaptureDialogComponent } from '../../../packet-capturing/start-capture/start-capture.component';
 
 @Component({
+  standalone: false,
   selector: 'app-start-capture-action',
   templateUrl: './start-capture-action.component.html',
 })

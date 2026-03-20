@@ -13,6 +13,7 @@ import { ProjectService } from '@services/project.service';
 import { ThemeService } from '@services/theme.service';
 
 @Component({
+  standalone: false,
   selector: 'app-topology-summary',
   templateUrl: './topology-summary.component.html',
   styleUrls: ['./topology-summary.component.scss'],

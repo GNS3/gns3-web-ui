@@ -4,6 +4,7 @@ import { map, mergeMap, skipUntil, take, tap, startWith } from 'rxjs/operators';
 import { Rectangle } from '../../../models/rectangle';
 
 @Component({
+  standalone: false,
   selector: '[app-selection]',
   templateUrl: './selection.component.html',
   styleUrls: ['./selection.component.scss'],

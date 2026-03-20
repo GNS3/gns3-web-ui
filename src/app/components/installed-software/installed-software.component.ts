@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { InstalledSoftwareService } from '@services/installed-software.service';
 
 @Component({
+  standalone: false,
   selector: 'app-installed-software',
   templateUrl: './installed-software.component.html',
   styleUrls: ['./installed-software.component.scss'],

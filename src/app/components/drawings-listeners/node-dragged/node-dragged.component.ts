@@ -10,6 +10,7 @@ import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 
 @Component({
+  standalone: false,
   selector: 'app-node-dragged',
   templateUrl: './node-dragged.component.html',
   styleUrls: ['./node-dragged.component.scss'],

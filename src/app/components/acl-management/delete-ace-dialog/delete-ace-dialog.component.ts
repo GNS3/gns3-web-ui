@@ -16,6 +16,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {ACE} from "@models/api/ACE";
 
 @Component({
+  standalone: false,
   selector: 'app-delete-ace-dialog',
   templateUrl: './delete-ace-dialog.component.html',
   styleUrls: ['./delete-ace-dialog.component.scss']

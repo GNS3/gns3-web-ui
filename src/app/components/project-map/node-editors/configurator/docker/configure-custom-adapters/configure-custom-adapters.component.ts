@@ -8,6 +8,7 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-configure-custom-adapters',
   templateUrl: './configure-custom-adapters.component.html',
   styleUrls: ['./configure-custom-adapters.component.scss'],

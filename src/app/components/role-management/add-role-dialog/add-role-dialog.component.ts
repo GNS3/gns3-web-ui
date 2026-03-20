@@ -19,6 +19,7 @@ import {GroupService} from "@services/group.service";
 import {groupNameAsyncValidator} from "@components/group-management/add-group-dialog/groupNameAsyncValidator";
 
 @Component({
+  standalone: false,
   selector: 'app-add-role-dialog',
   templateUrl: './add-role-dialog.component.html',
   styleUrls: ['./add-role-dialog.component.scss']

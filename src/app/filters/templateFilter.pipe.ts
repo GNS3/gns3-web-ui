@@ -2,6 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { Template } from '@models/template';
 
 @Pipe({
+  standalone: false,
   name: 'templatefilter',
 })
 export class TemplateFilter implements PipeTransform {

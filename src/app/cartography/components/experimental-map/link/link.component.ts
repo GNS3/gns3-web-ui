@@ -17,6 +17,7 @@ import { LinkStrategy } from './strategies/link-strategy';
 import { SerialLinkStrategy } from './strategies/serial-link-strategy';
 
 @Component({
+  standalone: false,
   selector: '[app-link]',
   templateUrl: './link.component.html',
   styleUrls: ['./link.component.scss'],

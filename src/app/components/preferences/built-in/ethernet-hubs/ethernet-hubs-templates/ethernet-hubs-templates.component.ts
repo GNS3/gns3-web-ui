@@ -7,6 +7,7 @@ import { ControllerService } from '@services/controller.service';
 import { DeleteTemplateComponent } from '../../../common/delete-template-component/delete-template.component';
 
 @Component({
+  standalone: false,
   selector: 'app-ethernet-hubs-templates',
   templateUrl: './ethernet-hubs-templates.component.html',
   styleUrls: ['./ethernet-hubs-templates.component.scss', '../../../preferences.component.scss'],

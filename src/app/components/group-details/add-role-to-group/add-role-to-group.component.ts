@@ -23,6 +23,7 @@ import {Role} from "@models/api/role";
 import {RoleService} from "@services/role.service";
 
 @Component({
+  standalone: false,
   selector: 'app-add-role-to-group',
   templateUrl: './add-role-to-group.component.html',
   styleUrls: ['./add-role-to-group.component.scss']

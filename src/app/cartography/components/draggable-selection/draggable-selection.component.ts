@@ -20,6 +20,7 @@ import { LinksWidget } from '../../widgets/links';
 import { NodesWidget } from '../../widgets/nodes';
 
 @Component({
+  standalone: false,
   selector: 'app-draggable-selection',
   templateUrl: './draggable-selection.component.html',
   styleUrls: ['./draggable-selection.component.scss'],

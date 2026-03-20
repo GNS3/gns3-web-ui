@@ -6,6 +6,7 @@ import { IdlePCDialogComponent } from "@components/project-map/context-menu/dial
 import { NodeService } from "@services/node.service";
 
 @Component({
+  standalone: false,
   selector: 'app-idle-pc-action',
   templateUrl: './idle-pc-action.component.html',
 })

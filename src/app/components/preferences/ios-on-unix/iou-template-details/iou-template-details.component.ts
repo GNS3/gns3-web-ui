@@ -11,6 +11,7 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-iou-template-details',
   templateUrl: './iou-template-details.component.html',
   styleUrls: ['./iou-template-details.component.scss', '../../preferences.component.scss'],

@@ -28,6 +28,7 @@ import {MatTableDataSource} from "@angular/material/table";
 import {ControllerService} from "@services/controller.service";
 
 @Component({
+  standalone: false,
   selector: 'app-user-management',
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.scss']

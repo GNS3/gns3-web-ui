@@ -19,6 +19,7 @@ import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-add-qemu-virtual-machine-template',
   templateUrl: './add-qemu-vm-template.component.html',
   styleUrls: ['./add-qemu-vm-template.component.scss', '../../preferences.component.scss'],

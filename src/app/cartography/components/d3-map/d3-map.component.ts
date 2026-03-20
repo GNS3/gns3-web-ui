@@ -33,6 +33,7 @@ import { InterfaceLabelWidget } from '../../widgets/interface-label';
 import { TextEditorComponent } from '../text-editor/text-editor.component';
 
 @Component({
+  standalone: false,
   selector: 'app-d3-map',
   templateUrl: './d3-map.component.html',
   styleUrls: ['./d3-map.component.scss'],

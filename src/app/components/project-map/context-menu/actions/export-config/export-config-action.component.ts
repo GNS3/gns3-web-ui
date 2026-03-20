@@ -6,6 +6,7 @@ import { NodeService } from '@services/node.service';
 import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog.component';
 
 @Component({
+  standalone: false,
   selector: 'app-export-config-action',
   templateUrl: './export-config-action.component.html',
 })

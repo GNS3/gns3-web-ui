@@ -4,6 +4,7 @@ import { MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
 import { ThemeService } from '@services/theme.service';
 
 @Component({
+  standalone: false,
   selector: 'app-confirmation-bottomsheet',
   templateUrl: 'confirmation-bottomsheet.component.html',
   styleUrls: ['confirmation-bottomsheet.component.scss'],

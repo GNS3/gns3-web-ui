@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Controller } from '@models/controller';
 
 @Component({
+  standalone: false,
   selector: 'app-symbols-menu',
   templateUrl: './symbols-menu.component.html',
   styleUrls: ['./symbols-menu.component.scss', '../../preferences.component.scss'],

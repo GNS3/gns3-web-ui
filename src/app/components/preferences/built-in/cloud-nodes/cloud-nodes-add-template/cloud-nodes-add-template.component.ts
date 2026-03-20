@@ -12,6 +12,7 @@ import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-cloud-nodes-add-template',
   templateUrl: './cloud-nodes-add-template.component.html',
   styleUrls: ['./cloud-nodes-add-template.component.scss', '../../../preferences.component.scss'],

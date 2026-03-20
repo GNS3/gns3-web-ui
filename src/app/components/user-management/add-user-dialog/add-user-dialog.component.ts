@@ -27,6 +27,7 @@ import {matchingPassword} from "@components/user-management/ConfirmPasswordValid
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
+  standalone: false,
   selector: 'app-add-user-dialog',
   templateUrl: './add-user-dialog.component.html',
   styleUrls: ['./add-user-dialog.component.scss']

@@ -12,6 +12,7 @@ import { ToasterService } from '@services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
 
 @Component({
+  standalone: false,
   selector: 'app-template-list-dialog',
   templateUrl: './template-list-dialog.component.html',
   styleUrls: ['./template-list-dialog.component.scss'],

@@ -13,6 +13,7 @@ import { ToasterService } from '@services/toaster.service';
 import { PacketFiltersDialogComponent } from '../packet-filters/packet-filters.component';
 
 @Component({
+  standalone: false,
   selector: 'app-start-capture',
   templateUrl: './start-capture.component.html',
   styleUrls: ['./start-capture.component.scss'],

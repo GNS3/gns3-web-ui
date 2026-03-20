@@ -16,6 +16,7 @@ import {User} from "@models/users/user";
 import {UserService} from "@services/user.service";
 
 @Component({
+  standalone: false,
   selector: 'app-delete-user-dialog',
   templateUrl: './delete-user-dialog.component.html',
   styleUrls: ['./delete-user-dialog.component.scss']

@@ -10,6 +10,7 @@ import { LinkService } from '@services/link.service';
 import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
 
 @Component({
+  standalone: false,
   selector: 'app-packet-filters',
   templateUrl: './packet-filters.component.html',
   styleUrls: ['./packet-filters.component.scss'],

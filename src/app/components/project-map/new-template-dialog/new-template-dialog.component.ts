@@ -35,6 +35,7 @@ import { UploadServiceService } from '../../../common/uploading-processbar/uploa
 import { environment } from 'environments/environment';
 
 @Component({
+  standalone: false,
   selector: 'app-new-template-dialog',
   templateUrl: './new-template-dialog.component.html',
   styleUrls: ['./new-template-dialog.component.scss'],

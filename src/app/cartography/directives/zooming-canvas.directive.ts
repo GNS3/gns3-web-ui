@@ -6,6 +6,7 @@ import { MovingEventSource } from '../events/moving-event-source';
 import { Context } from '../models/context';
 
 @Directive({
+  standalone: false,
   selector: '[zoomingCanvas]',
 })
 export class ZoomingCanvasDirective implements OnInit, OnDestroy {

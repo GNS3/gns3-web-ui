@@ -8,6 +8,7 @@ import { ControllerService } from '@services/controller.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
 @Component({
+  standalone: false,
   selector: 'app-ios-templates',
   templateUrl: './ios-templates.component.html',
   styleUrls: ['./ios-templates.component.scss', '../../preferences.component.scss'],

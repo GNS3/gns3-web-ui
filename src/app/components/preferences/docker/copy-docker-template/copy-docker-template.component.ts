@@ -9,6 +9,7 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-copy-docker-template',
   templateUrl: './copy-docker-template.component.html',
   styleUrls: ['./copy-docker-template.component.scss', '../../preferences.component.scss'],

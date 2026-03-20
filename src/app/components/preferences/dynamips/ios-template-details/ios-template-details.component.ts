@@ -12,6 +12,7 @@ import { ToasterService } from '@services/toaster.service';
 import { ProgressService } from "../../../../common/progress/progress.service";
 
 @Component({
+  standalone: false,
   selector: 'app-ios-template-details',
   templateUrl: './ios-template-details.component.html',
   styleUrls: ['./ios-template-details.component.scss', '../../preferences.component.scss'],

@@ -10,6 +10,7 @@ import { templateNameAsyncValidator } from '../../../../validators/template-name
 import { ProjectNameValidator } from '../../../projects/models/projectNameValidator';
 
 @Component({
+  standalone: false,
   selector: 'app-template-name-dialog',
   templateUrl: './template-name-dialog.component.html',
   styleUrls: ['./template-name-dialog.component.scss'],

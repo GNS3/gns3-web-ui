@@ -5,6 +5,7 @@ import { AddedDataEvent } from '../../events/event-source';
 import { Context } from '../../models/context';
 
 @Component({
+  standalone: false,
   selector: 'app-drawing-adding',
   templateUrl: './drawing-adding.component.html',
   styleUrls: ['./drawing-adding.component.scss'],

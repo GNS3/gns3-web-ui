@@ -7,6 +7,7 @@ import { VmwareService } from '@services/vmware.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
 @Component({
+  standalone: false,
   selector: 'app-vmware-templates',
   templateUrl: './vmware-templates.component.html',
   styleUrls: ['./vmware-templates.component.scss', '../../preferences.component.scss'],

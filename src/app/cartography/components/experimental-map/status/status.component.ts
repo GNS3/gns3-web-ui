@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, ElementRef, Input } from '@angular/core';
 
 @Component({
+  standalone: false,
   selector: '[app-status]',
   templateUrl: './status.component.html',
   styleUrls: ['./status.component.scss'],

@@ -17,6 +17,7 @@ import {DeleteResourcePoolComponent} from "@components/resource-pools-management
 import {ResourcePoolsService} from "@services/resource-pools.service";
 
 @Component({
+  standalone: false,
   selector: 'app-resource-pools-management',
   templateUrl: './resource-pools-management.component.html',
   styleUrls: ['./resource-pools-management.component.scss']

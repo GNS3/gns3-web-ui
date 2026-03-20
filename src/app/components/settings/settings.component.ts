@@ -7,6 +7,7 @@ import { ToasterService } from '@services/toaster.service';
 import { UpdatesService } from '@services/updates.service';
 
 @Component({
+  standalone: false,
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],

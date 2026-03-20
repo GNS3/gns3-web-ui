@@ -4,6 +4,7 @@ import {PrivilegeChange} from "@components/role-management/role-detail/privilege
 import {IPrivilegesChange} from "@components/role-management/role-detail/privilege/IPrivilegesChange";
 
 @Component({
+  standalone: false,
   selector: 'app-privilege',
   templateUrl: './privilege.component.html',
   styleUrls: ['./privilege.component.scss']

@@ -6,6 +6,7 @@ import { Observable, of, forkJoin } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Component({
+  standalone: false,
   selector: 'app-confirmation-delete-all-projects',
   templateUrl: './confirmation-delete-all-projects.component.html',
   styleUrls: ['./confirmation-delete-all-projects.component.scss']

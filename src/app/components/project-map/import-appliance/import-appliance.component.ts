@@ -14,6 +14,7 @@ import { QemuService } from '@services/qemu.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-import-appliance',
   templateUrl: './import-appliance.component.html',
   styleUrls: ['./import-appliance.component.scss'],

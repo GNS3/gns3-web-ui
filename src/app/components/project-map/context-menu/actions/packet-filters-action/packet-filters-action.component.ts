@@ -6,6 +6,7 @@ import { Controller } from '@models/controller';
 import { PacketFiltersDialogComponent } from '../../../packet-capturing/packet-filters/packet-filters.component';
 
 @Component({
+  standalone: false,
   selector: 'app-packet-filters-action',
   templateUrl: './packet-filters-action.component.html',
 })

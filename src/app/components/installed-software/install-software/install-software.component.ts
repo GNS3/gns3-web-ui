@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 
 @Component({
+  standalone: false,
   selector: 'app-install-software',
   templateUrl: './install-software.component.html',
   styleUrls: ['./install-software.component.scss'],

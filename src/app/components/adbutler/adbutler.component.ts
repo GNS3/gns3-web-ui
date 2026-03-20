@@ -7,6 +7,7 @@ import { Location } from '@angular/common';
 const adButlerResponseBodyRegex: RegExp = /<a href="(.*)">(.*)<\/a><br\/>(.*)<br\/>\s*<button><a .*>(.*)<\/a>\s*<\/button>/i;
 
 @Component({
+  standalone: false,
   selector: 'app-adbutler',
   templateUrl: './adbutler.component.html',
   styleUrls: ['./adbutler.component.scss'],

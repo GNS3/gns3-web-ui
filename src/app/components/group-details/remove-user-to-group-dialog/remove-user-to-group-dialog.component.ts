@@ -15,6 +15,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {User} from "@models/users/user";
 
 @Component({
+  standalone: false,
   selector: 'app-remove-user-to-group-dialog',
   templateUrl: './remove-user-to-group-dialog.component.html',
   styleUrls: ['./remove-user-to-group-dialog.component.scss']

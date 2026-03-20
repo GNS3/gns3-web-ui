@@ -9,6 +9,7 @@ import { ControllerService } from '@services/controller.service';
 import { VersionService } from '@services/version.service';
 
 @Component({
+  standalone: false,
   selector: 'app-controller-discovery',
   templateUrl: './controller-discovery.component.html',
   styleUrls: ['./controller-discovery.component.scss'],

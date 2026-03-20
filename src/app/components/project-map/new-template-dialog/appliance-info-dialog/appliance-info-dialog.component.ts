@@ -3,6 +3,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Appliance } from '@models/appliance';
 
 @Component({
+  standalone: false,
   selector: 'appliance-info-dialog',
   templateUrl: 'appliance-info-dialog.component.html',
 })

@@ -12,6 +12,7 @@ import { ToasterService } from '@services/toaster.service';
 import { NodesMenuConfirmationDialogComponent } from './nodes-menu-confirmation-dialog/nodes-menu-confirmation-dialog.component';
 
 @Component({
+  standalone: false,
   selector: 'app-nodes-menu',
   templateUrl: './nodes-menu.component.html',
   styleUrls: ['./nodes-menu.component.scss'],

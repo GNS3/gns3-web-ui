@@ -7,6 +7,7 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-status-info',
   templateUrl: './status-info.component.html',
   styleUrls: ['./status-info.component.scss'],

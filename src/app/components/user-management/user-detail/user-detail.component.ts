@@ -19,6 +19,7 @@ import {Endpoint} from "@models/api/endpoint";
 
 
 @Component({
+  standalone: false,
   selector: 'app-user-detail',
   templateUrl: './user-detail.component.html',
   styleUrls: ['./user-detail.component.scss']

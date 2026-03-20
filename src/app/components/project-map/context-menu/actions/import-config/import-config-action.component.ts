@@ -7,6 +7,7 @@ import { ToasterService } from '@services/toaster.service';
 import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog.component';
 
 @Component({
+  standalone: false,
   selector: 'app-import-config-action',
   templateUrl: './import-config-action.component.html',
   styleUrls: ['./import-config-action.component.scss'],

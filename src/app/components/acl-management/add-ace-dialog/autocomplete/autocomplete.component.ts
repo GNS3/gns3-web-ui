@@ -5,6 +5,7 @@ import {UntypedFormControl} from "@angular/forms";
 import {map, startWith} from "rxjs/operators";
 
 @Component({
+  standalone: false,
   selector: 'app-autocomplete',
   templateUrl: './autocomplete.component.html',
   styleUrls: ['./autocomplete.component.scss']

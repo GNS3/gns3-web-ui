@@ -17,6 +17,7 @@ import { ConfiguratorDialogVmwareComponent } from '../../../node-editors/configu
 import { ConfiguratorDialogVpcsComponent } from '../../../node-editors/configurator/vpcs/configurator-vpcs.component';
 
 @Component({
+  standalone: false,
   selector: 'app-config-node-action',
   templateUrl: './config-action.component.html',
 })

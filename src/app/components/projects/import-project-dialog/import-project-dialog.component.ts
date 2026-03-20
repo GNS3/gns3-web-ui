@@ -15,6 +15,7 @@ import { UploadingProcessbarComponent } from '../../../common/uploading-processb
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
+  standalone: false,
   selector: 'app-import-project-dialog',
   templateUrl: 'import-project-dialog.component.html',
   styleUrls: ['import-project-dialog.component.scss'],

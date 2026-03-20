@@ -4,6 +4,7 @@ import { Controller } from '@models/controller';
 import { LinkService } from '@services/link.service';
 
 @Component({
+  standalone: false,
   selector: 'app-resume-link-action',
   templateUrl: './resume-link-action.component.html',
 })

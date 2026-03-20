@@ -5,6 +5,7 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-unisolate-node-action',
   templateUrl: './unisolate-node-action.component.html',
 })

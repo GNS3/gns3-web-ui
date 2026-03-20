@@ -6,6 +6,7 @@ import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
 
 @Component({
+  standalone: false,
   selector: 'app-export-portable-project',
   templateUrl: './export-portable-project.component.html',
   styleUrls: ['./export-portable-project.component.scss'],

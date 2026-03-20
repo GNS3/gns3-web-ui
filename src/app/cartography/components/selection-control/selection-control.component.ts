@@ -7,6 +7,7 @@ import { SelectionManager } from '../../managers/selection-manager';
 import { Rectangle } from '../../models/rectangle';
 
 @Component({
+  standalone: false,
   selector: 'app-selection-control',
   templateUrl: './selection-control.component.html',
   styleUrls: ['./selection-control.component.scss'],

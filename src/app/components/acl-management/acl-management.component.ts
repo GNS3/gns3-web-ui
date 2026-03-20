@@ -28,6 +28,7 @@ import {DeleteAceDialogComponent} from "@components/acl-management/delete-ace-di
 import {Endpoint} from "@models/api/endpoint";
 
 @Component({
+  standalone: false,
   selector: 'app-acl-management',
   templateUrl: './acl-management.component.html',
   styleUrls: ['./acl-management.component.scss']

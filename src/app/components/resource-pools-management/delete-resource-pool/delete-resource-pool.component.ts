@@ -16,6 +16,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {ResourcePool} from "@models/resourcePools/ResourcePool";
 
 @Component({
+  standalone: false,
   selector: 'app-delete-resource-pool',
   templateUrl: './delete-resource-pool.component.html',
   styleUrls: ['./delete-resource-pool.component.scss']

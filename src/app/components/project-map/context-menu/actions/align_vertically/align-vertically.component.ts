@@ -5,6 +5,7 @@ import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 
 @Component({
+  standalone: false,
   selector: 'app-align-vertically-action',
   templateUrl: './align-vertically.component.html',
 })

@@ -5,6 +5,7 @@ import { Controller } from '@models/controller';
 import { ChangeHostnameDialogComponent } from '../../../change-hostname-dialog/change-hostname-dialog.component';
 
 @Component({
+  standalone: false,
   selector: 'app-change-hostname-action',
   templateUrl: './change-hostname-action.component.html',
 })

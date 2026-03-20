@@ -2,6 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
+  standalone: false,
   selector: 'app-question-dialog',
   templateUrl: './question-dialog.component.html',
 })

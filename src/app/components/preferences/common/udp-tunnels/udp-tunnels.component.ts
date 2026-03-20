@@ -3,6 +3,7 @@ import { PortsMappingEntity } from '@models/ethernetHub/ports-mapping-enity';
 import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
 
 @Component({
+  standalone: false,
   selector: 'app-udp-tunnels',
   templateUrl: './udp-tunnels.component.html',
   styleUrls: ['../../preferences.component.scss'],

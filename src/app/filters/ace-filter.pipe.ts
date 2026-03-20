@@ -5,6 +5,7 @@ import {ACE} from "@models/api/ACE";
 import {Endpoint} from "@models/api/endpoint";
 
 @Pipe({
+  standalone: false,
   name: 'aceFilter'
 })
 export class AceFilterPipe implements PipeTransform {

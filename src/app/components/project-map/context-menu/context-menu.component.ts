@@ -12,6 +12,7 @@ import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
 
 @Component({
+  standalone: false,
   selector: 'app-context-menu',
   templateUrl: './context-menu.component.html',
   styleUrls: ['./context-menu.component.scss'],

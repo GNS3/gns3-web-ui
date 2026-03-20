@@ -5,6 +5,7 @@ import { Controller } from '@models/controller';
 import { PacketCaptureService } from '@services/packet-capture.service';
 
 @Component({
+  standalone: false,
   selector: 'app-start-capture-on-started-link-action',
   templateUrl: './start-capture-on-started-link.component.html',
 })

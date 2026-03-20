@@ -8,6 +8,7 @@ import { QemuService } from '@services/qemu.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-qemu-image-creator',
   templateUrl: './qemu-image-creator.component.html',
   styleUrls: ['../../configurator.component.scss'],

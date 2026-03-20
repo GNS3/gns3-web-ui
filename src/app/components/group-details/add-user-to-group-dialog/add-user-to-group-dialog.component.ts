@@ -22,6 +22,7 @@ import {tap} from "rxjs/operators";
 import {ToasterService} from "@services/toaster.service";
 
 @Component({
+  standalone: false,
   selector: 'app-add-user-to-group-dialog',
   templateUrl: './add-user-to-group-dialog.component.html',
   styleUrls: ['./add-user-to-group-dialog.component.scss']

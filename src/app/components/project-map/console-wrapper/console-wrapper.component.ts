@@ -15,6 +15,7 @@ import { ConsoleDevicesPanelComponent } from './console-devices-panel.component'
 import { WebConsoleComponent } from '../web-console/web-console.component';
 
 @Component({
+  standalone: false,
   selector: 'app-console-wrapper',
   templateUrl: './console-wrapper.component.html',
   styleUrls: ['./console-wrapper.component.scss'],

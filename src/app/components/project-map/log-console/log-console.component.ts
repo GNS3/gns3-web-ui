@@ -30,6 +30,7 @@ import { LogEventsDataSource } from './log-events-datasource';
 import * as ipaddr from 'ipaddr.js';
 
 @Component({
+  standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-log-console',
   templateUrl: './log-console.component.html',

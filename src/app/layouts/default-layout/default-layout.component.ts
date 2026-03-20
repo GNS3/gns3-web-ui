@@ -14,6 +14,7 @@ import { ToasterService } from '@services/toaster.service';
 import { version } from '../../version';
 
 @Component({
+  standalone: false,
   selector: 'app-default-layout',
   encapsulation: ViewEncapsulation.None,
   templateUrl: './default-layout.component.html',

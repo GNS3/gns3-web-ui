@@ -4,6 +4,7 @@ import { Controller } from '@models/controller';
 import { LinkService } from '@services/link.service';
 
 @Component({
+  standalone: false,
   selector: 'app-stop-capture-action',
   templateUrl: './stop-capture-action.component.html',
 })

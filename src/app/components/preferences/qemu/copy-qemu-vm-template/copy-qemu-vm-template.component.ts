@@ -10,6 +10,7 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-copy-qemu-virtual-machine-template',
   templateUrl: './copy-qemu-vm-template.component.html',
   styleUrls: ['./copy-qemu-vm-template.component.scss', '../../preferences.component.scss'],

@@ -6,6 +6,7 @@ import {NodeService} from "@services/node.service";
 import {ToasterService} from "@services/toaster.service";
 
 @Component({
+  standalone: false,
   selector: 'app-idle-pc-dialog',
   templateUrl: './idle-pc-dialog.component.html',
   styleUrls: ['./idle-pc-dialog.component.scss'],

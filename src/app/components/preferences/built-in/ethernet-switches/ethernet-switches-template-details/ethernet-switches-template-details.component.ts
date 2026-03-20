@@ -12,6 +12,7 @@ import { ToasterService } from '@services/toaster.service';
 import { PortsComponent } from '../../../common/ports/ports.component';
 
 @Component({
+  standalone: false,
   selector: 'app-ethernet-switches-template-details',
   templateUrl: './ethernet-switches-template-details.component.html',
   styleUrls: ['./ethernet-switches-template-details.component.scss', '../../../preferences.component.scss'],

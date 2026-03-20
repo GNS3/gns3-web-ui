@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 
 @Component({
+  standalone: false,
   selector: 'app-empty-templates-list',
   templateUrl: './empty-templates-list.component.html',
   styleUrls: ['./empty-templates-list.component.scss'],

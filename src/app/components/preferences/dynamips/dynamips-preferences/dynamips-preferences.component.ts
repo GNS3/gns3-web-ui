@@ -5,6 +5,7 @@ import { ControllerSettingsService } from '@services/controller-settings.service
 import { ControllerService } from '@services/controller.service';
 
 @Component({
+  standalone: false,
   selector: 'app-dynamips-preferences',
   templateUrl: './dynamips-preferences.component.html',
   styleUrls: ['./dynamips-preferences.component.scss'],

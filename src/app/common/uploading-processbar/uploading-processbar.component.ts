@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { UploadServiceService } from './upload-service.service';
 
 @Component({
+  standalone: false,
   selector: 'app-uploading-processbar',
   templateUrl: './uploading-processbar.component.html',
   styleUrls: ['./uploading-processbar.component.scss'],

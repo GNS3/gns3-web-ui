@@ -3,6 +3,7 @@ import { QtDasharrayFixer } from '../../../../../helpers/qt-dasharray-fixer';
 import { EllipseElement } from '../../../../../models/drawings/ellipse-element';
 
 @Component({
+  standalone: false,
   selector: '[app-ellipse]',
   templateUrl: './ellipse.component.html',
   styleUrls: ['./ellipse.component.scss'],

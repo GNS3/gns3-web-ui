@@ -12,6 +12,7 @@ import { LinkService } from '@services/link.service';
 import { ProjectService } from '@services/project.service';
 
 @Component({
+  standalone: false,
   selector: 'app-link-created',
   templateUrl: './link-created.component.html',
   styleUrls: ['./link-created.component.scss'],

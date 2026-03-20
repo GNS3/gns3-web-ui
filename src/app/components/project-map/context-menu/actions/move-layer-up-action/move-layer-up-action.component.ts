@@ -8,6 +8,7 @@ import { DrawingService } from '@services/drawing.service';
 import { NodeService } from '@services/node.service';
 
 @Component({
+  standalone: false,
   selector: 'app-move-layer-up-action',
   templateUrl: './move-layer-up-action.component.html',
 })

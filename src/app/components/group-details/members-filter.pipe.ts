@@ -14,6 +14,7 @@ import {Pipe, PipeTransform} from '@angular/core';
 import {User} from "@models/users/user";
 
 @Pipe({
+  standalone: false,
   name: 'membersFilter'
 })
 export class MembersFilterPipe implements PipeTransform {

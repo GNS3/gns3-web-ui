@@ -9,6 +9,7 @@ import { ToasterService } from '@services/toaster.service';
 import { ProjectNameValidator } from '../models/projectNameValidator';
 
 @Component({
+  standalone: false,
   selector: 'app-save-project-dialog',
   templateUrl: './save-project-dialog.component.html',
   styleUrls: ['./save-project-dialog.component.scss'],

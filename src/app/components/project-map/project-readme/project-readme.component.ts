@@ -10,6 +10,7 @@ import { ViewChild } from '@angular/core';
 import { marked } from 'marked';
 
 @Component({
+  standalone: false,
   selector: 'app-project-readme',
   templateUrl: './project-readme.component.html',
   styleUrls: ['./project-readme.component.scss']

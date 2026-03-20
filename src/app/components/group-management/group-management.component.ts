@@ -28,6 +28,7 @@ import {MatTableDataSource} from "@angular/material/table";
 
 
 @Component({
+  standalone: false,
   selector: 'app-group-management',
   templateUrl: './group-management.component.html',
   styleUrls: ['./group-management.component.scss']

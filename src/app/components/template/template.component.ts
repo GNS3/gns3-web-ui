@@ -13,6 +13,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Context } from '../../cartography/models/context';
 
 @Component({
+  standalone: false,
   selector: 'app-template',
   templateUrl: './template.component.html',
   styleUrls: ['./template.component.scss'],

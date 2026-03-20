@@ -30,6 +30,7 @@ import { MapLinkNode } from '../../models/map/map-link-node';
 import { Node } from '../../models/node';
 
 @Component({
+  standalone: false,
   selector: 'app-text-editor',
   templateUrl: './text-editor.component.html',
   styleUrls: ['./text-editor.component.scss'],

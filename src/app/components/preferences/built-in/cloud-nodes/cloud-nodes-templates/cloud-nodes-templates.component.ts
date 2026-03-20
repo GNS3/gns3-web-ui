@@ -7,6 +7,7 @@ import { ControllerService } from '@services/controller.service';
 import { DeleteTemplateComponent } from '../../../common/delete-template-component/delete-template.component';
 
 @Component({
+  standalone: false,
   selector: 'app-cloud-nodes-templates',
   templateUrl: './cloud-nodes-templates.component.html',
   styleUrls: ['./cloud-nodes-templates.component.scss', '../../../preferences.component.scss'],

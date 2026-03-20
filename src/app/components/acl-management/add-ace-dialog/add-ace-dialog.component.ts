@@ -32,6 +32,7 @@ import {EndpointNode, EndpointTreeAdapter} from "@components/acl-management/add-
 
 
 @Component({
+  standalone: false,
   selector: 'app-add-ace-dialog',
   templateUrl: './add-ace-dialog.component.html',
   styleUrls: ['./add-ace-dialog.component.scss']

@@ -9,6 +9,7 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-copy-ios-template',
   templateUrl: './copy-ios-template.component.html',
   styleUrls: ['./copy-ios-template.component.scss', '../../preferences.component.scss'],

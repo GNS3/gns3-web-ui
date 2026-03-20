@@ -10,6 +10,7 @@ import { ToasterService } from '@services/toaster.service';
 import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
 
 @Component({
+  standalone: false,
   selector: 'app-configurator-ethernet-hub',
   templateUrl: './configurator-ethernet-hub.component.html',
   styleUrls: ['../configurator.component.scss'],

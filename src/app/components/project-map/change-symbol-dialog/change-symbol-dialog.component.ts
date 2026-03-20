@@ -5,6 +5,7 @@ import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 
 @Component({
+  standalone: false,
   selector: 'app-change-symbol-dialog',
   templateUrl: './change-symbol-dialog.component.html',
   styleUrls: ['./change-symbol-dialog.component.scss'],

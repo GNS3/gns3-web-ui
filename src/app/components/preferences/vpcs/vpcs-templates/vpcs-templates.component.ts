@@ -7,6 +7,7 @@ import { VpcsService } from '@services/vpcs.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
 @Component({
+  standalone: false,
   selector: 'app-vpcs-templates',
   templateUrl: './vpcs-templates.component.html',
   styleUrls: ['./vpcs-templates.component.scss', '../../preferences.component.scss'],

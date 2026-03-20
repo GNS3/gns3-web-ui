@@ -14,6 +14,7 @@ import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-add-docker-template',
   templateUrl: './add-docker-template.component.html',
   styleUrls: ['./add-docker-template.component.scss', '../../preferences.component.scss'],

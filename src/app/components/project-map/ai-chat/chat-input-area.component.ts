@@ -18,6 +18,7 @@ import { OverlayContainer } from '@angular/cdk/overlay';
  * Inspired by FlowNet-Lab ChatInput component
  */
 @Component({
+  standalone: false,
   selector: 'app-chat-input-area',
   template: `
     <div class="chat-input-area">

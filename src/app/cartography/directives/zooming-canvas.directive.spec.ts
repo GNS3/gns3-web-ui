@@ -7,6 +7,7 @@ import { Context } from '../models/context';
 import { ZoomingCanvasDirective } from './zooming-canvas.directive';
 
 @Component({
+  standalone: false,
   template: `<svg #svg class="map" preserveAspectRatio="none" zoomingCanvas>
     <g class="canvas" transform="translate(0, 0) scale(1)"></g>
   </svg>`,

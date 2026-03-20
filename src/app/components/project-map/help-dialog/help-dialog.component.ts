@@ -3,6 +3,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { Message } from '@models/message';
 
 @Component({
+  standalone: false,
   selector: 'app-help-dialog',
   templateUrl: './help-dialog.component.html',
   styleUrls: ['./help-dialog.component.scss'],

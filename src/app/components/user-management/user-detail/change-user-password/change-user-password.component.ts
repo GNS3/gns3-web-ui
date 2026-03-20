@@ -8,6 +8,7 @@ import {ToasterService} from "@services/toaster.service";
 import {matchingPassword} from "@components/user-management/ConfirmPasswordValidator";
 
 @Component({
+  standalone: false,
   selector: 'app-change-user-password',
   templateUrl: './change-user-password.component.html',
   styleUrls: ['./change-user-password.component.scss']

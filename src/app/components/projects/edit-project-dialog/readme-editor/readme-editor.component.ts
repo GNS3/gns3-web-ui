@@ -6,7 +6,8 @@ import { Controller } from '@models/controller';
 import { Project } from '@models/project';
 
 @Component({
-    selector: 'app-readme-editor',
+  standalone: false,
+  selector: 'app-readme-editor',
     templateUrl: './readme-editor.component.html',
     encapsulation: ViewEncapsulation.None,
     styleUrls: ['./readme-editor.component.scss']

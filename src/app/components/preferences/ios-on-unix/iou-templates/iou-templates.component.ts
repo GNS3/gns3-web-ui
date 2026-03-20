@@ -7,6 +7,7 @@ import { ControllerService } from '@services/controller.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
 @Component({
+  standalone: false,
   selector: 'app-iou-templates',
   templateUrl: './iou-templates.component.html',
   styleUrls: ['./iou-templates.component.scss', '../../preferences.component.scss'],

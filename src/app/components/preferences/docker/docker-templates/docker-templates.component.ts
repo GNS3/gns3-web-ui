@@ -7,6 +7,7 @@ import { ControllerService } from '@services/controller.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
 @Component({
+  standalone: false,
   selector: 'app-docker-templates',
   templateUrl: './docker-templates.component.html',
   styleUrls: ['./docker-templates.component.scss', '../../preferences.component.scss'],

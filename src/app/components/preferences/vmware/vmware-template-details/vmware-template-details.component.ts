@@ -13,6 +13,7 @@ import { VmwareService } from '@services/vmware.service';
 import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
 
 @Component({
+  standalone: false,
   selector: 'app-vmware-template-details',
   templateUrl: './vmware-template-details.component.html',
   styleUrls: ['./vmware-template-details.component.scss', '../../preferences.component.scss'],

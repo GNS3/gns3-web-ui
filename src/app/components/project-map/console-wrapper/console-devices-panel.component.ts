@@ -11,6 +11,7 @@ import { NodesDataSource } from '../../../cartography/datasources/nodes-datasour
  * Displays a list of console-capable devices in the sidebar
  */
 @Component({
+  standalone: false,
   selector: 'app-console-devices-panel',
   templateUrl: './console-devices-panel.component.html',
   styleUrls: ['./console-devices-panel.component.scss']

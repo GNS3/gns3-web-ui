@@ -21,6 +21,7 @@ import { DrawingsDataSource } from '../../../cartography/datasources/drawings-da
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { AiChatStore } from '../../../stores/ai-chat.store';
 @Component({
+  standalone: false,
   selector: 'app-project-map-menu',
   templateUrl: './project-map-menu.component.html',
   styleUrls: ['./project-map-menu.component.scss'],

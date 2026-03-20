@@ -14,6 +14,7 @@ import { ConfirmationBottomSheetComponent } from '../projects/confirmation-botto
 import { AddControllerDialogComponent } from './add-controller-dialog/add-controller-dialog.component';
 
 @Component({
+  standalone: false,
   selector: 'app-controller-list',
   templateUrl: './controllers.component.html',
   styleUrls: ['./controllers.component.scss'],

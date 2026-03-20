@@ -13,6 +13,7 @@ import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
 
 @Component({
+  standalone: false,
   selector: 'app-text-added',
   templateUrl: './text-added.component.html',
   styleUrls: ['./text-added.component.scss'],

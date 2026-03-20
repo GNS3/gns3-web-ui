@@ -11,6 +11,7 @@ import { ToasterService } from '@services/toaster.service';
 import { VmwareConfigurationService } from '@services/vmware-configuration.service';
 
 @Component({
+  standalone: false,
   selector: 'app-configurator-vmware',
   templateUrl: './configurator-vmware.component.html',
   styleUrls: ['../configurator.component.scss'],

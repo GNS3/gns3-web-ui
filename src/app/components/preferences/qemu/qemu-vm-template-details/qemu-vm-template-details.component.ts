@@ -14,6 +14,7 @@ import { ToasterService } from '@services/toaster.service';
 import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
 
 @Component({
+  standalone: false,
   selector: 'app-qemu-virtual-machine-template-details',
   templateUrl: './qemu-vm-template-details.component.html',
   styleUrls: ['./qemu-vm-template-details.component.scss', '../../preferences.component.scss'],

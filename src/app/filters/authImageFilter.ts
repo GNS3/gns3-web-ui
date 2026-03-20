@@ -5,7 +5,8 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from 'environments/environment';
 
 @Pipe({
-    name: 'authImage'
+  standalone: false,
+  name: 'authImage'
 })
 export class AuthImageFilter implements PipeTransform {
 

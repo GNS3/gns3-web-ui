@@ -5,6 +5,7 @@ import { BackgroundUploadService } from '@services/background-upload.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-add-image-dialog',
   templateUrl: './add-image-dialog.component.html',
   styleUrls: ['./add-image-dialog.component.scss'],

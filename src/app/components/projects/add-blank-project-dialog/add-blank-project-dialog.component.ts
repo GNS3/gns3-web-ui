@@ -12,6 +12,7 @@ import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation
 import { ProjectNameValidator } from '../models/projectNameValidator';
 
 @Component({
+  standalone: false,
   selector: 'app-add-blank-project-dialog',
   templateUrl: './add-blank-project-dialog.component.html',
   styleUrls: ['./add-blank-project-dialog.component.scss'],

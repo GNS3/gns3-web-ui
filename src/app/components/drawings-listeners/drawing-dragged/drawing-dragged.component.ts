@@ -10,6 +10,7 @@ import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
 
 @Component({
+  standalone: false,
   selector: 'app-drawing-dragged',
   templateUrl: './drawing-dragged.component.html',
   styleUrls: ['./drawing-dragged.component.scss'],

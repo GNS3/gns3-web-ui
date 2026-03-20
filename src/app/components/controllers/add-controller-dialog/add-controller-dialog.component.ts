@@ -6,6 +6,7 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-add-controller-dialog',
   templateUrl: 'add-controller-dialog.component.html',
 })

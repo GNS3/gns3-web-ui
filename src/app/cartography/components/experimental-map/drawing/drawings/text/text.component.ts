@@ -4,6 +4,7 @@ import { FontFixer } from '../../../../../helpers/font-fixer';
 import { TextElement } from '../../../../../models/drawings/text-element';
 
 @Component({
+  standalone: false,
   selector: '[app-text]',
   templateUrl: './text.component.html',
   styleUrls: ['./text.component.scss'],

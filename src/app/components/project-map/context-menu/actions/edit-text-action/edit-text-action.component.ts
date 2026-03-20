@@ -10,6 +10,7 @@ import { Controller } from '@models/controller';
 import { TextEditorDialogComponent } from '../../../drawings-editors/text-editor/text-editor.component';
 
 @Component({
+  standalone: false,
   selector: 'app-edit-text-action',
   templateUrl: './edit-text-action.component.html',
 })

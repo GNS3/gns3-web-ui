@@ -7,6 +7,7 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-configurator-switch',
   templateUrl: './configurator-switch.component.html',
   styleUrls: ['../configurator.component.scss', '../../../../preferences/preferences.component.scss'],

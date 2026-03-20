@@ -5,6 +5,7 @@ import { Symbol } from '@models/symbol';
 import { SymbolService } from '@services/symbol.service';
 
 @Component({
+  standalone: false,
   selector: 'app-symbols',
   templateUrl: './symbols.component.html',
   styleUrls: ['./symbols.component.scss'],

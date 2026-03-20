@@ -13,6 +13,7 @@ import { NodeSelectInterfaceComponent } from '@components/project-map/node-selec
 import { Link } from '@models/link';
 
 @Component({
+  standalone: false,
   selector: 'app-draw-link-tool',
   templateUrl: './draw-link-tool.component.html',
   styleUrls: ['./draw-link-tool.component.scss'],

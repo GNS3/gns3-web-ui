@@ -6,6 +6,7 @@ import { Controller } from '@models/controller';
 import { ControllerService } from '@services/controller.service';
 
 @Component({
+  standalone: false,
   selector: 'app-bundled-controller-finder',
   templateUrl: './bundled-controller-finder.component.html',
   styleUrls: ['./bundled-controller-finder.component.scss'],

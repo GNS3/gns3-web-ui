@@ -2,6 +2,7 @@ import { Component, Input } from '@angular/core';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 
 @Component({
+  standalone: false,
   selector: 'app-custom-adapters-table',
   templateUrl: './custom-adapters-table.component.html',
   styleUrls: ['../../preferences.component.scss'],

@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { MapSettingsService } from '@services/mapsettings.service';
 
 @Component({
+  standalone: false,
   selector: 'app-http-console-action',
   templateUrl: './http-console-action.component.html',
 })

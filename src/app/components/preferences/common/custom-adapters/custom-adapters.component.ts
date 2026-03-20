@@ -3,6 +3,7 @@ import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 import { CustomAdaptersTableComponent } from '../custom-adapters-table/custom-adapters-table.component';
 
 @Component({
+  standalone: false,
   selector: 'app-custom-adapters',
   templateUrl: './custom-adapters.component.html',
   styleUrls: ['./custom-adapters.component.scss', '../../preferences.component.scss'],

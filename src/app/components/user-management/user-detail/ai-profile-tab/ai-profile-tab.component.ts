@@ -18,6 +18,7 @@ import { AiProfileDialogComponent } from './ai-profile-dialog/ai-profile-dialog.
 import { ConfirmDialogComponent } from './ai-profile-dialog/confirm-dialog/confirm-dialog.component';
 
 @Component({
+  standalone: false,
   selector: 'app-ai-profile-tab',
   templateUrl: './ai-profile-tab.component.html',
   styleUrls: ['./ai-profile-tab.component.scss']

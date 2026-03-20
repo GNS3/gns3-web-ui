@@ -11,6 +11,7 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-cloud-nodes-template-details',
   templateUrl: './cloud-nodes-template-details.component.html',
   styleUrls: ['./cloud-nodes-template-details.component.scss', '../../../preferences.component.scss'],

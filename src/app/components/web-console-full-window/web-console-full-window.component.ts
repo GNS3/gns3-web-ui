@@ -14,6 +14,7 @@ import { ThemeService } from '@services/theme.service';
 import { XtermContextMenuService } from '@services/xterm-context-menu.service';
 
 @Component({
+  standalone: false,
   encapsulation: ViewEncapsulation.None,
   selector: 'app-web-console-full-window',
   templateUrl: './web-console-full-window.component.html',

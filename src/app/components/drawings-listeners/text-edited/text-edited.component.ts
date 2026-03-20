@@ -11,6 +11,7 @@ import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
 
 @Component({
+  standalone: false,
   selector: 'app-text-edited',
   templateUrl: './text-edited.component.html',
   styleUrls: ['./text-edited.component.scss'],

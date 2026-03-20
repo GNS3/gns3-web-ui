@@ -10,6 +10,7 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-duplicate-action',
   templateUrl: './duplicate-action.component.html',
 })

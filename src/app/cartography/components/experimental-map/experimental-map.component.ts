@@ -25,6 +25,7 @@ import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
 import { GraphLayout } from '../../widgets/graph-layout';
 
 @Component({
+  standalone: false,
   selector: 'app-experimental-map',
   templateUrl: './experimental-map.component.html',
   styleUrls: ['./experimental-map.component.scss'],

@@ -13,6 +13,7 @@ import { VirtualBoxService } from '@services/virtual-box.service';
 import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
 
 @Component({
+  standalone: false,
   selector: 'app-virtual-box-template-details',
   templateUrl: './virtual-box-template-details.component.html',
   styleUrls: ['./virtual-box-template-details.component.scss', '../../preferences.component.scss'],

@@ -8,6 +8,7 @@ import { VirtualBoxService } from '@services/virtual-box.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 
 @Component({
+  standalone: false,
   selector: 'app-virtual-box-templates',
   templateUrl: './virtual-box-templates.component.html',
   styleUrls: ['./virtual-box-templates.component.scss', '../../preferences.component.scss'],

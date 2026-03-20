@@ -7,6 +7,7 @@ import { LinkNode } from '@models/link-node';
 import { Port } from '@models/port';
 
 @Component({
+  standalone: false,
   selector: 'app-node-select-interface',
   templateUrl: './node-select-interface.component.html',
   styleUrls: ['./node-select-interface.component.scss'],

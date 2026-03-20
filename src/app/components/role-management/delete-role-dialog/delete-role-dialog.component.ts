@@ -15,6 +15,7 @@ import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {Role} from "@models/api/role";
 
 @Component({
+  standalone: false,
   selector: 'app-delete-role-dialog',
   templateUrl: './delete-role-dialog.component.html',
   styleUrls: ['./delete-role-dialog.component.scss']

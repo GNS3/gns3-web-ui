@@ -7,6 +7,7 @@ import { catchError } from 'rxjs/operators';
 import { ImageData } from '@models/images';
 
 @Component({
+  standalone: false,
   selector: 'app-deleteallfiles-dialog',
   templateUrl: './deleteallfiles-dialog.component.html',
   styleUrls: ['./deleteallfiles-dialog.component.scss']

@@ -22,6 +22,7 @@ import { ImportProjectDialogComponent } from './import-project-dialog/import-pro
 import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog.component';
 
 @Component({
+  standalone: false,
   selector: 'app-projects',
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.scss'],

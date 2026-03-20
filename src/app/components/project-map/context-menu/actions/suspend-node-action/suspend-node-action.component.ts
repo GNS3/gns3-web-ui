@@ -4,6 +4,7 @@ import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 
 @Component({
+  standalone: false,
   selector: 'app-suspend-node-action',
   templateUrl: './suspend-node-action.component.html',
 })

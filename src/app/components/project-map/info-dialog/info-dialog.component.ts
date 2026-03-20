@@ -5,6 +5,7 @@ import { Controller } from '@models/controller';
 import { InfoService } from '@services/info.service';
 
 @Component({
+  standalone: false,
   selector: 'app-info-dialog',
   templateUrl: './info-dialog.component.html',
   styleUrls: ['./info-dialog.component.scss'],

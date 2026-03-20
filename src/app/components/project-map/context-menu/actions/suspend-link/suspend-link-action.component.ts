@@ -4,6 +4,7 @@ import { Controller } from '@models/controller';
 import { LinkService } from '@services/link.service';
 
 @Component({
+  standalone: false,
   selector: 'app-suspend-link-action',
   templateUrl: './suspend-link-action.component.html',
 })

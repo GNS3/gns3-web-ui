@@ -108,6 +108,7 @@ export const COPILOT_MODES: { value: CopilotMode; label: string; description: st
 const STANDARD_FIELDS = ['name', 'model_type', 'provider', 'model', 'api_key', 'base_url', 'temperature', 'context_limit', 'context_strategy', 'copilot_mode', 'is_default'];
 
 @Component({
+  standalone: false,
   selector: 'app-ai-profile-dialog',
   templateUrl: './ai-profile-dialog.component.html',
   styleUrls: ['./ai-profile-dialog.component.scss'],

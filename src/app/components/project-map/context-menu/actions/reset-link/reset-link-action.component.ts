@@ -4,6 +4,7 @@ import { Link } from '../../../../../models/link';
 import { LinkService } from '../../../../../services/link.service';
 
 @Component({
+  standalone: false,
   selector: 'app-reset-link-action',
   templateUrl: './reset-link-action.component.html',
 })

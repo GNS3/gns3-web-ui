@@ -15,6 +15,7 @@ import {
 } from "@components/resource-pool-details/delete-resource-confirmation-dialog/delete-resource-confirmation-dialog.component";
 
 @Component({
+  standalone: false,
   selector: 'app-resource-pool-details',
   templateUrl: './resource-pool-details.component.html',
   styleUrls: ['./resource-pool-details.component.scss']

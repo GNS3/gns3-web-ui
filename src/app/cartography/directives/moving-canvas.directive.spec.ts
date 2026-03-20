@@ -6,6 +6,7 @@ import { Context } from '../models/context';
 import { MovingCanvasDirective } from './moving-canvas.directive';
 
 @Component({
+  standalone: false,
   template: `<svg #svg class="map" preserveAspectRatio="none" movingCanvas>
     <g class="canvas" transform="translate(0, 0) scale(1)"></g>
   </svg>`,

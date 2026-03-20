@@ -5,6 +5,7 @@ import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
 
 @Component({
+  standalone: false,
   selector: 'app-choose-name-dialog',
   templateUrl: './choose-name-dialog.component.html',
   styleUrls: ['./choose-name-dialog.component.scss'],

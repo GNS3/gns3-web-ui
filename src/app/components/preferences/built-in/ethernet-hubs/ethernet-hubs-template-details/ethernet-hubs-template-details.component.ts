@@ -11,6 +11,7 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-ethernet-hubs-template-details',
   templateUrl: './ethernet-hubs-template-details.component.html',
   styleUrls: ['./ethernet-hubs-template-details.component.scss', '../../../preferences.component.scss'],

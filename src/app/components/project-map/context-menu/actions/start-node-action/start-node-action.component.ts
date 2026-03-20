@@ -5,6 +5,7 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-start-node-action',
   templateUrl: './start-node-action.component.html',
 })

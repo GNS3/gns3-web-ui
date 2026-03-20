@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
+  standalone: false,
   selector: 'app-help',
   templateUrl: './help.component.html',
   styleUrls: ['./help.component.scss'],

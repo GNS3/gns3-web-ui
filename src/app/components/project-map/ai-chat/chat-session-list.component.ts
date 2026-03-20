@@ -15,6 +15,7 @@ import { ConfirmationDialogComponent, ConfirmationDialogData } from '@components
  * Displays and manages chat sessions
  */
 @Component({
+  standalone: false,
   selector: 'app-chat-session-list',
   template: `
     <div class="chat-session-list">

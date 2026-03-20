@@ -13,6 +13,7 @@ import { EditNetworkConfigurationDialogComponent } from './edit-network-configur
 import { NonNegativeValidator } from '../../../../../validators/non-negative-validator';
 
 @Component({
+  standalone: false,
   selector: 'app-configurator-docker',
   templateUrl: './configurator-docker.component.html',
   styleUrls: ['../configurator.component.scss'],

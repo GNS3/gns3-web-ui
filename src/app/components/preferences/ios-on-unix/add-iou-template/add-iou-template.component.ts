@@ -18,6 +18,7 @@ import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-add-iou-template',
   templateUrl: './add-iou-template.component.html',
   styleUrls: ['./add-iou-template.component.scss', '../../preferences.component.scss'],

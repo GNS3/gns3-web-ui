@@ -6,6 +6,7 @@ import { Controller } from '@models/controller';
 import { LinkStyleEditorDialogComponent } from '../../../drawings-editors/link-style-editor/link-style-editor.component';
 
 @Component({
+  standalone: false,
   selector: 'app-edit-link-style-action',
 
   templateUrl: './edit-link-style-action.component.html',

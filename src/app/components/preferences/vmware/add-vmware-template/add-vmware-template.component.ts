@@ -11,6 +11,7 @@ import { ToasterService } from '@services/toaster.service';
 import { VmwareService } from '@services/vmware.service';
 
 @Component({
+  standalone: false,
   selector: 'app-add-vmware-template',
   templateUrl: './add-vmware-template.component.html',
   styleUrls: ['./add-vmware-template.component.scss', '../../preferences.component.scss'],

@@ -4,6 +4,7 @@ import { Controller } from '@models/controller';
 import { ControllerService } from '@services/controller.service';
 
 @Component({
+  standalone: false,
   selector: 'app-vpcs-preferences',
   templateUrl: './vpcs-preferences.component.html',
   styleUrls: ['./vpcs-preferences.component.scss'],

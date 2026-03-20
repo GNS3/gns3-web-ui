@@ -12,6 +12,7 @@ import { LinksEventSource } from '../../../../cartography/events/links-event-sou
 import { LinkToMapLinkConverter } from '../../../../cartography/converters/map/link-to-map-link-converter';
 
 @Component({
+  standalone: false,
   selector: 'app-link-style-editor',
   templateUrl: './link-style-editor.component.html',
   styleUrls: ['./link-style-editor.component.scss'],

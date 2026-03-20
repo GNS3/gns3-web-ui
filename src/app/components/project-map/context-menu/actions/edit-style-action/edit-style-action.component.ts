@@ -7,6 +7,7 @@ import { Controller } from '@models/controller';
 import { StyleEditorDialogComponent } from '../../../drawings-editors/style-editor/style-editor.component';
 
 @Component({
+  standalone: false,
   selector: 'app-edit-style-action',
   templateUrl: './edit-style-action.component.html',
 })

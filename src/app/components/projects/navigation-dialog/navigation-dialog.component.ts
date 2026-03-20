@@ -3,6 +3,7 @@ import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { ThemeService } from '@services/theme.service';
 
 @Component({
+  standalone: false,
   selector: 'app-navigation-dialog',
   templateUrl: 'navigation-dialog.component.html',
   styleUrls: ['navigation-dialog.component.scss'],

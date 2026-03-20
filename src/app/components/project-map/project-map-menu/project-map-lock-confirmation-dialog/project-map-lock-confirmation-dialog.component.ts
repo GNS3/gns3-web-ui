@@ -2,6 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
+  standalone: false,
   selector: 'app-project-map-lock-confirmation-dialog',
   templateUrl: './project-map-lock-confirmation-dialog.component.html',
   styleUrls: ['./project-map-lock-confirmation-dialog.component.scss']

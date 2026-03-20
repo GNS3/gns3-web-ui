@@ -10,6 +10,7 @@ import { VncConsoleService } from '@services/vnc-console.service';
 import * as ipaddr from 'ipaddr.js';
 
 @Component({
+  standalone: false,
   selector: 'app-console-device-action-browser',
   templateUrl: './console-device-action-browser.component.html',
 })

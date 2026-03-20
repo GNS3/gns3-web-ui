@@ -5,6 +5,7 @@ import { Controller } from '@models/controller';
 import { InfoDialogComponent } from '../../../info-dialog/info-dialog.component';
 
 @Component({
+  standalone: false,
   selector: 'app-show-node-action',
   templateUrl: './show-node-action.component.html',
 })

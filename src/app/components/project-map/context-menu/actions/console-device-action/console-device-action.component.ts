@@ -7,6 +7,7 @@ import { SettingsService } from '@services/settings.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-console-device-action',
   templateUrl: './console-device-action.component.html',
 })

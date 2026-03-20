@@ -10,6 +10,7 @@ import { ToasterService } from '@services/toaster.service';
 import { CreateSnapshotDialogComponent } from '../create-snapshot-dialog/create-snapshot-dialog.component';
 
 @Component({
+  standalone: false,
   selector: 'app-snapshot-menu-item',
   templateUrl: './snapshot-menu-item.component.html',
   styleUrls: ['./snapshot-menu-item.component.scss'],

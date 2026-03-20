@@ -12,6 +12,7 @@ import { ToasterService } from '@services/toaster.service';
 import { VersionService } from '@services/version.service';
 
 @Component({
+  standalone: false,
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],

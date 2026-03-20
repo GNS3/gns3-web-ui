@@ -7,6 +7,7 @@ import { MapDrawing } from '../../models/map/map-drawing';
 import { DrawingsWidget } from '../../widgets/drawings';
 
 @Component({
+  standalone: false,
   selector: 'app-drawing-resizing',
   template: ` <ng-content></ng-content> `,
   styleUrls: ['./drawing-resizing.component.scss'],

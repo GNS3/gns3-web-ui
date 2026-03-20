@@ -21,6 +21,7 @@ import { FontFixer } from '../../../helpers/font-fixer';
 import { MapNode } from '../../../models/map/map-node';
 
 @Component({
+  standalone: false,
   selector: '[app-node]',
   templateUrl: './node.component.html',
   styleUrls: ['./node.component.scss'],

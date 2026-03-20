@@ -6,6 +6,7 @@ import { ToasterService } from "@services/toaster.service";
 import { ProgressService } from "../../../../../common/progress/progress.service";
 
 @Component({
+  standalone: false,
   selector: 'app-auto-idle-pc-action',
   templateUrl: './auto-idle-pc-action.component.html',
 })

@@ -23,6 +23,7 @@ import { ToasterService } from '@services/toaster.service';
 import { RotationValidator } from '../../../../validators/rotation-validator';
 
 @Component({
+  standalone: false,
   selector: 'app-text-editor',
   templateUrl: './text-editor.component.html',
   styleUrls: ['./text-editor.component.scss'],

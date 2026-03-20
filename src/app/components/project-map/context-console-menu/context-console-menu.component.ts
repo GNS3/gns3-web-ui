@@ -20,6 +20,7 @@ import { VncConsoleService } from '@services/vnc-console.service';
 import { ConsoleDeviceActionBrowserComponent } from '../context-menu/actions/console-device-action-browser/console-device-action-browser.component';
 
 @Component({
+  standalone: false,
   selector: 'app-context-console-menu',
   templateUrl: './context-console-menu.component.html',
   styleUrls: ['./context-console-menu.component.scss'],

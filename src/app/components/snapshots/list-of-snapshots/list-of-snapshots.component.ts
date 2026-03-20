@@ -10,6 +10,7 @@ import { SnapshotService } from '@services/snapshot.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-list-of-snapshots',
   templateUrl: './list-of-snapshots.component.html',
   styleUrls: ['./list-of-snapshots.component.scss'],

@@ -9,6 +9,7 @@ import { ChangeUserPasswordComponent } from "@components/user-management/user-de
 import { MatDialog } from "@angular/material/dialog";
 
 @Component({
+  standalone: false,
   selector: 'app-logged-user',
   templateUrl: './logged-user.component.html',
   styleUrls: ['./logged-user.component.scss'],

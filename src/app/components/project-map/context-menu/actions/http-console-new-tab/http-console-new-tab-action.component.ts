@@ -7,6 +7,7 @@ import { Controller } from '@models/controller';
 import { Router } from '@angular/router';
 
 @Component({
+  standalone: false,
   selector: 'app-http-console-new-tab-action',
   templateUrl: './http-console-new-tab-action.component.html',
 })

@@ -4,6 +4,7 @@ import { Controller } from '@models/controller';
 import { ControllerService } from '@services/controller.service';
 
 @Component({
+  standalone: false,
   selector: 'app-virtual-box-preferences',
   templateUrl: './virtual-box-preferences.component.html',
   styleUrls: ['./virtual-box-preferences.component.scss'],

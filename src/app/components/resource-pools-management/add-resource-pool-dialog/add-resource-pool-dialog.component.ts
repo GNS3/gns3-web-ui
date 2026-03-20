@@ -8,6 +8,7 @@ import {ToasterService} from "@services/toaster.service";
 import {poolNameAsyncValidator} from "@components/resource-pools-management/add-resource-pool-dialog/PoolNameAsyncValidator";
 
 @Component({
+  standalone: false,
   selector: 'app-add-resource-pool-dialog',
   templateUrl: './add-resource-pool-dialog.component.html',
   styleUrls: ['./add-resource-pool-dialog.component.scss'],

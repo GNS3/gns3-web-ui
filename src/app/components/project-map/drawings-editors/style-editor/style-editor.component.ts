@@ -17,6 +17,7 @@ import { NonNegativeValidator } from '../../../../validators/non-negative-valida
 import { RotationValidator } from '../../../../validators/rotation-validator';
 
 @Component({
+  standalone: false,
   selector: 'app-style-editor',
   templateUrl: './style-editor.component.html',
   styleUrls: ['./style-editor.component.scss'],

@@ -27,6 +27,7 @@ import {Group} from "@models/groups/group";
 import {map, startWith} from "rxjs/operators";
 
 @Component({
+  standalone: false,
   selector: 'app-add-group-dialog',
   templateUrl: './add-group-dialog.component.html',
   styleUrls: ['./add-group-dialog.component.scss'],

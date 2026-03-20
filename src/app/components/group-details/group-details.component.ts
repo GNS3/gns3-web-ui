@@ -32,6 +32,7 @@ import {interval} from "rxjs";
 import {MatTableDataSource} from "@angular/material/table";
 
 @Component({
+  standalone: false,
   selector: 'app-group-details',
   templateUrl: './group-details.component.html',
   styleUrls: ['./group-details.component.scss']

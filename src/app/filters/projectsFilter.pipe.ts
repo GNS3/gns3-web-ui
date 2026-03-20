@@ -2,6 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import { ProjectDataSource } from '@components/projects/projects.component';
 
 @Pipe({
+  standalone: false,
   name: 'projectsfilter',
 })
 export class ProjectsFilter implements PipeTransform {

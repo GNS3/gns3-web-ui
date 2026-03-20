@@ -9,6 +9,7 @@ import { NodeService } from '@services/node.service';
 import { ProjectService } from '@services/project.service';
 
 @Component({
+  standalone: false,
   selector: 'app-lock-action',
   templateUrl: './lock-action.component.html',
 })

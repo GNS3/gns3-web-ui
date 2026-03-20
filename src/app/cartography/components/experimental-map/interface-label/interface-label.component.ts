@@ -3,6 +3,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { CssFixer } from '../../../helpers/css-fixer';
 
 @Component({
+  standalone: false,
   selector: '[app-interface-label]',
   templateUrl: './interface-label.component.html',
   styleUrls: ['./interface-label.component.scss'],

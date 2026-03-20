@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
+  standalone: false,
   selector: 'app-system-status',
   templateUrl: './system-status.component.html',
   styleUrls: ['./system-status.component.scss'],

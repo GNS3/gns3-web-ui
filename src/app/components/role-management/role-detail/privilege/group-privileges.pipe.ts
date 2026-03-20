@@ -2,6 +2,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 import {Privilege} from "@models/api/Privilege";
 
 @Pipe({
+  standalone: false,
   name: 'groupPrivileges'
 })
 export class GroupPrivilegesPipe implements PipeTransform {

@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { ProgressService } from './progress.service';
 
 @Component({
+  standalone: false,
   selector: 'app-progress',
   templateUrl: './progress.component.html',
   styleUrls: ['./progress.component.scss'],

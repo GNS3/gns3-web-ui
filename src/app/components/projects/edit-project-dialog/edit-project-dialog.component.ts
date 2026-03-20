@@ -9,6 +9,7 @@ import { NonNegativeValidator } from '../../../validators/non-negative-validator
 import { ReadmeEditorComponent } from './readme-editor/readme-editor.component';
 
 @Component({
+  standalone: false,
   selector: 'app-edit-project-dialog',
   templateUrl: './edit-project-dialog.component.html',
   styleUrls: ['./edit-project-dialog.component.scss'],

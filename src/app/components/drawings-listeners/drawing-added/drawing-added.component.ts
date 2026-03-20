@@ -11,6 +11,7 @@ import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
 
 @Component({
+  standalone: false,
   selector: 'app-drawing-added',
   templateUrl: './drawing-added.component.html',
   styleUrls: ['./drawing-added.component.scss'],

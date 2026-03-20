@@ -6,6 +6,7 @@ import { Controller } from '@models/controller';
 import { ConfigEditorDialogComponent } from '../../../node-editors/config-editor/config-editor.component';
 
 @Component({
+  standalone: false,
   selector: 'app-edit-config-action',
   templateUrl: './edit-config-action.component.html',
 })

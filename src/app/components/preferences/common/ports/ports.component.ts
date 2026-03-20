@@ -4,6 +4,7 @@ import { BuiltInTemplatesConfigurationService } from '@services/built-in-templat
 import { ToasterService } from "@services/toaster.service";
 
 @Component({
+  standalone: false,
   selector: 'app-ports',
   templateUrl: './ports.component.html',
   styleUrls: ['../../preferences.component.scss'],

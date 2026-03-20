@@ -11,6 +11,7 @@ import { ToasterService } from '@services/toaster.service';
 import { VirtualBoxService } from '@services/virtual-box.service';
 
 @Component({
+  standalone: false,
   selector: 'app-add-virtual-box-template',
   templateUrl: './add-virtual-box-template.component.html',
   styleUrls: ['./add-virtual-box-template.component.scss', '../../preferences.component.scss'],

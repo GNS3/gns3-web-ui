@@ -20,6 +20,7 @@ import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-add-ios-template',
   templateUrl: './add-ios-template.component.html',
   styleUrls: ['./add-ios-template.component.scss', '../../preferences.component.scss'],

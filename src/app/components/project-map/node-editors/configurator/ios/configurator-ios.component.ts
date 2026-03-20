@@ -10,6 +10,7 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-configurator-ios',
   templateUrl: './configurator-ios.component.html',
   styleUrls: ['../configurator.component.scss'],

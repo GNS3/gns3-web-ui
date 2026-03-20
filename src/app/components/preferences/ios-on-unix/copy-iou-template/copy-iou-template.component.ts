@@ -9,6 +9,7 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-copy-iou-template',
   templateUrl: './copy-iou-template.component.html',
   styleUrls: ['./copy-iou-template.component.scss', '../../preferences.component.scss'],

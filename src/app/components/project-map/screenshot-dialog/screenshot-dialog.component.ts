@@ -5,6 +5,7 @@ import { DeviceDetectorService } from 'ngx-device-detector';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-screenshot-dialog',
   templateUrl: './screenshot-dialog.component.html',
   styleUrls: ['./screenshot-dialog.component.scss'],

@@ -23,6 +23,7 @@ import { getModelDisplayName, shortenModelName } from '@utils/ai-profile.util';
  * Integrates all sub-components and handles main business logic
  */
 @Component({
+  standalone: false,
   selector: 'app-ai-chat',
   templateUrl: './ai-chat.component.html',
   styleUrls: ['./ai-chat.component.scss'],

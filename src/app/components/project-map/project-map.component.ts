@@ -98,6 +98,7 @@ import { ProjectReadmeComponent } from './project-readme/project-readme.componen
 import { AiChatStore } from '../../stores/ai-chat.store';
 
 @Component({
+  standalone: false,
   selector: 'app-project-map',
   encapsulation: ViewEncapsulation.None,
   templateUrl: './project-map.component.html',

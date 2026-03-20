@@ -4,6 +4,7 @@ import { SelectionManager } from '../../managers/selection-manager';
 import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
 
 @Component({
+  standalone: false,
   selector: 'app-selection-select',
   templateUrl: './selection-select.component.html',
   styleUrls: ['./selection-select.component.scss'],

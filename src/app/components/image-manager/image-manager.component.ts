@@ -16,6 +16,7 @@ import { Subscription } from 'rxjs';
 import { ImageUploadEvent, ImageUploadSessionService } from '@services/image-upload-session.service';
 
 @Component({
+  standalone: false,
   selector: 'app-image-manager',
   templateUrl: './image-manager.component.html',
   styleUrls: ['./image-manager.component.scss']

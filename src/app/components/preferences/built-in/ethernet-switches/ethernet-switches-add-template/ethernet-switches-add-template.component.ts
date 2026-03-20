@@ -12,6 +12,7 @@ import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-ethernet-switches-add-template',
   templateUrl: './ethernet-switches-add-template.component.html',
   styleUrls: ['./ethernet-switches-add-template.component.scss', '../../../preferences.component.scss'],

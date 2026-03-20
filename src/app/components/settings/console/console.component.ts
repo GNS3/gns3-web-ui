@@ -5,6 +5,7 @@ import { ConsoleService } from '@services/settings/console.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: false,
   selector: 'app-console',
   templateUrl: './console.component.html',
   styleUrls: ['./console.component.scss'],

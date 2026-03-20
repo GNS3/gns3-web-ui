@@ -16,6 +16,7 @@ import {Controller} from "@models/controller";
 import {ControllerService} from "@services/controller.service";
 
 @Component({
+  standalone: false,
   selector: 'app-management',
   templateUrl: './management.component.html',
   styleUrls: ['./management.component.scss']

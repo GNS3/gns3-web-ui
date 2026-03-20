@@ -8,6 +8,7 @@ import { DrawingService } from '@services/drawing.service';
 import { NodeService } from '@services/node.service';
 
 @Component({
+  standalone: false,
   selector: 'app-bring-to-front-action',
   templateUrl: './bring-to-front-action.component.html',
 })

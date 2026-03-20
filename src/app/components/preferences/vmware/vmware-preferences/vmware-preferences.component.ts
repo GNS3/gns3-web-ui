@@ -4,6 +4,7 @@ import { Controller } from '@models/controller';
 import { ControllerService } from '@services/controller.service';
 
 @Component({
+  standalone: false,
   selector: 'app-vmware-preferences',
   templateUrl: './vmware-preferences.component.html',
   styleUrls: ['./vmware-preferences.component.scss'],

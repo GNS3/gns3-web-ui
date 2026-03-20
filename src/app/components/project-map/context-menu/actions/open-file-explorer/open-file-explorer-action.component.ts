@@ -3,6 +3,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 
 @Component({
+  standalone: false,
   selector: 'app-open-file-explorer-action',
   templateUrl: './open-file-explorer-action.component.html',
 })

@@ -3,6 +3,7 @@ import { QtDasharrayFixer } from '../../../../../helpers/qt-dasharray-fixer';
 import { RectElement } from '../../../../../models/drawings/rect-element';
 
 @Component({
+  standalone: false,
   selector: '[app-rect]',
   templateUrl: './rect.component.html',
   styleUrls: ['./rect.component.scss'],

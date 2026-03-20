@@ -5,6 +5,7 @@ import { Controller } from '@models/controller';
 import { ChangeSymbolDialogComponent } from '../../../change-symbol-dialog/change-symbol-dialog.component';
 
 @Component({
+  standalone: false,
   selector: 'app-change-symbol-action',
   templateUrl: './change-symbol-action.component.html',
 })
