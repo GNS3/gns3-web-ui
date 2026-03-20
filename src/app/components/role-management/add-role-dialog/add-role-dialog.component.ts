@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, Inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {Controller} from "@models/controller";
@@ -22,7 +22,8 @@ import {groupNameAsyncValidator} from "@components/group-management/add-group-di
   standalone: false,
   selector: 'app-add-role-dialog',
   templateUrl: './add-role-dialog.component.html',
-  styleUrls: ['./add-role-dialog.component.scss']
+  styleUrls: ['./add-role-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddRoleDialogComponent implements OnInit {
 
@@ -30,7 +31,8 @@ export class AddRoleDialogComponent implements OnInit {
 
   constructor(private dialogRef: MatDialogRef<AddRoleDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: { controller: Controller },
-              private formBuilder: UntypedFormBuilder) {
+              private formBuilder: UntypedFormBuilder,
+              private cd: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -38,6 +40,7 @@ export class AddRoleDialogComponent implements OnInit {
       name: new UntypedFormControl(),
       description: new UntypedFormControl()
     });
+    this.cd.markForCheck();
   }
 
   get form() {

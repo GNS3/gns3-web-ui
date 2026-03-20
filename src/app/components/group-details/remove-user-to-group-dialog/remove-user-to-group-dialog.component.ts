@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, Inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {User} from "@models/users/user";
 
@@ -18,7 +18,8 @@ import {User} from "@models/users/user";
   standalone: false,
   selector: 'app-remove-user-to-group-dialog',
   templateUrl: './remove-user-to-group-dialog.component.html',
-  styleUrls: ['./remove-user-to-group-dialog.component.scss']
+  styleUrls: ['./remove-user-to-group-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RemoveUserToGroupDialogComponent implements OnInit {
 

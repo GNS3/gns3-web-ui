@@ -11,7 +11,7 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 
-import {Component, Inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {ACE} from "@models/api/ACE";
 
@@ -19,7 +19,8 @@ import {ACE} from "@models/api/ACE";
   standalone: false,
   selector: 'app-delete-ace-dialog',
   templateUrl: './delete-ace-dialog.component.html',
-  styleUrls: ['./delete-ace-dialog.component.scss']
+  styleUrls: ['./delete-ace-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DeleteAceDialogComponent implements OnInit {
 

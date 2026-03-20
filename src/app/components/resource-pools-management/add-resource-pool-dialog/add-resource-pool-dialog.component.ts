@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
 import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {Controller} from "@models/controller";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
@@ -12,7 +12,8 @@ import {poolNameAsyncValidator} from "@components/resource-pools-management/add-
   selector: 'app-add-resource-pool-dialog',
   templateUrl: './add-resource-pool-dialog.component.html',
   styleUrls: ['./add-resource-pool-dialog.component.scss'],
-  providers: [PoolNameValidator]
+  providers: [PoolNameValidator],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddResourcePoolDialogComponent implements OnInit {
   poolNameForm: UntypedFormGroup;
@@ -23,7 +24,8 @@ export class AddResourcePoolDialogComponent implements OnInit {
               private formBuilder: UntypedFormBuilder,
               private poolNameValidator: PoolNameValidator,
               private resourcePoolsService: ResourcePoolsService,
-              private toasterService: ToasterService) {
+              private toasterService: ToasterService,
+              private cd: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -35,6 +37,7 @@ export class AddResourcePoolDialogComponent implements OnInit {
           [poolNameAsyncValidator(this.data.controller, this.resourcePoolsService)]
       ),
     });
+    this.cd.markForCheck();
   }
 
   onKeyDown(event) {

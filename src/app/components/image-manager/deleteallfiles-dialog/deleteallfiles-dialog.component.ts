@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ImageManagerService } from '@services/image-manager.service';
 import { ToasterService } from '@services/toaster.service';
@@ -10,7 +10,8 @@ import { ImageData } from '@models/images';
   standalone: false,
   selector: 'app-deleteallfiles-dialog',
   templateUrl: './deleteallfiles-dialog.component.html',
-  styleUrls: ['./deleteallfiles-dialog.component.scss']
+  styleUrls: ['./deleteallfiles-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DeleteAllImageFilesDialogComponent implements OnInit {
   isDelete: boolean = false;
@@ -22,7 +23,8 @@ export class DeleteAllImageFilesDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public deleteData: any,
     public dialogRef: MatDialogRef<DeleteAllImageFilesDialogComponent>,
     private imageService: ImageManagerService,
-    private toasterService: ToasterService
+    private toasterService: ToasterService,
+    private cd: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
@@ -43,6 +45,7 @@ export class DeleteAllImageFilesDialogComponent implements OnInit {
       this.fileNotDeleted = responses.filter(x => x === null)
       this.isUsedFiles = true;
       this.isDelete = true
+      this.cd.markForCheck();
     });
 
   }

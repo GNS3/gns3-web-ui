@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { DeviceDetectorService } from 'ngx-device-detector';
@@ -9,6 +9,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-screenshot-dialog',
   templateUrl: './screenshot-dialog.component.html',
   styleUrls: ['./screenshot-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ScreenshotDialogComponent implements OnInit {
   nameForm: UntypedFormGroup;
@@ -19,7 +20,8 @@ export class ScreenshotDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<ScreenshotDialogComponent>,
     private toasterService: ToasterService,
     private formBuilder: UntypedFormBuilder,
-    private deviceService: DeviceDetectorService
+    private deviceService: DeviceDetectorService,
+    private cd: ChangeDetectorRef
   ) {
     this.nameForm = this.formBuilder.group({
       screenshotName: new UntypedFormControl(`screenshot-${Date.now()}`, [Validators.required]),
@@ -27,7 +29,9 @@ export class ScreenshotDialogComponent implements OnInit {
     this.isPngAvailable = this.deviceService.getDeviceInfo().os === 'Windows';
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.cd.markForCheck();
+  }
 
   get form() {
     return this.nameForm.controls;
@@ -58,6 +62,7 @@ export class ScreenshotDialogComponent implements OnInit {
   setFiletype(type: string) {
     if (this.isPngAvailable) {
       this.filetype = type;
+      this.cd.markForCheck();
     }
   }
 }

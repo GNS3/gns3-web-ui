@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
 import {MatDialogRef} from '@angular/material/dialog';
 import {Controller} from "@models/controller";
 import {Node} from '../../../../../cartography/models/node';
@@ -10,7 +10,8 @@ import {ToasterService} from "@services/toaster.service";
   selector: 'app-idle-pc-dialog',
   templateUrl: './idle-pc-dialog.component.html',
   styleUrls: ['./idle-pc-dialog.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IdlePCDialogComponent implements OnInit {
   @Input() controller: Controller;
@@ -23,7 +24,8 @@ export class IdlePCDialogComponent implements OnInit {
   constructor(
     private nodeService: NodeService,
     public dialogRef: MatDialogRef<IdlePCDialogComponent>,
-    private toasterService: ToasterService
+    private toasterService: ToasterService,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -55,6 +57,7 @@ export class IdlePCDialogComponent implements OnInit {
         this.idlePC = this.idlepcs[0].key;
       }
       this.isComputing = false;
+      this.cd.markForCheck();
     });
   }
 
@@ -67,6 +70,7 @@ export class IdlePCDialogComponent implements OnInit {
       this.node.properties.idlepc = this.idlePC;
       this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated with idle-PC value ${this.idlePC}`);
+        this.cd.markForCheck();
       });
     }
   }

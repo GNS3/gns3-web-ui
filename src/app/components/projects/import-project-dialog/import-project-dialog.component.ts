@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Inject, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ToasterService } from '@services/toaster.service';
@@ -20,6 +20,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   templateUrl: 'import-project-dialog.component.html',
   styleUrls: ['import-project-dialog.component.scss'],
   providers: [ProjectNameValidator],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ImportProjectDialogComponent implements OnInit {
   uploader: FileUploader;
@@ -45,6 +46,7 @@ export class ImportProjectDialogComponent implements OnInit {
     private toasterService : ToasterService,
     private uploadServiceService: UploadServiceService,
     private snackBar : MatSnackBar,
+    private cd: ChangeDetectorRef
 
   ) {
     this.projectNameForm = this.formBuilder.group({
@@ -62,6 +64,7 @@ export class ImportProjectDialogComponent implements OnInit {
       let controllerResponse: ControllerResponse = JSON.parse(response);
       this.resultMessage = 'An error has occurred: ' + controllerResponse.message;
       this.isFinishEnabled = true;
+      this.cd.markForCheck();
     };
 
     this.uploader.onCompleteItem = (
@@ -73,10 +76,12 @@ export class ImportProjectDialogComponent implements OnInit {
       this.onImportProject.emit(this.uuid);
       this.resultMessage = 'Project was imported succesfully!';
       this.isFinishEnabled = true;
+      this.cd.markForCheck();
     };
     this.uploader.onProgressItem = (progress: any) => {
       this.uploadProgress = progress['progress'];
       this.uploadServiceService.processBarCount(this.uploadProgress)
+      this.cd.markForCheck();
     };
 
     this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
@@ -94,6 +99,7 @@ export class ImportProjectDialogComponent implements OnInit {
     this.projectNameForm.controls['projectName'].setValue(event.target.files[0].name.split('.')[0]);
     this.isImportEnabled = true;
     this.isDeleteVisible = true;
+    this.cd.markForCheck();
   }
 
   onImportClick(): void {
@@ -109,6 +115,7 @@ export class ImportProjectDialogComponent implements OnInit {
         } else {
           this.importProject();
         }
+        this.cd.markForCheck();
       });
     }
   }
@@ -143,6 +150,7 @@ export class ImportProjectDialogComponent implements OnInit {
           });
         });
       }
+      this.cd.markForCheck();
     });
   }
 
@@ -160,6 +168,7 @@ export class ImportProjectDialogComponent implements OnInit {
     this.isImportEnabled = false;
     this.isDeleteVisible = false;
     this.projectNameForm.controls['projectName'].setValue('');
+    this.cd.markForCheck();
   }
 
   prepareUploadPath(): string {

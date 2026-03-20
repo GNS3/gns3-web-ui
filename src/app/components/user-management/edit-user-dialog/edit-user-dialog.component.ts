@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, Inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {Controller} from "@models/controller";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
@@ -24,7 +24,8 @@ import {User} from "@models/users/user";
   standalone: false,
   selector: 'app-edit-user-dialog',
   templateUrl: './edit-user-dialog.component.html',
-  styleUrls: ['./edit-user-dialog.component.scss']
+  styleUrls: ['./edit-user-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditUserDialogComponent implements OnInit {
 
@@ -33,6 +34,7 @@ export class EditUserDialogComponent implements OnInit {
   constructor(public dialogRef: MatDialogRef<EditUserDialogComponent>,
               public userService: UserService,
               private toasterService: ToasterService,
+              private cd: ChangeDetectorRef,
               @Inject(MAT_DIALOG_DATA) public data: { user: User, controller: Controller }) {}
 
   ngOnInit(): void {
@@ -50,6 +52,7 @@ export class EditUserDialogComponent implements OnInit {
         [Validators.minLength(6), Validators.maxLength(100)]),
       is_active: new FormControl(this.data.user.is_active)
     });
+    this.cd.markForCheck();
   }
 
   get form() {

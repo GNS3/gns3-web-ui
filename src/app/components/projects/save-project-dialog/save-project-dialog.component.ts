@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
@@ -14,6 +14,7 @@ import { ProjectNameValidator } from '../models/projectNameValidator';
   templateUrl: './save-project-dialog.component.html',
   styleUrls: ['./save-project-dialog.component.scss'],
   providers: [ProjectNameValidator],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SaveProjectDialogComponent implements OnInit {
   controller: Controller;
@@ -27,14 +28,17 @@ export class SaveProjectDialogComponent implements OnInit {
     private nodesDataSource: NodesDataSource,
     private toasterService: ToasterService,
     private formBuilder: UntypedFormBuilder,
-    private projectNameValidator: ProjectNameValidator
+    private projectNameValidator: ProjectNameValidator,
+    private cd: ChangeDetectorRef
   ) {
     this.projectNameForm = this.formBuilder.group({
       projectName: new UntypedFormControl(null, [Validators.required, projectNameValidator.get]),
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.cd.markForCheck();
+  }
 
   get form() {
     return this.projectNameForm.controls;
@@ -64,6 +68,7 @@ export class SaveProjectDialogComponent implements OnInit {
       } else {
         this.addProject();
       }
+      this.cd.markForCheck();
     });
   }
 

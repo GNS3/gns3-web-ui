@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
@@ -17,6 +17,7 @@ import { ProjectNameValidator } from '../models/projectNameValidator';
   templateUrl: './add-blank-project-dialog.component.html',
   styleUrls: ['./add-blank-project-dialog.component.scss'],
   providers: [ProjectNameValidator],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddBlankProjectDialogComponent implements OnInit {
   controller: Controller;
@@ -31,7 +32,8 @@ export class AddBlankProjectDialogComponent implements OnInit {
     private projectService: ProjectService,
     private toasterService: ToasterService,
     private formBuilder: UntypedFormBuilder,
-    private projectNameValidator: ProjectNameValidator
+    private projectNameValidator: ProjectNameValidator,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -61,6 +63,7 @@ export class AddBlankProjectDialogComponent implements OnInit {
       } else {
         this.addProject();
       }
+      this.cd.markForCheck();
     });
   }
 
@@ -109,6 +112,7 @@ export class AddBlankProjectDialogComponent implements OnInit {
           });
         });
       }
+      this.cd.markForCheck();
     });
   }
 }

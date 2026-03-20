@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, Inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {Role} from "@models/api/role";
 
@@ -18,7 +18,8 @@ import {Role} from "@models/api/role";
   standalone: false,
   selector: 'app-delete-role-dialog',
   templateUrl: './delete-role-dialog.component.html',
-  styleUrls: ['./delete-role-dialog.component.scss']
+  styleUrls: ['./delete-role-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DeleteRoleDialogComponent implements OnInit {
 

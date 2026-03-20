@@ -11,7 +11,7 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 
-import {Component, Inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {UserService} from "@services/user.service";
 import {ToasterService} from "@services/toaster.service";
@@ -35,7 +35,8 @@ import {EndpointNode, EndpointTreeAdapter} from "@components/acl-management/add-
   standalone: false,
   selector: 'app-add-ace-dialog',
   templateUrl: './add-ace-dialog.component.html',
-  styleUrls: ['./add-ace-dialog.component.scss']
+  styleUrls: ['./add-ace-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddAceDialogComponent implements OnInit {
   controller: Controller
@@ -45,16 +46,16 @@ export class AddAceDialogComponent implements OnInit {
 
   endpoints: Endpoint[];
   selectedEndpoint: Endpoint
-  filteredEndpoint: Endpoint[]
+  filteredEndpoint: Endpoint[] = []
   endpointTypes: string[]
 
-  groups: Group[];
+  groups: Group[] = [];
   selectedGroup: Group;
 
-  users: User[];
+  users: User[] = [];
   selectedUser: User;
 
-  roles: Role[];
+  roles: Role[] = [];
   selectedRole: Role;
 
   TREE_DATA: EndpointNode[] = [];
@@ -67,6 +68,7 @@ export class AddAceDialogComponent implements OnInit {
               private groupService: GroupService,
               private roleService: RoleService,
               private toasterService: ToasterService,
+              private cd: ChangeDetectorRef,
               @Inject(MAT_DIALOG_DATA) public data: { endpoints: Endpoint[] }) {
     this.endpoints = data.endpoints
     const treeAdapter = new EndpointTreeAdapter(this.endpoints)
@@ -84,14 +86,17 @@ export class AddAceDialogComponent implements OnInit {
     this.groupService.getGroups(this.controller)
       .subscribe((groups: Group[]) => {
         this.groups = groups;
+        this.cd.markForCheck();
       })
     this.userService.list(this.controller)
       .subscribe((users: User[]) => {
         this.users = users;
+        this.cd.markForCheck();
       })
     this.roleService.get(this.controller)
       .subscribe((roles: Role[]) => {
         this.roles = roles;
+        this.cd.markForCheck();
       })
 
   }

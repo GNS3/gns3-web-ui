@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
@@ -14,6 +14,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-create-snapshot-dialog',
   templateUrl: './create-snapshot-dialog.component.html',
   styleUrls: ['./create-snapshot-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CreateSnapshotDialogComponent {
   controller: Controller;
@@ -29,6 +30,7 @@ export class CreateSnapshotDialogComponent {
     private toasterService: ToasterService,
     private snapshotService: SnapshotService,
     private nodesDataSource: NodesDataSource,
+    private cd: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.controller = data['controller'];
@@ -43,6 +45,7 @@ export class CreateSnapshotDialogComponent {
         snapshots.forEach((snapshot: Snapshot) => {
           this.snapshots.push(snapshot.name);
         });
+        this.cd.markForCheck();
       });
     }
 
@@ -52,6 +55,7 @@ export class CreateSnapshotDialogComponent {
           this.isInRunningState = true;
         }
       });
+      this.cd.markForCheck();
     }
   }
 

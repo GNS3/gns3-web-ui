@@ -39,6 +39,7 @@ import { environment } from 'environments/environment';
   selector: 'app-new-template-dialog',
   templateUrl: './new-template-dialog.component.html',
   styleUrls: ['./new-template-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('detailExpand', [
       state('collapsed', style({ height: '0px', minHeight: '0', visibility: 'hidden' })),
@@ -113,28 +114,34 @@ export class NewTemplateDialogComponent implements OnInit {
       this.allAppliances = appliances;
       this.dataSource = new MatTableDataSource(this.allAppliances);
       this.dataSource.paginator = this.paginator;
+      this.changeDetectorRef.markForCheck();
     });
 
     this.templateService.list(this.controller).subscribe((templates) => {
       this.templates = templates;
+      this.changeDetectorRef.markForCheck();
     });
 
     this.computeService.getComputes(this.controller).subscribe((computes) => {
       computes.forEach((compute) => {
         if (compute.capabilities.platform === 'linux') this.isLinuxPlatform = true;
       });
+      this.changeDetectorRef.markForCheck();
     });
 
     this.qemuService.getImages(this.controller).subscribe((qemuImages) => {
       this.qemuImages = qemuImages;
+      this.changeDetectorRef.markForCheck();
     });
 
     this.iosService.getImages(this.controller).subscribe((iosImages) => {
       this.iosImages = iosImages;
+      this.changeDetectorRef.markForCheck();
     });
 
     this.iouService.getImages(this.controller).subscribe((iouImages) => {
       this.iouImages = iouImages;
+      this.changeDetectorRef.markForCheck();
     });
 
     this.applianceService.getAppliances(this.controller).subscribe((appliances) => {
@@ -148,6 +155,7 @@ export class NewTemplateDialogComponent implements OnInit {
       this.allAppliances = appliances;
       this.dataSource = new MatTableDataSource(this.allAppliances);
       this.dataSource.paginator = this.paginator;
+      this.changeDetectorRef.markForCheck();
     });
 
     this.uploader = new FileUploader({url: ''});

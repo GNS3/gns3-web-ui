@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, Inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {Group} from "@models/groups/group";
 
@@ -18,7 +18,8 @@ import {Group} from "@models/groups/group";
   standalone: false,
   selector: 'app-delete-group-dialog',
   templateUrl: './delete-group-dialog.component.html',
-  styleUrls: ['./delete-group-dialog.component.scss']
+  styleUrls: ['./delete-group-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DeleteGroupDialogComponent implements OnInit {
 

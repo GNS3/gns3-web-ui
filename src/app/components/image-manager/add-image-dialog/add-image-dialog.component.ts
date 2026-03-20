@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Controller } from '@models/controller';
 import { BackgroundUploadService } from '@services/background-upload.service';
@@ -9,6 +9,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-add-image-dialog',
   templateUrl: './add-image-dialog.component.html',
   styleUrls: ['./add-image-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddImageDialogComponent implements OnInit {
   controller: Controller;
@@ -18,11 +19,13 @@ export class AddImageDialogComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<AddImageDialogComponent>,
     private backgroundUploadService: BackgroundUploadService,
-    private toasterService: ToasterService
+    private toasterService: ToasterService,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     this.controller = this.data;
+    this.cd.markForCheck();
   }
 
   onFilesSelected(event: Event) {
@@ -42,6 +45,7 @@ export class AddImageDialogComponent implements OnInit {
 
   selectInstallApplianceOption(ev: any) {
     this.install_appliance = ev.value === true;
+    this.cd.markForCheck();
   }
 
   closeDialog() {

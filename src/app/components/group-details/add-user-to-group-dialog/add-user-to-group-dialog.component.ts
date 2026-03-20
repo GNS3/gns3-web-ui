@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, Inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {UserService} from "@services/user.service";
 import {Controller} from "@models/controller";
@@ -25,7 +25,8 @@ import {ToasterService} from "@services/toaster.service";
   standalone: false,
   selector: 'app-add-user-to-group-dialog',
   templateUrl: './add-user-to-group-dialog.component.html',
-  styleUrls: ['./add-user-to-group-dialog.component.scss']
+  styleUrls: ['./add-user-to-group-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddUserToGroupDialogComponent implements OnInit {
   users = new BehaviorSubject<User[]>([]);
@@ -38,7 +39,8 @@ export class AddUserToGroupDialogComponent implements OnInit {
               @Inject(MAT_DIALOG_DATA) public data: { controller: Controller; group: Group },
               private userService: UserService,
               private groupService: GroupService,
-              private toastService: ToasterService) {
+              private toastService: ToasterService,
+              private cd: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -53,6 +55,7 @@ export class AddUserToGroupDialogComponent implements OnInit {
         });
 
         this.displayedUsers.next(displayedUsers);
+        this.cd.markForCheck();
       });
   }
 
@@ -68,6 +71,7 @@ export class AddUserToGroupDialogComponent implements OnInit {
 
       this.users.next(users);
       this.displayedUsers.next(users);
+      this.cd.markForCheck();
 
     });
 
@@ -81,10 +85,12 @@ export class AddUserToGroupDialogComponent implements OnInit {
         this.toastService.success(`user ${user.username} was added`);
         this.getUsers();
         this.loading = false;
+        this.cd.markForCheck();
       }, (err) => {
         console.log(err);
         this.toastService.error(`error while adding user ${user.username} to group ${this.data.group.name}`);
         this.loading = false;
+        this.cd.markForCheck();
       });
 
 

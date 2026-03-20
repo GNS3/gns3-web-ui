@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
@@ -112,7 +112,8 @@ const STANDARD_FIELDS = ['name', 'model_type', 'provider', 'model', 'api_key', '
   selector: 'app-ai-profile-dialog',
   templateUrl: './ai-profile-dialog.component.html',
   styleUrls: ['./ai-profile-dialog.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AiProfileDialogComponent implements OnInit {
   form: FormGroup;
@@ -169,6 +170,7 @@ export class AiProfileDialogComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<AiProfileDialogComponent>,
+    private cd: ChangeDetectorRef,
     @Inject(MAT_DIALOG_DATA) public data: ConfigDialogData
   ) {
     this.mode = data.mode;
@@ -210,6 +212,7 @@ export class AiProfileDialogComponent implements OnInit {
 
       // Try to find matching preset
       this.detectPresetFromConfig();
+      this.cd.markForCheck();
     }
 
     // Watch for provider changes to auto-fill base URL in Custom mode
@@ -224,6 +227,7 @@ export class AiProfileDialogComponent implements OnInit {
           baseUrlControl.setValue(defaultUrl);
         }
       }
+      this.cd.markForCheck();
     });
   }
 

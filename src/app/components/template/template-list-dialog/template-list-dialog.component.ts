@@ -1,5 +1,5 @@
 import { DataSource } from '@angular/cdk/collections';
-import { Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
@@ -16,6 +16,7 @@ import { NonNegativeValidator } from '../../../validators/non-negative-validator
   selector: 'app-template-list-dialog',
   templateUrl: './template-list-dialog.component.html',
   styleUrls: ['./template-list-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TemplateListDialogComponent implements OnInit {
   controller: Controller;
@@ -35,8 +36,8 @@ export class TemplateListDialogComponent implements OnInit {
   selectedType: string;
   configurationForm: UntypedFormGroup;
   positionForm: UntypedFormGroup;
-  templates: Template[];
-  filteredTemplates: Template[];
+  templates: Template[] = [];
+  filteredTemplates: Template[] = [];
   selectedTemplate: Template;
   searchText: string = '';
 
@@ -48,7 +49,8 @@ export class TemplateListDialogComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private toasterService: ToasterService,
-    private nonNegativeValidator: NonNegativeValidator
+    private nonNegativeValidator: NonNegativeValidator,
+    private cd: ChangeDetectorRef
   ) {
     this.controller = data['controller'];
     this.project = data['project'];
@@ -65,6 +67,7 @@ export class TemplateListDialogComponent implements OnInit {
     this.templateService.list(this.controller).subscribe((listOfTemplates: Template[]) => {
       this.filteredTemplates = listOfTemplates;
       this.templates = listOfTemplates;
+      this.cd.markForCheck();
     });
   }
 

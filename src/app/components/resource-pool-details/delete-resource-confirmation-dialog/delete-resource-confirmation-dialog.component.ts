@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
 import {DIALOG_DATA} from "@angular/cdk/dialog";
 import {Resource} from "@models/resourcePools/Resource";
 import {MatDialogRef} from "@angular/material/dialog";
@@ -7,7 +7,8 @@ import {MatDialogRef} from "@angular/material/dialog";
   standalone: false,
   selector: 'app-delete-resource-confirmation-dialog',
   templateUrl: './delete-resource-confirmation-dialog.component.html',
-  styleUrls: ['./delete-resource-confirmation-dialog.component.scss']
+  styleUrls: ['./delete-resource-confirmation-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DeleteResourceConfirmationDialogComponent implements OnInit {
 

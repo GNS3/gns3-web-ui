@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, Inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {groupNameAsyncValidator} from "@components/group-management/add-group-dialog/groupNameAsyncValidator";
@@ -31,14 +31,15 @@ import {map, startWith} from "rxjs/operators";
   selector: 'app-add-group-dialog',
   templateUrl: './add-group-dialog.component.html',
   styleUrls: ['./add-group-dialog.component.scss'],
-  providers: [GroupNameValidator]
+  providers: [GroupNameValidator],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AddGroupDialogComponent implements OnInit {
 
   groupNameForm: UntypedFormGroup;
   controller: Controller;
 
-  users: User[];
+  users: User[] = [];
   usersToAdd: Set<User> = new Set([]);
   filteredUsers: Observable<User[]>
   loading = false;
@@ -52,7 +53,8 @@ export class AddGroupDialogComponent implements OnInit {
               private groupNameValidator: GroupNameValidator,
               private groupService: GroupService,
               private userService: UserService,
-              private toasterService: ToasterService) {
+              private toasterService: ToasterService,
+              private cd: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -71,6 +73,7 @@ export class AddGroupDialogComponent implements OnInit {
           startWith(''),
           map(value => this._filter(value)),
         );
+        this.cd.markForCheck();
       })
   }
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, Injectable, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Injectable, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Project, ProjectVariable } from '@models/project';
@@ -13,6 +13,7 @@ import { ReadmeEditorComponent } from './readme-editor/readme-editor.component';
   selector: 'app-edit-project-dialog',
   templateUrl: './edit-project-dialog.component.html',
   styleUrls: ['./edit-project-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EditProjectDialogComponent implements OnInit {
   @ViewChild('editor') editor: ReadmeEditorComponent;
@@ -33,7 +34,8 @@ export class EditProjectDialogComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private projectService: ProjectService,
     private toasterService: ToasterService,
-    private nonNegativeValidator: NonNegativeValidator
+    private nonNegativeValidator: NonNegativeValidator,
+    private cd: ChangeDetectorRef
   ) {
     this.formGroup = this.formBuilder.group({
       projectName: new UntypedFormControl('', [Validators.required]),
@@ -59,6 +61,7 @@ export class EditProjectDialogComponent implements OnInit {
       this.project.variables.forEach((n) => this.variables.push(n));
     }
     this.auto_close = !this.project.auto_close;
+    this.cd.markForCheck();
   }
 
   addVariable() {
@@ -68,6 +71,7 @@ export class EditProjectDialogComponent implements OnInit {
         value: this.variableFormGroup.get('value').value,
       };
       this.variables = this.variables.concat([variable]);
+      this.cd.markForCheck();
     } else {
       this.toasterService.error(`Fill all required fields with correct values.`);
     }
@@ -75,6 +79,7 @@ export class EditProjectDialogComponent implements OnInit {
 
   deleteVariable(variable: ProjectVariable) {
     this.variables = this.variables.filter((elem) => elem !== variable);
+    this.cd.markForCheck();
   }
 
   onNoClick() {
