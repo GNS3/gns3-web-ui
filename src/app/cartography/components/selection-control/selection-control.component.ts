@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SelectionEventSource } from '../../events/selection-event-source';
 import { InRectangleHelper } from '../../helpers/in-rectangle-helper';
@@ -11,6 +11,7 @@ import { Rectangle } from '../../models/rectangle';
   selector: 'app-selection-control',
   templateUrl: './selection-control.component.html',
   styleUrls: ['./selection-control.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SelectionControlComponent implements OnInit, OnDestroy {
   private onSelection: Subscription;
@@ -19,7 +20,8 @@ export class SelectionControlComponent implements OnInit, OnDestroy {
     private selectionEventSource: SelectionEventSource,
     private graphDataManager: GraphDataManager,
     private inRectangleHelper: InRectangleHelper,
-    private selectionManager: SelectionManager
+    private selectionManager: SelectionManager,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
@@ -83,6 +85,7 @@ export class SelectionControlComponent implements OnInit, OnDestroy {
       ];
 
       this.selectionManager.setSelected(selected);
+      this.cd.markForCheck();
     });
   }
 
