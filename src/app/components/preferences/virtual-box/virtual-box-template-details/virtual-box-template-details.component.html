@@ -23,7 +23,7 @@
               matInput
               formControlName="templateName"
               type="text"
-              [(ngModel)]="virtualBoxTemplate.name"
+              
               placeholder="Template name"
             />
           </mat-form-field>
@@ -32,7 +32,7 @@
               matInput
               formControlName="defaultName"
               type="text"
-              [(ngModel)]="virtualBoxTemplate.default_name_format"
+              
               placeholder="Default name format"
             />
           </mat-form-field>
@@ -41,7 +41,7 @@
               matInput
               formControlName="symbol"
               type="text"
-              [(ngModel)]="virtualBoxTemplate.symbol"
+              
               placeholder="Symbol"
             />
           </mat-form-field>
@@ -63,7 +63,7 @@
             <mat-select
               [ngModelOptions]="{ standalone: true }"
               placeholder="Category"
-              [(ngModel)]="virtualBoxTemplate.category"
+              
             >
               <mat-option *ngFor="let category of categories" [value]="category[1]">
                 {{ category[0] }}
@@ -74,14 +74,14 @@
             <mat-select
               [ngModelOptions]="{ standalone: true }"
               placeholder="Console type"
-              [(ngModel)]="virtualBoxTemplate.console_type"
+              
             >
               <mat-option *ngFor="let type of consoleTypes" [value]="type">
                 {{ type }}
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="virtualBoxTemplate.console_auto_start">
+          <mat-checkbox [ngModelOptions]="{ standalone: true }" >
             Auto start console
           </mat-checkbox>
           <mat-form-field class="form-field">
@@ -89,7 +89,7 @@
               matInput
               formControlName="ram"
               type="number"
-              [(ngModel)]="virtualBoxTemplate.ram"
+              
               placeholder="RAM"
             />
             <span matSuffix>MB</span>
@@ -98,7 +98,7 @@
             <mat-select
               [ngModelOptions]="{ standalone: true }"
               placeholder="On close"
-              [(ngModel)]="virtualBoxTemplate.on_close"
+              
             >
               <mat-option *ngFor="let option of onCloseOptions" [value]="option[1]">
                 {{ option[0] }}
@@ -106,8 +106,8 @@
             </mat-select>
           </mat-form-field>
         </form>
-        <mat-checkbox [(ngModel)]="virtualBoxTemplate.headless"> Start VM in headless mode </mat-checkbox><br />
-        <mat-checkbox [(ngModel)]="virtualBoxTemplate.linked_clone">
+        <mat-checkbox > Start VM in headless mode </mat-checkbox><br />
+        <mat-checkbox >
           Use as a linked base VM (experimental)
         </mat-checkbox>
       </mat-expansion-panel>
@@ -121,7 +121,7 @@
               formControlName="adapters"
               matInput
               type="number"
-              [(ngModel)]="virtualBoxTemplate.adapters"
+              
               placeholder="Adapters"
             />
           </mat-form-field>
@@ -130,7 +130,7 @@
               [ngModelOptions]="{ standalone: true }"
               matInput
               type="text"
-              [(ngModel)]="virtualBoxTemplate.first_port_name"
+              
               placeholder="First port name"
             />
           </mat-form-field>
@@ -139,7 +139,7 @@
               formControlName="nameFormat"
               matInput
               type="text"
-              [(ngModel)]="virtualBoxTemplate.port_name_format"
+              
               placeholder="Name format"
             />
           </mat-form-field>
@@ -148,7 +148,7 @@
               formControlName="size"
               matInput
               type="number"
-              [(ngModel)]="virtualBoxTemplate.port_segment_size"
+              
               placeholder="Segment size"
             />
           </mat-form-field>
@@ -156,7 +156,7 @@
             <mat-select
               [ngModelOptions]="{ standalone: true }"
               placeholder="Type"
-              [(ngModel)]="virtualBoxTemplate.adapter_type"
+              
             >
               <mat-option *ngFor="let type of networkTypes" [value]="type">
                 {{ type }}
@@ -167,7 +167,7 @@
         <button mat-button class="configButton" (click)="setCustomAdaptersConfiguratorState(true)">
           Configure custom adapters</button
         ><br />
-        <mat-checkbox [(ngModel)]="virtualBoxTemplate.use_any_adapter">
+        <mat-checkbox >
           Allow GNS3 to use any configured VirtualBox adapter
         </mat-checkbox>
       </mat-expansion-panel>
@@ -176,7 +176,7 @@
           <mat-panel-title> Usage </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-form-field class="form-field">
-          <textarea matInput type="text" [(ngModel)]="virtualBoxTemplate.usage"></textarea>
+          <textarea matInput type="text" ></textarea>
         </mat-form-field>
       </mat-expansion-panel>
     </mat-accordion>

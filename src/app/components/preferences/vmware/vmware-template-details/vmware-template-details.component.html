@@ -22,7 +22,7 @@
             <input
               matInput
               type="text"
-              [(ngModel)]="vmwareTemplate.name"
+              
               formControlName="templateName"
               placeholder="Template name"
             />
@@ -31,7 +31,7 @@
             <input
               matInput
               type="text"
-              [(ngModel)]="vmwareTemplate.default_name_format"
+              
               formControlName="defaultName"
               placeholder="Default name format"
             />
@@ -40,7 +40,7 @@
             <input
               matInput
               type="text"
-              [(ngModel)]="vmwareTemplate.symbol"
+              
               formControlName="symbol"
               placeholder="Symbol"
             />
@@ -63,7 +63,7 @@
             <mat-select
               placeholder="Category"
               [ngModelOptions]="{ standalone: true }"
-              [(ngModel)]="vmwareTemplate.category"
+              
             >
               <mat-option *ngFor="let category of categories" [value]="category[1]">
                 {{ category[0] }}
@@ -74,31 +74,31 @@
             <mat-select
               placeholder="Console type"
               [ngModelOptions]="{ standalone: true }"
-              [(ngModel)]="vmwareTemplate.console_type"
+              
             >
               <mat-option *ngFor="let type of consoleTypes" [value]="type">
                 {{ type }}
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="vmwareTemplate.console_auto_start">
+          <mat-checkbox [ngModelOptions]="{ standalone: true }" >
             Auto start console
           </mat-checkbox>
           <mat-form-field class="form-field">
             <mat-select
               placeholder="On close"
               [ngModelOptions]="{ standalone: true }"
-              [(ngModel)]="vmwareTemplate.on_close"
+              
             >
               <mat-option *ngFor="let option of onCloseOptions" [value]="option[1]">
                 {{ option[0] }}
               </mat-option>
             </mat-select>
           </mat-form-field>
-          <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="vmwareTemplate.headless">
+          <mat-checkbox [ngModelOptions]="{ standalone: true }" >
             Start VM in headless mode </mat-checkbox
           ><br /><br />
-          <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="vmwareTemplate.linked_clone">
+          <mat-checkbox [ngModelOptions]="{ standalone: true }" >
             Use as a linked base VM (experimental)
           </mat-checkbox>
         </form>
@@ -108,19 +108,19 @@
           <mat-panel-title> Network </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-form-field class="form-field">
-          <input matInput type="number" min="0" [(ngModel)]="vmwareTemplate.adapters" placeholder="Adapters" />
+          <input matInput type="number" min="0"  placeholder="Adapters" />
         </mat-form-field>
         <mat-form-field class="form-field">
-          <input matInput type="text" [(ngModel)]="vmwareTemplate.first_port_name" placeholder="First port name" />
+          <input matInput type="text"  placeholder="First port name" />
         </mat-form-field>
         <mat-form-field class="form-field">
-          <input matInput type="text" [(ngModel)]="vmwareTemplate.port_name_format" placeholder="Name format" />
+          <input matInput type="text"  placeholder="Name format" />
         </mat-form-field>
         <mat-form-field class="form-field">
-          <input matInput type="number" min="0" [(ngModel)]="vmwareTemplate.port_segment_size" placeholder="Segment size" />
+          <input matInput type="number" min="0"  placeholder="Segment size" />
         </mat-form-field>
         <mat-form-field class="form-field">
-          <mat-select placeholder="Type" [(ngModel)]="vmwareTemplate.adapter_type">
+          <mat-select placeholder="Type" >
             <mat-option *ngFor="let type of networkTypes" [value]="type">
               {{ type }}
             </mat-option>
@@ -129,7 +129,7 @@
         <button mat-button class="configButton" (click)="setCustomAdaptersConfiguratorState(true)">
           Configure custom adapters</button
         ><br />
-        <mat-checkbox [(ngModel)]="vmwareTemplate.use_any_adapter">
+        <mat-checkbox >
           Allow GNS3 to override non custom VMware adapter
         </mat-checkbox>
       </mat-expansion-panel>
@@ -138,7 +138,7 @@
           <mat-panel-title> Usage </mat-panel-title>
         </mat-expansion-panel-header>
         <mat-form-field class="form-field">
-          <textarea matInput type="text" [(ngModel)]="vmwareTemplate.usage"></textarea>
+          <textarea matInput type="text" ></textarea>
         </mat-form-field>
       </mat-expansion-panel>
     </mat-accordion>
