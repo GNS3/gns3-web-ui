@@ -1,6 +1,5 @@
 import { EventEmitter } from '@angular/core';
 import { drag, DraggedElementBaseType } from 'd3-drag';
-import { event } from 'd3-selection';
 
 class DraggableEvent {
   public x: number;
@@ -39,16 +38,16 @@ export class Draggable<GElement extends DraggedElementBaseType, Datum> {
   private behaviour() {
     let startEvt;
     return drag<GElement, Datum>()
-      .on('start', (datum: Datum) => {
-        startEvt = new DraggableStart<Datum>(datum);
+      .on('start', (event: any) => {
+        startEvt = new DraggableStart<Datum>(event.subject);
         startEvt.dx = event.dx;
         startEvt.dy = event.dy;
         startEvt.x = event.x;
         startEvt.y = event.y;
         this.start.emit(startEvt);
       })
-      .on('drag', (datum: Datum) => {
-        const evt = new DraggableDrag<Datum>(datum);
+      .on('drag', (event: any) => {
+        const evt = new DraggableDrag<Datum>(event.subject);
         // Use D3's event.dx/dy which are in local (canvas) coordinate space,
         // already accounting for zoom scale. Using raw clientX/Y deltas caused
         // nodes to move at the wrong speed when zoomed and jump on drag end.
@@ -56,8 +55,8 @@ export class Draggable<GElement extends DraggedElementBaseType, Datum> {
         evt.dy = event.dy;
         this.drag.emit(evt);
       })
-      .on('end', (datum: Datum) => {
-        const evt = new DraggableEnd<Datum>(datum);
+      .on('end', (event: any) => {
+        const evt = new DraggableEnd<Datum>(event.subject);
         evt.dx = event.x - startEvt.x;
         evt.dy = event.y - startEvt.y;
         this.end.emit(evt);

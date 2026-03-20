@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { event } from 'd3-selection';
+
 import { LinkContextMenu } from '../events/event-source';
 import { MultiLinkCalculatorHelper } from '../helpers/multi-link-calculator-helper';
 import { SelectionManager } from '../managers/selection-manager';

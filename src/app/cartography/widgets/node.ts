@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { event, select } from 'd3-selection';
+
 import { MapSettingsService } from '@services/mapsettings.service';
 import { ClickedDataEvent } from '../events/event-source';
 import { NodeClicked, NodeContextMenu } from '../events/nodes';
@@ -36,7 +36,7 @@ export class NodeWidget implements Widget {
       .merge(node_body_enter)
       .classed('selected', (n: MapNode) => this.selectionManager.isSelected(n))
       .on('click', (node: MapNode) => {
-        this.nodesEventSource.clicked.emit(new ClickedDataEvent<MapNode>(node, event.pageX, event.pageY));
+        this.nodesEventSource.clicked.emit(new ClickedDataEvent<MapNode>(node, event().pageX, event().pageY));
       });
 
     node_body_merge.select('.layer_label_wrapper').remove();

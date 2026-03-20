@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { drag } from 'd3-drag';
-import { event } from 'd3-selection';
+
 import { Draggable } from '../events/draggable';
 import { ResizingEnd } from '../events/resizing';
 import { SvgToDrawingConverter } from '../helpers/svg-to-drawing-converter';
@@ -79,12 +79,12 @@ export class DrawingsWidget implements Widget {
       .on('start', (datum: MapDrawing) => {
         document.body.style.cursor = 'ns-resize';
         topEdge = datum.y;
-        y = event.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
+        y = event().sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
       })
       .on('drag', (datum: MapDrawing) => {
         const evt = event;
         dy = y - (evt.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y);
-        y = event.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
+        y = event().sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
         let height = datum.element.height - dy;
         if (height < 0) {
           datum.y += height;
@@ -100,7 +100,7 @@ export class DrawingsWidget implements Widget {
 
     let top = drag()
       .on('start', (datum: MapDrawing) => {
-        y = event.sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
+        y = event().sourceEvent.clientY - this.context.getZeroZeroTransformationPoint().y;
         bottomEdge = y + datum.element.height;
         document.body.style.cursor = 'ns-resize';
       })
@@ -164,7 +164,7 @@ export class DrawingsWidget implements Widget {
     let isReflectedHorizontal: boolean = false;
     let right = drag()
       .on('start', (datum: MapDrawing) => {
-        x = event.sourceEvent.clientX - this.context.getZeroZeroTransformationPoint().x;
+        x = event().sourceEvent.clientX - this.context.getZeroZeroTransformationPoint().x;
         leftEdge = x + datum.element.width;
         document.body.style.cursor = 'ew-resize';
       })

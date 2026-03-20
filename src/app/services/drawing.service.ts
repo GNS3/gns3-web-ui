@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import 'rxjs/add/operator/map';
+import import { map } from 'rxjs/operators';
 import { SvgToDrawingConverter } from '../cartography/helpers/svg-to-drawing-converter';
 import { Drawing } from '../cartography/models/drawing';
 import { Project } from '@models/project';

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import 'rxjs/add/operator/map';
+import import { map } from 'rxjs/operators';
 import { Label } from '../cartography/models/label';
 import { Node } from '../cartography/models/node';
 import { Project } from '@models/project';

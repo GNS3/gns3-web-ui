@@ -146,6 +146,6 @@ describe('ZoomingCanvasDirective', () => {
     canvas.dispatchEvent(event);
     tick();
 
-    expect(event.preventDefault).toHaveBeenCalled();
+    expect(event().preventDefault).toHaveBeenCalled();
   }));
 });

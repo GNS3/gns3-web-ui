@@ -30,12 +30,12 @@ export class SelectionTool {
 
     selection.on('mousedown', function () {
       // prevent deselection on right click
-      if (event.button == 2) {
+      if (event().button == 2) {
         selection.on('contextmenu', () => {
           event.preventDefault();
         });
 
-        self.contextMenuOpened.emit(event);
+        self.contextMenuOpened.emit(event());
         return;
       }
 

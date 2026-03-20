@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { drag } from 'd3-drag';
-import { event } from 'd3-selection';
+
 import { Draggable } from '../events/draggable';
 import { DrawingContextMenu } from '../events/event-source';
 import { ResizingEnd } from '../events/resizing';
@@ -60,9 +60,9 @@ export class DrawingsWidget implements Widget {
       .append<SVGGElement>('g')
       .attr('class', 'drawing')
       .attr('drawing_id', (l: MapDrawing) => l.id)
-      .on('contextmenu', (l: MapDrawing) => {
+      .on('contextmenu', (event: any, l: MapDrawing) => {
         event.preventDefault();
-        this.onContextMenu.emit(new DrawingContextMenu(event, l));
+        this.onContextMenu.emit(new DrawingContextMenu(event,  l));
       });
 
     const merge = drawing.merge(drawing_enter);
@@ -143,7 +143,7 @@ export class DrawingsWidget implements Widget {
 
     let top = drag()
       .on('start', (datum: MapDrawing) => {
-        y = event.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y);
+        y = event().sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y);
         bottomEdge = y + datum.element.height;
         document.body.style.cursor = 'ns-resize';
       })
@@ -210,7 +210,7 @@ export class DrawingsWidget implements Widget {
     let isReflectedHorizontal: boolean = false;
     let right = drag()
       .on('start', (datum: MapDrawing) => {
-        x = event.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x);
+        x = event().sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x);
         leftEdge = x + datum.element.width;
         document.body.style.cursor = 'ew-resize';
       })

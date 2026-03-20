@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { path } from 'd3-path';
-import { event } from 'd3-selection';
+
 import { LinkContextMenu } from '../../events/event-source';
 import { MapLink } from '../../models/map/map-link';
 import { SVGSelection } from '../../models/types';

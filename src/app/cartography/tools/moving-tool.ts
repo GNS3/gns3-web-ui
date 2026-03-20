@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { event } from 'd3-selection';
+
 import { D3ZoomEvent, zoom, ZoomBehavior } from 'd3-zoom';
 import { Context } from '../models/context';
 import { SVGSelection } from '../models/types';
