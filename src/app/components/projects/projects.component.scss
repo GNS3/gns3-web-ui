@@ -97,7 +97,7 @@ table {
   transform-origin: left center;
   padding: var(--gns3-spacing-xs, 2px) var(--gns3-spacing-xs, 4px);
   margin: calc(var(--gns3-spacing-xs, 2px) * -1) calc(var(--gns3-spacing-xs, 4px) * -1);
-  color: var(--mat-app-primary-color, #0097a7);
+  color: var(--mat-app-primary-color);
   text-decoration: none;
 
   &:hover {
