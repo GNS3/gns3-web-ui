@@ -1,4 +1,11 @@
+/**
+ * GNS3 QEMU Preferences Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .top-button {
-  height: 36px;
-  margin-top: 22px;
+  height: var(--gns3-spacing-lg, 36px);
+  margin-top: var(--gns3-spacing-md, 22px);
 }

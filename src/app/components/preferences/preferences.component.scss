@@ -1,3 +1,10 @@
+/**
+ * GNS3 Preferences Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 table {
   width: 100%;
 }
@@ -8,19 +15,19 @@ table {
 }
 
 .top-button {
-  height: 36px;
-  margin-top: 22px;
+  height: var(--gns3-spacing-lg, 36px);
+  margin-top: var(--gns3-spacing-md, 22px);
 }
 
 .choose-symbol-button {
-  height: 36px;
-  margin-top: 22px;
+  height: var(--gns3-spacing-lg, 36px);
+  margin-top: var(--gns3-spacing-md, 22px);
 }
 
 .cancel-button {
-  height: 36px;
-  margin-top: 22px;
-  margin-right: 10px;
+  height: var(--gns3-spacing-lg, 36px);
+  margin-top: var(--gns3-spacing-md, 22px);
+  margin-right: var(--gns3-spacing-sm, 10px);
 }
 
 .form-field {
@@ -33,7 +40,7 @@ table {
 
 .shadowed {
   display: none;
-  transition: 0.25s;
+  transition: var(--gns3-duration-normal, 0.25s);
 }
 
 .nonvisible {
@@ -47,7 +54,7 @@ table {
 .configHideButton {
   margin-left: 80%;
   width: 20%;
-  margin-bottom: 10px;
+  margin-bottom: var(--gns3-spacing-sm, 10px);
 }
 
 .symbolSelectionButton {
@@ -77,20 +84,20 @@ th {
 }
 
 th.mat-header-cell {
-  padding-bottom: 15px;
+  padding-bottom: var(--gns3-spacing-md, 15px);
 }
 
 td.mat-cell {
-  padding-top: 15px;
+  padding-top: var(--gns3-spacing-md, 15px);
 }
 
 .radio-button {
   width: 50%;
-  padding-top: 20px;
+  padding-top: var(--gns3-spacing-md, 20px);
 }
 
 .radio-group {
-  margin-bottom: 20px;
+  margin-bottom: var(--gns3-spacing-md, 20px);
 }
 
 .file-button {
