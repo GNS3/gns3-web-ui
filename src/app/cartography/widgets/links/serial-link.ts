@@ -30,6 +30,15 @@ export class SerialLinkWidget implements Widget {
   constructor() {}
 
   private linkToSerialLink(link: MapLink) {
+    // Validate source and target have valid coordinates
+    if (!link.source || !link.target ||
+        link.source.x == null || link.source.y == null ||
+        link.source.width == null || link.source.height == null ||
+        link.target.x == null || link.target.y == null ||
+        link.target.width == null || link.target.height == null) {
+      return null;
+    }
+
     const source = {
       x: link.source.x + link.source.width / 2,
       y: link.source.y + link.source.height / 2,
@@ -82,7 +91,8 @@ export class SerialLinkWidget implements Widget {
   public draw(view: SVGSelection) {
     const link = view.selectAll<SVGPathElement, SerialLinkPath>('path.serial_link').data((l) => {
       if (l.linkType === 'serial') {
-        return [this.linkToSerialLink(l)];
+        const serialLink = this.linkToSerialLink(l);
+        return serialLink ? [serialLink] : [];
       }
       return [];
     });

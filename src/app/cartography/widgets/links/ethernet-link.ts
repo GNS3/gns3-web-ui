@@ -24,6 +24,15 @@ export class EthernetLinkWidget implements Widget {
   constructor() {}
 
   private linktoEthernetLink(link: MapLink) {
+    // Validate source and target have valid coordinates
+    if (!link.source || !link.target ||
+        link.source.x == null || link.source.y == null ||
+        link.source.width == null || link.source.height == null ||
+        link.target.x == null || link.target.y == null ||
+        link.target.width == null || link.target.height == null) {
+      return null;
+    }
+
     const hasValidColor = link.link_style && link.link_style.color;
     const hasValidWidth = link.link_style?.width && link.link_style.width >= this.defaultEthernetLinkStyle.width;
 
@@ -49,7 +58,8 @@ export class EthernetLinkWidget implements Widget {
   public draw(view: SVGSelection) {
     const link = view.selectAll<SVGPathElement, EthernetLinkPath>('path.ethernet_link').data((l) => {
       if (l.linkType === 'ethernet') {
-        return [this.linktoEthernetLink(l)];
+        const ethernetLink = this.linktoEthernetLink(l);
+        return ethernetLink ? [ethernetLink] : [];
       }
       return [];
     });
