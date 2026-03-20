@@ -1,11 +1,16 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
+import { NgCircleProgressModule } from 'ng-circle-progress';
 import { ComputeStatistics } from '@models/computeStatistics';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-status-chart',
   templateUrl: './status-chart.component.html',
   styleUrls: ['./status-chart.component.scss'],
+  imports: [CommonModule, MatCardModule, MatChipsModule, NgCircleProgressModule],
 })
 export class StatusChartComponent implements OnInit {
   @Input() computeStatistics: ComputeStatistics;

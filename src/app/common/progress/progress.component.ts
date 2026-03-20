@@ -1,20 +1,34 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { CommonModule } from '@angular/common';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProgressService } from './progress.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-progress',
   templateUrl: './progress.component.html',
   styleUrls: ['./progress.component.scss'],
+  imports: [
+    CommonModule,
+    MatProgressSpinnerModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+    RouterLink,
+  ],
 })
 export class ProgressComponent implements OnInit, OnDestroy {
-  visible = false;
-  error: any = null;  // Initialize to null instead of undefined
-  routerSubscription: Subscription;
+  private progressService = inject(ProgressService);
+  private router = inject(Router);
 
-  constructor(private progressService: ProgressService, private router: Router) {}
+  visible = false;
+  error: any = null;
+  routerSubscription: Subscription;
 
   ngOnInit() {
     this.progressService.state.subscribe((state) => {
