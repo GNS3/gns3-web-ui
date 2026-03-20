@@ -1,31 +1,28 @@
-// CSS Variables for AI Chat Component
-:root {
-  // Layout dimensions
-  --ai-chat-sidebar-width: 280px;
-  --ai-chat-sidebar-collapsed-width: 48px;
-  --ai-chat-header-height: 48px;
-  --ai-chat-button-size: 40px;
-  --ai-chat-icon-size: 20px;
-  --ai-chat-minimized-size: 56px;
+/**
+ * AI Chat Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
 
-  // Spacing
-  --ai-chat-spacing-xs: 4px;
-  --ai-chat-spacing-sm: 8px;
-  --ai-chat-spacing-md: 12px;
-  --ai-chat-spacing-lg: 16px;
-}
+@use '@angular/material' as mat;
 
+// =============================================
+// AI Chat Container
+// =============================================
 .ai-chat-container {
   position: fixed;
-  background-color: rgba(250, 250, 250, 1);
-  border-radius: 12px;
+  background-color: var(--mat-app-surface-container-low-color);
+  border-radius: var(--gns3-radius-lg);
   overflow: hidden;
   display: flex;
-  z-index: 1000;
-  color: var(--mat-app-on-surface);
-  border: 1px solid var(--mat-app-outline-variant);
+  z-index: var(--gns3-z-dropdown);
+  color: var(--mat-app-on-surface-color);
+  border: 1px solid var(--mat-app-outline-variant-color);
+
   // Performance optimized: fully opaque, no backdrop-filter
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  transition: box-shadow var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing),
+              border-color var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing);
 
   // GNS3 cyan gradient border effect
   &::before {
@@ -35,28 +32,33 @@
     left: 0;
     right: 0;
     bottom: 0;
-    border-radius: 12px;
+    border-radius: var(--gns3-radius-lg);
     padding: 1px;
-    background: linear-gradient(135deg, rgba(0, 151, 167, 0.4), rgba(0, 188, 212, 0.2), rgba(0, 151, 167, 0.4));
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--mat-app-primary-color) 40%, transparent),
+      color-mix(in srgb, var(--mat-app-primary-color) 20%, transparent),
+      color-mix(in srgb, var(--mat-app-primary-color) 40%, transparent)
+    );
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
     opacity: 0.8;
-    transition: opacity 0.3s ease;
+    transition: opacity var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing);
   }
 
-  // Enhanced hover effect
   &:hover::before {
     opacity: 1;
   }
 
-  // Minimized state override - make it perfectly circular and clean
+  // Minimized state - make it perfectly circular
   &.minimized {
     border-radius: 50%;
     border: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 151, 167, 0.4);
+    box-shadow: var(--mdc-elevated-card-container-elevation),
+                0 0 15px color-mix(in srgb, var(--mat-app-primary-color) / 0.4, transparent);
     backdrop-filter: none;
 
     &::before {
@@ -72,32 +74,34 @@
   right: 0;
   bottom: 0;
   background-color: transparent;
-  z-index: 1001;
+  z-index: calc(var(--gns3-z-dropdown) + 1);
   cursor: grabbing;
 }
 
+// =============================================
+// Chat Sidebar
+// =============================================
 .chat-sidebar {
-  width: 280px;
-  background-color: var(--mat-app-background);
+  width: var(--gns3-ai-chat-sidebar-width);
+  background-color: var(--mat-app-surface-container-low-color);
   display: flex;
   flex-direction: column;
-  transition: width 0.3s;
+  transition: width var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing);
   flex-shrink: 0;
 }
 
 .chat-sidebar.collapsed {
-  width: 48px;
+  width: var(--gns3-ai-chat-sidebar-collapsed-width);
 }
 
 .sidebar-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px;
-  // border-bottom removed for cleaner look
+  padding: var(--gns3-spacing-md);
   cursor: grab;
   user-select: none;
-  height: 48px;
+  height: var(--gns3-ai-chat-header-height);
   box-sizing: border-box;
 }
 
@@ -105,30 +109,32 @@
   cursor: grabbing;
 }
 
-// Collapsed new chat button
+// =============================================
+// Collapsed New Chat Button
+// =============================================
 .collapsed-new-chat-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 48px;
+  height: var(--gns3-ai-chat-header-height);
   background: transparent;
   border-radius: 0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  margin: 8px 0;
+  transition: all var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing);
+  margin: var(--gns3-spacing-sm) 0;
 
   mat-icon {
     font-size: 24px;
     width: 24px;
     height: 24px;
-    color: var(--mat-app-primary);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--mat-app-primary-color);
+    transition: all var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing);
   }
 
   &:hover {
     mat-icon {
       transform: scale(1.2);
-      filter: drop-shadow(0 0 6px rgba(0, 151, 167, 0.6));
+      filter: drop-shadow(0 0 6px color-mix(in srgb, var(--mat-app-primary-color) / 0.6, transparent));
     }
   }
 
@@ -149,21 +155,24 @@
   display: none;
 }
 
+// =============================================
+// Sidebar Title
+// =============================================
 .sidebar-title {
   margin: 0;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--mat-app-on-surface);
+  font-size: var(--gns3-font-size-base);
+  font-weight: var(--gns3-font-weight-medium);
+  color: var(--mat-app-on-surface-color);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--gns3-spacing-sm);
   width: 100%;
   justify-content: center;
 }
 
 .sidebar-title.clickable {
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--gns3-duration-fast) var(--gns3-easing-default);
 }
 
 .sidebar-title.clickable:hover {
@@ -174,21 +183,28 @@
   opacity: 0.8;
 }
 
+// =============================================
+// AI Logo
+// =============================================
 .ai-logo {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: bold;
-  font-family: 'Roboto', sans-serif;
+  font-size: var(--gns3-font-size-sm);
+  font-weight: var(--gns3-font-weight-bold);
+  font-family: var(--gns3-font-family-base);
   letter-spacing: -0.5px;
-  background: linear-gradient(135deg, var(--mat-app-primary), var(--mat-app-primary));
-  color: var(--mat-app-on-primary);
+  background: linear-gradient(
+    135deg,
+    var(--mat-app-primary-color),
+    var(--mat-app-primary-color)
+  );
+  color: var(--mat-app-on-primary-color);
   padding: 6px 10px;
-  border-radius: 6px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--gns3-radius-sm);
+  transition: all var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing);
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0, 151, 167, 0.3);
+  box-shadow: var(--gns3-shadow-primary);
   position: relative;
   overflow: hidden;
 
@@ -202,17 +218,17 @@
     background: linear-gradient(
       45deg,
       transparent 30%,
-      rgba(255, 255, 255, 0.1) 50%,
+      color-mix(in srgb, var(--mat-app-on-primary-color) / 0.1, transparent) 50%,
       transparent 70%
     );
     transform: translateX(-100%);
-    transition: transform 0.6s ease;
+    transition: transform var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing);
   }
 }
 
 .sidebar-title.clickable:hover .ai-logo {
   transform: scale(1.08);
-  box-shadow: 0 4px 15px rgba(0, 151, 167, 0.5);
+  box-shadow: 0 4px 15px color-mix(in srgb, var(--mat-app-primary-color) / 0.5, transparent);
 
   &::after {
     transform: translateX(100%);
@@ -223,16 +239,22 @@
   transform: scale(0.95);
 }
 
+// =============================================
+// Sidebar Content
+// =============================================
 .sidebar-content {
   flex: 1;
   overflow: hidden;
 }
 
+// =============================================
+// Chat Main Area
+// =============================================
 .chat-main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: var(--mat-app-background);
+  background-color: var(--mat-app-surface-container-low-color);
   min-width: 0;
 }
 
@@ -240,13 +262,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px;
+  padding: var(--gns3-spacing-md);
   flex-shrink: 0;
   cursor: grab;
   user-select: none;
-  transition: background 0.3s ease;
+  transition: background var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing);
   position: relative;
-  height: 48px;
+  height: var(--gns3-ai-chat-header-height);
   box-sizing: border-box;
 }
 
@@ -257,10 +279,10 @@
 .chat-title {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--mat-app-on-surface);
+  gap: var(--gns3-spacing-sm);
+  font-size: var(--gns3-font-size-base);
+  font-weight: var(--gns3-font-weight-medium);
+  color: var(--mat-app-on-surface-color);
 }
 
 .chat-messages {
@@ -270,48 +292,33 @@
 }
 
 .chat-input {
-  border-top: 1px solid var(--mat-app-outline-variant);
+  border-top: 1px solid var(--mat-app-outline-variant-color);
   flex-shrink: 0;
-}
+  position: relative;
+  transition: border-color var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing);
 
-// Custom Snackbar styles for AI Chat errors
-::ng-deep .ai-chat-snack-error {
-  background-color: #d32f2f;
-  color: white;
-  font-weight: 500;
-
-  .mat-simple-snackbar-action {
-    color: white;
-    font-weight: 600;
+  &:focus-within {
+    border-top-color: var(--mat-app-primary-color);
+    box-shadow: 0 -2px 10px color-mix(in srgb, var(--mat-app-primary-color) / 0.2, transparent);
   }
 }
 
-@media (max-width: 768px) {
-  .chat-sidebar {
-    position: absolute;
-    z-index: 100;
-    height: 100%;
-  }
-
-  .chat-sidebar.collapsed {
-    width: 0;
-  }
-}
-
-// Header actions button group
+// =============================================
+// Header Actions Button Group
+// =============================================
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--gns3-spacing-xs);
 
   // Icon button color and sizing
   .mat-icon-button {
-    color: var(--mat-app-on-surface);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    min-height: 40px;
+    color: var(--mat-app-on-surface-color);
+    transition: all var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing);
+    width: var(--gns3-ai-chat-button-size);
+    height: var(--gns3-ai-chat-button-size);
+    min-width: var(--gns3-ai-chat-button-size);
+    min-height: var(--gns3-ai-chat-button-size);
     padding: 0;
     display: inline-flex;
     align-items: center;
@@ -328,28 +335,29 @@
       width: 0;
       height: 0;
       border-radius: 50%;
-      background: rgba(0, 151, 167, 0.3);
+      background: color-mix(in srgb, var(--mat-app-primary-color) / 0.3, transparent);
       transform: translate(-50%, -50%);
-      transition: width 0.4s ease, height 0.4s ease;
+      transition: width var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing),
+                  height var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing);
     }
   }
 
   // Header icon SVG styling
   .header-icon {
-    fill: var(--mat-app-on-surface);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 20px;
-    height: 20px;
+    fill: var(--mat-app-on-surface-color);
+    transition: all var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing);
+    width: var(--gns3-ai-chat-icon-size);
+    height: var(--gns3-ai-chat-icon-size);
     position: relative;
     z-index: 1;
   }
 
   // Enhanced hover effect for header buttons
   .mat-icon-button:hover {
-    background-color: rgba(0, 151, 167, 0.15);
+    background-color: color-mix(in srgb, var(--mat-app-primary-color) / 0.15, transparent);
     border-radius: 50%;
     transform: scale(1.15);
-    box-shadow: 0 4px 12px rgba(0, 151, 167, 0.3);
+    box-shadow: var(--mdc-elevated-card-container-elevation);
 
     &::before {
       width: 100%;
@@ -357,8 +365,8 @@
     }
 
     .header-icon {
-      fill: var(--mat-app-primary);
-      filter: drop-shadow(0 0 6px rgba(0, 151, 167, 0.8));
+      fill: var(--mat-app-primary-color);
+      filter: drop-shadow(0 0 6px color-mix(in srgb, var(--mat-app-primary-color) / 0.8, transparent));
     }
   }
 
@@ -368,8 +376,8 @@
 
   // Close button hover effect (red tint with cyan glow)
   .close-button:hover {
-    background-color: rgba(244, 67, 54, 0.2);
-    box-shadow: 0 0 10px rgba(244, 67, 54, 0.4);
+    background-color: color-mix(in srgb, var(--mat-app-error-color) / 0.2, transparent);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--mat-app-error-color) / 0.4, transparent);
 
     .header-icon {
       fill: #ff8a80;
@@ -377,20 +385,9 @@
   }
 }
 
-// Chat input focus effects
-.chat-input {
-  border-top: 1px solid var(--mat-app-outline-variant);
-  flex-shrink: 0;
-  position: relative;
-  transition: border-color 0.3s ease;
-
-  &:focus-within {
-    border-top-color: var(--mat-app-primary);
-    box-shadow: 0 -2px 10px rgba(0, 151, 167, 0.2);
-  }
-}
-
-// Minimized state - floating circular button with GNS3 cyan glow
+// =============================================
+// Minimized Bar
+// =============================================
 .minimized-bar {
   display: flex;
   align-items: center;
@@ -400,10 +397,15 @@
   cursor: pointer;
   user-select: none;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--mat-app-background), var(--mat-app-surface));
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 151, 167, 0.3);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: bounceIn 0.3s ease-out;
+  background: linear-gradient(
+    135deg,
+    var(--mat-app-background-color),
+    var(--mat-app-surface-color)
+  );
+  box-shadow: var(--mdc-elevated-card-container-elevation),
+              0 0 20px color-mix(in srgb, var(--mat-app-primary-color) / 0.3, transparent);
+  transition: all var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing);
+  animation: bounceIn var(--mat-standard-motion-duration-long) var(--mat-standard-motion-easing);
   position: relative;
   overflow: hidden;
 
@@ -417,16 +419,25 @@
     height: 100%;
     transform: translate(-50%, -50%);
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(0, 151, 167, 0.3) 0%, transparent 70%);
+    background: radial-gradient(
+      circle,
+      color-mix(in srgb, var(--mat-app-primary-color) / 0.3, transparent) 0%,
+      transparent 70%
+    );
     animation: pulse 2s ease-in-out infinite;
   }
 
   &:hover {
     transform: scale(1.15);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 151, 167, 0.5);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-app-background-color) / 0.6, transparent),
+                0 0 30px color-mix(in srgb, var(--mat-app-primary-color) / 0.5, transparent);
 
     &::before {
-      background: radial-gradient(circle, rgba(0, 151, 167, 0.5) 0%, transparent 70%);
+      background: radial-gradient(
+        circle,
+        color-mix(in srgb, var(--mat-app-primary-color) / 0.5, transparent) 0%,
+        transparent 70%
+      );
     }
   }
 
@@ -483,23 +494,72 @@
   font-size: 28px;
   width: 28px;
   height: 28px;
-  color: #b0bec5;
+  color: var(--mat-app-outline-color);
   position: relative;
   z-index: 1;
 }
 
-// NOTE: Menu and sidebar icon styles are in global styles.scss
-// Menu panels are rendered to body, and component styles are encapsulated
-// So all icon color overrides are defined globally
+// =============================================
+// Snackbar Error Styles
+// =============================================
+::ng-deep .ai-chat-snack-error {
+  background-color: var(--mat-app-error-color);
+  color: var(--mat-app-on-error-color);
+  font-weight: var(--gns3-font-weight-medium);
 
-// Dark theme - match GNS3 toolbar color #20313b
-.dark-theme .ai-chat-container {
-  background-color: rgba(32, 49, 59, 1);
-  // Performance optimized: fully opaque, no backdrop-filter
+  .mat-simple-snackbar-action {
+    color: var(--mat-app-on-error-color);
+    font-weight: var(--gns3-font-weight-semibold);
+  }
 }
-.dark-theme .chat-sidebar {
-  background-color: rgba(26, 37, 44, 0.70);
+
+// =============================================
+// Responsive Design
+// =============================================
+@media (max-width: 768px) {
+  .chat-sidebar {
+    position: absolute;
+    z-index: var(--gns3-z-sticky);
+    height: 100%;
+  }
+
+  .chat-sidebar.collapsed {
+    width: 0;
+  }
 }
-.dark-theme .chat-main {
-  background-color: rgba(32, 49, 59, 0.60);
+
+// =============================================
+// Dark Theme Specific Overrides
+// =============================================
+.dark-theme .ai-chat-container,
+.theme-dark .ai-chat-container {
+  background-color: var(--gns3-dark-bg);
+}
+
+.dark-theme .chat-sidebar,
+.theme-dark .chat-sidebar {
+  background-color: color-mix(in srgb, var(--gns3-surface-dark) / 0.7, transparent);
+}
+
+.dark-theme .chat-main,
+.theme-dark .chat-main {
+  background-color: color-mix(in srgb, var(--gns3-dark-bg) / 0.6, transparent);
+}
+
+// =============================================
+// Light Theme Specific Overrides
+// =============================================
+.light-theme .ai-chat-container,
+.theme-light .ai-chat-container {
+  background-color: var(--gns3-light-bg);
+}
+
+.light-theme .chat-sidebar,
+.theme-light .chat-sidebar {
+  background-color: color-mix(in srgb, var(--gns3-surface-light) / 0.7, transparent);
+}
+
+.light-theme .chat-main,
+.theme-light .chat-main {
+  background-color: color-mix(in srgb, var(--gns3-light-bg) / 0.6, transparent);
 }
