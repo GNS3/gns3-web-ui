@@ -1,4 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
@@ -17,11 +20,14 @@ import { ConfiguratorDialogVmwareComponent } from '../../../node-editors/configu
 import { ConfiguratorDialogVpcsComponent } from '../../../node-editors/configurator/vpcs/configurator-vpcs.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-config-node-action',
   templateUrl: './config-action.component.html',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
 })
 export class ConfigActionComponent {
+  private dialog = inject(MatDialog);
+
   @Input() controller: Controller;
   @Input() node: Node;
   private conf = {
@@ -30,8 +36,6 @@ export class ConfigActionComponent {
     disableClose: true,
   };
   dialogRef;
-
-  constructor(private dialog: MatDialog) {}
 
   configureNode() {
     if (this.node.node_type === 'vpcs') {
