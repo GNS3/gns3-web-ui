@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
@@ -12,6 +12,7 @@ import { VirtualBoxService } from '@services/virtual-box.service';
 
 @Component({
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-add-virtual-box-template',
   templateUrl: './add-virtual-box-template.component.html',
   styleUrls: ['./add-virtual-box-template.component.scss', '../../preferences.component.scss'],
@@ -30,7 +31,8 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
     private toasterService: ToasterService,
     private templateMocksService: TemplateMocksService,
     private router: Router,
-    private formBuilder: UntypedFormBuilder
+    private formBuilder: UntypedFormBuilder,
+    private cd: ChangeDetectorRef
   ) {
     this.vmForm = this.formBuilder.group({
       vm: new UntypedFormControl('', Validators.required),
@@ -42,12 +44,15 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
+      this.cd.markForCheck();
 
       this.virtualBoxService.getVirtualMachines(this.controller).subscribe((virtualMachines: VirtualBoxVm[]) => {
         this.virtualMachines = virtualMachines;
+        this.cd.markForCheck();
 
         this.templateMocksService.getVirtualBoxTemplate().subscribe((template: VirtualBoxTemplate) => {
           this.virtualBoxTemplate = template;
+          this.cd.markForCheck();
         });
       });
     });

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, Output } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Controller } from '@models/controller';
 import { Symbol } from '@models/symbol';
@@ -6,6 +6,7 @@ import { SymbolService } from '@services/symbol.service';
 
 @Component({
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-symbols',
   templateUrl: './symbols.component.html',
   styleUrls: ['./symbols.component.scss'],
@@ -20,7 +21,7 @@ export class SymbolsComponent implements OnInit {
   isSelected: string = '';
   searchText: string = '';
 
-  constructor(private symbolService: SymbolService) {}
+  constructor(private symbolService: SymbolService, private cd: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.isSelected = this.symbol;
@@ -46,6 +47,7 @@ export class SymbolsComponent implements OnInit {
     this.symbolService.list(this.controller).subscribe((symbols: Symbol[]) => {
       this.symbols = symbols;
       this.filteredSymbols = symbols;
+      this.cd.markForCheck();
     });
   }
 

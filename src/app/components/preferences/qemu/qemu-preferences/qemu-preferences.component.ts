@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Controller } from '@models/controller';
 import { QemuSettings } from '@models/settings/qemu-settings';
@@ -8,6 +8,7 @@ import { ToasterService } from '@services/toaster.service';
 
 @Component({
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-qemu-preferences',
   templateUrl: './qemu-preferences.component.html',
   styleUrls: ['./qemu-preferences.component.scss'],
@@ -20,16 +21,19 @@ export class QemuPreferencesComponent implements OnInit {
     private route: ActivatedRoute,
     private controllerService: ControllerService,
     private controllerSettingsService: ControllerSettingsService,
-    private toasterService: ToasterService
+    private toasterService: ToasterService,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
+      this.cd.markForCheck();
 
       this.controllerSettingsService.getSettingsForQemu(this.controller).subscribe((settings: QemuSettings) => {
         this.settings = settings;
+        this.cd.markForCheck();
       });
     });
   }

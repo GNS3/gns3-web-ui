@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -14,6 +14,7 @@ import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-ada
 
 @Component({
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-virtual-box-template-details',
   templateUrl: './virtual-box-template-details.component.html',
   styleUrls: ['./virtual-box-template-details.component.scss', '../../preferences.component.scss'],
@@ -42,7 +43,8 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     private toasterService: ToasterService,
     private formBuilder: UntypedFormBuilder,
     private virtualBoxConfigurationService: VirtualBoxConfigurationService,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {
     this.generalSettingsForm = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
@@ -63,6 +65,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     const template_id = this.route.snapshot.paramMap.get('template_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
+      this.cd.markForCheck();
 
       this.getConfiguration();
       this.virtualBoxService
@@ -73,6 +76,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
             this.virtualBoxTemplate.tags = [];
           }
           this.fillCustomAdapters();
+          this.cd.markForCheck();
         });
     });
   }

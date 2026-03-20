@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -12,6 +12,7 @@ import { ToasterService } from '@services/toaster.service';
 
 @Component({
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-cloud-nodes-template-details',
   templateUrl: './cloud-nodes-template-details.component.html',
   styleUrls: ['./cloud-nodes-template-details.component.scss', '../../../preferences.component.scss'],
@@ -42,7 +43,8 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
     private builtInTemplatesService: BuiltInTemplatesService,
     private toasterService: ToasterService,
     private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {
     this.newPort = {
       name: '',
@@ -55,6 +57,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
     const template_id = this.route.snapshot.paramMap.get('template_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
+      this.cd.markForCheck();
 
       this.getConfiguration();
       this.builtInTemplatesService
@@ -73,6 +76,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
           this.portsMappingUdp = this.cloudNodeTemplate.ports_mapping.filter((elem) => elem.type === 'udp');
 
           this.dataSourceUdp = this.portsMappingUdp;
+          this.cd.markForCheck();
         });
     });
   }

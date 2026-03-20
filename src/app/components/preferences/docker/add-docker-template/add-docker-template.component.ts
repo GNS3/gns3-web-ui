@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
@@ -15,6 +15,7 @@ import { ToasterService } from '@services/toaster.service';
 
 @Component({
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-add-docker-template',
   templateUrl: './add-docker-template.component.html',
   styleUrls: ['./add-docker-template.component.scss', '../../preferences.component.scss'],
@@ -43,7 +44,8 @@ export class AddDockerTemplateComponent implements OnInit {
     private formBuilder: UntypedFormBuilder,
     private templateMocksService: TemplateMocksService,
     private configurationService: DockerConfigurationService,
-    private computeService: ComputeService
+    private computeService: ComputeService,
+    private cd: ChangeDetectorRef
   ) {
     this.dockerTemplate = new DockerTemplate();
 
@@ -64,16 +66,19 @@ export class AddDockerTemplateComponent implements OnInit {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
+      this.cd.markForCheck();
 
       this.consoleTypes = this.configurationService.getConsoleTypes();
       this.auxConsoleTypes = this.configurationService.getAuxConsoleTypes();
 
       this.templateMocksService.getDockerTemplate().subscribe((dockerTemplate: DockerTemplate) => {
         this.dockerTemplate = dockerTemplate;
+        this.cd.markForCheck();
       });
 
       this.dockerService.getImages(controller).subscribe((images) => {
         this.dockerImages = images;
+        this.cd.markForCheck();
       });
     });
   }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
@@ -12,6 +12,7 @@ import { VmwareService } from '@services/vmware.service';
 
 @Component({
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-add-vmware-template',
   templateUrl: './add-vmware-template.component.html',
   styleUrls: ['./add-vmware-template.component.scss', '../../preferences.component.scss'],
@@ -30,7 +31,8 @@ export class AddVmwareTemplateComponent implements OnInit {
     private toasterService: ToasterService,
     private templateMocksService: TemplateMocksService,
     private router: Router,
-    private formBuilder: UntypedFormBuilder
+    private formBuilder: UntypedFormBuilder,
+    private cd: ChangeDetectorRef
   ) {
     this.templateNameForm = this.formBuilder.group({
       templateName: new UntypedFormControl(null, [Validators.required]),
@@ -42,12 +44,15 @@ export class AddVmwareTemplateComponent implements OnInit {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
+      this.cd.markForCheck();
 
       this.vmwareService.getVirtualMachines(this.controller).subscribe((virtualMachines: VmwareVm[]) => {
         this.virtualMachines = virtualMachines;
+        this.cd.markForCheck();
 
         this.templateMocksService.getVmwareTemplate().subscribe((template: VmwareTemplate) => {
           this.vmwareTemplate = template;
+          this.cd.markForCheck();
         });
       });
     });

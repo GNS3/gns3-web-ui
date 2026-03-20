@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -13,6 +13,7 @@ import { ToasterService } from '@services/toaster.service';
 
 @Component({
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-docker-template-details',
   templateUrl: './docker-template-details.component.html',
   styleUrls: ['./docker-template-details.component.scss', '../../preferences.component.scss'],
@@ -40,7 +41,8 @@ export class DockerTemplateDetailsComponent implements OnInit {
     private toasterService: ToasterService,
     private configurationService: DockerConfigurationService,
     private formBuilder: UntypedFormBuilder,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {
     this.generalSettingsForm = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
@@ -55,6 +57,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
     const template_id = this.route.snapshot.paramMap.get('template_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
+      this.cd.markForCheck();
 
       this.getConfiguration();
       this.dockerService.getTemplate(this.controller, template_id).subscribe((dockerTemplate: DockerTemplate) => {
@@ -62,6 +65,7 @@ export class DockerTemplateDetailsComponent implements OnInit {
         if (!this.dockerTemplate.tags) {
           this.dockerTemplate.tags = [];
         }
+        this.cd.markForCheck();
       });
     });
   }

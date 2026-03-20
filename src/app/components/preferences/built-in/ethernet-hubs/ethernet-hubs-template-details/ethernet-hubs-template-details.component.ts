@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -12,6 +12,7 @@ import { ToasterService } from '@services/toaster.service';
 
 @Component({
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ethernet-hubs-template-details',
   templateUrl: './ethernet-hubs-template-details.component.html',
   styleUrls: ['./ethernet-hubs-template-details.component.scss', '../../../preferences.component.scss'],
@@ -33,7 +34,8 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
     private toasterService: ToasterService,
     private formBuilder: UntypedFormBuilder,
     private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {
     this.inputForm = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
@@ -47,6 +49,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
     const template_id = this.route.snapshot.paramMap.get('template_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
+      this.cd.markForCheck();
 
       this.categories = this.builtInTemplatesConfigurationService.getCategoriesForEthernetHubs();
       this.builtInTemplatesService
@@ -60,6 +63,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
           if (!this.ethernetHubTemplate.tags) {
             this.ethernetHubTemplate.tags = [];
           }
+          this.cd.markForCheck();
         });
     });
   }

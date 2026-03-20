@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -12,6 +12,7 @@ import { ToasterService } from '@services/toaster.service';
 
 @Component({
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-iou-template-details',
   templateUrl: './iou-template-details.component.html',
   styleUrls: ['./iou-template-details.component.scss', '../../preferences.component.scss'],
@@ -38,7 +39,8 @@ export class IouTemplateDetailsComponent implements OnInit {
     private toasterService: ToasterService,
     private configurationService: IouConfigurationService,
     private router: Router,
-    private formBuilder: UntypedFormBuilder
+    private formBuilder: UntypedFormBuilder,
+    private cd: ChangeDetectorRef
   ) {
     this.generalSettingsForm = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
@@ -59,6 +61,7 @@ export class IouTemplateDetailsComponent implements OnInit {
     const template_id = this.route.snapshot.paramMap.get('template_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
+      this.cd.markForCheck();
 
       this.getConfiguration();
       this.iouService.getTemplate(this.controller, template_id).subscribe((iouTemplate: IouTemplate) => {
@@ -66,6 +69,7 @@ export class IouTemplateDetailsComponent implements OnInit {
         if (!this.iouTemplate.tags) {
           this.iouTemplate.tags = [];
         }
+        this.cd.markForCheck();
       });
     });
   }

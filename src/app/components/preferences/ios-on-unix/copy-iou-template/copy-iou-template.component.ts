@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
@@ -10,6 +10,7 @@ import { ToasterService } from '@services/toaster.service';
 
 @Component({
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-copy-iou-template',
   templateUrl: './copy-iou-template.component.html',
   styleUrls: ['./copy-iou-template.component.scss', '../../preferences.component.scss'],
@@ -26,7 +27,8 @@ export class CopyIouTemplateComponent implements OnInit {
     private qemuService: IouService,
     private toasterService: ToasterService,
     private router: Router,
-    private formBuilder: UntypedFormBuilder
+    private formBuilder: UntypedFormBuilder,
+    private cd: ChangeDetectorRef
   ) {
     this.templateNameForm = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
@@ -38,10 +40,12 @@ export class CopyIouTemplateComponent implements OnInit {
     const template_id = this.route.snapshot.paramMap.get('template_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
+      this.cd.markForCheck();
 
       this.qemuService.getTemplate(this.controller, template_id).subscribe((iouTemplate: IouTemplate) => {
         this.iouTemplate = iouTemplate;
         this.templateName = `Copy of ${this.iouTemplate.name}`;
+        this.cd.markForCheck();
       });
     });
   }

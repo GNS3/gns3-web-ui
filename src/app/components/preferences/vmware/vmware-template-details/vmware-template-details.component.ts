@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
@@ -14,6 +14,7 @@ import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-ada
 
 @Component({
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-vmware-template-details',
   templateUrl: './vmware-template-details.component.html',
   styleUrls: ['./vmware-template-details.component.scss', '../../preferences.component.scss'],
@@ -41,7 +42,8 @@ export class VmwareTemplateDetailsComponent implements OnInit {
     private toasterService: ToasterService,
     private formBuilder: UntypedFormBuilder,
     private vmwareConfigurationService: VmwareConfigurationService,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {
     this.generalSettingsForm = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
@@ -55,6 +57,7 @@ export class VmwareTemplateDetailsComponent implements OnInit {
     const template_id = this.route.snapshot.paramMap.get('template_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
+      this.cd.markForCheck();
 
       this.getConfiguration();
       this.vmwareService.getTemplate(this.controller, template_id).subscribe((vmwareTemplate: VmwareTemplate) => {
@@ -63,6 +66,7 @@ export class VmwareTemplateDetailsComponent implements OnInit {
           this.vmwareTemplate.tags = [];
         }
         this.fillCustomAdapters();
+        this.cd.markForCheck();
       });
     });
   }

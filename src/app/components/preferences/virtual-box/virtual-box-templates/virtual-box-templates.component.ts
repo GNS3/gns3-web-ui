@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Controller } from '@models/controller';
 import { VirtualBoxTemplate } from '@models/templates/virtualbox-template';
@@ -9,6 +9,7 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
 
 @Component({
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-virtual-box-templates',
   templateUrl: './virtual-box-templates.component.html',
   styleUrls: ['./virtual-box-templates.component.scss', '../../preferences.component.scss'],
@@ -21,13 +22,15 @@ export class VirtualBoxTemplatesComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private controllerService: ControllerService,
-    private virtualBoxService: VirtualBoxService
+    private virtualBoxService: VirtualBoxService,
+    private cd: ChangeDetectorRef
   ) {}
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
+      this.cd.markForCheck();
       this.getTemplates();
     });
   }
@@ -37,6 +40,7 @@ export class VirtualBoxTemplatesComponent implements OnInit {
       this.virtualBoxTemplates = virtualBoxTemplates.filter(
         (elem) => elem.template_type === 'virtualbox' && !elem.builtin
       );
+      this.cd.markForCheck();
     });
   }
 

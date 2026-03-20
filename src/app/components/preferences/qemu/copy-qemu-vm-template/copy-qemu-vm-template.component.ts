@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { v4 as uuid } from 'uuid';
@@ -11,6 +11,7 @@ import { ToasterService } from '@services/toaster.service';
 
 @Component({
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-copy-qemu-virtual-machine-template',
   templateUrl: './copy-qemu-vm-template.component.html',
   styleUrls: ['./copy-qemu-vm-template.component.scss', '../../preferences.component.scss'],
@@ -27,7 +28,8 @@ export class CopyQemuVmTemplateComponent implements OnInit {
     private qemuService: QemuService,
     private toasterService: ToasterService,
     private router: Router,
-    private formBuilder: UntypedFormBuilder
+    private formBuilder: UntypedFormBuilder,
+    private cd: ChangeDetectorRef
   ) {
     this.nameForm = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
@@ -39,10 +41,12 @@ export class CopyQemuVmTemplateComponent implements OnInit {
     const template_id = this.route.snapshot.paramMap.get('template_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
+      this.cd.markForCheck();
 
       this.qemuService.getTemplate(this.controller, template_id).subscribe((qemuTemplate: QemuTemplate) => {
         this.qemuTemplate = qemuTemplate;
         this.templateName = `Copy of ${this.qemuTemplate.name}`;
+        this.cd.markForCheck();
       });
     });
   }

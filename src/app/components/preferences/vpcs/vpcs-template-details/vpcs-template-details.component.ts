@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
@@ -12,6 +12,7 @@ import { VpcsService } from '@services/vpcs.service';
 
 @Component({
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-vpcs-template-details',
   templateUrl: './vpcs-template-details.component.html',
   styleUrls: ['./vpcs-template-details.component.scss', '../../preferences.component.scss'],
@@ -32,7 +33,8 @@ export class VpcsTemplateDetailsComponent implements OnInit {
     private toasterService: ToasterService,
     private formBuilder: UntypedFormBuilder,
     private vpcsConfigurationService: VpcsConfigurationService,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {
     this.inputForm = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
@@ -47,6 +49,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
     const template_id = this.route.snapshot.paramMap.get('template_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
+      this.cd.markForCheck();
 
       this.getConfiguration();
       this.vpcsService.getTemplate(this.controller, template_id).subscribe((vpcsTemplate: VpcsTemplate) => {
@@ -54,6 +57,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
         if (!this.vpcsTemplate.tags) {
           this.vpcsTemplate.tags = [];
         }
+        this.cd.markForCheck();
       });
     });
   }

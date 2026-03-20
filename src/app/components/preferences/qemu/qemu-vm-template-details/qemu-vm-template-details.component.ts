@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatChipInputEvent } from '@angular/material/chips';
@@ -15,6 +15,7 @@ import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-ada
 
 @Component({
   standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-qemu-virtual-machine-template-details',
   templateUrl: './qemu-vm-template-details.component.html',
   styleUrls: ['./qemu-vm-template-details.component.scss', '../../preferences.component.scss'],
@@ -50,7 +51,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     private toasterService: ToasterService,
     private configurationService: QemuConfigurationService,
     private formBuilder: UntypedFormBuilder,
-    private router: Router
+    private router: Router,
+    private cd: ChangeDetectorRef
   ) {
     this.generalSettingsForm = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
@@ -64,6 +66,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     const template_id = this.route.snapshot.paramMap.get('template_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
+      this.cd.markForCheck();
 
       this.getConfiguration();
       this.qemuService.getTemplate(this.controller, template_id).subscribe((qemuTemplate: QemuTemplate) => {
@@ -72,6 +75,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
           this.qemuTemplate.tags = [];
         }
         this.fillCustomAdapters();
+        this.cd.markForCheck();
       });
     });
 
