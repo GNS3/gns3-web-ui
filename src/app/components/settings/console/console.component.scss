@@ -1,3 +1,10 @@
+/**
+ * GNS3 Settings Console Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .help {
-  font-size: 14px;
+  font-size: var(--gns3-font-size-sm, 14px);
 }

@@ -1,19 +1,66 @@
-.symbolsWrapper {
-  height: 350px;
-  overflow-y: scroll;
-  scrollbar-color: darkgrey #263238;
-  scrollbar-width: thin;
+/**
+ * GNS3 Change Symbol Dialog Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
+.buttonWrapper {
+  width: 85px;
+  height: 85px;
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  outline: none;
 }
 
-::-webkit-scrollbar {
-  width: 0.5em;
+.menu {
+  display: flex;
+  justify-content: space-between;
 }
 
-::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+.button {
+  background: border-box;
+  border-width: 0px;
+  outline: none;
 }
 
-::-webkit-scrollbar-thumb {
-  background-color: darkgrey;
-  outline: 1px solid #263238;
+.buttonSelected {
+  background: var(--mat-app-primary-color, #0097a7) !important;
+}
+
+.image {
+  width: 65px;
+  height: 65px;
+  filter: invert(0);
+  --webkit-filter: invert(0) !important;
+}
+
+.imageSelected {
+  margin-left: 0px;
+}
+
+.wrapper {
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: repeat(7, 1fr);
+  grid-row-gap: var(--gns3-spacing-xl, 3em);
+  grid-column-gap: var(--gns3-spacing-sm, 1em);
+}
+
+.radio-selection {
+  width: 90%;
+}
+
+.mat-radio-button ~ .mat-radio-button {
+  margin-left: var(--gns3-spacing-md, 16px);
+}
+
+.non-visible {
+  display: none;
+}
+
+.example-full-width {
+  width: 100%;
 }
