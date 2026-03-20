@@ -359,14 +359,14 @@
 
 /* Tool call specific styles - blue/cyan theme */
 .inline-tool-call {
-  border-left: 3px solid #0ea5e9;
+  border-left: 3px solid var(--gns3-cyan-light);
 }
 
 .inline-tool-call:hover {
-  background: rgba(14, 165, 233, 0.08);
-  border-color: #0ea5e9;
+  background: var(--mat-app-primary-container-color);
+  border-color: var(--gns3-cyan-light);
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(14, 165, 233, 0.15);
+  box-shadow: 0 3px 10px var(--gns3-cyan);
 }
 
 /* Tool result specific styles - green theme */
@@ -375,17 +375,17 @@
 }
 
 .inline-tool-result:hover {
-  background: rgba(76, 175, 80, 0.08);
+  background: var(--mat-app-success-container-color);
   border-color: var(--gns3-color-success);
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(76, 175, 80, 0.15);
+  box-shadow: 0 3px 10px var(--gns3-color-success);
 }
 
 .inline-tool-call .tool-icon {
   width: 16px;
   height: 16px;
   font-size: 16px;
-  color: #0ea5e9;
+  color: var(--gns3-cyan-light);
 }
 
 .inline-tool-result .tool-icon {
