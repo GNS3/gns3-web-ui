@@ -22,7 +22,7 @@
             <input
               matInput
               type="text"
-              [(ngModel)]="ethernetSwitchTemplate.name"
+              
               formControlName="templateName"
               placeholder="Template name"
             />
@@ -31,7 +31,7 @@
             <input
               matInput
               type="text"
-              [(ngModel)]="ethernetSwitchTemplate.default_name_format"
+              
               formControlName="defaultName"
               placeholder="Default name format"
             />
@@ -40,7 +40,7 @@
             <input
               matInput
               type="text"
-              [(ngModel)]="ethernetSwitchTemplate.symbol"
+              
               formControlName="symbol"
               placeholder="Symbol"
             />
@@ -63,7 +63,7 @@
             <mat-select
               placeholder="Category"
               [ngModelOptions]="{ standalone: true }"
-              [(ngModel)]="ethernetSwitchTemplate.category"
+              
             >
               <mat-option *ngFor="let category of categories" [value]="category[1]">
                 {{ category[0] }}
@@ -74,7 +74,7 @@
             <mat-select
               placeholder="Console type"
               [ngModelOptions]="{ standalone: true }"
-              [(ngModel)]="ethernetSwitchTemplate.console_type"
+              
             >
               <mat-option *ngFor="let type of consoleTypes" [value]="type">
                 {{ type }}

@@ -24,7 +24,7 @@
           <input
             matInput
             type="text"
-            [(ngModel)]="ethernetHubTemplate.name"
+            
             formControlName="templateName"
             placeholder="Template name"
           />
@@ -33,7 +33,7 @@
           <input
             matInput
             type="text"
-            [(ngModel)]="ethernetHubTemplate.default_name_format"
+            
             formControlName="defaultName"
             placeholder="Default name format"
           />
@@ -42,7 +42,7 @@
           <input
             matInput
             type="text"
-            [(ngModel)]="ethernetHubTemplate.symbol"
+            
             formControlName="symbol"
             placeholder="Symbol"
           />
@@ -65,7 +65,7 @@
           <mat-select
             placeholder="Category"
             [ngModelOptions]="{ standalone: true }"
-            [(ngModel)]="ethernetHubTemplate.category"
+            
           >
             <mat-option *ngFor="let category of categories" [value]="category[1]">
               {{ category[0] }}
