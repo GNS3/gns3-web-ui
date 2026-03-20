@@ -1,5 +1,12 @@
+/**
+ * GNS3 Help Dialog Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .message {
-  margin-bottom: 10px;
+  margin-bottom: var(--gns3-spacing-sm, 10px);
 }
 
 .description {

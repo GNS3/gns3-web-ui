@@ -1,7 +1,14 @@
+/**
+ * GNS3 List of Snapshots Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .filter-field {
   width: 100%;
 }
 
 .mat-table {
-  margin: -16px !important;
+  margin: calc(var(--gns3-spacing-md, 16px) * -1) !important;
 }

@@ -1,5 +1,12 @@
+/**
+ * GNS3 Snapshot Menu Item Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .snapshot-button {
-  transition: transform 0.2s ease;
+  transition: transform var(--gns3-duration-fast, 0.2s) ease;
 }
 
 .snapshot-button:hover {
