@@ -1,19 +1,23 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-stop-node-action',
   templateUrl: './stop-node-action.component.html',
+  imports: [CommonModule, MatButtonModule, MatIconModule],
 })
 export class StopNodeActionComponent implements OnInit, OnChanges {
+  private nodeService = inject(NodeService);
+
   @Input() controller: Controller;
   @Input() nodes: Node[];
   isNodeWithStartedStatus: boolean;
-
-  constructor(private nodeService: NodeService) {}
 
   ngOnInit() {}
 

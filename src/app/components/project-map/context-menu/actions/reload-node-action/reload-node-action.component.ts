@@ -1,20 +1,24 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-reload-node-action',
   templateUrl: './reload-node-action.component.html',
+  imports: [CommonModule, MatButtonModule, MatIconModule],
 })
 export class ReloadNodeActionComponent implements OnInit {
+  private nodeService = inject(NodeService);
+
   @Input() controller: Controller;
   @Input() nodes: Node[];
 
   filteredNodes: Node[] = [];
-
-  constructor(private nodeService: NodeService) {}
 
   ngOnInit() {
     this.nodes.forEach((node) => {

@@ -1,20 +1,25 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-start-node-action',
   templateUrl: './start-node-action.component.html',
+  imports: [CommonModule, MatButtonModule, MatIconModule],
 })
 export class StartNodeActionComponent implements OnInit, OnChanges {
+  private nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
+
   @Input() controller: Controller;
   @Input() nodes: Node[];
   isNodeWithStoppedStatus: boolean;
-
-  constructor(private nodeService: NodeService, private toasterService: ToasterService) {}
 
   ngOnInit() {}
 
