@@ -1,10 +1,18 @@
+/**
+ * GNS3 Controllers Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .buttons-bar {
   padding-top: 0px;
 }
 
 .button {
-  margin: 20px !important;
+  margin: var(--gns3-spacing-md, 20px) !important;
 }
+
 table {
   width: 100%;
 }
@@ -14,7 +22,7 @@ table {
 }
 
 .controllers-search {
-  margin-top: 12px;
+  margin-top: var(--gns3-spacing-sm, 12px);
 }
 
 mat-header-cell, mat-cell {
@@ -46,26 +54,26 @@ mat-header-cell, mat-cell {
 }
 
 .status-chip {
-  border-radius: 12px;
-  font-size: 12px;
+  border-radius: var(--gns3-radius-md, 12px);
+  font-size: var(--gns3-font-size-xs, 12px);
   font-weight: 600;
   line-height: 1;
-  padding: 5px 10px;
+  padding: 5px var(--gns3-spacing-sm, 10px);
 }
 
 .status-running {
-  background: #d4edda;
-  color: #155724;
+  background: var(--mat-green-100, #d4edda);
+  color: var(--mat-green-900, #155724);
 }
 
 .status-starting {
-  background: #fff3cd;
-  color: #856404;
+  background: var(--mat-yellow-100, #fff3cd);
+  color: var(--mat-yellow-900, #856404);
 }
 
 .status-stopped {
-  background: #f8d7da;
-  color: #721c24;
+  background: var(--mat-red-100, #f8d7da);
+  color: var(--mat-red-900, #721c24);
 }
 
 @media (max-width: 768px) {
@@ -75,16 +83,16 @@ mat-header-cell, mat-cell {
   }
 
   .button {
-    margin: 10px 0 !important;
+    margin: var(--gns3-spacing-sm, 10px) 0 !important;
     width: 100%;
   }
 }
 
 .table-link {
-  transition: transform 0.2s ease;
+  transition: transform var(--gns3-duration-fast, 0.2s) ease;
   display: inline-block;
   transform-origin: left center;
-  padding: 2px 4px;
+  padding: 2px var(--gns3-spacing-xs, 4px);
   margin: -2px -4px;
 }
 
@@ -94,7 +102,7 @@ mat-header-cell, mat-cell {
 
 /* Table action buttons hover effect */
 mat-cell .mat-icon-button {
-  transition: transform 0.2s ease;
+  transition: transform var(--gns3-duration-fast, 0.2s) ease;
 }
 
 mat-cell .mat-icon-button:hover {
