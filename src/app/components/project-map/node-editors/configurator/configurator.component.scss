@@ -1,3 +1,10 @@
+/**
+ * GNS3 Configurator Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 table {
   width: 100%;
 }
@@ -17,7 +24,7 @@ table {
 .default-content {
   max-height: 400px;
   overflow-y: scroll;
-  scrollbar-color: darkgrey #263238;
+  scrollbar-color: darkgrey var(--gns3-surface, #263238);
   scrollbar-width: thin;
 }
 
@@ -39,7 +46,7 @@ table {
 }
 
 mat-radio-button {
-  margin-right: 10px;
+  margin-right: var(--gns3-spacing-sm, 10px);
 }
 
 ::-webkit-scrollbar {
@@ -52,7 +59,7 @@ mat-radio-button {
 
 ::-webkit-scrollbar-thumb {
   background-color: darkgrey;
-  outline: 1px solid #263238;
+  outline: 1px solid var(--gns3-surface, #263238);
 }
 
 .tags-field {
