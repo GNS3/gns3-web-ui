@@ -9,7 +9,7 @@
             <br />
             <form [formGroup]="generalSettingsForm">
               <mat-form-field class="form-field">
-                <input matInput type="text" formControlName="name" [(ngModel)]="node.name" placeholder="Name" />
+                <input matInput type="text" formControlName="name" placeholder="Name" />
               </mat-form-field>
 
               <mat-form-field class="form-field tags-field">
@@ -53,7 +53,6 @@
                   matInput
                   formControlName="ethernetAdapters"
                   type="number"
-                  [(ngModel)]="node.properties.ethernet_adapters"
                   placeholder="Ethernet adapters"
                 />
               </mat-form-field>
@@ -62,7 +61,6 @@
                   matInput
                   formControlName="serialAdapters"
                   type="number"
-                  [(ngModel)]="node.properties.serial_adapters"
                   placeholder="Serial adapters"
                 />
               </mat-form-field>

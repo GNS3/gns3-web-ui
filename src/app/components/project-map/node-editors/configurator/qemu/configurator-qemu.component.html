@@ -9,7 +9,7 @@
             <br />
             <form [formGroup]="generalSettingsForm">
               <mat-form-field class="form-field">
-                <input matInput type="text" formControlName="name" [(ngModel)]="node.name" placeholder="Name" />
+                <input matInput type="text" formControlName="name" placeholder="Name" />
               </mat-form-field>
               <mat-form-field class="form-field tags-field">
                 <mat-label>Tags</mat-label>
@@ -36,7 +36,6 @@
                   matInput
                   type="number"
                   formControlName="ram"
-                  [(ngModel)]="node.properties.ram"
                   placeholder="RAM"
                 />
                 <span matSuffix>MB</span>
@@ -180,7 +179,6 @@
                   matInput
                   formControlName="mac_address"
                   type="text"
-                  [(ngModel)]="node.properties.mac_address"
                   placeholder="Base MAC"
                 />
               </mat-form-field>

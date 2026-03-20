@@ -9,7 +9,7 @@
             <br />
             <form [formGroup]="generalSettingsForm">
               <mat-form-field class="form-field">
-                <input matInput formControlName="name" type="text" [(ngModel)]="node.name" placeholder="Name" />
+                <input matInput formControlName="name" type="text" placeholder="Name" />
               </mat-form-field>
 
               <mat-form-field class="form-field tags-field">
@@ -31,7 +31,6 @@
                   matInput
                   formControlName="startCommand"
                   type="text"
-                  [(ngModel)]="node.properties.start_command"
                   placeholder="Start command"
                 />
               </mat-form-field>
@@ -41,7 +40,6 @@
                   formControlName="adapter"
                   matInput
                   type="number"
-                  [(ngModel)]="node.properties.adapters"
                   placeholder="Adapters"
                 />
               </mat-form-field>
@@ -51,18 +49,17 @@
                   matInput
                   formControlName="mac_address"
                   type="text"
-                  [(ngModel)]="node.properties.mac_address"
                   placeholder="Base MAC"
                 />
               </mat-form-field>
 
               <mat-form-field class="form-field">
-                  <input formControlName="memory" matInput type="number" min="0" [(ngModel)]="node.properties.memory" placeholder="Maximum memory">
+                  <input formControlName="memory" matInput type="number" min="0" placeholder="Maximum memory">
                   <span matSuffix>MB</span>
               </mat-form-field>
 
               <mat-form-field class="form-field">
-                  <input formControlName="cpus" matInput type="number" min="0" [(ngModel)]="node.properties.cpus" placeholder="Maximum CPUs">
+                  <input formControlName="cpus" matInput type="number" min="0" placeholder="Maximum CPUs">
               </mat-form-field>
 
 <!--              <button mat-button class="form-field" (click)="configureCustomAdapters()">-->
@@ -112,7 +109,6 @@
                   formControlName="consoleHttpPort"
                   matInput
                   type="number"
-                  [(ngModel)]="node.properties.console_http_port"
                   placeholder="HTTP port in the container"
                 />
               </mat-form-field>
@@ -122,7 +118,6 @@
                   matInput
                   formControlName="consoleHttpPath"
                   type="text"
-                  [(ngModel)]="node.properties.console_http_path"
                   placeholder="HTTP path"
                 />
               </mat-form-field>

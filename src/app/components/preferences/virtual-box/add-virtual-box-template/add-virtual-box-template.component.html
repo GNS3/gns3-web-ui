@@ -21,7 +21,7 @@
     <mat-card class="matCard">
       <form [formGroup]="vmForm">
         <mat-form-field class="form-field">
-          <mat-select placeholder="VM list" [(ngModel)]="selectedVM" formControlName="vm">
+          <mat-select placeholder="VM list" formControlName="vm">
             <mat-option *ngFor="let vm of virtualMachines" [value]="vm">
               {{ vm.vmname }}
             </mat-option>

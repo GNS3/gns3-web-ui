@@ -9,7 +9,6 @@
             <input
               matInput
               type="text"
-              [(ngModel)]="qemuImg.qemu_img"
               formControlName="qemu_img"
               placeholder="Qemu image path"
             />
@@ -94,10 +93,10 @@
         </div>
         <form [formGroup]="inputForm">
           <mat-form-field class="form-field">
-            <input matInput type="text" [(ngModel)]="qemuImg.path" formControlName="path" placeholder="File location" />
+            <input matInput type="text" formControlName="path" placeholder="File location" />
           </mat-form-field>
           <mat-form-field class="form-field">
-            <input matInput type="number" min="1" [(ngModel)]="qemuImg.size" formControlName="size" placeholder="Disk size" />
+            <input matInput type="number" min="1" formControlName="size" placeholder="Disk size" />
           </mat-form-field>
         </form>
       </mat-card>

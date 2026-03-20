@@ -12,7 +12,7 @@
             <br /><br />
             <form [formGroup]="generalSettingsForm">
               <mat-form-field class="form-field">
-                <input matInput type="text" formControlName="name" [(ngModel)]="node.name" placeholder="Name" />
+                <input matInput type="text" formControlName="name" placeholder="Name" />
               </mat-form-field>
               <mat-form-field class="form-field tags-field">
                 <mat-label>Tags</mat-label>
@@ -28,7 +28,7 @@
                        (matChipInputTokenEnd)="addTag($event)" />
               </mat-form-field>
               <mat-form-field class="form-field">
-                <input matInput type="text" formControlName="path" [(ngModel)]="node.properties.image" placeholder="IOS image path"/>
+                <input matInput type="text" formControlName="path" placeholder="IOS image path"/>
               </mat-form-field>
             </form>
             <mat-form-field class="select" *ngIf="node.properties.midplane">
@@ -71,7 +71,6 @@
                   type="number"
                   min="0"
                   formControlName="ram"
-                  [(ngModel)]="node.properties.ram"
                   placeholder="RAM size"
                 />
                 <span matSuffix>MiB</span>
@@ -82,7 +81,6 @@
                   type="number"
                   min="0"
                   formControlName="nvram"
-                  [(ngModel)]="node.properties.nvram"
                   placeholder="NVRAM size"
                 />
                 <span matSuffix>MiB</span>
@@ -178,7 +176,7 @@
                 </mat-form-field>
                 <form [formGroup]="advancedSettingsForm">
                 <mat-form-field class="form-field">
-                  <input matInput formControlName="mac_addr" type="text" [(ngModel)]="node.properties.mac_addr" placeholder="Base MAC" />
+                  <input matInput formControlName="mac_addr" type="text" placeholder="Base MAC" />
                 </mat-form-field>
                 </form>
               </mat-card-content>
@@ -189,7 +187,7 @@
               <mat-card-content>
                 <form [formGroup]="advancedSettingsForm">
                 <mat-form-field class="form-field">
-                  <input matInput type="text" formControlName="idlepc" [(ngModel)]="node.properties.idlepc" placeholder="Idle-PC" />
+                  <input matInput type="text" formControlName="idlepc" placeholder="Idle-PC" />
                 </mat-form-field>
                 </form>
                 <mat-form-field class="form-field">

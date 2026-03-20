@@ -36,7 +36,7 @@
 
         <form [formGroup]="nameForm">
           <mat-form-field class="form-field">
-            <input matInput type="text" [(ngModel)]="node.name" formControlName="name" placeholder="Name" />
+            <input matInput type="text" formControlName="name" placeholder="Name" />
           </mat-form-field>
         </form>
 
@@ -45,17 +45,17 @@
         <form [formGroup]="inputForm">
           Source
           <mat-form-field class="form-field">
-            <input matInput type="number" min="0" [(ngModel)]="sourcePort" formControlName="sourcePort" placeholder="Port" />
+            <input matInput type="number" min="0" formControlName="sourcePort" placeholder="Port" />
           </mat-form-field>
         </form>
         <form [formGroup]="abstractForm">
           <mat-form-field class="form-field">
-            <input matInput type="number" min="1" [(ngModel)]="sourceVpi" formControlName="sourceVpi" placeholder="VPI" />
+            <input matInput type="number" min="1" formControlName="sourceVpi" placeholder="VPI" />
           </mat-form-field>
         </form>
         <form [formGroup]="inputForm">
           <mat-form-field class="form-field">
-            <input matInput type="number" min="1" [(ngModel)]="sourceVci" formControlName="sourceVci" placeholder="VCI" />
+            <input matInput type="number" min="1" formControlName="sourceVci" placeholder="VCI" />
           </mat-form-field>
           Destination
           <mat-form-field class="form-field">
@@ -63,7 +63,6 @@
               matInput
               type="number"
               min="0"
-              [(ngModel)]="destinationPort"
               formControlName="destinationPort"
               placeholder="Port"
             />
@@ -75,7 +74,6 @@
               matInput
               type="number"
               min="1"
-              [(ngModel)]="destinationVpi"
               formControlName="destinationVpi"
               placeholder="VPI"
             />
@@ -87,7 +85,6 @@
               matInput
               type="number"
               min="1"
-              [(ngModel)]="destinationVci"
               formControlName="destinationVci"
               placeholder="VCI"
             />

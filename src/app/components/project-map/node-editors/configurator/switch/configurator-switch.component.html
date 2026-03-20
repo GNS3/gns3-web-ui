@@ -36,17 +36,17 @@
 
         <form [formGroup]="nameForm">
           <mat-form-field class="form-field">
-            <input matInput type="text" [(ngModel)]="node.name" formControlName="name" placeholder="Name" />
+            <input matInput type="text" formControlName="name" placeholder="Name" />
           </mat-form-field>
         </form>
 
         <form [formGroup]="inputForm">
           Source
           <mat-form-field class="form-field">
-            <input matInput type="number" min="0" [(ngModel)]="sourcePort" formControlName="sourcePort" placeholder="Port" />
+            <input matInput type="number" min="0" formControlName="sourcePort" placeholder="Port" />
           </mat-form-field>
           <mat-form-field class="form-field">
-            <input matInput type="number" min="1" [(ngModel)]="sourceDlci" formControlName="sourceDlci" placeholder="DLCI" />
+            <input matInput type="number" min="1" formControlName="sourceDlci" placeholder="DLCI" />
           </mat-form-field>
           Destination
           <mat-form-field class="form-field">
@@ -54,7 +54,6 @@
               matInput
               type="number"
               min="0"
-              [(ngModel)]="destinationPort"
               formControlName="destinationPort"
               placeholder="Port"
             />
@@ -64,7 +63,6 @@
               matInput
               type="number"
               min="1"
-              [(ngModel)]="destinationDlci"
               formControlName="destinationDlci"
               placeholder="DLCI"
             />
