@@ -7,7 +7,7 @@
 }
 
 .button {
-  margin: var(--gns3-spacing-md) !important;
+  margin: var(--gns3-spacing-md);
 }
 
 .controllers-search {
@@ -22,12 +22,10 @@ mat-cell {
 .mat-header-row {
   position: sticky;
   top: 0;
-  z-index: 3;
 }
 
 .mat-table-sticky {
-  top: 0 !important;
-  z-index: 3 !important;
+  top: 0;
 }
 
 .status-chip {
@@ -68,7 +66,7 @@ mat-cell {
 
 @media (max-width: 768px) {
   .button {
-    margin: var(--gns3-spacing-sm) 0 !important;
+    margin: var(--gns3-spacing-sm) 0;
     width: 100%;
   }
 }

@@ -21,12 +21,10 @@
 .mat-header-row {
   position: sticky;
   top: 0;
-  z-index: 3;
 }
 
 .mat-table-sticky {
-  top: 0 !important;
-  z-index: 3 !important;
+  top: 0;
 }
 
 .table-link {
