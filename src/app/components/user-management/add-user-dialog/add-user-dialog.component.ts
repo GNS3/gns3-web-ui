@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import {UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {MatDialogRef} from "@angular/material/dialog";
 import {UserService} from "@services/user.service";
@@ -30,13 +30,14 @@ import { HttpErrorResponse } from '@angular/common/http';
   standalone: false,
   selector: 'app-add-user-dialog',
   templateUrl: './add-user-dialog.component.html',
-  styleUrls: ['./add-user-dialog.component.scss']
+  styleUrls: ['./add-user-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddUserDialogComponent implements OnInit {
   addUserForm: UntypedFormGroup;
   controller: Controller;
 
-  groups: Group[];
+  groups: Group[] = [];
   groupsToAdd: Set<Group> = new Set([]);
   autocompleteControl = new UntypedFormControl();
   filteredGroups: Observable<Group[]>;
@@ -44,7 +45,8 @@ export class AddUserDialogComponent implements OnInit {
   constructor(public dialogRef: MatDialogRef<AddUserDialogComponent>,
               public userService: UserService,
               private toasterService: ToasterService,
-              private groupService: GroupService) { }
+              private groupService: GroupService,
+              private cd: ChangeDetectorRef) { }
 
   ngOnInit(): void {
     this.addUserForm = new UntypedFormGroup({
@@ -72,6 +74,7 @@ export class AddUserDialogComponent implements OnInit {
         startWith(''),
         map(value => this._filter(value)),
       );
+      this.cd.markForCheck();
     })
 
   }
