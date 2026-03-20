@@ -7,11 +7,11 @@
 }
 
 .unmarked {
-  color: white;
+  color: var(--mat-app-on-surface-color);
 }
 
 .unmarkedLight {
-  color: black;
+  color: var(--mat-app-on-surface-color);
 }
 
 .marked {
@@ -40,23 +40,23 @@
   right: var(--gns3-spacing-xs);
   width: var(--gns3-spacing-xs);
   height: var(--gns3-spacing-xs);
-  background-color: #00bcd4;
+  background-color: var(--gns3-cyan-light);
   border-radius: 50%;
-  box-shadow: 0 0 var(--gns3-spacing-sm) rgba(0, 188, 212, 0.8);
+  box-shadow: 0 0 var(--gns3-spacing-sm) var(--gns3-cyan-light);
 }
 
 /* AI Chat minimized state */
 .ai-chat-button.ai-minimized {
   position: relative;
-  background-color: rgba(0, 188, 212, 0.25);
-  box-shadow: 0 0 var(--gns3-spacing-md) rgba(0, 188, 212, 0.6), inset 0 0 var(--gns3-spacing-sm) rgba(0, 188, 212, 0.4);
+  background-color: var(--mat-app-primary-container-color);
+  box-shadow: 0 0 var(--gns3-spacing-md) var(--gns3-cyan), inset 0 0 var(--gns3-spacing-sm) var(--gns3-cyan);
   animation: pulse-minimized 1.5s ease-in-out infinite;
-  border: var(--gns3-radius-xs) solid rgba(0, 188, 212, 0.8);
+  border: var(--gns3-radius-xs) solid var(--gns3-cyan-light);
 }
 
 .ai-chat-button.ai-minimized .ai-icon {
-  color: #00e5ff;
-  text-shadow: 0 0 var(--gns3-spacing-sm) rgba(0, 229, 255, 0.8);
+  color: var(--gns3-cyan-light);
+  text-shadow: 0 0 var(--gns3-spacing-sm) var(--gns3-cyan-light);
   font-weight: 900;
 }
 
@@ -67,19 +67,19 @@
   transform: translateX(-50%);
   width: var(--gns3-spacing-xs);
   height: var(--gns3-spacing-xs);
-  background-color: #00e5ff;
+  background-color: var(--gns3-cyan-light);
   border-radius: 50%;
-  box-shadow: 0 0 var(--gns3-spacing-xs) rgba(0, 229, 255, 1);
+  box-shadow: 0 0 var(--gns3-spacing-xs) var(--gns3-cyan-light);
   animation: blink-indicator 1s ease-in-out infinite;
 }
 
 @keyframes pulse-minimized {
   0%, 100% {
-    box-shadow: 0 0 var(--gns3-spacing-md) rgba(0, 188, 212, 0.6), inset 0 0 var(--gns3-spacing-sm) rgba(0, 188, 212, 0.4);
+    box-shadow: 0 0 var(--gns3-spacing-md) var(--gns3-cyan), inset 0 0 var(--gns3-spacing-sm) var(--gns3-cyan);
     transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 var(--gns3-spacing-xl) rgba(0, 188, 212, 0.9), inset 0 0 var(--gns3-spacing-md) rgba(0, 188, 212, 0.6);
+    box-shadow: 0 0 var(--gns3-spacing-xl) var(--gns3-cyan-light), inset 0 0 var(--gns3-spacing-md) var(--gns3-cyan);
     transform: scale(1.05);
   }
 }
