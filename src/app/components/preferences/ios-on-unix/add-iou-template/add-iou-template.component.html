@@ -4,7 +4,7 @@
       <div class="col col-md-1">
         <button
           class="top-button"
-          *ngIf="controller"
+          *ngIf="controller()"
           class="cancel-button"
           mat-button
           (click)="goBack()"
@@ -20,7 +20,7 @@
   <div class="default-content">
     <div class="container mat-elevation-z8">
       <mat-vertical-stepper [linear]="true">
-        <mat-step label="Controller type" [completed]="isLocalComputerChosen">
+        <mat-step label="Controller type" [completed]="isLocalComputerChosen()">
           <mat-radio-group class="radio-group">
             <mat-radio-button class="radio-button" value="1" (click)="setControllerType('local')" checked
               >Run this IOU device locally</mat-radio-button
@@ -48,23 +48,23 @@
             </mat-radio-group>
             <mat-form-field class="form-field">
               <mat-select placeholder="Type" [(ngModel)]="selectedType" [ngModelOptions]="{ standalone: true }">
-                <mat-option *ngFor="let type of types" [value]="type">
+                <mat-option *ngFor="let type of types()" [value]="type">
                   {{ type }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
-            <mat-form-field class="form-field" *ngIf="!newImageSelected">
+            <mat-form-field class="form-field" *ngIf="!newImageSelected()">
               <mat-select
                 placeholder="IOU image"
-                [(ngModel)]="iouTemplate.path"
+                [(ngModel)]="iouTemplate().path"
                 [ngModelOptions]="{ standalone: true }"
               >
-                <mat-option *ngFor="let image of iouImages" [value]="image.path">
+                <mat-option *ngFor="let image of iouImages()" [value]="image.path">
                   {{ image.path }}
                 </mat-option>
               </mat-select>
             </mat-form-field>
-            <div *ngIf="newImageSelected">
+            <div *ngIf="newImageSelected()">
               <input
                 type="file"
                 accept=".bin, .image, .iol"
@@ -72,7 +72,7 @@
                 class="nonvisible"
                 (change)="uploadImageFile($event)"
                 ng2FileSelect
-                [uploader]="uploader"
+                [uploader]="uploader()"
               />
               <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
               <mat-form-field class="file-name-form-field">

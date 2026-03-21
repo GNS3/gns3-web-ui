@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -31,7 +31,10 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-add-iou-template',
   templateUrl: './add-iou-template.component.html',
   styleUrls: ['./add-iou-template.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, FileUploadModule]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, FileUploadModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class AddIouTemplateComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
@@ -44,24 +47,20 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   private computeService = inject(ComputeService);
   private uploadServiceService = inject(UploadServiceService);
   private snackBar = inject(MatSnackBar);
-  controller: Controller;
-  iouTemplate: IouTemplate;
-  isRemoteComputerChosen: boolean = false;
-  newImageSelected: boolean = false;
-  types: string[] = ['L2 image', 'L3 image'];
-  selectedType: string;
-  iouImages: IouImage[] = [];
-  uploader: FileUploader;
+  readonly controller = signal<Controller | undefined>(undefined);
+  readonly iouTemplate = signal<IouTemplate>(new IouTemplate());
+  readonly newImageSelected = signal<boolean>(false);
+  readonly types = signal<string[]>(['L2 image', 'L3 image']);
+  readonly selectedType = signal<string>('');
+  readonly iouImages = signal<IouImage[]>([]);
+  readonly uploader = signal<FileUploader | undefined>(undefined);
 
-  templateNameForm: UntypedFormGroup;
-  imageForm: UntypedFormGroup;
-  isLocalComputerChosen: boolean = true;
-  uploadProgress: number = 0
+  readonly templateNameForm: UntypedFormGroup;
+  readonly imageForm: UntypedFormGroup;
+  readonly isLocalComputerChosen = signal<boolean>(true);
   subscription: Subscription;
 
   constructor() {
-    this.iouTemplate = new IouTemplate();
-
     this.templateNameForm = this.formBuilder.group({
       templateName: new UntypedFormControl(null, Validators.required),
     });
@@ -72,19 +71,18 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.uploader = new FileUploader({url: ''});
-    this.uploader.onAfterAddingFile = (file) => {
+    this.uploader.set(new FileUploader({url: ''}));
+    this.uploader().onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };
-    this.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+    this.uploader().onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
       this.toasterService.error('An error occured: ' + response);
     };
-    this.uploader.onProgressItem = (progress: any) => {
-      this.uploadProgress = progress['progress'];
-      this.uploadServiceService.processBarCount(this.uploadProgress)
+    this.uploader().onProgressItem = (progress: any) => {
+      this.uploadServiceService.processBarCount(progress['progress'])
     };
 
-    this.uploader.onSuccessItem = (
+    this.uploader().onSuccessItem = (
       item: FileItem,
       response: string,
       status: number,
@@ -95,11 +93,11 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
     };
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
-      this.controller = controller;
+    this.controllerService.get(parseInt(controller_id, 10)).then((ctrl: Controller ) => {
+      this.controller.set(ctrl);
       this.getImages();
       this.templateMocksService.getIouTemplate().subscribe((iouTemplate: IouTemplate) => {
-        this.iouTemplate = iouTemplate;
+        this.iouTemplate.set(iouTemplate);
       });
     });
    this.subscription =  this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
@@ -112,31 +110,31 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   }
 
   getImages() {
-    this.iouService.getImages(this.controller).subscribe((images: IouImage[]) => {
-      this.iouImages = images;
+    this.iouService.getImages(this.controller()).subscribe((images: IouImage[]) => {
+      this.iouImages.set(images);
     });
   }
 
   setControllerType(controllerType: string) {
     if (controllerType === 'local') {
-      this.isLocalComputerChosen = true;
+      this.isLocalComputerChosen.set(true);
     }
   }
 
   setDiskImage(value: string) {
-    this.newImageSelected = value === 'newImage';
+    this.newImageSelected.set(value === 'newImage');
   }
 
   uploadImageFile(event): void {
     let name = event.target.files[0].name;
     this.imageForm.controls['imageName'].setValue(name);
 
-    const url = this.iouService.getImagePath(this.controller, name);
-    this.uploader.queue.forEach((elem) => (elem.url = url));
+    const url = this.iouService.getImagePath(this.controller(), name);
+    this.uploader().queue.forEach((elem) => (elem.url = url));
 
-    const itemToUpload = this.uploader.queue[0];
-    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller.authToken }])
-    this.uploader.uploadItem(itemToUpload);
+    const itemToUpload = this.uploader().queue[0];
+    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller().authToken }])
+    this.uploader().uploadItem(itemToUpload);
     this.snackBar.openFromComponent(UploadingProcessbarComponent, {
       panelClass: 'uplaoding-file-snackabar',
       data:{upload_file_type:'Image'}
@@ -145,38 +143,35 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   }
 
   cancelUploading() {
-    this.uploader.clearQueue();
+    this.uploader().clearQueue();
     this.uploadServiceService.processBarCount(100)
     this.toasterService.warning('File upload cancelled');
-    // this.uploadServiceService.cancelFileUploading(false)
-    // window.location.reload()
   }
 
-
-
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'iou', 'templates']);
+    this.router.navigate(['/controller', this.controller().id, 'preferences', 'iou', 'templates']);
   }
 
   addTemplate() {
     if (
       !this.templateNameForm.invalid &&
-      ((this.newImageSelected && !this.imageForm.invalid) || (!this.newImageSelected && this.iouTemplate.path))
+      ((this.newImageSelected() && !this.imageForm.invalid) || (!this.newImageSelected() && this.iouTemplate().path))
     ) {
-      this.iouTemplate.template_id = uuid();
-      this.iouTemplate.name = this.templateNameForm.get('templateName').value;
-      if (this.newImageSelected) this.iouTemplate.path = this.imageForm.get('imageName').value;
-      this.iouTemplate.compute_id = 'local';
+      const template = this.iouTemplate();
+      template.template_id = uuid();
+      template.name = this.templateNameForm.get('templateName').value;
+      if (this.newImageSelected()) template.path = this.imageForm.get('imageName').value;
+      template.compute_id = 'local';
 
-      if (this.selectedType === 'L2 image') {
-        this.iouTemplate.ethernet_adapters = 4;
-        this.iouTemplate.serial_adapters = 0;
-      } else if (this.selectedType === 'L3 image') {
-        this.iouTemplate.ethernet_adapters = 2;
-        this.iouTemplate.serial_adapters = 2;
+      if (this.selectedType() === 'L2 image') {
+        template.ethernet_adapters = 4;
+        template.serial_adapters = 0;
+      } else if (this.selectedType() === 'L3 image') {
+        template.ethernet_adapters = 2;
+        template.serial_adapters = 2;
       }
 
-      this.iouService.addTemplate(this.controller, this.iouTemplate).subscribe((template: IouTemplate) => {
+      this.iouService.addTemplate(this.controller(), template).subscribe((iouTemplate: IouTemplate) => {
         this.goBack();
       });
     } else {
