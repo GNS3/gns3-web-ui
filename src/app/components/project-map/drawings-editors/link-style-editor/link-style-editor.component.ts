@@ -1,6 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatButtonModule } from '@angular/material/button';
 import { Link } from '@models/link';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
@@ -12,31 +18,32 @@ import { LinksEventSource } from '../../../../cartography/events/links-event-sou
 import { LinkToMapLinkConverter } from '../../../../cartography/converters/map/link-to-map-link-converter';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-link-style-editor',
   templateUrl: './link-style-editor.component.html',
   styleUrls: ['./link-style-editor.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule]
 })
 export class LinkStyleEditorDialogComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<LinkStyleEditorDialogComponent>);
+  private formBuilder = inject(UntypedFormBuilder);
+  private toasterService = inject(ToasterService);
+  private linkService = inject(LinkService);
+  private linksDataSource = inject(LinksDataSource);
+  private linksEventSource = inject(LinksEventSource);
+  private linkToMapLink = inject(LinkToMapLinkConverter);
+  private nonNegativeValidator = inject(NonNegativeValidator);
+
   controller: Controller;
   project: Project;
   link: Link;
   formGroup: UntypedFormGroup;
   borderTypes = ["Solid", "Dash", "Dot", "Dash Dot", "Dash Dot Dot"];
 
-  constructor(
-    public dialogRef: MatDialogRef<LinkStyleEditorDialogComponent>,
-    private formBuilder: UntypedFormBuilder,
-    private toasterService: ToasterService,
-    private linkService: LinkService,
-    private linksDataSource: LinksDataSource,
-    private linksEventSource: LinksEventSource,
-    private linkToMapLink: LinkToMapLinkConverter,
-    private nonNegativeValidator: NonNegativeValidator
-  ) {
+  constructor() {
     this.formGroup = this.formBuilder.group({
       color: new UntypedFormControl('', [Validators.required]),
-      width: new UntypedFormControl('', [Validators.required, nonNegativeValidator.get]),
+      width: new UntypedFormControl('', [Validators.required, this.nonNegativeValidator.get]),
       type: new UntypedFormControl('', [Validators.required])
     });
   }
