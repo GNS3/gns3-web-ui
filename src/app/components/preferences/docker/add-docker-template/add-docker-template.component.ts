@@ -1,6 +1,16 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '@models/compute';
 import { DockerImage } from '@models/docker/docker-image';
@@ -14,13 +24,25 @@ import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-add-docker-template',
   templateUrl: './add-docker-template.component.html',
   styleUrls: ['./add-docker-template.component.scss', '../../preferences.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, MatCheckboxModule]
 })
 export class AddDockerTemplateComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private dockerService = inject(DockerService);
+  private toasterService = inject(ToasterService);
+  private router = inject(Router);
+  private formBuilder = inject(UntypedFormBuilder);
+  private templateMocksService = inject(TemplateMocksService);
+  private configurationService = inject(DockerConfigurationService);
+  private computeService = inject(ComputeService);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   dockerTemplate: DockerTemplate;
   consoleTypes: string[] = [];
@@ -35,18 +57,7 @@ export class AddDockerTemplateComponent implements OnInit {
   networkAdaptersForm: UntypedFormGroup;
   isLocalComputerChosen: boolean = true;
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private dockerService: DockerService,
-    private toasterService: ToasterService,
-    private router: Router,
-    private formBuilder: UntypedFormBuilder,
-    private templateMocksService: TemplateMocksService,
-    private configurationService: DockerConfigurationService,
-    private computeService: ComputeService,
-    private cd: ChangeDetectorRef
-  ) {
+  constructor() {
     this.dockerTemplate = new DockerTemplate();
 
     this.virtualMachineForm = this.formBuilder.group({
