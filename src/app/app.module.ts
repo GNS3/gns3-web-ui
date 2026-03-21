@@ -346,7 +346,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
 @NgModule({
     declarations: [
         AppComponent,
-        LoggedUserComponent,
         ProjectMapComponent,
         ControllersComponent,
         AddControllerDialogComponent,
@@ -450,8 +449,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         RoleFilterPipe,
         RoleDetailComponent,
         AddRoleToGroupComponent,
-        ChangeUserPasswordComponent,
-        ChangeUserPasswordComponent,
         ImageManagerComponent,
         ExportPortableProjectComponent,
         AclManagementComponent,
@@ -577,6 +574,8 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         EditProjectDialogComponent,
         ProjectReadmeComponent,
         LoginComponent,
+        ChangeUserPasswordComponent,
+        LoggedUserComponent,
         BuiltInPreferencesComponent,
         PreferencesComponent,
         DynamipsPreferencesComponent,
