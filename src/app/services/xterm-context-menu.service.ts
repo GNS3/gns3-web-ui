@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Terminal } from 'xterm';
 import { ThemeService } from '@services/theme.service';
 
@@ -10,10 +10,7 @@ import { ThemeService } from '@services/theme.service';
   providedIn: 'root'
 })
 export class XtermContextMenuService {
-  constructor(
-    private themeService: ThemeService,
-    private ngZone: NgZone
-  ) {}
+  constructor(private themeService: ThemeService) {}
 
   /**
    * Attach context menu to a terminal element
@@ -35,36 +32,35 @@ export class XtermContextMenuService {
 
   /**
    * Show context menu at mouse position
+   * Note: In zoneless mode, runOutsideAngular is a no-op, so we don't need it
    */
   private showContextMenu(event: MouseEvent, terminal: Terminal): void {
-    this.ngZone.runOutsideAngular(() => {
-      const selection = terminal.getSelection();
-      const hasSelection = selection && selection.length > 0;
+    const selection = terminal.getSelection();
+    const hasSelection = selection && selection.length > 0;
 
-      // Get current theme
-      const currentTheme = this.themeService.getActualTheme();
-      const themeClass = currentTheme === 'light' ? 'light-theme' : 'dark-theme';
+    // Get current theme
+    const currentTheme = this.themeService.getActualTheme();
+    const themeClass = currentTheme === 'light' ? 'light-theme' : 'dark-theme';
 
-      // Create context menu
-      const contextMenu = document.createElement('div');
-      contextMenu.className = `xterm-context-menu ${themeClass}`;
+    // Create context menu
+    const contextMenu = document.createElement('div');
+    contextMenu.className = `xterm-context-menu ${themeClass}`;
 
-      // Calculate position to prevent overflow
-      const { left, top } = this.calculateMenuPosition(event, 200, 150);
-      contextMenu.style.left = `${left}px`;
-      contextMenu.style.top = `${top}px`;
-      contextMenu.style.position = 'absolute';
-      contextMenu.style.zIndex = '10000';
+    // Calculate position to prevent overflow
+    const { left, top } = this.calculateMenuPosition(event, 200, 150);
+    contextMenu.style.left = `${left}px`;
+    contextMenu.style.top = `${top}px`;
+    contextMenu.style.position = 'absolute';
+    contextMenu.style.zIndex = '10000';
 
-      // Create menu items
-      this.createMenuItems(contextMenu, terminal, hasSelection);
+    // Create menu items
+    this.createMenuItems(contextMenu, terminal, hasSelection);
 
-      // Add to document
-      document.body.appendChild(contextMenu);
+    // Add to document
+    document.body.appendChild(contextMenu);
 
-      // Setup cleanup handlers
-      this.setupMenuCleanup(contextMenu, terminal);
-    });
+    // Setup cleanup handlers
+    this.setupMenuCleanup(contextMenu, terminal);
   }
 
   /**
