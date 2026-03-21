@@ -1,12 +1,21 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatTableModule } from '@angular/material/table';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { PortsMappingEntity } from '@models/ethernetHub/ports-mapping-enity';
 import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-udp-tunnels',
   templateUrl: './udp-tunnels.component.html',
   styleUrls: ['../../preferences.component.scss'],
+  imports: [CommonModule, FormsModule, MatTableModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatTooltipModule]
 })
 export class UdpTunnelsComponent implements OnInit {
   @Input() dataSourceUdp: PortsMappingEntity[] = [];
@@ -18,7 +27,7 @@ export class UdpTunnelsComponent implements OnInit {
   portTypes: string[] = [];
   etherTypes: string[] = [];
 
-  constructor(private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService) {}
+  private builtInTemplatesConfigurationService = inject(BuiltInTemplatesConfigurationService);
 
   ngOnInit() {
     this.getConfiguration();
