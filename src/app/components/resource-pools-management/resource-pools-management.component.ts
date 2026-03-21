@@ -1,13 +1,21 @@
-import {Component, OnInit, QueryList, ViewChildren} from '@angular/core';
+import {Component, OnInit, QueryList, ViewChildren, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 import {Controller} from "@models/controller";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
 import {SelectionModel} from "@angular/cdk/collections";
-import {MatTableDataSource} from "@angular/material/table";
+import {MatTableModule, MatTableDataSource} from "@angular/material/table";
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {MatButtonModule} from "@angular/material/button";
+import {MatIconModule} from "@angular/material/icon";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatInputModule} from "@angular/material/input";
+import {MatDialogModule, MatDialog} from "@angular/material/dialog";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {ActivatedRoute} from "@angular/router";
 import {ControllerService} from "@services/controller.service";
 import {ToasterService} from "@services/toaster.service";
-import {MatDialog} from "@angular/material/dialog";
 import {forkJoin} from "rxjs";
 import {ResourcePool} from "@models/resourcePools/ResourcePool";
 import {
@@ -17,12 +25,19 @@ import {DeleteResourcePoolComponent} from "@components/resource-pools-management
 import {ResourcePoolsService} from "@services/resource-pools.service";
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-resource-pools-management',
   templateUrl: './resource-pools-management.component.html',
-  styleUrls: ['./resource-pools-management.component.scss']
+  styleUrls: ['./resource-pools-management.component.scss'],
+  imports: [CommonModule, FormsModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule, AddResourcePoolDialogComponent, DeleteResourcePoolComponent]
 })
 export class ResourcePoolsManagementComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private toasterService = inject(ToasterService);
+  public resourcePoolsService = inject(ResourcePoolsService);
+  public dialog = inject(MatDialog);
+
   controller: Controller;
 
   @ViewChildren('resourcePoolsPaginator') resourcePoolsPaginator: QueryList<MatPaginator>;
@@ -35,13 +50,7 @@ export class ResourcePoolsManagementComponent implements OnInit {
   searchText: string;
   isReady = false;
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private toasterService: ToasterService,
-    public resourcePoolsService: ResourcePoolsService,
-    public dialog: MatDialog
-  ) {
+  constructor() {
   }
 
 
