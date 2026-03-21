@@ -1,7 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatDialog, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { v4 as uuid } from 'uuid';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
@@ -12,29 +16,28 @@ import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation
 import { ProjectNameValidator } from '../models/projectNameValidator';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-add-blank-project-dialog',
   templateUrl: './add-blank-project-dialog.component.html',
   styleUrls: ['./add-blank-project-dialog.component.scss'],
   providers: [ProjectNameValidator],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule]
 })
 export class AddBlankProjectDialogComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<AddBlankProjectDialogComponent>);
+  private router = inject(Router);
+  private dialog = inject(MatDialog);
+  private projectService = inject(ProjectService);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private projectNameValidator = inject(ProjectNameValidator);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   projectNameForm: UntypedFormGroup;
   uuid: string;
   onAddProject = new EventEmitter<string>();
-
-  constructor(
-    public dialogRef: MatDialogRef<AddBlankProjectDialogComponent>,
-    private router: Router,
-    private dialog: MatDialog,
-    private projectService: ProjectService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder,
-    private projectNameValidator: ProjectNameValidator,
-    private cd: ChangeDetectorRef
-  ) {}
 
   ngOnInit() {
     this.projectNameForm = this.formBuilder.group({
