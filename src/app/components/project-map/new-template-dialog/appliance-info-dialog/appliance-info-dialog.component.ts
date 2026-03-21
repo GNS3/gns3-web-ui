@@ -1,19 +1,20 @@
-import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, Inject, inject } from '@angular/core';
+import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Appliance } from '@models/appliance';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'appliance-info-dialog',
   templateUrl: 'appliance-info-dialog.component.html',
+  imports: [MatDialogModule, MatButtonModule, MatProgressSpinnerModule],
 })
 export class ApplianceInfoDialogComponent {
+  public dialogRef = inject(MatDialogRef<ApplianceInfoDialogComponent>);
   public appliance: Appliance;
 
-  constructor(
-    public dialogRef: MatDialogRef<ApplianceInfoDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 
   onNoClick(): void {
     this.dialogRef.close();
