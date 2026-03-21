@@ -32,8 +32,8 @@
         <mat-card-title>All Configurations (Own + Inherited)</mat-card-title>
       </mat-card-header>
       <mat-card-content>
-        <div class="table-container" *ngIf="configs.length > 0">
-          <table mat-table [dataSource]="configs" class="profiles-table">
+        <div class="table-container" *ngIf="configs().length > 0">
+          <table mat-table [dataSource]="configs()" class="profiles-table">
 
             <!-- Name column -->
             <ng-container matColumnDef="name">

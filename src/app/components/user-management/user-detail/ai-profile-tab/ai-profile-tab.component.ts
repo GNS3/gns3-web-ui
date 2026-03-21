@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BehaviorSubject, Subject, combineLatest } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
@@ -46,6 +46,9 @@ import { ConfirmDialogComponent } from './ai-profile-dialog/confirm-dialog/confi
     MatCardModule,
     MatProgressSpinnerModule,
   ],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class AiProfileTabComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -62,8 +65,8 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
   defaultConfig$ = new BehaviorSubject<LLMModelConfigWithSource | null>(null);
 
   // Local data
-  configs: LLMModelConfigWithSource[] = [];
-  defaultConfig: LLMModelConfigWithSource | null = null;
+  configs = signal<LLMModelConfigWithSource[]>([]);
+  defaultConfig = signal<LLMModelConfigWithSource | null>(null);
   settingDefaultConfigs = new Set<string>();
 
   // Table columns - now with model type column
@@ -82,8 +85,8 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
     combineLatest([this.configs$, this.defaultConfig$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(([configs, defaultConfig]) => {
-        this.configs = configs;
-        this.defaultConfig = defaultConfig;
+        this.configs.set(configs);
+        this.defaultConfig.set(defaultConfig);
       });
 
     // Subscribe to errors
@@ -135,7 +138,7 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
    * Check if config is default
    */
   isDefault(config: LLMModelConfigWithSource): boolean {
-    return this.defaultConfig?.config_id === config.config_id;
+    return this.defaultConfig()?.config_id === config.config_id;
   }
 
   /**
@@ -157,7 +160,7 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
       data: {
         mode: 'create',
         config: null,
-        existingNames: this.configs.filter((c) => c.source === 'user').map((c) => c.name),
+        existingNames: this.configs().filter((c) => c.source === 'user').map((c) => c.name),
       },
     });
 
@@ -180,7 +183,7 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
       data: {
         mode: 'edit',
         config: { ...config },
-        existingNames: this.configs
+        existingNames: this.configs()
           .filter((c) => c.source === 'user' && c.config_id !== config.config_id)
           .map((c) => c.name),
       },
