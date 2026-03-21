@@ -1,7 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { forkJoin, from, of, Observable } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDividerModule } from '@angular/material/divider';
 import { Controller, ControllerProtocol } from '@models/controller';
 import { Version } from '@models/version';
 import { ControllerDatabase } from '@services/controller.database';
@@ -9,12 +13,18 @@ import { ControllerService } from '@services/controller.service';
 import { VersionService } from '@services/version.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-controller-discovery',
   templateUrl: './controller-discovery.component.html',
   styleUrls: ['./controller-discovery.component.scss'],
+  imports: [CommonModule, MatCardModule, MatButtonModule, MatDividerModule]
 })
 export class ControllerDiscoveryComponent implements OnInit {
+  private versionService = inject(VersionService);
+  private controllerService = inject(ControllerService);
+  private controllerDatabase = inject(ControllerDatabase);
+  private route = inject(ActivatedRoute);
+
   private defaultControllers = [
     {
       host: '127.0.0.1',
@@ -24,12 +34,7 @@ export class ControllerDiscoveryComponent implements OnInit {
 
   discoveredController: Controller;
 
-  constructor(
-    private versionService: VersionService,
-    private controllerService: ControllerService,
-    private controllerDatabase: ControllerDatabase,
-    private route: ActivatedRoute
-  ) {}
+  constructor() {}
 
   ngOnInit() {
     if (this.controllerService.isServiceInitialized) this.discoverFirstController();
