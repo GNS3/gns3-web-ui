@@ -10,32 +10,62 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from "@angular/router";
-import {Controller} from "@models/controller";
-import {Group} from "@models/groups/group";
-import {User} from "@models/users/user";
-import {UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
-import {MatDialog} from "@angular/material/dialog";
-import {AddUserToGroupDialogComponent} from "@components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component";
-import {RemoveToGroupDialogComponent} from "@components/group-details/remove-to-group-dialog/remove-to-group-dialog.component";
-import {GroupService} from "@services/group.service";
-import {ToasterService} from "@services/toaster.service";
-import {PageEvent} from "@angular/material/paginator";
-import {ACE, ACEDetailed, AceType} from "@models/api/ACE";
-import {UserService} from "@services/user.service";
-import {RoleService} from "@services/role.service";
-import {Role} from "@models/api/role";
-import {AclService} from "@services/acl.service";
-import {Endpoint} from "@models/api/endpoint";
-import {interval} from "rxjs";
-import {MatTableDataSource} from "@angular/material/table";
+import {Component, OnInit, inject} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, RouterModule } from "@angular/router";
+import { Controller } from "@models/controller";
+import { Group } from "@models/groups/group";
+import { User } from "@models/users/user";
+import { UntypedFormControl, UntypedFormGroup, Validators, ReactiveFormsModule, FormsModule } from "@angular/forms";
+import { MatDialog, MatDialogModule } from "@angular/material/dialog";
+import { AddUserToGroupDialogComponent } from "@components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component";
+import { RemoveToGroupDialogComponent } from "@components/group-details/remove-to-group-dialog/remove-to-group-dialog.component";
+import { GroupService } from "@services/group.service";
+import { ToasterService } from "@services/toaster.service";
+import { PageEvent, MatPaginatorModule } from "@angular/material/paginator";
+import { ACE, ACEDetailed, AceType } from "@models/api/ACE";
+import { UserService } from "@services/user.service";
+import { RoleService } from "@services/role.service";
+import { Role } from "@models/api/role";
+import { AclService } from "@services/acl.service";
+import { Endpoint } from "@models/api/endpoint";
+import { interval } from "rxjs";
+import { MatTableModule, MatTableDataSource } from "@angular/material/table";
+import { MatTabsModule } from "@angular/material/tabs";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatButtonModule } from "@angular/material/button";
+import { MatIconModule } from "@angular/material/icon";
+import { MatCardModule } from "@angular/material/card";
+import { GroupAiProfileTabComponent } from "@components/group-details/group-ai-profile-tab/group-ai-profile-tab.component";
+import { MembersFilterPipe } from "@components/group-details/members-filter.pipe";
+import { PaginatorPipe } from "@components/group-details/paginator.pipe";
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-group-details',
   templateUrl: './group-details.component.html',
-  styleUrls: ['./group-details.component.scss']
+  styleUrls: ['./group-details.component.scss'],
+  imports: [
+    CommonModule,
+    RouterModule,
+    ReactiveFormsModule,
+    FormsModule,
+    MatDialogModule,
+    MatPaginatorModule,
+    MatTableModule,
+    MatTabsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCheckboxModule,
+    MatButtonModule,
+    MatIconModule,
+    MatCardModule,
+    GroupAiProfileTabComponent,
+    MembersFilterPipe,
+    PaginatorPipe
+  ]
 })
 export class GroupDetailsComponent implements OnInit {
   controller: Controller;
@@ -48,12 +78,14 @@ export class GroupDetailsComponent implements OnInit {
   aceDatasource = new MatTableDataSource<ACEDetailed>();
   public aceDisplayedColumns = ['endpoint', 'role', 'propagate', 'allowed'];
 
-  constructor(private route: ActivatedRoute,
-              private dialog: MatDialog,
-              private groupService: GroupService,
-              private toastService: ToasterService,
-              private aclService: AclService,
-              private roleService: RoleService) {
+  private route = inject(ActivatedRoute);
+  private dialog = inject(MatDialog);
+  private groupService = inject(GroupService);
+  private toastService = inject(ToasterService);
+  private aclService = inject(AclService);
+  private roleService = inject(RoleService);
+
+  constructor() {
 
 
 
