@@ -1,24 +1,35 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule, ActivatedRoute } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Controller } from '@models/controller';
 import { VpcsTemplate } from '@models/templates/vpcs-template';
 import { ControllerService } from '@services/controller.service';
 import { VpcsService } from '@services/vpcs.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
+import { EmptyTemplatesListComponent } from '../../common/empty-templates-list/empty-templates-list.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-vpcs-templates',
   templateUrl: './vpcs-templates.component.html',
   styleUrls: ['./vpcs-templates.component.scss', '../../preferences.component.scss'],
+  imports: [CommonModule, RouterModule, MatButtonModule, MatIconModule, MatListModule, MatMenuModule, MatTooltipModule, DeleteTemplateComponent, EmptyTemplatesListComponent]
 })
 export class VpcsTemplatesComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private vpcsService = inject(VpcsService);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   vpcsTemplates: VpcsTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
-
-  constructor(private route: ActivatedRoute, private controllerService: ControllerService, private vpcsService: VpcsService, private cd: ChangeDetectorRef) {}
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
