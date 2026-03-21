@@ -1,5 +1,11 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatDialogModule, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatButtonModule } from '@angular/material/button';
 import { Filter } from '@models/filter';
 import { FilterDescription } from '@models/filter-description';
 import { Link } from '@models/link';
@@ -10,23 +16,24 @@ import { LinkService } from '@services/link.service';
 import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-packet-filters',
   templateUrl: './packet-filters.component.html',
   styleUrls: ['./packet-filters.component.scss'],
+  imports: [CommonModule, FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatTabsModule, MatButtonModule, HelpDialogComponent]
 })
 export class PacketFiltersDialogComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<PacketFiltersDialogComponent>);
+  private linkService = inject(LinkService);
+  private dialog = inject(MatDialog);
+
   controller: Controller;
   project: Project;
   link: Link;
   filters: Filter;
   availableFilters: FilterDescription[];
 
-  constructor(
-    private dialogRef: MatDialogRef<PacketFiltersDialogComponent>,
-    private linkService: LinkService,
-    private dialog: MatDialog
-  ) {}
+  constructor() {}
 
   ngOnInit() {
     this.linkService.getLink(this.controller, this.link.project_id, this.link.link_id).subscribe((link: Link) => {
