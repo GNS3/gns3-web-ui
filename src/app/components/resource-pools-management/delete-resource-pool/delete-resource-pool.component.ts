@@ -11,20 +11,24 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 
-import {Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {Component, Inject, OnInit, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from "@angular/material/dialog";
+import {MatButtonModule} from '@angular/material/button';
 import {ResourcePool} from "@models/resourcePools/ResourcePool";
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-delete-resource-pool',
   templateUrl: './delete-resource-pool.component.html',
-  styleUrls: ['./delete-resource-pool.component.scss']
+  styleUrls: ['./delete-resource-pool.component.scss'],
+  imports: [CommonModule, MatDialogModule, MatButtonModule]
 })
 export class DeleteResourcePoolComponent implements OnInit {
 
-  constructor(private dialogRef: MatDialogRef<DeleteResourcePoolComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: { pools: ResourcePool[] }) {}
+  private dialogRef = inject(MatDialogRef<DeleteResourcePoolComponent>);
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { pools: ResourcePool[] }) {}
 
   ngOnInit(): void {
   }
