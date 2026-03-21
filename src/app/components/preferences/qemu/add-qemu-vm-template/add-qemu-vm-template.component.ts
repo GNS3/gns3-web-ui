@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -33,7 +33,10 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-add-qemu-virtual-machine-template',
   templateUrl: './add-qemu-vm-template.component.html',
   styleUrls: ['./add-qemu-vm-template.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, FileUploadModule]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, FileUploadModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
@@ -49,29 +52,24 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
   private uploadServiceService = inject(UploadServiceService);
   subscription: Subscription;
 
-  controller: Controller;
-  selectPlatform: string[] = [];
-  selectedPlatform: string;
-  ramMemory: number;
-  consoleTypes: string[] = [];
-  auxConsoleTypes: string[] = [];
-  newImageSelected: boolean = false;
-  qemuImages: QemuImage[] = [];
-  selectedImage: QemuImage;
-  chosenImage: string = '';
-  qemuTemplate: QemuTemplate;
-  uploader: FileUploader;
-  uploadedFile: boolean = false;
-  uploadProgress: number = 0;
+  readonly controller = signal<Controller | undefined>(undefined);
+  readonly selectPlatform = signal<string[]>([]);
+  readonly selectedPlatform = signal<string>('');
+  readonly consoleTypes = signal<string[]>([]);
+  readonly auxConsoleTypes = signal<string[]>([]);
+  readonly newImageSelected = signal<boolean>(false);
+  readonly qemuImages = signal<QemuImage[]>([]);
+  readonly selectedImage = signal<QemuImage | undefined>(undefined);
+  readonly chosenImage = signal<string>('');
+  readonly qemuTemplate = signal<QemuTemplate>(new QemuTemplate());
+  readonly uploader = signal<FileUploader | undefined>(undefined);
+  readonly isLocalComputerChosen = signal<boolean>(true);
 
   nameForm: UntypedFormGroup;
   memoryForm: UntypedFormGroup;
   diskForm: UntypedFormGroup;
-  isLocalComputerChosen: boolean = true;
 
   constructor() {
-    this.qemuTemplate = new QemuTemplate();
-
     this.nameForm = this.formBuilder.group({
       templateName: new UntypedFormControl(null, Validators.required),
     });
@@ -86,48 +84,46 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.uploader = new FileUploader({url: ''});
+    this.uploader.set(new FileUploader({url: ''}));
 
-    this.uploader.onAfterAddingFile = (file) => {
+    this.uploader().onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };
-    this.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+    this.uploader().onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
       this.toasterService.error('An error occured: ' + response);
     };
-    this.uploader.onSuccessItem = (
+    this.uploader().onSuccessItem = (
       item: FileItem,
       response: string,
       status: number,
       headers: ParsedResponseHeaders
     ) => {
-      this.qemuService.getImages(this.controller).subscribe((qemuImages: QemuImage[]) => {
-        this.qemuImages = qemuImages;
+      this.qemuService.getImages(this.controller()).subscribe((qemuImages: QemuImage[]) => {
+        this.qemuImages.set(qemuImages);
       });
       this.toasterService.success('Image uploaded');
     };
 
-    this.uploader.onProgressItem = (progress: any) => {
-      this.uploadProgress = progress['progress'];
-      this.uploadServiceService.processBarCount(this.uploadProgress)
-
+    this.uploader().onProgressItem = (progress: any) => {
+      this.uploadServiceService.processBarCount(progress['progress'])
     };
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
-      this.controller = controller;
+    this.controllerService.get(parseInt(controller_id, 10)).then((ctrl: Controller ) => {
+      this.controller.set(ctrl);
 
       this.templateMocksService.getQemuTemplate().subscribe((qemuTemplate: QemuTemplate) => {
-        this.qemuTemplate = qemuTemplate;
+        this.qemuTemplate.set(qemuTemplate);
       });
 
-      this.qemuService.getImages(this.controller).subscribe((qemuImages: QemuImage[]) => {
-        this.qemuImages = qemuImages;
+      this.qemuService.getImages(this.controller()).subscribe((qemuImages: QemuImage[]) => {
+        this.qemuImages.set(qemuImages);
       });
 
-      this.selectPlatform = this.configurationService.getPlatform();
-      this.selectedPlatform = this.selectPlatform[0];
-      this.consoleTypes = this.configurationService.getConsoleTypes();
-      this.auxConsoleTypes = this.configurationService.getAuxConsoleTypes();
+      this.selectPlatform.set(this.configurationService.getPlatform());
+      this.selectedPlatform.set(this.selectPlatform()[0]);
+      this.consoleTypes.set(this.configurationService.getConsoleTypes());
+      this.auxConsoleTypes.set(this.configurationService.getAuxConsoleTypes());
     });
 
     this.subscription = this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
@@ -142,32 +138,30 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
 
   setControllerType(controllerType: string) {
     if (controllerType === 'local') {
-      this.isLocalComputerChosen = true;
+      this.isLocalComputerChosen.set(true);
     }
   }
 
   setDiskImage(value: string) {
-    this.newImageSelected = value === 'newImage';
+    this.newImageSelected.set(value === 'newImage');
   }
 
   uploadImageFile(event) {
-
-    // this.uploadedFile = true;
     let name = event.target.files[0].name;
     this.diskForm.controls['fileName'].setValue(name);
 
-    const url = this.qemuService.getImagePath(this.controller, name);
-    this.uploader.queue.forEach((elem) => (elem.url = url));
+    const url = this.qemuService.getImagePath(this.controller(), name);
+    this.uploader().queue.forEach((elem) => (elem.url = url));
 
-    const itemToUpload = this.uploader.queue[0];
+    const itemToUpload = this.uploader().queue[0];
 
-    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers =[{name:'Authorization',value:'Bearer ' + this.controller.authToken}])
-    this.uploader.uploadItem(itemToUpload);
+    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers =[{name:'Authorization',value:'Bearer ' + this.controller().authToken}])
+    this.uploader().uploadItem(itemToUpload);
     this.snackBar.openFromComponent(UploadingProcessbarComponent,{panelClass: 'uplaoding-file-snackabar', data:{upload_file_type:'Image'}});
   }
 
   cancelUploading() {
-    this.uploader.clearQueue();
+    this.uploader().clearQueue();
     this.uploadServiceService.processBarCount(null)
     this.toasterService.warning('Image Uploading canceled');
     this.uploadServiceService.cancelFileUploading(false)
@@ -175,23 +169,24 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'qemu', 'templates']);
+    this.router.navigate(['/controller', this.controller().id, 'preferences', 'qemu', 'templates']);
   }
 
   addTemplate() {
-    if (!this.nameForm.invalid && !this.memoryForm.invalid && (this.selectedImage || this.chosenImage)) {
-      this.qemuTemplate.ram = +this.memoryForm.get('ramMemory').value;
-      this.qemuTemplate.platform = this.selectedPlatform;
-      if (this.newImageSelected) {
-        this.qemuTemplate.hda_disk_image = this.diskForm.get('fileName').value;
+    if (!this.nameForm.invalid && !this.memoryForm.invalid && (this.selectedImage() || this.chosenImage())) {
+      const template = this.qemuTemplate();
+      template.ram = +this.memoryForm.get('ramMemory').value;
+      template.platform = this.selectedPlatform();
+      if (this.newImageSelected()) {
+        template.hda_disk_image = this.diskForm.get('fileName').value;
       } else {
-        this.qemuTemplate.hda_disk_image = this.selectedImage.path;
+        template.hda_disk_image = this.selectedImage().path;
       }
-      this.qemuTemplate.template_id = uuid();
-      this.qemuTemplate.name = this.nameForm.get('templateName').value;
-      this.qemuTemplate.compute_id = 'local';
+      template.template_id = uuid();
+      template.name = this.nameForm.get('templateName').value;
+      template.compute_id = 'local';
 
-      this.qemuService.addTemplate(this.controller, this.qemuTemplate).subscribe((template: QemuTemplate) => {
+      this.qemuService.addTemplate(this.controller(), template).subscribe((qemuTemplate: QemuTemplate) => {
         this.goBack();
       });
     } else {

@@ -2,7 +2,7 @@
   <div class="default-header">
     <div class="row">
       <div class="col col-md-1">
-        <button class="top-button" *ngIf="controller" class="cancel-button" mat-button (click)="goBack()">
+        <button class="top-button" *ngIf="controller()" class="cancel-button" mat-button (click)="goBack()">
           <mat-icon>arrow_back</mat-icon>
         </button>
       </div>
@@ -14,7 +14,7 @@
   <div class="default-content">
     <div class="container mat-elevation-z8">
       <mat-vertical-stepper [linear]="true">
-        <mat-step label="Controller type" [completed]="isLocalComputerChosen">
+        <mat-step label="Controller type" [completed]="isLocalComputerChosen()">
           <mat-radio-group class="radio-group">
             <mat-radio-button class="radio-button" value="1" (click)="setControllerType('local')" checked
               >Run this QEMU VM locally</mat-radio-button
@@ -36,11 +36,11 @@
           </form>
         </mat-step>
 
-        <mat-step label="Platform and memory" [completed]="memoryForm.get('ramMemory').value && selectedPlatform">
+        <mat-step label="Platform and memory" [completed]="memoryForm.get('ramMemory').value && selectedPlatform()">
           <form [formGroup]="memoryForm">
             <mat-form-field class="form-field">
               <mat-select placeholder="Platform" [(ngModel)]="selectedPlatform" [ngModelOptions]="{ standalone: true }">
-                <mat-option *ngFor="let platform of selectPlatform" [value]="platform">
+                <mat-option *ngFor="let platform of selectPlatform()" [value]="platform">
                   {{ platform }}
                 </mat-option>
               </mat-select> </mat-form-field
@@ -52,28 +52,28 @@
           </form>
         </mat-step>
 
-        <mat-step label="Console type" [completed]="qemuTemplate.console_type">
+        <mat-step label="Console type" [completed]="qemuTemplate().console_type">
           <mat-form-field class="form-field">
             <mat-select
               placeholder="Console type"
-              [(ngModel)]="qemuTemplate.console_type"
+              [(ngModel)]="qemuTemplate().console_type"
               [ngModelOptions]="{ standalone: true }"
             >
-              <mat-option *ngFor="let type of consoleTypes" [value]="type">
+              <mat-option *ngFor="let type of consoleTypes()" [value]="type">
                 {{ type }}
               </mat-option>
             </mat-select>
           </mat-form-field>
         </mat-step>
 
-        <mat-step label="Auxiliary console type" [completed]="qemuTemplate.aux_type">
+        <mat-step label="Auxiliary console type" [completed]="qemuTemplate().aux_type">
           <mat-form-field class="form-field">
             <mat-select
               placeholder="Auxiliary console type"
-              [(ngModel)]="qemuTemplate.aux_type"
+              [(ngModel)]="qemuTemplate().aux_type"
               [ngModelOptions]="{ standalone: true }"
             >
-              <mat-option *ngFor="let type of auxConsoleTypes" [value]="type">
+              <mat-option *ngFor="let type of auxConsoleTypes()" [value]="type">
                 {{ type }}
               </mat-option>
             </mat-select>
@@ -91,16 +91,16 @@
               > </mat-radio-group
             ><br /><br />
             <mat-select
-              *ngIf="!newImageSelected"
+              *ngIf="!newImageSelected()"
               placeholder="Disk image (hda)"
               [ngModelOptions]="{ standalone: true }"
               [(ngModel)]="selectedImage"
             >
-              <mat-option *ngFor="let image of qemuImages" [value]="image">
+              <mat-option *ngFor="let image of qemuImages()" [value]="image">
                 {{ image.filename }}
               </mat-option>
             </mat-select>
-            <div *ngIf="newImageSelected">
+            <div *ngIf="newImageSelected()">
               <input
                 type="file"
                 accept=".qcow2"
@@ -108,7 +108,7 @@
                 class="nonvisible"
                 (change)="uploadImageFile($event)"
                 ng2FileSelect
-                [uploader]="uploader"
+                [uploader]="uploader()"
               />
               <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
               <mat-form-field class="file-name-form-field">
