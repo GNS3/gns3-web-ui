@@ -1,4 +1,4 @@
-import {Component, OnInit, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, inject, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule, ReactiveFormsModule, FormControl, UntypedFormControl, UntypedFormGroup} from "@angular/forms";
 import {RouterModule} from '@angular/router';
@@ -27,7 +27,10 @@ import {
   selector: 'app-resource-pool-details',
   templateUrl: './resource-pool-details.component.html',
   styleUrls: ['./resource-pool-details.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatDividerModule, MatAutocompleteModule, MatDialogModule]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatDividerModule, MatAutocompleteModule, MatDialogModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ResourcePoolDetailsComponent implements OnInit {
   private toastService = inject(ToasterService);
@@ -37,10 +40,10 @@ export class ResourcePoolDetailsComponent implements OnInit {
 
   controller: Controller;
   editPoolForm: UntypedFormGroup;
-  pool: ResourcePool;
+  pool = signal<ResourcePool | undefined>(undefined);
   addResourceFormControl = new FormControl('');
   addResourceFilteredOptions: Observable<string[]>;
-  projects: Project[] = [];
+  projects = signal<Project[]>([]);
 
   constructor() {
     this.editPoolForm = new UntypedFormGroup({
@@ -51,7 +54,7 @@ export class ResourcePoolDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.route.data.subscribe((d: { controller: Controller; pool: ResourcePool }) => {
       this.controller = d.controller;
-      this.pool = d.pool;
+      this.pool.set(d.pool);
 
     this.refresh();
 
@@ -61,18 +64,18 @@ export class ResourcePoolDetailsComponent implements OnInit {
   }
 
   onUpdate() {
-    this.resourcePoolsService.update(this.controller, this.pool)
+    this.resourcePoolsService.update(this.controller, this.pool())
       .subscribe((pool: ResourcePool) => {
         this.toastService.success(`pool ${pool.name}, updated`);
       });
   }
   addResource() {
       const selected = this.addResourceFormControl.value;
-      const project = this.projects.filter( p => p.name.includes(selected));
+      const project = this.projects().filter( p => p.name.includes(selected));
       if(project.length === 1) {
-        this.resourcePoolsService.addResource(this.controller,this.pool, project[0])
+        this.resourcePoolsService.addResource(this.controller,this.pool(), project[0])
           .subscribe(() => {
-            this.toastService.success(`project : ${project[0].name}, added to pool: ${this.pool.name}`);
+            this.toastService.success(`project : ${project[0].name}, added to pool: ${this.pool().name}`);
             this.refresh();
             this.addResourceFormControl.setValue('');
             return;
@@ -95,10 +98,10 @@ export class ResourcePoolDetailsComponent implements OnInit {
       .subscribe((resource: Resource) => {
         if(resource) {
           this.resourcePoolsService
-            .deleteResource(this.controller, resource, this.pool)
+            .deleteResource(this.controller, resource, this.pool())
             .subscribe(() => {
               this.refresh()
-              this.toastService.success(`resource ${resource.name} delete from pool ${this.pool.name}`)
+              this.toastService.success(`resource ${resource.name} delete from pool ${this.pool().name}`)
             });
         }
       })
@@ -106,20 +109,20 @@ export class ResourcePoolDetailsComponent implements OnInit {
 
   private refresh() {
     this.resourcePoolsService
-      .get(this.controller, this.pool.resource_pool_id)
+      .get(this.controller, this.pool().resource_pool_id)
       .subscribe((pool) => {
-        this.pool = pool;
+        this.pool.set(pool);
       });
 
     this.resourcePoolsService
       .getFreeResources(this.controller)
       .subscribe((projects: Project[]) => {
-        this.projects = projects;
+        this.projects.set(projects);
 
         this.addResourceFilteredOptions = this.addResourceFormControl.valueChanges.pipe(
           startWith(''),
           map((value: string) => {
-            return this.projects
+            return this.projects()
               .filter((project: Project) => project.name.toLowerCase().includes(value.toLowerCase() || ''))
               .map((project: Project) => project.name);
           })
