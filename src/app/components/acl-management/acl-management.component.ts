@@ -11,30 +11,44 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 
-import {Component, OnInit, QueryList, ViewChildren} from '@angular/core';
-import {Controller} from "@models/controller";
-import {SelectionModel} from "@angular/cdk/collections";
-import {MatTableDataSource} from "@angular/material/table";
-import {ACE} from "@models/api/ACE";
-import {ActivatedRoute} from "@angular/router";
-import {ControllerService} from "@services/controller.service";
-import {ToasterService} from "@services/toaster.service";
-import {MatDialog} from "@angular/material/dialog";
-import {AclService} from "@services/acl.service";
-import {MatPaginator} from "@angular/material/paginator";
-import {MatSort} from "@angular/material/sort";
-import {AddAceDialogComponent} from "@components/acl-management/add-ace-dialog/add-ace-dialog.component";
-import {DeleteAceDialogComponent} from "@components/acl-management/delete-ace-dialog/delete-ace-dialog.component";
-import {Endpoint} from "@models/api/endpoint";
+import {Component, OnInit, QueryList, ViewChildren, inject} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { SelectionModel } from '@angular/cdk/collections';
+import { Controller } from "@models/controller";
+import { ACE } from "@models/api/ACE";
+import { ActivatedRoute } from "@angular/router";
+import { ControllerService } from "@services/controller.service";
+import { ToasterService } from "@services/toaster.service";
+import { AclService } from "@services/acl.service";
+import { AddAceDialogComponent } from "@components/acl-management/add-ace-dialog/add-ace-dialog.component";
+import { DeleteAceDialogComponent } from "@components/acl-management/delete-ace-dialog/delete-ace-dialog.component";
+import { Endpoint } from "@models/api/endpoint";
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-acl-management',
   templateUrl: './acl-management.component.html',
-  styleUrls: ['./acl-management.component.scss']
+  styleUrls: ['./acl-management.component.scss'],
+  imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatCardModule]
 })
 export class AclManagementComponent implements OnInit {
-
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private toasterService = inject(ToasterService);
+  public aclService = inject(AclService);
+  public dialog = inject(MatDialog);
 
   @ViewChildren('acesPaginator') acesPaginator: QueryList<MatPaginator>;
   @ViewChildren('acesSort') acesSort: QueryList<MatSort>;
@@ -47,11 +61,7 @@ export class AclManagementComponent implements OnInit {
   searchText = '';
   endpoints: Endpoint[];
 
-  constructor(private route: ActivatedRoute,
-              private controllerService: ControllerService,
-              private toasterService: ToasterService,
-              public aclService: AclService,
-              public dialog: MatDialog) { }
+  constructor() { }
 
   ngOnInit(): void {
     const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');

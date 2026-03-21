@@ -1,6 +1,16 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import {
   LLMModelConfigResponse,
@@ -108,12 +118,26 @@ export const COPILOT_MODES: { value: CopilotMode; label: string; description: st
 const STANDARD_FIELDS = ['name', 'model_type', 'provider', 'model', 'api_key', 'base_url', 'temperature', 'context_limit', 'context_strategy', 'copilot_mode', 'is_default'];
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-ai-profile-dialog',
   templateUrl: './ai-profile-dialog.component.html',
   styleUrls: ['./ai-profile-dialog.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonToggleModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatCheckboxModule,
+    MatButtonModule,
+    MatTooltipModule
+  ]
 })
 export class AiProfileDialogComponent implements OnInit {
   form: FormGroup;

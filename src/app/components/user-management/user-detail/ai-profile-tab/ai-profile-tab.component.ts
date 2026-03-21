@@ -1,8 +1,18 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { Component, Input, OnInit, OnDestroy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { BehaviorSubject, Subject, combineLatest } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { Controller } from '@models/controller';
 import { User } from '@models/users/user';
@@ -18,10 +28,26 @@ import { AiProfileDialogComponent } from './ai-profile-dialog/ai-profile-dialog.
 import { ConfirmDialogComponent } from './ai-profile-dialog/confirm-dialog/confirm-dialog.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-ai-profile-tab',
   templateUrl: './ai-profile-tab.component.html',
-  styleUrls: ['./ai-profile-tab.component.scss']
+  styleUrls: ['./ai-profile-tab.component.scss'],
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatCheckboxModule,
+    MatCardModule,
+    MatProgressSpinnerModule,
+    AiProfileDialogComponent,
+    ConfirmDialogComponent
+  ]
 })
 export class AiProfileTabComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -45,11 +71,11 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
   // Table columns - now with model type column
   displayedColumns: string[] = ['name', 'model_type', 'provider', 'model', 'context_limit', 'actions'];
 
-  constructor(
-    private aiProfilesService: AiProfilesService,
-    private dialog: MatDialog,
-    private snackBar: MatSnackBar
-  ) {}
+  private aiProfilesService = inject(AiProfilesService);
+  private dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
+
+  constructor() {}
 
   ngOnInit(): void {
     this.loadConfigs();

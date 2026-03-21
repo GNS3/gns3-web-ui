@@ -10,30 +10,45 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
-import {ControllerService} from "@services/controller.service";
-import {ToasterService} from "@services/toaster.service";
-import {GroupService} from "@services/group.service";
-import {Controller} from "@models/controller";
-import {Group} from "@models/groups/group";
-import {MatSort, Sort} from "@angular/material/sort";
-import {MatDialog} from "@angular/material/dialog";
-import {AddGroupDialogComponent} from "@components/group-management/add-group-dialog/add-group-dialog.component";
-import {DeleteGroupDialogComponent} from "@components/group-management/delete-group-dialog/delete-group-dialog.component";
-import {SelectionModel} from "@angular/cdk/collections";
-import {forkJoin} from "rxjs";
-import {MatPaginator} from "@angular/material/paginator";
-import {MatTableDataSource} from "@angular/material/table";
+import {Component, OnInit, QueryList, ViewChild, ViewChildren, inject} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterModule, ActivatedRoute, Router } from "@angular/router";
+import { MatSort, Sort } from "@angular/material/sort";
+import { MatDialogModule, MatDialog } from "@angular/material/dialog";
+import { MatTableModule, MatTableDataSource } from "@angular/material/table";
+import { MatPaginator } from "@angular/material/paginator";
+import { MatCheckboxModule } from "@angular/material/checkbox";
+import { MatButtonModule } from "@angular/material/button";
+import { MatIconModule } from "@angular/material/icon";
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatCardModule } from "@angular/material/card";
+import { SelectionModel } from "@angular/cdk/collections";
+import { forkJoin } from "rxjs";
+import { ControllerService } from "@services/controller.service";
+import { ToasterService } from "@services/toaster.service";
+import { GroupService } from "@services/group.service";
+import { Controller } from "@models/controller";
+import { Group } from "@models/groups/group";
+import { AddGroupDialogComponent } from "@components/group-management/add-group-dialog/add-group-dialog.component";
+import { DeleteGroupDialogComponent } from "@components/group-management/delete-group-dialog/delete-group-dialog.component";
 
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-group-management',
   templateUrl: './group-management.component.html',
-  styleUrls: ['./group-management.component.scss']
+  styleUrls: ['./group-management.component.scss'],
+  imports: [CommonModule, FormsModule, RouterModule, MatSort, MatDialogModule, MatTableModule, MatPaginator, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatCardModule]
 })
 export class GroupManagementComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private toasterService = inject(ToasterService);
+  public groupService = inject(GroupService);
+  public dialog = inject(MatDialog);
+
   controller: Controller;
 
   @ViewChildren('groupsPaginator') groupsPaginator: QueryList<MatPaginator>;
@@ -46,13 +61,7 @@ export class GroupManagementComponent implements OnInit {
   searchText: string;
   isReady = false;
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private toasterService: ToasterService,
-    public groupService: GroupService,
-    public dialog: MatDialog
-  ) {
+  constructor() {
   }
 
 
