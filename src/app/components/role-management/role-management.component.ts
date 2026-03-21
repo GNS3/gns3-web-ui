@@ -43,7 +43,7 @@ import {HttpErrorResponse} from "@angular/common/http";
   selector: 'app-role-management',
   templateUrl: './role-management.component.html',
   styleUrls: ['./role-management.component.scss'],
-  imports: [CommonModule, FormsModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule, AddRoleDialogComponent, DeleteRoleDialogComponent, RoleFilterPipe]
+  imports: [CommonModule, FormsModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule, RoleFilterPipe]
 })
 export class RoleManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);

@@ -17,7 +17,7 @@ import { ThemeService } from '@services/theme.service';
 @Component({
   standalone: true,
   selector: 'app-chat-message-list',
-  imports: [CommonModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MarkdownModule, ToolCallDisplayComponent, ToolDetailsDialogComponent],
+  imports: [CommonModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MarkdownModule],
   styleUrls: ['./chat-message-list.component.scss'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,

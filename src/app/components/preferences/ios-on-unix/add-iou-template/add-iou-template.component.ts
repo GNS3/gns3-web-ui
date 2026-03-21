@@ -31,7 +31,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-add-iou-template',
   templateUrl: './add-iou-template.component.html',
   styleUrls: ['./add-iou-template.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, UploadingProcessbarComponent, FileUploadModule]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, FileUploadModule]
 })
 export class AddIouTemplateComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);

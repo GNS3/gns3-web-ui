@@ -27,7 +27,7 @@ import { ControllerDiscoveryComponent } from './controller-discovery/controller-
   templateUrl: './controllers.component.html',
   styleUrls: ['./controllers.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, MatDialogModule, MatSortModule, MatTableModule, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatBottomSheetModule, AddControllerDialogComponent, ConfirmationBottomSheetComponent, ControllerDiscoveryComponent]
+  imports: [CommonModule, FormsModule, MatDialogModule, MatSortModule, MatTableModule, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatBottomSheetModule, ControllerDiscoveryComponent]
 })
 export class ControllersComponent implements OnInit, OnDestroy {
   private dialog = inject(MatDialog);

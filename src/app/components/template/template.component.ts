@@ -27,7 +27,7 @@ import { Context } from '../../cartography/models/context';
   selector: 'app-template',
   templateUrl: './template.component.html',
   styleUrls: ['./template.component.scss'],
-  imports: [CommonModule, FormsModule, MatDialogModule, MatIconModule, MatButtonModule, MatMenuModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatListModule, TemplateListDialogComponent]
+  imports: [CommonModule, FormsModule, MatDialogModule, MatIconModule, MatButtonModule, MatMenuModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatListModule]
 })
 export class TemplateComponent implements OnInit, OnDestroy {
   private dialog = inject(MatDialog);

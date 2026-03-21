@@ -37,8 +37,7 @@ import { UploadingProcessbarComponent } from '../../../common/uploading-processb
     MatIconModule,
     MatTooltipModule,
     MatSnackBarModule,
-    FileUploadModule,
-    ConfirmationDialogComponent
+    FileUploadModule
   ]
 })
 export class ImportProjectDialogComponent implements OnInit {

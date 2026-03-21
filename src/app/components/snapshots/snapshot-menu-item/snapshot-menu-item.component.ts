@@ -18,7 +18,7 @@ import { CreateSnapshotDialogComponent } from '../create-snapshot-dialog/create-
   selector: 'app-snapshot-menu-item',
   templateUrl: './snapshot-menu-item.component.html',
   styleUrls: ['./snapshot-menu-item.component.scss'],
-  imports: [CommonModule, MatDialogModule, MatTooltipModule, MatIconModule, MatButtonModule, CreateSnapshotDialogComponent, ProgressDialogComponent]
+  imports: [CommonModule, MatDialogModule, MatTooltipModule, MatIconModule, MatButtonModule]
 })
 export class SnapshotMenuItemComponent implements OnInit {
   @Input('project') project: Project;

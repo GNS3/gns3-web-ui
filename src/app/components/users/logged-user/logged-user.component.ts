@@ -17,7 +17,7 @@ import { ChangeUserPasswordComponent } from "@components/user-management/user-de
   selector: 'app-logged-user',
   templateUrl: './logged-user.component.html',
   styleUrls: ['./logged-user.component.scss'],
-  imports: [CommonModule, RouterModule, MatCardModule, MatListModule, MatButtonModule, MatDialogModule, ChangeUserPasswordComponent]
+  imports: [CommonModule, RouterModule, MatCardModule, MatListModule, MatButtonModule, MatDialogModule]
 })
 export class LoggedUserComponent implements OnInit {
     private route = inject(ActivatedRoute);

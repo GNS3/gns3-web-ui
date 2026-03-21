@@ -27,7 +27,7 @@ import {
   selector: 'app-resource-pool-details',
   templateUrl: './resource-pool-details.component.html',
   styleUrls: ['./resource-pool-details.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatDividerModule, MatAutocompleteModule, MatDialogModule, DeleteResourceConfirmationDialogComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatDividerModule, MatAutocompleteModule, MatDialogModule]
 })
 export class ResourcePoolDetailsComponent implements OnInit {
   private toastService = inject(ToasterService);

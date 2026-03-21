@@ -19,7 +19,7 @@ import { ConfirmationDialogComponent, ConfirmationDialogData } from '@components
 @Component({
   standalone: true,
   selector: 'app-chat-session-list',
-  imports: [CommonModule, MatIconModule, MatInputModule, MatFormFieldModule, MatMenuModule, MatButtonModule, MatDialogModule, MatDividerModule, ConfirmationDialogComponent],
+  imports: [CommonModule, MatIconModule, MatInputModule, MatFormFieldModule, MatMenuModule, MatButtonModule, MatDialogModule, MatDividerModule],
   template: `
     <div class="chat-session-list">
       <!-- New session button -->

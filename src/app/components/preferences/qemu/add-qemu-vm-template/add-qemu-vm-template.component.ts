@@ -33,7 +33,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-add-qemu-virtual-machine-template',
   templateUrl: './add-qemu-vm-template.component.html',
   styleUrls: ['./add-qemu-vm-template.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, UploadingProcessbarComponent, FileUploadModule]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, FileUploadModule]
 })
 export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);

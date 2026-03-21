@@ -28,7 +28,7 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
   selector: 'app-cloud-nodes-template-details',
   templateUrl: './cloud-nodes-template-details.component.html',
   styleUrls: ['./cloud-nodes-template-details.component.scss', '../../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, MatTableModule, UdpTunnelsComponent, SymbolsMenuComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, MatTableModule, SymbolsMenuComponent]
 })
 export class CloudNodesTemplateDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);

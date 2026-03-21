@@ -13,7 +13,7 @@ import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog
   standalone: true,
   selector: 'app-export-config-action',
   templateUrl: './export-config-action.component.html',
-  imports: [MatButtonModule, MatIconModule, MatMenuModule, ConfigDialogComponent],
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
 })
 export class ExportConfigActionComponent {
   private nodeService = inject(NodeService);

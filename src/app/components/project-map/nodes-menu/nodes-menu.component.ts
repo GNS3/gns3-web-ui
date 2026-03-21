@@ -21,7 +21,7 @@ import { NodesMenuConfirmationDialogComponent } from './nodes-menu-confirmation-
   templateUrl: './nodes-menu.component.html',
   styleUrls: ['./nodes-menu.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule, NodesMenuConfirmationDialogComponent]
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule]
 })
 export class NodesMenuComponent {
   private nodeService = inject(NodeService);

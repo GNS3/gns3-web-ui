@@ -29,7 +29,7 @@ import {ResourcePoolsService} from "@services/resource-pools.service";
   selector: 'app-resource-pools-management',
   templateUrl: './resource-pools-management.component.html',
   styleUrls: ['./resource-pools-management.component.scss'],
-  imports: [CommonModule, FormsModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule, AddResourcePoolDialogComponent, DeleteResourcePoolComponent]
+  imports: [CommonModule, FormsModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule]
 })
 export class ResourcePoolsManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);

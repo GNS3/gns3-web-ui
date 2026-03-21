@@ -23,7 +23,7 @@ import { NameFilter } from '@filters/nameFilter.pipe';
   selector: 'app-list-of-snapshots',
   templateUrl: './list-of-snapshots.component.html',
   styleUrls: ['./list-of-snapshots.component.scss'],
-  imports: [CommonModule, FormsModule, MatTableModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule, MatInputModule, MatCardModule, ProgressDialogComponent, NameFilter]
+  imports: [CommonModule, FormsModule, MatTableModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule, MatInputModule, MatCardModule, NameFilter]
 })
 export class ListOfSnapshotsComponent implements OnInit {
   private route = inject(ActivatedRoute);

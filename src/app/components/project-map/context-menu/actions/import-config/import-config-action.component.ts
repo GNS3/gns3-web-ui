@@ -14,7 +14,7 @@ import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog
   selector: 'app-import-config-action',
   templateUrl: './import-config-action.component.html',
   styleUrls: ['./import-config-action.component.scss'],
-  imports: [MatButtonModule, MatIconModule, MatMenuModule, ConfigDialogComponent],
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
 })
 export class ImportConfigActionComponent {
   private nodeService = inject(NodeService);

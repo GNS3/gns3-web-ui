@@ -33,7 +33,7 @@ import { AiChatStore } from '../../../stores/ai-chat.store';
   templateUrl: './project-map-menu.component.html',
   styleUrls: ['./project-map-menu.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule, MatDividerModule, MatMenuModule, ScreenshotDialogComponent, ProjectMapLockConfirmationDialogComponent, DrawingAddedComponent]
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule, MatDividerModule, MatMenuModule, DrawingAddedComponent]
 })
 export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   private toolsService = inject(ToolsService);

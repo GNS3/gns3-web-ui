@@ -27,7 +27,7 @@ import { NonNegativeValidator } from '../../../../../validators/non-negative-val
   templateUrl: './configurator-docker.component.html',
   styleUrls: ['../configurator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatChipsModule, MatIconModule, MatCheckboxModule, ConfigureCustomAdaptersDialogComponent, EditNetworkConfigurationDialogComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatChipsModule, MatIconModule, MatCheckboxModule]
 })
 export class ConfiguratorDialogDockerComponent implements OnInit {
   private dialogReference = inject(MatDialogRef<ConfiguratorDialogDockerComponent>);

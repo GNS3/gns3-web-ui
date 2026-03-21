@@ -20,7 +20,7 @@ import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
   selector: 'app-packet-filters',
   templateUrl: './packet-filters.component.html',
   styleUrls: ['./packet-filters.component.scss'],
-  imports: [CommonModule, FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatTabsModule, MatButtonModule, HelpDialogComponent]
+  imports: [CommonModule, FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatTabsModule, MatButtonModule]
 })
 export class PacketFiltersDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<PacketFiltersDialogComponent>);

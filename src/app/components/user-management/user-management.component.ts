@@ -41,7 +41,7 @@ import {UserFilterPipe} from "@filters/user-filter.pipe";
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatPaginator, MatDialogModule, AddUserDialogComponent, DeleteUserDialogComponent, UserFilterPipe]
+  imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatPaginator, MatDialogModule, UserFilterPipe]
 })
 export class UserManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);

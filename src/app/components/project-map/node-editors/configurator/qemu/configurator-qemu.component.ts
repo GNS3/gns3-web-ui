@@ -29,7 +29,7 @@ import { QemuImageCreatorComponent } from './qemu-image-creator/qemu-image-creat
   templateUrl: './configurator-qemu.component.html',
   styleUrls: ['../configurator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatChipsModule, MatIconModule, MatCheckboxModule, CustomAdaptersTableComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatChipsModule, MatIconModule, MatCheckboxModule]
 })
 export class ConfiguratorDialogQemuComponent implements OnInit {
   private dialog = inject(MatDialog);
