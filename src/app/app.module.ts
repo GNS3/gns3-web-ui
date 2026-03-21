@@ -733,8 +733,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         UpdatesService,
         LoginService,
         UserService
-    ],
-    bootstrap: [AppComponent]
+    ]
 })
 export class AppModule {
   constructor(protected _googleAnalyticsService: GoogleAnalyticsService) {}
