@@ -1,8 +1,8 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, AfterViewChecked, ElementRef, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, AfterViewChecked, ElementRef, ViewChild, ViewEncapsulation, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MarkdownModule } from 'ngx-markdown';
 import { ChatMessage, ToolCall, ToolResult } from '@models/ai-chat.interface';
 import { ToolCallDisplayComponent } from './tool-call-display.component';
@@ -15,8 +15,9 @@ import { ThemeService } from '@services/theme.service';
  * Supports: user, assistant, system, tool_call, tool_result messages
  */
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-chat-message-list',
+  imports: [CommonModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MarkdownModule, ToolCallDisplayComponent, ToolDetailsDialogComponent],
   styleUrls: ['./chat-message-list.component.scss'],
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -132,7 +133,10 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
 
   private shouldScrollToBottom = false;
 
-  constructor(private dialog: MatDialog, private themeService: ThemeService) {}
+  private dialog = inject(MatDialog);
+  private themeService = inject(ThemeService);
+
+  constructor() {}
 
   ngOnChanges(changes: SimpleChanges): void {
     // Mark need to scroll to bottom when messages change

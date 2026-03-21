@@ -1,8 +1,13 @@
-import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, HostListener, ChangeDetectorRef, ViewChildren, QueryList, AfterViewInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, HostListener, ChangeDetectorRef, ViewChildren, QueryList, AfterViewInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, UntypedFormControl } from '@angular/forms';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { UntypedFormControl } from '@angular/forms';
-import { ResizeEvent } from 'angular-resizable-element';
+import { ResizeEvent, ResizableModule } from 'angular-resizable-element';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
@@ -13,12 +18,14 @@ import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.se
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { ConsoleDevicesPanelComponent } from './console-devices-panel.component';
 import { WebConsoleComponent } from '../web-console/web-console.component';
+import { LogConsoleComponent } from '../log-console/log-console.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-console-wrapper',
   templateUrl: './console-wrapper.component.html',
   styleUrls: ['./console-wrapper.component.scss'],
+  imports: [CommonModule, FormsModule, MatTabsModule, MatIconModule, MatButtonModule, MatTooltipModule, ResizableModule, ConsoleDevicesPanelComponent, WebConsoleComponent, LogConsoleComponent]
 })
 export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy {
 
@@ -43,13 +50,13 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   public resizedWidth: number = 848;
   public resizedHeight: number = 600;
 
-  constructor(
-    private consoleService: NodeConsoleService,
-    private themeService: ThemeService,
-    private mapSettingsService: MapSettingsService,
-    private boundaryService: WindowBoundaryService,
-    private cdr: ChangeDetectorRef
-  ) {}
+  private consoleService = inject(NodeConsoleService);
+  private themeService = inject(ThemeService);
+  private mapSettingsService = inject(MapSettingsService);
+  private boundaryService = inject(WindowBoundaryService);
+  private cdr = inject(ChangeDetectorRef);
+
+  constructor() {}
 
   nodes: Node[] = [];
   selected = new UntypedFormControl(0);

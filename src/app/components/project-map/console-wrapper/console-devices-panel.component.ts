@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter, ChangeDetectorRef, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, ChangeDetectorRef, Input, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { Subject } from 'rxjs';
@@ -11,12 +11,16 @@ import { NodesDataSource } from '../../../cartography/datasources/nodes-datasour
  * Displays a list of console-capable devices in the sidebar
  */
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-console-devices-panel',
   templateUrl: './console-devices-panel.component.html',
-  styleUrls: ['./console-devices-panel.component.scss']
+  styleUrls: ['./console-devices-panel.component.scss'],
+  imports: [CommonModule, MatIconModule]
 })
 export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
+  private nodesDataSource = inject(NodesDataSource);
+  private cdr = inject(ChangeDetectorRef);
+
   @Output() deviceSelected = new EventEmitter<Node>();
   @Input() isLightTheme: boolean = false;
 
@@ -25,10 +29,7 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private nodesDataSource: NodesDataSource,
-    private cdr: ChangeDetectorRef
-  ) {}
+  constructor() {}
 
   ngOnInit(): void {
     // Subscribe to all nodes changes

@@ -6,8 +6,11 @@ import {
   OnInit,
   ViewChild,
   ViewContainerRef,
+  inject,
 } from '@angular/core';
-import { MatMenuTrigger } from '@angular/material/menu';
+import { CommonModule } from '@angular/common';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { Node } from '../../../cartography/models/node';
@@ -20,12 +23,21 @@ import { VncConsoleService } from '@services/vnc-console.service';
 import { ConsoleDeviceActionBrowserComponent } from '../context-menu/actions/console-device-action-browser/console-device-action-browser.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-context-console-menu',
   templateUrl: './context-console-menu.component.html',
   styleUrls: ['./context-console-menu.component.scss'],
+  imports: [CommonModule, MatMenuModule, MatIconModule]
 })
 export class ContextConsoleMenuComponent implements OnInit {
+  private sanitizer = inject(DomSanitizer);
+  private changeDetector = inject(ChangeDetectorRef);
+  private mapSettingsService = inject(MapSettingsService);
+  private consoleService = inject(NodeConsoleService);
+  private toasterService = inject(ToasterService);
+  private router = inject(Router);
+  private vncConsoleService = inject(VncConsoleService);
+
   @Input() project: Project;
   @Input() controller: Controller;
   @ViewChild(MatMenuTrigger) contextConsoleMenu: MatMenuTrigger;
@@ -36,15 +48,7 @@ export class ContextConsoleMenuComponent implements OnInit {
   leftPosition;
   node: Node;
 
-  constructor(
-    private sanitizer: DomSanitizer,
-    private changeDetector: ChangeDetectorRef,
-    private mapSettingsService: MapSettingsService,
-    private consoleService: NodeConsoleService,
-    private toasterService: ToasterService,
-    private router: Router,
-    private vncConsoleService: VncConsoleService
-  ) {}
+  constructor() {}
 
   ngOnInit() {
     this.setPosition(0, 0);

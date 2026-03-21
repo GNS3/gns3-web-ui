@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, Input, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, Output, EventEmitter, Input, OnInit, OnDestroy, ViewChild, ElementRef, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,8 +18,9 @@ import { OverlayContainer } from '@angular/cdk/overlay';
  * Inspired by FlowNet-Lab ChatInput component
  */
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-chat-input-area',
+  imports: [CommonModule, FormsModule, MatIconModule, MatRippleModule, MatMenuModule, MatDividerModule],
   template: `
     <div class="chat-input-area">
       <div class="input-wrapper">
@@ -458,11 +459,11 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
   private previousMessageLength = 0;
   private currentTheme: string = '';
 
-  constructor(
-    private themeService: ThemeService,
-    private cdr: ChangeDetectorRef,
-    private overlayContainer: OverlayContainer
-  ) {
+  private themeService = inject(ThemeService);
+  private cdr = inject(ChangeDetectorRef);
+  private overlayContainer = inject(OverlayContainer);
+
+  constructor() {
     this.currentTheme = this.themeService.savedTheme;
   }
 

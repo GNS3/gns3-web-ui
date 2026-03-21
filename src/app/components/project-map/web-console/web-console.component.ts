@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, OnDestroy, ViewChild, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Input, OnInit, OnDestroy, ViewChild, ViewEncapsulation, ChangeDetectorRef, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Terminal } from 'xterm';
 import { AttachAddon } from 'xterm-addon-attach';
 import { FitAddon } from 'xterm-addon-fit';
@@ -10,11 +11,12 @@ import { ThemeService } from '@services/theme.service';
 import { XtermContextMenuService } from '@services/xterm-context-menu.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   encapsulation: ViewEncapsulation.None,
   selector: 'app-web-console',
   templateUrl: './web-console.component.html',
   styleUrls: ['../../../../../node_modules/xterm/css/xterm.css', './web-console.component.scss'],
+  imports: [CommonModule]
 })
 export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() controller: Controller;
@@ -36,12 +38,12 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('terminal') terminal: ElementRef;
 
-  constructor(
-    private consoleService: NodeConsoleService,
-    private themeService: ThemeService,
-    private cdr: ChangeDetectorRef,
-    private contextMenuService: XtermContextMenuService
-  ) {}
+  private consoleService = inject(NodeConsoleService);
+  private themeService = inject(ThemeService);
+  private cdr = inject(ChangeDetectorRef);
+  private contextMenuService = inject(XtermContextMenuService);
+
+  constructor() {}
 
   ngOnInit() {
     this.themeService.getActualTheme() === 'light'

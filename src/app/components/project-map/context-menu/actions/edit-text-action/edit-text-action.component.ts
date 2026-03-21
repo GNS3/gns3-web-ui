@@ -1,5 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Label } from '../../../../../cartography/models/label';
 import { Node } from '../../../../../cartography/models/node';
@@ -10,11 +12,14 @@ import { Controller } from '@models/controller';
 import { TextEditorDialogComponent } from '../../../drawings-editors/text-editor/text-editor.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-edit-text-action',
   templateUrl: './edit-text-action.component.html',
+  imports: [CommonModule, MatDialogModule, MatIconModule]
 })
 export class EditTextActionComponent implements OnInit {
+  private dialog = inject(MatDialog);
+
   @Input() controller: Controller;
   @Input() project: Project;
   @Input() drawing: Drawing;
@@ -23,7 +28,7 @@ export class EditTextActionComponent implements OnInit {
   @Input() link: Link;
   @Input() linkNode: LinkNode;
 
-  constructor(private dialog: MatDialog) {}
+  constructor() {}
 
   ngOnInit() {}
 

@@ -1,10 +1,12 @@
-import { Component, Input, Output, EventEmitter, OnInit, ViewChild, Renderer2 } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, ViewChild, Renderer2, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { ChatSession } from '@models/ai-chat.interface';
 import { Controller } from '@models/controller';
 import { AiChatService } from '@services/ai-chat.service';
@@ -15,8 +17,9 @@ import { ConfirmationDialogComponent, ConfirmationDialogData } from '@components
  * Displays and manages chat sessions
  */
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-chat-session-list',
+  imports: [CommonModule, MatIconModule, MatInputModule, MatFormFieldModule, MatMenuModule, MatButtonModule, MatDialogModule, MatDividerModule, ConfirmationDialogComponent],
   template: `
     <div class="chat-session-list">
       <!-- New session button -->
@@ -405,6 +408,10 @@ import { ConfirmationDialogComponent, ConfirmationDialogData } from '@components
   `]
 })
 export class ChatSessionListComponent implements OnInit {
+  private dialog = inject(MatDialog);
+  private aiChatService = inject(AiChatService);
+  private renderer = inject(Renderer2);
+
   @Input() sessions: ChatSession[] = [];
   @Input() currentSessionId: string | null = null;
   @Input() controller: Controller;
@@ -417,11 +424,7 @@ export class ChatSessionListComponent implements OnInit {
   @Output() sessionPinned = new EventEmitter<string>();
   @Output() sessionUnpinned = new EventEmitter<string>();
 
-  constructor(
-    private dialog: MatDialog,
-    private aiChatService: AiChatService,
-    private renderer: Renderer2
-  ) {}
+  constructor() {}
 
   /**
    * Handle menu opened event
