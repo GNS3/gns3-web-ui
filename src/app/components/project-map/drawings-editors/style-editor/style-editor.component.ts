@@ -1,6 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatButtonModule } from '@angular/material/button';
 import { DrawingToMapDrawingConverter } from '../../../../cartography/converters/map/drawing-to-map-drawing-converter';
 import { MapDrawingToSvgConverter } from '../../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../../cartography/datasources/drawings-datasource';
@@ -17,12 +23,24 @@ import { NonNegativeValidator } from '../../../../validators/non-negative-valida
 import { RotationValidator } from '../../../../validators/rotation-validator';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-style-editor',
   templateUrl: './style-editor.component.html',
   styleUrls: ['./style-editor.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule]
 })
 export class StyleEditorDialogComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<StyleEditorDialogComponent>);
+  private drawingToMapDrawingConverter = inject(DrawingToMapDrawingConverter);
+  private mapDrawingToSvgConverter = inject(MapDrawingToSvgConverter);
+  private drawingService = inject(DrawingService);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private formBuilder = inject(UntypedFormBuilder);
+  private toasterService = inject(ToasterService);
+  private nonNegativeValidator = inject(NonNegativeValidator);
+  private rotationValidator = inject(RotationValidator);
+  private qtDasharrayFixer = inject(QtDasharrayFixer);
+
   controller: Controller;
   project: Project;
   drawing: Drawing;
@@ -37,21 +55,10 @@ export class StyleEditorDialogComponent implements OnInit {
     { qt: '', value: '', name: 'No border' },
   ];
 
-  constructor(
-    public dialogRef: MatDialogRef<StyleEditorDialogComponent>,
-    private drawingToMapDrawingConverter: DrawingToMapDrawingConverter,
-    private mapDrawingToSvgConverter: MapDrawingToSvgConverter,
-    private drawingService: DrawingService,
-    private drawingsDataSource: DrawingsDataSource,
-    private formBuilder: UntypedFormBuilder,
-    private toasterService: ToasterService,
-    private nonNegativeValidator: NonNegativeValidator,
-    private rotationValidator: RotationValidator,
-    private qtDasharrayFixer: QtDasharrayFixer
-  ) {
+  constructor() {
     this.formGroup = this.formBuilder.group({
-      borderWidth: new UntypedFormControl('', [Validators.required, nonNegativeValidator.get]),
-      rotation: new UntypedFormControl('', [Validators.required, rotationValidator.get]),
+      borderWidth: new UntypedFormControl('', [Validators.required, this.nonNegativeValidator.get]),
+      rotation: new UntypedFormControl('', [Validators.required, this.rotationValidator.get]),
     });
   }
 
