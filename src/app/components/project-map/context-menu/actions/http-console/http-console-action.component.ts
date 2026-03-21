@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -15,6 +15,9 @@ import { MapSettingsService } from '@services/mapsettings.service';
   selector: 'app-http-console-action',
   templateUrl: './http-console-action.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class HttpConsoleActionComponent implements OnInit {
   private nodeConsoleService = inject(NodeConsoleService);
@@ -22,6 +25,7 @@ export class HttpConsoleActionComponent implements OnInit {
   private toasterService = inject(ToasterService);
   private router = inject(Router);
   private mapSettingsService = inject(MapSettingsService);
+  private cdr = inject(ChangeDetectorRef);
 
   readonly controller = input<Controller>(undefined);
   readonly nodes = input<Node[]>(undefined);
@@ -52,6 +56,7 @@ export class HttpConsoleActionComponent implements OnInit {
             this.mapSettingsService.logConsoleSubject.next(true);
             setTimeout(() => {
               this.nodeConsoleService.openConsoleForNode(n);
+              this.cdr.markForCheck();
             }, 500);
           } else {
             this.toasterService.error(`Console type '${n.console_type}' is not supported for node ${n.name}.`);

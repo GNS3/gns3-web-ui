@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,6 +16,9 @@ import { TextEditorDialogComponent } from '../../../drawings-editors/text-editor
   selector: 'app-edit-text-action',
   templateUrl: './edit-text-action.component.html',
   imports: [CommonModule, MatDialogModule, MatIconModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class EditTextActionComponent implements OnInit {
   private dialog = inject(MatDialog);

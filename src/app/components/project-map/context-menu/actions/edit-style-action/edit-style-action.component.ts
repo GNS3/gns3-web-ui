@@ -1,4 +1,4 @@
-import { Component, OnChanges, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnChanges, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { Drawing } from '../../../../../cartography/models/drawing';
@@ -12,6 +12,9 @@ import { StyleEditorDialogComponent } from '../../../drawings-editors/style-edit
   selector: 'app-edit-style-action',
   templateUrl: './edit-style-action.component.html',
   imports: [CommonModule, MatDialogModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class EditStyleActionComponent implements OnChanges {
   private dialog = inject(MatDialog);

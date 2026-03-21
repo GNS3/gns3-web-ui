@@ -1,4 +1,4 @@
-import { Component, OnChanges, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnChanges, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +12,9 @@ import { LinkStyleEditorDialogComponent } from '../../../drawings-editors/link-s
   selector: 'app-edit-link-style-action',
   templateUrl: './edit-link-style-action.component.html',
   imports: [CommonModule, MatDialogModule, MatIconModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class EditLinkStyleActionComponent implements OnChanges {
   private dialog = inject(MatDialog);
