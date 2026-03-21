@@ -1,6 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { RouterModule } from '@angular/router';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '@models/project';
@@ -10,13 +16,30 @@ import { SnapshotService } from '@services/snapshot.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-create-snapshot-dialog',
   templateUrl: './create-snapshot-dialog.component.html',
   styleUrls: ['./create-snapshot-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatProgressSpinnerModule,
+  ],
 })
 export class CreateSnapshotDialogComponent {
+  public dialogRef = inject(MatDialogRef<CreateSnapshotDialogComponent>);
+  private formBuilder = inject(UntypedFormBuilder);
+  private toasterService = inject(ToasterService);
+  private snapshotService = inject(SnapshotService);
+  private nodesDataSource = inject(NodesDataSource);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   project: Project;
   snapshot: Snapshot = new Snapshot();
@@ -24,15 +47,7 @@ export class CreateSnapshotDialogComponent {
   snapshots: string[] = [];
   isInRunningState: boolean;
 
-  constructor(
-    public dialogRef: MatDialogRef<CreateSnapshotDialogComponent>,
-    private formBuilder: UntypedFormBuilder,
-    private toasterService: ToasterService,
-    private snapshotService: SnapshotService,
-    private nodesDataSource: NodesDataSource,
-    private cd: ChangeDetectorRef,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
     this.controller = data['controller'];
     this.project = data['project'];
 
