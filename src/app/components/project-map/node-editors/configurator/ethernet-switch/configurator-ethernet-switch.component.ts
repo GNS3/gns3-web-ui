@@ -1,7 +1,14 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
 import { PortsComponent } from '@components/preferences/common/ports/ports.component';
@@ -11,14 +18,23 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-configurator-ethernet-switch',
   templateUrl: './configurator-ethernet-switch.component.html',
   styleUrls: ['../configurator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatChipsModule, MatIconModule, PortsComponent]
 })
 export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
   @ViewChild(PortsComponent) portsComponent: PortsComponent;
+
+  private dialogRef = inject(MatDialogRef<ConfiguratorDialogEthernetSwitchComponent>);
+  private nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private ethernetSwitchesConfigurationService = inject(BuiltInTemplatesConfigurationService);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   node: Node;
   name: string;
@@ -26,14 +42,7 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
   consoleTypes: string[] = [];
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
-  constructor(
-    public dialogRef: MatDialogRef<ConfiguratorDialogEthernetSwitchComponent>,
-    public nodeService: NodeService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder,
-    private ethernetSwitchesConfigurationService: BuiltInTemplatesConfigurationService,
-    private cd: ChangeDetectorRef
-  ) {
+  constructor() {
     this.inputForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
     });

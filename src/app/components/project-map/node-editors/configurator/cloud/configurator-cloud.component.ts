@@ -1,8 +1,16 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { MatChipInputEvent } from '@angular/material/chips';
 import { Node } from '../../../../../cartography/models/node';
 import { UdpTunnelsComponent } from '@components/preferences/common/udp-tunnels/udp-tunnels.component';
 import { PortsMappingEntity } from '@models/ethernetHub/ports-mapping-enity';
@@ -13,13 +21,21 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-configurator-cloud',
   templateUrl: './configurator-cloud.component.html',
   styleUrls: ['../configurator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatChipsModule, MatIconModule, UdpTunnelsComponent]
 })
 export class ConfiguratorDialogCloudComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<ConfiguratorDialogCloudComponent>);
+  private nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private builtInTemplatesConfigurationService = inject(BuiltInTemplatesConfigurationService);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   node: Node;
   name: string;
@@ -42,14 +58,7 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
 
   @ViewChild('udpTunnels') udpTunnels: UdpTunnelsComponent;
 
-  constructor(
-    public dialogRef: MatDialogRef<ConfiguratorDialogCloudComponent>,
-    public nodeService: NodeService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder,
-    private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService,
-    private cd: ChangeDetectorRef
-  ) {
+  constructor() {
     this.generalSettingsForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
     });

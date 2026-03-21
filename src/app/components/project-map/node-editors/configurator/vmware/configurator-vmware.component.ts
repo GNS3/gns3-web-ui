@@ -1,8 +1,17 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { MatChipInputEvent } from '@angular/material/chips';
 import { Node } from '../../../../../cartography/models/node';
 import { CustomAdaptersTableComponent } from '@components/preferences/common/custom-adapters-table/custom-adapters-table.component';
 import { Controller } from '@models/controller';
@@ -11,13 +20,21 @@ import { ToasterService } from '@services/toaster.service';
 import { VmwareConfigurationService } from '@services/vmware-configuration.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-configurator-vmware',
   templateUrl: './configurator-vmware.component.html',
   styleUrls: ['../configurator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatChipsModule, MatIconModule, MatCheckboxModule, CustomAdaptersTableComponent]
 })
 export class ConfiguratorDialogVmwareComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<ConfiguratorDialogVmwareComponent>);
+  private nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private vmwareConfigurationService = inject(VmwareConfigurationService);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   node: Node;
   name: string;
@@ -31,14 +48,7 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
 
   @ViewChild('customAdapters') customAdapters: CustomAdaptersTableComponent;
 
-  constructor(
-    public dialogRef: MatDialogRef<ConfiguratorDialogVmwareComponent>,
-    public nodeService: NodeService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder,
-    private vmwareConfigurationService: VmwareConfigurationService,
-    private cd: ChangeDetectorRef
-  ) {
+  constructor() {
     this.generalSettingsForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
     });

@@ -1,7 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
@@ -10,13 +16,21 @@ import { ToasterService } from '@services/toaster.service';
 import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-configurator-ethernet-hub',
   templateUrl: './configurator-ethernet-hub.component.html',
   styleUrls: ['../configurator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatChipsModule, MatIconModule]
 })
 export class ConfiguratorDialogEthernetHubComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<ConfiguratorDialogEthernetHubComponent>);
+  private nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private vpcsConfigurationService = inject(VpcsConfigurationService);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   node: Node;
   numberOfPorts: number;
@@ -26,14 +40,7 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
   name: string;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
-  constructor(
-    public dialogRef: MatDialogRef<ConfiguratorDialogEthernetHubComponent>,
-    public nodeService: NodeService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder,
-    private vpcsConfigurationService: VpcsConfigurationService,
-    private cd: ChangeDetectorRef
-  ) {
+  constructor() {
     this.inputForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
     });
