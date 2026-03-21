@@ -1,19 +1,24 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-align-vertically-action',
   templateUrl: './align-vertically.component.html',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
 })
 export class AlignVerticallyActionComponent implements OnInit {
+  private nodesDataSource = inject(NodesDataSource);
+  private nodeService = inject(NodeService);
+
   @Input() controller: Controller;
   @Input() nodes: Node[];
-
-  constructor(private nodesDataSource: NodesDataSource, private nodeService: NodeService) {}
 
   ngOnInit() {}
 

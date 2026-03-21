@@ -1,4 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeConsoleService } from '@services/nodeConsole.service';
@@ -8,21 +11,20 @@ import { Router } from '@angular/router';
 import { MapSettingsService } from '@services/mapsettings.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-http-console-action',
   templateUrl: './http-console-action.component.html',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
 })
 export class HttpConsoleActionComponent implements OnInit {
+  private nodeConsoleService = inject(NodeConsoleService);
+  private vncConsoleService = inject(VncConsoleService);
+  private toasterService = inject(ToasterService);
+  private router = inject(Router);
+  private mapSettingsService = inject(MapSettingsService);
+
   @Input() controller: Controller;
   @Input() nodes: Node[];
-
-  constructor(
-    private nodeConsoleService: NodeConsoleService,
-    private vncConsoleService: VncConsoleService,
-    private toasterService: ToasterService,
-    private router: Router,
-    private mapSettingsService: MapSettingsService
-  ) {}
 
   ngOnInit() {}
 
