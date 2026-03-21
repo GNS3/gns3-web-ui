@@ -1,7 +1,17 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
+import { MatTableModule } from '@angular/material/table';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { MatChipInputEvent } from '@angular/material/chips';
 import { PortsMappingEntity } from '@models/ethernetHub/ports-mapping-enity';
 import { Controller } from '@models/controller';
 import { CloudTemplate } from '@models/templates/cloud-template';
@@ -9,15 +19,26 @@ import { BuiltInTemplatesConfigurationService } from '@services/built-in-templat
 import { BuiltInTemplatesService } from '@services/built-in-templates.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
+import { UdpTunnelsComponent } from '@components/preferences/common/udp-tunnels/udp-tunnels.component';
+import { SymbolsMenuComponent } from '@components/preferences/common/symbols-menu/symbols-menu.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-cloud-nodes-template-details',
   templateUrl: './cloud-nodes-template-details.component.html',
   styleUrls: ['./cloud-nodes-template-details.component.scss', '../../../preferences.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, MatTableModule, UdpTunnelsComponent, SymbolsMenuComponent]
 })
 export class CloudNodesTemplateDetailsComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private builtInTemplatesService = inject(BuiltInTemplatesService);
+  private toasterService = inject(ToasterService);
+  private builtInTemplatesConfigurationService = inject(BuiltInTemplatesConfigurationService);
+  private router = inject(Router);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   cloudNodeTemplate: CloudTemplate;
 
@@ -37,15 +58,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
   displayedColumns: string[] = ['name', 'lport', 'rhost', 'rport'];
   dataSourceUdp: PortsMappingEntity[] = [];
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private builtInTemplatesService: BuiltInTemplatesService,
-    private toasterService: ToasterService,
-    private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService,
-    private router: Router,
-    private cd: ChangeDetectorRef
-  ) {
+  constructor() {
     this.newPort = {
       name: '',
       port_number: 0,
