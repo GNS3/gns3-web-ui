@@ -10,32 +10,50 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {Component, OnInit, QueryList, ViewChild, ViewChildren, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 import {Controller} from "@models/controller";
-import {MatTableDataSource} from "@angular/material/table";
+import {MatTableModule, MatTableDataSource} from "@angular/material/table";
 import {SelectionModel} from "@angular/cdk/collections";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {MatButtonModule} from "@angular/material/button";
+import {MatIconModule} from "@angular/material/icon";
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatInputModule} from "@angular/material/input";
+import {MatDialogModule, MatDialog} from "@angular/material/dialog";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {ActivatedRoute, Router} from "@angular/router";
 import {ProgressService} from "../../common/progress/progress.service";
 import {ControllerService} from "@services/controller.service";
-import {MatDialog} from "@angular/material/dialog";
 import {ToasterService} from "@services/toaster.service";
 import {Role} from "@models/api/role";
 import {RoleService} from "@services/role.service";
 import {AddRoleDialogComponent} from "@components/role-management/add-role-dialog/add-role-dialog.component";
 import {DeleteRoleDialogComponent} from "@components/role-management/delete-role-dialog/delete-role-dialog.component";
+import {RoleFilterPipe} from "@components/role-management/role-filter.pipe";
 import {forkJoin} from "rxjs";
 import {HttpErrorResponse} from "@angular/common/http";
 
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-role-management',
   templateUrl: './role-management.component.html',
-  styleUrls: ['./role-management.component.scss']
+  styleUrls: ['./role-management.component.scss'],
+  imports: [CommonModule, FormsModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule, AddRoleDialogComponent, DeleteRoleDialogComponent, RoleFilterPipe]
 })
 export class RoleManagementComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private roleService = inject(RoleService);
+  private progressService = inject(ProgressService);
+  private controllerService = inject(ControllerService);
+  public dialog = inject(MatDialog);
+  private toasterService = inject(ToasterService);
+
   controller: Controller;
   dataSource = new MatTableDataSource<Role>();
   displayedColumns = ['select', 'name', 'description', 'delete'];
@@ -46,15 +64,7 @@ export class RoleManagementComponent implements OnInit {
   @ViewChildren('rolesSort') rolesSort: QueryList<MatSort>;
   isReady = false;
 
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private roleService: RoleService,
-    private progressService: ProgressService,
-    private controllerService: ControllerService,
-    public dialog: MatDialog,
-    private toasterService: ToasterService) {
+  constructor() {
   }
 
   ngOnInit() {
