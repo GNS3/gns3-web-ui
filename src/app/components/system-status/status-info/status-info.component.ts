@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ComputeStatistics } from '@models/computeStatistics';
@@ -14,6 +14,9 @@ import { StatusChartComponent } from '../status-chart/status-chart.component';
   templateUrl: './status-info.component.html',
   styleUrls: ['./status-info.component.scss'],
   imports: [CommonModule, StatusChartComponent],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class StatusInfoComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -22,7 +25,7 @@ export class StatusInfoComponent implements OnInit {
   private toasterService = inject(ToasterService);
 
   public controllerId: string = '';
-  public computeStatistics: ComputeStatistics[] = [];
+  public computeStatistics = signal<ComputeStatistics[]>([]);
   public connectionFailed: boolean;
 
   ngOnInit() {
@@ -33,7 +36,7 @@ export class StatusInfoComponent implements OnInit {
   getStatistics() {
     this.controllerService.get(Number(this.controllerId)).then((controller: Controller) => {
       this.computeService.getStatistics(controller).subscribe((statistics: ComputeStatistics[]) => {
-        this.computeStatistics = statistics;
+        this.computeStatistics.set(statistics);
         setTimeout(() => {
           this.getStatistics();
         }, 20000);
