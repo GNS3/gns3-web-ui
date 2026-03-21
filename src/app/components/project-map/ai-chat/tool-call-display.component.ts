@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Output, EventEmitter, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ToolCall } from '@models/ai-chat.interface';
@@ -11,10 +11,13 @@ import { ToolCall } from '@models/ai-chat.interface';
   selector: 'app-tool-call-display',
   standalone: true,
   imports: [MatIconModule, MatProgressSpinnerModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
   template: `
-    <div class="inline-tool-call" (click)="onViewDetails()" [title]="getStatusText()" *ngIf="toolCall?.function?.name">
+    <div class="inline-tool-call" (click)="onViewDetails()" [title]="getStatusText()" *ngIf="toolCall()?.function?.name">
       <mat-icon class="tool-icon">build</mat-icon>
-      <span class="tool-name">{{ toolCall?.function?.name }}</span>
+      <span class="tool-name">{{ toolCall()?.function?.name }}</span>
       <span class="tool-status" [class.status-receiving]="isReceiving" [class.status-executing]="isExecuting()">
         <mat-spinner *ngIf="isReceiving || isExecuting()" diameter="12"></mat-spinner>
         <span *ngIf="!isReceiving && !isExecuting()" class="status-text">{{ getStatusText() }}</span>
@@ -100,7 +103,7 @@ import { ToolCall } from '@models/ai-chat.interface';
   ],
 })
 export class ToolCallDisplayComponent {
-  @Input() toolCall: ToolCall & { isExecuting?: boolean };
+  readonly toolCall = input<ToolCall & { isExecuting?: boolean }>(undefined);
   readonly toolOutput = input<string>(undefined);
   readonly error = input<string>(undefined);
   readonly isExecuting = input(false);
@@ -116,7 +119,7 @@ export class ToolCallDisplayComponent {
   get isReceiving(): boolean {
     // For history messages, complete might not exist - treat as complete
     // Only show receiving when complete is explicitly false (real-time)
-    return this.toolCall?.function?.complete === false;
+    return this.toolCall()?.function?.complete === false;
   }
 
   /**
@@ -126,7 +129,7 @@ export class ToolCallDisplayComponent {
     if (this.isReceiving) {
       return 'Receiving parameters...';
     }
-    if (this.isExecuting() || (this.toolCall as any)?.isExecuting) {
+    if (this.isExecuting() || (this.toolCall() as any)?.isExecuting) {
       return 'Executing...';
     }
     if (this.error()) {
@@ -143,8 +146,9 @@ export class ToolCallDisplayComponent {
    * Emit viewDetails event to open dialog
    */
   onViewDetails(): void {
-    if (this.toolCall) {
-      this.viewDetails.emit(this.toolCall);
+    const tc = this.toolCall();
+    if (tc) {
+      this.viewDetails.emit(tc);
     }
   }
 }
