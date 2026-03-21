@@ -1,23 +1,24 @@
 import { DOCUMENT } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { ProgressService } from '../../common/progress/progress.service';
+import { ProgressComponent } from '../../common/progress/progress.component';
 import { Controller } from '@models/controller';
 import { ControllerService } from '@services/controller.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-bundled-controller-finder',
   templateUrl: './bundled-controller-finder.component.html',
   styleUrls: ['./bundled-controller-finder.component.scss'],
+  imports: [ProgressComponent],
 })
 export class BundledControllerFinderComponent implements OnInit {
-  constructor(
-    private router: Router,
-    private controllerService: ControllerService,
-    private progressService: ProgressService,
-    @Inject(DOCUMENT) private document
-  ) {}
+  private router = inject(Router);
+  private controllerService = inject(ControllerService);
+  private progressService = inject(ProgressService);
+
+  constructor(@Inject(DOCUMENT) private document) {}
 
   ngOnInit() {
     this.progressService.activate();
