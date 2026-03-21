@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { environment } from 'environments/environment';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { Project } from '@models/project';
@@ -14,10 +15,11 @@ import { QemuService } from '@services/qemu.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-import-appliance',
   templateUrl: './import-appliance.component.html',
   styleUrls: ['./import-appliance.component.scss'],
+  imports: [CommonModule]
 })
 export class ImportApplianceComponent implements OnInit {
   @Input('project') project: Project;
@@ -25,13 +27,13 @@ export class ImportApplianceComponent implements OnInit {
   uploader: FileUploader;
   template;
 
-  constructor(
-    private toasterService: ToasterService,
-    private dockerService: DockerService,
-    private qemuService: QemuService,
-    private iouService: IouService,
-    private iosService: IosService
-  ) {}
+  private toasterService = inject(ToasterService);
+  private dockerService = inject(DockerService);
+  private qemuService = inject(QemuService);
+  private iouService = inject(IouService);
+  private iosService = inject(IosService);
+
+  constructor() {}
 
   ngOnInit() {
     this.uploader = new FileUploader({url: ''});
