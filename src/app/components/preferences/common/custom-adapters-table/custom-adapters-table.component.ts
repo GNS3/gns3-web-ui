@@ -1,4 +1,4 @@
-import { Component, Input, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -24,13 +24,14 @@ import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
     MatIconModule,
     MatTooltipModule,
   ],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class CustomAdaptersTableComponent {
   readonly networkTypes = input([]);
   readonly displayedColumns = input<string[]>([]);
   @Input() adapters: CustomAdapter[] = [];
-
-  public numberOfAdapters: number;
 
   onAdd() {
     let adapter: CustomAdapter = {
