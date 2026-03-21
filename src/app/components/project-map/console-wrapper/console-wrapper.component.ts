@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   EventEmitter,
   OnInit,
@@ -50,6 +51,9 @@ import { LogConsoleComponent } from '../log-console/log-console.component';
     WebConsoleComponent,
     LogConsoleComponent,
   ],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
