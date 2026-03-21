@@ -1,4 +1,5 @@
-import { Component, ElementRef, OnInit, OnDestroy, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, ViewChild, ViewEncapsulation, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -14,11 +15,12 @@ import { ThemeService } from '@services/theme.service';
 import { XtermContextMenuService } from '@services/xterm-context-menu.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   encapsulation: ViewEncapsulation.None,
   selector: 'app-web-console-full-window',
   templateUrl: './web-console-full-window.component.html',
   styleUrls: ['../../../../node_modules/xterm/css/xterm.css', './web-console-full-window.component.scss'],
+  imports: [CommonModule]
 })
 export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
   private controllerId: string;
@@ -37,15 +39,15 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
 
   @ViewChild('terminal') terminal: ElementRef;
 
-  constructor(
-    private consoleService: NodeConsoleService,
-    private controllerService: ControllerService,
-    private route: ActivatedRoute,
-    private title: Title,
-    private nodeService: NodeService,
-    private themeService: ThemeService,
-    private contextMenuService: XtermContextMenuService
-  ) {}
+  private consoleService = inject(NodeConsoleService);
+  private controllerService = inject(ControllerService);
+  private route = inject(ActivatedRoute);
+  private title = inject(Title);
+  private nodeService = inject(NodeService);
+  private themeService = inject(ThemeService);
+  private contextMenuService = inject(XtermContextMenuService);
+
+  constructor() {}
 
   ngOnInit() {
     if (this.controllerService.isServiceInitialized) {
