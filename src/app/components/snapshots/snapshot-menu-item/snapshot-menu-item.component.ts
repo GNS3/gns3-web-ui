@@ -1,5 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { ProgressDialogComponent } from '../../../common/progress-dialog/progress-dialog.component';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
 import { Project } from '@models/project';
@@ -10,21 +14,22 @@ import { ToasterService } from '@services/toaster.service';
 import { CreateSnapshotDialogComponent } from '../create-snapshot-dialog/create-snapshot-dialog.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-snapshot-menu-item',
   templateUrl: './snapshot-menu-item.component.html',
   styleUrls: ['./snapshot-menu-item.component.scss'],
+  imports: [CommonModule, MatDialogModule, MatTooltipModule, MatIconModule, MatButtonModule, CreateSnapshotDialogComponent, ProgressDialogComponent]
 })
 export class SnapshotMenuItemComponent implements OnInit {
   @Input('project') project: Project;
   @Input('controller') controller: Controller;
 
-  constructor(
-    private dialog: MatDialog,
-    private snapshotService: SnapshotService,
-    private progressDialogService: ProgressDialogService,
-    private toaster: ToasterService
-  ) {}
+  private dialog = inject(MatDialog);
+  private snapshotService = inject(SnapshotService);
+  private progressDialogService = inject(ProgressDialogService);
+  private toaster = inject(ToasterService);
+
+  constructor() {}
 
   ngOnInit() {}
 
