@@ -1,26 +1,33 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatRadioModule } from '@angular/material/radio';
 import { Controller } from '@models/controller';
 import { BackgroundUploadService } from '@services/background-upload.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-add-image-dialog',
   templateUrl: './add-image-dialog.component.html',
   styleUrls: ['./add-image-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatRadioModule]
 })
 export class AddImageDialogComponent implements OnInit {
+  private backgroundUploadService = inject(BackgroundUploadService);
+  private toasterService = inject(ToasterService);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   isInstallAppliance: boolean = false;
   install_appliance: boolean = false;
+
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
-    public dialogRef: MatDialogRef<AddImageDialogComponent>,
-    private backgroundUploadService: BackgroundUploadService,
-    private toasterService: ToasterService,
-    private cd: ChangeDetectorRef
+    public dialogRef: MatDialogRef<AddImageDialogComponent>
   ) {}
 
   ngOnInit() {
