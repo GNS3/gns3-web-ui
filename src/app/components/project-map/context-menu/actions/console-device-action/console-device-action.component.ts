@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,6 +14,9 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-console-device-action',
   templateUrl: './console-device-action.component.html',
   imports: [CommonModule, MatButtonModule, MatIconModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ConsoleDeviceActionComponent implements OnInit {
   private controllerService = inject(ControllerService);
@@ -21,8 +24,8 @@ export class ConsoleDeviceActionComponent implements OnInit {
   private toasterService = inject(ToasterService);
   private nodeService = inject(NodeService);
 
-  @Input() controller: Controller;
-  @Input() nodes: Node[];
+  readonly controller = input<Controller>(undefined);
+  readonly nodes = input<Node[]>([]);
 
   ngOnInit() {}
 
