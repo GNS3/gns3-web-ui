@@ -1,13 +1,24 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatOptionModule } from '@angular/material/core';
 import { PortsMappingEntity } from '@models/ethernetHub/ports-mapping-enity';
 import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
 import { ToasterService } from "@services/toaster.service";
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-ports',
   templateUrl: './ports.component.html',
   styleUrls: ['../../preferences.component.scss'],
+  imports: [CommonModule, FormsModule, MatTableModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatTooltipModule, MatOptionModule]
 })
 export class PortsComponent implements OnInit {
   @Input() ethernetPorts: PortsMappingEntity[] = [];
@@ -19,14 +30,12 @@ export class PortsComponent implements OnInit {
     ethertype: '0x8100',
   };
 
+  private builtInTemplatesConfigurationService = inject(BuiltInTemplatesConfigurationService);
+  private toasterService = inject(ToasterService);
+
   portTypes: string[] = [];
   etherTypes: string[] = [];
   displayedColumns: string[] = ['port_number', 'vlan', 'type', 'ethertype', 'action'];
-
-  constructor(
-    private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService,
-    private toasterService: ToasterService,
-  ) {}
 
   ngOnInit() {
     this.getConfiguration();
