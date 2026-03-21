@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -12,10 +12,14 @@ import { NodeService } from '@services/node.service';
   selector: 'app-align-vertically-action',
   templateUrl: './align-vertically.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class AlignVerticallyActionComponent implements OnInit {
   private nodesDataSource = inject(NodesDataSource);
   private nodeService = inject(NodeService);
+  private cdr = inject(ChangeDetectorRef);
 
   readonly controller = input<Controller>(undefined);
   readonly nodes = input<Node[]>(undefined);
@@ -33,7 +37,9 @@ export class AlignVerticallyActionComponent implements OnInit {
       node.x = averageX;
       this.nodesDataSource.update(node);
 
-      this.nodeService.update(this.controller(), node).subscribe((node: Node) => {});
+      this.nodeService.update(this.controller(), node).subscribe((node: Node) => {
+        this.cdr.markForCheck();
+      });
     });
   }
 }

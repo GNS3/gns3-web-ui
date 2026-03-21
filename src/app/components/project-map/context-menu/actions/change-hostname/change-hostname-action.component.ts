@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -12,6 +12,9 @@ import { ChangeHostnameDialogComponent } from '../../../change-hostname-dialog/c
   selector: 'app-change-hostname-action',
   templateUrl: './change-hostname-action.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ChangeHostnameActionComponent implements OnInit {
   private dialog = inject(MatDialog);
