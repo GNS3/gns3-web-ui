@@ -1,6 +1,12 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { v4 as uuid } from 'uuid';
 import { Controller } from '@models/controller';
 import { IouTemplate } from '@models/templates/iou-template';
@@ -9,27 +15,27 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-copy-iou-template',
   templateUrl: './copy-iou-template.component.html',
   styleUrls: ['./copy-iou-template.component.scss', '../../preferences.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatFormFieldModule, MatInputModule]
 })
 export class CopyIouTemplateComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private iouService = inject(IouService);
+  private toasterService = inject(ToasterService);
+  private router = inject(Router);
+  private formBuilder = inject(UntypedFormBuilder);
+  private cd = inject(ChangeDetectorRef);
   controller: Controller;
   templateName: string = '';
   iouTemplate: IouTemplate;
   templateNameForm: UntypedFormGroup;
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private qemuService: IouService,
-    private toasterService: ToasterService,
-    private router: Router,
-    private formBuilder: UntypedFormBuilder,
-    private cd: ChangeDetectorRef
-  ) {
+  constructor() {
     this.templateNameForm = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
     });
@@ -42,7 +48,7 @@ export class CopyIouTemplateComponent implements OnInit {
       this.controller = controller;
       this.cd.markForCheck();
 
-      this.qemuService.getTemplate(this.controller, template_id).subscribe((iouTemplate: IouTemplate) => {
+      this.iouService.getTemplate(this.controller, template_id).subscribe((iouTemplate: IouTemplate) => {
         this.iouTemplate = iouTemplate;
         this.templateName = `Copy of ${this.iouTemplate.name}`;
         this.cd.markForCheck();
@@ -59,7 +65,7 @@ export class CopyIouTemplateComponent implements OnInit {
       this.iouTemplate.template_id = uuid();
       this.iouTemplate.name = this.templateName;
 
-      this.qemuService.addTemplate(this.controller, this.iouTemplate).subscribe((template: IouTemplate) => {
+      this.iouService.addTemplate(this.controller, this.iouTemplate).subscribe((template: IouTemplate) => {
         this.goBack();
       });
     } else {

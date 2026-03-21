@@ -1,6 +1,12 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { v4 as uuid } from 'uuid';
 import { QemuBinary } from '@models/qemu/qemu-binary';
 import { Controller } from '@models/controller';
@@ -10,27 +16,27 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-copy-qemu-virtual-machine-template',
   templateUrl: './copy-qemu-vm-template.component.html',
   styleUrls: ['./copy-qemu-vm-template.component.scss', '../../preferences.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatFormFieldModule, MatInputModule]
 })
 export class CopyQemuVmTemplateComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private qemuService = inject(QemuService);
+  private toasterService = inject(ToasterService);
+  private router = inject(Router);
+  private formBuilder = inject(UntypedFormBuilder);
+  private cd = inject(ChangeDetectorRef);
   controller: Controller;
   templateName: string = '';
   qemuTemplate: QemuTemplate;
   nameForm: UntypedFormGroup;
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private qemuService: QemuService,
-    private toasterService: ToasterService,
-    private router: Router,
-    private formBuilder: UntypedFormBuilder,
-    private cd: ChangeDetectorRef
-  ) {
+  constructor() {
     this.nameForm = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
     });
