@@ -15,7 +15,7 @@ import { Template } from '@models/template';
 import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
-import { TemplatefilterPipe } from '@filters/templateFilter.pipe';
+import { TemplateFilter } from '@filters/templateFilter.pipe';
 
 @Component({
   standalone: true,
@@ -23,7 +23,7 @@ import { TemplatefilterPipe } from '@filters/templateFilter.pipe';
   templateUrl: './template-list-dialog.component.html',
   styleUrls: ['./template-list-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, TemplatefilterPipe]
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, TemplateFilter]
 })
 export class TemplateListDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<TemplateListDialogComponent>);

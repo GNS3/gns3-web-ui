@@ -37,6 +37,7 @@ import {User} from "@models/users/user";
 import {Role} from "@models/api/role";
 import {RoleService} from "@services/role.service";
 import {EndpointNode, EndpointTreeAdapter} from "@components/acl-management/add-ace-dialog/EndpointTreeAdapter";
+import {AutocompleteComponent} from "@components/acl-management/add-ace-dialog/autocomplete/autocomplete.component";
 
 
 
@@ -46,7 +47,7 @@ import {EndpointNode, EndpointTreeAdapter} from "@components/acl-management/add-
   templateUrl: './add-ace-dialog.component.html',
   styleUrls: ['./add-ace-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatCheckboxModule, MatDividerModule, MatFormFieldModule, MatIconModule, MatInputModule, MatSelectModule, MatTreeModule, CdkTreeModule]
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatCheckboxModule, MatDividerModule, MatFormFieldModule, MatIconModule, MatInputModule, MatSelectModule, MatTreeModule, CdkTreeModule, AutocompleteComponent]
 })
 export class AddAceDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<AddAceDialogComponent>);
