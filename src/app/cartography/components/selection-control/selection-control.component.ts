@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SelectionEventSource } from '../../events/selection-event-source';
 import { InRectangleHelper } from '../../helpers/in-rectangle-helper';
@@ -7,22 +7,21 @@ import { SelectionManager } from '../../managers/selection-manager';
 import { Rectangle } from '../../models/rectangle';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-selection-control',
   templateUrl: './selection-control.component.html',
   styleUrls: ['./selection-control.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: []
 })
 export class SelectionControlComponent implements OnInit, OnDestroy {
   private onSelection: Subscription;
 
-  constructor(
-    private selectionEventSource: SelectionEventSource,
-    private graphDataManager: GraphDataManager,
-    private inRectangleHelper: InRectangleHelper,
-    private selectionManager: SelectionManager,
-    private cd: ChangeDetectorRef
-  ) {}
+  private selectionEventSource = inject(SelectionEventSource);
+  private graphDataManager = inject(GraphDataManager);
+  private inRectangleHelper = inject(InRectangleHelper);
+  private selectionManager = inject(SelectionManager);
+  private cd = inject(ChangeDetectorRef);
 
   ngOnInit() {
     this.onSelection = this.selectionEventSource.selected.subscribe((rectangle: Rectangle) => {

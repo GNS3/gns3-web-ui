@@ -8,6 +8,7 @@ import {
   OnInit,
   Renderer2,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { select } from 'd3-selection';
 import { Subscription } from 'rxjs';
@@ -30,10 +31,11 @@ import { MapLinkNode } from '../../models/map/map-link-node';
 import { Node } from '../../models/node';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-text-editor',
   templateUrl: './text-editor.component.html',
   styleUrls: ['./text-editor.component.scss'],
+  imports: []
 })
 export class TextEditorComponent implements OnInit, OnDestroy {
   @ViewChild('temporaryTextElement') temporaryTextElement: ElementRef;
@@ -54,19 +56,17 @@ export class TextEditorComponent implements OnInit, OnDestroy {
   private textAddingSubscription: Subscription;
   public addingFinished = new EventEmitter<any>();
 
-  constructor(
-    private drawingsEventSource: DrawingsEventSource,
-    private toolsService: ToolsService,
-    private context: Context,
-    private renderer: Renderer2,
-    private mapScaleService: MapScaleService,
-    private linkService: LinkService,
-    private linksDataSource: LinksDataSource,
-    private nodesDataSource: NodesDataSource,
-    private selectionManager: SelectionManager,
-    private fontFixer: FontFixer,
-    private ngZone: NgZone
-  ) {}
+  private drawingsEventSource = inject(DrawingsEventSource);
+  private toolsService = inject(ToolsService);
+  private context = inject(Context);
+  private renderer = inject(Renderer2);
+  private mapScaleService = inject(MapScaleService);
+  private linkService = inject(LinkService);
+  private linksDataSource = inject(LinksDataSource);
+  private nodesDataSource = inject(NodesDataSource);
+  private selectionManager = inject(SelectionManager);
+  private fontFixer = inject(FontFixer);
+  private ngZone = inject(NgZone);
 
   ngOnInit() {
     this.textAddingSubscription = this.toolsService.isTextAddingToolActivated.subscribe((isActive: boolean) => {

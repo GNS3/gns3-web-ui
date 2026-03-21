@@ -1,14 +1,15 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { AddedDataEvent } from '../../events/event-source';
 import { Context } from '../../models/context';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-drawing-adding',
   templateUrl: './drawing-adding.component.html',
   styleUrls: ['./drawing-adding.component.scss'],
+  imports: []
 })
 export class DrawingAddingComponent implements OnInit, OnDestroy {
   @Input('svg') svg: SVGSVGElement;
@@ -16,7 +17,8 @@ export class DrawingAddingComponent implements OnInit, OnDestroy {
   private mapListener: Function;
   private drawingSelected: Subscription;
 
-  constructor(private drawingsEventSource: DrawingsEventSource, private context: Context) {}
+  private drawingsEventSource = inject(DrawingsEventSource);
+  private context = inject(Context);
 
   ngOnInit() {
     this.drawingSelected = this.drawingsEventSource.selected.subscribe((evt) => {

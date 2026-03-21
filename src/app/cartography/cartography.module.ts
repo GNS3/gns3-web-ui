@@ -92,9 +92,6 @@ import { SerialLinkWidget } from './widgets/links/serial-link';
     NodeComponent,
     SelectionComponent,
     StatusComponent,
-  ],
-  declarations: [
-    D3MapComponent,
     DrawingAddingComponent,
     DrawingResizingComponent,
     TextEditorComponent,
@@ -102,6 +99,9 @@ import { SerialLinkWidget } from './widgets/links/serial-link';
     SelectionSelectComponent,
     DraggableSelectionComponent,
     LinkEditingComponent,
+  ],
+  declarations: [
+    D3MapComponent,
     MovingCanvasDirective,
     ZoomingCanvasDirective,
   ],

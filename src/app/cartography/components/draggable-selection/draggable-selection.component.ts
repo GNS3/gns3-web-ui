@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { select } from 'd3-selection';
 import { merge, Subscription } from 'rxjs';
 import { MapSettingsService } from '@services/mapsettings.service';
@@ -20,10 +20,11 @@ import { LinksWidget } from '../../widgets/links';
 import { NodesWidget } from '../../widgets/nodes';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-draggable-selection',
   templateUrl: './draggable-selection.component.html',
   styleUrls: ['./draggable-selection.component.scss'],
+  imports: []
 })
 export class DraggableSelectionComponent implements OnInit, OnDestroy {
   private start: Subscription;
@@ -34,19 +35,17 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
 
   @Input('svg') svg: SVGSVGElement;
 
-  constructor(
-    private nodesWidget: NodesWidget,
-    private drawingsWidget: DrawingsWidget,
-    private linksWidget: LinksWidget,
-    private labelWidget: LabelWidget,
-    private interfaceWidget: InterfaceLabelWidget,
-    private selectionManager: SelectionManager,
-    private nodesEventSource: NodesEventSource,
-    private drawingsEventSource: DrawingsEventSource,
-    private graphDataManager: GraphDataManager,
-    private linksEventSource: LinksEventSource,
-    private mapSettingsService: MapSettingsService
-  ) {}
+  private nodesWidget = inject(NodesWidget);
+  private drawingsWidget = inject(DrawingsWidget);
+  private linksWidget = inject(LinksWidget);
+  private labelWidget = inject(LabelWidget);
+  private interfaceWidget = inject(InterfaceLabelWidget);
+  private selectionManager = inject(SelectionManager);
+  private nodesEventSource = inject(NodesEventSource);
+  private drawingsEventSource = inject(DrawingsEventSource);
+  private graphDataManager = inject(GraphDataManager);
+  private linksEventSource = inject(LinksEventSource);
+  private mapSettingsService = inject(MapSettingsService);
 
   ngOnInit() {
     const svg = select(this.svg);
