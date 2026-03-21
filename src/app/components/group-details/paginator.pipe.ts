@@ -15,7 +15,7 @@ import {User} from "@models/users/user";
 import {PageEvent} from "@angular/material/paginator";
 
 @Pipe({
-  standalone: false,
+  standalone: true,
   name: 'paginator'
 })
 export class PaginatorPipe implements PipeTransform {
