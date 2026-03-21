@@ -10,6 +10,7 @@ import {
   OnDestroy,
   OnInit,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
@@ -19,13 +20,15 @@ import { NodesEventSource } from '../../../events/nodes-event-source';
 import { CssFixer } from '../../../helpers/css-fixer';
 import { FontFixer } from '../../../helpers/font-fixer';
 import { MapNode } from '../../../models/map/map-node';
+import { DraggableComponent } from '../draggable/draggable.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: '[app-node]',
   templateUrl: './node.component.html',
   styleUrls: ['./node.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [DraggableComponent]
 })
 export class NodeComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
   static NODE_LABEL_MARGIN = 3;
@@ -43,14 +46,12 @@ export class NodeComponent implements OnInit, OnDestroy, OnChanges, AfterViewIni
 
   private labelHeight = 0;
 
-  constructor(
-    private cssFixer: CssFixer,
-    private fontFixer: FontFixer,
-    private sanitizer: DomSanitizer,
-    protected element: ElementRef,
-    private cd: ChangeDetectorRef,
-    private nodesEventSource: NodesEventSource
-  ) { }
+  private cssFixer = inject(CssFixer);
+  private fontFixer = inject(FontFixer);
+  private sanitizer = inject(DomSanitizer);
+  protected element = inject(ElementRef);
+  private cd = inject(ChangeDetectorRef);
+  private nodesEventSource = inject(NodesEventSource);
 
   ngOnInit() {
     // this.nodeChangedSubscription = this.nodeChanged.subscribe((node: Node) => {

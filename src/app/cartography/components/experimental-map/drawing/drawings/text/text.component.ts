@@ -1,13 +1,14 @@
-import { Component, DoCheck, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Component, DoCheck, ElementRef, Input, OnInit, ViewChild, inject } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FontFixer } from '../../../../../helpers/font-fixer';
 import { TextElement } from '../../../../../models/drawings/text-element';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: '[app-text]',
   templateUrl: './text.component.html',
   styleUrls: ['./text.component.scss'],
+  imports: []
 })
 export class TextComponent implements OnInit, DoCheck {
   static MARGIN = 4;
@@ -20,7 +21,8 @@ export class TextComponent implements OnInit, DoCheck {
 
   transformation = '';
 
-  constructor(private fontFixer: FontFixer, private sanitizer: DomSanitizer) { }
+  private fontFixer = inject(FontFixer);
+  private sanitizer = inject(DomSanitizer);
 
   ngOnInit() {
     if (this.text) {

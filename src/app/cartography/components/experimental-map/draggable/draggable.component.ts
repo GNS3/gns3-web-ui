@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import { fromEvent, combineLatest, Observable, Subscription } from 'rxjs';
 import { map, mergeMap, skipUntil, take, tap, startWith } from 'rxjs/operators';
 import { Point } from '../../../models/point';
@@ -8,10 +8,11 @@ export class DraggableDraggedEvent {
 }
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: '[app-draggable]',
   template: ` <ng-content></ng-content> `,
   styleUrls: ['./draggable.component.scss'],
+  imports: []
 })
 export class DraggableComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input('app-draggable') item: Point;
@@ -26,7 +27,7 @@ export class DraggableComponent implements OnInit, AfterViewInit, OnDestroy {
   private posX: number;
   private posY: number;
 
-  constructor(private elementRef: ElementRef) {}
+  private elementRef = inject(ElementRef);
 
   ngOnInit() {}
 

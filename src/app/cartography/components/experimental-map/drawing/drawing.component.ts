@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
 import { DrawingsEventSource } from '../../../events/drawings-event-source';
 import { DraggedDataEvent } from '../../../events/event-source';
 import { SvgToDrawingConverter } from '../../../helpers/svg-to-drawing-converter';
@@ -8,21 +8,21 @@ import { LineElement } from '../../../models/drawings/line-element';
 import { RectElement } from '../../../models/drawings/rect-element';
 import { TextElement } from '../../../models/drawings/text-element';
 import { MapDrawing } from '../../../models/map/map-drawing';
+import { DraggableComponent } from '../draggable/draggable.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: '[app-drawing]',
   templateUrl: './drawing.component.html',
   styleUrls: ['./drawing.component.scss'],
+  imports: [DraggableComponent]
 })
 export class DrawingComponent implements OnInit {
   @Input('app-drawing') drawing: MapDrawing;
 
-  constructor(
-    private svgToDrawingConverter: SvgToDrawingConverter,
-    private drawingsEventSource: DrawingsEventSource,
-    private cd: ChangeDetectorRef
-  ) { }
+  private svgToDrawingConverter = inject(SvgToDrawingConverter);
+  private drawingsEventSource = inject(DrawingsEventSource);
+  private cd = inject(ChangeDetectorRef);
 
   ngOnInit() {
     try {

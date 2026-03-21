@@ -1,17 +1,18 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { QtDasharrayFixer } from '../../../../../helpers/qt-dasharray-fixer';
 import { LineElement } from '../../../../../models/drawings/line-element';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: '[app-line]',
   templateUrl: './line.component.html',
   styleUrls: ['./line.component.scss'],
+  imports: []
 })
 export class LineComponent implements OnInit {
   @Input('app-line') line: LineElement;
 
-  constructor(private qtDasharrayFixer: QtDasharrayFixer) {}
+  private qtDasharrayFixer = inject(QtDasharrayFixer);
 
   ngOnInit() {}
 

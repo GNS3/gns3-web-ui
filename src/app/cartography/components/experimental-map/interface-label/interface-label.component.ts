@@ -1,12 +1,13 @@
-import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild, inject } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CssFixer } from '../../../helpers/css-fixer';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: '[app-interface-label]',
   templateUrl: './interface-label.component.html',
   styleUrls: ['./interface-label.component.scss'],
+  imports: []
 })
 export class InterfaceLabelComponent implements OnInit {
   @Input('app-interface-label') ignore: any;
@@ -26,12 +27,10 @@ export class InterfaceLabelComponent implements OnInit {
   textWidth = 0;
   textHeight = 0;
 
-  constructor(
-    private elementRef: ElementRef,
-    private ref: ChangeDetectorRef,
-    private sanitizer: DomSanitizer,
-    private cssFixer: CssFixer
-  ) { }
+  private elementRef = inject(ElementRef);
+  private ref = inject(ChangeDetectorRef);
+  private sanitizer = inject(DomSanitizer);
+  private cssFixer = inject(CssFixer);
 
   ngOnInit() { }
 

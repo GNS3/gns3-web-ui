@@ -7,6 +7,7 @@ import {
   OnDestroy,
   OnInit,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MultiLinkCalculatorHelper } from '../../../helpers/multi-link-calculator-helper';
@@ -15,12 +16,14 @@ import { Node } from '../../../models/node';
 import { EthernetLinkStrategy } from './strategies/ethernet-link-strategy';
 import { LinkStrategy } from './strategies/link-strategy';
 import { SerialLinkStrategy } from './strategies/serial-link-strategy';
+import { StatusComponent } from '../status/status.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: '[app-link]',
   templateUrl: './link.component.html',
   styleUrls: ['./link.component.scss'],
+  imports: [StatusComponent]
 })
 export class LinkComponent implements OnInit, OnDestroy {
   @Input('app-link') link: MapLink;
@@ -34,7 +37,8 @@ export class LinkComponent implements OnInit, OnDestroy {
 
   private nodeChangedSubscription: Subscription;
 
-  constructor(private multiLinkCalculatorHelper: MultiLinkCalculatorHelper, private ref: ChangeDetectorRef) { }
+  private multiLinkCalculatorHelper = inject(MultiLinkCalculatorHelper);
+  private ref = inject(ChangeDetectorRef);
 
   ngOnInit() {
     this.ref.detectChanges();

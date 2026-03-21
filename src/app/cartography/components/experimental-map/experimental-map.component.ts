@@ -10,6 +10,7 @@ import {
   OnInit,
   SimpleChange,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Link } from '@models/link';
@@ -23,13 +24,23 @@ import { Node } from '../../models/node';
 import { Size } from '../../models/size';
 import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
 import { GraphLayout } from '../../widgets/graph-layout';
+import { SelectionComponent } from './selection/selection.component';
+import { NodeComponent } from './node/node.component';
+import { LinkComponent } from './link/link.component';
+import { DrawingComponent } from './drawing/drawing.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-experimental-map',
   templateUrl: './experimental-map.component.html',
   styleUrls: ['./experimental-map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    SelectionComponent,
+    NodeComponent,
+    LinkComponent,
+    DrawingComponent,
+  ]
 })
 export class ExperimentalMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() nodes: Node[] = [];
@@ -51,15 +62,13 @@ export class ExperimentalMapComponent implements OnInit, OnChanges, OnDestroy {
     show_interface_labels: true,
   };
 
-  constructor(
-    private graphDataManager: GraphDataManager,
-    private context: Context,
-    private mapChangeDetectorRef: MapChangeDetectorRef,
-    private canvasSizeDetector: CanvasSizeDetector,
-    private changeDetectorRef: ChangeDetectorRef,
-    private layersManger: LayersManager,
-    public graphLayout: GraphLayout
-  ) {}
+  private graphDataManager = inject(GraphDataManager);
+  private context = inject(Context);
+  private mapChangeDetectorRef = inject(MapChangeDetectorRef);
+  private canvasSizeDetector = inject(CanvasSizeDetector);
+  private changeDetectorRef = inject(ChangeDetectorRef);
+  private layersManger = inject(LayersManager);
+  public graphLayout = inject(GraphLayout);
 
   @Input('show-interface-labels')
   set showInterfaceLabels(value) {

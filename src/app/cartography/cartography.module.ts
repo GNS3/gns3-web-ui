@@ -12,6 +12,18 @@ import { ExperimentalMapComponent } from './components/experimental-map/experime
 import { SelectionControlComponent } from './components/selection-control/selection-control.component';
 import { SelectionSelectComponent } from './components/selection-select/selection-select.component';
 import { TextEditorComponent } from './components/text-editor/text-editor.component';
+import { DraggableComponent } from './components/experimental-map/draggable/draggable.component';
+import { DrawingComponent } from './components/experimental-map/drawing/drawing.component';
+import { EllipseComponent } from './components/experimental-map/drawing/drawings/ellipse/ellipse.component';
+import { ImageComponent } from './components/experimental-map/drawing/drawings/image/image.component';
+import { LineComponent } from './components/experimental-map/drawing/drawings/line/line.component';
+import { RectComponent } from './components/experimental-map/drawing/drawings/rect/rect.component';
+import { TextComponent } from './components/experimental-map/drawing/drawings/text/text.component';
+import { InterfaceLabelComponent } from './components/experimental-map/interface-label/interface-label.component';
+import { LinkComponent as MapLinkComponent } from './components/experimental-map/link/link.component';
+import { NodeComponent } from './components/experimental-map/node/node.component';
+import { SelectionComponent } from './components/experimental-map/selection/selection.component';
+import { StatusComponent } from './components/experimental-map/status/status.component';
 import { DrawingToMapDrawingConverter } from './converters/map/drawing-to-map-drawing-converter';
 import { LabelToMapLabelConverter } from './converters/map/label-to-map-label-converter';
 import { LinkNodeToMapLinkNodeConverter } from './converters/map/link-node-to-map-link-node-converter';
@@ -63,14 +75,29 @@ import { EthernetLinkWidget } from './widgets/links/ethernet-link';
 import { SerialLinkWidget } from './widgets/links/serial-link';
 
 @NgModule({
-  imports: [CommonModule, MatMenuModule, MatIconModule],
+  imports: [
+    CommonModule,
+    MatMenuModule,
+    MatIconModule,
+    ExperimentalMapComponent,
+    DraggableComponent,
+    DrawingComponent,
+    EllipseComponent,
+    ImageComponent,
+    LineComponent,
+    RectComponent,
+    TextComponent,
+    InterfaceLabelComponent,
+    MapLinkComponent,
+    NodeComponent,
+    SelectionComponent,
+    StatusComponent,
+  ],
   declarations: [
     D3MapComponent,
-    ExperimentalMapComponent,
     DrawingAddingComponent,
     DrawingResizingComponent,
     TextEditorComponent,
-    ...ANGULAR_MAP_DECLARATIONS,
     SelectionControlComponent,
     SelectionSelectComponent,
     DraggableSelectionComponent,

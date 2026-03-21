@@ -1,14 +1,15 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { fromEvent, combineLatest, Observable, Subscription } from 'rxjs';
 import { map, mergeMap, skipUntil, take, tap, startWith } from 'rxjs/operators';
 import { Rectangle } from '../../../models/rectangle';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: '[app-selection]',
   templateUrl: './selection.component.html',
   styleUrls: ['./selection.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: []
 })
 export class SelectionComponent implements OnInit, AfterViewInit {
   @Input('app-selection') svg: SVGSVGElement;
@@ -25,7 +26,7 @@ export class SelectionComponent implements OnInit, AfterViewInit {
 
   @Output('selected') rectangleSelected = new EventEmitter<Rectangle>();
 
-  constructor(private ref: ChangeDetectorRef) {}
+  private ref = inject(ChangeDetectorRef);
 
   ngOnInit() {}
 

@@ -1,17 +1,18 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { QtDasharrayFixer } from '../../../../../helpers/qt-dasharray-fixer';
 import { RectElement } from '../../../../../models/drawings/rect-element';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: '[app-rect]',
   templateUrl: './rect.component.html',
   styleUrls: ['./rect.component.scss'],
+  imports: []
 })
 export class RectComponent implements OnInit {
   @Input('app-rect') rect: RectElement;
 
-  constructor(private qtDasharrayFixer: QtDasharrayFixer) {}
+  private qtDasharrayFixer = inject(QtDasharrayFixer);
 
   ngOnInit() {}
 

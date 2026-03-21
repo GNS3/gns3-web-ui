@@ -1,10 +1,11 @@
-import { ChangeDetectorRef, Component, ElementRef, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, inject } from '@angular/core';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: '[app-status]',
   templateUrl: './status.component.html',
   styleUrls: ['./status.component.scss'],
+  imports: []
 })
 export class StatusComponent {
   static STOPPED_STATUS_RECT_WIDTH = 10;
@@ -16,7 +17,8 @@ export class StatusComponent {
     d: null,
   };
 
-  constructor(protected element: ElementRef, private ref: ChangeDetectorRef) {}
+  protected element = inject(ElementRef);
+  private ref = inject(ChangeDetectorRef);
 
   @Input('app-status')
   set status(value) {

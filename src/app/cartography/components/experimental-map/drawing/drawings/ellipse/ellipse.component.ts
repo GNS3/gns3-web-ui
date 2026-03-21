@@ -1,17 +1,18 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { QtDasharrayFixer } from '../../../../../helpers/qt-dasharray-fixer';
 import { EllipseElement } from '../../../../../models/drawings/ellipse-element';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: '[app-ellipse]',
   templateUrl: './ellipse.component.html',
   styleUrls: ['./ellipse.component.scss'],
+  imports: []
 })
 export class EllipseComponent implements OnInit {
   @Input('app-ellipse') ellipse: EllipseElement;
 
-  constructor(private qtDasharrayFixer: QtDasharrayFixer) {}
+  private qtDasharrayFixer = inject(QtDasharrayFixer);
 
   ngOnInit() {}
 
