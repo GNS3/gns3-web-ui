@@ -1,32 +1,35 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewEncapsulation} from '@angular/core';
-import {MatDialogRef} from '@angular/material/dialog';
-import {Controller} from "@models/controller";
-import {Node} from '../../../../../cartography/models/node';
-import {NodeService} from "@services/node.service";
-import {ToasterService} from "@services/toaster.service";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewEncapsulation, inject } from '@angular/core';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatInputModule } from '@angular/material/input';
+import { MatRadioModule } from '@angular/material/radio';
+import { Controller } from "@models/controller";
+import { Node } from '../../../../../cartography/models/node';
+import { NodeService } from "@services/node.service";
+import { ToasterService } from "@services/toaster.service";
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-idle-pc-dialog',
   templateUrl: './idle-pc-dialog.component.html',
   styleUrls: ['./idle-pc-dialog.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatDialogModule, MatButtonModule, MatProgressSpinnerModule, MatInputModule, MatRadioModule],
 })
 export class IdlePCDialogComponent implements OnInit {
+  private nodeService = inject(NodeService);
+  public dialogRef = inject(MatDialogRef<IdlePCDialogComponent>);
+  private toasterService = inject(ToasterService);
+  private cd = inject(ChangeDetectorRef);
+
   @Input() controller: Controller;
   @Input() node: Node;
 
   idlepcs = [];
   idlePC: string = '';
   isComputing: boolean = false;
-
-  constructor(
-    private nodeService: NodeService,
-    public dialogRef: MatDialogRef<IdlePCDialogComponent>,
-    private toasterService: ToasterService,
-    private cd: ChangeDetectorRef
-  ) {}
 
   ngOnInit() {
     this.onCompute();

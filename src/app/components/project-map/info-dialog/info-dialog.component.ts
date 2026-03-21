@@ -1,24 +1,30 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTabsModule } from '@angular/material/tabs';
 import { Node } from '../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { InfoService } from '@services/info.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-info-dialog',
   templateUrl: './info-dialog.component.html',
   styleUrls: ['./info-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatDialogModule, MatButtonModule, MatProgressSpinnerModule, MatTabsModule],
 })
 export class InfoDialogComponent implements OnInit {
+  public dialogRef = inject(MatDialogRef<InfoDialogComponent>);
+  private infoService = inject(InfoService);
+  private cd = inject(ChangeDetectorRef);
+
   @Input() controller: Controller;
   @Input() node: Node;
   infoList: string[] = [];
   usage: string = '';
   commandLine: string = '';
-
-  constructor(public dialogRef: MatDialogRef<InfoDialogComponent>, private infoService: InfoService, private cd: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.infoList = this.infoService.getInfoAboutNode(this.node, this.controller);
