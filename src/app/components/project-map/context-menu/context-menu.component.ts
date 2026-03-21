@@ -1,5 +1,6 @@
-import { ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
-import { MatMenuTrigger } from '@angular/material/menu';
+import { ChangeDetectorRef, Component, Input, OnInit, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Drawing } from '../../../cartography/models/drawing';
 import { TextElement } from '../../../cartography/models/drawings/text-element';
@@ -12,12 +13,17 @@ import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-context-menu',
   templateUrl: './context-menu.component.html',
   styleUrls: ['./context-menu.component.scss'],
+  imports: [CommonModule, MatMenuModule]
 })
 export class ContextMenuComponent implements OnInit {
+  private sanitizer = inject(DomSanitizer);
+  private changeDetector = inject(ChangeDetectorRef);
+  public projectService = inject(ProjectService);
+
   @Input() project: Project;
   @Input() controller: Controller;
 
@@ -35,11 +41,7 @@ export class ContextMenuComponent implements OnInit {
   hasTextCapabilities = false;
   isBundledController: boolean = false;
 
-  constructor(
-    private sanitizer: DomSanitizer,
-    private changeDetector: ChangeDetectorRef,
-    public projectService: ProjectService
-  ) {}
+  constructor() {}
 
   ngOnInit() {
     this.setPosition(0, 0);
