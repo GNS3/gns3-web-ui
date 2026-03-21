@@ -1,6 +1,10 @@
-import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, ElementRef, OnInit, Renderer2, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 import { DrawingToMapDrawingConverter } from '../../../../cartography/converters/map/drawing-to-map-drawing-converter';
 import { MapDrawingToSvgConverter } from '../../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../../cartography/datasources/drawings-datasource';
@@ -23,13 +27,29 @@ import { ToasterService } from '@services/toaster.service';
 import { RotationValidator } from '../../../../validators/rotation-validator';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-text-editor',
   templateUrl: './text-editor.component.html',
   styleUrls: ['./text-editor.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule]
 })
 export class TextEditorDialogComponent implements OnInit {
   @ViewChild('textArea', { static: true }) textArea: ElementRef;
+
+  private dialogRef = inject(MatDialogRef<TextEditorDialogComponent>);
+  private drawingToMapDrawingConverter = inject(DrawingToMapDrawingConverter);
+  private mapDrawingToSvgConverter = inject(MapDrawingToSvgConverter);
+  private drawingService = inject(DrawingService);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private renderer = inject(Renderer2);
+  private nodeService = inject(NodeService);
+  private nodesDataSource = inject(NodesDataSource);
+  private linkService = inject(LinkService);
+  private linksDataSource = inject(LinksDataSource);
+  private formBuilder = inject(UntypedFormBuilder);
+  private toasterService = inject(ToasterService);
+  private rotationValidator = inject(RotationValidator);
+  private fontFixer = inject(FontFixer);
 
   controller: Controller;
   project: Project;
@@ -43,22 +63,7 @@ export class TextEditorDialogComponent implements OnInit {
   isTextEditable: boolean;
   formGroup: UntypedFormGroup;
 
-  constructor(
-    private dialogRef: MatDialogRef<TextEditorDialogComponent>,
-    private drawingToMapDrawingConverter: DrawingToMapDrawingConverter,
-    private mapDrawingToSvgConverter: MapDrawingToSvgConverter,
-    private drawingService: DrawingService,
-    private drawingsDataSource: DrawingsDataSource,
-    private renderer: Renderer2,
-    private nodeService: NodeService,
-    private nodesDataSource: NodesDataSource,
-    private linkService: LinkService,
-    private linksDataSource: LinksDataSource,
-    private formBuilder: UntypedFormBuilder,
-    private toasterService: ToasterService,
-    private rotationValidator: RotationValidator,
-    private fontFixer: FontFixer
-  ) {}
+  constructor() {}
 
   ngOnInit() {
     this.formGroup = this.formBuilder.group({
