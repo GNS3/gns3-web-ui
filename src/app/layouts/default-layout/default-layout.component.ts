@@ -1,4 +1,4 @@
-import { Component, HostListener, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, ViewEncapsulation, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ProjectService } from '@services/project.service';
@@ -12,13 +12,31 @@ import { ControllerService } from '@services/controller.service';
 import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.service';
 import { ToasterService } from '@services/toaster.service';
 import { version } from '../../version';
+import { ProgressComponent } from '../../common/progress/progress.component';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-default-layout',
   encapsulation: ViewEncapsulation.None,
   templateUrl: './default-layout.component.html',
   styleUrls: ['./default-layout.component.scss'],
+  imports: [
+    CommonModule,
+    RouterModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+    MatTooltipModule,
+    ProgressComponent,
+  ]
 })
 export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public isInstalledSoftwareAvailable = false;
@@ -37,26 +55,24 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public project: Project;
   private projectMapSubscription: Subscription = new Subscription();
 
-  constructor(
-    private recentlyOpenedProjectService: RecentlyOpenedProjectService,
-    private controllerManagement: ControllerManagementService,
-    private toasterService: ToasterService,
-    private progressService: ProgressService,
-    private dialog: MatDialog,
-    public router: Router,
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private projectService: ProjectService
-  ) {
+  private recentlyOpenedProjectService = inject(RecentlyOpenedProjectService);
+  private controllerManagement = inject(ControllerManagementService);
+  private toasterService = inject(ToasterService);
+  private progressService = inject(ProgressService);
+  private dialog = inject(MatDialog);
+  public router = inject(Router);
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private projectService = inject(ProjectService);
+
+  ngOnInit() {
     this.router.events.subscribe((data) => {
       if (data instanceof NavigationEnd) {
         this.controllerId = this.route.children[0].snapshot.paramMap.get('controller_id');
         this.getData();
       }
     });
-  }
 
-  ngOnInit() {
     this.checkIfUserIsLoginPage();
     this.routeSubscription = this.router.events.subscribe((val) => {
       if (val instanceof NavigationEnd) this.checkIfUserIsLoginPage();

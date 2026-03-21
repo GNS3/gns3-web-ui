@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewChild, inject } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -33,9 +33,27 @@ import { ApplianceInfoDialogComponent } from './appliance-info-dialog/appliance-
 import { TemplateNameDialogComponent } from './template-name-dialog/template-name-dialog.component';
 import { UploadServiceService } from '../../../common/uploading-processbar/upload-service.service';
 import { environment } from 'environments/environment';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatButtonModule } from '@angular/material/button';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatInputModule } from '@angular/material/input';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { FileUploadModule } from 'ng2-file-upload';
+import { DataSourceFilter } from '../../../filters/dataSourceFilter';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-new-template-dialog',
   templateUrl: './new-template-dialog.component.html',
   styleUrls: ['./new-template-dialog.component.scss'],
@@ -47,6 +65,26 @@ import { environment } from 'environments/environment';
       transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
     ]),
   ],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatDialogModule,
+    MatRadioModule,
+    MatButtonModule,
+    MatStepperModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatSelectModule,
+    MatTableModule,
+    MatPaginatorModule,
+    MatInputModule,
+    MatProgressBarModule,
+    MatProgressSpinnerModule,
+    MatCheckboxModule,
+    MatExpansionModule,
+    FileUploadModule,
+    DataSourceFilter,
+  ]
 })
 export class NewTemplateDialogComponent implements OnInit {
   @Input() controller: Controller;
@@ -84,23 +122,21 @@ export class NewTemplateDialogComponent implements OnInit {
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild('stepper', { static: true }) stepper: MatStepper;
 
-  constructor(
-    public dialogRef: MatDialogRef<NewTemplateDialogComponent>,
-    private applianceService: ApplianceService,
-    private changeDetector: ChangeDetectorRef,
-    private toasterService: ToasterService,
-    private qemuService: QemuService,
-    private dockerService: DockerService,
-    private iosService: IosService,
-    private iouService: IouService,
-    private templateService: TemplateService,
-    public dialog: MatDialog,
-    private computeService: ComputeService,
-    private changeDetectorRef: ChangeDetectorRef,
-    private progressService: ProgressService,
-    public snackBar: MatSnackBar,
-    private uploadServiceService: UploadServiceService
-  ) { }
+  public dialogRef = inject<MatDialogRef<NewTemplateDialogComponent>>(MatDialogRef);
+  private applianceService = inject(ApplianceService);
+  private changeDetector = inject(ChangeDetectorRef);
+  private toasterService = inject(ToasterService);
+  private qemuService = inject(QemuService);
+  private dockerService = inject(DockerService);
+  private iosService = inject(IosService);
+  private iouService = inject(IouService);
+  private templateService = inject(TemplateService);
+  public dialog = inject(MatDialog);
+  private computeService = inject(ComputeService);
+  private changeDetectorRef = inject(ChangeDetectorRef);
+  private progressService = inject(ProgressService);
+  public snackBar = inject(MatSnackBar);
+  private uploadServiceService = inject(UploadServiceService);
 
   ngOnInit() {
     this.applianceService.getAppliances(this.controller).subscribe((appliances) => {
