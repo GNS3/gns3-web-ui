@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, OnDestroy, ViewChild, ViewEncapsulation, ChangeDetectorRef, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnInit, OnDestroy, ViewChild, ViewEncapsulation, ChangeDetectorRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Terminal } from 'xterm';
 import { AttachAddon } from 'xterm-addon-attach';
@@ -16,7 +16,10 @@ import { XtermContextMenuService } from '@services/xterm-context-menu.service';
   selector: 'app-web-console',
   templateUrl: './web-console.component.html',
   styleUrls: ['../../../../../node_modules/xterm/css/xterm.css', './web-console.component.scss'],
-  imports: [CommonModule]
+  imports: [CommonModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() controller: Controller;
@@ -49,6 +52,7 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     this.themeService.getActualTheme() === 'light'
       ? (this.isLightThemeEnabled = true)
       : (this.isLightThemeEnabled = false);
+    this.cdr.markForCheck();
 
     this.consoleService.consoleResized.subscribe((ev) => {
       let numberOfColumns = Math.floor(ev.width / 9);

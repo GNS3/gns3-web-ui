@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   ElementRef,
   HostListener,
@@ -52,7 +53,10 @@ import { LinkEditingComponent } from '../link-editing/link-editing.component';
     SelectionSelectComponent,
     DraggableSelectionComponent,
     LinkEditingComponent,
-  ]
+  ],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() nodes: Node[] = [];

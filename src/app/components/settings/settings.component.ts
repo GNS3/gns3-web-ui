@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -17,7 +17,10 @@ import { UpdatesService } from '@services/updates.service';
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
-  imports: [CommonModule, FormsModule, MatExpansionModule, MatCheckboxModule, MatButtonModule, MatRadioModule]
+  imports: [CommonModule, FormsModule, MatExpansionModule, MatCheckboxModule, MatButtonModule, MatRadioModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class SettingsComponent implements OnInit {
   private settingsService = inject(SettingsService);
@@ -25,6 +28,7 @@ export class SettingsComponent implements OnInit {
   private themeService = inject(ThemeService);
   public mapSettingsService = inject(MapSettingsService);
   public updatesService = inject(UpdatesService);
+  private cdr = inject(ChangeDetectorRef);
 
   settings: Settings;
   integrateLinksLabelsToLinks: boolean;
@@ -38,6 +42,7 @@ export class SettingsComponent implements OnInit {
     this.openReadme = this.mapSettingsService.openReadme;
     this.openConsolesInWidget = this.mapSettingsService.openConsolesInWidget;
     this.mapTheme = this.themeService.savedMapTheme;
+    this.cdr.markForCheck();
   }
 
   save() {
@@ -56,6 +61,7 @@ export class SettingsComponent implements OnInit {
     setMapTheme(theme: 'light' | 'dark' | 'auto') {
     this.mapTheme = theme;
     this.themeService.setMapTheme(theme);
+    this.cdr.markForCheck();
   }
  
   checkForUpdates() {
