@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, input, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, inject, input, viewChild, ChangeDetectorRef } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -15,11 +15,15 @@ import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog
   templateUrl: './import-config-action.component.html',
   styleUrls: ['./import-config-action.component.scss'],
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ImportConfigActionComponent {
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
   private dialog = inject(MatDialog);
+  private cdr = inject(ChangeDetectorRef);
 
   readonly controller = input<Controller>(undefined);
   readonly node = input<Node>(undefined);
@@ -38,6 +42,7 @@ export class ImportConfigActionComponent {
       let instance = dialogRef.componentInstance;
       dialogRef.afterClosed().subscribe((configType: string) => {
         this.configType = configType;
+        this.cdr.markForCheck();
         this.fileInput().nativeElement.click();
       });
     } else {
@@ -59,18 +64,22 @@ export class ImportConfigActionComponent {
         this.nodeService.saveConfiguration(this.controller(), this.node(), content).subscribe({
           next: () => {
             this.toasterService.success(`Configuration for node ${this.node().name} imported.`);
+            this.cdr.markForCheck();
           },
           error: (error) => {
             this.toasterService.error(error.error?.message || 'Failed to import startup configuration');
+            this.cdr.markForCheck();
           },
         });
       } else if (this.configType === 'private-config') {
         this.nodeService.savePrivateConfiguration(this.controller(), this.node(), content).subscribe({
           next: () => {
             this.toasterService.success(`Configuration for node ${this.node().name} imported.`);
+            this.cdr.markForCheck();
           },
           error: (error) => {
             this.toasterService.error(error.error?.message || 'Failed to import private configuration');
+            this.cdr.markForCheck();
           },
         });
       } else {

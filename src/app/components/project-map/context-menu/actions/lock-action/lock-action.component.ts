@@ -1,4 +1,4 @@
-import { Component, OnChanges, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnChanges, inject, input, ChangeDetectorRef } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -17,6 +17,9 @@ import { ProjectService } from '@services/project.service';
   selector: 'app-lock-action',
   templateUrl: './lock-action.component.html',
   imports: [CommonModule, MatButtonModule, MatIconModule, MatMenuModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class LockActionComponent implements OnChanges {
   private nodesDataSource = inject(NodesDataSource);
@@ -24,6 +27,7 @@ export class LockActionComponent implements OnChanges {
   private nodeService = inject(NodeService);
   private drawingService = inject(DrawingService);
   private projectService = inject(ProjectService);
+  private cdr = inject(ChangeDetectorRef);
 
   readonly controller = input<Controller>(undefined);
   readonly nodes = input<Node[]>(undefined);
@@ -47,6 +51,7 @@ export class LockActionComponent implements OnChanges {
       node.locked = !node.locked;
       this.nodeService.updateNode(this.controller(), node).subscribe((node) => {
         this.nodesDataSource.update(node);
+        this.cdr.markForCheck();
       });
     });
 
@@ -54,6 +59,7 @@ export class LockActionComponent implements OnChanges {
       drawing.locked = !drawing.locked;
       this.drawingService.update(this.controller(), drawing).subscribe((drawing) => {
         this.drawingsDataSource.update(drawing);
+        this.cdr.markForCheck();
       });
     });
     this.projectService.projectUpdateLockIcon();
