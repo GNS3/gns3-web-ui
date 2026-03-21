@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { AdButlerResponse } from '@models/adbutler';
 import { ThemeService } from '@services/theme.service';
 import { Location } from '@angular/common';
@@ -7,12 +9,17 @@ import { Location } from '@angular/common';
 const adButlerResponseBodyRegex: RegExp = /<a href="(.*)">(.*)<\/a><br\/>(.*)<br\/>\s*<button><a .*>(.*)<\/a>\s*<\/button>/i;
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-adbutler',
   templateUrl: './adbutler.component.html',
   styleUrls: ['./adbutler.component.scss'],
+  imports: [CommonModule, MatIconModule],
 })
 export class AdbutlerComponent implements OnInit {
+  private httpClient = inject(HttpClient);
+  private themeService = inject(ThemeService);
+  private location = inject(Location);
+
   isVisible: boolean = false;
   isLightThemeEnabled: boolean = false;
 
@@ -22,8 +29,6 @@ export class AdbutlerComponent implements OnInit {
   adBody: string =
     'Network Config Generator makes it easy configure network devices, including VLANs without opening the CLI';
   buttonLabel: string = 'Check it out!';
-
-  constructor(private httpClient: HttpClient, private themeService: ThemeService, private location: Location) {}
 
   hide() {
     this.isVisible = false;
