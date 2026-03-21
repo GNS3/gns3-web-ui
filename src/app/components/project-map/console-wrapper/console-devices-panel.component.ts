@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter, ChangeDetectorRef, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, Output, EventEmitter, ChangeDetectorRef, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { Subject } from 'rxjs';
@@ -16,6 +16,9 @@ import { NodesDataSource } from '../../../cartography/datasources/nodes-datasour
   templateUrl: './console-devices-panel.component.html',
   styleUrls: ['./console-devices-panel.component.scss'],
   imports: [CommonModule, MatIconModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
   private nodesDataSource = inject(NodesDataSource);
@@ -24,8 +27,8 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
   @Output() deviceSelected = new EventEmitter<Node>();
   readonly isLightTheme = input<boolean>(false);
 
-  nodes: Node[] = [];
-  collapsed = true;
+  nodes = signal<Node[]>([]);
+  collapsed = signal(true);
 
   private destroy$ = new Subject<void>();
 
@@ -35,21 +38,24 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
     // Subscribe to all nodes changes
     this.nodesDataSource.changes.pipe(takeUntil(this.destroy$)).subscribe((nodes: Node[]) => {
       // Filter out nodes without console and VNC/HTTP/HTTPS nodes (they use standalone popup windows)
-      this.nodes = nodes.filter((n) => {
+      const filteredNodes = nodes.filter((n) => {
         const noConsole = n.console_type === 'none' || !n.console_type;
         const isVnc = n.console_type === 'vnc';
         const isHttp = n.console_type && n.console_type.startsWith('http');
         return !noConsole && !isVnc && !isHttp;
       });
+      this.nodes.set(filteredNodes);
       this.sortNodes();
       this.cdr.markForCheck();
     });
 
     // Subscribe to individual node updates
     this.nodesDataSource.itemChanged.pipe(takeUntil(this.destroy$)).subscribe((node: Node) => {
-      const index = this.nodes.findIndex((n) => n.node_id === node.node_id);
+      const currentNodes = this.nodes();
+      const index = currentNodes.findIndex((n) => n.node_id === node.node_id);
       if (index >= 0) {
-        this.nodes[index] = node;
+        currentNodes[index] = node;
+        this.nodes.set([...currentNodes]);
         this.sortNodes();
         this.cdr.markForCheck();
       }
@@ -72,7 +78,8 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
    * Sort nodes: started devices first, then by name
    */
   private sortNodes(): void {
-    this.nodes.sort((a, b) => {
+    const currentNodes = this.nodes();
+    currentNodes.sort((a, b) => {
       // First, sort by status (started first)
       const aStarted = a.status === 'started';
       const bStarted = b.status === 'started';
@@ -87,6 +94,7 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
       // Then, sort by name alphabetically
       return a.name.localeCompare(b.name);
     });
+    this.nodes.set([...currentNodes]);
   }
 
   /**
@@ -114,7 +122,7 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
    * Toggle panel collapse/expand
    */
   togglePanel(): void {
-    this.collapsed = !this.collapsed;
+    this.collapsed.set(!this.collapsed());
     this.cdr.markForCheck();
   }
 

@@ -1,4 +1,4 @@
-<div class="console-devices-panel" [class.collapsed]="collapsed" [ngClass]="{ lightTheme: isLightTheme() }">
+<div class="console-devices-panel" [class.collapsed]="collapsed()" [ngClass]="{ lightTheme: isLightTheme() }">
   <!-- Panel Header -->
   <div
     class="panel-header"
@@ -10,14 +10,14 @@
   >
     <div class="header-title">
       <mat-icon class="panel-icon">devices</mat-icon>
-      <span class="header-text" *ngIf="!collapsed">Devices</span>
+      <span class="header-text" *ngIf="!collapsed()">Devices</span>
     </div>
   </div>
 
   <!-- Device List -->
-  <div class="device-list" *ngIf="!collapsed">
+  <div class="device-list" *ngIf="!collapsed()">
     <div
-      *ngFor="let node of nodes"
+      *ngFor="let node of nodes()"
       class="device-item"
       [class.started]="isDeviceStarted(node)"
       (click)="onDeviceClick(node)"
@@ -32,7 +32,7 @@
     </div>
 
     <!-- Empty State -->
-    <div *ngIf="nodes.length === 0" class="empty-state">
+    <div *ngIf="nodes().length === 0" class="empty-state">
       <mat-icon class="empty-icon">devices</mat-icon>
       <div class="empty-text">No console devices available</div>
     </div>
