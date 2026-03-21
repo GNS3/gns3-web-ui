@@ -1,4 +1,5 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
 import { NodeToMapNodeConverter } from '../../../cartography/converters/map/node-to-map-node-converter';
@@ -13,10 +14,11 @@ import { NodeSelectInterfaceComponent } from '@components/project-map/node-selec
 import { Link } from '@models/link';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-draw-link-tool',
   templateUrl: './draw-link-tool.component.html',
   styleUrls: ['./draw-link-tool.component.scss'],
+  imports: [CommonModule, NodeSelectInterfaceComponent]
 })
 export class DrawLinkToolComponent implements OnInit, OnDestroy {
   @Input() links: Link[];
@@ -24,14 +26,14 @@ export class DrawLinkToolComponent implements OnInit, OnDestroy {
 
   private nodeClicked$: Subscription;
 
-  constructor(
-    private drawingLineTool: DrawingLineWidget,
-    private nodesEventSource: NodesEventSource,
-    private linksEventSource: LinksEventSource,
-    private mapNodeToNode: MapNodeToNodeConverter,
-    private nodeToMapNode: NodeToMapNodeConverter,
-    private portToMapPort: PortToMapPortConverter
-  ) {}
+  private drawingLineTool = inject(DrawingLineWidget);
+  private nodesEventSource = inject(NodesEventSource);
+  private linksEventSource = inject(LinksEventSource);
+  private mapNodeToNode = inject(MapNodeToNodeConverter);
+  private nodeToMapNode = inject(NodeToMapNodeConverter);
+  private portToMapPort = inject(PortToMapPortConverter);
+
+  constructor() {}
 
   ngOnInit() {
     this.nodeClicked$ = this.nodesEventSource.clicked.subscribe((clickedEvent) => {
