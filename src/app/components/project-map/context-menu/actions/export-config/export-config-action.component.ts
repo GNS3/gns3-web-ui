@@ -1,4 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
@@ -7,19 +10,18 @@ import { ToasterService } from '@services/toaster.service';
 import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-export-config-action',
   templateUrl: './export-config-action.component.html',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule, ConfigDialogComponent],
 })
 export class ExportConfigActionComponent {
+  private nodeService = inject(NodeService);
+  private dialog = inject(MatDialog);
+  private toasterService = inject(ToasterService);
+
   @Input() controller: Controller;
   @Input() node: Node;
-
-  constructor(
-    private nodeService: NodeService,
-    private dialog: MatDialog,
-    private toasterService: ToasterService
-  ) {}
 
   exportConfig() {
     if (this.node.node_type === 'vpcs') {

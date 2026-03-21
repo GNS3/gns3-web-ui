@@ -1,4 +1,7 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
@@ -7,18 +10,21 @@ import { ToasterService } from '@services/toaster.service';
 import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-import-config-action',
   templateUrl: './import-config-action.component.html',
   styleUrls: ['./import-config-action.component.scss'],
+  imports: [MatButtonModule, MatIconModule, MatMenuModule, ConfigDialogComponent],
 })
 export class ImportConfigActionComponent {
+  private nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
+  private dialog = inject(MatDialog);
+
   @Input() controller: Controller;
   @Input() node: Node;
   @ViewChild('fileInput') fileInput: ElementRef;
   configType: string;
-
-  constructor(private nodeService: NodeService, private toasterService: ToasterService, private dialog: MatDialog) {}
 
   triggerClick() {
     // 重置 fileInput，确保 change 事件可以再次触发
