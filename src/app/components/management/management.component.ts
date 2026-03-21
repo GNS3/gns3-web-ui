@@ -10,26 +10,29 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
+import { Component, OnInit, inject } from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {ActivatedRoute, Router, RouterModule} from "@angular/router";
+import {MatTabsModule} from '@angular/material/tabs';
 import {Controller} from "@models/controller";
 import {ControllerService} from "@services/controller.service";
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-management',
   templateUrl: './management.component.html',
-  styleUrls: ['./management.component.scss']
+  styleUrls: ['./management.component.scss'],
+  imports: [CommonModule, RouterModule, MatTabsModule]
 })
 export class ManagementComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private controllerService = inject(ControllerService);
 
   controller: Controller;
   links = ['users', 'groups', 'roles', 'pools', 'ACL'];
 
-  constructor(
-    private route: ActivatedRoute,
-    public router: Router,
-    private controllerService: ControllerService) { }
+  constructor() { }
 
   ngOnInit(): void {
     const controllerId = this.route.snapshot.paramMap.get('controller_id');
