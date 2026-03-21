@@ -1,19 +1,33 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit, ViewEncapsulation, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatButtonModule } from '@angular/material/button';
 import { Controller } from '@models/controller';
 import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-direct-link',
   templateUrl: './direct-link.component.html',
   styleUrls: ['./direct-link.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule]
 })
 export class DirectLinkComponent implements OnInit {
+  private controllerService = inject(ControllerService);
+  private controllerDatabase = inject(ControllerDatabase);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private toasterService = inject(ToasterService);
+
   public controllerOptionsVisibility = false;
   public controllerIp;
   public controllerPort;
@@ -34,13 +48,7 @@ export class DirectLinkComponent implements OnInit {
     protocol: new UntypedFormControl('http:')
   });
 
-  constructor(
-    private controllerService: ControllerService,
-    private controllerDatabase: ControllerDatabase,
-    private route: ActivatedRoute,
-    private router: Router,
-    private toasterService: ToasterService
-  ) {}
+  constructor() {}
 
   async ngOnInit() {
     if (this.controllerService.isServiceInitialized) this.getControllers();
