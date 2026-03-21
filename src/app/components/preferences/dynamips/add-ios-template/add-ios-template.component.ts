@@ -1,11 +1,20 @@
 import { Location } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatStepperModule } from '@angular/material/stepper';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Router } from '@angular/router';
 import { UploadServiceService } from 'app/common/uploading-processbar/upload-service.service';
 import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/uploading-processbar.component';
-import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { FileItem, FileUploader, ParsedResponseHeaders, FileUploadModule } from 'ng2-file-upload';
 import { Subscription } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '@models/compute';
@@ -20,12 +29,25 @@ import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-add-ios-template',
   templateUrl: './add-ios-template.component.html',
   styleUrls: ['./add-ios-template.component.scss', '../../preferences.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, UploadingProcessbarComponent, FileUploadModule]
 })
 export class AddIosTemplateComponent implements OnInit, OnDestroy {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private iosService = inject(IosService);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private router = inject(Router);
+  private templateMocksService = inject(TemplateMocksService);
+  private iosConfigurationService = inject(IosConfigurationService);
+  private computeService = inject(ComputeService);
+  private uploadServiceService = inject(UploadServiceService);
+  private snackBar = inject(MatSnackBar);
+
   controller: Controller;
   iosTemplate: IosTemplate;
   isEtherSwitchRouter: boolean = false;
@@ -53,19 +75,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   uploadProgress:number = 0;
   subscription: Subscription;
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private iosService: IosService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder,
-    private router: Router,
-    private templateMocksService: TemplateMocksService,
-    private iosConfigurationService: IosConfigurationService,
-    private computeService: ComputeService,
-    private uploadServiceService: UploadServiceService,
-    private snackBar : MatSnackBar,
-  ) {
+  constructor() {
     this.iosTemplate = new IosTemplate();
 
     this.iosImageForm = this.formBuilder.group({

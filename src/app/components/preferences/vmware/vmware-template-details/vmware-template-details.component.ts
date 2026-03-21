@@ -1,8 +1,17 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { MatChipInputEvent } from '@angular/material/chips';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 import { Controller } from '@models/controller';
 import { VmwareTemplate } from '@models/templates/vmware-template';
@@ -11,15 +20,28 @@ import { ToasterService } from '@services/toaster.service';
 import { VmwareConfigurationService } from '@services/vmware-configuration.service';
 import { VmwareService } from '@services/vmware.service';
 import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
+import { SymbolsMenuComponent } from '@components/preferences/common/symbols-menu/symbols-menu.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-vmware-template-details',
   templateUrl: './vmware-template-details.component.html',
   styleUrls: ['./vmware-template-details.component.scss', '../../preferences.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatExpansionModule, MatIconModule, MatButtonModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, MatCheckboxModule, CustomAdaptersComponent, SymbolsMenuComponent]
 })
 export class VmwareTemplateDetailsComponent implements OnInit {
+  @ViewChild('customAdaptersConfigurator')
+  customAdaptersConfigurator: CustomAdaptersComponent;
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private vmwareService = inject(VmwareService);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private vmwareConfigurationService = inject(VmwareConfigurationService);
+  private router = inject(Router);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   vmwareTemplate: VmwareTemplate;
   generalSettingsForm: UntypedFormGroup;
@@ -32,19 +54,7 @@ export class VmwareTemplateDetailsComponent implements OnInit {
   onCloseOptions = [];
   networkTypes = [];
 
-  @ViewChild('customAdaptersConfigurator')
-  customAdaptersConfigurator: CustomAdaptersComponent;
-
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private vmwareService: VmwareService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder,
-    private vmwareConfigurationService: VmwareConfigurationService,
-    private router: Router,
-    private cd: ChangeDetectorRef
-  ) {
+  constructor() {
     this.generalSettingsForm = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
       defaultName: new UntypedFormControl('', Validators.required),
