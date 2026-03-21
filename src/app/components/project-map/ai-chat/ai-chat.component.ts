@@ -1,8 +1,11 @@
-import { Component, Input, Output, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewEncapsulation, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, HostListener } from '@angular/core';
+import { Component, Input, Output, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewEncapsulation, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, HostListener, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
-import { ResizeEvent } from 'angular-resizable-element';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { ResizeEvent, ResizableModule } from 'angular-resizable-element';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { environment } from '../../../../environments/environment';
 
 import { Project } from '@models/project';
@@ -17,18 +20,31 @@ import { AiChatStore } from '../../../stores/ai-chat.store';
 import { ThemeService } from '@services/theme.service';
 import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.service';
 import { getModelDisplayName, shortenModelName } from '@utils/ai-profile.util';
+import { ChatSessionListComponent } from './chat-session-list.component';
+import { ChatMessageListComponent } from './chat-message-list.component';
+import { ChatInputAreaComponent } from './chat-input-area.component';
 
 /**
  * AI Chat Main Component
  * Integrates all sub-components and handles main business logic
  */
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-ai-chat',
   templateUrl: './ai-chat.component.html',
   styleUrls: ['./ai-chat.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    ResizableModule,
+    MatSnackBarModule,
+    MatIconModule,
+    MatButtonModule,
+    ChatSessionListComponent,
+    ChatMessageListComponent,
+    ChatInputAreaComponent
+  ]
 })
 export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   @Input() project!: Project;
@@ -71,17 +87,17 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   private saveStateTimer: any = null;
   private dragRafId: number | null = null;
 
-  constructor(
-    private aiChatService: AiChatService,
-    private controllerService: ControllerService,
-    private aiProfilesService: AiProfilesService,
-    private loginService: LoginService,
-    private aiChatStore: AiChatStore,
-    private snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef,
-    private themeService: ThemeService,
-    private boundaryService: WindowBoundaryService
-  ) {}
+  private aiChatService = inject(AiChatService);
+  private controllerService = inject(ControllerService);
+  private aiProfilesService = inject(AiProfilesService);
+  private loginService = inject(LoginService);
+  private aiChatStore = inject(AiChatStore);
+  private snackBar = inject(MatSnackBar);
+  private cdr = inject(ChangeDetectorRef);
+  private themeService = inject(ThemeService);
+  private boundaryService = inject(WindowBoundaryService);
+
+  constructor() {}
 
   /**
    * Error logger - always enabled
