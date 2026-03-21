@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -21,6 +21,9 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-delete-action',
   templateUrl: './delete-action.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DeleteActionComponent implements OnInit {
   private toasterService = inject(ToasterService);
@@ -31,11 +34,12 @@ export class DeleteActionComponent implements OnInit {
   private drawingService = inject(DrawingService);
   private linkService = inject(LinkService);
   private bottomSheet = inject(MatBottomSheet);
+  private cdr = inject(ChangeDetectorRef);
 
   readonly controller = input<Controller>(undefined);
-  @Input() nodes: Node[];
-  @Input() drawings: Drawing[];
-  @Input() links: Link[];
+  readonly nodes = input<Node[]>([]);
+  readonly drawings = input<Drawing[]>([]);
+  readonly links = input<Link[]>([]);
 
   ngOnInit() {}
 
@@ -46,33 +50,36 @@ export class DeleteActionComponent implements OnInit {
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
         this.delete();
+        this.cdr.markForCheck();
       }
     });
   }
 
   delete() {
-    this.nodes.forEach((node) => {
+    this.nodes().forEach((node) => {
       if (!node.locked) {
         this.nodesDataSource.remove(node);
         this.nodeService.delete(this.controller(), node).subscribe((node: Node) => {});
       } else {
         this.toasterService.error('Cannot delete locked node: ' + node.name);
+        this.cdr.markForCheck();
         return;
       }
     });
 
-    this.drawings.forEach((drawing) => {
+    this.drawings().forEach((drawing) => {
       if (!drawing.locked) {
         this.drawingsDataSource.remove(drawing);
         this.drawingService.delete(this.controller(), drawing).subscribe((drawing: Drawing) => {});
       } else {
         this.toasterService.error('Cannot delete locked drawing');
+        this.cdr.markForCheck();
         return;
       }
     });
 
-    if (this.nodes.length == 0 && this.drawings.length == 0) {
-      this.links.forEach((link) => {
+    if (this.nodes().length == 0 && this.drawings().length == 0) {
+      this.links().forEach((link) => {
         this.linksDataSource.remove(link);
         this.linkService.deleteLink(this.controller(), link).subscribe(() => {});
       });
