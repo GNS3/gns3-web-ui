@@ -1,8 +1,15 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Inject, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Inject, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { ToasterService } from '@services/toaster.service';
-import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { FileItem, FileUploader, ParsedResponseHeaders, FileUploadModule } from 'ng2-file-upload';
 import { v4 as uuid } from 'uuid';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
@@ -12,17 +19,41 @@ import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation
 import { ProjectNameValidator } from '../models/projectNameValidator';
 import { UploadServiceService } from '../../../common/uploading-processbar/upload-service.service';
 import { UploadingProcessbarComponent } from '../../../common/uploading-processbar/uploading-processbar.component';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-import-project-dialog',
   templateUrl: 'import-project-dialog.component.html',
   styleUrls: ['import-project-dialog.component.scss'],
   providers: [ProjectNameValidator],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatSnackBarModule,
+    FileUploadModule,
+    ConfirmationDialogComponent
+  ]
 })
 export class ImportProjectDialogComponent implements OnInit {
+  private dialog = inject(MatDialog);
+  public dialogRef = inject(MatDialogRef<ImportProjectDialogComponent>);
+  private formBuilder = inject(UntypedFormBuilder);
+  private projectService = inject(ProjectService);
+  private projectNameValidator = inject(ProjectNameValidator);
+  private toasterService = inject(ToasterService);
+  private uploadServiceService = inject(UploadServiceService);
+  private snackBar = inject(MatSnackBar);
+  private cd = inject(ChangeDetectorRef);
+
+  @Inject(MAT_DIALOG_DATA) public data: any;
+
   uploader: FileUploader;
   uploadProgress: number = 0;
   controller: Controller;
@@ -36,21 +67,9 @@ export class ImportProjectDialogComponent implements OnInit {
   uuid: string;
   onImportProject = new EventEmitter<string>();
 
-  constructor(
-    private dialog: MatDialog,
-    public dialogRef: MatDialogRef<ImportProjectDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    private formBuilder: UntypedFormBuilder,
-    private projectService: ProjectService,
-    private projectNameValidator: ProjectNameValidator,
-    private toasterService : ToasterService,
-    private uploadServiceService: UploadServiceService,
-    private snackBar : MatSnackBar,
-    private cd: ChangeDetectorRef
-
-  ) {
+  constructor() {
     this.projectNameForm = this.formBuilder.group({
-      projectName: new UntypedFormControl(null, [Validators.required, projectNameValidator.get]),
+      projectName: new UntypedFormControl(null, [Validators.required, this.projectNameValidator.get]),
     });
   }
 
