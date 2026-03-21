@@ -1,6 +1,14 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatCardModule } from '@angular/material/card';
+import { MatRadioModule } from '@angular/material/radio';
 import { QemuImg } from '@models/qemu/qemu-img';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
@@ -8,10 +16,23 @@ import { QemuService } from '@services/qemu.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-qemu-image-creator',
   templateUrl: './qemu-image-creator.component.html',
   styleUrls: ['../../configurator.component.scss'],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatCardModule,
+    MatRadioModule
+  ]
 })
 export class QemuImageCreatorComponent implements OnInit {
   controller: Controller;
@@ -78,13 +99,13 @@ export class QemuImageCreatorComponent implements OnInit {
   zeroedGrainOptions: string[] = ['on', 'off'];
   inputForm: UntypedFormGroup;
 
-  constructor(
-    public dialogRef: MatDialogRef<QemuImageCreatorComponent>,
-    public nodeService: NodeService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder,
-    private qemuService: QemuService
-  ) {
+  public dialogRef = inject(MatDialogRef<QemuImageCreatorComponent>);
+  public nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private qemuService = inject(QemuService);
+
+  constructor() {
     this.inputForm = this.formBuilder.group({
       qemu_img: new UntypedFormControl('', Validators.required),
       path: new UntypedFormControl('', Validators.required),
