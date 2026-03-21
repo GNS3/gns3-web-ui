@@ -1,4 +1,9 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatDividerModule } from '@angular/material/divider';
 import { ResizeEvent } from 'angular-resizable-element';
 import { Subscription } from 'rxjs';
 import { LinksDataSource } from '../../cartography/datasources/links-datasource';
@@ -13,13 +18,20 @@ import { ProjectService } from '@services/project.service';
 import { ThemeService } from '@services/theme.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-topology-summary',
   templateUrl: './topology-summary.component.html',
   styleUrls: ['./topology-summary.component.scss'],
   changeDetection: ChangeDetectionStrategy.Default,
+  imports: [CommonModule, MatTabsModule, MatSelectModule, MatOptionModule, MatDividerModule]
 })
 export class TopologySummaryComponent implements OnInit, OnDestroy {
+  private nodesDataSource = inject(NodesDataSource);
+  private projectService = inject(ProjectService);
+  private computeService = inject(ComputeService);
+  private linksDataSource = inject(LinksDataSource);
+  private themeService = inject(ThemeService);
+
   @Input() controller: Controller;
   @Input() project: Project;
 
@@ -43,13 +55,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
   isDraggingEnabled: boolean = false;
   isLightThemeEnabled: boolean = false;
 
-  constructor(
-    private nodesDataSource: NodesDataSource,
-    private projectService: ProjectService,
-    private computeService: ComputeService,
-    private linksDataSource: LinksDataSource,
-    private themeService: ThemeService
-  ) {}
+  constructor() {}
 
   ngOnInit() {
     this.themeService.getActualTheme() === 'light'
