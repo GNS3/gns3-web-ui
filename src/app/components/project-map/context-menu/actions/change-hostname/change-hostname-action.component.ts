@@ -1,19 +1,23 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { ChangeHostnameDialogComponent } from '../../../change-hostname-dialog/change-hostname-dialog.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-change-hostname-action',
   templateUrl: './change-hostname-action.component.html',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
 })
 export class ChangeHostnameActionComponent implements OnInit {
+  private dialog = inject(MatDialog);
+
   @Input() controller: Controller;
   @Input() node: Node;
-
-  constructor(private dialog: MatDialog) {}
 
   ngOnInit() {}
 
