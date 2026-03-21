@@ -1,6 +1,15 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule, ReactiveFormsModule, FormControl, UntypedFormControl, UntypedFormGroup} from "@angular/forms";
+import {RouterModule} from '@angular/router';
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatButtonModule } from "@angular/material/button";
+import { MatIconModule } from "@angular/material/icon";
+import { MatDividerModule } from "@angular/material/divider";
+import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { MatDialogModule, MatDialog } from "@angular/material/dialog";
 import {Controller} from "@models/controller";
-import {FormControl, UntypedFormControl, UntypedFormGroup} from "@angular/forms";
 import {ToasterService} from "@services/toaster.service";
 import {ActivatedRoute} from "@angular/router";
 import {ResourcePool} from "@models/resourcePools/ResourcePool";
@@ -9,18 +18,22 @@ import {map, startWith} from "rxjs/operators";
 import {Project} from "@models/project";
 import {Observable} from "rxjs";
 import {Resource} from "@models/resourcePools/Resource";
-import {MatDialog} from "@angular/material/dialog";
 import {
   DeleteResourceConfirmationDialogComponent
 } from "@components/resource-pool-details/delete-resource-confirmation-dialog/delete-resource-confirmation-dialog.component";
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-resource-pool-details',
   templateUrl: './resource-pool-details.component.html',
-  styleUrls: ['./resource-pool-details.component.scss']
+  styleUrls: ['./resource-pool-details.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatDividerModule, MatAutocompleteModule, MatDialogModule, DeleteResourceConfirmationDialogComponent]
 })
 export class ResourcePoolDetailsComponent implements OnInit {
+  private toastService = inject(ToasterService);
+  private route = inject(ActivatedRoute);
+  private resourcePoolsService = inject(ResourcePoolsService);
+  private dialog = inject(MatDialog);
 
   controller: Controller;
   editPoolForm: UntypedFormGroup;
@@ -29,13 +42,7 @@ export class ResourcePoolDetailsComponent implements OnInit {
   addResourceFilteredOptions: Observable<string[]>;
   projects: Project[] = [];
 
-  constructor(private toastService: ToasterService,
-              private route: ActivatedRoute,
-              private resourcePoolsService: ResourcePoolsService,
-              private dialog: MatDialog,
-  ) {
-
-
+  constructor() {
     this.editPoolForm = new UntypedFormGroup({
       poolname: new UntypedFormControl(),
     });
