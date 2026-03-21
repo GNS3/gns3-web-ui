@@ -1,29 +1,35 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule, ActivatedRoute } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Controller } from '@models/controller';
 import { VmwareTemplate } from '@models/templates/vmware-template';
 import { ControllerService } from '@services/controller.service';
 import { VmwareService } from '@services/vmware.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
+import { EmptyTemplatesListComponent } from '../../common/empty-templates-list/empty-templates-list.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-vmware-templates',
   templateUrl: './vmware-templates.component.html',
   styleUrls: ['./vmware-templates.component.scss', '../../preferences.component.scss'],
+  imports: [CommonModule, RouterModule, MatButtonModule, MatIconModule, MatListModule, MatMenuModule, MatTooltipModule, DeleteTemplateComponent, EmptyTemplatesListComponent]
 })
 export class VmwareTemplatesComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private vmwareService = inject(VmwareService);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   vmwareTemplates: VmwareTemplate[] = [];
   @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
-
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private vmwareService: VmwareService,
-    private cd: ChangeDetectorRef
-  ) {}
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
