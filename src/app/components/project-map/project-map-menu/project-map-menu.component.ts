@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
+import { DrawingAddedComponent } from '../../drawings-listeners/drawing-added/drawing-added.component';
 import { NodeService } from '@services/node.service';
 import { select } from 'd3-selection';
 import { Subscription } from 'rxjs';
@@ -32,7 +33,7 @@ import { AiChatStore } from '../../../stores/ai-chat.store';
   templateUrl: './project-map-menu.component.html',
   styleUrls: ['./project-map-menu.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule, MatDividerModule, MatMenuModule, ScreenshotDialogComponent, ProjectMapLockConfirmationDialogComponent]
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule, MatDividerModule, MatMenuModule, ScreenshotDialogComponent, ProjectMapLockConfirmationDialogComponent, DrawingAddedComponent]
 })
 export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   private toolsService = inject(ToolsService);
