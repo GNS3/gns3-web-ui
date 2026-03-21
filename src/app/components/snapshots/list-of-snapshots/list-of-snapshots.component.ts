@@ -1,5 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import { Sort } from '@angular/material/sort';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatTableModule } from '@angular/material/table';
+import { MatSortModule, Sort } from '@angular/material/sort';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatInputModule } from '@angular/material/input';
+import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute } from '@angular/router';
 import { Controller } from '@models/controller';
 import { ProgressDialogComponent } from '../../../common/progress-dialog/progress-dialog.component';
@@ -8,26 +16,27 @@ import { Project } from '@models/project';
 import { Snapshot } from '@models/snapshot';
 import { SnapshotService } from '@services/snapshot.service';
 import { ToasterService } from '@services/toaster.service';
+import { NameFilter } from '@filters/nameFilter.pipe';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-list-of-snapshots',
   templateUrl: './list-of-snapshots.component.html',
   styleUrls: ['./list-of-snapshots.component.scss'],
+  imports: [CommonModule, FormsModule, MatTableModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule, MatInputModule, MatCardModule, ProgressDialogComponent, NameFilter]
 })
 export class ListOfSnapshotsComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private snapshotService = inject(SnapshotService);
+  private progressDialogService = inject(ProgressDialogService);
+  private toaster = inject(ToasterService);
   controller: Controller;
   projectId: string;
   snapshots: Snapshot[];
   displayedColumns = ['name', 'creationDate', 'actions'];
   searchText: string;
 
-  constructor(
-    private route: ActivatedRoute,
-    private snapshotService: SnapshotService,
-    private progressDialogService: ProgressDialogService,
-    private toaster: ToasterService
-  ) {}
+  constructor() {}
 
   ngOnInit() {
     this.projectId = this.route.snapshot.paramMap.get('project_id');
