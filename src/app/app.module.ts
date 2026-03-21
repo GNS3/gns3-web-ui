@@ -347,7 +347,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     declarations: [
         AppComponent,
         ProjectMapComponent,
-        ProjectsComponent,
+        // ProjectsComponent,
         DefaultLayoutComponent,
         // ContextMenuComponent,
         // ContextConsoleMenuComponent,
@@ -422,6 +422,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         GroupDetailsComponent,
         GroupAiProfileTabComponent,
         ImageManagerComponent,
+        ProjectsComponent,
         FormsModule,
         ReactiveFormsModule,
         BrowserAnimationsModule,

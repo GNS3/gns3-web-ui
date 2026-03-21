@@ -1,9 +1,11 @@
 import { DataSource, SelectionModel } from '@angular/cdk/collections';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSort, MatSortable } from '@angular/material/sort';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSort, MatSortable, MatSortModule } from '@angular/material/sort';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ExportPortableProjectComponent } from '@components/export-portable-project/export-portable-project.component';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -20,12 +22,34 @@ import { ConfirmationBottomSheetComponent } from './confirmation-bottomsheet/con
 import { ConfirmationDeleteAllProjectsComponent } from './confirmation-delete-all-projects/confirmation-delete-all-projects.component';
 import { ImportProjectDialogComponent } from './import-project-dialog/import-project-dialog.component';
 import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-projects',
   templateUrl: './projects.component.html',
   styleUrls: ['./projects.component.scss'],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatBottomSheetModule,
+    MatDialogModule,
+    MatSortModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCheckboxModule,
+    ProjectsFilter
+  ]
 })
 export class ProjectsComponent implements OnInit {
   controller: Controller;
@@ -40,17 +64,17 @@ export class ProjectsComponent implements OnInit {
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-  constructor(
-    private route: ActivatedRoute,
-    private projectService: ProjectService,
-    private settingsService: SettingsService,
-    private progressService: ProgressService,
-    public dialog: MatDialog,
-    private router: Router,
-    private bottomSheet: MatBottomSheet,
-    private toasterService: ToasterService,
-    private recentlyOpenedProjectService: RecentlyOpenedProjectService
-  ) {}
+  private route = inject(ActivatedRoute);
+  private projectService = inject(ProjectService);
+  private settingsService = inject(SettingsService);
+  private progressService = inject(ProgressService);
+  public dialog = inject(MatDialog);
+  private router = inject(Router);
+  private bottomSheet = inject(MatBottomSheet);
+  private toasterService = inject(ToasterService);
+  private recentlyOpenedProjectService = inject(RecentlyOpenedProjectService);
+
+  constructor() {}
 
   ngOnInit() {
     this.controller = this.route.snapshot.data['controller'];
