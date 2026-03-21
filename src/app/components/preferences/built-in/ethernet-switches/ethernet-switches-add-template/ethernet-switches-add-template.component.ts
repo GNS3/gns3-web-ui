@@ -1,6 +1,13 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '@models/compute';
 import { Controller } from '@models/controller';
@@ -12,29 +19,30 @@ import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ethernet-switches-add-template',
   templateUrl: './ethernet-switches-add-template.component.html',
   styleUrls: ['./ethernet-switches-add-template.component.scss', '../../../preferences.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule]
 })
 export class EthernetSwitchesAddTemplateComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private builtInTemplatesService = inject(BuiltInTemplatesService);
+  private router = inject(Router);
+  private toasterService = inject(ToasterService);
+  private templateMocksService = inject(TemplateMocksService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private computeService = inject(ComputeService);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   templateName: string = '';
   formGroup: UntypedFormGroup;
   isLocalComputerChosen: boolean = true;
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private builtInTemplatesService: BuiltInTemplatesService,
-    private router: Router,
-    private toasterService: ToasterService,
-    private templateMocksService: TemplateMocksService,
-    private formBuilder: UntypedFormBuilder,
-    private computeService: ComputeService,
-    private cd: ChangeDetectorRef
-  ) {
+  constructor() {
     this.formGroup = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
       numberOfPorts: new UntypedFormControl(8, Validators.required),
