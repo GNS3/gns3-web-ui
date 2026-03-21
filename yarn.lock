@@ -292,7 +292,7 @@
     parse5 "^8.0.0"
     tslib "^2.3.0"
 
-"@angular/cli@^21.0.0":
+"@angular/cli@^21.2.3":
   version "21.2.3"
   resolved "https://registry.npmjs.org/@angular/cli/-/cli-21.2.3.tgz"
   integrity sha512-QzDxnSy8AUOz6ca92xfbNuEmRdWRDi1dfFkxDVr+4l6XUnA9X6VmOi7ioCO1I9oDR73LXHybOqkqHBYDlqt/Ag==

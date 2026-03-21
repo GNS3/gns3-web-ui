@@ -91,7 +91,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^21.0.0",
-    "@angular/cli": "^21.0.0",
+    "@angular/cli": "^21.2.3",
     "@angular/compiler-cli": "^21.0.0",
     "@angular/language-service": "^21.0.0",
     "@babel/runtime": "^7.29.2",
