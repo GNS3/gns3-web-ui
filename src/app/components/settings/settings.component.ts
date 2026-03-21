@@ -1,4 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { MatRadioModule } from '@angular/material/radio';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { Settings, SettingsService } from '@services/settings.service';
 import { ConsoleService } from '@services/settings/console.service';
@@ -7,26 +13,24 @@ import { ToasterService } from '@services/toaster.service';
 import { UpdatesService } from '@services/updates.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-settings',
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
+  imports: [CommonModule, FormsModule, MatExpansionModule, MatCheckboxModule, MatButtonModule, MatRadioModule]
 })
 export class SettingsComponent implements OnInit {
+  private settingsService = inject(SettingsService);
+  private toaster = inject(ToasterService);
+  private themeService = inject(ThemeService);
+  public mapSettingsService = inject(MapSettingsService);
+  public updatesService = inject(UpdatesService);
+
   settings: Settings;
   integrateLinksLabelsToLinks: boolean;
   openReadme: boolean;
   openConsolesInWidget: boolean;
   mapTheme: string;
-
-  constructor(
-    private settingsService: SettingsService,
-    private toaster: ToasterService,
-    private consoleService: ConsoleService,
-    private themeService: ThemeService,
-    public mapSettingsService: MapSettingsService,
-    public updatesService: UpdatesService
-  ) {}
 
   ngOnInit() {
     this.settings = this.settingsService.getAll();
