@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -23,7 +23,10 @@ import { NameFilter } from '@filters/nameFilter.pipe';
   selector: 'app-list-of-snapshots',
   templateUrl: './list-of-snapshots.component.html',
   styleUrls: ['./list-of-snapshots.component.scss'],
-  imports: [CommonModule, FormsModule, MatTableModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule, MatInputModule, MatCardModule, NameFilter]
+  imports: [CommonModule, FormsModule, MatTableModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule, MatInputModule, MatCardModule, NameFilter],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ListOfSnapshotsComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -32,9 +35,9 @@ export class ListOfSnapshotsComponent implements OnInit {
   private toaster = inject(ToasterService);
   controller: Controller;
   projectId: string;
-  snapshots: Snapshot[];
+  snapshots = signal<Snapshot[]>([]);
   displayedColumns = ['name', 'creationDate', 'actions'];
-  searchText: string;
+  searchText = model('');
 
   constructor() {}
 
@@ -46,7 +49,7 @@ export class ListOfSnapshotsComponent implements OnInit {
 
   getSnapshots() {
     this.snapshotService.list(this.controller, this.projectId).subscribe((snapshots: Snapshot[]) => {
-      this.snapshots = snapshots;
+      this.snapshots.set(snapshots);
     });
   }
 
@@ -75,15 +78,15 @@ export class ListOfSnapshotsComponent implements OnInit {
   sortData(sort: Sort) {
     if (!sort.active || sort.direction === '') return;
 
-    let snapshots = this.snapshots.slice();
-    this.snapshots = snapshots.sort((a, b) => {
+    let snapshots = this.snapshots().slice();
+    this.snapshots.set(snapshots.sort((a, b) => {
       const isAsc = sort.direction === 'asc';
       if (sort.active === 'name') {
         return compareNames(a.name, b.name, isAsc);
       } else if (sort.active === 'creationDate') {
         return compareDates(+a.created_at, +b.created_at, !isAsc);
       } else return 0;
-    });
+    }));
   }
 }
 
