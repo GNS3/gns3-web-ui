@@ -1,7 +1,16 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 import { Controller } from '@models/controller';
@@ -11,15 +20,26 @@ import { ToasterService } from '@services/toaster.service';
 import { VirtualBoxConfigurationService } from '@services/virtual-box-configuration.service';
 import { VirtualBoxService } from '@services/virtual-box.service';
 import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
+import { SymbolsMenuComponent } from '@components/preferences/common/symbols-menu/symbols-menu.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-virtual-box-template-details',
   templateUrl: './virtual-box-template-details.component.html',
   styleUrls: ['./virtual-box-template-details.component.scss', '../../preferences.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatExpansionModule, MatIconModule, MatButtonModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, MatCheckboxModule, CustomAdaptersComponent, SymbolsMenuComponent]
 })
 export class VirtualBoxTemplateDetailsComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private virtualBoxService = inject(VirtualBoxService);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private virtualBoxConfigurationService = inject(VirtualBoxConfigurationService);
+  private router = inject(Router);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   virtualBoxTemplate: VirtualBoxTemplate;
   isSymbolSelectionOpened: boolean = false;
@@ -36,16 +56,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   @ViewChild('customAdaptersConfigurator')
   customAdaptersConfigurator: CustomAdaptersComponent;
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private virtualBoxService: VirtualBoxService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder,
-    private virtualBoxConfigurationService: VirtualBoxConfigurationService,
-    private router: Router,
-    private cd: ChangeDetectorRef
-  ) {
+  constructor() {
     this.generalSettingsForm = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
       defaultName: new UntypedFormControl('', Validators.required),
