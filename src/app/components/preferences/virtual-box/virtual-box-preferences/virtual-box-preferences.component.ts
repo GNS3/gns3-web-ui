@@ -1,20 +1,27 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { Controller } from '@models/controller';
 import { ControllerService } from '@services/controller.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-virtual-box-preferences',
   templateUrl: './virtual-box-preferences.component.html',
   styleUrls: ['./virtual-box-preferences.component.scss'],
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule]
 })
 export class VirtualBoxPreferencesComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   vboxManagePath: string;
-
-  constructor(private route: ActivatedRoute, private controllerService: ControllerService, private cd: ChangeDetectorRef) {}
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
