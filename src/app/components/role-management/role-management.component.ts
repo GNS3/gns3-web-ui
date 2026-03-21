@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, OnInit, QueryList, ViewChild, ViewChildren, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChild, ViewChildren, inject, model, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Controller} from "@models/controller";
@@ -43,7 +43,10 @@ import {HttpErrorResponse} from "@angular/common/http";
   selector: 'app-role-management',
   templateUrl: './role-management.component.html',
   styleUrls: ['./role-management.component.scss'],
-  imports: [CommonModule, FormsModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule, RoleFilterPipe]
+  imports: [CommonModule, FormsModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule, RoleFilterPipe],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class RoleManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -58,11 +61,11 @@ export class RoleManagementComponent implements OnInit {
   dataSource = new MatTableDataSource<Role>();
   displayedColumns = ['select', 'name', 'description', 'delete'];
   selection = new SelectionModel<Role>(true, []);
-  searchText = '';
+  searchText = model('');
 
   @ViewChildren('rolesPaginator') rolesPaginator: QueryList<MatPaginator>;
   @ViewChildren('rolesSort') rolesSort: QueryList<MatSort>;
-  isReady = false;
+  isReady = signal(false);
 
   constructor() {
   }
@@ -98,7 +101,7 @@ export class RoleManagementComponent implements OnInit {
   refresh() {
     this.roleService.get(this.controller).subscribe(
       (roles: Role[]) => {
-        this.isReady = true;
+        this.isReady.set(true);
         this.dataSource.data = roles;
       },
       (error) => {
