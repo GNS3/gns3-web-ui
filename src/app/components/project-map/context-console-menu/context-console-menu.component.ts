@@ -1,4 +1,5 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ComponentRef,
@@ -7,6 +8,7 @@ import {
   ViewContainerRef,
   inject,
   input,
+  signal,
   viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -29,6 +31,9 @@ import { ConsoleDeviceActionBrowserComponent } from '../context-menu/actions/con
   templateUrl: './context-console-menu.component.html',
   styleUrls: ['./context-console-menu.component.scss'],
   imports: [CommonModule, MatMenuModule, MatIconModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ContextConsoleMenuComponent implements OnInit {
   private sanitizer = inject(DomSanitizer);
@@ -45,8 +50,8 @@ export class ContextConsoleMenuComponent implements OnInit {
   readonly container = viewChild('container', { read: ViewContainerRef });
   componentBrowserRef: ComponentRef<ConsoleDeviceActionBrowserComponent>;
 
-  topPosition;
-  leftPosition;
+  topPosition = signal<any>(undefined);
+  leftPosition = signal<any>(undefined);
   node: Node;
 
   constructor() {}
@@ -56,8 +61,8 @@ export class ContextConsoleMenuComponent implements OnInit {
   }
 
   public setPosition(top: number, left: number) {
-    this.topPosition = this.sanitizer.bypassSecurityTrustStyle(top + 'px');
-    this.leftPosition = this.sanitizer.bypassSecurityTrustStyle(left + 'px');
+    this.topPosition.set(this.sanitizer.bypassSecurityTrustStyle(top + 'px'));
+    this.leftPosition.set(this.sanitizer.bypassSecurityTrustStyle(left + 'px'));
     this.changeDetector.detectChanges();
   }
 

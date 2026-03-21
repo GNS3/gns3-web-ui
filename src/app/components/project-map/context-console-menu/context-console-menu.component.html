@@ -1,4 +1,4 @@
-<div class="context-menu" [style.left]="leftPosition" [style.top]="topPosition">
+<div class="context-menu" [style.left]="leftPosition()" [style.top]="topPosition()">
   <span [matMenuTriggerFor]="contextConsoleMenu"></span>
   <mat-menu #contextConsoleMenu="matMenu" class="context-menu-items">
     <span class="title"> Choose default behavior for double click on node </span>
