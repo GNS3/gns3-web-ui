@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,31 +14,34 @@ import { GroupPrivilegesPipe } from '@components/role-management/role-detail/pri
   templateUrl: './privilege.component.html',
   styleUrls: ['./privilege.component.scss'],
   imports: [CommonModule, MatButtonModule, MatIconModule, MatCheckboxModule, GroupPrivilegesPipe],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class PrivilegeComponent implements OnInit {
   readonly disable = input(true);
   readonly privileges = input<Privilege[]>([]);
   @Input() set ownedPrivilege(privileges: Privilege[]) {
     if (privileges) {
-      this.ownedPrivilegesName = privileges.map((p: Privilege) => p.name.split('.')[0]);
-      this.ownedPrivilegesList = privileges.map((p: Privilege) => p.privilege_id);
+      this.ownedPrivilegesName.set(privileges.map((p: Privilege) => p.name.split('.')[0]));
+      this.ownedPrivilegesList.set(privileges.map((p: Privilege) => p.privilege_id));
     }
   }
   @Output() update: EventEmitter<IPrivilegesChange> = new EventEmitter<IPrivilegesChange>();
 
-  ownedPrivilegesName: string[] = [];
-  ownedPrivilegesList: string[] = [];
-  changer = new PrivilegeChange(this.ownedPrivilegesList);
-  private editModeState = false;
+  ownedPrivilegesName = signal<string[]>([]);
+  ownedPrivilegesList = signal<string[]>([]);
+  changer = new PrivilegeChange([]);
+  private editModeState = signal(false);
 
   get editMode(): boolean {
-    return this.editModeState;
+    return this.editModeState();
   }
   set editMode(state: boolean) {
     if (state) {
-      this.changer = new PrivilegeChange(this.ownedPrivilegesList);
+      this.changer = new PrivilegeChange(this.ownedPrivilegesList());
     }
-    this.editModeState = state;
+    this.editModeState.set(state);
   }
   constructor() {}
 

@@ -18,7 +18,7 @@
           <div class="box" *ngFor="let privilegeVerb of privilegeName.values">
             <mat-checkbox
               (change)="onPrivilegeChange($event.checked, privilegeVerb.privilege)"
-              [checked]="ownedPrivilegesList.includes(privilegeVerb.privilege.privilege_id)"
+              [checked]="ownedPrivilegesList().includes(privilegeVerb.privilege.privilege_id)"
             ></mat-checkbox>
             <div
               [ngClass]="{
@@ -33,13 +33,13 @@
       </div>
     </div>
     <ng-template #normalMode>
-      <div class="privilege" *ngIf="ownedPrivilegesName.includes(privilegeName.key)">
+      <div class="privilege" *ngIf="ownedPrivilegesName().includes(privilegeName.key)">
         <div class="key">{{ privilegeName.key }}:</div>
         <div class="values">
           <div *ngFor="let privilegeVerb of privilegeName.values">
             <div
-              [ngClass]="{ box: ownedPrivilegesList.includes(privilegeVerb.privilege.privilege_id) }"
-              *ngIf="ownedPrivilegesList.includes(privilegeVerb.privilege.privilege_id)"
+              [ngClass]="{ box: ownedPrivilegesList().includes(privilegeVerb.privilege.privilege_id) }"
+              *ngIf="ownedPrivilegesList().includes(privilegeVerb.privilege.privilege_id)"
             >
               {{ privilegeVerb.verb }}
             </div>
