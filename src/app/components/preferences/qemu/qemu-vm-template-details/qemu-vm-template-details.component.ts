@@ -1,7 +1,16 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCardModule } from '@angular/material/card';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { QemuBinary } from '@models/qemu/qemu-binary';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
@@ -12,15 +21,26 @@ import { QemuService } from '@services/qemu.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
+import { SymbolsMenuComponent } from '@components/preferences/common/symbols-menu/symbols-menu.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-qemu-virtual-machine-template-details',
   templateUrl: './qemu-vm-template-details.component.html',
   styleUrls: ['./qemu-vm-template-details.component.scss', '../../preferences.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatExpansionModule, MatIconModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, MatCheckboxModule, MatCardModule, CustomAdaptersComponent, SymbolsMenuComponent]
 })
 export class QemuVmTemplateDetailsComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private qemuService = inject(QemuService);
+  private toasterService = inject(ToasterService);
+  private configurationService = inject(QemuConfigurationService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private router = inject(Router);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   qemuTemplate: QemuTemplate;
   isSymbolSelectionOpened: boolean = false;
@@ -44,16 +64,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   @ViewChild('customAdaptersConfigurator')
   customAdaptersConfigurator: CustomAdaptersComponent;
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private qemuService: QemuService,
-    private toasterService: ToasterService,
-    private configurationService: QemuConfigurationService,
-    private formBuilder: UntypedFormBuilder,
-    private router: Router,
-    private cd: ChangeDetectorRef
-  ) {
+  constructor() {
     this.generalSettingsForm = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
       defaultName: new UntypedFormControl('', Validators.required),

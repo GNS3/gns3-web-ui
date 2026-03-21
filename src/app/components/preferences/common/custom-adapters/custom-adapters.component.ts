@@ -1,12 +1,14 @@
 import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 import { CustomAdaptersTableComponent } from '../custom-adapters-table/custom-adapters-table.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-custom-adapters',
   templateUrl: './custom-adapters.component.html',
   styleUrls: ['./custom-adapters.component.scss', '../../preferences.component.scss'],
+  imports: [MatButtonModule, CustomAdaptersTableComponent]
 })
 export class CustomAdaptersComponent {
   @Input() networkTypes = [];
