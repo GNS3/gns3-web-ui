@@ -1,6 +1,15 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatListModule } from '@angular/material/list';
 import { ThemeService } from '@services/theme.service';
 import { Subscription } from 'rxjs';
 import { Project } from '@models/project';
@@ -13,12 +22,21 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Context } from '../../cartography/models/context';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-template',
   templateUrl: './template.component.html',
   styleUrls: ['./template.component.scss'],
+  imports: [CommonModule, FormsModule, MatDialogModule, MatIconModule, MatButtonModule, MatMenuModule, MatFormFieldModule, MatSelectModule, MatOptionModule, MatListModule, TemplateListDialogComponent]
 })
 export class TemplateComponent implements OnInit, OnDestroy {
+  private dialog = inject(MatDialog);
+  private templateService = inject(TemplateService);
+  private symbolService = inject(SymbolService);
+  private domSanitizer = inject(DomSanitizer);
+  private themeService = inject(ThemeService);
+  private overlayContainer = inject(OverlayContainer);
+  private context = inject(Context);
+
   @Input() controller: Controller;
   @Input() project: Project;
   @Output() onNodeCreation = new EventEmitter<any>();
@@ -48,16 +66,8 @@ export class TemplateComponent implements OnInit, OnDestroy {
   private themeSubscription: Subscription;
   private isLightThemeEnabled: boolean = false;
 
-  constructor(
-    private dialog: MatDialog,
-    private templateService: TemplateService,
-    private symbolService: SymbolService,
-    private domSanitizer: DomSanitizer,
-    private themeService: ThemeService,
-    private overlayContainer: OverlayContainer,
-    private context: Context,
-  ) {
-    this.overlay = overlayContainer.getContainerElement();
+  constructor() {
+    this.overlay = this.overlayContainer.getContainerElement();
   }
 
   ngOnInit() {
