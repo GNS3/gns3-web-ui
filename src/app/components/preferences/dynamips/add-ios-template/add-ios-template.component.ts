@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -33,7 +33,10 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-add-ios-template',
   templateUrl: './add-ios-template.component.html',
   styleUrls: ['./add-ios-template.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, FileUploadModule]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, FileUploadModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class AddIosTemplateComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
@@ -48,36 +51,31 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   private uploadServiceService = inject(UploadServiceService);
   private snackBar = inject(MatSnackBar);
 
-  controller: Controller;
-  iosTemplate: IosTemplate;
-  isEtherSwitchRouter: boolean = false;
+  readonly controller = signal<Controller | undefined>(undefined);
+  readonly iosTemplate = signal<IosTemplate>(new IosTemplate());
+  readonly isEtherSwitchRouter = signal<boolean>(false);
 
-  iosImageForm: UntypedFormGroup;
-  iosNameForm: UntypedFormGroup;
-  iosMemoryForm: UntypedFormGroup;
-  iosIdlePCForm: UntypedFormGroup;
-  selectedPlatform: string;
-  iosImages: IosImage[] = [];
-  platforms: string[] = [];
-  platformsWithEtherSwitchRouterOption = {};
-  platformsWithChassis = {};
-  chassis = {};
-  defaultRam = {};
-  defaultNvram = {};
-  networkAdaptersForTemplate: string[] = [];
-  wicsForTemplate: string[] = [];
-  adapterMatrix = {};
-  wicMatrix = {};
+  readonly iosImageForm: UntypedFormGroup;
+  readonly iosNameForm: UntypedFormGroup;
+  readonly iosMemoryForm: UntypedFormGroup;
+  readonly iosIdlePCForm: UntypedFormGroup;
+  readonly selectedPlatform = signal<string>('');
+  readonly iosImages = signal<IosImage[]>([]);
+  readonly platforms = signal<string[]>([]);
+  readonly platformsWithEtherSwitchRouterOption = signal<any>({});
+  readonly chassis = signal<any>({});
+  readonly defaultRam = signal<any>({});
+  readonly networkAdaptersForTemplate = signal<string[]>([]);
+  readonly wicsForTemplate = signal<string[]>([]);
+  readonly adapterMatrix = signal<any>({});
+  readonly wicMatrix = signal<any>({});
 
-  ciscoUrl: string = 'https://cfn.cloudapps.cisco.com/ITDIT/CFN/jsp/SearchBySoftware.jsp';
-  uploader: FileUploader;
-  isLocalComputerChosen: boolean = true;
-  uploadProgress:number = 0;
+  readonly ciscoUrl = 'https://cfn.cloudapps.cisco.com/ITDIT/CFN/jsp/SearchBySoftware.jsp';
+  readonly uploader = signal<FileUploader | undefined>(undefined);
+  readonly isLocalComputerChosen = signal<boolean>(true);
   subscription: Subscription;
 
   constructor() {
-    this.iosTemplate = new IosTemplate();
-
     this.iosImageForm = this.formBuilder.group({
       imageName: new UntypedFormControl(null, [Validators.required]),
     });
@@ -98,14 +96,14 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.uploader = new FileUploader({url: ''});
-    this.uploader.onAfterAddingFile = (file) => {
+    this.uploader.set(new FileUploader({url: ''}));
+    this.uploader().onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };
-    this.uploader.onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+    this.uploader().onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
       this.toasterService.error('An error occured: ' + response);
     };
-    this.uploader.onSuccessItem = (
+    this.uploader().onSuccessItem = (
       item: FileItem,
       response: string,
       status: number,
@@ -114,9 +112,8 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
       this.getImages();
       this.toasterService.success('Image uploaded');
     };
-    this.uploader.onProgressItem = (progress: any) => {
-      this.uploadProgress = progress['progress'];
-      this.uploadServiceService.processBarCount(this.uploadProgress)
+    this.uploader().onProgressItem = (progress: any) => {
+      this.uploadServiceService.processBarCount(progress['progress'])
     };
    this.subscription = this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
       if (isCancel) {
@@ -126,33 +123,32 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     })
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
-      this.controller = controller;
+    this.controllerService.get(parseInt(controller_id, 10)).then((ctrl: Controller ) => {
+      this.controller.set(ctrl);
 
       this.getImages();
 
       this.templateMocksService.getIosTemplate().subscribe((iosTemplate: IosTemplate) => {
-        this.iosTemplate = iosTemplate;
-        this.platforms = this.iosConfigurationService.getAvailablePlatforms();
-        this.platformsWithEtherSwitchRouterOption = this.iosConfigurationService.getPlatformsWithEtherSwitchRouterOption();
-        this.platformsWithChassis = this.iosConfigurationService.getPlatformsWithChassis();
-        this.chassis = this.iosConfigurationService.getChassis();
-        this.defaultRam = this.iosConfigurationService.getDefaultRamSettings();
-        this.adapterMatrix = this.iosConfigurationService.getAdapterMatrix();
-        this.wicMatrix = this.iosConfigurationService.getWicMatrix();
+        this.iosTemplate.set(iosTemplate);
+        this.platforms.set(this.iosConfigurationService.getAvailablePlatforms());
+        this.platformsWithEtherSwitchRouterOption.set(this.iosConfigurationService.getPlatformsWithEtherSwitchRouterOption());
+        this.chassis.set(this.iosConfigurationService.getChassis());
+        this.defaultRam.set(this.iosConfigurationService.getDefaultRamSettings());
+        this.adapterMatrix.set(this.iosConfigurationService.getAdapterMatrix());
+        this.wicMatrix.set(this.iosConfigurationService.getWicMatrix());
       });
     });
   }
 
   fillDefaultSlots() {
-
-    console.log("Fill default slots");
     if (this.iosNameForm.get('platform').value) {
+      const matrix = this.adapterMatrix();
       for (let i = 0; i <= 6; i++) {
-        let adapters = this.adapterMatrix[this.iosNameForm.get('platform').value][this.iosNameForm.get('chassis').value || ''][i];
+        let adapters = matrix[this.iosNameForm.get('platform').value][this.iosNameForm.get('chassis').value || ''][i];
         if (adapters && (adapters.length === 1 || adapters[0].startsWith('C7200'))) {
-          console.log("Set default adapter for slot" + i + " to " + adapters[0]);
-          this.networkAdaptersForTemplate[i] = adapters[0];
+          const currentAdapters = [...this.networkAdaptersForTemplate()];
+          currentAdapters[i] = adapters[0];
+          this.networkAdaptersForTemplate.set(currentAdapters);
         }
       }
     }
@@ -160,13 +156,13 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
 
   setControllerType(controllerType: string) {
     if (controllerType === 'local') {
-      this.isLocalComputerChosen = true;
+      this.isLocalComputerChosen.set(true);
     }
   }
 
   getImages() {
-    this.iosService.getImages(this.controller).subscribe((images: IosImage[]) => {
-      this.iosImages = images;
+    this.iosService.getImages(this.controller()).subscribe((images: IosImage[]) => {
+      this.iosImages.set(images);
     });
   }
 
@@ -175,12 +171,12 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     this.iosNameForm.controls['templateName'].setValue(name);
     let fileName = event.target.files[0].name;
 
-    const url = this.iosService.getImagePath(this.controller, fileName);
-    this.uploader.queue.forEach((elem) => (elem.url = url));
+    const url = this.iosService.getImagePath(this.controller(), fileName);
+    this.uploader().queue.forEach((elem) => (elem.url = url));
 
-    const itemToUpload = this.uploader.queue[0];
-    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller.authToken }])
-    this.uploader.uploadItem(itemToUpload);
+    const itemToUpload = this.uploader().queue[0];
+    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller().authToken }])
+    this.uploader().uploadItem(itemToUpload);
     this.snackBar.openFromComponent(UploadingProcessbarComponent, {
       panelClass: 'uplaoding-file-snackabar',
       data:{upload_file_type:'Image'}
@@ -195,25 +191,26 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
       this.iosNameForm.get('templateName').value &&
       this.iosNameForm.get('platform').value
     ) {
-      this.iosTemplate.template_id = uuid();
-      this.iosTemplate.image = this.iosImageForm.get('imageName').value;
-      this.iosTemplate.name = this.iosNameForm.get('templateName').value;
-      this.iosTemplate.platform = this.iosNameForm.get('platform').value;
+      const template = this.iosTemplate();
+      template.template_id = uuid();
+      template.image = this.iosImageForm.get('imageName').value;
+      template.name = this.iosNameForm.get('templateName').value;
+      template.platform = this.iosNameForm.get('platform').value;
 
-      if (this.chassis[this.iosNameForm.get('platform').value])
-        this.iosTemplate.chassis = this.iosNameForm.get('chassis').value;
-      this.iosTemplate.ram = this.iosMemoryForm.get('memory').value;
+      if (this.chassis()[this.iosNameForm.get('platform').value])
+        template.chassis = this.iosNameForm.get('chassis').value;
+      template.ram = this.iosMemoryForm.get('memory').value;
 
-      if (this.isEtherSwitchRouter) {
-        this.iosTemplate.symbol = 'multilayer_switch';
-        this.iosTemplate.category = 'switch';
+      if (this.isEtherSwitchRouter()) {
+        template.symbol = 'multilayer_switch';
+        template.category = 'switch';
       }
 
-      if (this.networkAdaptersForTemplate.length > 0) this.completeAdaptersData();
-      if (this.wicsForTemplate.length > 0) this.completeWicsData();
-      this.iosTemplate.compute_id = 'local';
+      if (this.networkAdaptersForTemplate().length > 0) this.completeAdaptersData(template);
+      if (this.wicsForTemplate().length > 0) this.completeWicsData(template);
+      template.compute_id = 'local';
 
-      this.iosService.addTemplate(this.controller, this.iosTemplate).subscribe((template: IosTemplate) => {
+      this.iosService.addTemplate(this.controller(), template).subscribe((iosTemplate: IosTemplate) => {
         this.goBack();
       });
     } else {
@@ -221,30 +218,32 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     }
   }
 
-  completeAdaptersData() {
+  completeAdaptersData(template: IosTemplate) {
+    const matrix = this.adapterMatrix();
     for (let i = 0; i <= 6; i++) {
-      if (this.adapterMatrix[this.iosTemplate.platform][this.iosTemplate.chassis || ''][i]) {
-        if (this.networkAdaptersForTemplate[i] === undefined)
-          this.iosTemplate[`slot${i}`] = ""
+      if (matrix[template.platform][template.chassis || ''][i]) {
+        if (this.networkAdaptersForTemplate()[i] === undefined)
+          template[`slot${i}`] = ""
         else
-          this.iosTemplate[`slot${i}`] = this.networkAdaptersForTemplate[i];
+          template[`slot${i}`] = this.networkAdaptersForTemplate()[i];
       }
     }
   }
 
-  completeWicsData() {
+  completeWicsData(template: IosTemplate) {
+    const matrix = this.wicMatrix();
     for (let i = 0; i <= 3; i++) {
-      if (this.wicMatrix[this.iosTemplate.platform][i]) {
-        if (this.wicsForTemplate[i] === undefined)
-          this.iosTemplate[`wic${i}`] = ""
+      if (matrix[template.platform][i]) {
+        if (this.wicsForTemplate()[i] === undefined)
+          template[`wic${i}`] = ""
         else
-          this.iosTemplate[`wic${i}`] = this.wicsForTemplate[i];
+          template[`wic${i}`] = this.wicsForTemplate()[i];
       }
     }
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'dynamips', 'templates']);
+    this.router.navigate(['/controller', this.controller().id, 'preferences', 'dynamips', 'templates']);
   }
 
   onImageChosen() {
@@ -253,10 +252,10 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
 
     if (name === 'c3620' || name === 'c3640' || name === 'c3660') {
       this.iosNameForm.controls['platform'].setValue('c3600');
-      this.selectedPlatform = 'c3600';
+      this.selectedPlatform.set('c3600');
     } else {
       this.iosNameForm.controls['platform'].setValue(name);
-      this.selectedPlatform = name;
+      this.selectedPlatform.set(name);
     }
 
     if (name === 'c3620' || name === 'c3640' || name === 'c3660')
@@ -268,31 +267,30 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     } else {
       this.iosNameForm.controls['chassis'].setValue('');
     }
-    this.iosMemoryForm.controls['memory'].setValue(this.defaultRam[this.selectedPlatform]);
+    this.iosMemoryForm.controls['memory'].setValue(this.defaultRam()[this.selectedPlatform()]);
     this.fillDefaultSlots();
   }
 
   onPlatformChosen() {
-    this.iosTemplate.chassis = '';
-    this.networkAdaptersForTemplate = [];
-    this.wicsForTemplate = [];
-    if (!this.chassis[this.iosNameForm.get('platform').value])
+    const template = this.iosTemplate();
+    template.chassis = '';
+    this.iosTemplate.set({...template});
+    this.networkAdaptersForTemplate.set([]);
+    this.wicsForTemplate.set([]);
+    if (!this.chassis()[this.iosNameForm.get('platform').value])
       this.fillDefaultSlots();
   }
 
   onChassisChosen() {
-    this.networkAdaptersForTemplate = [];
-    if (this.chassis[this.iosNameForm.get('platform').value])
+    this.networkAdaptersForTemplate.set([]);
+    if (this.chassis()[this.iosNameForm.get('platform').value])
       this.fillDefaultSlots();
   }
 
   cancelUploading() {
-    this.uploader.clearQueue();
+    this.uploader().clearQueue();
     this.uploadServiceService.processBarCount(null)
     this.toasterService.warning('File upload cancelled');
-    // this.uploadServiceService.cancelFileUploading(false)
-    // window.location.reload()
-
   }
   ngOnDestroy() {
     this.subscription.unsubscribe();
