@@ -10,21 +10,26 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {ChangeDetectionStrategy, Component, Inject, OnInit, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from "@angular/material/dialog";
+import {MatButtonModule} from '@angular/material/button';
 import {User} from "@models/users/user";
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-remove-user-to-group-dialog',
   templateUrl: './remove-user-to-group-dialog.component.html',
   styleUrls: ['./remove-user-to-group-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, MatDialogModule, MatButtonModule]
 })
 export class RemoveUserToGroupDialogComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<RemoveUserToGroupDialogComponent>);
 
-  constructor(private dialogRef: MatDialogRef<RemoveUserToGroupDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: { user: User }) { }
+  @Inject(MAT_DIALOG_DATA) public data: { user: User };
+
+  constructor() {}
 
   ngOnInit(): void {
   }
