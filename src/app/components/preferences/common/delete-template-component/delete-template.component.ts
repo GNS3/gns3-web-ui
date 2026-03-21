@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, input } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Controller } from '@models/controller';
 import { TemplateService } from '@services/template.service';
@@ -11,6 +11,9 @@ import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog
   templateUrl: './delete-template.component.html',
   styleUrls: ['./delete-template.component.scss'],
   imports: [MatDialogModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DeleteTemplateComponent {
   readonly controller = input<Controller>(undefined);
