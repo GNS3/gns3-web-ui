@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnInit, inject, signal } from '@angular/core';
 import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { Project } from '@models/project';
@@ -9,12 +9,15 @@ import { Project } from '@models/project';
   templateUrl: 'confirmation-dialog.component.html',
   styleUrls: ['confirmation-dialog.component.scss'],
   imports: [MatDialogModule, MatButtonModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ConfirmationDialogComponent implements OnInit {
   public dialogRef = inject(MatDialogRef<ConfirmationDialogComponent>);
   private existingProject: Project;
-  public confirmationMessage: string;
-  public isOpen: boolean;
+  public confirmationMessage = signal('');
+  public isOpen = signal(false);
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
     this.existingProject = data['existingProject'];
@@ -22,10 +25,10 @@ export class ConfirmationDialogComponent implements OnInit {
 
   ngOnInit() {
     if (this.existingProject.status === 'opened') {
-      this.confirmationMessage = `Project ${this.existingProject.name} is open. You can not overwrite it.`;
-      this.isOpen = true;
+      this.confirmationMessage.set(`Project ${this.existingProject.name} is open. You can not overwrite it.`);
+      this.isOpen.set(true);
     } else {
-      this.confirmationMessage = `Project ${this.existingProject.name} already exist, overwrite it?`;
+      this.confirmationMessage.set(`Project ${this.existingProject.name} already exist, overwrite it?`);
     }
   }
 
