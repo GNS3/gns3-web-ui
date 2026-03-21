@@ -458,7 +458,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         ResourcePoolDetailsComponent,
         AiProfileTabComponent,
         AiProfileDialogComponent,
-        ConfirmDialogComponent,
         GroupAiProfileTabComponent,
     ],
     imports: [
@@ -542,6 +541,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         ConfirmationDeleteAllProjectsComponent,
         NodesMenuConfirmationDialogComponent,
         ProjectMapLockConfirmationDialogComponent,
+        ConfirmDialogComponent,
         ProgressDialogComponent,
         UploadingProcessbarComponent,
         ChangeSymbolDialogComponent,
