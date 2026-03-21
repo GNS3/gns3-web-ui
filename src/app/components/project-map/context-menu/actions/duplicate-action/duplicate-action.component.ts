@@ -1,4 +1,4 @@
-import { Component, Input, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, inject, input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -17,6 +17,9 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-duplicate-action',
   templateUrl: './duplicate-action.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DuplicateActionComponent {
   private nodeService = inject(NodeService);
@@ -27,11 +30,11 @@ export class DuplicateActionComponent {
 
   readonly controller = input<Controller>(undefined);
   readonly project = input<Project>(undefined);
-  @Input() drawings: Drawing[];
-  @Input() nodes: Node[];
+  readonly drawings = input<Drawing[]>([]);
+  readonly nodes = input<Node[]>([]);
 
   duplicate() {
-    for (let node of this.nodes) {
+    for (let node of this.nodes()) {
       this.nodeService.duplicate(this.controller(), node).subscribe(
         (node: Node) => {
           this.nodesDataSource.add(node);
@@ -46,7 +49,7 @@ export class DuplicateActionComponent {
       );
     }
 
-    for (let drawing of this.drawings) {
+    for (let drawing of this.drawings()) {
       this.drawingService.duplicate(this.controller(), drawing.project_id, drawing).subscribe((drawing: Drawing) => {
         this.drawingsDataSource.add(drawing);
       });
