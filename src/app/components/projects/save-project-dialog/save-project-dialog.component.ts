@@ -1,6 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
@@ -9,28 +13,28 @@ import { ToasterService } from '@services/toaster.service';
 import { ProjectNameValidator } from '../models/projectNameValidator';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-save-project-dialog',
   templateUrl: './save-project-dialog.component.html',
   styleUrls: ['./save-project-dialog.component.scss'],
   providers: [ProjectNameValidator],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule]
 })
 export class SaveProjectDialogComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<SaveProjectDialogComponent>);
+  private projectService = inject(ProjectService);
+  private nodesDataSource = inject(NodesDataSource);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   project: Project;
   projectNameForm: UntypedFormGroup;
   onAddProject = new EventEmitter<string>();
 
-  constructor(
-    public dialogRef: MatDialogRef<SaveProjectDialogComponent>,
-    private projectService: ProjectService,
-    private nodesDataSource: NodesDataSource,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder,
-    private projectNameValidator: ProjectNameValidator,
-    private cd: ChangeDetectorRef
-  ) {
+  constructor(private projectNameValidator: ProjectNameValidator) {
     this.projectNameForm = this.formBuilder.group({
       projectName: new UntypedFormControl(null, [Validators.required, projectNameValidator.get]),
     });

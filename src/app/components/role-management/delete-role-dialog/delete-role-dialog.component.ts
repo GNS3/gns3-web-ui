@@ -10,21 +10,25 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {ChangeDetectionStrategy, Component, Inject, OnInit, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from "@angular/material/dialog";
+import {MatButtonModule} from '@angular/material/button';
 import {Role} from "@models/api/role";
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-delete-role-dialog',
   templateUrl: './delete-role-dialog.component.html',
   styleUrls: ['./delete-role-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, MatDialogModule, MatButtonModule]
 })
 export class DeleteRoleDialogComponent implements OnInit {
 
-  constructor(private dialogRef: MatDialogRef<DeleteRoleDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: { roles: Role[] }) { }
+  private dialogRef = inject(MatDialogRef<DeleteRoleDialogComponent>);
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { roles: Role[] }) { }
 
   ngOnInit(): void {
   }

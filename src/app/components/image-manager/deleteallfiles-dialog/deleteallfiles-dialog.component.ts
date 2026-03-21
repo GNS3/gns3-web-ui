@@ -1,5 +1,8 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ImageManagerService } from '@services/image-manager.service';
 import { ToasterService } from '@services/toaster.service';
 import { Observable, of, forkJoin } from 'rxjs';
@@ -7,13 +10,18 @@ import { catchError } from 'rxjs/operators';
 import { ImageData } from '@models/images';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-deleteallfiles-dialog',
   templateUrl: './deleteallfiles-dialog.component.html',
   styleUrls: ['./deleteallfiles-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatProgressSpinnerModule]
 })
 export class DeleteAllImageFilesDialogComponent implements OnInit {
+  private imageService = inject(ImageManagerService);
+  private toasterService = inject(ToasterService);
+  private cd = inject(ChangeDetectorRef);
+
   isDelete: boolean = false;
   isUsedFiles: boolean = false;
   deleteFliesDetails: ImageData = []
@@ -21,10 +29,7 @@ export class DeleteAllImageFilesDialogComponent implements OnInit {
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public deleteData: any,
-    public dialogRef: MatDialogRef<DeleteAllImageFilesDialogComponent>,
-    private imageService: ImageManagerService,
-    private toasterService: ToasterService,
-    private cd: ChangeDetectorRef
+    public dialogRef: MatDialogRef<DeleteAllImageFilesDialogComponent>
   ) { }
 
   ngOnInit(): void {

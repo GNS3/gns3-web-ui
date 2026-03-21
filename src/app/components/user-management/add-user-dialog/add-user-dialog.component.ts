@@ -10,30 +10,44 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import {UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
-import {MatDialogRef} from "@angular/material/dialog";
-import {UserService} from "@services/user.service";
-import {Controller} from "@models/controller";
-import {User} from "@models/users/user";
-import {ToasterService} from "@services/toaster.service";
-import {userNameAsyncValidator} from "@components/user-management/add-user-dialog/userNameAsyncValidator";
-import {userEmailAsyncValidator} from "@components/user-management/add-user-dialog/userEmailAsyncValidator";
-import {BehaviorSubject, Observable} from "rxjs";
-import {Group} from "@models/groups/group";
-import {GroupService} from "@services/group.service";
-import {startWith, map} from "rxjs/operators";
-import {matchingPassword} from "@components/user-management/ConfirmPasswordValidator";
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
+import { MatDialogRef, MatDialogModule } from "@angular/material/dialog";
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { UserService } from "@services/user.service";
+import { Controller } from "@models/controller";
+import { User } from "@models/users/user";
+import { ToasterService } from "@services/toaster.service";
+import { userNameAsyncValidator } from "@components/user-management/add-user-dialog/userNameAsyncValidator";
+import { userEmailAsyncValidator } from "@components/user-management/add-user-dialog/userEmailAsyncValidator";
+import { BehaviorSubject, Observable } from "rxjs";
+import { Group } from "@models/groups/group";
+import { GroupService } from "@services/group.service";
+import { startWith, map } from "rxjs/operators";
+import { matchingPassword } from "@components/user-management/ConfirmPasswordValidator";
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-add-user-dialog',
   templateUrl: './add-user-dialog.component.html',
   styleUrls: ['./add-user-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, MatDividerModule, MatAutocompleteModule]
 })
 export class AddUserDialogComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<AddUserDialogComponent>);
+  private userService = inject(UserService);
+  private toasterService = inject(ToasterService);
+  private groupService = inject(GroupService);
+  private cd = inject(ChangeDetectorRef);
+
   addUserForm: UntypedFormGroup;
   controller: Controller;
 
@@ -42,11 +56,7 @@ export class AddUserDialogComponent implements OnInit {
   autocompleteControl = new UntypedFormControl();
   filteredGroups: Observable<Group[]>;
 
-  constructor(public dialogRef: MatDialogRef<AddUserDialogComponent>,
-              public userService: UserService,
-              private toasterService: ToasterService,
-              private groupService: GroupService,
-              private cd: ChangeDetectorRef) { }
+  constructor() { }
 
   ngOnInit(): void {
     this.addUserForm = new UntypedFormGroup({

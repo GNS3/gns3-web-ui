@@ -10,21 +10,25 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {ChangeDetectionStrategy, Component, Inject, OnInit, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from "@angular/material/dialog";
+import {MatButtonModule} from '@angular/material/button';
 import {Group} from "@models/groups/group";
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-delete-group-dialog',
   templateUrl: './delete-group-dialog.component.html',
   styleUrls: ['./delete-group-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, MatDialogModule, MatButtonModule]
 })
 export class DeleteGroupDialogComponent implements OnInit {
 
-  constructor(private dialogRef: MatDialogRef<DeleteGroupDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: { groups: Group[] }) { }
+  private dialogRef = inject(MatDialogRef<DeleteGroupDialogComponent>);
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { groups: Group[] }) { }
 
   ngOnInit(): void {
   }

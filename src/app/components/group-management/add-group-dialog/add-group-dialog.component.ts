@@ -10,9 +10,15 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
-import {UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
+import {ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
+import {MatButtonModule} from '@angular/material/button';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatIconModule} from '@angular/material/icon';
 import {groupNameAsyncValidator} from "@components/group-management/add-group-dialog/groupNameAsyncValidator";
 import {GroupNameValidator} from "@components/group-management/add-group-dialog/GroupNameValidator";
 import {GroupService} from "@services/group.service";
@@ -27,14 +33,22 @@ import {Group} from "@models/groups/group";
 import {map, startWith} from "rxjs/operators";
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-add-group-dialog',
   templateUrl: './add-group-dialog.component.html',
   styleUrls: ['./add-group-dialog.component.scss'],
   providers: [GroupNameValidator],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule, MatIconModule]
 })
 export class AddGroupDialogComponent implements OnInit {
+
+  private dialogRef = inject(MatDialogRef<AddGroupDialogComponent>);
+  private formBuilder = inject(UntypedFormBuilder);
+  private groupService = inject(GroupService);
+  private userService = inject(UserService);
+  private toasterService = inject(ToasterService);
+  private cd = inject(ChangeDetectorRef);
 
   groupNameForm: UntypedFormGroup;
   controller: Controller;
@@ -45,16 +59,7 @@ export class AddGroupDialogComponent implements OnInit {
   loading = false;
   autocompleteControl = new UntypedFormControl();
 
-
-
-  constructor(private dialogRef: MatDialogRef<AddGroupDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: { controller: Controller },
-              private formBuilder: UntypedFormBuilder,
-              private groupNameValidator: GroupNameValidator,
-              private groupService: GroupService,
-              private userService: UserService,
-              private toasterService: ToasterService,
-              private cd: ChangeDetectorRef) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { controller: Controller }, private groupNameValidator: GroupNameValidator) {
   }
 
   ngOnInit(): void {

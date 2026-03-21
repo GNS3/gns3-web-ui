@@ -11,21 +11,25 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 
-import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {ChangeDetectionStrategy, Component, Inject, OnInit, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from "@angular/material/dialog";
+import {MatButtonModule} from '@angular/material/button';
 import {ACE} from "@models/api/ACE";
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-delete-ace-dialog',
   templateUrl: './delete-ace-dialog.component.html',
   styleUrls: ['./delete-ace-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, MatDialogModule, MatButtonModule]
 })
 export class DeleteAceDialogComponent implements OnInit {
 
-  constructor(private dialogRef: MatDialogRef<DeleteAceDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: { aces: ACE[] }) { }
+  private dialogRef = inject(MatDialogRef<DeleteAceDialogComponent>);
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { aces: ACE[] }) { }
 
   ngOnInit(): void {
   }
