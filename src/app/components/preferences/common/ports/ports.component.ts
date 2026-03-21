@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -18,7 +18,10 @@ import { ToasterService } from "@services/toaster.service";
   selector: 'app-ports',
   templateUrl: './ports.component.html',
   styleUrls: ['../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, MatTableModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatTooltipModule, MatOptionModule]
+  imports: [CommonModule, FormsModule, MatTableModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatTooltipModule, MatOptionModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class PortsComponent implements OnInit {
   @Input() ethernetPorts: PortsMappingEntity[] = [];
@@ -33,8 +36,8 @@ export class PortsComponent implements OnInit {
   private builtInTemplatesConfigurationService = inject(BuiltInTemplatesConfigurationService);
   private toasterService = inject(ToasterService);
 
-  portTypes: string[] = [];
-  etherTypes: string[] = [];
+  readonly portTypes = signal<string[]>([]);
+  readonly etherTypes = signal<string[]>([]);
   displayedColumns: string[] = ['port_number', 'vlan', 'type', 'ethertype', 'action'];
 
   ngOnInit() {
@@ -43,8 +46,8 @@ export class PortsComponent implements OnInit {
   }
 
   getConfiguration() {
-    this.etherTypes = this.builtInTemplatesConfigurationService.getEtherTypesForEthernetSwitches();
-    this.portTypes = this.builtInTemplatesConfigurationService.getPortTypesForEthernetSwitches();
+    this.etherTypes.set(this.builtInTemplatesConfigurationService.getEtherTypesForEthernetSwitches());
+    this.portTypes.set(this.builtInTemplatesConfigurationService.getPortTypesForEthernetSwitches());
   }
 
   onAdd() {
