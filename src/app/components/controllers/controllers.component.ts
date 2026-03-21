@@ -1,8 +1,15 @@
 import { DataSource } from '@angular/cdk/collections';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, NgZone } from '@angular/core';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSort, MatSortable } from '@angular/material/sort';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, NgZone, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSort, MatSortable, MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BehaviorSubject, interval, merge, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -12,15 +19,27 @@ import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { AddControllerDialogComponent } from './add-controller-dialog/add-controller-dialog.component';
+import { ControllerDiscoveryComponent } from './controller-discovery/controller-discovery.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-controller-list',
   templateUrl: './controllers.component.html',
   styleUrls: ['./controllers.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, FormsModule, MatDialogModule, MatSortModule, MatTableModule, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatBottomSheetModule, AddControllerDialogComponent, ConfirmationBottomSheetComponent, ControllerDiscoveryComponent]
 })
 export class ControllersComponent implements OnInit, OnDestroy {
+  private dialog = inject(MatDialog);
+  private controllerService = inject(ControllerService);
+  private controllerDatabase = inject(ControllerDatabase);
+  private controllerManagement = inject(ControllerManagementService);
+  private changeDetector = inject(ChangeDetectorRef);
+  private bottomSheet = inject(MatBottomSheet);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private ngZone = inject(NgZone);
+
   dataSource: ControllerDataSource;
   displayedColumns = ['id', 'name', 'status', 'location', 'ip', 'port', 'actions'];
   controllerStatusSubscription: Subscription;
@@ -33,17 +52,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
 
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-  constructor(
-    private dialog: MatDialog,
-    private controllerService: ControllerService,
-    private controllerDatabase: ControllerDatabase,
-    private controllerManagement: ControllerManagementService,
-    private changeDetector: ChangeDetectorRef,
-    private bottomSheet: MatBottomSheet,
-    private route: ActivatedRoute,
-    private router: Router,
-    private ngZone: NgZone
-  ) { }
+  constructor() { }
 
   getControllers() {
     const runningControllerNames = this.controllerManagement.getRunningControllers();
