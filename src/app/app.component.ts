@@ -1,34 +1,42 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { Component, HostBinding, OnInit } from '@angular/core';
+import { Component, HostBinding, OnInit, inject } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
 import { ProgressService } from './common/progress/progress.service';
 import { SettingsService } from '@services/settings.service';
 import { ThemeService } from '@services/theme.service';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { GlobalUploadIndicatorComponent } from './components/global-upload-indicator/global-upload-indicator.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  imports: [
+    CommonModule,
+    RouterModule,
+    GlobalUploadIndicatorComponent,
+  ]
 })
 export class AppComponent implements OnInit {
   public darkThemeEnabled: boolean = false;
 
-  constructor(
-    private overlayContainer: OverlayContainer,
-    iconReg: MatIconRegistry,
-    sanitizer: DomSanitizer,
-    private settingsService: SettingsService,
-    private themeService: ThemeService,
-    private router: Router,
-    private progressService: ProgressService
-  ) {
-    iconReg.addSvgIcon('gns3', sanitizer.bypassSecurityTrustResourceUrl('./assets/gns3_icon.svg'));
-    iconReg.addSvgIcon('gns3black', sanitizer.bypassSecurityTrustResourceUrl('./assets/gns3_icon_black.svg'));
+  private overlayContainer = inject(OverlayContainer);
+  private iconReg = inject(MatIconRegistry);
+  private sanitizer = inject(DomSanitizer);
+  private settingsService = inject(SettingsService);
+  private themeService = inject(ThemeService);
+  private router = inject(Router);
+  private progressService = inject(ProgressService);
 
-    router.events.subscribe((value) => {
+  constructor() {
+    this.iconReg.addSvgIcon('gns3', this.sanitizer.bypassSecurityTrustResourceUrl('./assets/gns3_icon.svg'));
+    this.iconReg.addSvgIcon('gns3black', this.sanitizer.bypassSecurityTrustResourceUrl('./assets/gns3_icon_black.svg'));
+
+    this.router.events.subscribe((value) => {
       this.checkEvent(value);
     });
   }

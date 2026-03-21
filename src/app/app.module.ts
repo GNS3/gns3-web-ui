@@ -345,7 +345,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
 
 @NgModule({
     declarations: [
-        AppComponent,
+        // AppComponent - Root component is standalone, doesn't need to be declared
         // ProjectMapComponent,
         // ProjectsComponent,
         // DefaultLayoutComponent,
