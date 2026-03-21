@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -92,7 +92,10 @@ import { AlignVerticallyActionComponent } from './actions/align_vertically/align
     DeleteActionComponent,
     AlignHorizontallyActionComponent,
     AlignVerticallyActionComponent
-  ]
+  ],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ContextMenuComponent implements OnInit {
   private sanitizer = inject(DomSanitizer);

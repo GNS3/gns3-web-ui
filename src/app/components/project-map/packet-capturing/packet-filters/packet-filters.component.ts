@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialog, MatDialogRef } from '@angular/material/dialog';
@@ -20,12 +20,16 @@ import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
   selector: 'app-packet-filters',
   templateUrl: './packet-filters.component.html',
   styleUrls: ['./packet-filters.component.scss'],
-  imports: [CommonModule, FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatTabsModule, MatButtonModule]
+  imports: [CommonModule, FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatTabsModule, MatButtonModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class PacketFiltersDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<PacketFiltersDialogComponent>);
   private linkService = inject(LinkService);
   private dialog = inject(MatDialog);
+  private cdr = inject(ChangeDetectorRef);
 
   controller: Controller;
   project: Project;
@@ -53,10 +57,12 @@ export class PacketFiltersDialogComponent implements OnInit {
         this.filters.frequency_drop = this.link.filters.frequency_drop ? this.link.filters.frequency_drop : [0];
         this.filters.packet_loss = this.link.filters.packet_loss ? this.link.filters.packet_loss : [0];
       }
+      this.cdr.markForCheck();
     });
 
     this.linkService.getAvailableFilters(this.controller, this.link).subscribe((availableFilters: FilterDescription[]) => {
       this.availableFilters = availableFilters;
+      this.cdr.markForCheck();
     });
   }
 

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, Renderer2, inject, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, Renderer2, inject, viewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormsModule,
@@ -47,6 +47,9 @@ import { RotationValidator } from '../../../../validators/rotation-validator';
     MatInputModule,
     MatButtonModule,
   ],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class TextEditorDialogComponent implements OnInit {
   readonly textArea = viewChild<ElementRef>('textArea');
@@ -65,6 +68,7 @@ export class TextEditorDialogComponent implements OnInit {
   private toasterService = inject(ToasterService);
   private rotationValidator = inject(RotationValidator);
   private fontFixer = inject(FontFixer);
+  private cdr = inject(ChangeDetectorRef);
 
   controller: Controller;
   project: Project;

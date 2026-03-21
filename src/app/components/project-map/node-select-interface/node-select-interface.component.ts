@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output, inject, input, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit, Output, inject, input, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -13,6 +13,9 @@ import { Port } from '@models/port';
   templateUrl: './node-select-interface.component.html',
   styleUrls: ['./node-select-interface.component.scss'],
   imports: [CommonModule, MatMenuModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class NodeSelectInterfaceComponent implements OnInit {
   readonly links = input<Link[]>(undefined);

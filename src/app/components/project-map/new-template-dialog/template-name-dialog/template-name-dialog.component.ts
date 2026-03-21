@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -19,7 +19,10 @@ import { ProjectNameValidator } from '../../../projects/models/projectNameValida
   templateUrl: './template-name-dialog.component.html',
   styleUrls: ['./template-name-dialog.component.scss'],
   providers: [ProjectNameValidator],
-  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule]
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class TemplateNameDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<TemplateNameDialogComponent>);
@@ -28,6 +31,7 @@ export class TemplateNameDialogComponent implements OnInit {
   private toasterService = inject(ToasterService);
   private formBuilder = inject(UntypedFormBuilder);
   private templateService = inject(TemplateService);
+  private cdr = inject(ChangeDetectorRef);
 
   controller: Controller;
   templateNameForm: UntypedFormGroup;
@@ -49,6 +53,7 @@ export class TemplateNameDialogComponent implements OnInit {
 
     setTimeout(() => {
       this.templateNameForm.controls['templateName'].markAsTouched();
+      this.cdr.markForCheck();
     }, 100);
   }
 

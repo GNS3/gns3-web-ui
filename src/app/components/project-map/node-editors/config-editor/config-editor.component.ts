@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -14,11 +14,15 @@ import { ToasterService } from '@services/toaster.service';
   templateUrl: './config-editor.component.html',
   styleUrls: ['./config-editor.component.scss'],
   imports: [MatDialogModule, MatButtonModule, MatProgressSpinnerModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ConfigEditorDialogComponent implements OnInit {
   public dialogRef = inject(MatDialogRef<ConfigEditorDialogComponent>);
   public nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
+  private cdr = inject(ChangeDetectorRef);
 
   controller: Controller;
   project: Project;
@@ -30,11 +34,13 @@ export class ConfigEditorDialogComponent implements OnInit {
   ngOnInit() {
     this.nodeService.getStartupConfiguration(this.controller, this.node).subscribe((config: any) => {
       this.config = config;
+      this.cdr.markForCheck();
     });
 
     if (this.node.node_type === 'iou' || this.node.node_type === 'dynamips') {
       this.nodeService.getPrivateConfiguration(this.controller, this.node).subscribe((privateConfig: any) => {
         this.privateConfig = privateConfig;
+        this.cdr.markForCheck();
       });
     }
   }

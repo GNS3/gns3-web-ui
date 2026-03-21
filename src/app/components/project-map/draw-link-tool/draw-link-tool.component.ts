@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject, input, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, input, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
@@ -19,6 +19,9 @@ import { Link } from '@models/link';
   templateUrl: './draw-link-tool.component.html',
   styleUrls: ['./draw-link-tool.component.scss'],
   imports: [CommonModule, NodeSelectInterfaceComponent],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DrawLinkToolComponent implements OnInit, OnDestroy {
   readonly links = input<Link[]>(undefined);

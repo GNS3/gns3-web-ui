@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { environment } from 'environments/environment';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
@@ -20,6 +20,9 @@ import { ToasterService } from '@services/toaster.service';
   templateUrl: './import-appliance.component.html',
   styleUrls: ['./import-appliance.component.scss'],
   imports: [CommonModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ImportApplianceComponent implements OnInit {
   readonly project = input<Project>(undefined);
@@ -32,6 +35,7 @@ export class ImportApplianceComponent implements OnInit {
   private qemuService = inject(QemuService);
   private iouService = inject(IouService);
   private iosService = inject(IosService);
+  private cdr = inject(ChangeDetectorRef);
 
   constructor() {}
 
@@ -66,6 +70,7 @@ export class ImportApplianceComponent implements OnInit {
   private onUploadComplete() {
     this.toasterService.success('Appliance imported successfully');
     this.uploader.queue = [];
+    this.cdr.markForCheck();
   }
 
   public uploadAppliance(event) {
@@ -144,6 +149,7 @@ export class ImportApplianceComponent implements OnInit {
         template.symbol = `:/symbols/${template.category}_guest.svg`;
       }
       this.template = template;
+      this.cdr.markForCheck();
 
       const url = this.getUploadPath(this.controller(), name);
       this.uploader.queue.forEach((elem) => (elem.url = url));

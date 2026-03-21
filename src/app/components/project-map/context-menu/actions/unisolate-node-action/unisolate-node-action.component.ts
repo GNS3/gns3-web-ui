@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,6 +12,9 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-unisolate-node-action',
   templateUrl: './unisolate-node-action.component.html',
   imports: [CommonModule, MatButtonModule, MatIconModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class UnisolateNodeActionComponent implements OnInit {
   private nodeService = inject(NodeService);

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -14,12 +14,16 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-edit-network-configuration',
   templateUrl: './edit-network-configuration.component.html',
   styleUrls: ['./edit-network-configuration.component.scss'],
-  imports: [CommonModule, FormsModule, MatDialogModule, MatInputModule, MatButtonModule]
+  imports: [CommonModule, FormsModule, MatDialogModule, MatInputModule, MatButtonModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class EditNetworkConfigurationDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<EditNetworkConfigurationDialogComponent>);
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
+  private cdr = inject(ChangeDetectorRef);
 
   controller: Controller;
   node: Node;
@@ -30,6 +34,7 @@ export class EditNetworkConfigurationDialogComponent implements OnInit {
   ngOnInit() {
     this.nodeService.getNetworkConfiguration(this.controller, this.node).subscribe((response: string) => {
       this.configuration = response;
+      this.cdr.markForCheck();
     });
   }
 

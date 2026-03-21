@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, UntypedFormBuilder } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -16,7 +16,10 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-configure-custom-adapters',
   templateUrl: './configure-custom-adapters.component.html',
   styleUrls: ['./configure-custom-adapters.component.scss'],
-  imports: [CommonModule, FormsModule, MatDialogModule, MatListModule, MatInputModule, MatButtonModule]
+  imports: [CommonModule, FormsModule, MatDialogModule, MatListModule, MatInputModule, MatButtonModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ConfigureCustomAdaptersDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfigureCustomAdaptersDialogComponent>);

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnInit, inject } from '@angular/core';
 import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
@@ -9,6 +9,9 @@ import { MatDividerModule } from '@angular/material/divider';
   templateUrl: './nodes-menu-confirmation-dialog.component.html',
   styleUrls: ['./nodes-menu-confirmation-dialog.component.scss'],
   imports: [MatDialogModule, MatButtonModule, MatDividerModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class NodesMenuConfirmationDialogComponent implements OnInit {
   public dialogRef = inject(MatDialogRef<NodesMenuConfirmationDialogComponent>);
