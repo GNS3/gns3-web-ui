@@ -10,10 +10,16 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
-import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {ReactiveFormsModule, FormControl, FormGroup, Validators} from "@angular/forms";
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from "@angular/material/dialog";
+import {MatButtonModule} from '@angular/material/button';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+import {MatIconModule} from '@angular/material/icon';
 import {Controller} from "@models/controller";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {UserService} from "@services/user.service";
 import {ToasterService} from "@services/toaster.service";
 import {userNameAsyncValidator} from "@components/user-management/add-user-dialog/userNameAsyncValidator";
@@ -21,20 +27,22 @@ import {userEmailAsyncValidator} from "@components/user-management/add-user-dial
 import {User} from "@models/users/user";
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-edit-user-dialog',
   templateUrl: './edit-user-dialog.component.html',
   styleUrls: ['./edit-user-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatIconModule]
 })
 export class EditUserDialogComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<EditUserDialogComponent>);
+  private userService = inject(UserService);
+  private toasterService = inject(ToasterService);
+  private cd = inject(ChangeDetectorRef);
 
   editUserForm: FormGroup;
 
-  constructor(public dialogRef: MatDialogRef<EditUserDialogComponent>,
-              public userService: UserService,
-              private toasterService: ToasterService,
-              private cd: ChangeDetectorRef,
+  constructor(
               @Inject(MAT_DIALOG_DATA) public data: { user: User, controller: Controller }) {}
 
   ngOnInit(): void {
