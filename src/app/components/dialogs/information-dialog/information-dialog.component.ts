@@ -1,15 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit, inject } from '@angular/core';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-information-dialog',
   templateUrl: 'information-dialog.component.html',
   styleUrls: ['information-dialog.component.scss'],
+  imports: [MatDialogModule, MatButtonModule],
 })
 export class InformationDialogComponent implements OnInit {
+  public dialogRef = inject(MatDialogRef<InformationDialogComponent>);
   public confirmationMessage: string;
-  constructor(public dialogRef: MatDialogRef<InformationDialogComponent>) {}
 
   ngOnInit() {}
 

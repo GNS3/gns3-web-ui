@@ -1,16 +1,17 @@
-import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, inject } from '@angular/core';
+import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { Inject } from '@angular/core';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-question-dialog',
   templateUrl: './question-dialog.component.html',
+  imports: [MatDialogModule, MatButtonModule],
 })
 export class QuestionDialogComponent {
-  constructor(
-    public dialogRef: MatDialogRef<QuestionDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { title: string, question: string}
-  ) {}
+  public dialogRef = inject(MatDialogRef<QuestionDialogComponent>);
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { title: string, question: string}) {}
 
   onNoClick(): void {
     this.dialogRef.close(false);
