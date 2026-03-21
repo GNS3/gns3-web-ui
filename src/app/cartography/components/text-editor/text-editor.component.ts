@@ -3,7 +3,6 @@ import {
   ElementRef,
   EventEmitter,
   Input,
-  NgZone,
   OnDestroy,
   OnInit,
   Renderer2,
@@ -66,15 +65,15 @@ export class TextEditorComponent implements OnInit, OnDestroy {
   private nodesDataSource = inject(NodesDataSource);
   private selectionManager = inject(SelectionManager);
   private fontFixer = inject(FontFixer);
-  private ngZone = inject(NgZone);
 
   ngOnInit() {
     this.textAddingSubscription = this.toolsService.isTextAddingToolActivated.subscribe((isActive: boolean) => {
       isActive ? this.activateTextAdding() : this.deactivateTextAdding();
     });
 
-    this.ngZone.runOutsideAngular(this.activateTextEditingForDrawings.bind(this));
-    this.ngZone.runOutsideAngular(this.activateTextEditingForNodeLabels.bind(this));
+    // Note: In zoneless mode, runOutsideAngular is a no-op
+    this.activateTextEditingForDrawings();
+    this.activateTextEditingForNodeLabels();
   }
 
   activateTextAdding() {

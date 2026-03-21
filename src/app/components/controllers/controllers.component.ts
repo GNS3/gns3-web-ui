@@ -1,5 +1,5 @@
 import { DataSource } from '@angular/cdk/collections';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, NgZone, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
@@ -38,7 +38,6 @@ export class ControllersComponent implements OnInit, OnDestroy {
   private bottomSheet = inject(MatBottomSheet);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private ngZone = inject(NgZone);
 
   dataSource: ControllerDataSource;
   displayedColumns = ['id', 'name', 'status', 'location', 'ip', 'port', 'actions'];
