@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -19,6 +19,9 @@ import { CreateSnapshotDialogComponent } from '../create-snapshot-dialog/create-
   templateUrl: './snapshot-menu-item.component.html',
   styleUrls: ['./snapshot-menu-item.component.scss'],
   imports: [CommonModule, MatDialogModule, MatTooltipModule, MatIconModule, MatButtonModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class SnapshotMenuItemComponent implements OnInit {
   readonly project = input<Project>(undefined);
