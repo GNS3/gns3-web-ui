@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -15,7 +15,10 @@ import { BuiltInTemplatesConfigurationService } from '@services/built-in-templat
   selector: 'app-udp-tunnels',
   templateUrl: './udp-tunnels.component.html',
   styleUrls: ['../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, MatTableModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatTooltipModule]
+  imports: [CommonModule, FormsModule, MatTableModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatTooltipModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class UdpTunnelsComponent implements OnInit {
   @Input() dataSourceUdp: PortsMappingEntity[] = [];
@@ -24,8 +27,8 @@ export class UdpTunnelsComponent implements OnInit {
     name: '',
     port_number: 0,
   };
-  portTypes: string[] = [];
-  etherTypes: string[] = [];
+  readonly portTypes = signal<string[]>([]);
+  readonly etherTypes = signal<string[]>([]);
 
   private builtInTemplatesConfigurationService = inject(BuiltInTemplatesConfigurationService);
 
@@ -34,8 +37,8 @@ export class UdpTunnelsComponent implements OnInit {
   }
 
   getConfiguration() {
-    this.etherTypes = this.builtInTemplatesConfigurationService.getEtherTypesForEthernetSwitches();
-    this.portTypes = this.builtInTemplatesConfigurationService.getPortTypesForEthernetSwitches();
+    this.etherTypes.set(this.builtInTemplatesConfigurationService.getEtherTypesForEthernetSwitches());
+    this.portTypes.set(this.builtInTemplatesConfigurationService.getPortTypesForEthernetSwitches());
   }
 
   onAddUdpInterface() {
