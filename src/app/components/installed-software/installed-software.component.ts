@@ -1,22 +1,27 @@
 import { DataSource } from '@angular/cdk/table';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { InstalledSoftwareService } from '@services/installed-software.service';
+import { AdbutlerComponent } from '@components/adbutler/adbutler.component';
+import { InstallSoftwareComponent } from './install-software/install-software.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-installed-software',
   templateUrl: './installed-software.component.html',
   styleUrls: ['./installed-software.component.scss'],
+  imports: [CommonModule, MatTableModule, AdbutlerComponent, InstallSoftwareComponent]
 })
 export class InstalledSoftwareComponent implements OnInit {
   dataSource: InstalledSoftwareDataSource;
   displayedColumns = ['name', 'actions'];
 
-  constructor(
-    private installedSoftwareService: InstalledSoftwareService,
-    private changeDetectorRef: ChangeDetectorRef
-  ) {}
+  private installedSoftwareService = inject(InstalledSoftwareService);
+  private changeDetectorRef = inject(ChangeDetectorRef);
+
+  constructor() {}
 
   ngOnInit() {
     this.dataSource = new InstalledSoftwareDataSource(this.installedSoftwareService);

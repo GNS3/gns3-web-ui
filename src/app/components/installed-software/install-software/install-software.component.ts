@@ -1,10 +1,13 @@
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-install-software',
   templateUrl: './install-software.component.html',
   styleUrls: ['./install-software.component.scss'],
+  imports: [CommonModule, MatButtonModule]
 })
 export class InstallSoftwareComponent implements OnInit, OnDestroy, OnChanges {
   @Input('software')
