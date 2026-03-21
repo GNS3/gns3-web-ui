@@ -1,7 +1,8 @@
 import { DataSource } from '@angular/cdk/collections';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -23,7 +24,7 @@ import { TemplateFilter } from '@filters/templateFilter.pipe';
   templateUrl: './template-list-dialog.component.html',
   styleUrls: ['./template-list-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, TemplateFilter]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, TemplateFilter]
 })
 export class TemplateListDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<TemplateListDialogComponent>);
