@@ -2,7 +2,7 @@
   <div class="default-header">
     <div class="row">
       <div class=" col col-md-1">
-        <button class="top-button" class="cancel-button" routerLink="/controller/{{ controllerId }}/preferences" mat-button>
+        <button class="top-button" class="cancel-button" [routerLink]="'/controller/' + controllerId() + '/preferences'" mat-button>
           <mat-icon>arrow_back</mat-icon>
         </button>
       </div>
@@ -14,13 +14,13 @@
   <div class="default-content">
     <div class="listcontainer mat-elevation-z8">
       <mat-nav-list>
-        <mat-list-item routerLink="/controller/{{ controllerId }}/preferences/builtin/ethernet-hubs">
+        <mat-list-item [routerLink]="'/controller/' + controllerId() + '/preferences/builtin/ethernet-hubs'">
           Ethernet hub templates
         </mat-list-item>
-        <mat-list-item routerLink="/controller/{{ controllerId }}/preferences/builtin/ethernet-switches">
+        <mat-list-item [routerLink]="'/controller/' + controllerId() + '/preferences/builtin/ethernet-switches'">
           Ethernet switch templates
         </mat-list-item>
-        <mat-list-item routerLink="/controller/{{ controllerId }}/preferences/builtin/cloud-nodes"> Cloud node templates </mat-list-item>
+        <mat-list-item [routerLink]="'/controller/' + controllerId() + '/preferences/builtin/cloud-nodes'"> Cloud node templates </mat-list-item>
       </mat-nav-list>
     </div>
   </div>
