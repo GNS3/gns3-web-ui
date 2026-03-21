@@ -1,6 +1,14 @@
-import { Component, DoCheck, OnInit, ViewEncapsulation } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, DoCheck, OnInit, ViewEncapsulation, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatError } from '@angular/material/form-field';
 import { AuthResponse } from '@models/authResponse';
 import { Controller } from '@models/controller';
 import { Version } from '@models/version';
@@ -12,13 +20,34 @@ import { ToasterService } from '@services/toaster.service';
 import { VersionService } from '@services/version.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
   encapsulation: ViewEncapsulation.None,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCheckboxModule,
+    MatButtonModule,
+    MatIconModule,
+    MatError
+  ]
 })
 export class LoginComponent implements OnInit, DoCheck {
+  private loginService = inject(LoginService);
+  private controllerService = inject(ControllerService);
+  private controllerDatabase = inject(ControllerDatabase);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private toasterService = inject(ToasterService);
+  private versionService = inject(VersionService);
+  private themeService = inject(ThemeService);
+
   private controller: Controller;
   public version: string;
   public isLightThemeEnabled: boolean = false;
@@ -32,16 +61,7 @@ export class LoginComponent implements OnInit, DoCheck {
     password: new UntypedFormControl('', [Validators.required]),
   });
 
-  constructor(
-    private loginService: LoginService,
-    private controllerService: ControllerService,
-    private controllerDatabase: ControllerDatabase,
-    private route: ActivatedRoute,
-    private router: Router,
-    private toasterService: ToasterService,
-    private versionService: VersionService,
-    private themeService: ThemeService
-  ) {}
+  constructor() {}
 
   async ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
