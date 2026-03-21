@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter, OnInit, ViewChild, Renderer2, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Output, EventEmitter, OnInit, ViewChild, Renderer2, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -32,6 +32,9 @@ import {
     MatDialogModule,
     MatDividerModule,
   ],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
   template: `
     <div class="chat-session-list">
       <!-- New session button -->
