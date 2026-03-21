@@ -82,8 +82,8 @@ export class ContextConsoleMenuComponent implements OnInit {
     this.mapSettingsService.setConsoleContextMenuAction('console');
     // Use Ivy's new API - no need for resolveComponentFactory
     this.componentBrowserRef = this.container().createComponent(ConsoleDeviceActionBrowserComponent);
-    this.componentBrowserRef.instance.controller = this.controller;
-    this.componentBrowserRef.instance.node = this.node;
+    this.componentBrowserRef.setInput('controller', this.controller);
+    this.componentBrowserRef.setInput('node', this.node);
     this.componentBrowserRef.instance.openConsole();
   }
 

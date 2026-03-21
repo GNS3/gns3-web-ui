@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, inject, input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -17,6 +17,9 @@ import * as ipaddr from 'ipaddr.js';
   selector: 'app-console-device-action-browser',
   templateUrl: './console-device-action-browser.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ConsoleDeviceActionBrowserComponent {
   private toasterService = inject(ToasterService);
@@ -25,55 +28,59 @@ export class ConsoleDeviceActionBrowserComponent {
   private protocolHandlerService = inject(ProtocolHandlerService);
   private vncConsoleService = inject(VncConsoleService);
 
-  @Input() controller: Controller;
-  @Input() node: Node;
+  readonly controller = input<Controller>(undefined);
+  node = signal<Node | undefined>(undefined);
 
   openConsole(auxiliary: boolean = false) {
-    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
-      this.node = node;
+    this.nodeService.getNode(this.controller(), this.node()).subscribe((node: Node) => {
+      this.node.set(node);
       this.startConsole(auxiliary);
     });
   }
 
   startConsole(auxiliary: boolean) {
-    if (this.node.status !== 'started') {
+    let node = this.node();
+    if (!node) return;
+
+    if (node.status !== 'started') {
       this.toasterService.error('This node must be started before a console can be opened');
     } else {
       if (
-        this.node.console_host === '0.0.0.0' ||
-        this.node.console_host === '0:0:0:0:0:0:0:0' ||
-        this.node.console_host === '::'
+        node.console_host === '0.0.0.0' ||
+        node.console_host === '0:0:0:0:0:0:0:0' ||
+        node.console_host === '::'
       ) {
-        this.node.console_host = this.controller.host;
+        node = {...node, console_host: this.controller().host};
+        this.node.set(node);
       }
 
       try {
         var uri;
-        var host = this.node.console_host;
+        var host = node.console_host;
         if (ipaddr.IPv6.isValid(host)) {
            host = `[${host}]`;
         }
-        if (this.node.console_type === 'telnet') {
+        if (node.console_type === 'telnet') {
 
           var console_port;
           if (auxiliary === true) {
-            console_port = this.node.properties.aux;
+            console_port = node.properties.aux;
             if (console_port === undefined) {
               this.toasterService.error('Auxiliary console port is not set.');
               return;
             }
           } else {
-            console_port = this.node.console;
+            console_port = node.console;
           }
-          uri = `gns3+telnet://${host}:${console_port}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`;
-        } else if (this.node.console_type === 'vnc') {
+          uri = `gns3+telnet://${host}:${console_port}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`;
+        } else if (node.console_type === 'vnc') {
           // Open VNC console in standalone page via WebSocket API
-          this.vncConsoleService.openVncConsole(this.controller, this.node);
+          this.vncConsoleService.openVncConsole(this.controller(), node);
           return;  // Return early, don't use protocol handler
-        } else if (this.node.console_type && this.node.console_type.startsWith('spice')) {
-          uri = `gns3+spice://${host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`
-        } else if (this.node.console_type && this.node.console_type.startsWith('http')) {
-          uri = `${this.node.console_type}://${host}:${this.node.console}`
+        } else if (node.console_type && node.console_type.startsWith('spice')) {
+          uri = `gns3+spice://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
+        } else if (node.console_type && node.console_type.startsWith('http')) {
+          uri = `${node.console_type}://${host}:${node.console}`
           return window.open(uri);  // open an http console directly in a new window/tab
         } else {
           this.toasterService.error('Supported console types are: telnet, vnc, spice and spice+agent.');
