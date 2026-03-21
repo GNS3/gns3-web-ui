@@ -8,6 +8,7 @@ import {
   OnInit,
   SimpleChange,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { select, Selection } from 'd3-selection';
 import { Subscription } from 'rxjs';
@@ -31,12 +32,27 @@ import { SelectionTool } from '../../tools/selection-tool';
 import { GraphLayout } from '../../widgets/graph-layout';
 import { InterfaceLabelWidget } from '../../widgets/interface-label';
 import { TextEditorComponent } from '../text-editor/text-editor.component';
+import { DrawingAddingComponent } from '../drawing-adding/drawing-adding.component';
+import { DrawingResizingComponent } from '../drawing-resizing/drawing-resizing.component';
+import { SelectionControlComponent } from '../selection-control/selection-control.component';
+import { SelectionSelectComponent } from '../selection-select/selection-select.component';
+import { DraggableSelectionComponent } from '../draggable-selection/draggable-selection.component';
+import { LinkEditingComponent } from '../link-editing/link-editing.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-d3-map',
   templateUrl: './d3-map.component.html',
   styleUrls: ['./d3-map.component.scss'],
+  imports: [
+    TextEditorComponent,
+    DrawingAddingComponent,
+    DrawingResizingComponent,
+    SelectionControlComponent,
+    SelectionSelectComponent,
+    DraggableSelectionComponent,
+    LinkEditingComponent,
+  ]
 })
 export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() nodes: Node[] = [];
@@ -67,22 +83,22 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   public drawingGridX: number = 0;
   public drawingGridY: number = 0;
 
-  constructor(
-    private graphDataManager: GraphDataManager,
-    public context: Context,
-    private mapChangeDetectorRef: MapChangeDetectorRef,
-    private canvasSizeDetector: CanvasSizeDetector,
-    private mapSettings: MapSettingsManager,
-    protected element: ElementRef,
-    protected interfaceLabelWidget: InterfaceLabelWidget,
-    protected selectionToolWidget: SelectionTool,
-    protected movingToolWidget: MovingTool,
-    public graphLayout: GraphLayout,
-    private toolsService: ToolsService,
-    private mapScaleService: MapScaleService,
-    private mapSettingsService: MapSettingsService
-  ) {
-    this.parentNativeElement = element.nativeElement;
+  private graphDataManager = inject(GraphDataManager);
+  public context = inject(Context);
+  private mapChangeDetectorRef = inject(MapChangeDetectorRef);
+  private canvasSizeDetector = inject(CanvasSizeDetector);
+  private mapSettings = inject(MapSettingsManager);
+  protected element = inject(ElementRef);
+  protected interfaceLabelWidget = inject(InterfaceLabelWidget);
+  protected selectionToolWidget = inject(SelectionTool);
+  protected movingToolWidget = inject(MovingTool);
+  public graphLayout = inject(GraphLayout);
+  private toolsService = inject(ToolsService);
+  private mapScaleService = inject(MapScaleService);
+  private mapSettingsService = inject(MapSettingsService);
+
+  constructor() {
+    this.parentNativeElement = this.element.nativeElement;
   }
 
   @Input('show-interface-labels')

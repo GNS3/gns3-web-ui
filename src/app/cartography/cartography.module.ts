@@ -99,9 +99,9 @@ import { SerialLinkWidget } from './widgets/links/serial-link';
     SelectionSelectComponent,
     DraggableSelectionComponent,
     LinkEditingComponent,
+    D3MapComponent,
   ],
   declarations: [
-    D3MapComponent,
     MovingCanvasDirective,
     ZoomingCanvasDirective,
   ],
