@@ -1,4 +1,7 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewEncapsulation, Input, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatTabsModule } from '@angular/material/tabs';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { marked } from 'marked';
 import { ProjectService } from '@services/project.service';
@@ -6,24 +9,25 @@ import { Controller } from '@models/controller';
 import { Project } from '@models/project';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-readme-editor',
     templateUrl: './readme-editor.component.html',
     encapsulation: ViewEncapsulation.None,
     styleUrls: ['./readme-editor.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [CommonModule, FormsModule, MatTabsModule]
 })
 export class ReadmeEditorComponent implements OnInit {
     @Input() controller: Controller;
     @Input() project: Project;
 
+    private projectService = inject(ProjectService);
+    private sanitizer = inject(DomSanitizer);
+    private cd = inject(ChangeDetectorRef);
+
     public markdown = ``;
 
-    constructor(
-        private projectService: ProjectService,
-        private sanitizer: DomSanitizer,
-        private cd: ChangeDetectorRef
-    ) {}
+    constructor() {}
 
     /**
      * Get safe HTML for markdown preview

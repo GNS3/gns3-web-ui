@@ -1,6 +1,15 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Injectable, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Injectable, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTabsModule } from '@angular/material/tabs';
 import { Project, ProjectVariable } from '@models/project';
 import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
@@ -9,14 +18,36 @@ import { NonNegativeValidator } from '../../../validators/non-negative-validator
 import { ReadmeEditorComponent } from './readme-editor/readme-editor.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-edit-project-dialog',
   templateUrl: './edit-project-dialog.component.html',
   styleUrls: ['./edit-project-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCheckboxModule,
+    MatTableModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatTabsModule,
+    ReadmeEditorComponent
+  ]
 })
 export class EditProjectDialogComponent implements OnInit {
   @ViewChild('editor') editor: ReadmeEditorComponent;
+
+  private dialogRef = inject(MatDialogRef<EditProjectDialogComponent>);
+  private formBuilder = inject(UntypedFormBuilder);
+  private projectService = inject(ProjectService);
+  private toasterService = inject(ToasterService);
+  private nonNegativeValidator = inject(NonNegativeValidator);
+  private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
   project: Project;
@@ -29,20 +60,13 @@ export class EditProjectDialogComponent implements OnInit {
 
   auto_close: boolean;
 
-  constructor(
-    public dialogRef: MatDialogRef<EditProjectDialogComponent>,
-    private formBuilder: UntypedFormBuilder,
-    private projectService: ProjectService,
-    private toasterService: ToasterService,
-    private nonNegativeValidator: NonNegativeValidator,
-    private cd: ChangeDetectorRef
-  ) {
+  constructor() {
     this.formGroup = this.formBuilder.group({
       projectName: new UntypedFormControl('', [Validators.required]),
-      width: new UntypedFormControl('', [Validators.required, nonNegativeValidator.get]),
-      height: new UntypedFormControl('', [Validators.required, nonNegativeValidator.get]),
-      nodeGridSize: new UntypedFormControl('', [Validators.required, nonNegativeValidator.get]),
-      drawingGridSize: new UntypedFormControl('', [Validators.required, nonNegativeValidator.get]),
+      width: new UntypedFormControl('', [Validators.required, this.nonNegativeValidator.get]),
+      height: new UntypedFormControl('', [Validators.required, this.nonNegativeValidator.get]),
+      nodeGridSize: new UntypedFormControl('', [Validators.required, this.nonNegativeValidator.get]),
+      drawingGridSize: new UntypedFormControl('', [Validators.required, this.nonNegativeValidator.get]),
     });
 
     this.variableFormGroup = this.formBuilder.group({
