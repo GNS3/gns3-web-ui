@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit, inject} from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnInit, inject} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import { RouterModule, ActivatedRoute, Router } from "@angular/router";
@@ -33,7 +33,10 @@ import { AiProfileTabComponent } from "@components/user-management/user-detail/a
   selector: 'app-user-detail',
   templateUrl: './user-detail.component.html',
   styleUrls: ['./user-detail.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatDialogModule, MatTableModule, MatButtonModule, MatIconModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatCheckboxModule, MatTabsModule, AiProfileTabComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatDialogModule, MatTableModule, MatButtonModule, MatIconModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatCheckboxModule, MatTabsModule, AiProfileTabComponent],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class UserDetailComponent implements OnInit {
   private userService = inject(UserService);
