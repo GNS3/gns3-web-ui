@@ -1,21 +1,24 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatButtonModule } from '@angular/material/button';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatListModule } from '@angular/material/list';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-help',
   templateUrl: './help.component.html',
   styleUrls: ['./help.component.scss'],
+  imports: [MatTabsModule, MatButtonModule, MatExpansionModule, MatListModule],
 })
 export class HelpComponent implements OnInit {
+  private httpClient = inject(HttpClient);
+  private sanitizer = inject(DomSanitizer);
+
   thirdpartylicenses: SafeHtml | string = '';
   releasenotes: SafeHtml | string = '';
-
-  constructor(
-    private httpClient: HttpClient,
-    private sanitizer: DomSanitizer
-  ) {}
 
   ngOnInit() {
     this.httpClient.get(window.location.href + '/3rdpartylicenses.txt', { responseType: 'text' }).subscribe(
