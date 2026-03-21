@@ -10,27 +10,43 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, OnInit} from '@angular/core';
-import {RoleService} from "@services/role.service";
-import {ActivatedRoute} from "@angular/router";
-import {Controller} from "@models/controller";
-import {Role} from "@models/api/role";
-import {FormBuilder, FormGroup} from "@angular/forms";
-import {ToasterService} from "@services/toaster.service";
-import {HttpErrorResponse} from "@angular/common/http";
-import {Privilege} from "@models/api/Privilege";
-import {PrivilegeService} from "@services/privilege.service";
-import {BehaviorSubject, Observable, forkJoin} from "rxjs";
-import {IPrivilegesChange} from "@components/role-management/role-detail/privilege/IPrivilegesChange";
-import {map} from "rxjs/operators";
+import {Component, OnInit, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule, ReactiveFormsModule, FormBuilder, FormGroup} from '@angular/forms';
+import {RouterModule} from '@angular/router';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDividerModule } from '@angular/material/divider';
+import { RoleService } from "@services/role.service";
+import { ActivatedRoute } from "@angular/router";
+import { Controller } from "@models/controller";
+import { Role } from "@models/api/role";
+import { ToasterService } from "@services/toaster.service";
+import { HttpErrorResponse } from "@angular/common/http";
+import { Privilege } from "@models/api/Privilege";
+import { PrivilegeService } from "@services/privilege.service";
+import { BehaviorSubject, Observable, forkJoin } from "rxjs";
+import { IPrivilegesChange } from "@components/role-management/role-detail/privilege/IPrivilegesChange";
+import { map } from "rxjs/operators";
+import { PrivilegeComponent } from "@components/role-management/role-detail/privilege/privilege.component";
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-role-detail',
   templateUrl: './role-detail.component.html',
-  styleUrls: ['./role-detail.component.scss']
+  styleUrls: ['./role-detail.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatCheckboxModule, MatDividerModule, PrivilegeComponent]
 })
 export class RoleDetailComponent implements OnInit {
+  private roleService = inject(RoleService);
+  private toastService = inject(ToasterService);
+  private route = inject(ActivatedRoute);
+  private privilegeService = inject(PrivilegeService);
+  private fb = inject(FormBuilder);
+
   controller: Controller;
   $role: BehaviorSubject<Role> = new BehaviorSubject<Role>({role_id: "", description: "", updated_at: "", is_builtin: false, privileges: [], name: "", created_at:""});
   editRoleForm: FormGroup;
@@ -41,17 +57,9 @@ export class RoleDetailComponent implements OnInit {
   privileges: Observable<Privilege[]>;
   private roleId: string;
 
-  constructor(private roleService: RoleService,
-              private toastService: ToasterService,
-              private route: ActivatedRoute,
-              private privilegeService: PrivilegeService,
-              private fb : FormBuilder,
-  ) {
-
-
-
+  constructor() {
     this.$role.subscribe((role) => {
-      this.editRoleForm = fb.group({
+      this.editRoleForm = this.fb.group({
         rolename: [role.name],
         description: [role.description],
       });
