@@ -1,6 +1,12 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
 import { CapturingSettings } from '@models/capturingSettings';
 import { Link } from '@models/link';
@@ -13,10 +19,21 @@ import { ToasterService } from '@services/toaster.service';
 import { PacketFiltersDialogComponent } from '../packet-filters/packet-filters.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-start-capture',
   templateUrl: './start-capture.component.html',
   styleUrls: ['./start-capture.component.scss'],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatCheckboxModule
+  ]
 })
 export class StartCaptureDialogComponent implements OnInit {
   controller: Controller;
@@ -26,14 +43,14 @@ export class StartCaptureDialogComponent implements OnInit {
   inputForm: UntypedFormGroup;
   startProgram: boolean;
 
-  constructor(
-    private dialogRef: MatDialogRef<PacketFiltersDialogComponent>,
-    private linkService: LinkService,
-    private formBuilder: UntypedFormBuilder,
-    private toasterService: ToasterService,
-    private nodesDataSource: NodesDataSource,
-    private packetCaptureService: PacketCaptureService
-  ) {
+  private dialogRef = inject(MatDialogRef<PacketFiltersDialogComponent>);
+  private linkService = inject(LinkService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private toasterService = inject(ToasterService);
+  private nodesDataSource = inject(NodesDataSource);
+  private packetCaptureService = inject(PacketCaptureService);
+
+  constructor() {
     this.inputForm = this.formBuilder.group({
       linkType: new UntypedFormControl('', Validators.required),
       fileName: new UntypedFormControl('', Validators.required),
