@@ -1,19 +1,18 @@
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, inject } from '@angular/core';
 import { Controller } from '@models/controller';
 import { HttpController } from '@services/http-controller.service';
 import { DomSanitizer } from '@angular/platform-browser';
 import { environment } from 'environments/environment';
 
 @Pipe({
-  standalone: false,
+  standalone: true,
   name: 'authImage'
 })
 export class AuthImageFilter implements PipeTransform {
+    private httpController = inject(HttpController);
+    private domSanitizer = inject(DomSanitizer);
 
-    constructor(
-        private httpController: HttpController,
-        private domSanitizer: DomSanitizer
-    ) { }
+    constructor() {}
 
     async transform(src: string, controller: Controller ) {
         let url = src.split(`${environment.current_version}`)[1];
