@@ -1,10 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatStepperModule } from '@angular/material/stepper';
 import { UploadServiceService } from '../../../../common/uploading-processbar/upload-service.service';
 import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/uploading-processbar.component';
-import { FileItem, FileUploader, FileUploaderOptions, ParsedResponseHeaders } from 'ng2-file-upload';
+import { FileItem, FileUploader, FileUploaderOptions, ParsedResponseHeaders, FileUploadModule } from 'ng2-file-upload';
+import { Subscription } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '@models/compute';
 import { QemuBinary } from '@models/qemu/qemu-binary';
@@ -19,12 +29,26 @@ import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-add-qemu-virtual-machine-template',
   templateUrl: './add-qemu-vm-template.component.html',
   styleUrls: ['./add-qemu-vm-template.component.scss', '../../preferences.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, UploadingProcessbarComponent, FileUploadModule]
 })
-export class AddQemuVmTemplateComponent implements OnInit {
+export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private qemuService = inject(QemuService);
+  private toasterService = inject(ToasterService);
+  private router = inject(Router);
+  private formBuilder = inject(UntypedFormBuilder);
+  private templateMocksService = inject(TemplateMocksService);
+  private configurationService = inject(QemuConfigurationService);
+  private computeService = inject(ComputeService);
+  private snackBar = inject(MatSnackBar);
+  private uploadServiceService = inject(UploadServiceService);
+  subscription: Subscription;
+
   controller: Controller;
   selectPlatform: string[] = [];
   selectedPlatform: string;
@@ -45,19 +69,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
   diskForm: UntypedFormGroup;
   isLocalComputerChosen: boolean = true;
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private qemuService: QemuService,
-    private toasterService: ToasterService,
-    private router: Router,
-    private formBuilder: UntypedFormBuilder,
-    private templateMocksService: TemplateMocksService,
-    private configurationService: QemuConfigurationService,
-    private computeService: ComputeService,
-    private snackBar : MatSnackBar,
-    private uploadServiceService  : UploadServiceService
-  ) {
+  constructor() {
     this.qemuTemplate = new QemuTemplate();
 
     this.nameForm = this.formBuilder.group({
@@ -118,7 +130,7 @@ export class AddQemuVmTemplateComponent implements OnInit {
       this.auxConsoleTypes = this.configurationService.getAuxConsoleTypes();
     });
 
-    this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
+    this.subscription = this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
       if (isCancel) {
         this.cancelUploading()
       }
@@ -187,5 +199,8 @@ export class AddQemuVmTemplateComponent implements OnInit {
     }
   }
 
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
+  }
 
 }

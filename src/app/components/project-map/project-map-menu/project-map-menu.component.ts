@@ -1,5 +1,11 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, Output, EventEmitter, ChangeDetectorRef, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatMenuModule } from '@angular/material/menu';
 import { NodeService } from '@services/node.service';
 import { select } from 'd3-selection';
 import { Subscription } from 'rxjs';
@@ -21,13 +27,26 @@ import { DrawingsDataSource } from '../../../cartography/datasources/drawings-da
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { AiChatStore } from '../../../stores/ai-chat.store';
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-project-map-menu',
   templateUrl: './project-map-menu.component.html',
   styleUrls: ['./project-map-menu.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule, MatDividerModule, MatMenuModule, ScreenshotDialogComponent, ProjectMapLockConfirmationDialogComponent]
 })
 export class ProjectMapMenuComponent implements OnInit, OnDestroy {
+  private toolsService = inject(ToolsService);
+  private mapSettingsService = inject(MapSettingsService);
+  private drawingService = inject(DrawingService);
+  private symbolService = inject(SymbolService);
+  private dialog = inject(MatDialog);
+  private themeService = inject(ThemeService);
+  private projectServices = inject(ProjectService);
+  private nodeService = inject(NodeService);
+  private nodesDataSource = inject(NodesDataSource);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private aiChatStore = inject(AiChatStore);
+  private cdr = inject(ChangeDetectorRef);
   @Input() project: Project;
   @Input() controller: Controller;
   @Output() aiChatOpened = new EventEmitter<void>();
@@ -48,20 +67,6 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   public isAIMinimized: boolean = false;
   private projectSubscription: Subscription;
   private aiChatStateSubscription: Subscription;
-  constructor(
-    private toolsService: ToolsService,
-    private mapSettingsService: MapSettingsService,
-    private drawingService: DrawingService,
-    private symbolService: SymbolService,
-    private dialog: MatDialog,
-    private themeService: ThemeService,
-    private projectServices: ProjectService,
-    private nodeService : NodeService,
-    private nodesDataSource: NodesDataSource,
-    private drawingsDataSource: DrawingsDataSource,
-    private aiChatStore: AiChatStore,
-    private cdr: ChangeDetectorRef
-  ) {}
 
   ngOnInit() {
     this.themeService.getActualTheme() === 'light'
