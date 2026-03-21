@@ -10,31 +10,50 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, QueryList, ViewChild, ViewChildren, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 import {Location}  from '@angular/common';
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Router, RouterModule} from "@angular/router";
 import {Controller} from "@models/controller";
 import {MatSort} from "@angular/material/sort";
+import {MatTableModule} from '@angular/material/table';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatButtonModule} from '@angular/material/button';
+import {MatPaginator} from "@angular/material/paginator";
+import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {UserService} from "@services/user.service";
 import {ProgressService} from "../../common/progress/progress.service";
 import {User} from "@models/users/user";
 import {SelectionModel} from "@angular/cdk/collections";
 import {AddUserDialogComponent} from "@components/user-management/add-user-dialog/add-user-dialog.component";
-import {MatDialog} from "@angular/material/dialog";
 import {DeleteUserDialogComponent} from "@components/user-management/delete-user-dialog/delete-user-dialog.component";
 import {ToasterService} from "@services/toaster.service";
-import {MatPaginator} from "@angular/material/paginator";
 import {MatTableDataSource} from "@angular/material/table";
 import {ControllerService} from "@services/controller.service";
+import {UserFilterPipe} from "@filters/user-filter.pipe";
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-user-management',
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatPaginator, MatDialogModule, AddUserDialogComponent, DeleteUserDialogComponent, UserFilterPipe]
 })
 export class UserManagementComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private userService = inject(UserService);
+  private progressService = inject(ProgressService);
+  private controllerService = inject(ControllerService);
+  public dialog = inject(MatDialog);
+  private toasterService = inject(ToasterService);
+  private location = inject(Location);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   dataSource = new MatTableDataSource<User>();
   displayedColumns = ['select', 'username', 'full_name', 'email', 'is_active', 'last_login', 'updated_at', 'delete'];
@@ -45,17 +64,7 @@ export class UserManagementComponent implements OnInit {
   @ViewChildren('usersSort') usersSort: QueryList<MatSort>;
   isReady = false;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private userService: UserService,
-    private progressService: ProgressService,
-    private controllerService: ControllerService,
-    public dialog: MatDialog,
-    private toasterService: ToasterService,
-    private location: Location,
-    private cd: ChangeDetectorRef
-  ) { }
+  constructor() { }
 
   ngOnInit() {
     const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');
