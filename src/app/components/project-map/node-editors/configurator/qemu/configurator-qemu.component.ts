@@ -1,7 +1,16 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatDialog, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
 import { CustomAdaptersTableComponent } from '@components/preferences/common/custom-adapters-table/custom-adapters-table.component';
@@ -15,13 +24,23 @@ import { ToasterService } from '@services/toaster.service';
 import { QemuImageCreatorComponent } from './qemu-image-creator/qemu-image-creator.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-configurator-qemu',
   templateUrl: './configurator-qemu.component.html',
   styleUrls: ['../configurator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatChipsModule, MatIconModule, MatCheckboxModule, CustomAdaptersTableComponent]
 })
 export class ConfiguratorDialogQemuComponent implements OnInit {
+  private dialog = inject(MatDialog);
+  private dialogRef = inject(MatDialogRef<ConfiguratorDialogQemuComponent>);
+  private nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private qemuService = inject(QemuService);
+  private qemuConfigurationService = inject(QemuConfigurationService);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   node: Node;
   name: string;
@@ -47,16 +66,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
 
   @ViewChild('customAdapters') customAdapters: CustomAdaptersTableComponent;
 
-  constructor(
-    private dialog: MatDialog,
-    public dialogRef: MatDialogRef<ConfiguratorDialogQemuComponent>,
-    public nodeService: NodeService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder,
-    private qemuService: QemuService,
-    private qemuConfigurationService: QemuConfigurationService,
-    private cd: ChangeDetectorRef
-  ) {
+  constructor() {
     this.generalSettingsForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
       ram: new UntypedFormControl('', Validators.required),

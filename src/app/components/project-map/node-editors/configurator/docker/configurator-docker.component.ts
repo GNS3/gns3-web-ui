@@ -1,7 +1,16 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatDialog, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
@@ -13,13 +22,23 @@ import { EditNetworkConfigurationDialogComponent } from './edit-network-configur
 import { NonNegativeValidator } from '../../../../../validators/non-negative-validator';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-configurator-docker',
   templateUrl: './configurator-docker.component.html',
   styleUrls: ['../configurator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatChipsModule, MatIconModule, MatCheckboxModule, ConfigureCustomAdaptersDialogComponent, EditNetworkConfigurationDialogComponent]
 })
 export class ConfiguratorDialogDockerComponent implements OnInit {
+  private dialogReference = inject(MatDialogRef<ConfiguratorDialogDockerComponent>);
+  private nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private dockerConfigurationService = inject(DockerConfigurationService);
+  private nonNegativeValidator = inject(NonNegativeValidator);
+  private dialog = inject(MatDialog);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   node: Node;
   name: string;
@@ -35,22 +54,13 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   };
   dialogRef;
 
-  constructor(
-      public dialogReference: MatDialogRef<ConfiguratorDialogDockerComponent>,
-      public nodeService: NodeService,
-      private toasterService: ToasterService,
-      private formBuilder: UntypedFormBuilder,
-      private dockerConfigurationService: DockerConfigurationService,
-      private nonNegativeValidator: NonNegativeValidator,
-      private dialog: MatDialog,
-      private cd: ChangeDetectorRef
-  ) {
+  constructor() {
       this.generalSettingsForm = this.formBuilder.group({
           name: new UntypedFormControl('', Validators.required),
           adapter: new UntypedFormControl('', Validators.required),
           mac_address: new UntypedFormControl('', Validators.pattern(this.dockerConfigurationService.getMacAddrRegex())),
-          memory: new UntypedFormControl('', nonNegativeValidator.get),
-          cpus: new UntypedFormControl('', nonNegativeValidator.get),
+          memory: new UntypedFormControl('', this.nonNegativeValidator.get),
+          cpus: new UntypedFormControl('', this.nonNegativeValidator.get),
           startCommand: new UntypedFormControl(''),
           consoleHttpPort: new UntypedFormControl('', Validators.required),
           consoleHttpPath: new UntypedFormControl('', Validators.required)

@@ -1,6 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, UntypedFormBuilder } from '@angular/forms';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatListModule } from '@angular/material/list';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 import { Node } from '../../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { DockerConfigurationService } from '@services/docker-configuration.service';
@@ -8,24 +12,25 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-configure-custom-adapters',
   templateUrl: './configure-custom-adapters.component.html',
   styleUrls: ['./configure-custom-adapters.component.scss'],
+  imports: [CommonModule, FormsModule, MatDialogModule, MatListModule, MatInputModule, MatButtonModule]
 })
 export class ConfigureCustomAdaptersDialogComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<ConfigureCustomAdaptersDialogComponent>);
+  private nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private dockerConfigurationService = inject(DockerConfigurationService);
+
   controller: Controller;
   node: Node;
   displayedColumns: string[] = ['adapter_number', 'port_name'];
   adapters: CustomAdapter[] = [];
 
-  constructor(
-    public dialogRef: MatDialogRef<ConfigureCustomAdaptersDialogComponent>,
-    public nodeService: NodeService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder,
-    private dockerConfigurationService: DockerConfigurationService
-  ) {}
+  constructor() {}
 
   ngOnInit() {
     let i: number = 0;

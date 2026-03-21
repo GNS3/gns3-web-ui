@@ -1,26 +1,31 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 import { Node } from '../../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-edit-network-configuration',
   templateUrl: './edit-network-configuration.component.html',
   styleUrls: ['./edit-network-configuration.component.scss'],
+  imports: [CommonModule, FormsModule, MatDialogModule, MatInputModule, MatButtonModule]
 })
 export class EditNetworkConfigurationDialogComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<EditNetworkConfigurationDialogComponent>);
+  private nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
+
   controller: Controller;
   node: Node;
   configuration: string;
 
-  constructor(
-    public dialogRef: MatDialogRef<EditNetworkConfigurationDialogComponent>,
-    public nodeService: NodeService,
-    private toasterService: ToasterService
-  ) {}
+  constructor() {}
 
   ngOnInit() {
     this.nodeService.getNetworkConfiguration(this.controller, this.node).subscribe((response: string) => {
