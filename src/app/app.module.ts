@@ -346,7 +346,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
 @NgModule({
     declarations: [
         AppComponent,
-        ProjectMapComponent,
+        // ProjectMapComponent,
         // ProjectsComponent,
         // DefaultLayoutComponent,
         // ContextMenuComponent,
@@ -392,6 +392,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         AppRoutingModule,
         DefaultLayoutComponent,
         NewTemplateDialogComponent,
+        ProjectMapComponent,
         ManagementComponent,
         RoleManagementComponent,
         UserManagementComponent,

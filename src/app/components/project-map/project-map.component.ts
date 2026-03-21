@@ -10,6 +10,7 @@ import {
   ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
+  inject,
 } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
@@ -97,14 +98,65 @@ import { NewTemplateDialogComponent } from './new-template-dialog/new-template-d
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { ProjectReadmeComponent } from './project-readme/project-readme.component';
 import { AiChatStore } from '../../stores/ai-chat.store';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { AiChatComponent } from './ai-chat/ai-chat.component';
+import { ConsoleWrapperComponent } from './console-wrapper/console-wrapper.component';
+import { DrawLinkToolComponent } from './draw-link-tool/draw-link-tool.component';
+import { ImportApplianceComponent } from './import-appliance/import-appliance.component';
+import { NodesMenuComponent } from './nodes-menu/nodes-menu.component';
+import { ProgressComponent } from '../../common/progress/progress.component';
+import { TemplateComponent } from '../template/template.component';
+import { SnapshotMenuItemComponent } from '../snapshots/snapshot-menu-item/snapshot-menu-item.component';
+import { ExperimentalMapComponent } from '../../cartography/components/experimental-map/experimental-map.component';
+import { DrawingAddedComponent } from '../drawings-listeners/drawing-added/drawing-added.component';
+import { DrawingDraggedComponent } from '../drawings-listeners/drawing-dragged/drawing-dragged.component';
+import { DrawingResizedComponent } from '../drawings-listeners/drawing-resized/drawing-resized.component';
+import { InterfaceLabelDraggedComponent } from '../drawings-listeners/interface-label-dragged/interface-label-dragged.component';
+import { LinkCreatedComponent } from '../drawings-listeners/link-created/link-created.component';
+import { NodeDraggedComponent } from '../drawings-listeners/node-dragged/node-dragged.component';
+import { NodeLabelDraggedComponent } from '../drawings-listeners/node-label-dragged/node-label-dragged.component';
+import { TextAddedComponent } from '../drawings-listeners/text-added/text-added.component';
+import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edited.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-project-map',
   encapsulation: ViewEncapsulation.None,
   templateUrl: './project-map.component.html',
   styleUrls: ['./project-map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatIconModule,
+    MatMenuModule,
+    D3MapComponent,
+    ExperimentalMapComponent,
+    ContextMenuComponent,
+    ProjectMapMenuComponent,
+    DrawLinkToolComponent,
+    NodesMenuComponent,
+    SnapshotMenuItemComponent,
+    TemplateComponent,
+    ImportApplianceComponent,
+    ConsoleWrapperComponent,
+    AiChatComponent,
+    ProgressComponent,
+    DrawingAddedComponent,
+    DrawingDraggedComponent,
+    DrawingResizedComponent,
+    InterfaceLabelDraggedComponent,
+    LinkCreatedComponent,
+    NodeDraggedComponent,
+    NodeLabelDraggedComponent,
+    TextAddedComponent,
+    TextEditedComponent,
+  ]
 })
 export class ProjectMapComponent implements OnInit, OnDestroy {
   public nodes: Node[] = [];
@@ -148,60 +200,58 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   private projectMapSubscription: Subscription = new Subscription();
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private projectService: ProjectService,
-    private nodeService: NodeService,
-    private linkService: LinkService,
-    public drawingService: DrawingService,
-    private progressService: ProgressService,
-    private projectWebServiceHandler: ProjectWebServiceHandler,
-    private mapChangeDetectorRef: MapChangeDetectorRef,
-    private nodeWidget: NodeWidget,
-    private drawingsWidget: DrawingsWidget,
-    private linkWidget: LinkWidget,
-    private labelWidget: LabelWidget,
-    private interfaceLabelWidget: InterfaceLabelWidget,
-    private mapNodeToNode: MapNodeToNodeConverter,
-    private mapDrawingToDrawing: MapDrawingToDrawingConverter,
-    private mapLabelToLabel: MapLabelToLabelConverter,
-    private mapLinkToLink: MapLinkToLinkConverter,
-    private mapLinkNodeToLinkNode: MapLinkNodeToLinkNodeConverter,
-    private nodesDataSource: NodesDataSource,
-    private linksDataSource: LinksDataSource,
-    private drawingsDataSource: DrawingsDataSource,
-    private settingsService: SettingsService,
-    private toolsService: ToolsService,
-    private selectionManager: SelectionManager,
-    private selectionTool: SelectionTool,
-    private recentlyOpenedProjectService: RecentlyOpenedProjectService,
-    private movingEventSource: MovingEventSource,
-    private mapScaleService: MapScaleService,
-    private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer,
-    private toasterService: ToasterService,
-    private dialog: MatDialog,
-    private router: Router,
-    private mapNodesDataSource: MapNodesDataSource,
-    private mapLinksDataSource: MapLinksDataSource,
-    private mapDrawingsDataSource: MapDrawingsDataSource,
-    private mapSymbolsDataSource: MapSymbolsDataSource,
-    private mapSettingsService: MapSettingsService,
-    private ethernetLinkWidget: EthernetLinkWidget,
-    private serialLinkWidget: SerialLinkWidget,
-    private bottomSheet: MatBottomSheet,
-    private notificationService: NotificationService,
-    private themeService: ThemeService,
-    private title: Title,
-    private nodeConsoleService: NodeConsoleService,
-    private symbolService: SymbolService,
-    private cd: ChangeDetectorRef,
-    private aiChatStore: AiChatStore,
-    // private cfr: ComponentFactoryResolver,
-    // private injector: Injector,
-    private viewContainerRef: ViewContainerRef,
-    private ngZone: NgZone
-  ) {}
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private projectService = inject(ProjectService);
+  private nodeService = inject(NodeService);
+  private linkService = inject(LinkService);
+  public drawingService = inject(DrawingService);
+  private progressService = inject(ProgressService);
+  private projectWebServiceHandler = inject(ProjectWebServiceHandler);
+  private mapChangeDetectorRef = inject(MapChangeDetectorRef);
+  private nodeWidget = inject(NodeWidget);
+  private drawingsWidget = inject(DrawingsWidget);
+  private linkWidget = inject(LinkWidget);
+  private labelWidget = inject(LabelWidget);
+  private interfaceLabelWidget = inject(InterfaceLabelWidget);
+  private mapNodeToNode = inject(MapNodeToNodeConverter);
+  private mapDrawingToDrawing = inject(MapDrawingToDrawingConverter);
+  private mapLabelToLabel = inject(MapLabelToLabelConverter);
+  private mapLinkToLink = inject(MapLinkToLinkConverter);
+  private mapLinkNodeToLinkNode = inject(MapLinkNodeToLinkNodeConverter);
+  private nodesDataSource = inject(NodesDataSource);
+  private linksDataSource = inject(LinksDataSource);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private settingsService = inject(SettingsService);
+  private toolsService = inject(ToolsService);
+  private selectionManager = inject(SelectionManager);
+  private selectionTool = inject(SelectionTool);
+  private recentlyOpenedProjectService = inject(RecentlyOpenedProjectService);
+  private movingEventSource = inject(MovingEventSource);
+  private mapScaleService = inject(MapScaleService);
+  private nodeCreatedLabelStylesFixer = inject(NodeCreatedLabelStylesFixer);
+  private toasterService = inject(ToasterService);
+  private dialog = inject(MatDialog);
+  private router = inject(Router);
+  private mapNodesDataSource = inject(MapNodesDataSource);
+  private mapLinksDataSource = inject(MapLinksDataSource);
+  private mapDrawingsDataSource = inject(MapDrawingsDataSource);
+  private mapSymbolsDataSource = inject(MapSymbolsDataSource);
+  private mapSettingsService = inject(MapSettingsService);
+  private ethernetLinkWidget = inject(EthernetLinkWidget);
+  private serialLinkWidget = inject(SerialLinkWidget);
+  private bottomSheet = inject(MatBottomSheet);
+  private notificationService = inject(NotificationService);
+  private themeService = inject(ThemeService);
+  private title = inject(Title);
+  private nodeConsoleService = inject(NodeConsoleService);
+  private symbolService = inject(SymbolService);
+  private cd = inject(ChangeDetectorRef);
+  private aiChatStore = inject(AiChatStore);
+  private viewContainerRef = inject(ViewContainerRef);
+  private ngZone = inject(NgZone);
+  // private cfr: ComponentFactoryResolver,
+  // private injector: Injector,
 
   // constructor(private viewContainerRef: ViewContainerRef) {}
   // createMyComponent() {this.viewContainerRef.createComponent(MyComponent);}
