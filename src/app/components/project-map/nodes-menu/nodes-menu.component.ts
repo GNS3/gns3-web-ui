@@ -1,5 +1,9 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
@@ -12,26 +16,24 @@ import { ToasterService } from '@services/toaster.service';
 import { NodesMenuConfirmationDialogComponent } from './nodes-menu-confirmation-dialog/nodes-menu-confirmation-dialog.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-nodes-menu',
   templateUrl: './nodes-menu.component.html',
   styleUrls: ['./nodes-menu.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule, NodesMenuConfirmationDialogComponent]
 })
 export class NodesMenuComponent {
+  private nodeService = inject(NodeService);
+  private nodeConsoleService = inject(NodeConsoleService);
+  private nodesDataSource = inject(NodesDataSource);
+  private toasterService = inject(ToasterService);
+  private controllerService = inject(ControllerService);
+  private settingsService = inject(SettingsService);
+  private mapSettingsService = inject(MapSettingsService);
+  private dialog = inject(MatDialog);
   @Input('project') project: Project;
   @Input('controller') controller: Controller;
-
-  constructor(
-    private nodeService: NodeService,
-    private nodeConsoleService: NodeConsoleService,
-    private nodesDataSource: NodesDataSource,
-    private toasterService: ToasterService,
-    private controllerService: ControllerService,
-    private settingsService: SettingsService,
-    private mapSettingsService: MapSettingsService,
-    private dialog: MatDialog
-  ) {}
 
   async startConsoleForAllNodes() {
     if (this.mapSettingsService.openConsolesInWidget) {
