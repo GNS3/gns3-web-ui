@@ -1,5 +1,6 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { MatMenuTrigger } from '@angular/material/menu';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Node } from '../../../cartography/models/node';
 import { Link } from '@models/link';
@@ -7,10 +8,11 @@ import { LinkNode } from '@models/link-node';
 import { Port } from '@models/port';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-node-select-interface',
   templateUrl: './node-select-interface.component.html',
   styleUrls: ['./node-select-interface.component.scss'],
+  imports: [CommonModule, MatMenuModule]
 })
 export class NodeSelectInterfaceComponent implements OnInit {
   @Input() links: Link[];
@@ -18,12 +20,13 @@ export class NodeSelectInterfaceComponent implements OnInit {
 
   @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
 
+  private sanitizer = inject(DomSanitizer);
+  private changeDetector = inject(ChangeDetectorRef);
+
   protected topPosition;
   protected leftPosition;
   public node: Node;
   public ports: Port[];
-
-  constructor(private sanitizer: DomSanitizer, private changeDetector: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.setPosition(0, 0);
