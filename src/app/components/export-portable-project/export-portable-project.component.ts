@@ -1,15 +1,35 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, Inject, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { UntypedFormBuilder, UntypedFormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDividerModule } from '@angular/material/divider';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-export-portable-project',
   templateUrl: './export-portable-project.component.html',
   styleUrls: ['./export-portable-project.component.scss'],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatCheckboxModule,
+    MatDividerModule
+  ]
 })
 export class ExportPortableProjectComponent implements OnInit {
   export_project_form: UntypedFormGroup;
@@ -23,12 +43,12 @@ export class ExportPortableProjectComponent implements OnInit {
   fileName: string;
   isExport: boolean = false;
 
-  constructor(
-    public dialogRef: MatDialogRef<ExportPortableProjectComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    private projectService: ProjectService,
-    private _fb: UntypedFormBuilder
-  ) {}
+  public dialogRef = inject(MatDialogRef<ExportPortableProjectComponent>);
+  @Inject(MAT_DIALOG_DATA) public data: any;
+  private projectService = inject(ProjectService);
+  private _fb = inject(UntypedFormBuilder);
+
+  constructor() {}
 
   async ngOnInit() {
     this.controller = this.data.controllerDetails;
