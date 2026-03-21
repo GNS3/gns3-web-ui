@@ -1,6 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -26,7 +33,21 @@ import { ToasterService } from '@services/toaster.service';
   templateUrl: './configurator-cloud.component.html',
   styleUrls: ['../configurator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatChipsModule, MatIconModule, UdpTunnelsComponent]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatCardModule,
+    MatTabsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatChipsModule,
+    MatIconModule,
+    UdpTunnelsComponent,
+  ],
 })
 export class ConfiguratorDialogCloudComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogCloudComponent>);
@@ -56,7 +77,7 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
   ethernetInterface: string = '';
   ethernetInterfaces: string[] = ['Ethernet 2', 'Ethernet 3'];
 
-  @ViewChild('udpTunnels') udpTunnels: UdpTunnelsComponent;
+  readonly udpTunnels = viewChild<UdpTunnelsComponent>('udpTunnels');
 
   constructor() {
     this.generalSettingsForm = this.formBuilder.group({
@@ -111,7 +132,7 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
 
   onSaveClick() {
     if (this.generalSettingsForm.valid) {
-      this.portsMappingUdp = this.udpTunnels.dataSourceUdp;
+      this.portsMappingUdp = this.udpTunnels().dataSourceUdp;
 
       this.node.properties.ports_mapping = this.portsMappingUdp
         .concat(this.portsMappingEthernet)

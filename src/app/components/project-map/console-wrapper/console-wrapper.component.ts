@@ -6,11 +6,10 @@ import {
   OnDestroy,
   HostListener,
   ChangeDetectorRef,
-  ViewChildren,
-  QueryList,
   AfterViewInit,
   inject,
   input,
+  viewChildren,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, UntypedFormControl } from '@angular/forms';
@@ -85,8 +84,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   nodes: Node[] = [];
   selected = new UntypedFormControl(0);
 
-  @ViewChildren(WebConsoleComponent)
-  webConsoleComponents: QueryList<WebConsoleComponent>;
+  readonly webConsoleComponents = viewChildren(WebConsoleComponent);
 
   ngOnInit() {
     this.themeService.getActualTheme() === 'light'
@@ -402,10 +400,10 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     this.selected.setValue(index);
 
     // Auto-focus xterm when switching to device console tab (not GNS3 console)
-    if (index < this.nodes.length && this.webConsoleComponents) {
+    if (index < this.nodes.length && this.webConsoleComponents()) {
       // Use setTimeout to ensure DOM has updated before focusing
       setTimeout(() => {
-        const webConsoleArray = this.webConsoleComponents.toArray();
+        const webConsoleArray = this.webConsoleComponents;
         if (webConsoleArray[index]) {
           webConsoleArray[index].focusTerminal();
         }

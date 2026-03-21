@@ -5,11 +5,11 @@ import {
   ElementRef,
   OnInit,
   OnDestroy,
-  ViewChild,
   ViewEncapsulation,
   ChangeDetectorRef,
   inject,
   input,
+  viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Terminal } from 'xterm';
@@ -51,7 +51,7 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   private resizeObserver: ResizeObserver | null = null;
   private contextMenuCleanup: (() => void) | null = null;
 
-  @ViewChild('terminal') terminal: ElementRef;
+  readonly terminal = viewChild<ElementRef>('terminal');
 
   private consoleService = inject(NodeConsoleService);
   private themeService = inject(ThemeService);
@@ -82,7 +82,8 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.term.open(this.terminal.nativeElement);
+    const terminal = this.terminal();
+    this.term.open(terminal.nativeElement);
     if (this.isLightThemeEnabled)
       this.term.setOption('theme', { background: 'white', foreground: 'black', cursor: 'black' });
 
@@ -127,14 +128,15 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setupResizeObserver();
 
     // Setup context menu for copy/paste
-    this.contextMenuCleanup = this.contextMenuService.attachContextMenu(this.term, this.terminal.nativeElement);
+    this.contextMenuCleanup = this.contextMenuService.attachContextMenu(this.term, terminal.nativeElement);
   }
 
   /**
    * Setup ResizeObserver to automatically resize terminal when container size changes
    */
   private setupResizeObserver(): void {
-    if (!this.terminal?.nativeElement) return;
+    const terminal = this.terminal();
+    if (!terminal?.nativeElement) return;
 
     this.resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -165,7 +167,7 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
       }
     });
 
-    this.resizeObserver.observe(this.terminal.nativeElement);
+    this.resizeObserver.observe(terminal.nativeElement);
   }
 
   /**

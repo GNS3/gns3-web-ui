@@ -1,6 +1,13 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
@@ -28,11 +35,26 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
   selector: 'app-vmware-template-details',
   templateUrl: './vmware-template-details.component.html',
   styleUrls: ['./vmware-template-details.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatExpansionModule, MatIconModule, MatButtonModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, MatCheckboxModule, CustomAdaptersComponent, SymbolsMenuComponent]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MatExpansionModule,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatChipsModule,
+    MatCheckboxModule,
+    CustomAdaptersComponent,
+    SymbolsMenuComponent,
+  ],
 })
 export class VmwareTemplateDetailsComponent implements OnInit {
-  @ViewChild('customAdaptersConfigurator')
-  customAdaptersConfigurator: CustomAdaptersComponent;
+  readonly customAdaptersConfigurator = viewChild<CustomAdaptersComponent>('customAdaptersConfigurator');
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private vmwareService = inject(VmwareService);
@@ -65,7 +87,7 @@ export class VmwareTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
       this.controller = controller;
       this.cd.markForCheck();
 
@@ -98,9 +120,11 @@ export class VmwareTemplateDetailsComponent implements OnInit {
     } else {
       this.fillCustomAdapters();
 
-      this.vmwareService.saveTemplate(this.controller, this.vmwareTemplate).subscribe((vmwareTemplate: VmwareTemplate) => {
-        this.toasterService.success('Changes saved');
-      });
+      this.vmwareService
+        .saveTemplate(this.controller, this.vmwareTemplate)
+        .subscribe((vmwareTemplate: VmwareTemplate) => {
+          this.toasterService.success('Changes saved');
+        });
     }
   }
 
@@ -109,10 +133,10 @@ export class VmwareTemplateDetailsComponent implements OnInit {
 
     if (state) {
       this.fillCustomAdapters();
-      this.customAdaptersConfigurator.numberOfAdapters = this.vmwareTemplate.adapters;
-      this.customAdaptersConfigurator.adapters = [];
+      this.customAdaptersConfigurator().numberOfAdapters = this.vmwareTemplate.adapters;
+      this.customAdaptersConfigurator().adapters = [];
       this.vmwareTemplate.custom_adapters.forEach((adapter: CustomAdapter) => {
-        this.customAdaptersConfigurator.adapters.push({
+        this.customAdaptersConfigurator().adapters.push({
           adapter_number: adapter.adapter_number,
           adapter_type: adapter.adapter_type,
         });

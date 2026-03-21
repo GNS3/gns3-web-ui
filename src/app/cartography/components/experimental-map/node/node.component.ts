@@ -12,6 +12,7 @@ import {
   ViewChild,
   inject,
   input,
+  viewChild,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
@@ -35,7 +36,7 @@ export class NodeComponent implements OnInit, OnDestroy, OnChanges, AfterViewIni
   static NODE_LABEL_MARGIN = 3;
 
   @ViewChild('label') label: ElementRef;
-  @ViewChild('image') imageRef: ElementRef;
+  readonly imageRef = viewChild<ElementRef>('image');
 
   @Input('app-node') node: MapNode;
   readonly symbols = input<Symbol[]>(undefined);

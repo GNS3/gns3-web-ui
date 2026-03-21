@@ -1,6 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -23,10 +30,23 @@ import { ToasterService } from '@services/toaster.service';
   templateUrl: './configurator-ethernet-switch.component.html',
   styleUrls: ['../configurator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatChipsModule, MatIconModule, PortsComponent]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatChipsModule,
+    MatIconModule,
+    PortsComponent,
+  ],
 })
 export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
-  @ViewChild(PortsComponent) portsComponent: PortsComponent;
+  readonly portsComponent = viewChild(PortsComponent);
 
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogEthernetSwitchComponent>);
   private nodeService = inject(NodeService);
@@ -66,7 +86,7 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
 
   onSaveClick() {
     if (this.inputForm.valid) {
-      this.node.properties.ports_mapping = this.portsComponent.ethernetPorts;
+      this.node.properties.ports_mapping = this.portsComponent().ethernetPorts;
       this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();

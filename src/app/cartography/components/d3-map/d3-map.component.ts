@@ -8,9 +8,9 @@ import {
   OnDestroy,
   OnInit,
   SimpleChange,
-  ViewChild,
   inject,
   input,
+  viewChild,
 } from '@angular/core';
 import { select, Selection } from 'd3-selection';
 import { Subscription } from 'rxjs';
@@ -70,8 +70,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   readonly width = input(1500);
   readonly height = input(600);
 
-  @ViewChild('svg') svgRef: ElementRef;
-  @ViewChild('textEditor') textEditor: TextEditorComponent;
+  readonly svgRef = viewChild<ElementRef>('svg');
+  readonly textEditor = viewChild<TextEditorComponent>('textEditor');
 
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
@@ -350,8 +350,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     // Recalculate after setNodes/Drawings so graphDataManager has current positions.
     this.context.size = this.getSize();
     this.graphLayout.draw(this.svg, this.context);
-    this.textEditor.activateTextEditingForDrawings();
-    this.textEditor.activateTextEditingForNodeLabels();
+    this.textEditor().activateTextEditingForDrawings();
+    this.textEditor().activateTextEditingForNodeLabels();
     this.mapSettingsService.mapRenderedEmitter.emit(true);
   }
 

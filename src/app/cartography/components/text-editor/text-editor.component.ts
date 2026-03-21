@@ -5,9 +5,9 @@ import {
   OnDestroy,
   OnInit,
   Renderer2,
-  ViewChild,
   inject,
   input,
+  viewChild,
 } from '@angular/core';
 import { select } from 'd3-selection';
 import { Subscription } from 'rxjs';
@@ -37,7 +37,7 @@ import { Node } from '../../models/node';
   imports: [],
 })
 export class TextEditorComponent implements OnInit, OnDestroy {
-  @ViewChild('temporaryTextElement') temporaryTextElement: ElementRef;
+  readonly temporaryTextElement = viewChild<ElementRef>('temporaryTextElement');
   readonly svg = input<SVGSVGElement>(undefined);
   readonly controller = input<Controller>(undefined);
 
@@ -80,31 +80,33 @@ export class TextEditorComponent implements OnInit, OnDestroy {
     let addTextListener = (event: MouseEvent) => {
       this.leftPosition = event.pageX.toString() + 'px';
       this.topPosition = event.pageY.toString() + 'px';
-      this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'initial');
+      const temporaryTextElement = this.temporaryTextElement();
+      this.renderer.setStyle(temporaryTextElement.nativeElement, 'display', 'initial');
       this.renderer.setStyle(
-        this.temporaryTextElement.nativeElement,
+        temporaryTextElement.nativeElement,
         'transform',
         `scale(${this.mapScaleService.getScale()})`
       );
-      this.temporaryTextElement.nativeElement.focus();
+      temporaryTextElement.nativeElement.focus();
       document.documentElement.style.cursor = 'default';
 
       let textListener = () => {
+        const temporaryTextElementValue = this.temporaryTextElement();
         this.drawingsEventSource.textAdded.emit(
           new TextAddedDataEvent(
-            this.temporaryTextElement.nativeElement.innerText.replace(/\n$/, ''),
+            temporaryTextElementValue.nativeElement.innerText.replace(/\n$/, ''),
             event.pageX,
             event.pageY
           )
         );
         this.deactivateTextAdding();
         this.innerText = '';
-        this.temporaryTextElement.nativeElement.innerText = '';
-        this.temporaryTextElement.nativeElement.removeEventListener('focusout', this.textListener);
-        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'none');
+        temporaryTextElementValue.nativeElement.innerText = '';
+        temporaryTextElementValue.nativeElement.removeEventListener('focusout', this.textListener);
+        this.renderer.setStyle(temporaryTextElementValue.nativeElement, 'display', 'none');
       };
       this.textListener = textListener;
-      this.temporaryTextElement.nativeElement.addEventListener('focusout', this.textListener);
+      temporaryTextElement.nativeElement.addEventListener('focusout', this.textListener);
     };
 
     this.deactivateTextAdding();
@@ -125,9 +127,10 @@ export class TextEditorComponent implements OnInit, OnDestroy {
       .on('dblclick', (elem, index, textElements) => {
         this.selectionManager.setSelected([]);
 
-        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'initial');
+        const temporaryTextElement = this.temporaryTextElement();
+        this.renderer.setStyle(temporaryTextElement.nativeElement, 'display', 'initial');
         this.renderer.setStyle(
-          this.temporaryTextElement.nativeElement,
+          temporaryTextElement.nativeElement,
           'transform',
           `scale(${this.mapScaleService.getScale()})`
         );
@@ -148,7 +151,7 @@ export class TextEditorComponent implements OnInit, OnDestroy {
           this.context.transformation.y;
         this.leftPosition = x.toString() + 'px';
         this.topPosition = y.toString() + 'px';
-        this.temporaryTextElement.nativeElement.innerText = elem.label.text;
+        temporaryTextElement.nativeElement.innerText = elem.label.text;
 
         let styleProperties: StyleProperty[] = [];
         for (let property of elem.label.style.split(';')) {
@@ -170,18 +173,18 @@ export class TextEditorComponent implements OnInit, OnDestroy {
         };
         font = this.fontFixer.fix(font);
         this.renderer.setStyle(
-          this.temporaryTextElement.nativeElement,
+          temporaryTextElement.nativeElement,
           'color',
           styleProperties.find((p) => p.property === 'fill')
             ? styleProperties.find((p) => p.property === 'fill').value
             : '#000000'
         );
-        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-family', font.font_family);
-        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-size', `${font.font_size}pt`);
-        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-weight', font.font_weight);
+        this.renderer.setStyle(temporaryTextElement.nativeElement, 'font-family', font.font_family);
+        this.renderer.setStyle(temporaryTextElement.nativeElement, 'font-size', `${font.font_size}pt`);
+        this.renderer.setStyle(temporaryTextElement.nativeElement, 'font-weight', font.font_weight);
 
         let listener = () => {
-          let innerText = this.temporaryTextElement.nativeElement.innerText;
+          let innerText = this.temporaryTextElement().nativeElement.innerText;
           let link: Link = this.linksDataSource.get(this.editedLink.linkId);
           link.nodes.find((n) => n.node_id === this.editedNode.node_id).label.text = innerText;
 
@@ -192,16 +195,16 @@ export class TextEditorComponent implements OnInit, OnDestroy {
               .classed('editingMode', false);
 
             this.innerText = '';
-            this.temporaryTextElement.nativeElement.innerText = '';
-            this.temporaryTextElement.nativeElement.removeEventListener('focusout', this.textListener);
+            temporaryTextElement.nativeElement.innerText = '';
+            temporaryTextElement.nativeElement.removeEventListener('focusout', this.textListener);
 
             this.clearStyle();
-            this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'none');
+            this.renderer.setStyle(temporaryTextElement.nativeElement, 'display', 'none');
           });
         };
         this.textListener = listener;
-        this.temporaryTextElement.nativeElement.addEventListener('focusout', this.textListener);
-        this.temporaryTextElement.nativeElement.focus();
+        temporaryTextElement.nativeElement.addEventListener('focusout', this.textListener);
+        temporaryTextElement.nativeElement.focus();
       });
   }
 
@@ -211,9 +214,10 @@ export class TextEditorComponent implements OnInit, OnDestroy {
     rootElement
       .selectAll<SVGTextElement, TextElement>('text.text_element')
       .on('dblclick', (elem, index, textElements) => {
-        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'initial');
+        const temporaryTextElement = this.temporaryTextElement();
+        this.renderer.setStyle(temporaryTextElement.nativeElement, 'display', 'initial');
         this.renderer.setStyle(
-          this.temporaryTextElement.nativeElement,
+          temporaryTextElement.nativeElement,
           'transform',
           `scale(${this.mapScaleService.getScale()})`
         );
@@ -234,15 +238,15 @@ export class TextEditorComponent implements OnInit, OnDestroy {
           this.context.transformation.y;
         this.leftPosition = x.toString() + 'px';
         this.topPosition = y.toString() + 'px';
-        this.temporaryTextElement.nativeElement.innerText = elem.text;
+        temporaryTextElement.nativeElement.innerText = elem.text;
 
-        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'color', elem.fill);
-        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-family', elem.font_family);
-        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-size', `${elem.font_size}pt`);
-        this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-weight', elem.font_weight);
+        this.renderer.setStyle(temporaryTextElement.nativeElement, 'color', elem.fill);
+        this.renderer.setStyle(temporaryTextElement.nativeElement, 'font-family', elem.font_family);
+        this.renderer.setStyle(temporaryTextElement.nativeElement, 'font-size', `${elem.font_size}pt`);
+        this.renderer.setStyle(temporaryTextElement.nativeElement, 'font-weight', elem.font_weight);
 
         let listener = () => {
-          let innerText = this.temporaryTextElement.nativeElement.innerText;
+          let innerText = this.temporaryTextElement().nativeElement.innerText;
           this.drawingsEventSource.textEdited.emit(
             new TextEditedDataEvent(this.editingDrawingId, innerText.replace(/\n$/, ''), this.editedElement)
           );
@@ -253,15 +257,15 @@ export class TextEditorComponent implements OnInit, OnDestroy {
             .classed('editingMode', false);
 
           this.innerText = '';
-          this.temporaryTextElement.nativeElement.innerText = '';
-          this.temporaryTextElement.nativeElement.removeEventListener('focusout', this.textListener);
+          temporaryTextElement.nativeElement.innerText = '';
+          temporaryTextElement.nativeElement.removeEventListener('focusout', this.textListener);
 
           this.clearStyle();
-          this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'display', 'none');
+          this.renderer.setStyle(temporaryTextElement.nativeElement, 'display', 'none');
         };
         this.textListener = listener;
-        this.temporaryTextElement.nativeElement.addEventListener('focusout', this.textListener);
-        this.temporaryTextElement.nativeElement.focus();
+        temporaryTextElement.nativeElement.addEventListener('focusout', this.textListener);
+        temporaryTextElement.nativeElement.focus();
       });
   }
 
@@ -270,9 +274,10 @@ export class TextEditorComponent implements OnInit, OnDestroy {
   }
 
   clearStyle() {
-    this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'color', '#000000');
-    this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-family', 'Noto Sans');
-    this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-size', '11pt');
-    this.renderer.setStyle(this.temporaryTextElement.nativeElement, 'font-weight', 'bold');
+    const temporaryTextElement = this.temporaryTextElement();
+    this.renderer.setStyle(temporaryTextElement.nativeElement, 'color', '#000000');
+    this.renderer.setStyle(temporaryTextElement.nativeElement, 'font-family', 'Noto Sans');
+    this.renderer.setStyle(temporaryTextElement.nativeElement, 'font-size', '11pt');
+    this.renderer.setStyle(temporaryTextElement.nativeElement, 'font-weight', 'bold');
   }
 }

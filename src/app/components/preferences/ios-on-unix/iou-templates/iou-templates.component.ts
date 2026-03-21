@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,7 +19,17 @@ import { EmptyTemplatesListComponent } from '../../common/empty-templates-list/e
   selector: 'app-iou-templates',
   templateUrl: './iou-templates.component.html',
   styleUrls: ['./iou-templates.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, RouterModule, MatButtonModule, MatIconModule, MatListModule, MatMenuModule, MatTooltipModule, DeleteTemplateComponent, EmptyTemplatesListComponent]
+  imports: [
+    CommonModule,
+    RouterModule,
+    MatButtonModule,
+    MatIconModule,
+    MatListModule,
+    MatMenuModule,
+    MatTooltipModule,
+    DeleteTemplateComponent,
+    EmptyTemplatesListComponent,
+  ],
 })
 export class IouTemplatesComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -30,11 +40,11 @@ export class IouTemplatesComponent implements OnInit {
 
   controller: Controller;
   iouTemplates: IouTemplate[] = [];
-  @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
+  readonly deleteComponent = viewChild(DeleteTemplateComponent);
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
       this.controller = controller;
       this.cd.markForCheck();
       this.getTemplates();
@@ -49,7 +59,7 @@ export class IouTemplatesComponent implements OnInit {
   }
 
   deleteTemplate(template: IouTemplate) {
-    this.deleteComponent.deleteItem(template.name, template.template_id);
+    this.deleteComponent().deleteItem(template.name, template.template_id);
   }
 
   onDeleteEvent() {
@@ -57,6 +67,14 @@ export class IouTemplatesComponent implements OnInit {
   }
 
   copyTemplate(template: IouTemplate) {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'iou', 'templates', template.template_id, 'copy']);
+    this.router.navigate([
+      '/controller',
+      this.controller.id,
+      'preferences',
+      'iou',
+      'templates',
+      template.template_id,
+      'copy',
+    ]);
   }
 }

@@ -9,9 +9,9 @@ import {
   OnDestroy,
   OnInit,
   SimpleChange,
-  ViewChild,
   inject,
   input,
+  viewChild,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Link } from '@models/link';
@@ -50,7 +50,7 @@ export class ExperimentalMapComponent implements OnInit, OnChanges, OnDestroy {
   readonly width = input(1500);
   readonly height = input(600);
 
-  @ViewChild('svg') svg: ElementRef;
+  readonly svg = viewChild<ElementRef>('svg');
 
   private changesDetected: Subscription;
 

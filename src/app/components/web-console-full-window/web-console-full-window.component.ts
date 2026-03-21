@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, OnDestroy, ViewChild, ViewEncapsulation, inject } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, ViewEncapsulation, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
@@ -20,7 +20,7 @@ import { XtermContextMenuService } from '@services/xterm-context-menu.service';
   selector: 'app-web-console-full-window',
   templateUrl: './web-console-full-window.component.html',
   styleUrls: ['../../../../node_modules/xterm/css/xterm.css', './web-console-full-window.component.scss'],
-  imports: [CommonModule]
+  imports: [CommonModule],
 })
 export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
   private controllerId: string;
@@ -32,12 +32,12 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
   private contextMenuCleanup: (() => void) | null = null;
 
   public term: Terminal = new Terminal({
-    rightClickSelectsWord: true,  // Enable right-click to select word
-    altClickMovesCursor: true,    // Enable Alt+Click to move cursor
+    rightClickSelectsWord: true, // Enable right-click to select word
+    altClickMovesCursor: true, // Enable Alt+Click to move cursor
   });
   public fitAddon: FitAddon = new FitAddon();
 
-  @ViewChild('terminal') terminal: ElementRef;
+  readonly terminal = viewChild<ElementRef>('terminal');
 
   private consoleService = inject(NodeConsoleService);
   private controllerService = inject(ControllerService);
@@ -70,7 +70,7 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
       this.fitAddon.fit();
     });
 
-    this.controllerService.get(+this.controllerId).then((controller: Controller ) => {
+    this.controllerService.get(+this.controllerId).then((controller: Controller) => {
       this.controller = controller;
       this.nodeService.getNodeById(this.controller, this.projectId, this.nodeId).subscribe((node: GNS3Node) => {
         this.node = node;
@@ -82,7 +82,8 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
 
   openTerminal() {
     setTimeout(() => {
-      this.term.open(this.terminal.nativeElement);
+      const terminal = this.terminal();
+      this.term.open(terminal.nativeElement);
       const socket = new WebSocket(this.consoleService.getUrl(this.controller, this.node));
 
       socket.onerror = (event) => {
@@ -110,10 +111,7 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
       });
 
       // Setup context menu for copy/paste
-      this.contextMenuCleanup = this.contextMenuService.attachContextMenu(
-        this.term,
-        this.terminal.nativeElement
-      );
+      this.contextMenuCleanup = this.contextMenuService.attachContextMenu(this.term, terminal.nativeElement);
 
       let numberOfColumns = Math.round(window.innerWidth / this.consoleService.getLineWidth());
       let numberOfRows = Math.round(window.innerHeight / this.consoleService.getLineHeight());

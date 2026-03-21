@@ -6,9 +6,9 @@ import {
   Input,
   OnDestroy,
   OnInit,
-  ViewChild,
   inject,
   input,
+  viewChild,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MultiLinkCalculatorHelper } from '../../../helpers/multi-link-calculator-helper';
@@ -31,7 +31,7 @@ export class LinkComponent implements OnInit, OnDestroy {
   readonly nodeChanged = input<EventEmitter<Node>>(undefined, { alias: 'node-changed' });
   readonly showInterfaceLabels = input<boolean>(undefined, { alias: 'show-interface-labels' });
 
-  @ViewChild('path') path: ElementRef;
+  readonly path = viewChild<ElementRef>('path');
 
   private ethernetLinkStrategy = new EthernetLinkStrategy();
   private serialLinkStrategy = new SerialLinkStrategy();

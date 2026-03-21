@@ -1,6 +1,13 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
@@ -28,7 +35,23 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
   selector: 'app-virtual-box-template-details',
   templateUrl: './virtual-box-template-details.component.html',
   styleUrls: ['./virtual-box-template-details.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatExpansionModule, MatIconModule, MatButtonModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, MatCheckboxModule, CustomAdaptersComponent, SymbolsMenuComponent]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MatExpansionModule,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatChipsModule,
+    MatCheckboxModule,
+    CustomAdaptersComponent,
+    SymbolsMenuComponent,
+  ],
 })
 export class VirtualBoxTemplateDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -53,8 +76,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   generalSettingsForm: UntypedFormGroup;
   networkForm: UntypedFormGroup;
 
-  @ViewChild('customAdaptersConfigurator')
-  customAdaptersConfigurator: CustomAdaptersComponent;
+  readonly customAdaptersConfigurator = viewChild<CustomAdaptersComponent>('customAdaptersConfigurator');
 
   constructor() {
     this.generalSettingsForm = this.formBuilder.group({
@@ -74,7 +96,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
       this.controller = controller;
       this.cd.markForCheck();
 
@@ -104,10 +126,10 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
 
     if (state) {
       this.fillCustomAdapters();
-      this.customAdaptersConfigurator.numberOfAdapters = this.virtualBoxTemplate.adapters;
-      this.customAdaptersConfigurator.adapters = [];
+      this.customAdaptersConfigurator().numberOfAdapters = this.virtualBoxTemplate.adapters;
+      this.customAdaptersConfigurator().adapters = [];
       this.virtualBoxTemplate.custom_adapters.forEach((adapter: CustomAdapter) => {
-        this.customAdaptersConfigurator.adapters.push({
+        this.customAdaptersConfigurator().adapters.push({
           adapter_number: adapter.adapter_number,
           adapter_type: adapter.adapter_type,
         });

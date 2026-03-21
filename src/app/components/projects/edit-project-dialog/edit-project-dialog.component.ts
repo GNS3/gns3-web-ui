@@ -1,6 +1,21 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Injectable, ViewChild, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  Injectable,
+  inject,
+  viewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -36,11 +51,11 @@ import { ReadmeEditorComponent } from './readme-editor/readme-editor.component';
     MatIconModule,
     MatTooltipModule,
     MatTabsModule,
-    ReadmeEditorComponent
-  ]
+    ReadmeEditorComponent,
+  ],
 })
 export class EditProjectDialogComponent implements OnInit {
-  @ViewChild('editor') editor: ReadmeEditorComponent;
+  readonly editor = viewChild<ReadmeEditorComponent>('editor');
 
   private dialogRef = inject(MatDialogRef<EditProjectDialogComponent>);
   private formBuilder = inject(UntypedFormBuilder);
@@ -122,11 +137,13 @@ export class EditProjectDialogComponent implements OnInit {
       this.project.auto_close = !this.auto_close;
 
       this.projectService.update(this.controller, this.project).subscribe((project: Project) => {
-        this.projectService.postReadmeFile(this.controller, this.project.project_id, this.editor.markdown).subscribe((response) => {
-          this.toasterService.success(`Project ${project.name} updated.`);
-          this.onNoClick();
-        });
-      })
+        this.projectService
+          .postReadmeFile(this.controller, this.project.project_id, this.editor().markdown)
+          .subscribe((response) => {
+            this.toasterService.success(`Project ${project.name} updated.`);
+            this.onNoClick();
+          });
+      });
     } else {
       this.toasterService.error(`Fill all required fields with correct values.`);
     }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,7 +20,17 @@ import { EmptyTemplatesListComponent } from '../../common/empty-templates-list/e
   templateUrl: './ios-templates.component.html',
   styleUrls: ['./ios-templates.component.scss', '../../preferences.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, MatButtonModule, MatIconModule, MatListModule, MatMenuModule, MatTooltipModule, DeleteTemplateComponent, EmptyTemplatesListComponent]
+  imports: [
+    CommonModule,
+    RouterModule,
+    MatButtonModule,
+    MatIconModule,
+    MatListModule,
+    MatMenuModule,
+    MatTooltipModule,
+    DeleteTemplateComponent,
+    EmptyTemplatesListComponent,
+  ],
 })
 export class IosTemplatesComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -31,11 +41,11 @@ export class IosTemplatesComponent implements OnInit {
 
   controller: Controller;
   iosTemplates: IosTemplate[] = [];
-  @ViewChild(DeleteTemplateComponent) deleteComponent: DeleteTemplateComponent;
+  readonly deleteComponent = viewChild(DeleteTemplateComponent);
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
       this.controller = controller;
       this.cd.markForCheck();
       this.getTemplates();
@@ -50,7 +60,7 @@ export class IosTemplatesComponent implements OnInit {
   }
 
   deleteTemplate(template: VpcsTemplate) {
-    this.deleteComponent.deleteItem(template.name, template.template_id);
+    this.deleteComponent().deleteItem(template.name, template.template_id);
   }
 
   onDeleteEvent() {

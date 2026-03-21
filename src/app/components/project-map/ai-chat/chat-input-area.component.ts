@@ -4,11 +4,11 @@ import {
   EventEmitter,
   OnInit,
   OnDestroy,
-  ViewChild,
   ElementRef,
   ChangeDetectorRef,
   inject,
   input,
+  viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -477,8 +477,8 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
   @Output() modelSelected = new EventEmitter<LLMModelConfigWithSource>();
   @Output() copilotModeSelected = new EventEmitter<CopilotMode>();
 
-  @ViewChild('messageInput', { static: true }) messageInput!: ElementRef<HTMLTextAreaElement>;
-  @ViewChild('menuTrigger') menuTrigger!: MatMenuTrigger;
+  readonly messageInput = viewChild.required<ElementRef<HTMLTextAreaElement>>('messageInput');
+  readonly menuTrigger = viewChild.required<MatMenuTrigger>('menuTrigger');
 
   message = '';
   textareaHeight = 48; // Initial height
@@ -504,8 +504,9 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
     this.themeService.themeChanged.pipe(takeUntil(this.destroy$)).subscribe((theme) => {
       this.currentTheme = theme;
       // Close menu if open to force re-render with new theme
-      if (this.menuTrigger && this.menuTrigger.menuOpen) {
-        this.menuTrigger.closeMenu();
+      const menuTrigger = this.menuTrigger();
+      if (menuTrigger && menuTrigger.menuOpen) {
+        menuTrigger.closeMenu();
       }
     });
   }
@@ -583,11 +584,12 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
    * Inspired by FlowNet-Lab ChatInput implementation
    */
   private adjustTextareaHeight(): void {
-    if (!this.messageInput || !this.messageInput.nativeElement) {
+    const messageInput = this.messageInput();
+    if (!messageInput || !messageInput.nativeElement) {
       return;
     }
 
-    const textarea = this.messageInput.nativeElement;
+    const textarea = messageInput.nativeElement;
 
     // Reset height to auto to calculate scroll height
     textarea.style.height = 'auto';
@@ -630,8 +632,9 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
    * Focus input
    */
   focus(): void {
-    if (this.messageInput && this.messageInput.nativeElement) {
-      this.messageInput.nativeElement.focus();
+    const messageInput = this.messageInput();
+    if (messageInput && messageInput.nativeElement) {
+      messageInput.nativeElement.focus();
     }
   }
 

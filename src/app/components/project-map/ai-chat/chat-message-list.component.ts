@@ -6,11 +6,11 @@ import {
   SimpleChanges,
   AfterViewChecked,
   ElementRef,
-  ViewChild,
   ViewEncapsulation,
   ChangeDetectionStrategy,
   inject,
   input,
+  viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
@@ -160,7 +160,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
   @Output() scrollToEnd = new EventEmitter<void>();
   @Output() suggestionClicked = new EventEmitter<string>();
 
-  @ViewChild('messageContainer') private messageContainer!: ElementRef<HTMLDivElement>;
+  private readonly messageContainer = viewChild.required<ElementRef<HTMLDivElement>>('messageContainer');
 
   private shouldScrollToBottom = false;
 
@@ -253,8 +253,9 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
    * Scroll to bottom
    */
   private scrollToBottom(): void {
-    if (this.messageContainer?.nativeElement) {
-      const element = this.messageContainer.nativeElement;
+    const messageContainer = this.messageContainer();
+    if (messageContainer?.nativeElement) {
+      const element = messageContainer.nativeElement;
       element.scrollTop = element.scrollHeight;
       this.scrollToEnd.emit();
     }

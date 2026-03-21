@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, inject, input } from '@angular/core';
+import { Component, ElementRef, inject, input, viewChild } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -23,12 +23,12 @@ export class ImportConfigActionComponent {
 
   readonly controller = input<Controller>(undefined);
   readonly node = input<Node>(undefined);
-  @ViewChild('fileInput') fileInput: ElementRef;
+  readonly fileInput = viewChild<ElementRef>('fileInput');
   configType: string;
 
   triggerClick() {
     // 重置 fileInput，确保 change 事件可以再次触发
-    this.fileInput.nativeElement.value = '';
+    this.fileInput().nativeElement.value = '';
     if (this.node().node_type !== 'vpcs') {
       const dialogRef = this.dialog.open(ConfigDialogComponent, {
         width: '500px',
@@ -38,11 +38,11 @@ export class ImportConfigActionComponent {
       let instance = dialogRef.componentInstance;
       dialogRef.afterClosed().subscribe((configType: string) => {
         this.configType = configType;
-        this.fileInput.nativeElement.click();
+        this.fileInput().nativeElement.click();
       });
     } else {
       this.configType = 'startup-config';
-      this.fileInput.nativeElement.click();
+      this.fileInput().nativeElement.click();
     }
   }
 

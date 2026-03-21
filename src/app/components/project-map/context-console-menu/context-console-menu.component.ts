@@ -4,10 +4,10 @@ import {
   ComponentRef,
   Input,
   OnInit,
-  ViewChild,
   ViewContainerRef,
   inject,
   input,
+  viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
@@ -41,8 +41,8 @@ export class ContextConsoleMenuComponent implements OnInit {
 
   readonly project = input<Project>(undefined);
   @Input() controller: Controller;
-  @ViewChild(MatMenuTrigger) contextConsoleMenu: MatMenuTrigger;
-  @ViewChild('container', { read: ViewContainerRef }) container;
+  readonly contextConsoleMenu = viewChild(MatMenuTrigger);
+  readonly container = viewChild('container', { read: ViewContainerRef });
   componentBrowserRef: ComponentRef<ConsoleDeviceActionBrowserComponent>;
 
   topPosition;
@@ -74,14 +74,14 @@ export class ContextConsoleMenuComponent implements OnInit {
       }
     } else {
       this.setPosition(top, left);
-      this.contextConsoleMenu.openMenu();
+      this.contextConsoleMenu().openMenu();
     }
   }
 
   openConsole() {
     this.mapSettingsService.setConsoleContextMenuAction('console');
     // Use Ivy's new API - no need for resolveComponentFactory
-    this.componentBrowserRef = this.container.createComponent(ConsoleDeviceActionBrowserComponent);
+    this.componentBrowserRef = this.container().createComponent(ConsoleDeviceActionBrowserComponent);
     this.componentBrowserRef.instance.controller = this.controller;
     this.componentBrowserRef.instance.node = this.node;
     this.componentBrowserRef.instance.openConsole();

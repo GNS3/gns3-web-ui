@@ -1,6 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -25,7 +32,22 @@ import { VirtualBoxConfigurationService } from '@services/virtual-box-configurat
   templateUrl: './configurator-virtualbox.component.html',
   styleUrls: ['../configurator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatChipsModule, MatIconModule, MatCheckboxModule, CustomAdaptersTableComponent]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatCardModule,
+    MatTabsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatChipsModule,
+    MatIconModule,
+    MatCheckboxModule,
+    CustomAdaptersTableComponent,
+  ],
 })
 export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogVirtualBoxComponent>);
@@ -46,7 +68,7 @@ export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
   networkTypes = [];
 
-  @ViewChild('customAdapters') customAdapters: CustomAdaptersTableComponent;
+  readonly customAdapters = viewChild<CustomAdaptersTableComponent>('customAdapters');
 
   constructor() {
     this.generalSettingsForm = this.formBuilder.group({
@@ -76,7 +98,7 @@ export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
   onSaveClick() {
     if (this.generalSettingsForm.valid) {
       this.node.custom_adapters = [];
-      this.customAdapters.adapters.forEach((n) => {
+      this.customAdapters().adapters.forEach((n) => {
         this.node.custom_adapters.push({
           adapter_number: n.adapter_number,
           adapter_type: n.adapter_type,

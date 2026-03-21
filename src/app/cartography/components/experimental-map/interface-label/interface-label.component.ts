@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild, inject, input } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, inject, input, viewChild } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CssFixer } from '../../../helpers/css-fixer';
 
@@ -12,7 +12,7 @@ import { CssFixer } from '../../../helpers/css-fixer';
 export class InterfaceLabelComponent implements OnInit {
   readonly ignore = input<any>(undefined, { alias: 'app-interface-label' });
 
-  @ViewChild('textSvg') textRef: ElementRef;
+  readonly textRef = viewChild<ElementRef>('textSvg');
 
   private label = {
     x: 0,
@@ -77,15 +77,15 @@ export class InterfaceLabelComponent implements OnInit {
   }
 
   get rectY() {
-    return -this.textRef.nativeElement.getBBox().height - this.borderSize;
+    return -this.textRef().nativeElement.getBBox().height - this.borderSize;
   }
 
   get rectWidth() {
-    return this.textRef.nativeElement.getBBox().width + this.borderSize * 2;
+    return this.textRef().nativeElement.getBBox().width + this.borderSize * 2;
   }
 
   get rectHeight() {
-    return this.textRef.nativeElement.getBBox().height + this.borderSize;
+    return this.textRef().nativeElement.getBBox().height + this.borderSize;
   }
 
   get transform() {

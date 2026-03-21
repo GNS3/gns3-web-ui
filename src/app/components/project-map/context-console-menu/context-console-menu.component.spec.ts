@@ -43,7 +43,7 @@ describe('ContextConsoleMenuComponent', () => {
         NodeConsoleService,
         { provide: VncConsoleService, useValue: {} },
         ToasterService,
-        MapSettingsService
+        MapSettingsService,
       ],
       declarations: [ContextConsoleMenuComponent, ConsoleDeviceActionComponent, ConsoleDeviceActionBrowserComponent],
       schemas: [NO_ERRORS_SCHEMA],
@@ -54,51 +54,50 @@ describe('ContextConsoleMenuComponent', () => {
     nodeConsoleService = TestBed.inject(NodeConsoleService);
   });
 
-beforeEach(() => {
-  fixture = TestBed.createComponent(ContextConsoleMenuComponent);
-  component = fixture.componentInstance;
-  component.controller = { location: 'local' } as Controller;
-  fixture.detectChanges();
-});
+  beforeEach(() => {
+    fixture = TestBed.createComponent(ContextConsoleMenuComponent);
+    component = fixture.componentInstance;
+    component.controller = { location: 'local' } as Controller;
+    fixture.detectChanges();
+  });
 
-it('should create', () => {
-  expect(component).toBeTruthy();
-});
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
+  it('should open menu if there is no default settings', () => {
+    let spy = spyOn(component.contextConsoleMenu(), 'openMenu');
+    localStorage.removeItem('consoleContextMenu');
 
-it('should open menu if there is no default settings', () => {
-  let spy = spyOn(component.contextConsoleMenu, 'openMenu');
-  localStorage.removeItem('consoleContextMenu');
+    component.openMenu(node as unknown as Node, 0, 0);
 
-  component.openMenu((node as unknown) as Node, 0, 0);
+    expect(spy.calls.any()).toBeTruthy();
+  });
 
-  expect(spy.calls.any()).toBeTruthy();
-});
+  it('should call open web console when web console action in settings', () => {
+    let spy = spyOn(component, 'openWebConsole');
+    mapSettingsService.setConsoleContextMenuAction('web console');
 
-it('should call open web console when web console action in settings', () => {
-  let spy = spyOn(component, 'openWebConsole');
-  mapSettingsService.setConsoleContextMenuAction('web console');
+    component.openMenu(node as unknown as Node, 0, 0);
 
-  component.openMenu((node as unknown) as Node, 0, 0);
+    expect(spy.calls.any()).toBeTruthy();
+  });
 
-  expect(spy.calls.any()).toBeTruthy();
-});
+  it('should call open web console in new tab when web console in new tab action in settings', () => {
+    let spy = spyOn(component, 'openWebConsoleInNewTab');
+    mapSettingsService.setConsoleContextMenuAction('web console in new tab');
 
-it('should call open web console in new tab when web console in new tab action in settings', () => {
-  let spy = spyOn(component, 'openWebConsoleInNewTab');
-  mapSettingsService.setConsoleContextMenuAction('web console in new tab');
+    component.openMenu(node as unknown as Node, 0, 0);
 
-  component.openMenu((node as unknown) as Node, 0, 0);
+    expect(spy.calls.any()).toBeTruthy();
+  });
 
-  expect(spy.calls.any()).toBeTruthy();
-});
+  it('should call open console when console action in settings', () => {
+    let spy = spyOn(component, 'openConsole');
+    mapSettingsService.setConsoleContextMenuAction('console');
 
-it('should call open console when console action in settings', () => {
-  let spy = spyOn(component, 'openConsole');
-  mapSettingsService.setConsoleContextMenuAction('console');
+    component.openMenu(node as unknown as Node, 0, 0);
 
-  component.openMenu((node as unknown) as Node, 0, 0);
-
-  expect(spy.calls.any()).toBeTruthy();
-});
+    expect(spy.calls.any()).toBeTruthy();
+  });
 });

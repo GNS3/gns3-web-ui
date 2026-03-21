@@ -10,6 +10,7 @@ import {
   ViewContainerRef,
   ViewEncapsulation,
   inject,
+  viewChild,
 } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
@@ -153,7 +154,7 @@ import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edit
     NodeLabelDraggedComponent,
     TextAddedComponent,
     TextEditedComponent,
-  ]
+  ],
 })
 export class ProjectMapComponent implements OnInit, OnDestroy {
   public nodes: Node[] = [];
@@ -190,10 +191,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private highlightedNodeId: string = null;
   public isGlobalLightTheme: boolean = false;
 
-  @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
-  @ViewChild(D3MapComponent) mapChild: D3MapComponent;
+  readonly contextMenu = viewChild(ContextMenuComponent);
+  readonly mapChild = viewChild(D3MapComponent);
   @ViewChild(ProjectMapMenuComponent) projectMapMenuComponent: ProjectMapMenuComponent;
-  @ViewChild('topologySummaryContainer', { read: ViewContainerRef }) topologySummaryContainer: ViewContainerRef;
+  readonly topologySummaryContainer = viewChild('topologySummaryContainer', { read: ViewContainerRef });
 
   private projectMapSubscription: Subscription = new Subscription();
 
@@ -345,10 +346,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         // Build a map from node -> rawUrl for all nodes that need loading
         const nodeRawUrlMap = new Map<Node, string>();
         nodesToLoad.forEach((node: Node) => {
-          nodeRawUrlMap.set(
-            node,
-            `/symbols/${node.symbol}/raw`
-          );
+          nodeRawUrlMap.set(node, `/symbols/${node.symbol}/raw`);
         });
 
         // Deduplicate: only 1 fetch per unique symbol URL (shareReplay(1) in getSymbolBlobUrl handles concurrent callers)
@@ -366,7 +364,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           () => {
             // Fallback to raw URLs if blob fetch fails
             nodesToLoad.forEach((node: Node) => {
-              node.symbol_url = `${this.controller.protocol}//${this.controller.host}:${this.controller.port}/${environment.current_version}${nodeRawUrlMap.get(node)}`;
+              node.symbol_url = `${this.controller.protocol}//${this.controller.host}:${this.controller.port}/${
+                environment.current_version
+              }${nodeRawUrlMap.get(node)}`;
             });
             this.nodes = nodes;
             if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
@@ -424,7 +424,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
       from(this.controllerService.get(controller_id))
         .pipe(
-          mergeMap((controller: Controller ) => {
+          mergeMap((controller: Controller) => {
             if (!controller) this.router.navigate(['/controllers']);
             this.controller = controller;
             this.cd.markForCheck();
@@ -588,7 +588,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpProjectWS(project: Project) {
-    this.projectws = new WebSocket(this.notificationService.projectNotificationsPath(this.controller, project.project_id));
+    this.projectws = new WebSocket(
+      this.notificationService.projectNotificationsPath(this.controller, project.project_id)
+    );
 
     this.projectws.onmessage = (event: MessageEvent) => {
       this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
@@ -610,40 +612,61 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     const onLinkContextMenu = this.linkWidget.onContextMenu.subscribe((eventLink: LinkContextMenu) => {
       const link = this.mapLinkToLink.convert(eventLink.link);
-      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.clientY, eventLink.event.clientX);
+      this.contextMenu().openMenuForListOfElements(
+        [],
+        [],
+        [],
+        [link],
+        eventLink.event.clientY,
+        eventLink.event.clientX
+      );
     });
 
     const onEthernetLinkContextMenu = this.ethernetLinkWidget.onContextMenu.subscribe((eventLink: LinkContextMenu) => {
       const link = this.mapLinkToLink.convert(eventLink.link);
-      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.clientY, eventLink.event.clientX);
+      this.contextMenu().openMenuForListOfElements(
+        [],
+        [],
+        [],
+        [link],
+        eventLink.event.clientY,
+        eventLink.event.clientX
+      );
     });
 
     const onSerialLinkContextMenu = this.serialLinkWidget.onContextMenu.subscribe((eventLink: LinkContextMenu) => {
       const link = this.mapLinkToLink.convert(eventLink.link);
-      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.clientY, eventLink.event.clientX);
+      this.contextMenu().openMenuForListOfElements(
+        [],
+        [],
+        [],
+        [link],
+        eventLink.event.clientY,
+        eventLink.event.clientX
+      );
     });
 
     const onNodeContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
       const node = this.mapNodeToNode.convert(eventNode.node);
-      this.contextMenu.openMenuForNode(node, eventNode.event.clientY, eventNode.event.clientX);
+      this.contextMenu().openMenuForNode(node, eventNode.event.clientY, eventNode.event.clientX);
     });
 
     const onDrawingContextMenu = this.drawingsWidget.onContextMenu.subscribe((eventDrawing: DrawingContextMenu) => {
       const drawing = this.mapDrawingToDrawing.convert(eventDrawing.drawing);
-      this.contextMenu.openMenuForDrawing(drawing, eventDrawing.event.clientY, eventDrawing.event.clientX);
+      this.contextMenu().openMenuForDrawing(drawing, eventDrawing.event.clientY, eventDrawing.event.clientX);
     });
 
     const onLabelContextMenu = this.labelWidget.onContextMenu.subscribe((eventLabel: LabelContextMenu) => {
       const label = this.mapLabelToLabel.convert(eventLabel.label);
       const node = this.nodes.find((n) => n.node_id === eventLabel.label.nodeId);
-      this.contextMenu.openMenuForLabel(label, node, eventLabel.event.clientY, eventLabel.event.clientX);
+      this.contextMenu().openMenuForLabel(label, node, eventLabel.event.clientY, eventLabel.event.clientX);
     });
 
     const onInterfaceLabelContextMenu = this.interfaceLabelWidget.onContextMenu.subscribe(
       (eventInterfaceLabel: InterfaceLabelContextMenu) => {
         const linkNode = this.mapLinkNodeToLinkNode.convert(eventInterfaceLabel.interfaceLabel);
         const link = this.links.find((l) => l.link_id === eventInterfaceLabel.interfaceLabel.linkId);
-        this.contextMenu.openMenuForInterfaceLabel(
+        this.contextMenu().openMenuForInterfaceLabel(
           linkNode,
           link,
           eventInterfaceLabel.event.clientY,
@@ -673,7 +696,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         }
       });
 
-      this.contextMenu.openMenuForListOfElements(drawings, nodes, labels, links, event.clientY, event.clientX);
+      this.contextMenu().openMenuForListOfElements(drawings, nodes, labels, links, event.clientY, event.clientX);
     });
 
     this.projectMapSubscription.add(onLinkContextMenu);
@@ -738,15 +761,19 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public centerView() {
     if (this.project) {
-      const ctx = this.mapChild?.context;
-      const viewportWidth  = document.documentElement.clientWidth;
+      const ctx = this.mapChild()?.context;
+      const viewportWidth = document.documentElement.clientWidth;
       const viewportHeight = document.documentElement.clientHeight;
       // With an asymmetric canvas the scene origin sits at (centerX, centerY)
       // in SVG space. Scrolling to centerX - halfViewport puts the origin in
       // the middle of the screen, which is the natural "home" position.
-      const svgCenterX = ctx ? (ctx.centerX !== null ? ctx.centerX : ctx.size.width  / 2) : this.project.scene_width  / 2;
-      const svgCenterY = ctx ? (ctx.centerY !== null ? ctx.centerY : ctx.size.height / 2) : this.project.scene_height / 2;
-      const scrollX = Math.max(0, svgCenterX - viewportWidth  / 2);
+      const svgCenterX = ctx ? (ctx.centerX !== null ? ctx.centerX : ctx.size.width / 2) : this.project.scene_width / 2;
+      const svgCenterY = ctx
+        ? ctx.centerY !== null
+          ? ctx.centerY
+          : ctx.size.height / 2
+        : this.project.scene_height / 2;
+      const scrollX = Math.max(0, svgCenterX - viewportWidth / 2);
       const scrollY = Math.max(0, svgCenterY - viewportHeight / 2);
 
       window.scrollTo(scrollX, scrollY);
@@ -834,7 +861,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.aiChatStore.setPanelState({
       isOpen: false,
       isMinimized: false,
-      isMaximized: false
+      isMaximized: false,
     });
   }
 
@@ -868,7 +895,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     } else {
       localStorage.removeItem('layersVisibility');
     }
-    this.mapChild.applyMapSettingsChanges();
+    this.mapChild().applyMapSettingsChanges();
   }
 
   public toggleGrid(visible: boolean) {
@@ -878,7 +905,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     } else {
       localStorage.removeItem('gridVisibility');
     }
-    this.mapChild.gridVisibility = this.gridVisibility ? 1 : 0;
+    this.mapChild().gridVisibility = this.gridVisibility ? 1 : 0;
   }
 
   public toggleSnapToGrid(enabled: boolean) {
@@ -972,7 +999,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       uuid = projectId;
     });
 
-    dialogRef.afterClosed().subscribe((isCancel:boolean) => {
+    dialogRef.afterClosed().subscribe((isCancel: boolean) => {
       subscription.unsubscribe();
       if (uuid && !isCancel) {
         this.bottomSheet.open(NavigationDialogComponent);
@@ -1014,7 +1041,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       maxHeight: '850px',
       autoFocus: false,
       disableClose: true,
-      data: {controllerDetails:this.controller,projectDetails:this.project},
+      data: { controllerDetails: this.controller, projectDetails: this.project },
     });
 
     dialogRef.afterClosed().subscribe((isAddes: boolean) => {});
@@ -1112,7 +1139,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     }
 
     // Highlight connected links and their connected nodes
-    d3.selectAll('g.link_body').each(function(link: any) {
+    d3.selectAll('g.link_body').each(function (link: any) {
       if (link && (link.source?.id === nodeId || link.target?.id === nodeId)) {
         d3.select(this).classed('console-highlight', true);
 
@@ -1141,7 +1168,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       }
 
       // Remove highlight from connected links and their nodes
-      d3.selectAll('g.link_body').each(function(link: any) {
+      d3.selectAll('g.link_body').each(function (link: any) {
         if (link && (link.source?.id === nodeId || link.target?.id === nodeId)) {
           d3.select(this).classed('console-highlight', false);
 

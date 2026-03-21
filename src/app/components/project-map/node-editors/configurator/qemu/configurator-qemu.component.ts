@@ -1,6 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatDialog, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -29,7 +36,21 @@ import { QemuImageCreatorComponent } from './qemu-image-creator/qemu-image-creat
   templateUrl: './configurator-qemu.component.html',
   styleUrls: ['../configurator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatChipsModule, MatIconModule, MatCheckboxModule]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatCardModule,
+    MatTabsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatChipsModule,
+    MatIconModule,
+    MatCheckboxModule,
+  ],
 })
 export class ConfiguratorDialogQemuComponent implements OnInit {
   private dialog = inject(MatDialog);
@@ -64,7 +85,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   };
   dialogRefQemuImageCreator;
 
-  @ViewChild('customAdapters') customAdapters: CustomAdaptersTableComponent;
+  readonly customAdapters = viewChild<CustomAdaptersTableComponent>('customAdapters');
 
   constructor() {
     this.generalSettingsForm = this.formBuilder.group({
@@ -93,7 +114,6 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
       this.cd.markForCheck();
     });
     this.selectPlatform = this.qemuConfigurationService.getPlatform();
-
   }
 
   openQemuImageCreator() {

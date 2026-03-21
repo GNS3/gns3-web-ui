@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject, viewChild } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -84,7 +84,7 @@ import { DataSourceFilter } from '../../../filters/dataSourceFilter';
     MatExpansionModule,
     FileUploadModule,
     DataSourceFilter,
-  ]
+  ],
 })
 export class NewTemplateDialogComponent implements OnInit {
   @Input() controller: Controller;
@@ -105,7 +105,6 @@ export class NewTemplateDialogComponent implements OnInit {
   public isLinuxPlatform = false;
   private isLocalComputerChosen = false;
 
-
   public categories: string[] = ['all categories', 'router', 'multilayer_switch', 'guest', 'firewall'];
   public category: string = 'all categories';
   public displayedColumns: string[] = ['name', 'emulator', 'vendor', 'actions'];
@@ -119,8 +118,8 @@ export class NewTemplateDialogComponent implements OnInit {
   private templates: Template[] = [];
   uploadProgress: number = 0;
 
-  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
-  @ViewChild('stepper', { static: true }) stepper: MatStepper;
+  readonly paginator = viewChild(MatPaginator);
+  readonly stepper = viewChild<MatStepper>('stepper');
 
   public dialogRef = inject<MatDialogRef<NewTemplateDialogComponent>>(MatDialogRef);
   private applianceService = inject(ApplianceService);
@@ -149,7 +148,7 @@ export class NewTemplateDialogComponent implements OnInit {
       });
       this.allAppliances = appliances;
       this.dataSource = new MatTableDataSource(this.allAppliances);
-      this.dataSource.paginator = this.paginator;
+      this.dataSource.paginator = this.paginator();
       this.changeDetectorRef.markForCheck();
     });
 
@@ -190,11 +189,11 @@ export class NewTemplateDialogComponent implements OnInit {
       });
       this.allAppliances = appliances;
       this.dataSource = new MatTableDataSource(this.allAppliances);
-      this.dataSource.paginator = this.paginator;
+      this.dataSource.paginator = this.paginator();
       this.changeDetectorRef.markForCheck();
     });
 
-    this.uploader = new FileUploader({url: ''});
+    this.uploader = new FileUploader({ url: '' });
     this.uploader.onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };
@@ -213,7 +212,7 @@ export class NewTemplateDialogComponent implements OnInit {
       this.getAppliance(item.url);
     };
 
-    this.uploaderImage = new FileUploader({url: ''});
+    this.uploaderImage = new FileUploader({ url: '' });
     this.uploaderImage.onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };
@@ -243,16 +242,14 @@ export class NewTemplateDialogComponent implements OnInit {
 
     this.uploaderImage.onProgressItem = (progress: any) => {
       this.uploadProgress = progress['progress'];
-      this.uploadServiceService.processBarCount(this.uploadProgress)
+      this.uploadServiceService.processBarCount(this.uploadProgress);
     };
 
     this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
       if (isCancel) {
-        this.cancelUploading()
+        this.cancelUploading();
       }
-
-    })
-
+    });
   }
 
   updateAppliances() {
@@ -282,7 +279,6 @@ export class NewTemplateDialogComponent implements OnInit {
     this.iouService.getImages(this.controller).subscribe((iouImages) => {
       this.iouImages = iouImages;
     });
-
   }
 
   getAppliance(url: string) {
@@ -291,7 +287,7 @@ export class NewTemplateDialogComponent implements OnInit {
     this.applianceService.getAppliance(this.controller, appliancePath).subscribe((appliance: Appliance) => {
       this.applianceToInstall = appliance;
       setTimeout(() => {
-        this.stepper.next();
+        this.stepper().next();
       }, 100);
     });
   }
@@ -315,7 +311,8 @@ export class NewTemplateDialogComponent implements OnInit {
       this.uploader.queue.forEach((elem) => (elem.url = url));
 
       const itemToUpload = this.uploader.queue[0];
-      if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller.authToken }])
+      if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true;
+      (itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller.authToken }];
 
       this.uploader.uploadItem(itemToUpload);
     };
@@ -335,7 +332,7 @@ export class NewTemplateDialogComponent implements OnInit {
     }
 
     this.dataSource = new MatTableDataSource(this.appliances);
-    this.dataSource.paginator = this.paginator;
+    this.dataSource.paginator = this.paginator();
   }
 
   setAction(action: string) {
@@ -374,7 +371,7 @@ export class NewTemplateDialogComponent implements OnInit {
   install(object: Appliance) {
     this.applianceToInstall = object;
     setTimeout(() => {
-      this.stepper.next();
+      this.stepper().next();
     }, 100);
   }
 
@@ -403,14 +400,14 @@ export class NewTemplateDialogComponent implements OnInit {
         dialogRef.afterClosed().subscribe((answer: boolean) => {
           if (answer) {
             this.importImageFile(event, imageName);
-            this.openSnackBar()
+            this.openSnackBar();
           } else {
             this.uploaderImage.clearQueue();
           }
         });
       } else {
         this.importImageFile(event, imageName);
-        this.openSnackBar()
+        this.openSnackBar();
       }
     });
   }
@@ -430,7 +427,8 @@ export class NewTemplateDialogComponent implements OnInit {
       this.uploaderImage.queue.forEach((elem) => (elem.url = url));
 
       const itemToUpload = this.uploaderImage.queue[0];
-      if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller.authToken }])
+      if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true;
+      (itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller.authToken }];
 
       this.uploaderImage.uploadItem(itemToUpload);
     };
@@ -441,10 +439,9 @@ export class NewTemplateDialogComponent implements OnInit {
 
   cancelUploading() {
     this.uploaderImage.clearQueue();
-    this.uploadServiceService.processBarCount(null)
+    this.uploadServiceService.processBarCount(null);
     this.toasterService.warning('File upload cancelled');
-    this.uploadServiceService.cancelFileUploading(false)
-
+    this.uploadServiceService.cancelFileUploading(false);
   }
 
   checkImageFromVersion(image: string): boolean {
@@ -506,7 +503,6 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   createIouTemplate(image: Image) {
-
     let iou_image = image.filename;
     let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === iou_image)[0];
     let imageToUse = this.iouImages.filter((n) => n.checksum === imageToInstall.md5sum);
@@ -553,7 +549,6 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   createIosTemplate(image: Image) {
-
     let ios_image = image.filename;
     let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === ios_image)[0];
     let imageToUse = this.iosImages.filter((n) => n.checksum === imageToInstall.md5sum);
@@ -598,7 +593,7 @@ export class NewTemplateDialogComponent implements OnInit {
         iosTemplate.name = answer;
 
         this.iosService.addTemplate(this.controller, iosTemplate).subscribe((template) => {
-          this.templateService.newTemplateCreated.next((template as any) as Template);
+          this.templateService.newTemplateCreated.next(template as any as Template);
           this.toasterService.success('Template added');
           this.dialogRef.close();
         });
@@ -635,7 +630,7 @@ export class NewTemplateDialogComponent implements OnInit {
         dockerTemplate.name = answer;
 
         this.dockerService.addTemplate(this.controller, dockerTemplate).subscribe((template) => {
-          this.templateService.newTemplateCreated.next((template as any) as Template);
+          this.templateService.newTemplateCreated.next(template as any as Template);
           this.toasterService.success('Template added');
           this.dialogRef.close();
         });
@@ -646,15 +641,14 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   findControllerImageName(image_name) {
-
-      if (image_name) {
-        let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === image_name)[0];
-        let imageToUse = this.qemuImages.filter((n) => n.checksum === imageToInstall.md5sum);
-        if (imageToUse.length > 0) {
-          image_name = imageToUse[0].filename; // use the image name from the controller
-        }
+    if (image_name) {
+      let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === image_name)[0];
+      let imageToUse = this.qemuImages.filter((n) => n.checksum === imageToInstall.md5sum);
+      if (imageToUse.length > 0) {
+        image_name = imageToUse[0].filename; // use the image name from the controller
       }
-      return image_name;
+    }
+    return image_name;
   }
 
   createQemuTemplateFromVersion(version: Version) {
@@ -672,7 +666,7 @@ export class NewTemplateDialogComponent implements OnInit {
     qemuTemplate.first_port_name = this.applianceToInstall.first_port_name;
     qemuTemplate.port_name_format = this.applianceToInstall.port_name_format;
     qemuTemplate.port_segment_size = this.applianceToInstall.port_segment_size;
-    qemuTemplate.default_name_format = this.applianceToInstall.default_name_format
+    qemuTemplate.default_name_format = this.applianceToInstall.default_name_format;
     qemuTemplate.symbol = this.applianceToInstall.symbol;
     qemuTemplate.compute_id = 'local';
     qemuTemplate.template_id = uuid();
@@ -700,7 +694,7 @@ export class NewTemplateDialogComponent implements OnInit {
         qemuTemplate.name = answer;
 
         this.qemuService.addTemplate(this.controller, qemuTemplate).subscribe((template) => {
-          this.templateService.newTemplateCreated.next((template as any) as Template);
+          this.templateService.newTemplateCreated.next(template as any as Template);
           this.toasterService.success('Template added');
           this.dialogRef.close();
         });
@@ -743,10 +737,9 @@ export class NewTemplateDialogComponent implements OnInit {
   openSnackBar() {
     this.snackBar.openFromComponent(UploadingProcessbarComponent, {
       panelClass: 'uplaoding-file-snackabar',
-      data:{upload_file_type:'Image'}
+      data: { upload_file_type: 'Image' },
     });
   }
-
 }
 
 function compareNames(a: string, b: string, isAsc: boolean) {

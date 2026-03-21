@@ -1,17 +1,17 @@
-import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ControllerService } from '@services/controller.service';
 import { Image } from '@models/images';
 import { Controller } from '@models/controller';
-import { ImageManagerService } from "@services/image-manager.service";
+import { ImageManagerService } from '@services/image-manager.service';
 import { AddImageDialogComponent } from './add-image-dialog/add-image-dialog.component';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ToasterService } from '@services/toaster.service';
 import { DeleteAllImageFilesDialogComponent } from './deleteallfiles-dialog/deleteallfiles-dialog.component';
-import { ImageTableRow, imageDataSource, imageDatabase } from "./image-database-file";
-import { QuestionDialogComponent } from "@components/dialogs/question-dialog/question-dialog.component";
+import { ImageTableRow, imageDataSource, imageDatabase } from './image-database-file';
+import { QuestionDialogComponent } from '@components/dialogs/question-dialog/question-dialog.component';
 import { MatSort, MatSortable, MatSortModule } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { Subscription } from 'rxjs';
@@ -46,8 +46,8 @@ import { ControllerDiscoveryComponent } from '@components/controllers/controller
     MatCheckboxModule,
     MatProgressBarModule,
     MatListModule,
-    ControllerDiscoveryComponent
-  ]
+    ControllerDiscoveryComponent,
+  ],
 })
 export class ImageManagerComponent implements OnInit, OnDestroy {
   controller: Controller;
@@ -55,7 +55,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   dataSource: imageDataSource;
   imageDatabase = new imageDatabase();
   searchText: string = '';
-  isAllDelete: boolean = false
+  isAllDelete: boolean = false;
   selectedPaths = new Set<string>();
   private images: Image[] = [];
   private uploadRows = new Map<string, ImageTableRow>();
@@ -73,8 +73,8 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   currentPage = 0;
 
   displayedColumns = ['select', 'filename', 'image_type', 'image_size', 'created_at', 'delete'];
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+  readonly sort = viewChild(MatSort);
+  readonly paginator = viewChild(MatPaginator);
 
   private imageService = inject(ImageManagerService);
   private route = inject(ActivatedRoute);
@@ -84,24 +84,26 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   private imageUploadSessionService = inject(ImageUploadSessionService);
   private router = inject(Router);
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
     const controller_id = parseInt(this.route.snapshot.paramMap.get('controller_id'), 10);
-    if (this.sort) {
-      this.sort.sort(<MatSortable>{
+    const sort = this.sort();
+    if (sort) {
+      sort.sort(<MatSortable>{
         id: 'filename',
         start: 'asc',
       });
     }
 
     // Initialize paginator
-    if (this.paginator) {
-      this.paginator.pageIndex = this.currentPage;
-      this.paginator.pageSize = this.defaultPageSize;
+    const paginator = this.paginator();
+    if (paginator) {
+      paginator.pageIndex = this.currentPage;
+      paginator.pageSize = this.defaultPageSize;
     }
 
-    this.dataSource = new imageDataSource(this.imageDatabase, this.sort, this.paginator);
+    this.dataSource = new imageDataSource(this.imageDatabase, sort, paginator);
     this.dataRowsSubscription = this.dataSource.connect().subscribe((rows: ImageTableRow[]) => {
       this.displayedRows = rows || [];
     });
@@ -117,8 +119,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
       }
     });
 
-
-    this.controllerService.get(controller_id).then((controller: Controller ) => {
+    this.controllerService.get(controller_id).then((controller: Controller) => {
       this.controller = controller;
       if (controller.authToken) {
         this.getImages();
@@ -162,8 +163,9 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
     if (this.dataSource) {
       this.dataSource.setFilter(value);
       // Reset to first page when searching
-      if (this.paginator) {
-        this.paginator.pageIndex = 0;
+      const paginator = this.paginator();
+      if (paginator) {
+        paginator.pageIndex = 0;
       }
     }
   }
@@ -199,7 +201,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   deleteFile(path: string) {
     const dialogRef = this.dialog.open(QuestionDialogComponent, {
       width: '450px',
-      data: { title: 'Delete image', question: 'Are you sure you want to delete this image?' }
+      data: { title: 'Delete image', question: 'Are you sure you want to delete this image?' },
     });
 
     dialogRef.afterClosed().subscribe((result: boolean) => {
@@ -268,12 +270,12 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   }
 
   selectAllImages() {
-    this.isAllSelected() ? this.unChecked() : this.allChecked()
+    this.isAllSelected() ? this.unChecked() : this.allChecked();
   }
 
   unChecked() {
     this.selectedPaths.clear();
-    this.isAllDelete = false
+    this.isAllDelete = false;
     this.lastSelectedPath = null;
   }
 
@@ -297,16 +299,20 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   installAllImages() {
     const dialogRef = this.dialog.open(QuestionDialogComponent, {
       width: '450px',
-      data: { title: 'Install all images', question: 'This will attempt to automatically create templates based on image checksums. Continue?'}
+      data: {
+        title: 'Install all images',
+        question: 'This will attempt to automatically create templates based on image checksums. Continue?',
+      },
     });
 
     dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
-        this.imageService.installImages(this.controller).subscribe(() => {
+        this.imageService.installImages(this.controller).subscribe(
+          () => {
             this.toasterService.success('Images installed');
           },
           (error) => {
-            this.toasterService.error(error.error.message)
+            this.toasterService.error(error.error.message);
           }
         );
       }
@@ -316,21 +322,21 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   pruneImages() {
     const dialogRef = this.dialog.open(QuestionDialogComponent, {
       width: '450px',
-      data: { title: 'Prune images', question: 'Delete all images not used by a template? This cannot be reverted.'}
+      data: { title: 'Prune images', question: 'Delete all images not used by a template? This cannot be reverted.' },
     });
 
     dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
         this.imageService.pruneImages(this.controller).subscribe(
           () => {
-            this.getImages()
-            this.unChecked()
+            this.getImages();
+            this.unChecked();
             this.toasterService.success('Images pruned');
           },
           (error) => {
-            this.getImages()
-            this.unChecked()
-            this.toasterService.error(error.error.message)
+            this.getImages();
+            this.unChecked();
+            this.toasterService.error(error.error.message);
           }
         );
       }
@@ -342,7 +348,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
       width: '600px',
       maxHeight: '550px',
       autoFocus: false,
-      data: this.controller
+      data: this.controller,
     });
 
     dialogRef.afterClosed().subscribe((isAddes: boolean) => {
@@ -359,8 +365,8 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
       disableClose: true,
       data: {
         controller: this.controller,
-        deleteFilesPaths: this.getSelectedRows()
-      }
+        deleteFilesPaths: this.getSelectedRows(),
+      },
     });
 
     dialogRef.afterClosed().subscribe((isAllfilesdeleted: boolean) => {

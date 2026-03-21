@@ -1,4 +1,4 @@
-import { Component, AfterViewInit, ViewChild, inject } from '@angular/core';
+import { Component, AfterViewInit, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -14,7 +14,7 @@ import { marked } from 'marked';
   selector: 'app-project-readme',
   templateUrl: './project-readme.component.html',
   styleUrls: ['./project-readme.component.scss'],
-  imports: [CommonModule, MatDialogModule, MatButtonModule]
+  imports: [CommonModule, MatDialogModule, MatButtonModule],
 })
 export class ProjectReadmeComponent implements AfterViewInit {
   private dialogRef = inject(MatDialogRef<ProjectReadmeComponent>);
@@ -23,7 +23,7 @@ export class ProjectReadmeComponent implements AfterViewInit {
 
   controller: Controller;
   project: Project;
-  @ViewChild('text', {static: false}) text: ElementRef;
+  readonly text = viewChild<ElementRef>('text');
   readmeHtml: SafeHtml | string = '';
 
   constructor() {}
@@ -31,12 +31,12 @@ export class ProjectReadmeComponent implements AfterViewInit {
   ngAfterViewInit() {
     let markdown = ``;
 
-    this.projectService.getReadmeFile(this.controller, this.project.project_id).subscribe(file => {
-        if (file) {
-            markdown = file;
-            const markdownHtml = marked(markdown) as string;
-            this.readmeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownHtml);
-        }
+    this.projectService.getReadmeFile(this.controller, this.project.project_id).subscribe((file) => {
+      if (file) {
+        markdown = file;
+        const markdownHtml = marked(markdown) as string;
+        this.readmeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownHtml);
+      }
     });
   }
 

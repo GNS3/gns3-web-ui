@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild, inject, input } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, input, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
@@ -22,7 +22,7 @@ import { Link } from '@models/link';
 })
 export class DrawLinkToolComponent implements OnInit, OnDestroy {
   readonly links = input<Link[]>(undefined);
-  @ViewChild(NodeSelectInterfaceComponent) nodeSelectInterfaceMenu: NodeSelectInterfaceComponent;
+  readonly nodeSelectInterfaceMenu = viewChild(NodeSelectInterfaceComponent);
 
   private nodeClicked$: Subscription;
 
@@ -38,7 +38,7 @@ export class DrawLinkToolComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.nodeClicked$ = this.nodesEventSource.clicked.subscribe((clickedEvent) => {
       let node = this.mapNodeToNode.convert(clickedEvent.datum);
-      this.nodeSelectInterfaceMenu.open(node, clickedEvent.y, clickedEvent.x);
+      this.nodeSelectInterfaceMenu().open(node, clickedEvent.y, clickedEvent.x);
     });
   }
 

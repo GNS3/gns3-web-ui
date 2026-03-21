@@ -1,6 +1,13 @@
-import { Component, ElementRef, OnInit, Renderer2, ViewChild, inject } from '@angular/core';
+import { Component, ElementRef, OnInit, Renderer2, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -31,10 +38,18 @@ import { RotationValidator } from '../../../../validators/rotation-validator';
   selector: 'app-text-editor',
   templateUrl: './text-editor.component.html',
   styleUrls: ['./text-editor.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+  ],
 })
 export class TextEditorDialogComponent implements OnInit {
-  @ViewChild('textArea', { static: true }) textArea: ElementRef;
+  readonly textArea = viewChild<ElementRef>('textArea');
 
   private dialogRef = inject(MatDialogRef<TextEditorDialogComponent>);
   private drawingToMapDrawingConverter = inject(DrawingToMapDrawingConverter);
@@ -93,10 +108,11 @@ export class TextEditorDialogComponent implements OnInit {
     font = this.fontFixer.fix(font);
 
     this.formGroup.controls['rotation'].setValue(this.rotation);
-    this.renderer.setStyle(this.textArea.nativeElement, 'color', this.element.fill);
-    this.renderer.setStyle(this.textArea.nativeElement, 'font-family', font.font_family);
-    this.renderer.setStyle(this.textArea.nativeElement, 'font-size', `${font.font_size}pt`);
-    this.renderer.setStyle(this.textArea.nativeElement, 'font-weight', font.font_weight);
+    const textArea = this.textArea();
+    this.renderer.setStyle(textArea.nativeElement, 'color', this.element.fill);
+    this.renderer.setStyle(textArea.nativeElement, 'font-family', font.font_family);
+    this.renderer.setStyle(textArea.nativeElement, 'font-size', `${font.font_size}pt`);
+    this.renderer.setStyle(textArea.nativeElement, 'font-weight', font.font_weight);
   }
 
   getTextElementFromLabel(): TextElement {
@@ -179,7 +195,7 @@ export class TextEditorDialogComponent implements OnInit {
   }
 
   changeTextColor(changedColor) {
-    this.renderer.setStyle(this.textArea.nativeElement, 'color', changedColor);
+    this.renderer.setStyle(this.textArea().nativeElement, 'color', changedColor);
   }
 }
 

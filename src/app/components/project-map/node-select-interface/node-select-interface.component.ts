@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output, ViewChild, inject, input } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output, inject, input, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -18,7 +18,7 @@ export class NodeSelectInterfaceComponent implements OnInit {
   readonly links = input<Link[]>(undefined);
   @Output() onChooseInterface = new EventEmitter<any>();
 
-  @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
+  readonly contextMenu = viewChild(MatMenuTrigger);
 
   private sanitizer = inject(DomSanitizer);
   private changeDetector = inject(ChangeDetectorRef);
@@ -42,7 +42,7 @@ export class NodeSelectInterfaceComponent implements OnInit {
     this.node = node;
     this.filterNodePorts();
     this.setPosition(top, left);
-    this.contextMenu.openMenu();
+    this.contextMenu().openMenu();
   }
 
   public filterNodePorts() {

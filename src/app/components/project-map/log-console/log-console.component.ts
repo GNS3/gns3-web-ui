@@ -7,9 +7,9 @@ import {
   Input,
   OnDestroy,
   OnInit,
-  ViewChild,
   inject,
   input,
+  viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -58,7 +58,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   @Input() controller: Controller;
   readonly project = input<Project>(undefined);
 
-  @ViewChild('console') console: ElementRef;
+  readonly console = viewChild<ElementRef>('console');
 
   private version = version;
   private nodeSubscription: Subscription;
@@ -157,7 +157,8 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if (this.console.nativeElement) this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
+    const console = this.console();
+    if (console.nativeElement) console.nativeElement.scrollTop = console.nativeElement.scrollHeight;
   }
 
   ngOnDestroy() {
@@ -279,7 +280,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
 
   clearConsole() {
     this.filteredEvents = [];
-    this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
+    this.console().nativeElement.scrollTop = this.console().nativeElement.scrollHeight;
   }
 
   showCommand(message: string) {
@@ -292,10 +293,10 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   showMessage(event: LogEvent) {
     this.logEventsDataSource.add(event);
     this.filteredEvents = this.getFilteredEvents();
-    this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
+    this.console().nativeElement.scrollTop = this.console().nativeElement.scrollHeight;
 
     setTimeout(() => {
-      this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
+      this.console().nativeElement.scrollTop = this.console().nativeElement.scrollHeight;
     }, 100);
     this.cd.detectChanges();
   }

@@ -1,5 +1,5 @@
 import { DataSource, SelectionModel } from '@angular/cdk/collections';
-import { Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
@@ -48,8 +48,8 @@ import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
     MatFormFieldModule,
     MatInputModule,
     MatCheckboxModule,
-    ProjectsFilter
-  ]
+    ProjectsFilter,
+  ],
 })
 export class ProjectsComponent implements OnInit {
   controller: Controller;
@@ -62,7 +62,7 @@ export class ProjectsComponent implements OnInit {
   isAllDelete: boolean = false;
   selection = new SelectionModel(true, []);
 
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  readonly sort = viewChild(MatSort);
 
   private route = inject(ActivatedRoute);
   private projectService = inject(ProjectService);
@@ -82,11 +82,11 @@ export class ProjectsComponent implements OnInit {
     this.recentlyOpenedProjectService.setcontrollerIdProjectList(this.controller.id.toString());
 
     this.refresh();
-    this.sort.sort(<MatSortable>{
+    this.sort().sort(<MatSortable>{
       id: 'name',
       start: 'asc',
     });
-    this.dataSource = new ProjectDataSource(this.projectDatabase, this.sort);
+    this.dataSource = new ProjectDataSource(this.projectDatabase, this.sort());
     this.settings = this.settingsService.getAll();
 
     this.projectService.projectListSubject.subscribe(() => this.refresh());
@@ -212,18 +212,18 @@ export class ProjectsComponent implements OnInit {
       disableClose: true,
       data: {
         controller: this.controller,
-        deleteFilesPaths: this.selection.selected
-      }
+        deleteFilesPaths: this.selection.selected,
+      },
     });
 
     dialogRef.afterClosed().subscribe((isAllfilesdeleted: boolean) => {
       if (isAllfilesdeleted) {
-        this.unChecked()
-        this.refresh()
+        this.unChecked();
+        this.refresh();
         this.toasterService.success('All projects deleted');
       } else {
-        this.unChecked()
-        this.refresh()
+        this.unChecked();
+        this.refresh();
         return false;
       }
     });
@@ -249,20 +249,19 @@ export class ProjectsComponent implements OnInit {
     this.isAllDelete = true;
   }
 
-exportSelectProject(project: Project){
-  this.project = project
-  if(this.project.project_id){
-    this.exportPortableProjectDialog()
+  exportSelectProject(project: Project) {
+    this.project = project;
+    if (this.project.project_id) {
+      this.exportPortableProjectDialog();
+    }
   }
-
-}
   exportPortableProjectDialog() {
     const dialogRef = this.dialog.open(ExportPortableProjectComponent, {
       width: '700px',
       maxHeight: '850px',
       autoFocus: false,
       disableClose: true,
-      data: {controllerDetails:this.controller,projectDetails:this.project},
+      data: { controllerDetails: this.controller, projectDetails: this.project },
     });
 
     dialogRef.afterClosed().subscribe((isAddes: boolean) => {});
