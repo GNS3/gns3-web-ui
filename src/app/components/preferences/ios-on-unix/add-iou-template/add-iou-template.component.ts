@@ -1,10 +1,19 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatStepperModule } from '@angular/material/stepper';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ActivatedRoute, Router } from '@angular/router';
 import { UploadServiceService } from 'app/common/uploading-processbar/upload-service.service';
 import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/uploading-processbar.component';
-import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
+import { FileItem, FileUploader, ParsedResponseHeaders, FileUploadModule } from 'ng2-file-upload';
 import { Subscription } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '@models/compute';
@@ -18,12 +27,23 @@ import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-add-iou-template',
   templateUrl: './add-iou-template.component.html',
   styleUrls: ['./add-iou-template.component.scss', '../../preferences.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, UploadingProcessbarComponent, FileUploadModule]
 })
 export class AddIouTemplateComponent implements OnInit, OnDestroy {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private iouService = inject(IouService);
+  private toasterService = inject(ToasterService);
+  private router = inject(Router);
+  private formBuilder = inject(UntypedFormBuilder);
+  private templateMocksService = inject(TemplateMocksService);
+  private computeService = inject(ComputeService);
+  private uploadServiceService = inject(UploadServiceService);
+  private snackBar = inject(MatSnackBar);
   controller: Controller;
   iouTemplate: IouTemplate;
   isRemoteComputerChosen: boolean = false;
@@ -39,18 +59,7 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   uploadProgress: number = 0
   subscription: Subscription;
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private iouService: IouService,
-    private toasterService: ToasterService,
-    private router: Router,
-    private formBuilder: UntypedFormBuilder,
-    private templateMocksService: TemplateMocksService,
-    private computeService: ComputeService,
-    private uploadServiceService: UploadServiceService,
-    private snackBar: MatSnackBar
-  ) {
+  constructor() {
     this.iouTemplate = new IouTemplate();
 
     this.templateNameForm = this.formBuilder.group({

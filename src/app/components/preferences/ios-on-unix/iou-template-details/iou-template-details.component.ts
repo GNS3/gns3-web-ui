@@ -1,7 +1,15 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Controller } from '@models/controller';
 import { IouTemplate } from '@models/templates/iou-template';
@@ -9,15 +17,25 @@ import { IouConfigurationService } from '@services/iou-configuration.service';
 import { IouService } from '@services/iou.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
+import { SymbolsMenuComponent } from '@components/preferences/common/symbols-menu/symbols-menu.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-iou-template-details',
   templateUrl: './iou-template-details.component.html',
   styleUrls: ['./iou-template-details.component.scss', '../../preferences.component.scss'],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, SymbolsMenuComponent]
 })
 export class IouTemplateDetailsComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private iouService = inject(IouService);
+  private toasterService = inject(ToasterService);
+  private configurationService = inject(IouConfigurationService);
+  private router = inject(Router);
+  private formBuilder = inject(UntypedFormBuilder);
+  private cd = inject(ChangeDetectorRef);
   controller: Controller;
   iouTemplate: IouTemplate;
 
@@ -32,16 +50,7 @@ export class IouTemplateDetailsComponent implements OnInit {
   generalSettingsForm: UntypedFormGroup;
   networkForm: UntypedFormGroup;
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private iouService: IouService,
-    private toasterService: ToasterService,
-    private configurationService: IouConfigurationService,
-    private router: Router,
-    private formBuilder: UntypedFormBuilder,
-    private cd: ChangeDetectorRef
-  ) {
+  constructor() {
     this.generalSettingsForm = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
       defaultName: new UntypedFormControl('', Validators.required),
