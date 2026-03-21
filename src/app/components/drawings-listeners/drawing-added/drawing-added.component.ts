@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, SimpleChange } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, SimpleChange, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
@@ -11,10 +11,11 @@ import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-drawing-added',
   templateUrl: './drawing-added.component.html',
   styleUrls: ['./drawing-added.component.scss'],
+  imports: [],
 })
 export class DrawingAddedComponent implements OnInit, OnDestroy {
   @Input() controller: Controller
@@ -23,13 +24,11 @@ export class DrawingAddedComponent implements OnInit, OnDestroy {
   @Output() drawingSaved = new EventEmitter<boolean>();
   private pointToAddSelected: Subscription;
 
-  constructor(
-    private drawingService: DrawingService,
-    private drawingsDataSource: DrawingsDataSource,
-    private drawingsEventSource: DrawingsEventSource,
-    private drawingsFactory: DefaultDrawingsFactory,
-    private mapDrawingToSvgConverter: MapDrawingToSvgConverter
-  ) {}
+  private drawingService = inject(DrawingService);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private drawingsEventSource = inject(DrawingsEventSource);
+  private drawingsFactory = inject(DefaultDrawingsFactory);
+  private mapDrawingToSvgConverter = inject(MapDrawingToSvgConverter);
 
   ngOnInit() {
     this.pointToAddSelected = this.drawingsEventSource.pointToAddSelected.subscribe((evt) => this.onDrawingSaved(evt));

@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
@@ -10,21 +10,20 @@ import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-drawing-dragged',
   templateUrl: './drawing-dragged.component.html',
   styleUrls: ['./drawing-dragged.component.scss'],
+  imports: [],
 })
 export class DrawingDraggedComponent implements OnInit, OnDestroy {
   @Input() controller: Controller;
   @Input() project: Project;
   private drawingDragged: Subscription;
 
-  constructor(
-    private drawingService: DrawingService,
-    private drawingsDataSource: DrawingsDataSource,
-    private drawingsEventSource: DrawingsEventSource
-  ) {}
+  private drawingService = inject(DrawingService);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private drawingsEventSource = inject(DrawingsEventSource);
 
   ngOnInit() {
     this.drawingDragged = this.drawingsEventSource.dragged.subscribe((evt) => this.onDrawingDragged(evt));

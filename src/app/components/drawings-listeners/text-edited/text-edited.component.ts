@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
@@ -11,21 +11,20 @@ import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-text-edited',
   templateUrl: './text-edited.component.html',
   styleUrls: ['./text-edited.component.scss'],
+  imports: [],
 })
 export class TextEditedComponent implements OnInit, OnDestroy {
   @Input() controller: Controller;
   private textEdited: Subscription;
 
-  constructor(
-    private drawingService: DrawingService,
-    private drawingsDataSource: DrawingsDataSource,
-    private drawingsEventSource: DrawingsEventSource,
-    private mapDrawingToSvgConverter: MapDrawingToSvgConverter
-  ) {}
+  private drawingService = inject(DrawingService);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private drawingsEventSource = inject(DrawingsEventSource);
+  private mapDrawingToSvgConverter = inject(MapDrawingToSvgConverter);
 
   ngOnInit() {
     this.textEdited = this.drawingsEventSource.textEdited.subscribe((evt) => this.onTextEdited(evt));

@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapLabelToLabelConverter } from '../../../cartography/converters/map/map-label-to-label-converter';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
@@ -10,21 +10,20 @@ import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-node-label-dragged',
   templateUrl: './node-label-dragged.component.html',
   styleUrls: ['./node-label-dragged.component.scss'],
+  imports: [],
 })
 export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
   @Input() controller: Controller;
   private nodeLabelDragged: Subscription;
 
-  constructor(
-    private nodesDataSource: NodesDataSource,
-    private nodeService: NodeService,
-    private nodesEventSource: NodesEventSource,
-    private mapLabelToLabel: MapLabelToLabelConverter
-  ) {}
+  private nodesDataSource = inject(NodesDataSource);
+  private nodeService = inject(NodeService);
+  private nodesEventSource = inject(NodesEventSource);
+  private mapLabelToLabel = inject(MapLabelToLabelConverter);
 
   ngOnInit() {
     this.nodeLabelDragged = this.nodesEventSource.labelDragged.subscribe((evt) => this.onNodeLabelDragged(evt));

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
@@ -9,20 +9,19 @@ import { Controller } from '@models/controller';
 import { LinkService } from '@services/link.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-interface-label-dragged',
   templateUrl: './interface-label-dragged.component.html',
   styleUrls: ['./interface-label-dragged.component.scss'],
+  imports: [],
 })
 export class InterfaceLabelDraggedComponent {
   @Input() controller: Controller;
   private interfaceDragged: Subscription;
 
-  constructor(
-    private linkService: LinkService,
-    private linksDataSource: LinksDataSource,
-    private linksEventSource: LinksEventSource
-  ) {}
+  private linkService = inject(LinkService);
+  private linksDataSource = inject(LinksDataSource);
+  private linksEventSource = inject(LinksEventSource);
 
   ngOnInit() {
     this.interfaceDragged = this.linksEventSource.interfaceDragged.subscribe((evt) =>

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
@@ -13,10 +13,11 @@ import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-text-added',
   templateUrl: './text-added.component.html',
   styleUrls: ['./text-added.component.scss'],
+  imports: [],
 })
 export class TextAddedComponent implements OnInit, OnDestroy {
   @Input() controller: Controller;
@@ -24,14 +25,12 @@ export class TextAddedComponent implements OnInit, OnDestroy {
   @Output() drawingSaved = new EventEmitter<boolean>();
   private textAdded: Subscription;
 
-  constructor(
-    private drawingService: DrawingService,
-    private drawingsDataSource: DrawingsDataSource,
-    private drawingsEventSource: DrawingsEventSource,
-    private drawingsFactory: DefaultDrawingsFactory,
-    private mapDrawingToSvgConverter: MapDrawingToSvgConverter,
-    private context: Context
-  ) {}
+  private drawingService = inject(DrawingService);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private drawingsEventSource = inject(DrawingsEventSource);
+  private drawingsFactory = inject(DefaultDrawingsFactory);
+  private mapDrawingToSvgConverter = inject(MapDrawingToSvgConverter);
+  private context = inject(Context);
 
   ngOnInit() {
     this.textAdded = this.drawingsEventSource.textAdded.subscribe((evt) => this.onTextAdded(evt));

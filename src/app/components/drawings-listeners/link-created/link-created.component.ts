@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
 import { MapPortToPortConverter } from '../../../cartography/converters/map/map-port-to-port-converter';
@@ -12,24 +12,23 @@ import { LinkService } from '@services/link.service';
 import { ProjectService } from '@services/project.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-link-created',
   templateUrl: './link-created.component.html',
   styleUrls: ['./link-created.component.scss'],
+  imports: [],
 })
 export class LinkCreatedComponent implements OnInit, OnDestroy {
   @Input() controller: Controller;
   @Input() project: Project;
   private linkCreated: Subscription;
 
-  constructor(
-    private projectService: ProjectService,
-    private linkService: LinkService,
-    private linksDataSource: LinksDataSource,
-    private linksEventSource: LinksEventSource,
-    private mapNodeToNode: MapNodeToNodeConverter,
-    private mapPortToPort: MapPortToPortConverter
-  ) {}
+  private projectService = inject(ProjectService);
+  private linkService = inject(LinkService);
+  private linksDataSource = inject(LinksDataSource);
+  private linksEventSource = inject(LinksEventSource);
+  private mapNodeToNode = inject(MapNodeToNodeConverter);
+  private mapPortToPort = inject(MapPortToPortConverter);
 
   ngOnInit() {
     this.linkCreated = this.linksEventSource.created.subscribe((evt) => this.onLinkCreated(evt));

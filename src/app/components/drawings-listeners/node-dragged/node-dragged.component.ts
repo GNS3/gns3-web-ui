@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
@@ -10,21 +10,20 @@ import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-node-dragged',
   templateUrl: './node-dragged.component.html',
   styleUrls: ['./node-dragged.component.scss'],
+  imports: [],
 })
 export class NodeDraggedComponent implements OnInit, OnDestroy {
   @Input() controller: Controller;
   @Input() project: Project;
   private nodeDragged: Subscription;
 
-  constructor(
-    private nodesDataSource: NodesDataSource,
-    private nodeService: NodeService,
-    private nodesEventSource: NodesEventSource
-  ) {}
+  private nodesDataSource = inject(NodesDataSource);
+  private nodeService = inject(NodeService);
+  private nodesEventSource = inject(NodesEventSource);
 
   ngOnInit() {
     this.nodeDragged = this.nodesEventSource.dragged.subscribe((evt) => this.onNodeDragged(evt));
