@@ -1,18 +1,22 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { Component, Inject, OnInit, inject } from '@angular/core';
+import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 import { Project } from '@models/project';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-import-project-dialog',
   templateUrl: 'confirmation-dialog.component.html',
   styleUrls: ['confirmation-dialog.component.scss'],
+  imports: [MatDialogModule, MatButtonModule],
 })
 export class ConfirmationDialogComponent implements OnInit {
+  public dialogRef = inject(MatDialogRef<ConfirmationDialogComponent>);
   private existingProject: Project;
   public confirmationMessage: string;
   public isOpen: boolean;
-  constructor(public dialogRef: MatDialogRef<ConfirmationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
     this.existingProject = data['existingProject'];
   }
 
