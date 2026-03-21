@@ -1,4 +1,4 @@
-import { Component, OnInit, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -11,6 +11,9 @@ import { ComputeStatistics } from '@models/computeStatistics';
   templateUrl: './status-chart.component.html',
   styleUrls: ['./status-chart.component.scss'],
   imports: [CommonModule, MatCardModule, MatChipsModule, NgCircleProgressModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class StatusChartComponent implements OnInit {
   readonly computeStatistics = input<ComputeStatistics>(undefined);
