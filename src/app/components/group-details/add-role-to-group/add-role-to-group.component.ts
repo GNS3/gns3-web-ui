@@ -10,10 +10,16 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, Inject, OnInit, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
 import {BehaviorSubject, forkJoin, timer} from "rxjs";
 import {User} from "@models/users/user";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from "@angular/material/dialog";
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatIconModule} from '@angular/material/icon';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {Controller} from "@models/controller";
 import {Group} from "@models/groups/group";
 import {UserService} from "@services/user.service";
@@ -23,23 +29,26 @@ import {Role} from "@models/api/role";
 import {RoleService} from "@services/role.service";
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-add-role-to-group',
   templateUrl: './add-role-to-group.component.html',
-  styleUrls: ['./add-role-to-group.component.scss']
+  styleUrls: ['./add-role-to-group.component.scss'],
+  imports: [CommonModule, FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatIconModule, MatProgressSpinnerModule]
 })
 export class AddRoleToGroupComponent implements OnInit {
+  private dialog = inject(MatDialogRef<AddRoleToGroupComponent>);
+  private groupService = inject(GroupService);
+  private roleService = inject(RoleService);
+  private toastService = inject(ToasterService);
+
   roles = new BehaviorSubject<Role[]>([]);
   displayedRoles = new BehaviorSubject<Role[]>([]);
 
   searchText: string;
   loading = false;
 
-  constructor(private dialog: MatDialogRef<AddRoleToGroupComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: { controller: Controller; group: Group },
-              private groupService: GroupService,
-              private roleService: RoleService,
-              private toastService: ToasterService) {
+  constructor(
+              @Inject(MAT_DIALOG_DATA) public data: { controller: Controller; group: Group }) {
   }
 
   ngOnInit(): void {
