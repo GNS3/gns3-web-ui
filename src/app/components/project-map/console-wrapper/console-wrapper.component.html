@@ -2,12 +2,15 @@
 </div>
 <!-- Option with resizing -->
 <div class="consoleWrapper" [ngClass]="{ lightTheme: isLightThemeEnabled, 'console-active': isConsoleActive }"
-  [ngStyle]="style" mwlResizable [validateResize]="validate" [resizeCursorPrecision]="6"
-  [resizeEdges]="{ right: true, left: true, bottom: true, top: true }" [enableGhostResize]="true"
+  [ngStyle]="style" mwlResizable [validateResize]="validate" [enableGhostResize]="true"
   (resizeStart)="toggleDragging(false)" (resizeEnd)="onResizeEnd($event)"
   tabindex="0"
   (click)="onConsoleActivate()"
   (focus)="onConsoleActivate()">
+  <div class="resize-handle resize-handle-top" mwlResizeHandle [resizeEdges]="{ top: true }"></div>
+  <div class="resize-handle resize-handle-right" mwlResizeHandle [resizeEdges]="{ right: true }"></div>
+  <div class="resize-handle resize-handle-bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
+  <div class="resize-handle resize-handle-left" mwlResizeHandle [resizeEdges]="{ left: true }"></div>
 
   <div class="console-content">
     <!-- Devices Panel -->

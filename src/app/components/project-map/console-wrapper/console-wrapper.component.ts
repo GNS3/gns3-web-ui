@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { ResizeEvent, ResizableModule } from 'angular-resizable-element';
+import { ResizeEvent, ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
@@ -25,7 +25,7 @@ import { LogConsoleComponent } from '../log-console/log-console.component';
   selector: 'app-console-wrapper',
   templateUrl: './console-wrapper.component.html',
   styleUrls: ['./console-wrapper.component.scss'],
-  imports: [CommonModule, FormsModule, MatTabsModule, MatIconModule, MatButtonModule, MatTooltipModule, ResizableModule, ConsoleDevicesPanelComponent, WebConsoleComponent, LogConsoleComponent]
+  imports: [CommonModule, FormsModule, MatTabsModule, MatIconModule, MatButtonModule, MatTooltipModule, ResizableDirective, ResizeHandleDirective, ConsoleDevicesPanelComponent, WebConsoleComponent, LogConsoleComponent]
 })
 export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy {
 

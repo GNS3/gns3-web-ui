@@ -2,9 +2,12 @@
 
 <!-- AI Chat Container -->
 <div class="ai-chat-container" [class.dark-theme]="!isLightThemeEnabled" [class.light-theme]="isLightThemeEnabled" [class.maximized]="isMaximized" [class.minimized]="isMinimized" [ngStyle]="style"
-  mwlResizable [validateResize]="validate" [resizeCursorPrecision]="6"
-  [resizeEdges]="{ right: true, left: true, bottom: true, top: true }" [enableGhostResize]="true"
+  mwlResizable [validateResize]="validate" [enableGhostResize]="true"
   (resizeStart)="toggleDragging(false)" (resizeEnd)="onResizeEnd($event)">
+  <div class="resize-handle resize-handle-top" mwlResizeHandle [resizeEdges]="{ top: true }"></div>
+  <div class="resize-handle resize-handle-right" mwlResizeHandle [resizeEdges]="{ right: true }"></div>
+  <div class="resize-handle resize-handle-bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
+  <div class="resize-handle resize-handle-left" mwlResizeHandle [resizeEdges]="{ left: true }"></div>
 
   <!-- Minimized state - disabled, now using sidebar AI button instead -->
   <!--

@@ -2,7 +2,7 @@ import { Component, Input, Output, OnInit, OnDestroy, OnChanges, SimpleChanges, 
 import { CommonModule } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
-import { ResizeEvent, ResizableModule } from 'angular-resizable-element';
+import { ResizeEvent, ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -37,7 +37,8 @@ import { ChatInputAreaComponent } from './chat-input-area.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    ResizableModule,
+    ResizableDirective,
+    ResizeHandleDirective,
     MatSnackBarModule,
     MatIconModule,
     MatButtonModule,
