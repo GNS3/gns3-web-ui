@@ -10,8 +10,14 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from "@angular/material/dialog";
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatIconModule} from '@angular/material/icon';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 import {UserService} from "@services/user.service";
 import {Controller} from "@models/controller";
 import {BehaviorSubject, forkJoin, observable, Observable, timer} from "rxjs";
@@ -22,25 +28,28 @@ import {tap} from "rxjs/operators";
 import {ToasterService} from "@services/toaster.service";
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-add-user-to-group-dialog',
   templateUrl: './add-user-to-group-dialog.component.html',
   styleUrls: ['./add-user-to-group-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatIconModule, MatProgressSpinnerModule]
 })
 export class AddUserToGroupDialogComponent implements OnInit {
+  private dialog = inject(MatDialogRef<AddUserToGroupDialogComponent>);
+  private userService = inject(UserService);
+  private groupService = inject(GroupService);
+  private toastService = inject(ToasterService);
+  private cd = inject(ChangeDetectorRef);
+
   users = new BehaviorSubject<User[]>([]);
   displayedUsers = new BehaviorSubject<User[]>([]);
 
   searchText: string;
   loading = false;
 
-  constructor(private dialog: MatDialogRef<AddUserToGroupDialogComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: { controller: Controller; group: Group },
-              private userService: UserService,
-              private groupService: GroupService,
-              private toastService: ToasterService,
-              private cd: ChangeDetectorRef) {
+  constructor(
+              @Inject(MAT_DIALOG_DATA) public data: { controller: Controller; group: Group }) {
   }
 
   ngOnInit(): void {

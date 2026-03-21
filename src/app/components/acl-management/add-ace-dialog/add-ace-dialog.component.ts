@@ -11,34 +11,52 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {ReactiveFormsModule, UntypedFormControl, UntypedFormGroup} from "@angular/forms";
+import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from "@angular/material/dialog";
+import {MatButtonModule} from '@angular/material/button';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatIconModule} from '@angular/material/icon';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+import {MatTreeModule} from '@angular/material/tree';
+import {CdkTreeModule, NestedTreeControl} from "@angular/cdk/tree";
+import {ArrayDataSource} from "@angular/cdk/collections";
 import {UserService} from "@services/user.service";
 import {ToasterService} from "@services/toaster.service";
 import {AclService} from "@services/acl.service";
 import {Controller} from "@models/controller";
 import {Endpoint, RessourceType} from "@models/api/endpoint";
-import {UntypedFormControl, UntypedFormGroup} from "@angular/forms";
 import {ACE, AceType} from "@models/api/ACE";
 import {Group} from "@models/groups/group";
 import {GroupService} from "@services/group.service";
 import {User} from "@models/users/user";
 import {Role} from "@models/api/role";
 import {RoleService} from "@services/role.service";
-import {NestedTreeControl} from "@angular/cdk/tree";
-import {ArrayDataSource} from "@angular/cdk/collections";
 import {EndpointNode, EndpointTreeAdapter} from "@components/acl-management/add-ace-dialog/EndpointTreeAdapter";
 
 
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-add-ace-dialog',
   templateUrl: './add-ace-dialog.component.html',
   styleUrls: ['./add-ace-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatCheckboxModule, MatDividerModule, MatFormFieldModule, MatIconModule, MatInputModule, MatSelectModule, MatTreeModule, CdkTreeModule]
 })
 export class AddAceDialogComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<AddAceDialogComponent>);
+  private aclService = inject(AclService);
+  private userService = inject(UserService);
+  private groupService = inject(GroupService);
+  private roleService = inject(RoleService);
+  private toasterService = inject(ToasterService);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller
   addAceForm: UntypedFormGroup
   allowed: boolean = true
@@ -62,13 +80,7 @@ export class AddAceDialogComponent implements OnInit {
   treeControl = new NestedTreeControl<EndpointNode>(node => node.children);
   treeDataSource: ArrayDataSource<EndpointNode> ;
 
-  constructor(public dialogRef: MatDialogRef<AddAceDialogComponent>,
-              public aclService: AclService,
-              public userService: UserService,
-              private groupService: GroupService,
-              private roleService: RoleService,
-              private toasterService: ToasterService,
-              private cd: ChangeDetectorRef,
+  constructor(
               @Inject(MAT_DIALOG_DATA) public data: { endpoints: Endpoint[] }) {
     this.endpoints = data.endpoints
     const treeAdapter = new EndpointTreeAdapter(this.endpoints)

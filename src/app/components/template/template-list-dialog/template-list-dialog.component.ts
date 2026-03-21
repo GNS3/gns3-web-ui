@@ -1,7 +1,12 @@
 import { DataSource } from '@angular/cdk/collections';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Project } from '@models/project';
@@ -10,15 +15,24 @@ import { Template } from '@models/template';
 import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
+import { TemplatefilterPipe } from '@filters/templateFilter.pipe';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-template-list-dialog',
   templateUrl: './template-list-dialog.component.html',
   styleUrls: ['./template-list-dialog.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, TemplatefilterPipe]
 })
 export class TemplateListDialogComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<TemplateListDialogComponent>);
+  private templateService = inject(TemplateService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private toasterService = inject(ToasterService);
+  private nonNegativeValidator = inject(NonNegativeValidator);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   project: Project;
   templateTypes: string[] = [
@@ -44,18 +58,12 @@ export class TemplateListDialogComponent implements OnInit {
   nodeControllers: string[] = ['local', 'vm'];
 
   constructor(
-    public dialogRef: MatDialogRef<TemplateListDialogComponent>,
-    private templateService: TemplateService,
-    private formBuilder: UntypedFormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    private toasterService: ToasterService,
-    private nonNegativeValidator: NonNegativeValidator,
-    private cd: ChangeDetectorRef
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.controller = data['controller'];
     this.project = data['project'];
     this.configurationForm = this.formBuilder.group({
-      numberOfNodes: new UntypedFormControl(1, [ Validators.compose([Validators.required, nonNegativeValidator.get])]),
+      numberOfNodes: new UntypedFormControl(1, [ Validators.compose([Validators.required, this.nonNegativeValidator.get])]),
     });
     this.positionForm = this.formBuilder.group({
       top: new UntypedFormControl(0, Validators.required),
