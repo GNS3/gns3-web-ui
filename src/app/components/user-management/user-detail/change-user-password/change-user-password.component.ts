@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, OnInit, inject, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
 import {User} from "@models/users/user";
@@ -16,7 +16,10 @@ import {matchingPassword} from "@components/user-management/ConfirmPasswordValid
   selector: 'app-change-user-password',
   templateUrl: './change-user-password.component.html',
   styleUrls: ['./change-user-password.component.scss'],
-  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule]
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ChangeUserPasswordComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ChangeUserPasswordComponent>);
@@ -26,13 +29,13 @@ export class ChangeUserPasswordComponent implements OnInit {
   @Inject(MAT_DIALOG_DATA) public data: { user: User, controller: Controller, self_update: boolean };
 
   editPasswordForm: UntypedFormGroup;
-  user: User;
+  user = signal<User | undefined>(undefined);
 
   constructor() { }
 
   ngOnInit(): void {
     const password_regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
-    this.user = this.data.user;
+    this.user.set(this.data.user);
     this.editPasswordForm = new UntypedFormGroup({
       password: new UntypedFormControl(null,
         [Validators.minLength(6), Validators.maxLength(100), Validators.pattern(password_regex), Validators.required] ),
@@ -59,7 +62,7 @@ export class ChangeUserPasswordComponent implements OnInit {
 
     const updatedUser = {};
     updatedUser['password'] = this.editPasswordForm.get('password').value;
-    updatedUser['user_id'] = this.user.user_id;
+    updatedUser['user_id'] = this.user().user_id;
 
     this.userService.update(this.data.controller, updatedUser, this.data.self_update)
       .subscribe((user: User) => {
