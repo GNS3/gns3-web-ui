@@ -3,7 +3,6 @@ import {
   ChangeDetectorRef,
   Component,
   ComponentRef,
-  NgZone,
   HostListener,
   OnDestroy,
   OnInit,
@@ -247,7 +246,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private cd = inject(ChangeDetectorRef);
   private aiChatStore = inject(AiChatStore);
   private viewContainerRef = inject(ViewContainerRef);
-  private ngZone = inject(NgZone);
   // private cfr: ComponentFactoryResolver,
   // private injector: Injector,
 
@@ -519,7 +517,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     Mousetrap.bind('del', (event: Event) => {
       event.preventDefault();
-      this.ngZone.run(() => this.deleteItems());
+      // Note: In zoneless mode, ngZone.run() is a no-op
+      this.deleteItems();
     });
   }
 
