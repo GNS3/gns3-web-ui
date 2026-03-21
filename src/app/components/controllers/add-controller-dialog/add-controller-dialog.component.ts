@@ -1,17 +1,31 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
-import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
 import { Controller } from '@models/controller';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-add-controller-dialog',
   templateUrl: 'add-controller-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule]
 })
 export class AddControllerDialogComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<AddControllerDialogComponent>);
+  private controllerService = inject(ControllerService);
+  private toasterService = inject(ToasterService);
+  private changeDetector = inject(ChangeDetectorRef);
+
+  @Inject(MAT_DIALOG_DATA) public data: any;
+
   protocols = [
     { key: 'http:', name: 'HTTP' },
     { key: 'https:', name: 'HTTPS' },
@@ -31,13 +45,7 @@ export class AddControllerDialogComponent implements OnInit {
     protocol: new UntypedFormControl('http:')
   });
 
-  constructor(
-    public dialogRef: MatDialogRef<AddControllerDialogComponent>,
-    private controllerService: ControllerService,
-    private toasterService: ToasterService,
-    private changeDetector: ChangeDetectorRef,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  constructor() {}
 
   async getLocations() {
     const localControllers = await this.numberOfLocalControllers();
