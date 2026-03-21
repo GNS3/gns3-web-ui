@@ -1,31 +1,43 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCardModule } from '@angular/material/card';
 import { Node } from '../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-change-hostname-dialog-component',
   templateUrl: './change-hostname-dialog.component.html',
   styleUrls: ['./change-hostname-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    MatDialogModule,
+    MatButtonModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatCardModule,
+    ReactiveFormsModule,
+  ],
 })
 export class ChangeHostnameDialogComponent implements OnInit {
+  public dialogRef = inject(MatDialogRef<ChangeHostnameDialogComponent>);
+  public nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   node: Node;
   inputForm: UntypedFormGroup;
   name: string;
 
-  constructor(
-    public dialogRef: MatDialogRef<ChangeHostnameDialogComponent>,
-    public nodeService: NodeService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder,
-    private cd: ChangeDetectorRef
-  ) {
+  constructor() {
     // 初始化时直接使用传入的 node 的 name
     this.name = '';
     this.inputForm = this.formBuilder.group({
