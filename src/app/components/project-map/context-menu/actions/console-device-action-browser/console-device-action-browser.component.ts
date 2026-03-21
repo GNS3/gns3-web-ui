@@ -1,4 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
@@ -10,21 +13,20 @@ import { VncConsoleService } from '@services/vnc-console.service';
 import * as ipaddr from 'ipaddr.js';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-console-device-action-browser',
   templateUrl: './console-device-action-browser.component.html',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
 })
 export class ConsoleDeviceActionBrowserComponent {
+  private toasterService = inject(ToasterService);
+  private nodeService = inject(NodeService);
+  private deviceService = inject(DeviceDetectorService);
+  private protocolHandlerService = inject(ProtocolHandlerService);
+  private vncConsoleService = inject(VncConsoleService);
+
   @Input() controller: Controller;
   @Input() node: Node;
-
-  constructor(
-  private toasterService: ToasterService,
-  private nodeService: NodeService,
-  private deviceService: DeviceDetectorService,
-  private protocolHandlerService: ProtocolHandlerService,
-  private vncConsoleService: VncConsoleService
-  ) {}
 
   openConsole(auxiliary: boolean = false) {
     this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
