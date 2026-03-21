@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
@@ -17,7 +17,10 @@ import { ChangeUserPasswordComponent } from "@components/user-management/user-de
   selector: 'app-logged-user',
   templateUrl: './logged-user.component.html',
   styleUrls: ['./logged-user.component.scss'],
-  imports: [CommonModule, RouterModule, MatCardModule, MatListModule, MatButtonModule, MatDialogModule]
+  imports: [CommonModule, RouterModule, MatCardModule, MatListModule, MatButtonModule, MatDialogModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class LoggedUserComponent implements OnInit {
     private route = inject(ActivatedRoute);
@@ -26,7 +29,7 @@ export class LoggedUserComponent implements OnInit {
     private toasterService = inject(ToasterService);
     public dialog = inject(MatDialog);
 
-    public user: User;
+    public user = signal<User | undefined>(undefined);
     public controller: Controller;
 
     constructor() {}
@@ -36,14 +39,14 @@ export class LoggedUserComponent implements OnInit {
         this.controllerService.get(+controllerId).then((controller: Controller ) => {
             this.controller = controller;
             this.userService.getInformationAboutLoggedUser(controller).subscribe((response: any) => {
-                this.user = response;
+                this.user.set(response);
             });
         });
     }
 
     changePassword() {
         this.dialog.open<ChangeUserPasswordComponent>(ChangeUserPasswordComponent,
-          {width: '500px', height: '300px', data: {user: this.user, controller: this.controller, self_update: true}});
+          {width: '500px', height: '300px', data: {user: this.user(), controller: this.controller, self_update: true}});
     }
 
     copyToken() {
