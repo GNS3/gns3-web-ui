@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,7 +10,10 @@ import { MatListModule } from '@angular/material/list';
   selector: 'app-preferences',
   templateUrl: './preferences.component.html',
   styleUrls: ['./preferences.component.scss'],
-  imports: [CommonModule, RouterModule, MatButtonModule, MatIconModule, MatListModule]
+  imports: [CommonModule, RouterModule, MatButtonModule, MatIconModule, MatListModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class PreferencesComponent implements OnInit {
   public controllerId: string = '';
