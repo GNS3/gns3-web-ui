@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, OnDestroy, ViewEncapsulation, inject, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, OnDestroy, ViewEncapsulation, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
@@ -21,6 +21,9 @@ import { XtermContextMenuService } from '@services/xterm-context-menu.service';
   templateUrl: './web-console-full-window.component.html',
   styleUrls: ['../../../../node_modules/xterm/css/xterm.css', './web-console-full-window.component.scss'],
   imports: [CommonModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
   private controllerId: string;
