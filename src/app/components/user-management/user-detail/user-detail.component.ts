@@ -33,7 +33,7 @@ import { AiProfileTabComponent } from "@components/user-management/user-detail/a
   selector: 'app-user-detail',
   templateUrl: './user-detail.component.html',
   styleUrls: ['./user-detail.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatDialogModule, MatTableModule, MatButtonModule, MatIconModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatCheckboxModule, MatTabsModule, ChangeUserPasswordComponent, AiProfileTabComponent]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatDialogModule, MatTableModule, MatButtonModule, MatIconModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatCheckboxModule, MatTabsModule, AiProfileTabComponent]
 })
 export class UserDetailComponent implements OnInit {
   private userService = inject(UserService);

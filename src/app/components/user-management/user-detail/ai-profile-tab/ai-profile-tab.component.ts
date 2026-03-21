@@ -44,9 +44,7 @@ import { ConfirmDialogComponent } from './ai-profile-dialog/confirm-dialog/confi
     MatSelectModule,
     MatCheckboxModule,
     MatCardModule,
-    MatProgressSpinnerModule,
-    AiProfileDialogComponent,
-    ConfirmDialogComponent
+    MatProgressSpinnerModule
   ]
 })
 export class AiProfileTabComponent implements OnInit, OnDestroy {
