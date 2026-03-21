@@ -1,25 +1,53 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ControllerService } from '@services/controller.service';
 import { Image } from '@models/images';
 import { Controller } from '@models/controller';
 import { ImageManagerService } from "@services/image-manager.service";
 import { AddImageDialogComponent } from './add-image-dialog/add-image-dialog.component';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ToasterService } from '@services/toaster.service';
 import { DeleteAllImageFilesDialogComponent } from './deleteallfiles-dialog/deleteallfiles-dialog.component';
 import { ImageTableRow, imageDataSource, imageDatabase } from "./image-database-file";
 import { QuestionDialogComponent } from "@components/dialogs/question-dialog/question-dialog.component";
-import { MatSort, MatSortable } from '@angular/material/sort';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatSort, MatSortable, MatSortModule } from '@angular/material/sort';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { Subscription } from 'rxjs';
 import { ImageUploadEvent, ImageUploadSessionService } from '@services/image-upload-session.service';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatListModule } from '@angular/material/list';
+import { ControllerDiscoveryComponent } from '@components/controllers/controller-discovery/controller-discovery.component';
 
 @Component({
-  standalone: false,
+  standalone: true,
   selector: 'app-image-manager',
   templateUrl: './image-manager.component.html',
-  styleUrls: ['./image-manager.component.scss']
+  styleUrls: ['./image-manager.component.scss'],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    MatDialogModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCheckboxModule,
+    MatProgressBarModule,
+    MatListModule,
+    ControllerDiscoveryComponent
+  ]
 })
 export class ImageManagerComponent implements OnInit, OnDestroy {
   controller: Controller;
@@ -48,15 +76,15 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
-  constructor(
-    private imageService: ImageManagerService,
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private dialog: MatDialog,
-    private toasterService: ToasterService,
-    private imageUploadSessionService: ImageUploadSessionService,
-    private router: Router
-  ) { }
+  private imageService = inject(ImageManagerService);
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private dialog = inject(MatDialog);
+  private toasterService = inject(ToasterService);
+  private imageUploadSessionService = inject(ImageUploadSessionService);
+  private router = inject(Router);
+
+  constructor() { }
 
   ngOnInit(): void {
     const controller_id = parseInt(this.route.snapshot.paramMap.get('controller_id'), 10);
