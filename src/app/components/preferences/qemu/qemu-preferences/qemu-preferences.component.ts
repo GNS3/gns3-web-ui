@@ -1,5 +1,10 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatListModule } from '@angular/material/list';
 import { Controller } from '@models/controller';
 import { QemuSettings } from '@models/settings/qemu-settings';
 import { ControllerSettingsService } from '@services/controller-settings.service';
@@ -7,23 +12,22 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: false,
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-qemu-preferences',
   templateUrl: './qemu-preferences.component.html',
   styleUrls: ['./qemu-preferences.component.scss'],
+  imports: [CommonModule, FormsModule, RouterModule, MatButtonModule, MatCheckboxModule, MatListModule]
 })
 export class QemuPreferencesComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private controllerSettingsService = inject(ControllerSettingsService);
+  private toasterService = inject(ToasterService);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   settings: QemuSettings;
-
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private controllerSettingsService: ControllerSettingsService,
-    private toasterService: ToasterService,
-    private cd: ChangeDetectorRef
-  ) {}
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
