@@ -1,5 +1,5 @@
 import { DataSource, SelectionModel } from '@angular/cdk/collections';
-import { Component, OnInit, inject, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
@@ -50,6 +50,9 @@ import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
     MatCheckboxModule,
     ProjectsFilter,
   ],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ProjectsComponent implements OnInit {
   controller: Controller;
@@ -73,6 +76,7 @@ export class ProjectsComponent implements OnInit {
   private bottomSheet = inject(MatBottomSheet);
   private toasterService = inject(ToasterService);
   private recentlyOpenedProjectService = inject(RecentlyOpenedProjectService);
+  private cdr = inject(ChangeDetectorRef);
 
   constructor() {}
 
