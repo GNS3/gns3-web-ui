@@ -15,7 +15,7 @@ import {User} from "@models/users/user";
 import {MatTableDataSource} from "@angular/material/table";
 
 @Pipe({
-  standalone: false,
+  standalone: true,
   name: 'userFilter'
 })
 export class UserFilterPipe implements PipeTransform {

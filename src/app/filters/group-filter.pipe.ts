@@ -15,7 +15,7 @@ import {Group} from "@models/groups/group";
 import {MatTableDataSource} from "@angular/material/table";
 
 @Pipe({
-  standalone: false,
+  standalone: true,
   name: 'groupFilter'
 })
 export class GroupFilterPipe implements PipeTransform {
