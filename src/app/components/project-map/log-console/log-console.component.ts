@@ -8,8 +8,14 @@ import {
   OnDestroy,
   OnInit,
   ViewChild,
+  inject,
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { UntypedFormControl } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
 import { Subscription } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../cartography/models/drawing';
@@ -30,13 +36,24 @@ import { LogEventsDataSource } from './log-events-datasource';
 import * as ipaddr from 'ipaddr.js';
 
 @Component({
-  standalone: false,
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-log-console',
   templateUrl: './log-console.component.html',
   styleUrls: ['./log-console.component.scss'],
+  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatMenuModule]
 })
 export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
+  private projectWebServiceHandler = inject(ProjectWebServiceHandler);
+  private nodeService = inject(NodeService);
+  private nodesDataSource = inject(NodesDataSource);
+  private protocolHandlerService = inject(ProtocolHandlerService);
+  private logEventsDataSource = inject(LogEventsDataSource);
+  private httpService = inject(HttpController);
+  private themeService = inject(ThemeService);
+  private cd = inject(ChangeDetectorRef);
+  private nodeConsoleService = inject(NodeConsoleService);
+
   @Input() controller: Controller;
   @Input() project: Project;
 
@@ -68,23 +85,12 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   public isLightThemeEnabled: boolean = false;
   public selected = new UntypedFormControl(0);
 
-  constructor(
-    private projectWebServiceHandler: ProjectWebServiceHandler,
-    private nodeService: NodeService,
-    private nodesDataSource: NodesDataSource,
-    private protocolHandlerService: ProtocolHandlerService,
-    private logEventsDataSource: LogEventsDataSource,
-    private httpService: HttpController,
-    private themeService: ThemeService,
-    private cd: ChangeDetectorRef,
-    private nodeConsoleService: NodeConsoleService,
-    private changeDetectorRef: ChangeDetectorRef
-  ) {}
+  constructor() {}
 
   ngOnInit() {
     this.nodeConsoleService.consoleResized.subscribe((ev) => {
       this.style = { width: `${ev.width}px`, height: `${ev.height - 70}px` };
-      this.changeDetectorRef.detectChanges();
+      this.cd.detectChanges();
     });
 
     this.themeService.getActualTheme() === 'light'
