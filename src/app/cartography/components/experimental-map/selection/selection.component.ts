@@ -1,4 +1,14 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  OnInit,
+  Output,
+  inject,
+  input,
+} from '@angular/core';
 import { fromEvent, combineLatest, Observable, Subscription } from 'rxjs';
 import { map, mergeMap, skipUntil, take, tap, startWith } from 'rxjs/operators';
 import { Rectangle } from '../../../models/rectangle';
@@ -9,10 +19,10 @@ import { Rectangle } from '../../../models/rectangle';
   templateUrl: './selection.component.html',
   styleUrls: ['./selection.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: []
+  imports: [],
 })
 export class SelectionComponent implements OnInit, AfterViewInit {
-  @Input('app-selection') svg: SVGSVGElement;
+  readonly svg = input<SVGSVGElement>(undefined, { alias: 'app-selection' });
 
   private startX: number;
   private startY: number;
@@ -31,11 +41,9 @@ export class SelectionComponent implements OnInit, AfterViewInit {
   ngOnInit() {}
 
   ngAfterViewInit() {
-    const down = fromEvent(this.svg, 'mousedown').pipe(
-      tap((e: MouseEvent) => e.preventDefault())
-    );
+    const down = fromEvent(this.svg(), 'mousedown').pipe(tap((e: MouseEvent) => e.preventDefault()));
     down.subscribe((e: MouseEvent) => {
-      if (e.target !== this.svg) {
+      if (e.target !== this.svg()) {
         return;
       }
 
@@ -54,53 +62,48 @@ export class SelectionComponent implements OnInit, AfterViewInit {
       })
     );
 
-    const mouseMove = fromEvent(document, 'mousemove').pipe(
-      tap((e: MouseEvent) => e.stopPropagation())
-    );
+    const mouseMove = fromEvent(document, 'mousemove').pipe(tap((e: MouseEvent) => e.stopPropagation()));
 
-    const scrollWindow = fromEvent(document, 'scroll').pipe(
-      startWith({})
-    );
+    const scrollWindow = fromEvent(document, 'scroll').pipe(startWith({}));
 
     const move = combineLatest([mouseMove, scrollWindow]);
 
     const drag = down.pipe(
       mergeMap((md: MouseEvent) => {
-        return move
-          .pipe(
-            map(([mm, s]) => mm),
-            tap((mm: MouseEvent) => {
-              if (!this.started) {
-                return;
-              }
-              this.visible = true;
-              this.width = mm.clientX - this.startX + window.scrollX;
-              this.height = mm.clientY - this.startY + window.scrollY;
+        return move.pipe(
+          map(([mm, s]) => mm),
+          tap((mm: MouseEvent) => {
+            if (!this.started) {
+              return;
+            }
+            this.visible = true;
+            this.width = mm.clientX - this.startX + window.scrollX;
+            this.height = mm.clientY - this.startY + window.scrollY;
 
-              this.ref.detectChanges();
+            this.ref.detectChanges();
 
-              this.selectedEvent([this.startX, this.startY], [this.width, this.height]);
-            }),
-            skipUntil(
-              up.pipe(
-                take(1),
-                tap((e: MouseEvent) => {
-                  if (!this.started) {
-                    return;
-                  }
-                  this.visible = false;
-                  this.started = false;
+            this.selectedEvent([this.startX, this.startY], [this.width, this.height]);
+          }),
+          skipUntil(
+            up.pipe(
+              take(1),
+              tap((e: MouseEvent) => {
+                if (!this.started) {
+                  return;
+                }
+                this.visible = false;
+                this.started = false;
 
-                  this.width = e.clientX - this.startX + window.scrollX;
-                  this.height = e.clientY - this.startY + window.scrollY;
+                this.width = e.clientX - this.startX + window.scrollX;
+                this.height = e.clientY - this.startY + window.scrollY;
 
-                  this.ref.detectChanges();
-                  this.selectedEvent([this.startX, this.startY], [this.width, this.height]);
-                })
-              )
-            ),
-            take(1)
-          );
+                this.ref.detectChanges();
+                this.selectedEvent([this.startX, this.startY], [this.width, this.height]);
+              })
+            )
+          ),
+          take(1)
+        );
       })
     );
 

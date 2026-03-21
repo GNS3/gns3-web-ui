@@ -1,4 +1,14 @@
-import { AfterViewInit, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+  inject,
+  input,
+} from '@angular/core';
 import { fromEvent, combineLatest, Observable, Subscription } from 'rxjs';
 import { map, mergeMap, skipUntil, take, tap, startWith } from 'rxjs/operators';
 import { Point } from '../../../models/point';
@@ -12,10 +22,10 @@ export class DraggableDraggedEvent {
   selector: '[app-draggable]',
   template: ` <ng-content></ng-content> `,
   styleUrls: ['./draggable.component.scss'],
-  imports: []
+  imports: [],
 })
 export class DraggableComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input('app-draggable') item: Point;
+  readonly item = input<Point>(undefined, { alias: 'app-draggable' });
   @Output() dragging = new EventEmitter<DraggableDraggedEvent>();
   @Output() dragged = new EventEmitter<DraggableDraggedEvent>();
 
@@ -32,13 +42,12 @@ export class DraggableComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {}
 
   ngAfterViewInit() {
-    const down = fromEvent(this.elementRef.nativeElement, 'mousedown').pipe(
-      tap((e: MouseEvent) => e.preventDefault())
-    );
+    const down = fromEvent(this.elementRef.nativeElement, 'mousedown').pipe(tap((e: MouseEvent) => e.preventDefault()));
 
     down.subscribe((e: MouseEvent) => {
-      this.posX = this.item.x;
-      this.posY = this.item.y;
+      const item = this.item();
+      this.posX = item.x;
+      this.posY = item.y;
 
       this.startX = e.clientX;
       this.startY = e.clientY;
@@ -50,45 +59,41 @@ export class DraggableComponent implements OnInit, AfterViewInit, OnDestroy {
       })
     );
 
-    const mouseMove = fromEvent(document, 'mousemove').pipe(
-      tap((e: MouseEvent) => e.stopPropagation())
-    );
+    const mouseMove = fromEvent(document, 'mousemove').pipe(tap((e: MouseEvent) => e.stopPropagation()));
 
-    const scrollWindow = fromEvent(document, 'scroll').pipe(
-      startWith({})
-    );
+    const scrollWindow = fromEvent(document, 'scroll').pipe(startWith({}));
 
     const move = combineLatest([mouseMove, scrollWindow]);
 
     const drag = down.pipe(
       mergeMap((md: MouseEvent) => {
-        return move
-          .pipe(
-            map(([mm, s]) => mm),
-            tap((mm: MouseEvent) => {
-              const x = this.startX - mm.clientX;
-              const y = this.startY - mm.clientY;
+        const item = this.item();
+        return move.pipe(
+          map(([mm, s]) => mm),
+          tap((mm: MouseEvent) => {
+            const x = this.startX - mm.clientX;
+            const y = this.startY - mm.clientY;
 
-              this.item.x = Math.round(this.posX - x);
-              this.item.y = Math.round(this.posY - y);
-              this.dragging.emit(new DraggableDraggedEvent(this.item.x, this.item.y, -x, -y));
-            }),
-            skipUntil(
-              up.pipe(
-                take(1),
-                tap((e: MouseEvent) => {
-                  const x = this.startX - e.clientX;
-                  const y = this.startY - e.clientY;
+            item.x = Math.round(this.posX - x);
+            item.y = Math.round(this.posY - y);
+            this.dragging.emit(new DraggableDraggedEvent(item.x, item.y, -x, -y));
+          }),
+          skipUntil(
+            up.pipe(
+              take(1),
+              tap((e: MouseEvent) => {
+                const x = this.startX - e.clientX;
+                const y = this.startY - e.clientY;
 
-                  this.item.x = Math.round(this.posX - x);
-                  this.item.y = Math.round(this.posY - y);
+                item.x = Math.round(this.posX - x);
+                item.y = Math.round(this.posY - y);
 
-                  this.dragged.emit(new DraggableDraggedEvent(this.item.x, this.item.y, -x, -y));
-                })
-              )
-            ),
-            take(1)
-          );
+                this.dragged.emit(new DraggableDraggedEvent(item.x, item.y, -x, -y));
+              })
+            )
+          ),
+          take(1)
+        );
       })
     );
 

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, SimpleChange, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, SimpleChange, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
@@ -18,7 +18,7 @@ import { DrawingService } from '@services/drawing.service';
   imports: [],
 })
 export class DrawingAddedComponent implements OnInit, OnDestroy {
-  @Input() controller: Controller
+  readonly controller = input<Controller>(undefined);
   @Input() project: Project;
   @Input() selectedDrawing: string;
   @Output() drawingSaved = new EventEmitter<boolean>();
@@ -49,7 +49,7 @@ export class DrawingAddedComponent implements OnInit, OnDestroy {
     let svgText = this.mapDrawingToSvgConverter.convert(drawing);
 
     this.drawingService
-      .add(this.controller, this.project.project_id, evt.x, evt.y, svgText)
+      .add(this.controller(), this.project.project_id, evt.x, evt.y, svgText)
       .subscribe((controllerDrawing: Drawing) => {
         this.drawingsDataSource.add(controllerDrawing);
         this.drawingSaved.emit(true);

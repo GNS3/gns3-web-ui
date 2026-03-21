@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Output, ViewChild, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 import { CustomAdaptersTableComponent } from '../custom-adapters-table/custom-adapters-table.component';
@@ -8,11 +8,11 @@ import { CustomAdaptersTableComponent } from '../custom-adapters-table/custom-ad
   selector: 'app-custom-adapters',
   templateUrl: './custom-adapters.component.html',
   styleUrls: ['./custom-adapters.component.scss', '../../preferences.component.scss'],
-  imports: [MatButtonModule, CustomAdaptersTableComponent]
+  imports: [MatButtonModule, CustomAdaptersTableComponent],
 })
 export class CustomAdaptersComponent {
-  @Input() networkTypes = [];
-  @Input() displayedColumns: string[] = [];
+  readonly networkTypes = input([]);
+  readonly displayedColumns = input<string[]>([]);
   @Output() closeConfiguratorEmitter = new EventEmitter<boolean>();
   @Output() saveConfigurationEmitter = new EventEmitter<CustomAdapter[]>();
 

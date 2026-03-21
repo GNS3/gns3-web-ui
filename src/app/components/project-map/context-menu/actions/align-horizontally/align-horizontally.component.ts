@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -17,23 +17,23 @@ export class AlignHorizontallyActionComponent implements OnInit {
   private nodesDataSource = inject(NodesDataSource);
   private nodeService = inject(NodeService);
 
-  @Input() controller: Controller;
-  @Input() nodes: Node[];
+  readonly controller = input<Controller>(undefined);
+  readonly nodes = input<Node[]>(undefined);
 
   ngOnInit() {}
 
   alignHorizontally() {
     let averageY: number = 0;
-    this.nodes.forEach((node) => {
+    this.nodes().forEach((node) => {
       averageY += node.y;
     });
-    averageY = averageY / this.nodes.length;
+    averageY = averageY / this.nodes().length;
 
-    this.nodes.forEach((node) => {
+    this.nodes().forEach((node) => {
       node.y = averageY;
       this.nodesDataSource.update(node);
 
-      this.nodeService.update(this.controller, node).subscribe((node: Node) => {});
+      this.nodeService.update(this.controller(), node).subscribe((node: Node) => {});
     });
   }
 }

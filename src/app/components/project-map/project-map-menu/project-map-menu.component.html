@@ -93,7 +93,7 @@
   class="menu-button"
   (click)="changeLockValue()"
 >
-  <mat-icon [ngClass]="{ unmarkedLight: !isLocked && isLightThemeEnabled, marked: isLocked }">{{lock}}</mat-icon>
+  <mat-icon [ngClass]="{ unmarkedLight: !isLocked && isLightThemeEnabled, marked: isLocked }">{{ lock }}</mat-icon>
 </button>
 <button
   matTooltip="Take a screenshot"
@@ -119,8 +119,8 @@
   <span *ngIf="isAIChatOpen && isAIMinimized" class="ai-minimize-indicator"></span>
 </button>
 <app-drawing-added
-  [controller]="controller"
-  [project]="project"
+  [controller]="controller()"
+  [project]="project()"
   [selectedDrawing]="selectedDrawing"
   (drawingSaved)="onDrawingSaved()"
 >

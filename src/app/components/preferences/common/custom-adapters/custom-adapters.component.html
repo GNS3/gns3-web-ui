@@ -8,8 +8,8 @@
     <div class="container mat-elevation-z8">
       <app-custom-adapters-table
         #customAdapters
-        [networkTypes]="networkTypes"
-        [displayedColumns]="displayedColumns"
+        [networkTypes]="networkTypes()"
+        [displayedColumns]="displayedColumns()"
         [adapters]="adapters"
       ></app-custom-adapters-table>
     </div>

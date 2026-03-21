@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -25,14 +25,14 @@ export class DuplicateActionComponent {
   private drawingsDataSource = inject(DrawingsDataSource);
   private toasterService = inject(ToasterService);
 
-  @Input() controller: Controller;
-  @Input() project: Project;
+  readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
   @Input() drawings: Drawing[];
   @Input() nodes: Node[];
 
   duplicate() {
     for (let node of this.nodes) {
-      this.nodeService.duplicate(this.controller, node).subscribe(
+      this.nodeService.duplicate(this.controller(), node).subscribe(
         (node: Node) => {
           this.nodesDataSource.add(node);
         },
@@ -47,7 +47,7 @@ export class DuplicateActionComponent {
     }
 
     for (let drawing of this.drawings) {
-      this.drawingService.duplicate(this.controller, drawing.project_id, drawing).subscribe((drawing: Drawing) => {
+      this.drawingService.duplicate(this.controller(), drawing.project_id, drawing).subscribe((drawing: Drawing) => {
         this.drawingsDataSource.add(drawing);
       });
     }

@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { AddedDataEvent } from '../../events/event-source';
@@ -9,10 +9,10 @@ import { Context } from '../../models/context';
   selector: 'app-drawing-adding',
   templateUrl: './drawing-adding.component.html',
   styleUrls: ['./drawing-adding.component.scss'],
-  imports: []
+  imports: [],
 })
 export class DrawingAddingComponent implements OnInit, OnDestroy {
-  @Input('svg') svg: SVGSVGElement;
+  readonly svg = input<SVGSVGElement>(undefined);
 
   private mapListener: Function;
   private drawingSelected: Subscription;
@@ -41,11 +41,11 @@ export class DrawingAddingComponent implements OnInit, OnDestroy {
 
     this.deactivate();
     this.mapListener = listener;
-    this.svg.addEventListener('click', this.mapListener as EventListenerOrEventListenerObject);
+    this.svg().addEventListener('click', this.mapListener as EventListenerOrEventListenerObject);
   }
 
   deactivate() {
-    this.svg.removeEventListener('click', this.mapListener as EventListenerOrEventListenerObject);
+    this.svg().removeEventListener('click', this.mapListener as EventListenerOrEventListenerObject);
   }
 
   ngOnDestroy() {

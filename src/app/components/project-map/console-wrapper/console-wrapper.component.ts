@@ -1,4 +1,17 @@
-import { Component, EventEmitter, Input, OnInit, Output, OnDestroy, HostListener, ChangeDetectorRef, ViewChildren, QueryList, AfterViewInit, inject } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  OnInit,
+  Output,
+  OnDestroy,
+  HostListener,
+  ChangeDetectorRef,
+  ViewChildren,
+  QueryList,
+  AfterViewInit,
+  inject,
+  input,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, UntypedFormControl } from '@angular/forms';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -25,13 +38,24 @@ import { LogConsoleComponent } from '../log-console/log-console.component';
   selector: 'app-console-wrapper',
   templateUrl: './console-wrapper.component.html',
   styleUrls: ['./console-wrapper.component.scss'],
-  imports: [CommonModule, FormsModule, MatTabsModule, MatIconModule, MatButtonModule, MatTooltipModule, ResizableDirective, ResizeHandleDirective, ConsoleDevicesPanelComponent, WebConsoleComponent, LogConsoleComponent]
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatTabsModule,
+    MatIconModule,
+    MatButtonModule,
+    MatTooltipModule,
+    ResizableDirective,
+    ResizeHandleDirective,
+    ConsoleDevicesPanelComponent,
+    WebConsoleComponent,
+    LogConsoleComponent,
+  ],
 })
 export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy {
-
   private destroy$ = new Subject<void>();
-  @Input() controller: Controller;
-  @Input() project: Project;
+  readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
   @Output() closeConsole = new EventEmitter<boolean>();
   @Output() deviceSelected = new EventEmitter<string>();
   @Output() consoleDeactivated = new EventEmitter<void>();
@@ -109,7 +133,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
           bottom: '0px',
           left: currentLeft,
           width: `${this.resizedWidth}px`,
-          height: `${newHeight}px`
+          height: `${newHeight}px`,
         };
       } else {
         // Restore to normal state
@@ -117,7 +141,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
           bottom: currentBottom,
           left: currentLeft,
           width: `${this.resizedWidth}px`,
-          height: `${this.resizedHeight}px`
+          height: `${this.resizedHeight}px`,
         };
       }
     } else {
@@ -138,7 +162,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
         bottom: '0px',
         left: currentLeft,
         width: `${this.resizedWidth}px`,
-        height: `${newHeight}px`
+        height: `${newHeight}px`,
       };
       // Notify resize
       this.consoleService.consoleResized.next({
@@ -148,7 +172,12 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     } else {
       // Restore to normal size
       const currentLeft = (this.style as WindowStyle).left || '80px';
-      this.style = { bottom: '20px', left: currentLeft, width: `${this.resizedWidth}px`, height: `${this.resizedHeight}px` };
+      this.style = {
+        bottom: '20px',
+        left: currentLeft,
+        width: `${this.resizedWidth}px`,
+        height: `${this.resizedHeight}px`,
+      };
       // Notify resize
       this.consoleService.consoleResized.next({
         width: this.resizedWidth,
@@ -171,7 +200,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     this.minimize(false);
 
     // Check if node already exists in tabs
-    const existingIndex = this.nodes.findIndex(n => n.node_id === node.node_id);
+    const existingIndex = this.nodes.findIndex((n) => n.node_id === node.node_id);
 
     if (existingIndex >= 0) {
       // Node already exists, just switch to that tab
@@ -206,11 +235,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
 
   dragWidget(event) {
     // Use boundary service to constrain position
-    this.style = this.boundaryService.constrainDragPosition(
-      this.style,
-      event.movementX,
-      event.movementY
-    );
+    this.style = this.boundaryService.constrainDragPosition(this.style, event.movementX, event.movementY);
   }
 
   validate(event: ResizeEvent): boolean {
@@ -466,7 +491,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
             bottom: '0px',
             left: '80px',
             width: `${this.resizedWidth}px`,
-            height: `${newHeight}px`
+            height: `${newHeight}px`,
           };
         } else {
           // Restore to normal state with saved position
@@ -474,7 +499,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
             bottom: state.bottom || '20px',
             left: state.left || '80px',
             width: `${this.resizedWidth}px`,
-            height: `${this.resizedHeight}px`
+            height: `${this.resizedHeight}px`,
           };
         }
       } else {
@@ -498,7 +523,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
         height: this.resizedHeight,
         bottom: (this.style as WindowStyle).bottom,
         left: (this.style as WindowStyle).left,
-        isMaximized: this.isMaximized
+        isMaximized: this.isMaximized,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (e) {

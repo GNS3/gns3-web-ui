@@ -7,6 +7,7 @@ import {
   ViewChild,
   ViewContainerRef,
   inject,
+  input,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
@@ -27,7 +28,7 @@ import { ConsoleDeviceActionBrowserComponent } from '../context-menu/actions/con
   selector: 'app-context-console-menu',
   templateUrl: './context-console-menu.component.html',
   styleUrls: ['./context-console-menu.component.scss'],
-  imports: [CommonModule, MatMenuModule, MatIconModule]
+  imports: [CommonModule, MatMenuModule, MatIconModule],
 })
 export class ContextConsoleMenuComponent implements OnInit {
   private sanitizer = inject(DomSanitizer);
@@ -38,7 +39,7 @@ export class ContextConsoleMenuComponent implements OnInit {
   private router = inject(Router);
   private vncConsoleService = inject(VncConsoleService);
 
-  @Input() project: Project;
+  readonly project = input<Project>(undefined);
   @Input() controller: Controller;
   @ViewChild(MatMenuTrigger) contextConsoleMenu: MatMenuTrigger;
   @ViewChild('container', { read: ViewContainerRef }) container;

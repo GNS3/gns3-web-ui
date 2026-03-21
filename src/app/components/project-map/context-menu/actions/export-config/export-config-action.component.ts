@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -20,12 +20,13 @@ export class ExportConfigActionComponent {
   private dialog = inject(MatDialog);
   private toasterService = inject(ToasterService);
 
-  @Input() controller: Controller;
-  @Input() node: Node;
+  readonly controller = input<Controller>(undefined);
+  readonly node = input<Node>(undefined);
 
   exportConfig() {
-    if (this.node.node_type === 'vpcs') {
-      this.nodeService.getStartupConfiguration(this.controller, this.node).subscribe({
+    const node = this.node();
+    if (node.node_type === 'vpcs') {
+      this.nodeService.getStartupConfiguration(this.controller(), node).subscribe({
         next: (config: any) => {
           this.downloadByHtmlTag(config);
         },
@@ -42,7 +43,7 @@ export class ExportConfigActionComponent {
       let instance = dialogRef.componentInstance;
       dialogRef.afterClosed().subscribe((configType: string) => {
         if (configType === 'startup-config') {
-          this.nodeService.getStartupConfiguration(this.controller, this.node).subscribe({
+          this.nodeService.getStartupConfiguration(this.controller(), this.node()).subscribe({
             next: (config: any) => {
               this.downloadByHtmlTag(config);
             },
@@ -51,7 +52,7 @@ export class ExportConfigActionComponent {
             },
           });
         } else if (configType === 'private-config') {
-          this.nodeService.getPrivateConfiguration(this.controller, this.node).subscribe({
+          this.nodeService.getPrivateConfiguration(this.controller(), this.node()).subscribe({
             next: (config: any) => {
               this.downloadByHtmlTag(config);
             },
@@ -68,10 +69,11 @@ export class ExportConfigActionComponent {
     const element = document.createElement('a');
     const fileType = 'text/plain';
     element.setAttribute('href', `data:${fileType};charset=utf-8,${encodeURIComponent(config)}`);
-    if (this.node.node_type === 'vpcs') {
-      element.setAttribute('download', `${this.node.name}_startup.vpc`);
-    } else if (this.node.node_type === 'iou' || this.node.node_type === 'dynamips') {
-      element.setAttribute('download', `${this.node.name}_startup.cfg`);
+    const node = this.node();
+    if (node.node_type === 'vpcs') {
+      element.setAttribute('download', `${node.name}_startup.vpc`);
+    } else if (node.node_type === 'iou' || node.node_type === 'dynamips') {
+      element.setAttribute('download', `${node.name}_startup.cfg`);
     }
 
     var event = new MouseEvent('click');

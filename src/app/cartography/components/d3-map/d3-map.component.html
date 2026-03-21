@@ -5,12 +5,12 @@
       attr.x="{{ drawingGridX }}"
       attr.y="{{ drawingGridY }}"
       id="gridDrawing"
-      attr.width="{{ project.drawing_grid_size }}"
-      attr.height="{{ project.drawing_grid_size }}"
+      attr.width="{{ project().drawing_grid_size }}"
+      attr.height="{{ project().drawing_grid_size }}"
       patternUnits="userSpaceOnUse"
     >
       <path
-        attr.d="M {{ project.drawing_grid_size }} 0 L 0 0 0 {{ project.drawing_grid_size }}"
+        attr.d="M {{ project().drawing_grid_size }} 0 L 0 0 0 {{ project().drawing_grid_size }}"
         fill="none"
         stroke="silver"
         attr.stroke-width="{{ gridVisibility }}"
@@ -23,12 +23,12 @@
       attr.x="{{ nodeGridX }}"
       attr.y="{{ nodeGridY }}"
       id="gridNode"
-      attr.width="{{ project.grid_size }}"
-      attr.height="{{ project.grid_size }}"
+      attr.width="{{ project().grid_size }}"
+      attr.height="{{ project().grid_size }}"
       patternUnits="userSpaceOnUse"
     >
       <path
-        attr.d="M {{ project.grid_size }} 0 L 0 0 0 {{ project.grid_size }}"
+        attr.d="M {{ project().grid_size }} 0 L 0 0 0 {{ project().grid_size }}"
         fill="none"
         stroke="DarkSlateGray"
         attr.stroke-width="{{ gridVisibility }}"
@@ -44,6 +44,6 @@
 <app-drawing-resizing></app-drawing-resizing>
 <app-selection-control></app-selection-control>
 <app-selection-select></app-selection-select>
-<app-text-editor #textEditor [controller]="controller" [svg]="svg"></app-text-editor>
+<app-text-editor #textEditor [controller]="controller()" [svg]="svg"></app-text-editor>
 <app-draggable-selection [svg]="svg"></app-draggable-selection>
 <app-link-editing [svg]="svg"></app-link-editing>

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { environment } from 'environments/environment';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
@@ -19,11 +19,11 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-import-appliance',
   templateUrl: './import-appliance.component.html',
   styleUrls: ['./import-appliance.component.scss'],
-  imports: [CommonModule]
+  imports: [CommonModule],
 })
 export class ImportApplianceComponent implements OnInit {
-  @Input('project') project: Project;
-  @Input('controller') controller: Controller;
+  readonly project = input<Project>(undefined);
+  readonly controller = input<Controller>(undefined);
   uploader: FileUploader;
   template;
 
@@ -36,7 +36,7 @@ export class ImportApplianceComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    this.uploader = new FileUploader({url: ''});
+    this.uploader = new FileUploader({ url: '' });
     this.uploader.onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };
@@ -52,13 +52,13 @@ export class ImportApplianceComponent implements OnInit {
       headers: ParsedResponseHeaders
     ) => {
       if (this.template.template_type === 'qemu') {
-        this.qemuService.addTemplate(this.controller, this.template).subscribe(() => this.onUploadComplete());
+        this.qemuService.addTemplate(this.controller(), this.template).subscribe(() => this.onUploadComplete());
       } else if (this.template.template_type === 'iou') {
-        this.iouService.addTemplate(this.controller, this.template).subscribe(() => this.onUploadComplete());
+        this.iouService.addTemplate(this.controller(), this.template).subscribe(() => this.onUploadComplete());
       } else if (this.template.template_type === 'dynamips') {
-        this.iosService.addTemplate(this.controller, this.template).subscribe(() => this.onUploadComplete());
+        this.iosService.addTemplate(this.controller(), this.template).subscribe(() => this.onUploadComplete());
       } else if (this.template.template_type === 'docker') {
-        this.dockerService.addTemplate(this.controller, this.template).subscribe(() => this.onUploadComplete());
+        this.dockerService.addTemplate(this.controller(), this.template).subscribe(() => this.onUploadComplete());
       }
     };
   }
@@ -145,7 +145,7 @@ export class ImportApplianceComponent implements OnInit {
       }
       this.template = template;
 
-      const url = this.getUploadPath(this.controller, name);
+      const url = this.getUploadPath(this.controller(), name);
       this.uploader.queue.forEach((elem) => (elem.url = url));
       const itemToUpload = this.uploader.queue[0];
       this.uploader.uploadItem(itemToUpload);

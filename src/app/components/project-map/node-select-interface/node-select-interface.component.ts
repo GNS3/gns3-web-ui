@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output, ViewChild, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -12,10 +12,10 @@ import { Port } from '@models/port';
   selector: 'app-node-select-interface',
   templateUrl: './node-select-interface.component.html',
   styleUrls: ['./node-select-interface.component.scss'],
-  imports: [CommonModule, MatMenuModule]
+  imports: [CommonModule, MatMenuModule],
 })
 export class NodeSelectInterfaceComponent implements OnInit {
-  @Input() links: Link[];
+  readonly links = input<Link[]>(undefined);
   @Output() onChooseInterface = new EventEmitter<any>();
 
   @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
@@ -47,7 +47,7 @@ export class NodeSelectInterfaceComponent implements OnInit {
 
   public filterNodePorts() {
     let linkNodes: LinkNode[] = [];
-    this.links.forEach((link: Link) => {
+    this.links().forEach((link: Link) => {
       link.nodes.forEach((linkNode: LinkNode) => {
         if (linkNode.node_id === this.node.node_id) {
           linkNodes.push(linkNode);

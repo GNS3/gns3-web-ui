@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 
 @Component({
@@ -9,12 +9,13 @@ import { MatCardModule } from '@angular/material/card';
   imports: [MatCardModule],
 })
 export class EmptyTemplatesListComponent {
-  @Input() textMessage: string;
+  readonly textMessage = input<string>(undefined);
   emptyTemplatesListMessage: string = 'Empty templates list';
 
   constructor() {
-    if (this.textMessage) {
-      this.emptyTemplatesListMessage = this.textMessage;
+    const textMessage = this.textMessage();
+    if (textMessage) {
+      this.emptyTemplatesListMessage = textMessage;
     }
   }
 }

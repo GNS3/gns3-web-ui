@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
@@ -20,7 +20,7 @@ import { DrawingService } from '@services/drawing.service';
   imports: [],
 })
 export class TextAddedComponent implements OnInit, OnDestroy {
-  @Input() controller: Controller;
+  readonly controller = input<Controller>(undefined);
   @Input() project: Project;
   @Output() drawingSaved = new EventEmitter<boolean>();
   private textAdded: Subscription;
@@ -43,7 +43,7 @@ export class TextAddedComponent implements OnInit, OnDestroy {
 
     this.drawingService
       .add(
-        this.controller,
+        this.controller(),
         this.project.project_id,
         (evt.x - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x)) /
           this.context.transformation.k,

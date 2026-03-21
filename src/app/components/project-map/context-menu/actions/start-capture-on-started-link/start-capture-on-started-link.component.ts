@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -16,12 +16,12 @@ import { PacketCaptureService } from '@services/packet-capture.service';
 export class StartCaptureOnStartedLinkActionComponent {
   private packetCaptureService = inject(PacketCaptureService);
 
-  @Input() controller: Controller;
-  @Input() project: Project;
-  @Input() link: Link;
+  readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
+  readonly link = input<Link>(undefined);
 
   startCapture() {
-    var splittedFileName = this.link.capture_file_name.split('.');
-    this.packetCaptureService.startCapture(this.controller, this.project, this.link, splittedFileName[0]);
+    var splittedFileName = this.link().capture_file_name.split('.');
+    this.packetCaptureService.startCapture(this.controller(), this.project(), this.link(), splittedFileName[0]);
   }
 }

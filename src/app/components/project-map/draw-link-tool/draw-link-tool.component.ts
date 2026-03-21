@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
@@ -18,10 +18,10 @@ import { Link } from '@models/link';
   selector: 'app-draw-link-tool',
   templateUrl: './draw-link-tool.component.html',
   styleUrls: ['./draw-link-tool.component.scss'],
-  imports: [CommonModule, NodeSelectInterfaceComponent]
+  imports: [CommonModule, NodeSelectInterfaceComponent],
 })
 export class DrawLinkToolComponent implements OnInit, OnDestroy {
-  @Input() links: Link[];
+  readonly links = input<Link[]>(undefined);
   @ViewChild(NodeSelectInterfaceComponent) nodeSelectInterfaceMenu: NodeSelectInterfaceComponent;
 
   private nodeClicked$: Subscription;

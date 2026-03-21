@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -32,7 +32,7 @@ export class DeleteActionComponent implements OnInit {
   private linkService = inject(LinkService);
   private bottomSheet = inject(MatBottomSheet);
 
-  @Input() controller: Controller;
+  readonly controller = input<Controller>(undefined);
   @Input() nodes: Node[];
   @Input() drawings: Drawing[];
   @Input() links: Link[];
@@ -51,13 +51,11 @@ export class DeleteActionComponent implements OnInit {
   }
 
   delete() {
-
     this.nodes.forEach((node) => {
       if (!node.locked) {
         this.nodesDataSource.remove(node);
-        this.nodeService.delete(this.controller, node).subscribe((node: Node) => {});
-      }
-      else {
+        this.nodeService.delete(this.controller(), node).subscribe((node: Node) => {});
+      } else {
         this.toasterService.error('Cannot delete locked node: ' + node.name);
         return;
       }
@@ -66,9 +64,8 @@ export class DeleteActionComponent implements OnInit {
     this.drawings.forEach((drawing) => {
       if (!drawing.locked) {
         this.drawingsDataSource.remove(drawing);
-        this.drawingService.delete(this.controller, drawing).subscribe((drawing: Drawing) => {});
-      }
-      else {
+        this.drawingService.delete(this.controller(), drawing).subscribe((drawing: Drawing) => {});
+      } else {
         this.toasterService.error('Cannot delete locked drawing');
         return;
       }
@@ -77,7 +74,7 @@ export class DeleteActionComponent implements OnInit {
     if (this.nodes.length == 0 && this.drawings.length == 0) {
       this.links.forEach((link) => {
         this.linksDataSource.remove(link);
-        this.linkService.deleteLink(this.controller, link).subscribe(() => {});
+        this.linkService.deleteLink(this.controller(), link).subscribe(() => {});
       });
     }
   }

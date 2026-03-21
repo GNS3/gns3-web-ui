@@ -1,4 +1,17 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, AfterViewChecked, ElementRef, ViewChild, ViewEncapsulation, ChangeDetectionStrategy, inject } from '@angular/core';
+import {
+  Component,
+  Output,
+  EventEmitter,
+  OnChanges,
+  SimpleChanges,
+  AfterViewChecked,
+  ElementRef,
+  ViewChild,
+  ViewEncapsulation,
+  ChangeDetectionStrategy,
+  inject,
+  input,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -22,9 +35,9 @@ import { ThemeService } from '@services/theme.service';
   encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="chat-message-list" #messageContainer [class.auto-scroll]="autoScroll">
+    <div class="chat-message-list" #messageContainer [class.auto-scroll]="autoScroll()">
       <div class="messages-container">
-        <ng-container *ngFor="let message of messages; trackBy: trackByMessageId">
+        <ng-container *ngFor="let message of messages(); trackBy: trackByMessageId">
           <!-- User message -->
           <div class="message user-message" *ngIf="message.role === 'user'">
             <div class="message-avatar user-avatar">
@@ -32,7 +45,10 @@ import { ThemeService } from '@services/theme.service';
             </div>
             <div class="message-content user-content">
               <div class="message-bubble user-bubble">
-                <markdown class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all" [data]="message.content"></markdown>
+                <markdown
+                  class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all"
+                  [data]="message.content"
+                ></markdown>
               </div>
               <div class="message-time">{{ formatTime(message.created_at) }}</div>
             </div>
@@ -44,9 +60,19 @@ import { ThemeService } from '@services/theme.service';
               <img src="assets/gns3_icon.svg" alt="GNS3" class="avatar-logo" />
             </div>
             <div class="message-content assistant-content">
-              <div class="message-bubble assistant-bubble" [class.streaming]="isStreaming && message === lastAssistantMessage">
-                <markdown class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all" [data]="message.content"></markdown>
-                <mat-spinner *ngIf="isStreaming && message === lastAssistantMessage" diameter="16" class="streaming-indicator"></mat-spinner>
+              <div
+                class="message-bubble assistant-bubble"
+                [class.streaming]="isStreaming() && message === lastAssistantMessage"
+              >
+                <markdown
+                  class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all"
+                  [data]="message.content"
+                ></markdown>
+                <mat-spinner
+                  *ngIf="isStreaming() && message === lastAssistantMessage"
+                  diameter="16"
+                  class="streaming-indicator"
+                ></mat-spinner>
               </div>
 
               <!-- Tool calls list -->
@@ -54,7 +80,8 @@ import { ThemeService } from '@services/theme.service';
                 <div
                   class="inline-tool-call"
                   *ngFor="let toolCall of message.tool_calls"
-                  (click)="openToolCallDialog(toolCall)">
+                  (click)="openToolCallDialog(toolCall)"
+                >
                   <mat-icon class="tool-icon">build</mat-icon>
                   <span class="tool-name-text">{{ toolCall.function.name }}</span>
                   <mat-icon class="expand-icon">open_in_new</mat-icon>
@@ -66,7 +93,8 @@ import { ThemeService } from '@services/theme.service';
                 <div
                   class="inline-tool-result"
                   *ngFor="let result of message.tool_result"
-                  (click)="openAssistantToolResultDialog(result)">
+                  (click)="openAssistantToolResultDialog(result)"
+                >
                   <mat-icon class="tool-icon">check_circle</mat-icon>
                   <span class="tool-name-text">{{ result.toolName }}</span>
                   <mat-icon class="expand-icon">open_in_new</mat-icon>
@@ -80,7 +108,10 @@ import { ThemeService } from '@services/theme.service';
           <!-- System message -->
           <div class="message system-message" *ngIf="message.role === 'system'">
             <div class="message-bubble system-bubble">
-              <markdown class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all" [data]="message.content"></markdown>
+              <markdown
+                class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all"
+                [data]="message.content"
+              ></markdown>
             </div>
           </div>
 
@@ -94,7 +125,7 @@ import { ThemeService } from '@services/theme.service';
         </ng-container>
 
         <!-- Empty state -->
-        <div class="empty-state" *ngIf="messages.length === 0">
+        <div class="empty-state" *ngIf="messages().length === 0">
           <div class="empty-content">
             <div class="empty-icon-wrapper">
               <mat-icon class="empty-icon">smart_toy</mat-icon>
@@ -119,12 +150,12 @@ import { ThemeService } from '@services/theme.service';
         </div>
       </div>
     </div>
-  `
+  `,
 })
 export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
-  @Input() messages: ChatMessage[] = [];
-  @Input() isStreaming = false;
-  @Input() autoScroll = true;
+  readonly messages = input<ChatMessage[]>([]);
+  readonly isStreaming = input(false);
+  readonly autoScroll = input(true);
 
   @Output() scrollToEnd = new EventEmitter<void>();
   @Output() suggestionClicked = new EventEmitter<string>();
@@ -147,7 +178,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
 
   ngAfterViewChecked(): void {
     // Scroll to bottom if needed and auto-scroll is enabled
-    if (this.shouldScrollToBottom && this.autoScroll) {
+    if (this.shouldScrollToBottom && this.autoScroll()) {
       this.scrollToBottom();
       this.shouldScrollToBottom = false;
     }
@@ -157,7 +188,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
    * Get last assistant message
    */
   get lastAssistantMessage(): ChatMessage | undefined {
-    const assistantMessages = this.messages.filter(m => m.role === 'assistant');
+    const assistantMessages = this.messages().filter((m) => m.role === 'assistant');
     return assistantMessages[assistantMessages.length - 1];
   }
 
@@ -213,7 +244,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       });
     }
   }
@@ -258,7 +289,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
 
     const data: ToolDetailsDialogData = {
       type: 'tool_call',
-      toolCall: tc
+      toolCall: tc,
     };
 
     // Get current theme for dialog styling
@@ -271,7 +302,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
       minWidth: '600px',
       maxWidth: '95vw',
       maxHeight: '85vh',
-      panelClass: ['tool-details-dialog', themeClass]
+      panelClass: ['tool-details-dialog', themeClass],
     });
   }
 
@@ -283,7 +314,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
     const data: ToolDetailsDialogData = {
       type: 'tool_result',
       toolName: result.toolName,
-      toolOutput: result.toolOutput
+      toolOutput: result.toolOutput,
     };
 
     // Get current theme for dialog styling
@@ -296,7 +327,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
       minWidth: '600px',
       maxWidth: '95vw',
       maxHeight: '85vh',
-      panelClass: ['tool-details-dialog', themeClass]
+      panelClass: ['tool-details-dialog', themeClass],
     });
   }
 

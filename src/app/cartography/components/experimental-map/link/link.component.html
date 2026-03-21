@@ -29,7 +29,7 @@
   <svg:g [app-status]="link?.target?.status" [direction]="'target'" [path]="path" [d]="d" />
 
   <svg:g
-    *ngIf="showInterfaceLabels"
+    *ngIf="showInterfaceLabels()"
     [app-interface-label]
     [x]="link?.source?.x + link?.nodes[0]?.label?.x"
     [y]="link?.source?.y + link?.nodes[0]?.label?.y"
@@ -39,7 +39,7 @@
   />
 
   <svg:g
-    *ngIf="showInterfaceLabels"
+    *ngIf="showInterfaceLabels()"
     [app-interface-label]
     [x]="link?.target?.x + link?.nodes[1]?.label?.x"
     [y]="link?.target?.y + link?.nodes[1]?.label?.y"

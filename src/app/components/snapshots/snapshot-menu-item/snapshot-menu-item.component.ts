@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -18,11 +18,11 @@ import { CreateSnapshotDialogComponent } from '../create-snapshot-dialog/create-
   selector: 'app-snapshot-menu-item',
   templateUrl: './snapshot-menu-item.component.html',
   styleUrls: ['./snapshot-menu-item.component.scss'],
-  imports: [CommonModule, MatDialogModule, MatTooltipModule, MatIconModule, MatButtonModule]
+  imports: [CommonModule, MatDialogModule, MatTooltipModule, MatIconModule, MatButtonModule],
 })
 export class SnapshotMenuItemComponent implements OnInit {
-  @Input('project') project: Project;
-  @Input('controller') controller: Controller;
+  readonly project = input<Project>(undefined);
+  readonly controller = input<Controller>(undefined);
 
   private dialog = inject(MatDialog);
   private snapshotService = inject(SnapshotService);
@@ -37,16 +37,17 @@ export class SnapshotMenuItemComponent implements OnInit {
     const dialogRef = this.dialog.open(CreateSnapshotDialogComponent, {
       width: '450px',
       data: {
-        controller: this.controller,
-        project: this.project,
+        controller: this.controller(),
+        project: this.project(),
       },
       autoFocus: false,
       disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((snapshot) => {
-      if (snapshot && this.project.project_id) {
-        const creation = this.snapshotService.create(this.controller, this.project.project_id, snapshot);
+      const project = this.project();
+      if (snapshot && project.project_id) {
+        const creation = this.snapshotService.create(this.controller(), project.project_id, snapshot);
 
         const progress = this.progressDialogService.open();
 

@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapLabelToLabelConverter } from '../../../cartography/converters/map/map-label-to-label-converter';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
@@ -17,7 +17,7 @@ import { NodeService } from '@services/node.service';
   imports: [],
 })
 export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
-  @Input() controller: Controller;
+  readonly controller = input<Controller>(undefined);
   private nodeLabelDragged: Subscription;
 
   private nodesDataSource = inject(NodesDataSource);
@@ -38,7 +38,7 @@ export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
     const label = this.mapLabelToLabel.convert(mapLabel);
     node.label = label;
 
-    this.nodeService.updateLabel(this.controller, node, node.label).subscribe((controllerNode: Node) => {
+    this.nodeService.updateLabel(this.controller(), node, node.label).subscribe((controllerNode: Node) => {
       this.nodesDataSource.update(controllerNode);
     });
   }

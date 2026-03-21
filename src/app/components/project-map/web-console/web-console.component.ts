@@ -1,4 +1,16 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnInit, OnDestroy, ViewChild, ViewEncapsulation, ChangeDetectorRef, inject } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  OnInit,
+  OnDestroy,
+  ViewChild,
+  ViewEncapsulation,
+  ChangeDetectorRef,
+  inject,
+  input,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Terminal } from 'xterm';
 import { AttachAddon } from 'xterm-addon-attach';
@@ -22,16 +34,16 @@ import { XtermContextMenuService } from '@services/xterm-context-menu.service';
   changeDetection: ChangeDetectionStrategy.Default,
 })
 export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() controller: Controller;
-  @Input() project: Project;
-  @Input() node: GNS3Node;
+  readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
+  readonly node = input<GNS3Node>(undefined);
 
   public term: Terminal = new Terminal({
     cols: 100,
     rows: 32,
     cursorBlink: true,
-    rightClickSelectsWord: true,  // Enable right-click to select word
-    altClickMovesCursor: true,    // Enable Alt+Click to move cursor
+    rightClickSelectsWord: true, // Enable right-click to select word
+    altClickMovesCursor: true, // Enable Alt+Click to move cursor
   });
   public fitAddon: FitAddon = new FitAddon();
   public isLightThemeEnabled: boolean = false;
@@ -74,13 +86,13 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.isLightThemeEnabled)
       this.term.setOption('theme', { background: 'white', foreground: 'black', cursor: 'black' });
 
-    const socket = new WebSocket(this.consoleService.getUrl(this.controller, this.node));
+    const socket = new WebSocket(this.consoleService.getUrl(this.controller(), this.node()));
 
     socket.onerror = (event) => {
       this.term.write('Connection lost');
     };
     socket.onclose = (event) => {
-      this.consoleService.closeConsoleForNode(this.node);
+      this.consoleService.closeConsoleForNode(this.node());
     };
 
     const attachAddon = new AttachAddon(socket);
@@ -96,7 +108,7 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         // Create and dispatch custom event for parent component
         const customEvent = new CustomEvent('consoleTabShortcut', {
           detail: { key: key.key },
-          bubbles: true
+          bubbles: true,
         });
         this.term.element.dispatchEvent(customEvent);
         return false; // Prevent xterm from handling this
@@ -115,10 +127,7 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setupResizeObserver();
 
     // Setup context menu for copy/paste
-    this.contextMenuCleanup = this.contextMenuService.attachContextMenu(
-      this.term,
-      this.terminal.nativeElement
-    );
+    this.contextMenuCleanup = this.contextMenuService.attachContextMenu(this.term, this.terminal.nativeElement);
   }
 
   /**

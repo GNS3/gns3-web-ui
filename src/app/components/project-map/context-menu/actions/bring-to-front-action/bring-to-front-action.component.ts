@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -22,7 +22,7 @@ export class BringToFrontActionComponent implements OnInit {
   private nodeService = inject(NodeService);
   private drawingService = inject(DrawingService);
 
-  @Input() controller: Controller;
+  readonly controller = input<Controller>(undefined);
   @Input() nodes: Node[];
   @Input() drawings: Drawing[];
 
@@ -38,14 +38,14 @@ export class BringToFrontActionComponent implements OnInit {
       node.z = maxZValue;
       this.nodesDataSource.update(node);
 
-      this.nodeService.update(this.controller, node).subscribe((node: Node) => {});
+      this.nodeService.update(this.controller(), node).subscribe((node: Node) => {});
     });
 
     this.drawings.forEach((drawing) => {
       drawing.z = maxZValue;
       this.drawingsDataSource.update(drawing);
 
-      this.drawingService.update(this.controller, drawing).subscribe((drawing: Drawing) => {});
+      this.drawingService.update(this.controller(), drawing).subscribe((drawing: Drawing) => {});
     });
   }
 }

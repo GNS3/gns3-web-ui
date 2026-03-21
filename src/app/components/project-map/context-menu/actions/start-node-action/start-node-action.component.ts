@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, inject } from '@angular/core';
+import { Component, OnChanges, OnInit, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,8 +17,8 @@ export class StartNodeActionComponent implements OnInit, OnChanges {
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
 
-  @Input() controller: Controller;
-  @Input() nodes: Node[];
+  readonly controller = input<Controller>(undefined);
+  readonly nodes = input<Node[]>(undefined);
   isNodeWithStoppedStatus: boolean;
 
   ngOnInit() {}
@@ -26,7 +26,7 @@ export class StartNodeActionComponent implements OnInit, OnChanges {
   ngOnChanges(changes) {
     if (changes.nodes) {
       this.isNodeWithStoppedStatus = false;
-      this.nodes.forEach((node) => {
+      this.nodes().forEach((node) => {
         if (node.status === 'stopped' || node.status === 'suspended') {
           this.isNodeWithStoppedStatus = true;
         }
@@ -35,8 +35,8 @@ export class StartNodeActionComponent implements OnInit, OnChanges {
   }
 
   startNodes() {
-    this.nodes.forEach((node) => {
-      this.nodeService.start(this.controller, node).subscribe(
+    this.nodes().forEach((node) => {
+      this.nodeService.start(this.controller(), node).subscribe(
         (n: Node) => {},
         (error) => {
           this.toasterService.error(error.error.message);

@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
 import { MapPortToPortConverter } from '../../../cartography/converters/map/map-port-to-port-converter';
@@ -19,7 +19,7 @@ import { ProjectService } from '@services/project.service';
   imports: [],
 })
 export class LinkCreatedComponent implements OnInit, OnDestroy {
-  @Input() controller: Controller;
+  readonly controller = input<Controller>(undefined);
   @Input() project: Project;
   private linkCreated: Subscription;
 
@@ -87,7 +87,7 @@ export class LinkCreatedComponent implements OnInit, OnDestroy {
 
     this.linkService
       .createLink(
-        this.controller,
+        this.controller(),
         sourceNode,
         sourcePort,
         targetNode,
@@ -98,7 +98,7 @@ export class LinkCreatedComponent implements OnInit, OnDestroy {
         yLabelTargetNode
       )
       .subscribe(() => {
-        this.projectService.links(this.controller, this.project.project_id).subscribe((links: Link[]) => {
+        this.projectService.links(this.controller(), this.project.project_id).subscribe((links: Link[]) => {
           this.linksDataSource.set(links);
         });
       });

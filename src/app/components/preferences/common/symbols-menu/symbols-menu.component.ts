@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Output, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { Controller } from '@models/controller';
@@ -9,11 +9,11 @@ import { SymbolsComponent } from '../symbols/symbols.component';
   selector: 'app-symbols-menu',
   templateUrl: './symbols-menu.component.html',
   styleUrls: ['./symbols-menu.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, MatButtonModule, SymbolsComponent]
+  imports: [CommonModule, MatButtonModule, SymbolsComponent],
 })
 export class SymbolsMenuComponent {
-  @Input() controller: Controller;
-  @Input() symbol: string;
+  readonly controller = input<Controller>(undefined);
+  readonly symbol = input<string>(undefined);
   @Output() symbolChangedEmitter = new EventEmitter<string>();
 
   chosenSymbol: string = '';
@@ -27,6 +27,6 @@ export class SymbolsMenuComponent {
   }
 
   cancelChooseSymbol() {
-    this.symbolChangedEmitter.emit(this.symbol);
+    this.symbolChangedEmitter.emit(this.symbol());
   }
 }

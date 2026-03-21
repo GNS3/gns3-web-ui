@@ -1,4 +1,4 @@
-import { Component, DoCheck, ElementRef, Input, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, DoCheck, ElementRef, OnInit, ViewChild, inject, input } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FontFixer } from '../../../../../helpers/font-fixer';
 import { TextElement } from '../../../../../models/drawings/text-element';
@@ -8,12 +8,12 @@ import { TextElement } from '../../../../../models/drawings/text-element';
   selector: '[app-text]',
   templateUrl: './text.component.html',
   styleUrls: ['./text.component.scss'],
-  imports: []
+  imports: [],
 })
 export class TextComponent implements OnInit, DoCheck {
   static MARGIN = 4;
 
-  @Input('app-text') text: TextElement;
+  readonly text = input<TextElement>(undefined, { alias: 'app-text' });
 
   @ViewChild('text') textRef: ElementRef;
 
@@ -25,8 +25,9 @@ export class TextComponent implements OnInit, DoCheck {
   private sanitizer = inject(DomSanitizer);
 
   ngOnInit() {
-    if (this.text) {
-      this.lines = this.getLines(this.text.text);
+    const text = this.text();
+    if (text) {
+      this.lines = this.getLines(text.text);
     }
   }
 
@@ -35,33 +36,36 @@ export class TextComponent implements OnInit, DoCheck {
   }
 
   get style() {
-    if (this.text) {
-      const font = this.fontFixer.fix(this.text);
+    const text = this.text();
+    if (text) {
+      const font = this.fontFixer.fix(text);
 
       const styles: string[] = [];
       if (font.font_family) {
-        styles.push(`font-family: "${this.text.font_family}"`);
+        styles.push(`font-family: "${text.font_family}"`);
       }
       if (font.font_size) {
-        styles.push(`font-size: ${this.text.font_size}pt`);
+        styles.push(`font-size: ${text.font_size}pt`);
       }
       if (font.font_weight) {
-        styles.push(`font-weight: ${this.text.font_weight}`);
+        styles.push(`font-weight: ${text.font_weight}`);
       }
       return this.sanitizer.bypassSecurityTrustStyle(styles.join('; '));
     }
   }
 
   get textDecoration() {
-    if (this.text) {
-      return this.text.text_decoration;
+    const text = this.text();
+    if (text) {
+      return text.text_decoration;
     }
   }
 
   calculateTransformation() {
-    if (this.textRef != undefined && this.text) {
+    const text = this.text();
+    if (this.textRef != undefined && text) {
       const bbox = this.textRef.nativeElement.getBBox();
-      const expectedHeight = Number(this.text.height);
+      const expectedHeight = Number(text.height);
       const yOffset = isFinite(expectedHeight) ? expectedHeight / 2 - (bbox.y + bbox.height / 2) : 0;
       return `translate(0, ${yOffset})`;
     }

@@ -2,12 +2,12 @@ import {
   Component,
   ElementRef,
   EventEmitter,
-  Input,
   OnDestroy,
   OnInit,
   Renderer2,
   ViewChild,
   inject,
+  input,
 } from '@angular/core';
 import { select } from 'd3-selection';
 import { Subscription } from 'rxjs';
@@ -34,12 +34,12 @@ import { Node } from '../../models/node';
   selector: 'app-text-editor',
   templateUrl: './text-editor.component.html',
   styleUrls: ['./text-editor.component.scss'],
-  imports: []
+  imports: [],
 })
 export class TextEditorComponent implements OnInit, OnDestroy {
   @ViewChild('temporaryTextElement') temporaryTextElement: ElementRef;
-  @Input('svg') svg: SVGSVGElement;
-  @Input('controller') controller: Controller;
+  readonly svg = input<SVGSVGElement>(undefined);
+  readonly controller = input<Controller>(undefined);
 
   leftPosition: string = '0px';
   topPosition: string = '0px';
@@ -87,7 +87,7 @@ export class TextEditorComponent implements OnInit, OnDestroy {
         `scale(${this.mapScaleService.getScale()})`
       );
       this.temporaryTextElement.nativeElement.focus();
-      document.documentElement.style.cursor = "default";
+      document.documentElement.style.cursor = 'default';
 
       let textListener = () => {
         this.drawingsEventSource.textAdded.emit(
@@ -109,15 +109,15 @@ export class TextEditorComponent implements OnInit, OnDestroy {
 
     this.deactivateTextAdding();
     this.mapListener = addTextListener;
-    this.svg.addEventListener('click', this.mapListener as EventListenerOrEventListenerObject);
+    this.svg().addEventListener('click', this.mapListener as EventListenerOrEventListenerObject);
   }
 
   deactivateTextAdding() {
-    this.svg.removeEventListener('click', this.mapListener as EventListenerOrEventListenerObject);
+    this.svg().removeEventListener('click', this.mapListener as EventListenerOrEventListenerObject);
   }
 
   activateTextEditingForNodeLabels() {
-    const rootElement = select(this.svg);
+    const rootElement = select(this.svg());
 
     rootElement
       .selectAll<SVGGElement, MapLinkNode>('g.interface_label_container')
@@ -185,7 +185,7 @@ export class TextEditorComponent implements OnInit, OnDestroy {
           let link: Link = this.linksDataSource.get(this.editedLink.linkId);
           link.nodes.find((n) => n.node_id === this.editedNode.node_id).label.text = innerText;
 
-          this.linkService.updateLink(this.controller, link).subscribe((link: Link) => {
+          this.linkService.updateLink(this.controller(), link).subscribe((link: Link) => {
             rootElement
               .selectAll<SVGTextElement, TextElement>('text.editingMode')
               .attr('visibility', 'visible')
@@ -206,7 +206,7 @@ export class TextEditorComponent implements OnInit, OnDestroy {
   }
 
   activateTextEditingForDrawings() {
-    const rootElement = select(this.svg);
+    const rootElement = select(this.svg());
 
     rootElement
       .selectAll<SVGTextElement, TextElement>('text.text_element')

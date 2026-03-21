@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -12,8 +12,8 @@ import { Controller } from '@models/controller';
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
 })
 export class OpenFileExplorerActionComponent implements OnInit {
-  @Input() controller: Controller;
-  @Input() node: Node;
+  readonly controller = input<Controller>(undefined);
+  readonly node = input<Node>(undefined);
 
   ngOnInit() {}
 

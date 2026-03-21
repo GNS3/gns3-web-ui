@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -14,11 +14,20 @@ import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
   selector: 'app-custom-adapters-table',
   templateUrl: './custom-adapters-table.component.html',
   styleUrls: ['../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, MatTableModule, MatSelectModule, MatOptionModule, MatButtonModule, MatIconModule, MatTooltipModule]
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatTableModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+  ],
 })
 export class CustomAdaptersTableComponent {
-  @Input() networkTypes = [];
-  @Input() displayedColumns: string[] = [];
+  readonly networkTypes = input([]);
+  readonly displayedColumns = input<string[]>([]);
   @Input() adapters: CustomAdapter[] = [];
 
   public numberOfAdapters: number;
@@ -26,7 +35,7 @@ export class CustomAdaptersTableComponent {
   onAdd() {
     let adapter: CustomAdapter = {
       adapter_number: this.adapters.length,
-      adapter_type: this.networkTypes[0],
+      adapter_type: this.networkTypes()[0],
     };
     this.adapters = this.adapters.concat([adapter]);
   }

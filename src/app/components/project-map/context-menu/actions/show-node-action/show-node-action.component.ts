@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -16,8 +16,8 @@ import { InfoDialogComponent } from '../../../info-dialog/info-dialog.component'
 export class ShowNodeActionComponent {
   private dialog = inject(MatDialog);
 
-  @Input() node: Node;
-  @Input() controller: Controller;
+  readonly node = input<Node>(undefined);
+  readonly controller = input<Controller>(undefined);
 
   showNode() {
     const dialogRef = this.dialog.open(InfoDialogComponent, {
@@ -27,7 +27,7 @@ export class ShowNodeActionComponent {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.node = this.node;
-    instance.controller = this.controller;
+    instance.node = this.node();
+    instance.controller = this.controller();
   }
 }

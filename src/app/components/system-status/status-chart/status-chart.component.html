@@ -1,7 +1,7 @@
 <mat-card>
   <div class="wrapper">
     <circle-progress
-      [percent]="computeStatistics.statistics.cpu_usage_percent"
+      [percent]="computeStatistics().statistics.cpu_usage_percent"
       [radius]="100"
       [outerStrokeWidth]="8"
       [innerStrokeWidth]="6"
@@ -19,7 +19,7 @@
     ></circle-progress>
 
     <circle-progress
-      [percent]="computeStatistics.statistics.disk_usage_percent"
+      [percent]="computeStatistics().statistics.disk_usage_percent"
       [radius]="100"
       [outerStrokeWidth]="8"
       [innerStrokeWidth]="6"
@@ -37,7 +37,7 @@
     ></circle-progress>
 
     <circle-progress
-      [percent]="computeStatistics.statistics.memory_usage_percent"
+      [percent]="computeStatistics().statistics.memory_usage_percent"
       [radius]="100"
       [outerStrokeWidth]="8"
       [innerStrokeWidth]="6"
@@ -55,7 +55,7 @@
     ></circle-progress>
 
     <circle-progress
-      [percent]="computeStatistics.statistics.swap_usage_percent"
+      [percent]="computeStatistics().statistics.swap_usage_percent"
       [radius]="100"
       [outerStrokeWidth]="8"
       [innerStrokeWidth]="6"
@@ -75,7 +75,7 @@
 
   <div class="wrapper">
     <circle-progress
-      [percent]="computeStatistics.statistics.load_average_percent[0]"
+      [percent]="computeStatistics().statistics.load_average_percent[0]"
       [radius]="100"
       [outerStrokeWidth]="8"
       [innerStrokeWidth]="6"
@@ -93,7 +93,7 @@
     ></circle-progress>
 
     <circle-progress
-      [percent]="computeStatistics.statistics.load_average_percent[1]"
+      [percent]="computeStatistics().statistics.load_average_percent[1]"
       [radius]="100"
       [outerStrokeWidth]="8"
       [innerStrokeWidth]="6"
@@ -111,7 +111,7 @@
     ></circle-progress>
 
     <circle-progress
-      [percent]="computeStatistics.statistics.load_average_percent[2]"
+      [percent]="computeStatistics().statistics.load_average_percent[2]"
       [radius]="100"
       [outerStrokeWidth]="8"
       [innerStrokeWidth]="6"
@@ -132,17 +132,17 @@
   <div class="chips-wrapper">
     <mat-chip-grid>
       <mat-chip color="primary" selected
-        >Memory total: {{ formatBytes(computeStatistics.statistics.memory_total) }}</mat-chip
+        >Memory total: {{ formatBytes(computeStatistics().statistics.memory_total) }}</mat-chip
       >
     </mat-chip-grid>
     <mat-chip-grid>
       <mat-chip color="primary" selected
-        >Memory used: {{ formatBytes(computeStatistics.statistics.memory_used) }}</mat-chip
+        >Memory used: {{ formatBytes(computeStatistics().statistics.memory_used) }}</mat-chip
       >
     </mat-chip-grid>
     <mat-chip-grid>
       <mat-chip color="primary" selected
-        >Memory free: {{ formatBytes(computeStatistics.statistics.memory_free) }}</mat-chip
+        >Memory free: {{ formatBytes(computeStatistics().statistics.memory_free) }}</mat-chip
       >
     </mat-chip-grid>
   </div>
@@ -150,14 +150,18 @@
   <div class="chips-wrapper">
     <mat-chip-grid>
       <mat-chip color="primary" selected
-        >Swap total: {{ formatBytes(computeStatistics.statistics.swap_total) }}</mat-chip
+        >Swap total: {{ formatBytes(computeStatistics().statistics.swap_total) }}</mat-chip
       >
     </mat-chip-grid>
     <mat-chip-grid>
-      <mat-chip color="primary" selected>Swap used: {{ formatBytes(computeStatistics.statistics.swap_used) }}</mat-chip>
+      <mat-chip color="primary" selected
+        >Swap used: {{ formatBytes(computeStatistics().statistics.swap_used) }}</mat-chip
+      >
     </mat-chip-grid>
     <mat-chip-grid>
-      <mat-chip color="primary" selected>Swap free: {{ formatBytes(computeStatistics.statistics.swap_free) }}</mat-chip>
+      <mat-chip color="primary" selected
+        >Swap free: {{ formatBytes(computeStatistics().statistics.swap_free) }}</mat-chip
+      >
     </mat-chip-grid>
   </div>
 </mat-card>

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, inject } from '@angular/core';
+import { Component, OnChanges, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { Drawing } from '../../../../../cartography/models/drawing';
@@ -11,20 +11,20 @@ import { StyleEditorDialogComponent } from '../../../drawings-editors/style-edit
   standalone: true,
   selector: 'app-edit-style-action',
   templateUrl: './edit-style-action.component.html',
-  imports: [CommonModule, MatDialogModule]
+  imports: [CommonModule, MatDialogModule],
 })
 export class EditStyleActionComponent implements OnChanges {
   private dialog = inject(MatDialog);
 
-  @Input() controller: Controller;
-  @Input() project: Project;
-  @Input() drawing: Drawing;
+  readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
+  readonly drawing = input<Drawing>(undefined);
   isImageDrawing: boolean = false;
 
   constructor() {}
 
   ngOnChanges() {
-    this.isImageDrawing = this.drawing.element instanceof ImageElement;
+    this.isImageDrawing = this.drawing().element instanceof ImageElement;
   }
 
   editStyle() {
@@ -34,8 +34,8 @@ export class EditStyleActionComponent implements OnChanges {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.controller = this.controller;
-    instance.project = this.project;
-    instance.drawing = this.drawing;
+    instance.controller = this.controller();
+    instance.project = this.project();
+    instance.drawing = this.drawing();
   }
 }

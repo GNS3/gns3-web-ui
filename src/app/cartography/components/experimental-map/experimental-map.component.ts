@@ -11,6 +11,7 @@ import {
   SimpleChange,
   ViewChild,
   inject,
+  input,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { Link } from '@models/link';
@@ -35,24 +36,19 @@ import { DrawingComponent } from './drawing/drawing.component';
   templateUrl: './experimental-map.component.html',
   styleUrls: ['./experimental-map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    SelectionComponent,
-    NodeComponent,
-    LinkComponent,
-    DrawingComponent,
-  ]
+  imports: [SelectionComponent, NodeComponent, LinkComponent, DrawingComponent],
 })
 export class ExperimentalMapComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() nodes: Node[] = [];
-  @Input() links: Link[] = [];
-  @Input() drawings: Drawing[] = [];
-  @Input() symbols: Symbol[] = [];
+  readonly nodes = input<Node[]>([]);
+  readonly links = input<Link[]>([]);
+  readonly drawings = input<Drawing[]>([]);
+  readonly symbols = input<Symbol[]>([]);
   // @Input() changed: EventEmitter<any>;
 
   // @Input('node-updated') nodeUpdated: EventEmitter<any>;
 
-  @Input() width = 1500;
-  @Input() height = 600;
+  readonly width = input(1500);
+  readonly height = input(600);
 
   @ViewChild('svg') svg: ElementRef;
 
@@ -86,7 +82,7 @@ export class ExperimentalMapComponent implements OnInit, OnChanges, OnDestroy {
     this.mapChangeDetectorRef.detectChanges();
   }
 
-  @Input('draw-link-tool') drawLinkTool: boolean;
+  readonly drawLinkTool = input<boolean>(undefined, { alias: 'draw-link-tool' });
 
   @Input('readonly') set readonly(value) {}
 
@@ -96,10 +92,10 @@ export class ExperimentalMapComponent implements OnInit, OnChanges, OnDestroy {
     // this.changeDetectorRef.detach();
 
     this.changesDetected = this.mapChangeDetectorRef.changesDetected.subscribe(() => {
-      this.graphDataManager.setNodes(this.nodes);
-      this.graphDataManager.setLinks(this.links);
-      this.graphDataManager.setDrawings(this.drawings);
-      this.graphDataManager.setSymbols(this.symbols);
+      this.graphDataManager.setNodes(this.nodes());
+      this.graphDataManager.setLinks(this.links());
+      this.graphDataManager.setDrawings(this.drawings());
+      this.graphDataManager.setSymbols(this.symbols());
 
       this.changeDetectorRef.detectChanges();
     });
@@ -119,7 +115,7 @@ export class ExperimentalMapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public getSize(): Size {
-    return this.canvasSizeDetector.getOptimalSize(this.width, this.height);
+    return this.canvasSizeDetector.getOptimalSize(this.width(), this.height());
   }
 
   public get layers() {

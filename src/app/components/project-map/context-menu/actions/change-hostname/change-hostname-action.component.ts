@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -16,8 +16,8 @@ import { ChangeHostnameDialogComponent } from '../../../change-hostname-dialog/c
 export class ChangeHostnameActionComponent implements OnInit {
   private dialog = inject(MatDialog);
 
-  @Input() controller: Controller;
-  @Input() node: Node;
+  readonly controller = input<Controller>(undefined);
+  readonly node = input<Node>(undefined);
 
   ngOnInit() {}
 
@@ -27,7 +27,7 @@ export class ChangeHostnameActionComponent implements OnInit {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.controller = this.controller;
-    instance.node = this.node;
+    instance.controller = this.controller();
+    instance.node = this.node();
   }
 }

@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, inject } from '@angular/core';
+import { Component, OnChanges, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,14 +11,14 @@ import { LinkStyleEditorDialogComponent } from '../../../drawings-editors/link-s
   standalone: true,
   selector: 'app-edit-link-style-action',
   templateUrl: './edit-link-style-action.component.html',
-  imports: [CommonModule, MatDialogModule, MatIconModule]
+  imports: [CommonModule, MatDialogModule, MatIconModule],
 })
 export class EditLinkStyleActionComponent implements OnChanges {
   private dialog = inject(MatDialog);
 
-  @Input() controller: Controller;
-  @Input() project: Project;
-  @Input() link: Link;
+  readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
+  readonly link = input<Link>(undefined);
 
   constructor() {}
 
@@ -31,8 +31,8 @@ export class EditLinkStyleActionComponent implements OnChanges {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.controller = this.controller;
-    instance.project = this.project;
-    instance.link = this.link;
+    instance.controller = this.controller();
+    instance.project = this.project();
+    instance.link = this.link();
   }
 }

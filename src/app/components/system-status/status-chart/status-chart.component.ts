@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -13,7 +13,7 @@ import { ComputeStatistics } from '@models/computeStatistics';
   imports: [CommonModule, MatCardModule, MatChipsModule, NgCircleProgressModule],
 })
 export class StatusChartComponent implements OnInit {
-  @Input() computeStatistics: ComputeStatistics;
+  readonly computeStatistics = input<ComputeStatistics>(undefined);
 
   constructor() {}
 

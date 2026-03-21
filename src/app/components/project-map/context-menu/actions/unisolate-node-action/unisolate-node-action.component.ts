@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,17 +17,17 @@ export class UnisolateNodeActionComponent implements OnInit {
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
 
-  @Input() controller: Controller;
-  @Input() node: Node;
+  readonly controller = input<Controller>(undefined);
+  readonly node = input<Node>(undefined);
 
   ngOnInit() {}
 
   unisolate() {
-    this.nodeService.unisolate(this.controller, this.node).subscribe(
-        (n: Node) => {},
-        (error) => {
-          this.toasterService.error(error.error.message);
-        }
+    this.nodeService.unisolate(this.controller(), this.node()).subscribe(
+      (n: Node) => {},
+      (error) => {
+        this.toasterService.error(error.error.message);
+      }
     );
   }
 }

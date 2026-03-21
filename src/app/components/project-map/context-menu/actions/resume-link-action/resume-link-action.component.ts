@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -15,11 +15,12 @@ import { LinkService } from '@services/link.service';
 export class ResumeLinkActionComponent {
   private linkService = inject(LinkService);
 
-  @Input() controller: Controller;
-  @Input() link: Link;
+  readonly controller = input<Controller>(undefined);
+  readonly link = input<Link>(undefined);
 
   resumeLink() {
-    this.link.suspend = false;
-    this.linkService.updateLink(this.controller, this.link).subscribe(() => {});
+    const link = this.link();
+    link.suspend = false;
+    this.linkService.updateLink(this.controller(), link).subscribe(() => {});
   }
 }

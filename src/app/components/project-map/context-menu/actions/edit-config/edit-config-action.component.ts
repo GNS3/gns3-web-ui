@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -17,9 +17,9 @@ import { ConfigEditorDialogComponent } from '../../../node-editors/config-editor
 export class EditConfigActionComponent {
   private dialog = inject(MatDialog);
 
-  @Input() controller: Controller;
-  @Input() project: Project;
-  @Input() node: Node;
+  readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
+  readonly node = input<Node>(undefined);
 
   editConfig() {
     const dialogRef = this.dialog.open(ConfigEditorDialogComponent, {
@@ -29,8 +29,8 @@ export class EditConfigActionComponent {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.controller = this.controller;
-    instance.project = this.project;
-    instance.node = this.node;
+    instance.controller = this.controller();
+    instance.project = this.project();
+    instance.node = this.node();
   }
 }

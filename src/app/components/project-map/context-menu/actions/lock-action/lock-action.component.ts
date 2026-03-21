@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, inject } from '@angular/core';
+import { Component, OnChanges, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -25,35 +25,37 @@ export class LockActionComponent implements OnChanges {
   private drawingService = inject(DrawingService);
   private projectService = inject(ProjectService);
 
-  @Input() controller: Controller;
-  @Input() nodes: Node[];
-  @Input() drawings: Drawing[];
+  readonly controller = input<Controller>(undefined);
+  readonly nodes = input<Node[]>(undefined);
+  readonly drawings = input<Drawing[]>(undefined);
   command: string;
 
   ngOnChanges() {
-    if (this.nodes.length === 1 && this.drawings.length === 0) {
-      this.command = this.nodes[0].locked ? 'Unlock item' : 'Lock item';
-    } else if (this.nodes.length === 0 && this.drawings.length === 1) {
-      this.command = this.drawings[0].locked ? 'Unlock item' : 'Lock item';
+    const nodes = this.nodes();
+    const drawings = this.drawings();
+    if (nodes.length === 1 && drawings.length === 0) {
+      this.command = nodes[0].locked ? 'Unlock item' : 'Lock item';
+    } else if (nodes.length === 0 && drawings.length === 1) {
+      this.command = drawings[0].locked ? 'Unlock item' : 'Lock item';
     } else {
       this.command = 'Lock/unlock items';
     }
   }
 
   async lock() {
-   await this.nodes.forEach((node) => {
+    await this.nodes().forEach((node) => {
       node.locked = !node.locked;
-      this.nodeService.updateNode(this.controller, node).subscribe((node) => {
+      this.nodeService.updateNode(this.controller(), node).subscribe((node) => {
         this.nodesDataSource.update(node);
       });
     });
 
-   await this.drawings.forEach((drawing) => {
+    await this.drawings().forEach((drawing) => {
       drawing.locked = !drawing.locked;
-      this.drawingService.update(this.controller, drawing).subscribe((drawing) => {
+      this.drawingService.update(this.controller(), drawing).subscribe((drawing) => {
         this.drawingsDataSource.update(drawing);
       });
     });
-    this.projectService.projectUpdateLockIcon()
+    this.projectService.projectUpdateLockIcon();
   }
 }

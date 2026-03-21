@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -23,8 +23,8 @@ export class HttpConsoleActionComponent implements OnInit {
   private router = inject(Router);
   private mapSettingsService = inject(MapSettingsService);
 
-  @Input() controller: Controller;
-  @Input() nodes: Node[];
+  readonly controller = input<Controller>(undefined);
+  readonly nodes = input<Node[]>(undefined);
 
   ngOnInit() {}
 
@@ -32,21 +32,17 @@ export class HttpConsoleActionComponent implements OnInit {
     let nodesToStart = '';
     let nodesToStartCounter = 0;
 
-    this.nodes.forEach((n) => {
+    this.nodes().forEach((n) => {
       if (n.console_type !== 'none') {
         if (n.status === 'started') {
           // Check console type to determine how to open the console
           if (n.console_type === 'vnc') {
             // VNC console: use standalone page in popup window
-            this.vncConsoleService.openVncConsole(this.controller, n, false);
+            this.vncConsoleService.openVncConsole(this.controller(), n, false);
           } else if (n.console_type && n.console_type.startsWith('http')) {
             // HTTP/HTTPS console: open directly in popup window
-            if (
-              n.console_host === '0.0.0.0' ||
-              n.console_host === '0:0:0:0:0:0:0:0' ||
-              n.console_host === '::'
-            ) {
-              n.console_host = this.controller.host;
+            if (n.console_host === '0.0.0.0' || n.console_host === '0:0:0:0:0:0:0:0' || n.console_host === '::') {
+              n.console_host = this.controller().host;
             }
 
             const uri = `${n.console_type}://${n.console_host}:${n.console}`;
@@ -68,7 +64,9 @@ export class HttpConsoleActionComponent implements OnInit {
     });
 
     if (nodesToStartCounter > 0) {
-      this.toasterService.error('Please start the following nodes if you want to open consoles for them: ' + nodesToStart);
+      this.toasterService.error(
+        'Please start the following nodes if you want to open consoles for them: ' + nodesToStart
+      );
     }
   }
 }

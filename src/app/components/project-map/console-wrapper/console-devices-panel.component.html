@@ -1,11 +1,13 @@
-<div class="console-devices-panel" [class.collapsed]="collapsed" [ngClass]="{ lightTheme: isLightTheme }">
+<div class="console-devices-panel" [class.collapsed]="collapsed" [ngClass]="{ lightTheme: isLightTheme() }">
   <!-- Panel Header -->
-  <div class="panel-header"
-       (mousedown)="$event.stopPropagation()"
-       (click)="togglePanel()"
-       [class.clickable]="true"
-       [ngClass]="{ lightTheme: isLightTheme }"
-       title="Click to toggle panel">
+  <div
+    class="panel-header"
+    (mousedown)="$event.stopPropagation()"
+    (click)="togglePanel()"
+    [class.clickable]="true"
+    [ngClass]="{ lightTheme: isLightTheme() }"
+    title="Click to toggle panel"
+  >
     <div class="header-title">
       <mat-icon class="panel-icon">devices</mat-icon>
       <span class="header-text" *ngIf="!collapsed">Devices</span>
@@ -26,9 +28,7 @@
           <div class="device-name">{{ node.name }}</div>
         </div>
       </div>
-      <mat-icon class="device-icon" [class.disabled]="!isDeviceStarted(node)">
-        terminal
-      </mat-icon>
+      <mat-icon class="device-icon" [class.disabled]="!isDeviceStarted(node)"> terminal </mat-icon>
     </div>
 
     <!-- Empty State -->

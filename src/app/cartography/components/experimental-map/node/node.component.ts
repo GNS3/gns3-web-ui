@@ -11,6 +11,7 @@ import {
   OnInit,
   ViewChild,
   inject,
+  input,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
@@ -28,7 +29,7 @@ import { DraggableComponent } from '../draggable/draggable.component';
   templateUrl: './node.component.html',
   styleUrls: ['./node.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [DraggableComponent]
+  imports: [DraggableComponent],
 })
 export class NodeComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
   static NODE_LABEL_MARGIN = 3;
@@ -37,8 +38,8 @@ export class NodeComponent implements OnInit, OnDestroy, OnChanges, AfterViewIni
   @ViewChild('image') imageRef: ElementRef;
 
   @Input('app-node') node: MapNode;
-  @Input('symbols') symbols: Symbol[];
-  @Input('node-changed') nodeChanged: EventEmitter<Node>;
+  readonly symbols = input<Symbol[]>(undefined);
+  readonly nodeChanged = input<EventEmitter<Node>>(undefined, { alias: 'node-changed' });
 
   // @Output() valueChange = new EventEmitter<Node>();
 
@@ -87,8 +88,9 @@ export class NodeComponent implements OnInit, OnDestroy, OnChanges, AfterViewIni
   }
 
   get symbol(): string {
-    if (this.symbols) {
-      const symbol = this.symbols.find((s: Symbol) => s.symbol_id === this.node.symbol);
+    const symbols = this.symbols();
+    if (symbols) {
+      const symbol = symbols.find((s: Symbol) => s.symbol_id === this.node.symbol);
       if (symbol) {
         return 'data:image/svg+xml;base64,' + btoa(symbol.raw);
       }

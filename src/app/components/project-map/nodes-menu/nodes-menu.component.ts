@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,7 +21,7 @@ import { NodesMenuConfirmationDialogComponent } from './nodes-menu-confirmation-
   templateUrl: './nodes-menu.component.html',
   styleUrls: ['./nodes-menu.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule]
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule],
 })
 export class NodesMenuComponent {
   private nodeService = inject(NodeService);
@@ -32,8 +32,8 @@ export class NodesMenuComponent {
   private settingsService = inject(SettingsService);
   private mapSettingsService = inject(MapSettingsService);
   private dialog = inject(MatDialog);
-  @Input('project') project: Project;
-  @Input('controller') controller: Controller;
+  readonly project = input<Project>(undefined);
+  readonly controller = input<Controller>(undefined);
 
   async startConsoleForAllNodes() {
     if (this.mapSettingsService.openConsolesInWidget) {
@@ -44,31 +44,31 @@ export class NodesMenuComponent {
   }
 
   startNodes() {
-    this.nodeService.startAll(this.controller, this.project).subscribe(() => {
+    this.nodeService.startAll(this.controller(), this.project()).subscribe(() => {
       this.toasterService.success('All nodes successfully started');
     });
   }
 
   stopNodes() {
-    this.nodeService.stopAll(this.controller, this.project).subscribe(() => {
+    this.nodeService.stopAll(this.controller(), this.project()).subscribe(() => {
       this.toasterService.success('All nodes successfully stopped');
     });
   }
 
   suspendNodes() {
-    this.nodeService.suspendAll(this.controller, this.project).subscribe(() => {
+    this.nodeService.suspendAll(this.controller(), this.project()).subscribe(() => {
       this.toasterService.success('All nodes successfully suspended');
     });
   }
 
   reloadNodes() {
-    this.nodeService.reloadAll(this.controller, this.project).subscribe(() => {
+    this.nodeService.reloadAll(this.controller(), this.project()).subscribe(() => {
       this.toasterService.success('All nodes successfully reloaded');
     });
   }
 
   resetNodes() {
-    this.nodeService.resetAllNodes(this.controller, this.project).subscribe(() => {
+    this.nodeService.resetAllNodes(this.controller(), this.project()).subscribe(() => {
       this.toasterService.success('Successfully reset all console connections');
     });
   }
@@ -92,7 +92,7 @@ export class NodesMenuComponent {
       } else if (confirmAction_result.isAction && confirmAction_result.actionType == 'suspend') {
         this.suspendNodes();
       } else {
-        this.resetNodes()
+        this.resetNodes();
       }
     });
   }

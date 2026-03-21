@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,18 +15,18 @@ import { TextEditorDialogComponent } from '../../../drawings-editors/text-editor
   standalone: true,
   selector: 'app-edit-text-action',
   templateUrl: './edit-text-action.component.html',
-  imports: [CommonModule, MatDialogModule, MatIconModule]
+  imports: [CommonModule, MatDialogModule, MatIconModule],
 })
 export class EditTextActionComponent implements OnInit {
   private dialog = inject(MatDialog);
 
-  @Input() controller: Controller;
-  @Input() project: Project;
-  @Input() drawing: Drawing;
-  @Input() node: Node;
-  @Input() label: Label;
-  @Input() link: Link;
-  @Input() linkNode: LinkNode;
+  readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
+  readonly drawing = input<Drawing>(undefined);
+  readonly node = input<Node>(undefined);
+  readonly label = input<Label>(undefined);
+  readonly link = input<Link>(undefined);
+  readonly linkNode = input<LinkNode>(undefined);
 
   constructor() {}
 
@@ -39,12 +39,12 @@ export class EditTextActionComponent implements OnInit {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.controller = this.controller;
-    instance.project = this.project;
-    instance.drawing = this.drawing;
-    instance.node = this.node;
-    instance.label = this.label;
-    instance.link = this.link;
-    instance.linkNode = this.linkNode;
+    instance.controller = this.controller();
+    instance.project = this.project();
+    instance.drawing = this.drawing();
+    instance.node = this.node();
+    instance.label = this.label();
+    instance.link = this.link();
+    instance.linkNode = this.linkNode();
   }
 }

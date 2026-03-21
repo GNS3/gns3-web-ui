@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
@@ -16,7 +16,7 @@ import { LinkService } from '@services/link.service';
   imports: [],
 })
 export class InterfaceLabelDraggedComponent {
-  @Input() controller: Controller;
+  readonly controller = input<Controller>(undefined);
   private interfaceDragged: Subscription;
 
   private linkService = inject(LinkService);
@@ -40,7 +40,7 @@ export class InterfaceLabelDraggedComponent {
       link.nodes[1].label.y += draggedEvent.dy;
     }
 
-    this.linkService.updateNodes(this.controller, link, link.nodes).subscribe((controllerLink: Link) => {
+    this.linkService.updateNodes(this.controller(), link, link.nodes).subscribe((controllerLink: Link) => {
       this.linksDataSource.update(controllerLink);
     });
   }

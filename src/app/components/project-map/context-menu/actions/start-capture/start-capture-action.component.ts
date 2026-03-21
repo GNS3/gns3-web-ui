@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -17,9 +17,9 @@ import { StartCaptureDialogComponent } from '../../../packet-capturing/start-cap
 export class StartCaptureActionComponent {
   private dialog = inject(MatDialog);
 
-  @Input() controller: Controller;
-  @Input() project: Project;
-  @Input() link: Link;
+  readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
+  readonly link = input<Link>(undefined);
 
   startCapture() {
     const dialogRef = this.dialog.open(StartCaptureDialogComponent, {
@@ -28,8 +28,8 @@ export class StartCaptureActionComponent {
       disableClose: true,
     });
     let instance = dialogRef.componentInstance;
-    instance.controller = this.controller;
-    instance.project = this.project;
-    instance.link = this.link;
+    instance.controller = this.controller();
+    instance.project = this.project();
+    instance.link = this.link();
   }
 }

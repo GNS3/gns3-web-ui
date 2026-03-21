@@ -10,6 +10,7 @@ import {
   SimpleChange,
   ViewChild,
   inject,
+  input,
 } from '@angular/core';
 import { select, Selection } from 'd3-selection';
 import { Subscription } from 'rxjs';
@@ -59,15 +60,15 @@ import { LinkEditingComponent } from '../link-editing/link-editing.component';
   changeDetection: ChangeDetectionStrategy.Default,
 })
 export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() nodes: Node[] = [];
-  @Input() links: Link[] = [];
-  @Input() drawings: Drawing[] = [];
-  @Input() symbols: Symbol[] = [];
-  @Input() project: Project;
-  @Input() controller: Controller;
+  readonly nodes = input<Node[]>([]);
+  readonly links = input<Link[]>([]);
+  readonly drawings = input<Drawing[]>([]);
+  readonly symbols = input<Symbol[]>([]);
+  readonly project = input<Project>(undefined);
+  readonly controller = input<Controller>(undefined);
 
-  @Input() width = 1500;
-  @Input() height = 600;
+  readonly width = input(1500);
+  readonly height = input(600);
 
   @ViewChild('svg') svgRef: ElementRef;
   @ViewChild('textEditor') textEditor: TextEditorComponent;
@@ -128,8 +129,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       let heightOfProjectWindow = window.innerHeight - 16;
 
-      if (this.height > heightOfProjectWindow) {
-        this.svg.attr('height', this.height);
+      if (this.height() > heightOfProjectWindow) {
+        this.svg.attr('height', this.height());
       } else {
         this.svg.attr('height', heightOfProjectWindow);
       }
@@ -235,11 +236,11 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.subscriptions.push(
       this.graphLayout.getNodesWidget().draggable.end.subscribe(() => {
-        const prevCX = dragStartCenterX ?? this.context.size.width  / 2;
+        const prevCX = dragStartCenterX ?? this.context.size.width / 2;
         const prevCY = dragStartCenterY ?? this.context.size.height / 2;
         const newSize = this.getSize();
-        const newCX  = this.context.centerX ?? newSize.width  / 2;
-        const newCY  = this.context.centerY ?? newSize.height / 2;
+        const newCX = this.context.centerX ?? newSize.width / 2;
+        const newCY = this.context.centerY ?? newSize.height / 2;
         // Scroll BEFORE resizing the SVG so the browser never clamps the scroll
         // position first (which would nullify the compensation for the cases
         // where centerX/centerY shift, e.g. nodes returning from the left).
@@ -274,12 +275,12 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public getSize(): Size {
-    const viewportWidth  = document.documentElement.clientWidth;
+    const viewportWidth = document.documentElement.clientWidth;
     const viewportHeight = document.documentElement.clientHeight;
 
     // Use live MapNode positions from graphDataManager so size is correct during
     // active drags (where this.nodes hasn't been updated yet).
-    const mapNodes    = this.graphDataManager.getNodes();
+    const mapNodes = this.graphDataManager.getNodes();
     const mapDrawings = this.graphDataManager.getDrawings();
 
     if (mapNodes.length === 0 && mapDrawings.length === 0) {
@@ -288,12 +289,15 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
       return new Size(viewportWidth, viewportHeight);
     }
 
-    const scale  = this.context.transformation.k;
+    const scale = this.context.transformation.k;
     const margin = 100;
-    let minX = 0, maxX = 0, minY = 0, maxY = 0;
+    let minX = 0,
+      maxX = 0,
+      minY = 0,
+      maxY = 0;
 
     for (const node of mapNodes) {
-      const nodeWidth  = (node.width  || 60) * scale;
+      const nodeWidth = (node.width || 60) * scale;
       const nodeHeight = (node.height || 60) * scale;
       const nx = node.width ? node.x * scale : (node.x - 30) * scale;
       const ny = node.width ? node.y * scale : (node.y - 30) * scale;
@@ -312,12 +316,12 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
 
     // Asymmetric canvas: allocate exactly the space needed on each side of the
     // scene origin so scrollbars only appear in the direction content extends.
-    const halfViewW = viewportWidth  / 2;
+    const halfViewW = viewportWidth / 2;
     const halfViewH = viewportHeight / 2;
-    const leftSpace   = Math.max(halfViewW, (-minX) + margin);
-    const rightSpace  = Math.max(halfViewW, maxX    + margin);
-    const topSpace    = Math.max(halfViewH, (-minY) + margin);
-    const bottomSpace = Math.max(halfViewH, maxY    + margin);
+    const leftSpace = Math.max(halfViewW, -minX + margin);
+    const rightSpace = Math.max(halfViewW, maxX + margin);
+    const topSpace = Math.max(halfViewH, -minY + margin);
+    const bottomSpace = Math.max(halfViewH, maxY + margin);
 
     this.context.centerX = leftSpace;
     this.context.centerY = topSpace;
@@ -334,15 +338,15 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private onSymbolsChange(change: SimpleChange) {
-    this.graphDataManager.setSymbols(this.symbols);
+    this.graphDataManager.setSymbols(this.symbols());
   }
 
   private redraw() {
     this.updateGrid();
 
-    this.graphDataManager.setNodes(this.nodes);
-    this.graphDataManager.setLinks(this.links);
-    this.graphDataManager.setDrawings(this.drawings);
+    this.graphDataManager.setNodes(this.nodes());
+    this.graphDataManager.setLinks(this.links());
+    this.graphDataManager.setDrawings(this.drawings());
     // Recalculate after setNodes/Drawings so graphDataManager has current positions.
     this.context.size = this.getSize();
     this.graphLayout.draw(this.svg, this.context);
@@ -352,23 +356,22 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   updateGrid() {
-    if (this.project.grid_size && this.project.grid_size > 0)
+    const project = this.project();
+    if (project.grid_size && project.grid_size > 0)
       this.nodeGridX =
-        this.context.size.width / 2 -
-        Math.floor(this.context.size.width / 2 / this.project.grid_size) * this.project.grid_size;
-    if (this.project.grid_size && this.project.grid_size > 0)
+        this.context.size.width / 2 - Math.floor(this.context.size.width / 2 / project.grid_size) * project.grid_size;
+    if (project.grid_size && project.grid_size > 0)
       this.nodeGridY =
-        this.context.size.height / 2 -
-        Math.floor(this.context.size.height / 2 / this.project.grid_size) * this.project.grid_size;
+        this.context.size.height / 2 - Math.floor(this.context.size.height / 2 / project.grid_size) * project.grid_size;
 
-    if (this.project.drawing_grid_size && this.project.drawing_grid_size > 0)
+    if (project.drawing_grid_size && project.drawing_grid_size > 0)
       this.drawingGridX =
         this.context.size.width / 2 -
-        Math.floor(this.context.size.width / 2 / this.project.drawing_grid_size) * this.project.drawing_grid_size;
-    if (this.project.drawing_grid_size && this.project.drawing_grid_size > 0)
+        Math.floor(this.context.size.width / 2 / project.drawing_grid_size) * project.drawing_grid_size;
+    if (project.drawing_grid_size && project.drawing_grid_size > 0)
       this.drawingGridY =
         this.context.size.height / 2 -
-        Math.floor(this.context.size.height / 2 / this.project.drawing_grid_size) * this.project.drawing_grid_size;
+        Math.floor(this.context.size.height / 2 / project.drawing_grid_size) * project.drawing_grid_size;
   }
 
   @HostListener('window:resize', ['$event'])

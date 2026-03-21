@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter, ChangeDetectorRef, Input, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, ChangeDetectorRef, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { Subject } from 'rxjs';
@@ -15,14 +15,14 @@ import { NodesDataSource } from '../../../cartography/datasources/nodes-datasour
   selector: 'app-console-devices-panel',
   templateUrl: './console-devices-panel.component.html',
   styleUrls: ['./console-devices-panel.component.scss'],
-  imports: [CommonModule, MatIconModule]
+  imports: [CommonModule, MatIconModule],
 })
 export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
   private nodesDataSource = inject(NodesDataSource);
   private cdr = inject(ChangeDetectorRef);
 
   @Output() deviceSelected = new EventEmitter<Node>();
-  @Input() isLightTheme: boolean = false;
+  readonly isLightTheme = input<boolean>(false);
 
   nodes: Node[] = [];
   collapsed = true;
@@ -33,11 +33,9 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Subscribe to all nodes changes
-    this.nodesDataSource.changes.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe((nodes: Node[]) => {
+    this.nodesDataSource.changes.pipe(takeUntil(this.destroy$)).subscribe((nodes: Node[]) => {
       // Filter out nodes without console and VNC/HTTP/HTTPS nodes (they use standalone popup windows)
-      this.nodes = nodes.filter(n => {
+      this.nodes = nodes.filter((n) => {
         const noConsole = n.console_type === 'none' || !n.console_type;
         const isVnc = n.console_type === 'vnc';
         const isHttp = n.console_type && n.console_type.startsWith('http');
@@ -48,10 +46,8 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
     });
 
     // Subscribe to individual node updates
-    this.nodesDataSource.itemChanged.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe((node: Node) => {
-      const index = this.nodes.findIndex(n => n.node_id === node.node_id);
+    this.nodesDataSource.itemChanged.pipe(takeUntil(this.destroy$)).subscribe((node: Node) => {
+      const index = this.nodes.findIndex((n) => n.node_id === node.node_id);
       if (index >= 0) {
         this.nodes[index] = node;
         this.sortNodes();
@@ -102,7 +98,7 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
       starting: '#eab308',
       stopped: '#6b7280',
       suspended: '#f97316',
-      errored: '#ef4444'
+      errored: '#ef4444',
     };
     return colorMap[status] || '#6b7280';
   }
@@ -131,7 +127,7 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
       starting: 'Starting',
       stopped: 'Stopped',
       suspended: 'Suspended',
-      errored: 'Error'
+      errored: 'Error',
     };
     return labelMap[status] || 'Unknown';
   }

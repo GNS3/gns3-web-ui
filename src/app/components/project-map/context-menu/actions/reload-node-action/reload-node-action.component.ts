@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -15,13 +15,13 @@ import { NodeService } from '@services/node.service';
 export class ReloadNodeActionComponent implements OnInit {
   private nodeService = inject(NodeService);
 
-  @Input() controller: Controller;
-  @Input() nodes: Node[];
+  readonly controller = input<Controller>(undefined);
+  readonly nodes = input<Node[]>(undefined);
 
   filteredNodes: Node[] = [];
 
   ngOnInit() {
-    this.nodes.forEach((node) => {
+    this.nodes().forEach((node) => {
       if (
         node.node_type === 'vpcs' ||
         node.node_type === 'qemu' ||
@@ -35,7 +35,7 @@ export class ReloadNodeActionComponent implements OnInit {
 
   reloadNodes() {
     this.filteredNodes.forEach((node) => {
-      this.nodeService.reload(this.controller, node).subscribe((n: Node) => {});
+      this.nodeService.reload(this.controller(), node).subscribe((n: Node) => {});
     });
   }
 }

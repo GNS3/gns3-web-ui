@@ -1,9 +1,24 @@
-<div *ngIf="isDraggingEnabled && !isMaximized && !isMinimized" class="drag-overlay" (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)"></div>
+<div
+  *ngIf="isDraggingEnabled && !isMaximized && !isMinimized"
+  class="drag-overlay"
+  (document:mousemove)="dragWidget($event)"
+  (document:mouseup)="toggleDragging(false)"
+></div>
 
 <!-- AI Chat Container -->
-<div class="ai-chat-container" [class.dark-theme]="!isLightThemeEnabled" [class.light-theme]="isLightThemeEnabled" [class.maximized]="isMaximized" [class.minimized]="isMinimized" [ngStyle]="style"
-  mwlResizable [validateResize]="validate" [enableGhostResize]="true"
-  (resizeStart)="toggleDragging(false)" (resizeEnd)="onResizeEnd($event)">
+<div
+  class="ai-chat-container"
+  [class.dark-theme]="!isLightThemeEnabled"
+  [class.light-theme]="isLightThemeEnabled"
+  [class.maximized]="isMaximized"
+  [class.minimized]="isMinimized"
+  [ngStyle]="style"
+  mwlResizable
+  [validateResize]="validate"
+  [enableGhostResize]="true"
+  (resizeStart)="toggleDragging(false)"
+  (resizeEnd)="onResizeEnd($event)"
+>
   <div class="resize-handle resize-handle-top" mwlResizeHandle [resizeEdges]="{ top: true }"></div>
   <div class="resize-handle resize-handle-right" mwlResizeHandle [resizeEdges]="{ right: true }"></div>
   <div class="resize-handle resize-handle-bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
@@ -21,11 +36,13 @@
     <!-- Session sidebar -->
     <div class="chat-sidebar" [class.collapsed]="sidebarCollapsed">
       <div class="sidebar-header">
-        <h3 class="sidebar-title"
-            (mousedown)="$event.stopPropagation()"
-            (click)="toggleSidebar()"
-            [class.clickable]="true"
-            title="Click to toggle sidebar">
+        <h3
+          class="sidebar-title"
+          (mousedown)="$event.stopPropagation()"
+          (click)="toggleSidebar()"
+          [class.clickable]="true"
+          title="Click to toggle sidebar"
+        >
           <span class="ai-logo">AI</span>
           <span class="sidebar-text" *ngIf="!sidebarCollapsed">Assistant</span>
         </h3>
@@ -33,9 +50,7 @@
 
       <!-- New chat button for collapsed state -->
       <div class="sidebar-content" *ngIf="sidebarCollapsed">
-        <button class="collapsed-new-chat-btn"
-                mat-icon-button
-                (click)="onSessionCreated()">
+        <button class="collapsed-new-chat-btn" mat-icon-button (click)="onSessionCreated()">
           <mat-icon>add</mat-icon>
         </button>
       </div>
@@ -45,13 +60,14 @@
           [sessions]="sessions"
           [currentSessionId]="currentSessionId"
           [controller]="controller"
-          [projectId]="project.project_id"
+          [projectId]="project().project_id"
           (sessionSelected)="onSessionSelected($event)"
           (sessionCreated)="onSessionCreated()"
           (sessionRenamed)="onSessionRenamed($event)"
           (sessionDeleted)="onSessionDeleted($event)"
           (sessionPinned)="onSessionPinned($event)"
-          (sessionUnpinned)="onSessionUnpinned($event)">
+          (sessionUnpinned)="onSessionUnpinned($event)"
+        >
         </app-chat-session-list>
       </div>
     </div>
@@ -64,35 +80,40 @@
           <span>{{ currentSessionTitle }}</span>
         </div>
         <div class="header-actions">
-          <button mat-icon-button
+          <button
+            mat-icon-button
             (mousedown)="$event.stopPropagation()"
             (click)="$event.stopPropagation(); minimizeChat()"
-            class="minimize-button">
-            <svg class="header-icon" xmlns="http://www.w3.org/2000/svg"
-                 height="20" width="20"
-                 viewBox="0 0 24 24">
-              <path d="M19 13H5v-2h14v2z"/>
+            class="minimize-button"
+          >
+            <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+              <path d="M19 13H5v-2h14v2z" />
             </svg>
           </button>
-          <button mat-icon-button
+          <button
+            mat-icon-button
             (mousedown)="$event.stopPropagation()"
             (click)="$event.stopPropagation(); maximizeChat()"
-            class="maximize-button">
-            <svg class="header-icon" xmlns="http://www.w3.org/2000/svg"
-                 height="20" width="20"
-                 viewBox="0 0 24 24">
-              <path *ngIf="!isMaximized" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-              <path *ngIf="isMaximized" d="M5 5h14v14H5z"/>
+            class="maximize-button"
+          >
+            <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+              <path
+                *ngIf="!isMaximized"
+                d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"
+              />
+              <path *ngIf="isMaximized" d="M5 5h14v14H5z" />
             </svg>
           </button>
-          <button mat-icon-button
+          <button
+            mat-icon-button
             (mousedown)="$event.stopPropagation()"
             (click)="$event.stopPropagation(); closeChat()"
-            class="close-button">
-            <svg class="header-icon" xmlns="http://www.w3.org/2000/svg"
-                 height="20" width="20"
-                 viewBox="0 0 24 24">
-              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+            class="close-button"
+          >
+            <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+              <path
+                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+              />
             </svg>
           </button>
         </div>
@@ -104,7 +125,8 @@
           [messages]="currentMessages"
           [isStreaming]="isStreaming"
           (scrollToEnd)="onScrollToEnd()"
-          (suggestionClicked)="onSuggestionClicked($event)">
+          (suggestionClicked)="onSuggestionClicked($event)"
+        >
         </app-chat-message-list>
       </div>
 
@@ -117,7 +139,8 @@
           [currentCopilotMode]="currentCopilotMode"
           (messageSent)="onMessageSent($event)"
           (modelSelected)="onModelSelected($event)"
-          (copilotModeSelected)="onCopilotModeSelected($event)">
+          (copilotModeSelected)="onCopilotModeSelected($event)"
+        >
         </app-chat-input-area>
       </div>
     </div>

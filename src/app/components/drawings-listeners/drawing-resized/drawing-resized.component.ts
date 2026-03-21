@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
@@ -17,7 +17,7 @@ import { DrawingService } from '@services/drawing.service';
   imports: [],
 })
 export class DrawingResizedComponent implements OnInit, OnDestroy {
-  @Input() controller: Controller;
+  readonly controller = input<Controller>(undefined);
   private drawingResized: Subscription;
 
   private drawingService = inject(DrawingService);
@@ -34,7 +34,7 @@ export class DrawingResizedComponent implements OnInit, OnDestroy {
     let svgString = this.mapDrawingToSvgConverter.convert(resizedEvent.datum);
 
     this.drawingService
-      .updateSizeAndPosition(this.controller, drawing, resizedEvent.x, resizedEvent.y, svgString)
+      .updateSizeAndPosition(this.controller(), drawing, resizedEvent.x, resizedEvent.y, svgString)
       .subscribe((controllerDrawing: Drawing) => {
         this.drawingsDataSource.update(controllerDrawing);
       });

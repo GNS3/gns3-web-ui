@@ -9,6 +9,7 @@ import {
   OnInit,
   ViewChild,
   inject,
+  input,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -41,7 +42,7 @@ import * as ipaddr from 'ipaddr.js';
   selector: 'app-log-console',
   templateUrl: './log-console.component.html',
   styleUrls: ['./log-console.component.scss'],
-  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatMenuModule]
+  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatMenuModule],
 })
 export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   private projectWebServiceHandler = inject(ProjectWebServiceHandler);
@@ -55,7 +56,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   private nodeConsoleService = inject(NodeConsoleService);
 
   @Input() controller: Controller;
-  @Input() project: Project;
+  readonly project = input<Project>(undefined);
 
   @ViewChild('console') console: ElementRef;
 
@@ -190,22 +191,22 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
       this.showCommand('Current version: ' + this.version);
     } else if (this.command === 'start all') {
       this.showCommand('Starting all nodes...');
-      this.nodeService.startAll(this.controller, this.project).subscribe(() => {
+      this.nodeService.startAll(this.controller, this.project()).subscribe(() => {
         this.showCommand('All nodes started.');
       });
     } else if (this.command === 'stop all') {
       this.showCommand('Stopping all nodes...');
-      this.nodeService.stopAll(this.controller, this.project).subscribe(() => {
+      this.nodeService.stopAll(this.controller, this.project()).subscribe(() => {
         this.showCommand('All nodes stopped.');
       });
     } else if (this.command === 'suspend all') {
       this.showCommand('Suspending all nodes...');
-      this.nodeService.suspendAll(this.controller, this.project).subscribe(() => {
+      this.nodeService.suspendAll(this.controller, this.project()).subscribe(() => {
         this.showCommand('All nodes suspended.');
       });
     } else if (this.command === 'reload all') {
       this.showCommand('Reloading all nodes...');
-      this.nodeService.reloadAll(this.controller, this.project).subscribe(() => {
+      this.nodeService.reloadAll(this.controller, this.project()).subscribe(() => {
         this.showCommand('All nodes reloaded.');
       });
     } else if (
@@ -227,16 +228,20 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
           this.nodeService.stop(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} stopped.`));
         } else if (this.regexSuspend.test(this.command)) {
           this.showCommand(`Suspending node ${splittedCommand[1]}...`);
-          this.nodeService.suspend(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} suspended.`));
+          this.nodeService
+            .suspend(this.controller, node)
+            .subscribe(() => this.showCommand(`Node ${node.name} suspended.`));
         } else if (this.regexReload.test(this.command)) {
           this.showCommand(`Reloading node ${splittedCommand[1]}...`);
-          this.nodeService.reload(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} reloaded.`));
+          this.nodeService
+            .reload(this.controller, node)
+            .subscribe(() => this.showCommand(`Node ${node.name} reloaded.`));
         } else if (this.regexConsole.test(this.command)) {
           if (node.status === 'started') {
             this.showCommand(`Launching console for node ${splittedCommand[1]}...`);
             var host = node.console_host;
             if (ipaddr.IPv6.isValid(host)) {
-               host = `[${host}]`;
+              host = `[${host}]`;
             }
             if (node.console_type === 'telnet') {
               this.protocolHandlerService.open(
@@ -251,7 +256,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
                 `gns3+spice://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
             } else if (node.console_type && node.console_type.startsWith('http')) {
-               window.open(`${node.console_type}://${host}:${node.console}`);
+              window.open(`${node.console_type}://${host}:${node.console}`);
             } else {
               this.showCommand('Supported console types are: telnet, vnc, spice and spice+agent');
             }

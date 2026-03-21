@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild, inject, input } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CssFixer } from '../../../helpers/css-fixer';
 
@@ -7,10 +7,10 @@ import { CssFixer } from '../../../helpers/css-fixer';
   selector: '[app-interface-label]',
   templateUrl: './interface-label.component.html',
   styleUrls: ['./interface-label.component.scss'],
-  imports: []
+  imports: [],
 })
 export class InterfaceLabelComponent implements OnInit {
-  @Input('app-interface-label') ignore: any;
+  readonly ignore = input<any>(undefined, { alias: 'app-interface-label' });
 
   @ViewChild('textSvg') textRef: ElementRef;
 
@@ -32,7 +32,7 @@ export class InterfaceLabelComponent implements OnInit {
   private sanitizer = inject(DomSanitizer);
   private cssFixer = inject(CssFixer);
 
-  ngOnInit() { }
+  ngOnInit() {}
 
   @Input('x')
   set x(value) {
@@ -90,7 +90,7 @@ export class InterfaceLabelComponent implements OnInit {
 
   get transform() {
     if (this.elementRef.nativeElement.getBBox) {
-      const bbox = this.elementRef.nativeElement.getBBox()
+      const bbox = this.elementRef.nativeElement.getBBox();
       const x = this.label.x;
       const y = this.label.y + bbox.height;
       return `translate(${x}, ${y}) rotate(${this.label.rotation}, ${x}, ${y})`;

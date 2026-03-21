@@ -1,4 +1,4 @@
-<svg #svg class="map" preserveAspectRatio="none" [attr.width]="width" [attr.height]="height">
+<svg #svg class="map" preserveAspectRatio="none" [attr.width]="width()" [attr.height]="height()">
   <g [attr.transform]="transform">
     <g *ngFor="let layer of layers">
       <g class="links">
@@ -10,7 +10,7 @@
         <!-- [node-changed]="nodeChanged" -->
       </g>
       <g class="nodes">
-        <g *ngFor="let node of layer.nodes" [app-node]="node" [symbols]="symbols"></g>
+        <g *ngFor="let node of layer.nodes" [app-node]="node" [symbols]="symbols()"></g>
         <!-- [node-changed]="nodeChanged"
                 (valueChange)="onNodeChanged($event)" -->
       </g>

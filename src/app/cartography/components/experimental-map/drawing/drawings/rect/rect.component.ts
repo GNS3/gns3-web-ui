@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, input } from '@angular/core';
 import { QtDasharrayFixer } from '../../../../../helpers/qt-dasharray-fixer';
 import { RectElement } from '../../../../../models/drawings/rect-element';
 
@@ -7,32 +7,35 @@ import { RectElement } from '../../../../../models/drawings/rect-element';
   selector: '[app-rect]',
   templateUrl: './rect.component.html',
   styleUrls: ['./rect.component.scss'],
-  imports: []
+  imports: [],
 })
 export class RectComponent implements OnInit {
-  @Input('app-rect') rect: RectElement;
+  readonly rect = input<RectElement>(undefined, { alias: 'app-rect' });
 
   private qtDasharrayFixer = inject(QtDasharrayFixer);
 
   ngOnInit() {}
 
   get fill_opacity() {
-    if (this.rect && isFinite(this.rect.fill_opacity)) {
-      return this.rect.fill_opacity ? this.rect.fill_opacity : null;
+    const rect = this.rect();
+    if (rect && isFinite(rect.fill_opacity)) {
+      return rect.fill_opacity ? rect.fill_opacity : null;
     }
     return null;
   }
 
   get stroke_width() {
-    if (this.rect && isFinite(this.rect.stroke_width)) {
-      return this.rect.stroke_width ? this.rect.stroke_width : null;
+    const rect = this.rect();
+    if (rect && isFinite(rect.stroke_width)) {
+      return rect.stroke_width ? rect.stroke_width : null;
     }
     return null;
   }
 
   get stroke_dasharray() {
-    if (this.rect && this.rect.stroke_dasharray) {
-      return this.qtDasharrayFixer.fix(this.rect.stroke_dasharray);
+    const rect = this.rect();
+    if (rect && rect.stroke_dasharray) {
+      return this.qtDasharrayFixer.fix(rect.stroke_dasharray);
     }
     return null;
   }

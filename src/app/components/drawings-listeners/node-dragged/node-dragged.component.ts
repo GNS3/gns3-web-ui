@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
@@ -17,8 +17,8 @@ import { NodeService } from '@services/node.service';
   imports: [],
 })
 export class NodeDraggedComponent implements OnInit, OnDestroy {
-  @Input() controller: Controller;
-  @Input() project: Project;
+  readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
   private nodeDragged: Subscription;
 
   private nodesDataSource = inject(NodesDataSource);
@@ -34,9 +34,11 @@ export class NodeDraggedComponent implements OnInit, OnDestroy {
     node.x += draggedEvent.dx;
     node.y += draggedEvent.dy;
 
-    this.nodeService.updatePosition(this.controller, this.project, node, node.x, node.y).subscribe((controllerNode: Node) => {
-      this.nodesDataSource.update(controllerNode);
-    });
+    this.nodeService
+      .updatePosition(this.controller(), this.project(), node, node.x, node.y)
+      .subscribe((controllerNode: Node) => {
+        this.nodesDataSource.update(controllerNode);
+      });
   }
 
   ngOnDestroy() {

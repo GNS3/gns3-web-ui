@@ -8,6 +8,7 @@ import {
   OnInit,
   ViewChild,
   inject,
+  input,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MultiLinkCalculatorHelper } from '../../../helpers/multi-link-calculator-helper';
@@ -23,12 +24,12 @@ import { StatusComponent } from '../status/status.component';
   selector: '[app-link]',
   templateUrl: './link.component.html',
   styleUrls: ['./link.component.scss'],
-  imports: [StatusComponent]
+  imports: [StatusComponent],
 })
 export class LinkComponent implements OnInit, OnDestroy {
   @Input('app-link') link: MapLink;
-  @Input('node-changed') nodeChanged: EventEmitter<Node>;
-  @Input('show-interface-labels') showInterfaceLabels: boolean;
+  readonly nodeChanged = input<EventEmitter<Node>>(undefined, { alias: 'node-changed' });
+  readonly showInterfaceLabels = input<boolean>(undefined, { alias: 'show-interface-labels' });
 
   @ViewChild('path') path: ElementRef;
 

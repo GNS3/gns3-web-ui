@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, Output, EventEmitter, ChangeDetectorRef, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+  Output,
+  EventEmitter,
+  ChangeDetectorRef,
+  inject,
+  input,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -33,7 +43,16 @@ import { AiChatStore } from '../../../stores/ai-chat.store';
   templateUrl: './project-map-menu.component.html',
   styleUrls: ['./project-map-menu.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule, MatDividerModule, MatMenuModule, DrawingAddedComponent]
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatDividerModule,
+    MatMenuModule,
+    DrawingAddedComponent,
+  ],
 })
 export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   private toolsService = inject(ToolsService);
@@ -48,8 +67,8 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   private drawingsDataSource = inject(DrawingsDataSource);
   private aiChatStore = inject(AiChatStore);
   private cdr = inject(ChangeDetectorRef);
-  @Input() project: Project;
-  @Input() controller: Controller;
+  readonly project = input<Project>(undefined);
+  readonly controller = input<Controller>(undefined);
   @Output() aiChatOpened = new EventEmitter<void>();
   private nodes: Node[] = [];
   private drawing: Drawing[] = [];
@@ -81,7 +100,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     this.getAllNodesAndDrawingStatus();
 
     // Subscribe to AI Chat panel state
-    this.aiChatStateSubscription = this.aiChatStore.getPanelState().subscribe(panelState => {
+    this.aiChatStateSubscription = this.aiChatStore.getPanelState().subscribe((panelState) => {
       this.isAIChatOpen = panelState.isOpen;
       this.isAIMinimized = panelState.isMinimized;
       // Trigger change detection for OnPush strategy
@@ -127,7 +146,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         let splittedImage = splittedSvg[i].split('"');
         let splittedUrl = splittedImage[1].split('/');
 
-        let elem = await this.symbolService.raw(this.controller, splittedUrl[7]).toPromise();
+        let elem = await this.symbolService.raw(this.controller(), splittedUrl[7]).toPromise();
         let splittedElement = elem.split('-->');
         splittedSvg[i] = splittedElement[1].substring(2);
         i += 2;
@@ -203,28 +222,28 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     this.toolsService.textAddingToolActivation(this.drawTools.isTextChosen);
   }
   getAllNodesAndDrawingStatus() {
-   this.projectServices.getProjectStatus(this.controller,this.project.project_id).subscribe((status)=>{
-     if (status) {
-          this.isLocked = true;
-          this.lock = 'lock';
-        } else {
-          this.isLocked = false;
-          this.lock = 'lock_open';
-        }
-   })
-    this.projectServices.nodes(this.controller, this.project.project_id).subscribe((response) => {
+    this.projectServices.getProjectStatus(this.controller(), this.project().project_id).subscribe((status) => {
+      if (status) {
+        this.isLocked = true;
+        this.lock = 'lock';
+      } else {
+        this.isLocked = false;
+        this.lock = 'lock_open';
+      }
+    });
+    this.projectServices.nodes(this.controller(), this.project().project_id).subscribe((response) => {
       this.nodes = response;
       this.nodes.forEach((node) => {
-        this.nodeService.updateNode(this.controller, node).subscribe((node) => {
+        this.nodeService.updateNode(this.controller(), node).subscribe((node) => {
           this.nodesDataSource.update(node);
         });
       });
     });
 
-    this.projectServices.drawings(this.controller, this.project.project_id).subscribe((response) => {
+    this.projectServices.drawings(this.controller(), this.project().project_id).subscribe((response) => {
       this.drawing = response;
       this.drawing.forEach((drawing) => {
-        this.drawingService.update(this.controller, drawing).subscribe((drawing) => {
+        this.drawingService.update(this.controller(), drawing).subscribe((drawing) => {
           this.drawingsDataSource.update(drawing);
         });
       });
@@ -256,14 +275,14 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
 
   lockAllNode() {
     this.lock = 'lock';
-    this.drawingService.lockAllNodes(this.controller, this.project).subscribe((res) => {
+    this.drawingService.lockAllNodes(this.controller(), this.project()).subscribe((res) => {
       this.getAllNodesAndDrawingStatus();
     });
   }
 
   unlockAllNode() {
     this.lock = 'lock_open';
-    this.drawingService.unLockAllNodes(this.controller, this.project).subscribe((res) => {
+    this.drawingService.unLockAllNodes(this.controller(), this.project()).subscribe((res) => {
       this.getAllNodesAndDrawingStatus();
     });
   }
@@ -281,7 +300,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       let image = fileReader.result;
       let svg = this.createSvgFileForImage(image, imageToUpload);
       this.drawingService
-        .add(this.controller, this.project.project_id, -(imageToUpload.width / 2), -(imageToUpload.height / 2), svg)
+        .add(this.controller(), this.project().project_id, -(imageToUpload.width / 2), -(imageToUpload.height / 2), svg)
         .subscribe(() => {});
     };
 
@@ -307,7 +326,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
    * Open AI Chat panel
    */
   public openAIChat() {
-    if (!this.project || !this.controller) {
+    if (!this.project() || !this.controller()) {
       return;
     }
 

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit, input } from '@angular/core';
 import { ImageElement } from '../../../../../models/drawings/image-element';
 
 @Component({
@@ -6,11 +6,11 @@ import { ImageElement } from '../../../../../models/drawings/image-element';
   selector: '[app-image]',
   templateUrl: './image.component.html',
   styleUrls: ['./image.component.scss'],
-  imports: []
+  imports: [],
 })
 export class ImageComponent implements OnInit {
-  @Input('app-image') image: ImageElement;
-  data:any
+  readonly image = input<ImageElement>(undefined, { alias: 'app-image' });
+  data: any;
 
   ngOnInit() {}
 }

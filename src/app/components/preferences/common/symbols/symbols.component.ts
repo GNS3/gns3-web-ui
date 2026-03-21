@@ -1,4 +1,13 @@
-import { Component, EventEmitter, Input, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, Output, inject } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  OnInit,
+  Output,
+  inject,
+  input,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,14 +27,23 @@ import { SearchFilter } from '@filters/searchFilter.pipe';
   selector: 'app-symbols',
   templateUrl: './symbols.component.html',
   styleUrls: ['./symbols.component.scss'],
-  imports: [CommonModule, FormsModule, MatButtonModule, MatIconModule, MatInputModule, MatRadioModule, MatTabsModule, SearchFilter],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatButtonModule,
+    MatIconModule,
+    MatInputModule,
+    MatRadioModule,
+    MatTabsModule,
+    SearchFilter,
+  ],
 })
 export class SymbolsComponent implements OnInit {
   private symbolService = inject(SymbolService);
   private cd = inject(ChangeDetectorRef);
 
-  @Input() controller: Controller;
-  @Input() symbol: string;
+  readonly controller = input<Controller>(undefined);
+  readonly symbol = input<string>(undefined);
   @Output() symbolChanged = new EventEmitter<string>();
 
   symbols: Symbol[] = [];
@@ -34,7 +52,7 @@ export class SymbolsComponent implements OnInit {
   searchText: string = '';
 
   ngOnInit() {
-    this.isSelected = this.symbol;
+    this.isSelected = this.symbol();
     this.loadSymbols();
   }
 
@@ -54,7 +72,7 @@ export class SymbolsComponent implements OnInit {
   }
 
   loadSymbols() {
-    this.symbolService.list(this.controller).subscribe((symbols: Symbol[]) => {
+    this.symbolService.list(this.controller()).subscribe((symbols: Symbol[]) => {
       this.symbols = symbols;
       this.filteredSymbols = symbols;
       this.cd.markForCheck();
@@ -74,7 +92,7 @@ export class SymbolsComponent implements OnInit {
     fileReader.onloadend = () => {
       let image = fileReader.result;
       let svg = this.createSvgFileForImage(image, imageToUpload);
-      this.symbolService.add(this.controller, fileName, svg).subscribe(() => {
+      this.symbolService.add(this.controller(), fileName, svg).subscribe(() => {
         this.loadSymbols();
       });
     };
@@ -91,6 +109,8 @@ export class SymbolsComponent implements OnInit {
   }
 
   getImageSourceForTemplate(symbol: string) {
-    return `${this.controller.protocol}//${this.controller.host}:${this.controller.port}/${environment.current_version}/symbols/${symbol}/raw`;
+    return `${this.controller().protocol}//${this.controller().host}:${this.controller().port}/${
+      environment.current_version
+    }/symbols/${symbol}/raw`;
   }
 }
