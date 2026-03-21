@@ -1,4 +1,4 @@
-import {Component, OnInit, QueryList, ViewChildren, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChildren, inject, model, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Controller} from "@models/controller";
@@ -29,7 +29,10 @@ import {ResourcePoolsService} from "@services/resource-pools.service";
   selector: 'app-resource-pools-management',
   templateUrl: './resource-pools-management.component.html',
   styleUrls: ['./resource-pools-management.component.scss'],
-  imports: [CommonModule, FormsModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule]
+  imports: [CommonModule, FormsModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ResourcePoolsManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -45,10 +48,10 @@ export class ResourcePoolsManagementComponent implements OnInit {
 
   public displayedColumns = ['select', 'name', 'created_at', 'updated_at', 'delete'];
   selection = new SelectionModel<ResourcePool>(true, []);
-  resourcePools: ResourcePool[];
+  resourcePools = signal<ResourcePool[]>([]);
   dataSource = new MatTableDataSource<ResourcePool>();
-  searchText: string;
-  isReady = false;
+  searchText = model('');
+  isReady = signal(false);
 
   constructor() {
   }
@@ -82,14 +85,14 @@ export class ResourcePoolsManagementComponent implements OnInit {
 
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.resourcePools.length;
+    const numRows = this.resourcePools().length;
     return numSelected === numRows;
   }
 
   masterToggle() {
     this.isAllSelected() ?
       this.selection.clear() :
-      this.resourcePools.forEach(row => this.selection.select(row));
+      this.resourcePools().forEach(row => this.selection.select(row));
   }
 
   addResourcePool() {
@@ -105,8 +108,8 @@ export class ResourcePoolsManagementComponent implements OnInit {
 
   refresh() {
     this.resourcePoolsService.getAll(this.controller).subscribe((resourcePools: ResourcePool[]) => {
-      this.isReady = true;
-      this.resourcePools = resourcePools;
+      this.isReady.set(true);
+      this.resourcePools.set(resourcePools);
       this.dataSource.data = resourcePools;
       this.selection.clear();
     });
