@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LabelToMapLabelConverter } from 'app/cartography/converters/map/label-to-map-label-converter';
 import { MapLabelToLabelConverter } from 'app/cartography/converters/map/map-label-to-label-converter';
@@ -18,10 +19,11 @@ describe('DrawLinkToolComponent', () => {
   let component: DrawLinkToolComponent;
   let fixture: ComponentFixture<DrawLinkToolComponent>;
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [DrawLinkToolComponent, NodeSelectInterfaceComponent],
       providers:[
+        provideZonelessChangeDetection(),
         DrawingLineWidget,
         NodesEventSource,
         LinksEventSource,
