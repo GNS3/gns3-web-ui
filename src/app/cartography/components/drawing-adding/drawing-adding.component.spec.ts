@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { Context } from '../../models/context';
@@ -9,10 +9,11 @@ describe('DrawingAddingComponent', () => {
   let fixture: ComponentFixture<DrawingAddingComponent>;
   let drawingsEventSource = new DrawingsEventSource();
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [NoopAnimationsModule],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: DrawingsEventSource, useValue: drawingsEventSource },
         { provide: Context, useClass: Context },
       ],
