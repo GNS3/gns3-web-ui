@@ -13,14 +13,11 @@ interface UploadRow extends ImageUploadEvent {
 }
 
 @Component({
-  standalone: true,
   selector: 'app-global-upload-indicator',
   templateUrl: './global-upload-indicator.component.html',
-  styleUrls: ['./global-upload-indicator.component.scss'],
+  styleUrl: './global-upload-indicator.component.scss',
   imports: [CommonModule, MatIconModule, MatProgressBarModule, MatButtonModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GlobalUploadIndicatorComponent implements OnInit, OnDestroy {
   private imageUploadSessionService = inject(ImageUploadSessionService);
