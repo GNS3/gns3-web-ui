@@ -10,14 +10,11 @@ import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 
 @Component({
-  standalone: true,
   selector: 'app-node-label-dragged',
   templateUrl: './node-label-dragged.component.html',
-  styleUrls: ['./node-label-dragged.component.scss'],
+  styleUrl: './node-label-dragged.component.scss',
   imports: [],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
   readonly controller = input<Controller>(undefined);
