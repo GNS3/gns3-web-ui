@@ -6,13 +6,10 @@ import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 
 @Component({
-  standalone: true,
   selector: 'app-open-file-explorer-action',
   templateUrl: './open-file-explorer-action.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OpenFileExplorerActionComponent implements OnInit {
   readonly controller = input<Controller>(undefined);
