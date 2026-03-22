@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AddResourcePoolDialogComponent } from './add-resource-pool-dialog.component';
@@ -44,11 +45,12 @@ describe('AddResourcePoolDialogComponent', () => {
   let component: AddResourcePoolDialogComponent;
   let fixture: ComponentFixture<AddResourcePoolDialogComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [ AddResourcePoolDialogComponent ],
       imports: [ MatFormFieldModule ],
       providers: [
+        provideZonelessChangeDetection(),
         {provide: ToasterService, useClass: FakeToastService},
         {provide: ResourcePoolsService, useClass: FakeResourcePoolService},
         {provide: MatDialogRef, useClass: FakeMatDialogRef},
