@@ -11,13 +11,10 @@ import { DrawingService } from '@services/drawing.service';
 import { NodeService } from '@services/node.service';
 
 @Component({
-  standalone: true,
   selector: 'app-move-layer-down-action',
   templateUrl: './move-layer-down-action.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MoveLayerDownActionComponent implements OnInit {
   private nodesDataSource = inject(NodesDataSource);
