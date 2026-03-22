@@ -3,14 +3,11 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { CssFixer } from '../../../helpers/css-fixer';
 
 @Component({
-  standalone: true,
   selector: '[app-interface-label]',
   templateUrl: './interface-label.component.html',
-  styleUrls: ['./interface-label.component.scss'],
+  styleUrl: './interface-label.component.scss',
   imports: [],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InterfaceLabelComponent implements OnInit {
   readonly ignore = input<any>(undefined, { alias: 'app-interface-label' });
