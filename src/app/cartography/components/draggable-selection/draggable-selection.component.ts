@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { select } from 'd3-selection';
 import { merge, Subscription } from 'rxjs';
 import { MapSettingsService } from '@services/mapsettings.service';
@@ -24,7 +24,10 @@ import { NodesWidget } from '../../widgets/nodes';
   selector: 'app-draggable-selection',
   templateUrl: './draggable-selection.component.html',
   styleUrls: ['./draggable-selection.component.scss'],
-  imports: []
+  imports: [],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DraggableSelectionComponent implements OnInit, OnDestroy {
   private start: Subscription;
