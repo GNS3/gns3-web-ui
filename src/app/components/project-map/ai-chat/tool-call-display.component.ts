@@ -9,11 +9,8 @@ import { ToolCall } from '@models/ai-chat.interface';
  */
 @Component({
   selector: 'app-tool-call-display',
-  standalone: true,
   imports: [MatIconModule, MatProgressSpinnerModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="inline-tool-call" (click)="onViewDetails()" [title]="getStatusText()" *ngIf="toolCall()?.function?.name">
       <mat-icon class="tool-icon">build</mat-icon>
