@@ -1,4 +1,4 @@
-import { Renderer2 } from '@angular/core';
+import { Renderer2, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MockedLinkService } from '@components/project-map/project-map.component.spec';
@@ -18,10 +18,11 @@ describe('TextEditorComponent', () => {
   let fixture: ComponentFixture<TextEditorComponent>;
   let mockedLinkService: MockedLinkService = new MockedLinkService();
 
-  beforeEach(async() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [NoopAnimationsModule],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: DrawingsEventSource, useClass: DrawingsEventSource },
         { provide: ToolsService, useClass: ToolsService },
         { provide: Context, useClass: Context },
