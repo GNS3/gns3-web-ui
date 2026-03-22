@@ -5,14 +5,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @Component({
-  standalone: true,
   selector: 'app-progress-dialog',
   templateUrl: './progress-dialog.component.html',
-  styleUrls: ['./progress-dialog.component.scss'],
+  styleUrl: './progress-dialog.component.scss',
   imports: [MatDialogModule, MatButtonModule, MatProgressSpinnerModule, MatProgressBarModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProgressDialogComponent implements OnInit {
   public dialogRef = inject(MatDialogRef<ProgressDialogComponent>);
