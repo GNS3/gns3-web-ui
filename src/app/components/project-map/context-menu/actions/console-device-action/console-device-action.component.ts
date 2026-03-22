@@ -10,13 +10,10 @@ import { SettingsService } from '@services/settings.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: true,
   selector: 'app-console-device-action',
   templateUrl: './console-device-action.component.html',
   imports: [CommonModule, MatButtonModule, MatIconModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConsoleDeviceActionComponent implements OnInit {
   private controllerService = inject(ControllerService);
