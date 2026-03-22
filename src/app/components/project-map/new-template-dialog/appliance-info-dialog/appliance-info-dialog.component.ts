@@ -5,13 +5,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Appliance } from '@models/appliance';
 
 @Component({
-  standalone: true,
   selector: 'appliance-info-dialog',
   templateUrl: 'appliance-info-dialog.component.html',
   imports: [MatDialogModule, MatButtonModule, MatProgressSpinnerModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ApplianceInfoDialogComponent {
   public dialogRef = inject(MatDialogRef<ApplianceInfoDialogComponent>);
