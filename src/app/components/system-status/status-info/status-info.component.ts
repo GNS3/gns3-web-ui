@@ -9,14 +9,11 @@ import { ToasterService } from '@services/toaster.service';
 import { StatusChartComponent } from '../status-chart/status-chart.component';
 
 @Component({
-  standalone: true,
   selector: 'app-status-info',
   templateUrl: './status-info.component.html',
-  styleUrls: ['./status-info.component.scss'],
+  styleUrl: './status-info.component.scss',
   imports: [CommonModule, StatusChartComponent],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatusInfoComponent implements OnInit {
   private route = inject(ActivatedRoute);
