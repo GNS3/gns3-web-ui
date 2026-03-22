@@ -12,14 +12,11 @@ import {ToasterService} from "@services/toaster.service";
 import {matchingPassword} from "@components/user-management/ConfirmPasswordValidator";
 
 @Component({
-  standalone: true,
   selector: 'app-change-user-password',
   templateUrl: './change-user-password.component.html',
-  styleUrls: ['./change-user-password.component.scss'],
+  styleUrl: './change-user-password.component.scss',
   imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChangeUserPasswordComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ChangeUserPasswordComponent>);
