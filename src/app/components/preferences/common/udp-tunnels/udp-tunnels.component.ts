@@ -11,14 +11,11 @@ import { PortsMappingEntity } from '@models/ethernetHub/ports-mapping-enity';
 import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
 
 @Component({
-  standalone: true,
   selector: 'app-udp-tunnels',
   templateUrl: './udp-tunnels.component.html',
-  styleUrls: ['../../preferences.component.scss'],
+  styleUrl: '../../preferences.component.scss',
   imports: [CommonModule, FormsModule, MatTableModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatTooltipModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UdpTunnelsComponent implements OnInit {
   @Input() dataSourceUdp: PortsMappingEntity[] = [];
