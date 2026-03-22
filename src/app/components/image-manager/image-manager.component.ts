@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -48,6 +48,9 @@ import { ControllerDiscoveryComponent } from '@components/controllers/controller
     MatListModule,
     ControllerDiscoveryComponent,
   ],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ImageManagerComponent implements OnInit, OnDestroy {
   controller: Controller;
@@ -72,7 +75,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   defaultPageSize = 10;
   currentPage = 0;
 
-  displayedColumns = ['select', 'filename', 'image_type', 'image_size', 'created_at', 'delete'];
+  readonly displayedColumns = signal(['select', 'filename', 'image_type', 'image_size', 'created_at', 'delete']);
   readonly sort = viewChild(MatSort);
   readonly paginator = viewChild(MatPaginator);
 
