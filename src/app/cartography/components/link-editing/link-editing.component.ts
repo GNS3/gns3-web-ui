@@ -6,14 +6,11 @@ import { MapLink } from '../../models/map/map-link';
 import { LinksWidget } from '../../widgets/links';
 
 @Component({
-  standalone: true,
   selector: 'app-link-editing',
   templateUrl: './link-editing.component.html',
-  styleUrls: ['./link-editing.component.scss'],
+  styleUrl: './link-editing.component.scss',
   imports: [],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LinkEditingComponent implements OnInit, OnDestroy {
   private linkEditedSubscription: Subscription;
