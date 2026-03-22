@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DeleteResourceConfirmationDialogComponent } from './delete-resource-confirmation-dialog.component';
@@ -15,11 +16,12 @@ describe('DeleteResourceConfirmationDialogComponent', () => {
   let component: DeleteResourceConfirmationDialogComponent;
   let fixture: ComponentFixture<DeleteResourceConfirmationDialogComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [ DeleteResourceConfirmationDialogComponent ],
       imports: [ MatButtonModule ],
       providers: [
+        provideZonelessChangeDetection(),
         {provide: DIALOG_DATA,  useValue: {}},
         {provide: MatDialogRef, useClass: FakeMatDialogRef}
       ],
