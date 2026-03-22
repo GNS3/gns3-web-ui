@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { ResizedDataEvent } from '../../events/event-source';
@@ -11,7 +11,10 @@ import { DrawingsWidget } from '../../widgets/drawings';
   selector: 'app-drawing-resizing',
   template: ` <ng-content></ng-content> `,
   styleUrls: ['./drawing-resizing.component.scss'],
-  imports: []
+  imports: [],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DrawingResizingComponent implements OnInit, OnDestroy {
   resizingFinished: Subscription;
