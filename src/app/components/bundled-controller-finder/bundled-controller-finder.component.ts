@@ -1,3 +1,4 @@
+import { ChangeDetectionStrategy } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { Component, Inject, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
@@ -12,6 +13,9 @@ import { ControllerService } from '@services/controller.service';
   templateUrl: './bundled-controller-finder.component.html',
   styleUrls: ['./bundled-controller-finder.component.scss'],
   imports: [ProgressComponent],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class BundledControllerFinderComponent implements OnInit {
   private router = inject(Router);
