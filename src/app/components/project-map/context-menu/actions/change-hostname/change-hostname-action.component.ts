@@ -8,13 +8,10 @@ import { Controller } from '@models/controller';
 import { ChangeHostnameDialogComponent } from '../../../change-hostname-dialog/change-hostname-dialog.component';
 
 @Component({
-  standalone: true,
   selector: 'app-change-hostname-action',
   templateUrl: './change-hostname-action.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChangeHostnameActionComponent implements OnInit {
   private dialog = inject(MatDialog);
