@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { Inject } from '@angular/core';
@@ -8,6 +8,9 @@ import { Inject } from '@angular/core';
   selector: 'app-question-dialog',
   templateUrl: './question-dialog.component.html',
   imports: [MatDialogModule, MatButtonModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class QuestionDialogComponent {
   public dialogRef = inject(MatDialogRef<QuestionDialogComponent>);
