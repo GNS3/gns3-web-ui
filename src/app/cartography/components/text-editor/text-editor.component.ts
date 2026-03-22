@@ -32,14 +32,11 @@ import { MapLinkNode } from '../../models/map/map-link-node';
 import { Node } from '../../models/node';
 
 @Component({
-  standalone: true,
   selector: 'app-text-editor',
   templateUrl: './text-editor.component.html',
-  styleUrls: ['./text-editor.component.scss'],
+  styleUrl: './text-editor.component.scss',
   imports: [],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TextEditorComponent implements OnInit, OnDestroy {
   readonly temporaryTextElement = viewChild<ElementRef>('temporaryTextElement');
