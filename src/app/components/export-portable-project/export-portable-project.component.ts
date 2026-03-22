@@ -14,10 +14,9 @@ import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
 
 @Component({
-  standalone: true,
   selector: 'app-export-portable-project',
   templateUrl: './export-portable-project.component.html',
-  styleUrls: ['./export-portable-project.component.scss'],
+  styleUrl: './export-portable-project.component.scss',
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -30,9 +29,7 @@ import { ProjectService } from '@services/project.service';
     MatCheckboxModule,
     MatDividerModule
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExportPortableProjectComponent implements OnInit {
   export_project_form: UntypedFormGroup;
