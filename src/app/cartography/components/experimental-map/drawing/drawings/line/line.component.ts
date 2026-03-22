@@ -3,14 +3,11 @@ import { QtDasharrayFixer } from '../../../../../helpers/qt-dasharray-fixer';
 import { LineElement } from '../../../../../models/drawings/line-element';
 
 @Component({
-  standalone: true,
   selector: '[app-line]',
   templateUrl: './line.component.html',
-  styleUrls: ['./line.component.scss'],
+  styleUrl: './line.component.scss',
   imports: [],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LineComponent implements OnInit {
   readonly line = input<LineElement>(undefined, { alias: 'app-line' });
