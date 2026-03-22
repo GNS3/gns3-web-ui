@@ -21,14 +21,11 @@ import { SerialLinkStrategy } from './strategies/serial-link-strategy';
 import { StatusComponent } from '../status/status.component';
 
 @Component({
-  standalone: true,
   selector: '[app-link]',
   templateUrl: './link.component.html',
-  styleUrls: ['./link.component.scss'],
+  styleUrl: './link.component.scss',
   imports: [StatusComponent],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LinkComponent implements OnInit, OnDestroy {
   @Input('app-link') link: MapLink;
