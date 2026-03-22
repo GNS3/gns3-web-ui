@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BehaviorSubject, Subject, combineLatest } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
@@ -46,6 +46,9 @@ import { ConfirmDialogComponent } from '@components/user-management/user-detail/
     MatCardModule,
     MatProgressSpinnerModule,
   ],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -67,7 +70,7 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
   settingDefaultConfigs = new Set<string>();
 
   // Table columns - now with model type column
-  displayedColumns: string[] = ['name', 'model_type', 'provider', 'model', 'context_limit', 'actions'];
+  readonly displayedColumns = signal(['name', 'model_type', 'provider', 'model', 'context_limit', 'actions']);
 
   private aiProfilesService = inject(AiProfilesService);
   private dialog = inject(MatDialog);
