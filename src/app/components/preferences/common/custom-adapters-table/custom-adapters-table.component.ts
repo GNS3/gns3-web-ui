@@ -10,10 +10,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 
 @Component({
-  standalone: true,
   selector: 'app-custom-adapters-table',
   templateUrl: './custom-adapters-table.component.html',
-  styleUrls: ['../../preferences.component.scss'],
+  styleUrl: '../../preferences.component.scss',
   imports: [
     CommonModule,
     FormsModule,
@@ -24,9 +23,7 @@ import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
     MatIconModule,
     MatTooltipModule,
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomAdaptersTableComponent {
   readonly networkTypes = input([]);
