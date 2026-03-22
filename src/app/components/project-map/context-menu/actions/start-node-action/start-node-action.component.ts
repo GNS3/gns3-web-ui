@@ -8,13 +8,10 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: true,
   selector: 'app-start-node-action',
   templateUrl: './start-node-action.component.html',
   imports: [CommonModule, MatButtonModule, MatIconModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StartNodeActionComponent implements OnInit, OnChanges {
   private nodeService = inject(NodeService);
