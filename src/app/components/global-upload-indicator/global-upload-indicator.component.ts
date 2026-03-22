@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
@@ -18,13 +18,16 @@ interface UploadRow extends ImageUploadEvent {
   templateUrl: './global-upload-indicator.component.html',
   styleUrls: ['./global-upload-indicator.component.scss'],
   imports: [CommonModule, MatIconModule, MatProgressBarModule, MatButtonModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class GlobalUploadIndicatorComponent implements OnInit, OnDestroy {
   private imageUploadSessionService = inject(ImageUploadSessionService);
   private router = inject(Router);
 
   uploads = new Map<string, UploadRow>();
-  isExpanded = true;
+  readonly isExpanded = signal(true);
   private subscription: Subscription;
 
   ngOnInit() {
@@ -64,7 +67,7 @@ export class GlobalUploadIndicatorComponent implements OnInit, OnDestroy {
   }
 
   toggleExpanded() {
-    this.isExpanded = !this.isExpanded;
+    this.isExpanded.set(!this.isExpanded());
   }
 
   trackByTempId(_index: number, row: UploadRow): string {
@@ -98,7 +101,7 @@ export class GlobalUploadIndicatorComponent implements OnInit, OnDestroy {
     this.uploads.set(event.tempId, row);
 
     if (!existing && event.status === 'queued') {
-      this.isExpanded = true;
+      this.isExpanded.set(true);
     }
   }
 

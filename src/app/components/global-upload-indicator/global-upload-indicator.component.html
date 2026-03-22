@@ -18,11 +18,11 @@
         mode="determinate"
         [value]="overallProgress"
       ></mat-progress-bar>
-      <mat-icon class="toggle-icon">{{ isExpanded ? 'expand_more' : 'expand_less' }}</mat-icon>
+      <mat-icon class="toggle-icon">{{ isExpanded() ? 'expand_more' : 'expand_less' }}</mat-icon>
     </div>
   </div>
 
-  <div class="upload-list" *ngIf="isExpanded">
+  <div class="upload-list" *ngIf="isExpanded()">
     <div
       class="upload-item"
       *ngFor="let row of uploadList; trackBy: trackByTempId"
