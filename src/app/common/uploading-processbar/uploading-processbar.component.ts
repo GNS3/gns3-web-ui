@@ -6,15 +6,12 @@ import { Subscription } from 'rxjs';
 import { UploadServiceService } from './upload-service.service';
 
 @Component({
-  standalone: true,
   selector: 'app-uploading-processbar',
   templateUrl: './uploading-processbar.component.html',
-  styleUrls: ['./uploading-processbar.component.scss'],
+  styleUrl: './uploading-processbar.component.scss',
   encapsulation: ViewEncapsulation.None,
   imports: [MatButtonModule, MatProgressBarModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UploadingProcessbarComponent implements OnInit {
   private _snackRef = inject(MatSnackBarRef<UploadingProcessbarComponent>);
