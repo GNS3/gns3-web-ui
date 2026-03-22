@@ -16,10 +16,9 @@ import { QemuService } from '@services/qemu.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: true,
   selector: 'app-qemu-image-creator',
   templateUrl: './qemu-image-creator.component.html',
-  styleUrls: ['../../configurator.component.scss'],
+  styleUrl: '../../configurator.component.scss',
   imports: [
     CommonModule,
     FormsModule,
@@ -33,9 +32,7 @@ import { ToasterService } from '@services/toaster.service';
     MatCardModule,
     MatRadioModule
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QemuImageCreatorComponent implements OnInit {
   controller: Controller;
