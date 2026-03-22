@@ -1,4 +1,5 @@
-import {ComponentFixture, TestBed} from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed} from '@angular/core/testing';
 
 import {ResourcePoolDetailsComponent} from './resource-pool-details.component';
 import {ToasterService} from "@services/toaster.service";
@@ -40,8 +41,8 @@ describe('ResourcePoolDetailsComponent', () => {
   let component: ResourcePoolDetailsComponent;
   let fixture: ComponentFixture<ResourcePoolDetailsComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [ResourcePoolDetailsComponent],
       imports: [
         MatAutocompleteModule,
@@ -50,6 +51,7 @@ describe('ResourcePoolDetailsComponent', () => {
         MatDividerModule
       ],
       providers: [
+        provideZonelessChangeDetection(),
         {provide: ToasterService, useClass: FakeToastService},
         {provide: ActivatedRoute, useClass: FakeActivatedRoute},
         {provide: ResourcePoolsService, useClass: FakeResourcePoolService},
