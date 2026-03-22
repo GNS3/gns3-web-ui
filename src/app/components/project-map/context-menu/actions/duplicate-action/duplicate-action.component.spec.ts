@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -21,10 +22,11 @@ describe('DuplicateActionComponent', () => {
   let mockedDrawingService: MockedDrawingService = new MockedDrawingService();
   let mockedToasterService = new MockedToasterService();
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [MatIconModule, MatMenuModule, NoopAnimationsModule],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: NodesDataSource, useClass: NodesDataSource },
         { provide: DrawingsDataSource, useClass: DrawingsDataSource },
         { provide: NodeService, useValue: mockedNodeService },
