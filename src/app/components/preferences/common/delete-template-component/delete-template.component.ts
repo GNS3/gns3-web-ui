@@ -6,14 +6,11 @@ import { ToasterService } from '@services/toaster.service';
 import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 
 @Component({
-  standalone: true,
   selector: 'app-delete-template',
   templateUrl: './delete-template.component.html',
-  styleUrls: ['./delete-template.component.scss'],
+  styleUrl: './delete-template.component.scss',
   imports: [MatDialogModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeleteTemplateComponent {
   readonly controller = input<Controller>(undefined);
