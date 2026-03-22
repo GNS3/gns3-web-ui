@@ -7,13 +7,10 @@ import { Controller } from '@models/controller';
 import { LinkService } from '@services/link.service';
 
 @Component({
-  standalone: true,
   selector: 'app-suspend-link-action',
   templateUrl: './suspend-link-action.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SuspendLinkActionComponent {
   private linkService = inject(LinkService);
