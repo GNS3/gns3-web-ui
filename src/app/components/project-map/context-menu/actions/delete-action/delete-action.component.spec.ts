@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatIconModule } from '@angular/material/icon';
@@ -26,10 +27,11 @@ describe('DeleteActionComponent', () => {
   let mockedLinkService: MockedLinkService = new MockedLinkService();
   let mockedToasterService = new MockedToasterService();
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [MatIconModule, MatMenuModule, NoopAnimationsModule, MatBottomSheetModule],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: NodesDataSource, useClass: NodesDataSource },
         { provide: DrawingsDataSource, useClass: DrawingsDataSource },
         { provide: LinksDataSource, useClass: LinksDataSource },
