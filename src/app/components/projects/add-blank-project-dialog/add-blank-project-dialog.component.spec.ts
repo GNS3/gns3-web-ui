@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -64,8 +65,8 @@ describe('AddBlankProjectDialogComponent', () => {
     close: jasmine.createSpy('close'),
   };
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [
         MatDialogModule,
         MatFormFieldModule,
@@ -76,6 +77,7 @@ describe('AddBlankProjectDialogComponent', () => {
         MatSnackBarModule,
       ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: MatDialogRef, useValue: dialogRef },
         { provide: MAT_DIALOG_DATA, useValue: [] },
         { provide: ProjectService, useClass: MockedProjectService },
