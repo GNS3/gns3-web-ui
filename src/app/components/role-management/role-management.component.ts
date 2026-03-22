@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChild, ViewChildren, inject, model, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChild, ViewChildren, inject, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Controller} from "@models/controller";
@@ -58,7 +58,7 @@ export class RoleManagementComponent implements OnInit {
   dataSource = new MatTableDataSource<Role>();
   displayedColumns = ['select', 'name', 'description', 'delete'];
   selection = new SelectionModel<Role>(true, []);
-  searchText = model('');
+  searchText = '';
 
   @ViewChildren('rolesPaginator') rolesPaginator: QueryList<MatPaginator>;
   @ViewChildren('rolesSort') rolesSort: QueryList<MatSort>;

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -34,7 +34,7 @@ export class ListOfSnapshotsComponent implements OnInit {
   projectId: string;
   snapshots = signal<Snapshot[]>([]);
   displayedColumns = ['name', 'creationDate', 'actions'];
-  searchText = model('');
+  searchText = '';
 
   constructor() {}
 

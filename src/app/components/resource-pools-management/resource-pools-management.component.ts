@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChildren, inject, model, signal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChildren, inject, signal} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Controller} from "@models/controller";
@@ -48,7 +48,7 @@ export class ResourcePoolsManagementComponent implements OnInit {
   selection = new SelectionModel<ResourcePool>(true, []);
   resourcePools = signal<ResourcePool[]>([]);
   dataSource = new MatTableDataSource<ResourcePool>();
-  searchText = model('');
+  searchText = '';
   isReady = signal(false);
 
   constructor() {
