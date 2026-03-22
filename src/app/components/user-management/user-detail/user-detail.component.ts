@@ -29,14 +29,11 @@ import { AiProfileTabComponent } from "@components/user-management/user-detail/a
 
 
 @Component({
-  standalone: true,
   selector: 'app-user-detail',
   templateUrl: './user-detail.component.html',
-  styleUrls: ['./user-detail.component.scss'],
+  styleUrl: './user-detail.component.scss',
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatDialogModule, MatTableModule, MatButtonModule, MatIconModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatCheckboxModule, MatTabsModule, AiProfileTabComponent],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserDetailComponent implements OnInit {
   private userService = inject(UserService);
