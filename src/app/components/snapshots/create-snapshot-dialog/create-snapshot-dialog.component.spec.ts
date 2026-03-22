@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -23,8 +24,8 @@ describe('CreateSnapshotDialogComponent', () => {
   let mockedToasterService: MockedToasterService;
   let mockedSnapshotService: MockedSnapshotService;
   let mockedNodesDataSource: MockedNodesDataSource
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [CreateSnapshotDialogComponent],
       imports: [
         MatIconModule,
@@ -40,6 +41,7 @@ describe('CreateSnapshotDialogComponent', () => {
         BrowserAnimationsModule
       ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: MatDialogRef, useValue: {} },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: SnapshotService, useValue: mockedSnapshotService },
