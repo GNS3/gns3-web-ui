@@ -5,14 +5,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { ThemeService } from '@services/theme.service';
 
 @Component({
-  standalone: true,
   selector: 'app-confirmation-bottomsheet',
   templateUrl: 'confirmation-bottomsheet.component.html',
-  styleUrls: ['confirmation-bottomsheet.component.scss'],
+  styleUrl: 'confirmation-bottomsheet.component.scss',
   imports: [CommonModule, MatBottomSheetModule, MatButtonModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmationBottomSheetComponent implements OnInit {
   private bottomSheetRef = inject(MatBottomSheetRef<ConfirmationBottomSheetComponent>);
