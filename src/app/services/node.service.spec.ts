@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { inject, TestBed } from '@angular/core/testing';
+import { inject, TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 import { environment } from 'environments/environment';
 import { Label } from '../cartography/models/label';
 import { Node } from '../cartography/models/node';
@@ -23,6 +23,7 @@ describe('NodeService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
       providers: [
+        provideZonelessChangeDetection(),
         HttpController,
         NodeService,
       ],
