@@ -9,14 +9,11 @@ import { IPrivilegesChange } from '@components/role-management/role-detail/privi
 import { GroupPrivilegesPipe } from '@components/role-management/role-detail/privilege/group-privileges.pipe';
 
 @Component({
-  standalone: true,
   selector: 'app-privilege',
   templateUrl: './privilege.component.html',
-  styleUrls: ['./privilege.component.scss'],
+  styleUrl: './privilege.component.scss',
   imports: [CommonModule, MatButtonModule, MatIconModule, MatCheckboxModule, GroupPrivilegesPipe],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PrivilegeComponent implements OnInit {
   readonly disable = input(true);
