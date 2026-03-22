@@ -17,7 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -35,12 +35,13 @@ import { AclService } from "@services/acl.service";
 import { AddAceDialogComponent } from "@components/acl-management/add-ace-dialog/add-ace-dialog.component";
 import { DeleteAceDialogComponent } from "@components/acl-management/delete-ace-dialog/delete-ace-dialog.component";
 import { Endpoint } from "@models/api/endpoint";
+import { AceFilterPipe } from "@filters/ace-filter.pipe";
 
 @Component({
   selector: 'app-acl-management',
   templateUrl: './acl-management.component.html',
   styleUrl: './acl-management.component.scss',
-  imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatCardModule],
+  imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatPaginator, MatSortModule, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatCardModule, AceFilterPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AclManagementComponent implements OnInit {

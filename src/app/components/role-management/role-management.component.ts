@@ -17,7 +17,7 @@ import {Controller} from "@models/controller";
 import {MatTableModule, MatTableDataSource} from "@angular/material/table";
 import {SelectionModel} from "@angular/cdk/collections";
 import {MatPaginator} from "@angular/material/paginator";
-import {MatSort} from "@angular/material/sort";
+import {MatSort, MatSortModule} from "@angular/material/sort";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
@@ -42,7 +42,7 @@ import {HttpErrorResponse} from "@angular/common/http";
   selector: 'app-role-management',
   templateUrl: './role-management.component.html',
   styleUrl: './role-management.component.scss',
-  imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule, RoleFilterPipe],
+  imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatPaginator, MatSortModule, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule, RoleFilterPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoleManagementComponent implements OnInit {

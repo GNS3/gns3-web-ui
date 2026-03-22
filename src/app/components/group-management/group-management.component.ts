@@ -14,7 +14,7 @@ import {ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChild, ViewCh
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from "@angular/router";
-import { MatSort, Sort } from "@angular/material/sort";
+import { MatSort, MatSortModule, Sort } from "@angular/material/sort";
 import { MatDialogModule, MatDialog } from "@angular/material/dialog";
 import { MatTableModule, MatTableDataSource } from "@angular/material/table";
 import { MatPaginator } from "@angular/material/paginator";
@@ -33,13 +33,14 @@ import { Controller } from "@models/controller";
 import { Group } from "@models/groups/group";
 import { AddGroupDialogComponent } from "@components/group-management/add-group-dialog/add-group-dialog.component";
 import { DeleteGroupDialogComponent } from "@components/group-management/delete-group-dialog/delete-group-dialog.component";
+import { GroupFilterPipe } from "@filters/group-filter.pipe";
 
 
 @Component({
   selector: 'app-group-management',
   templateUrl: './group-management.component.html',
   styleUrl: './group-management.component.scss',
-  imports: [CommonModule, FormsModule, RouterModule, MatSort, MatDialogModule, MatTableModule, MatPaginator, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatCardModule],
+  imports: [CommonModule, FormsModule, RouterModule, MatSortModule, MatDialogModule, MatTableModule, MatPaginator, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatCardModule, GroupFilterPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GroupManagementComponent implements OnInit {

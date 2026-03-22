@@ -3,7 +3,7 @@ import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {Controller} from "@models/controller";
 import {MatPaginator} from "@angular/material/paginator";
-import {MatSort} from "@angular/material/sort";
+import {MatSort, MatSortModule} from "@angular/material/sort";
 import {SelectionModel} from "@angular/cdk/collections";
 import {MatTableModule, MatTableDataSource} from "@angular/material/table";
 import {MatCheckboxModule} from "@angular/material/checkbox";
@@ -23,12 +23,13 @@ import {
 } from "@components/resource-pools-management/add-resource-pool-dialog/add-resource-pool-dialog.component";
 import {DeleteResourcePoolComponent} from "@components/resource-pools-management/delete-resource-pool/delete-resource-pool.component";
 import {ResourcePoolsService} from "@services/resource-pools.service";
+import {ResourcePoolsFilterPipe} from "./resource-pools-filter.pipe";
 
 @Component({
   selector: 'app-resource-pools-management',
   templateUrl: './resource-pools-management.component.html',
   styleUrl: './resource-pools-management.component.scss',
-  imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule],
+  imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatPaginator, MatSortModule, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule, ResourcePoolsFilterPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResourcePoolsManagementComponent implements OnInit {

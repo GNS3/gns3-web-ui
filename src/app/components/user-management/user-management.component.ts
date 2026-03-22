@@ -16,7 +16,7 @@ import {FormsModule} from '@angular/forms';
 import {Location}  from '@angular/common';
 import {ActivatedRoute, Router, RouterModule} from "@angular/router";
 import {Controller} from "@models/controller";
-import {MatSort} from "@angular/material/sort";
+import {MatSort, MatSortModule} from "@angular/material/sort";
 import {MatTableModule} from '@angular/material/table';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatFormFieldModule} from '@angular/material/form-field';
@@ -41,7 +41,7 @@ import {UserFilterPipe} from "@filters/user-filter.pipe";
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatPaginator, MatDialogModule, UserFilterPipe]
+  imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatPaginator, MatSortModule, MatDialogModule, UserFilterPipe]
 })
 export class UserManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);

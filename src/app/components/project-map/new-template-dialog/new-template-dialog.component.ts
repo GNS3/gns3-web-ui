@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, i
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Sort } from '@angular/material/sort';
+import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatStepper } from '@angular/material/stepper';
 import { MatTableDataSource } from '@angular/material/table';
 import { UploadingProcessbarComponent } from 'app/common/uploading-processbar/uploading-processbar.component';
@@ -77,6 +77,7 @@ import { DataSourceFilter } from '../../../filters/dataSourceFilter';
     MatSelectModule,
     MatTableModule,
     MatPaginatorModule,
+    MatSortModule,
     MatInputModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
