@@ -37,14 +37,11 @@ import { DeleteAceDialogComponent } from "@components/acl-management/delete-ace-
 import { Endpoint } from "@models/api/endpoint";
 
 @Component({
-  standalone: true,
   selector: 'app-acl-management',
   templateUrl: './acl-management.component.html',
-  styleUrls: ['./acl-management.component.scss'],
+  styleUrl: './acl-management.component.scss',
   imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatCardModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AclManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);
