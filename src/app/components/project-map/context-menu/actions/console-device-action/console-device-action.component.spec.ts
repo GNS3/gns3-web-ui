@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatIconModule } from '@angular/material/icon';
 import { Node } from '../../../../../cartography/models/node';
@@ -27,9 +28,10 @@ describe('ConsoleDeviceActionComponent', () => {
     controller = { host: 'localhost', port: 222 } as Controller;
   });
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: SettingsService },
         { provide: ToasterService, useValue: mockedToaster },
