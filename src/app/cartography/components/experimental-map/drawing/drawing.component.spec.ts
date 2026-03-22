@@ -1,4 +1,4 @@
-import {ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { DrawingsEventSource } from 'app/cartography/events/drawings-event-source';
 import { SvgToDrawingConverter } from 'app/cartography/helpers/svg-to-drawing-converter';
 import { DrawingComponent } from './drawing.component';
@@ -14,8 +14,8 @@ describe('DrawingComponent', () => {
   let component: DrawingComponent;
   let fixture: ComponentFixture<DrawingComponent>;
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [
         DrawingComponent,
         DraggableComponent,
@@ -26,7 +26,7 @@ describe('DrawingComponent', () => {
         TextComponent
       ],
       imports: [CommonModule],
-      providers:[SvgToDrawingConverter,DrawingsEventSource]
+      providers:[provideZonelessChangeDetection(), SvgToDrawingConverter,DrawingsEventSource]
     }).compileComponents();
   });
 

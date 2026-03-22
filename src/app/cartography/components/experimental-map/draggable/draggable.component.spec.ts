@@ -1,13 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { DraggableComponent } from './draggable.component';
 
 describe('DraggableComponent', () => {
   let component: DraggableComponent;
   let fixture: ComponentFixture<DraggableComponent>;
 
-  beforeEach(async() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [DraggableComponent],
+      providers: [provideZonelessChangeDetection()],
     }).compileComponents();
   });
 
