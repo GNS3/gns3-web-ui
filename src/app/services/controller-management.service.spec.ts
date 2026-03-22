@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 import { Controller } from '@models/controller';
 import { ControllerManagementService } from './controller-management.service';
 
@@ -7,7 +7,7 @@ describe('ControllerManagementService', () => {
 
   beforeEach(() =>
     TestBed.configureTestingModule({
-      providers: [ControllerManagementService],
+      providers: [provideZonelessChangeDetection(), ControllerManagementService],
     })
   );
 
