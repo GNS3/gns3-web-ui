@@ -23,10 +23,9 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Context } from '../../cartography/models/context';
 
 @Component({
-  standalone: true,
   selector: 'app-template',
   templateUrl: './template.component.html',
-  styleUrls: ['./template.component.scss'],
+  styleUrl: './template.component.scss',
   imports: [
     CommonModule,
     FormsModule,
@@ -40,9 +39,7 @@ import { Context } from '../../cartography/models/context';
     MatOptionModule,
     MatListModule,
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TemplateComponent implements OnInit, OnDestroy {
   private dialog = inject(MatDialog);
