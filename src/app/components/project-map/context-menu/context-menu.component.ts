@@ -49,10 +49,9 @@ import { AlignHorizontallyActionComponent } from './actions/align-horizontally/a
 import { AlignVerticallyActionComponent } from './actions/align_vertically/align-vertically.component';
 
 @Component({
-  standalone: true,
   selector: 'app-context-menu',
   templateUrl: './context-menu.component.html',
-  styleUrls: ['./context-menu.component.scss'],
+  styleUrl: './context-menu.component.scss',
   imports: [
     CommonModule,
     MatMenuModule,
@@ -93,9 +92,7 @@ import { AlignVerticallyActionComponent } from './actions/align_vertically/align
     AlignHorizontallyActionComponent,
     AlignVerticallyActionComponent
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContextMenuComponent implements OnInit {
   private sanitizer = inject(DomSanitizer);
