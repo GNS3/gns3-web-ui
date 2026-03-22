@@ -16,14 +16,11 @@ import { LinkService } from '@services/link.service';
 import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
 
 @Component({
-  standalone: true,
   selector: 'app-packet-filters',
   templateUrl: './packet-filters.component.html',
-  styleUrls: ['./packet-filters.component.scss'],
+  styleUrl: './packet-filters.component.scss',
   imports: [CommonModule, FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatTabsModule, MatButtonModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PacketFiltersDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<PacketFiltersDialogComponent>);
