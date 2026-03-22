@@ -1,4 +1,4 @@
-import { EventEmitter } from '@angular/core';
+import { EventEmitter, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
@@ -30,10 +30,11 @@ describe('DrawingResizingComponent', () => {
   let drawingsWidgetMock = new DrawingWidgetMock();
   let drawingsEventSource = new DrawingsEventSource();
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+   TestBed.configureTestingModule({
       imports: [NoopAnimationsModule],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: DrawingsWidget, useValue: drawingsWidgetMock },
         { provide: DrawingsEventSource, useValue: drawingsEventSource },
       ],
