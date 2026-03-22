@@ -34,10 +34,9 @@ import { ToasterService } from '@services/toaster.service';
 import { RotationValidator } from '../../../../validators/rotation-validator';
 
 @Component({
-  standalone: true,
   selector: 'app-text-editor',
   templateUrl: './text-editor.component.html',
-  styleUrls: ['./text-editor.component.scss'],
+  styleUrl: './text-editor.component.scss',
   imports: [
     CommonModule,
     FormsModule,
@@ -47,9 +46,7 @@ import { RotationValidator } from '../../../../validators/rotation-validator';
     MatInputModule,
     MatButtonModule,
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TextEditorDialogComponent implements OnInit {
   readonly textArea = viewChild<ElementRef>('textArea');
