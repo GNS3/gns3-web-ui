@@ -3,14 +3,11 @@ import { QtDasharrayFixer } from '../../../../../helpers/qt-dasharray-fixer';
 import { EllipseElement } from '../../../../../models/drawings/ellipse-element';
 
 @Component({
-  standalone: true,
   selector: '[app-ellipse]',
   templateUrl: './ellipse.component.html',
-  styleUrls: ['./ellipse.component.scss'],
+  styleUrl: './ellipse.component.scss',
   imports: [],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EllipseComponent implements OnInit {
   readonly ellipse = input<EllipseElement>(undefined, { alias: 'app-ellipse' });
