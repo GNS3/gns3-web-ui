@@ -31,10 +31,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
 
 @Component({
-  standalone: true,
   selector: 'app-projects',
   templateUrl: './projects.component.html',
-  styleUrls: ['./projects.component.scss'],
+  styleUrl: './projects.component.scss',
   imports: [
     CommonModule,
     FormsModule,
@@ -50,9 +49,7 @@ import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
     MatCheckboxModule,
     ProjectsFilter,
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectsComponent implements OnInit {
   controller: Controller;
