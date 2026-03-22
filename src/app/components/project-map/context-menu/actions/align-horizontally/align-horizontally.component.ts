@@ -8,13 +8,10 @@ import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 
 @Component({
-  standalone: true,
   selector: 'app-align-horizontally-action',
   templateUrl: './align-horizontally.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AlignHorizontallyActionComponent implements OnInit {
   private nodesDataSource = inject(NodesDataSource);
