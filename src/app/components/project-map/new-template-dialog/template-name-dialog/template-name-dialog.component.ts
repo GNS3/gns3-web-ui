@@ -14,15 +14,12 @@ import { templateNameAsyncValidator } from '../../../../validators/template-name
 import { ProjectNameValidator } from '../../../projects/models/projectNameValidator';
 
 @Component({
-  standalone: true,
   selector: 'app-template-name-dialog',
   templateUrl: './template-name-dialog.component.html',
-  styleUrls: ['./template-name-dialog.component.scss'],
+  styleUrl: './template-name-dialog.component.scss',
   providers: [ProjectNameValidator],
   imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TemplateNameDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<TemplateNameDialogComponent>);
