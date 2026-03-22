@@ -18,14 +18,11 @@ import {Controller} from "@models/controller";
 import {ControllerService} from "@services/controller.service";
 
 @Component({
-  standalone: true,
   selector: 'app-management',
   templateUrl: './management.component.html',
-  styleUrls: ['./management.component.scss'],
+  styleUrl: './management.component.scss',
   imports: [CommonModule, RouterModule, MatTabsModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);
