@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ExternalSoftwareDefinitionService } from 'app/services/external-software-definition.service';
 import { InstalledSoftwareService } from 'app/services/installed-software.service';
@@ -12,8 +12,8 @@ describe('InstalledSoftwareComponent', () => {
   let component: InstalledSoftwareComponent;
   let fixture: ComponentFixture<InstalledSoftwareComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [InstalledSoftwareComponent],
       imports: [
         CommonModule,
@@ -21,6 +21,7 @@ describe('InstalledSoftwareComponent', () => {
         AppTestingModule
       ],
       providers: [
+        provideZonelessChangeDetection(),
         InstalledSoftwareService,
         ExternalSoftwareDefinitionService,
         PlatformService

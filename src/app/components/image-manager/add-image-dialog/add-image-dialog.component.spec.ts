@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialog, MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -38,8 +38,8 @@ describe('AddImageDialogComponent', () => {
     unregisterCancelHandler: jasmine.createSpy('unregisterCancelHandler'),
   };
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports:[
         MatIconModule,
         MatToolbarModule,
@@ -50,6 +50,7 @@ describe('AddImageDialogComponent', () => {
         require('@angular/common/http/testing').HttpClientTestingModule
       ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: ImageManagerService, useValue: mockedImageManagerService },
         { provide: MAT_DIALOG_DATA, useValue: {} },

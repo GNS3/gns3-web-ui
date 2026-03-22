@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -49,8 +49,8 @@ describe('ImageManagerComponent', () => {
   let mockedImageUploadSessionService = { events$: new Subject() };
 
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [
         BrowserAnimationsModule,
         MatIconModule,
@@ -60,6 +60,7 @@ describe('ImageManagerComponent', () => {
         MatDialogModule
       ],
       providers: [
+        provideZonelessChangeDetection(),
         {
           provide: ActivatedRoute,
           useValue: activatedRoute,

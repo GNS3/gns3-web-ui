@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -29,8 +29,8 @@ export class MockedImageManagerService {
   let mockedImageManagerService = new MockedImageManagerService()
   let mockedToasterService = new MockedToasterService()
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [
         MatIconModule,
         MatToolbarModule,
@@ -39,6 +39,7 @@ export class MockedImageManagerService {
         MatDialogModule,
       ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: ImageManagerService, useValue: mockedImageManagerService },
         { provide: MAT_DIALOG_DATA, useValue: {} },
