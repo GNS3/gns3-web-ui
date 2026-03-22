@@ -5,14 +5,11 @@ import { AddedDataEvent } from '../../events/event-source';
 import { Context } from '../../models/context';
 
 @Component({
-  standalone: true,
   selector: 'app-drawing-adding',
   templateUrl: './drawing-adding.component.html',
-  styleUrls: ['./drawing-adding.component.scss'],
+  styleUrl: './drawing-adding.component.scss',
   imports: [],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DrawingAddingComponent implements OnInit, OnDestroy {
   readonly svg = input<SVGSVGElement>(undefined);
