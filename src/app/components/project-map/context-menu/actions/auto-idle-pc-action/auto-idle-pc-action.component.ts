@@ -9,13 +9,10 @@ import { ToasterService } from '@services/toaster.service';
 import { ProgressService } from '../../../../../common/progress/progress.service';
 
 @Component({
-  standalone: true,
   selector: 'app-auto-idle-pc-action',
   templateUrl: './auto-idle-pc-action.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AutoIdlePcActionComponent {
   private nodeService = inject(NodeService);
