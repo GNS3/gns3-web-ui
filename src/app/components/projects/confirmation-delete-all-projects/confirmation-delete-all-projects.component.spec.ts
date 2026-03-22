@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -20,8 +21,8 @@ describe('ConfirmationDeleteAllProjectsComponent', () => {
   let mockedImageManagerService = new MockedProjectService()
   let mockedToasterService = new MockedToasterService()
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [
         MatIconModule,
         MatToolbarModule,
@@ -30,6 +31,7 @@ describe('ConfirmationDeleteAllProjectsComponent', () => {
         MatDialogModule,
       ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: ProjectService, useValue: mockedImageManagerService },
         { provide: MAT_DIALOG_DATA, useValue: {} },
