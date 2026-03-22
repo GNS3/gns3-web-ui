@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MapScaleService } from '@services/mapScale.service';
@@ -21,10 +21,11 @@ describe('ZoomingCanvasDirective', () => {
   let fixture: ComponentFixture<DummyComponent>;
   let movingEventSource = new MovingEventSource();
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+   TestBed.configureTestingModule({
       imports: [NoopAnimationsModule],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: MovingEventSource, useValue: movingEventSource },
         { provide: Context, useClass: Context },
         { provide: MapScaleService, useClass: MapScaleService },
