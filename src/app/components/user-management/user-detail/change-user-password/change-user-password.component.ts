@@ -22,25 +22,21 @@ export class ChangeUserPasswordComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ChangeUserPasswordComponent>);
   private userService = inject(UserService);
   private toasterService = inject(ToasterService);
+  data = inject<{ user: User, controller: Controller, self_update: boolean }>(MAT_DIALOG_DATA);
 
-  @Inject(MAT_DIALOG_DATA) public data: { user: User, controller: Controller, self_update: boolean };
+  user = signal<User | undefined>(this.data.user);
+  editPasswordForm = new UntypedFormGroup({
+    password: new UntypedFormControl(null,
+      [Validators.minLength(6), Validators.maxLength(100), Validators.pattern(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/), Validators.required] ),
+    confirmPassword: new UntypedFormControl(null,
+      [Validators.minLength(6), Validators.maxLength(100), Validators.pattern(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/), Validators.required] ),
+  },{
+    validators: [matchingPassword]
+  });
 
-  editPasswordForm: UntypedFormGroup;
-  user = signal<User | undefined>(undefined);
-
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
-    const password_regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/;
-    this.user.set(this.data.user);
-    this.editPasswordForm = new UntypedFormGroup({
-      password: new UntypedFormControl(null,
-        [Validators.minLength(6), Validators.maxLength(100), Validators.pattern(password_regex), Validators.required] ),
-      confirmPassword: new UntypedFormControl(null,
-        [Validators.minLength(6), Validators.maxLength(100), Validators.pattern(password_regex), Validators.required] ),
-    },{
-      validators: [matchingPassword]
-    })
   }
 
   get passwordForm() {
