@@ -1,4 +1,4 @@
-import { inject, TestBed } from '@angular/core/testing';
+import { inject, provideZonelessChangeDetection, TestBed } from '@angular/core/testing';
 import { Subject } from 'rxjs';
 import { DrawingsDataSource } from '../cartography/datasources/drawings-datasource';
 import { LinksDataSource } from '../cartography/datasources/links-datasource';
@@ -13,7 +13,7 @@ describe('ProjectWebServiceHandler', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ProjectWebServiceHandler, NodesDataSource, LinksDataSource, DrawingsDataSource],
+      providers: [provideZonelessChangeDetection(), ProjectWebServiceHandler, NodesDataSource, LinksDataSource, DrawingsDataSource],
     });
 
     ws = new Subject<WebServiceMessage>();
