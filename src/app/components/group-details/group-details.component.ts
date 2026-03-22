@@ -43,10 +43,9 @@ import { MembersFilterPipe } from "@components/group-details/members-filter.pipe
 import { PaginatorPipe } from "@components/group-details/paginator.pipe";
 
 @Component({
-  standalone: true,
   selector: 'app-group-details',
   templateUrl: './group-details.component.html',
-  styleUrls: ['./group-details.component.scss'],
+  styleUrl: './group-details.component.scss',
   imports: [
     CommonModule,
     RouterModule,
@@ -66,9 +65,7 @@ import { PaginatorPipe } from "@components/group-details/paginator.pipe";
     MembersFilterPipe,
     PaginatorPipe
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GroupDetailsComponent implements OnInit {
   controller: Controller;
