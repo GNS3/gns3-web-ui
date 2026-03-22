@@ -14,14 +14,11 @@ import { ToasterService } from '@services/toaster.service';
 import { CreateSnapshotDialogComponent } from '../create-snapshot-dialog/create-snapshot-dialog.component';
 
 @Component({
-  standalone: true,
   selector: 'app-snapshot-menu-item',
   templateUrl: './snapshot-menu-item.component.html',
-  styleUrls: ['./snapshot-menu-item.component.scss'],
+  styleUrl: './snapshot-menu-item.component.scss',
   imports: [CommonModule, MatDialogModule, MatTooltipModule, MatIconModule, MatButtonModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SnapshotMenuItemComponent implements OnInit {
   readonly project = input<Project>(undefined);
