@@ -9,14 +9,11 @@ import { Observable, of, forkJoin } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Component({
-  standalone: true,
   selector: 'app-confirmation-delete-all-projects',
   templateUrl: './confirmation-delete-all-projects.component.html',
-  styleUrls: ['./confirmation-delete-all-projects.component.scss'],
+  styleUrl: './confirmation-delete-all-projects.component.scss',
   imports: [CommonModule, MatDialogModule, MatButtonModule, MatProgressSpinnerModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmationDeleteAllProjectsComponent implements OnInit {
   public dialogRef = inject(MatDialogRef<ConfirmationDeleteAllProjectsComponent>);
