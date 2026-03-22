@@ -8,13 +8,10 @@ import { Controller } from '@models/controller';
 import { StyleEditorDialogComponent } from '../../../drawings-editors/style-editor/style-editor.component';
 
 @Component({
-  standalone: true,
   selector: 'app-edit-style-action',
   templateUrl: './edit-style-action.component.html',
   imports: [CommonModule, MatDialogModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditStyleActionComponent implements OnChanges {
   private dialog = inject(MatDialog);
