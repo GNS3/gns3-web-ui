@@ -1,4 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -15,8 +16,8 @@ describe('SnapshotMenuItemComponent', () => {
   let component: SnapshotMenuItemComponent;
   let fixture: ComponentFixture<SnapshotMenuItemComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [SnapshotMenuItemComponent],
       imports: [
         MatDialogModule,
@@ -27,6 +28,7 @@ describe('SnapshotMenuItemComponent', () => {
         AppTestingModule
       ],
       providers: [
+        provideZonelessChangeDetection(),
         SnapshotService,
         HttpController,
         ProgressDialogService,
