@@ -26,14 +26,11 @@ import { VncConsoleService } from '@services/vnc-console.service';
 import { ConsoleDeviceActionBrowserComponent } from '../context-menu/actions/console-device-action-browser/console-device-action-browser.component';
 
 @Component({
-  standalone: true,
   selector: 'app-context-console-menu',
   templateUrl: './context-console-menu.component.html',
-  styleUrls: ['./context-console-menu.component.scss'],
+  styleUrl: './context-console-menu.component.scss',
   imports: [CommonModule, MatMenuModule, MatIconModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContextConsoleMenuComponent implements OnInit {
   private sanitizer = inject(DomSanitizer);
