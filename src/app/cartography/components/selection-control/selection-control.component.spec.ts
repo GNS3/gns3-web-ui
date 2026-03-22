@@ -1,4 +1,4 @@
-import { fakeAsync, tick } from '@angular/core/testing';
+import { fakeAsync, tick, TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 import { instance, mock, when } from 'ts-mockito';
 import { SelectionEventSource } from '../../events/selection-event-source';
 import { InRectangleHelper } from '../../helpers/in-rectangle-helper';
@@ -15,6 +15,9 @@ describe('SelectionControlComponent', () => {
   let selectionEventSource: SelectionEventSource;
 
   beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection()],
+    });
     const mockedGraphData = mock(GraphDataManager);
 
     const node_1 = new MapNode();
