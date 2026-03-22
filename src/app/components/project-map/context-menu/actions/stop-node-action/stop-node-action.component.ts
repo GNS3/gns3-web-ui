@@ -7,13 +7,10 @@ import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 
 @Component({
-  standalone: true,
   selector: 'app-stop-node-action',
   templateUrl: './stop-node-action.component.html',
   imports: [CommonModule, MatButtonModule, MatIconModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StopNodeActionComponent implements OnInit, OnChanges {
   private nodeService = inject(NodeService);
