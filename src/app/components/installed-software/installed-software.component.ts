@@ -8,14 +8,11 @@ import { AdbutlerComponent } from '@components/adbutler/adbutler.component';
 import { InstallSoftwareComponent } from './install-software/install-software.component';
 
 @Component({
-  standalone: true,
   selector: 'app-installed-software',
   templateUrl: './installed-software.component.html',
-  styleUrls: ['./installed-software.component.scss'],
+  styleUrl: './installed-software.component.scss',
   imports: [CommonModule, MatTableModule, AdbutlerComponent, InstallSoftwareComponent],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InstalledSoftwareComponent implements OnInit {
   readonly dataSource = signal<InstalledSoftwareDataSource | null>(null);
