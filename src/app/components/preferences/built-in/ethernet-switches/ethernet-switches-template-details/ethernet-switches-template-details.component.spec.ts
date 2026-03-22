@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -42,8 +42,8 @@ describe('EthernetSwitchesTemplateDetailsComponent', () => {
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [
         FormsModule,
         ReactiveFormsModule,
@@ -57,6 +57,7 @@ describe('EthernetSwitchesTemplateDetailsComponent', () => {
         RouterTestingModule.withRoutes([]),
       ],
       providers: [
+        provideZonelessChangeDetection(),
         {
           provide: ActivatedRoute,
           useValue: activatedRoute,
