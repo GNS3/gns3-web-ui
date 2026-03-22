@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 
 import { UploadServiceService } from './upload-service.service';
 
@@ -6,7 +6,9 @@ describe('UploadServiceService', () => {
   let service: UploadServiceService;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({});
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection()],
+    });
     service = TestBed.inject(UploadServiceService);
   });
 
