@@ -9,13 +9,10 @@ import { Controller } from '@models/controller';
 import { ConfigEditorDialogComponent } from '../../../node-editors/config-editor/config-editor.component';
 
 @Component({
-  standalone: true,
   selector: 'app-edit-config-action',
   templateUrl: './edit-config-action.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditConfigActionComponent {
   private dialog = inject(MatDialog);
