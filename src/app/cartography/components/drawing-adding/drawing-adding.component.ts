@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject, input } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { AddedDataEvent } from '../../events/event-source';
@@ -10,6 +10,9 @@ import { Context } from '../../models/context';
   templateUrl: './drawing-adding.component.html',
   styleUrls: ['./drawing-adding.component.scss'],
   imports: [],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DrawingAddingComponent implements OnInit, OnDestroy {
   readonly svg = input<SVGSVGElement>(undefined);
