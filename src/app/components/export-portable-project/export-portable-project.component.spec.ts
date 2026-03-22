@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -19,8 +19,8 @@ describe('ExportPortableProjectComponent', () => {
   let mockedToasterService = new MockedToasterService();
   let mockedProjectService = new MockedProjectService();
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [ExportPortableProjectComponent],
       imports: [
         MatDialogModule,
@@ -33,6 +33,7 @@ describe('ExportPortableProjectComponent', () => {
         BrowserAnimationsModule,
       ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: MatDialogRef, useValue: {} },
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: ToasterService, useValue: mockedToasterService },
