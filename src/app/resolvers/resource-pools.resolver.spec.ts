@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 
 import { ResourcePoolsResolver } from './resource-pools.resolver';
 import {ControllerService} from "@services/controller.service";
@@ -21,6 +21,7 @@ describe('ResourcePoolsResolver', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         {provide: ControllerService, useClass: FakeControllerService},
         {provide: HttpController, useClass: FakeHttpController},
         {provide: ProjectService, useClass: FakeProjectService}
