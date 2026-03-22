@@ -19,14 +19,11 @@ export class DraggableDraggedEvent {
 }
 
 @Component({
-  standalone: true,
   selector: '[app-draggable]',
   template: ` <ng-content></ng-content> `,
-  styleUrls: ['./draggable.component.scss'],
+  styleUrl: './draggable.component.scss',
   imports: [],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DraggableComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly item = input<Point>(undefined, { alias: 'app-draggable' });
