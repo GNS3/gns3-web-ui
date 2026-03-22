@@ -7,14 +7,11 @@ import { MapDrawing } from '../../models/map/map-drawing';
 import { DrawingsWidget } from '../../widgets/drawings';
 
 @Component({
-  standalone: true,
   selector: 'app-drawing-resizing',
   template: ` <ng-content></ng-content> `,
-  styleUrls: ['./drawing-resizing.component.scss'],
+  styleUrl: './drawing-resizing.component.scss',
   imports: [],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DrawingResizingComponent implements OnInit, OnDestroy {
   resizingFinished: Subscription;
