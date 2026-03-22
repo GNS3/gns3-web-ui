@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import {  ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -259,12 +259,12 @@ xdescribe('ProjectMapComponent', () => {
   let nodeCreatedLabelStylesFixer;
   let mockedRouter = new MockedActivatedRoute();
 
-  beforeEach(async() => {
+  beforeEach(() => {
     nodeCreatedLabelStylesFixer = {
       fix: (node) => node,
     };
 
-  await  TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [
         MatBottomSheetModule,
         MatIconModule,
@@ -277,6 +277,7 @@ xdescribe('ProjectMapComponent', () => {
         AppTestingModule,
       ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ActivatedRoute },
         { provide: ControllerService, useClass: MockedControllerService },
         { provide: ProjectService, useClass: MockedProjectService },
