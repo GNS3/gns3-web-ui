@@ -42,10 +42,9 @@ import { DraggableSelectionComponent } from '../draggable-selection/draggable-se
 import { LinkEditingComponent } from '../link-editing/link-editing.component';
 
 @Component({
-  standalone: true,
   selector: 'app-d3-map',
   templateUrl: './d3-map.component.html',
-  styleUrls: ['./d3-map.component.scss'],
+  styleUrl: './d3-map.component.scss',
   imports: [
     TextEditorComponent,
     DrawingAddingComponent,
@@ -55,9 +54,7 @@ import { LinkEditingComponent } from '../link-editing/link-editing.component';
     DraggableSelectionComponent,
     LinkEditingComponent,
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   readonly nodes = input<Node[]>([]);
