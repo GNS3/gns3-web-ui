@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, NO_ERRORS_SCHEMA } from '@angular/core';
+import { ChangeDetectorRef, NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -31,10 +31,11 @@ describe('ContextConsoleMenuComponent', () => {
     status: 'started',
   };
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [MatMenuModule, BrowserModule, MatSnackBarModule],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ChangeDetectorRef },
         { provide: ProjectService, useClass: MockedProjectService },
         { provide: MapSettingsService, useValue: mapSettingsService },
