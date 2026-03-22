@@ -1,5 +1,5 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSortModule } from '@angular/material/sort';
@@ -33,8 +33,8 @@ describe('TopologySummaryComponent', () => {
   let mockedComputeService: MockedComputeService = new MockedComputeService();
   let mockedLinksDataSource: MockedLinksDataSource = new MockedLinksDataSource();
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+   TestBed.configureTestingModule({
       imports: [
         MatTableModule,
         MatTooltipModule,
@@ -45,6 +45,7 @@ describe('TopologySummaryComponent', () => {
         RouterTestingModule.withRoutes([]),
       ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ProjectService, useValue: mockedProjectService },
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
         { provide: ComputeService, useValue: mockedComputeService },
