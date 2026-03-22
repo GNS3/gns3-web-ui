@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CommonModule } from '@angular/common';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ToasterService } from '@services/toaster.service';
@@ -21,8 +22,8 @@ describe('ConsoleWrapperComponent', () => {
   let mapSettingsService: MapSettingsService;
   let toasterService: ToasterService;
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [ConsoleWrapperComponent],
       imports: [
         CommonModule,
@@ -32,7 +33,9 @@ describe('ConsoleWrapperComponent', () => {
         MatIconModule,
         BrowserAnimationsModule
       ],
-      providers: [NodeConsoleService, ThemeService, MapSettingsService, ToasterService],
+      providers: [
+        provideZonelessChangeDetection(),
+        NodeConsoleService, ThemeService, MapSettingsService, ToasterService],
       schemas: [NO_ERRORS_SCHEMA]
     }).compileComponents();
 
