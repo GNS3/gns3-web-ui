@@ -18,14 +18,11 @@ import {MatButtonModule} from '@angular/material/button';
 import {ResourcePool} from "@models/resourcePools/ResourcePool";
 
 @Component({
-  standalone: true,
   selector: 'app-delete-resource-pool',
   templateUrl: './delete-resource-pool.component.html',
-  styleUrls: ['./delete-resource-pool.component.scss'],
+  styleUrl: './delete-resource-pool.component.scss',
   imports: [CommonModule, MatDialogModule, MatButtonModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DeleteResourcePoolComponent implements OnInit {
 
