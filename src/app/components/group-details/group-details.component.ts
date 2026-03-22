@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, OnInit, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, inject, signal} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from "@angular/router";
 import { Controller } from "@models/controller";
@@ -65,18 +65,21 @@ import { PaginatorPipe } from "@components/group-details/paginator.pipe";
     GroupAiProfileTabComponent,
     MembersFilterPipe,
     PaginatorPipe
-  ]
+  ],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class GroupDetailsComponent implements OnInit {
   controller: Controller;
-  group: Group;
-  members: User[];
+  readonly group = signal<Group | null>(null);
+  readonly members = signal<User[]>([]);
   editGroupForm: UntypedFormGroup;
   pageEvent: PageEvent | undefined;
   searchMembers: string;
   aces: ACE[];
   aceDatasource = new MatTableDataSource<ACEDetailed>();
-  public aceDisplayedColumns = ['endpoint', 'role', 'propagate', 'allowed'];
+  readonly aceDisplayedColumns = signal(['endpoint', 'role', 'propagate', 'allowed']);
 
   private route = inject(ActivatedRoute);
   private dialog = inject(MatDialog);
@@ -92,11 +95,11 @@ export class GroupDetailsComponent implements OnInit {
     this.route.data.subscribe((d: { controller: Controller; group: Group, members: User[], aces: ACE[] }) => {
 
       this.controller = d.controller;
-      this.group = d.group;
+      this.group.set(d.group);
       this.aces = d.aces;
-      this.members = d.members.sort((a: User, b: User) => a.username.toLowerCase().localeCompare(b.username.toLowerCase()));
+      this.members.set(d.members.sort((a: User, b: User) => a.username.toLowerCase().localeCompare(b.username.toLowerCase())));
       this.editGroupForm = new UntypedFormGroup({
-        groupname: new UntypedFormControl(this.group.name, [Validators.required]),
+        groupname: new UntypedFormControl(d.group.name, [Validators.required]),
       });
     });
 
@@ -117,9 +120,9 @@ export class GroupDetailsComponent implements OnInit {
   }
 
   onUpdate() {
-    this.group.name = this.editGroupForm.get('groupname').value
+    this.group.update(g => { g.name = this.editGroupForm.get('groupname').value; return g; });
     console.log(this.editGroupForm.get('groupname'))
-    this.groupService.update(this.controller, this.group)
+    this.groupService.update(this.controller, this.group())
       .subscribe(() => {
         this.toastService.success(`group updated`);
       }, (error) => {
@@ -133,7 +136,7 @@ export class GroupDetailsComponent implements OnInit {
       .open<AddUserToGroupDialogComponent>(AddUserToGroupDialogComponent,
         {
           width: '700px', height: '500px',
-          data: {controller: this.controller, group: this.group}
+          data: {controller: this.controller, group: this.group()}
         })
       .afterClosed()
       .subscribe(() => {
@@ -147,13 +150,13 @@ export class GroupDetailsComponent implements OnInit {
       .afterClosed()
       .subscribe((confirm: boolean) => {
         if (confirm) {
-          this.groupService.removeUser(this.controller, this.group, user)
+          this.groupService.removeUser(this.controller, this.group(), user)
             .subscribe(() => {
                 this.toastService.success(`User ${user.username} was removed`);
                 this.reloadMembers();
               },
               (error) => {
-                this.toastService.error(`Error while removing user ${user.username} from ${this.group.name}`);
+                this.toastService.error(`Error while removing user ${user.username} from ${this.group().name}`);
                 console.log(error);
               });
         }
@@ -163,9 +166,9 @@ export class GroupDetailsComponent implements OnInit {
 
 
   reloadMembers() {
-    this.groupService.getGroupMember(this.controller, this.group.user_group_id)
+    this.groupService.getGroupMember(this.controller, this.group().user_group_id)
       .subscribe((members: User[]) => {
-        this.members = members;
+        this.members.set(members);
       });
   }
 
