@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -50,8 +50,8 @@ xdescribe('AddQemuVmTemplateComponent', () => {
     navigate: jasmine.createSpy('navigate'),
   };
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+   TestBed.configureTestingModule({
       imports: [
         MatStepperModule,
         FormsModule,
@@ -71,6 +71,7 @@ xdescribe('AddQemuVmTemplateComponent', () => {
         ]),
       ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ActivatedRoute, useValue: activatedRoute },
         { provide: Router, useValue: router },
         { provide: ControllerService, useValue: mockedControllerService },
