@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
@@ -14,8 +14,8 @@ describe('Custom adapters component', () => {
   let component: CustomAdaptersComponent;
   let fixture: ComponentFixture<CustomAdaptersComponent>;
 
-  beforeEach(async() => {
-  await  TestBed.configureTestingModule({
+  beforeEach(() => {
+  TestBed.configureTestingModule({
       imports: [
         MatTableModule,
         MatIconModule,
@@ -25,6 +25,7 @@ describe('Custom adapters component', () => {
         CommonModule,
         NoopAnimationsModule,
       ],
+      providers: [provideZonelessChangeDetection()],
       declarations: [CustomAdaptersComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

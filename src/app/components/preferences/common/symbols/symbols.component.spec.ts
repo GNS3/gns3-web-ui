@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
@@ -28,7 +28,7 @@ describe('Symbols component', () => {
   let fixture: ComponentFixture<SymbolsComponent>;
   let mockedSymbolsService = new MockedSymbolService();
 
-  beforeEach(async() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
         HttpClientModule,
@@ -41,6 +41,7 @@ describe('Symbols component', () => {
         RouterTestingModule.withRoutes([]),
       ],
       providers: [
+        provideZonelessChangeDetection(),
         {
           provide: SymbolService,
           useValue: mockedSymbolsService,

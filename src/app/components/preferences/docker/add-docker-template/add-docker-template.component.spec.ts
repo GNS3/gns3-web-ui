@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 import { AbstractControlDirective, UntypedFormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -46,8 +46,8 @@ xdescribe('AddDockerTemplateComponent', () => {
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [
         MatStepperModule,
         MatAutocompleteModule,
@@ -71,6 +71,7 @@ xdescribe('AddDockerTemplateComponent', () => {
         ]),
       ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ActivatedRoute, useValue: activatedRoute },
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: DockerService, useValue: mockedDockerService },
