@@ -10,14 +10,11 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: true,
   selector: 'app-edit-network-configuration',
   templateUrl: './edit-network-configuration.component.html',
-  styleUrls: ['./edit-network-configuration.component.scss'],
+  styleUrl: './edit-network-configuration.component.scss',
   imports: [CommonModule, FormsModule, MatDialogModule, MatInputModule, MatButtonModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditNetworkConfigurationDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<EditNetworkConfigurationDialogComponent>);
