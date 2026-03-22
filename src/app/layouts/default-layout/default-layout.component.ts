@@ -22,11 +22,10 @@ import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  standalone: true,
   selector: 'app-default-layout',
   encapsulation: ViewEncapsulation.None,
   templateUrl: './default-layout.component.html',
-  styleUrls: ['./default-layout.component.scss'],
+  styleUrl: './default-layout.component.scss',
   imports: [
     CommonModule,
     RouterModule,
@@ -37,9 +36,7 @@ import { CommonModule } from '@angular/common';
     MatTooltipModule,
     ProgressComponent,
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public isInstalledSoftwareAvailable = false;
