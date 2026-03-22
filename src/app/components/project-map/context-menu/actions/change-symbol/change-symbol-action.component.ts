@@ -8,13 +8,10 @@ import { Controller } from '@models/controller';
 import { ChangeSymbolDialogComponent } from '../../../change-symbol-dialog/change-symbol-dialog.component';
 
 @Component({
-  standalone: true,
   selector: 'app-change-symbol-action',
   templateUrl: './change-symbol-action.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChangeSymbolActionComponent implements OnInit {
   private dialog = inject(MatDialog);
