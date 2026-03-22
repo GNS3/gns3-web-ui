@@ -15,14 +15,11 @@ import { QemuService } from '@services/qemu.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: true,
   selector: 'app-import-appliance',
   templateUrl: './import-appliance.component.html',
-  styleUrls: ['./import-appliance.component.scss'],
+  styleUrl: './import-appliance.component.scss',
   imports: [CommonModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImportApplianceComponent implements OnInit {
   readonly project = input<Project>(undefined);
