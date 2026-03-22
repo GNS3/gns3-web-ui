@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -67,8 +67,8 @@ describe('ListOfSnapshotsComponent', () => {
   let mockedSnapshotService = new MockedSnapshotService();
   let mockedToasterService = new MockedToasterService();
 
-  beforeEach(async () => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+   TestBed.configureTestingModule({
       imports: [
         MatDialogModule,
         MatTableModule,
@@ -87,6 +87,7 @@ describe('ListOfSnapshotsComponent', () => {
         ]),
       ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: SnapshotService, useValue: mockedSnapshotService },
         { provide: ActivatedRoute, useValue: activatedRoute },
         { provide: ProgressDialogService, useClass: ProgressDialogService },
