@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { SelectionComponent } from './selection.component';
 
 describe('SelectionComponent', () => {
@@ -8,6 +8,7 @@ describe('SelectionComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [SelectionComponent],
+      providers: [provideZonelessChangeDetection()],
     }).compileComponents();
     fixture = TestBed.createComponent(SelectionComponent);
     component = fixture.componentInstance;

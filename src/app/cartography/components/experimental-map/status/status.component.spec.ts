@@ -1,13 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { StatusComponent } from './status.component';
 
 describe('StatusComponent', () => {
   let component: StatusComponent;
   let fixture: ComponentFixture<StatusComponent>;
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+   TestBed.configureTestingModule({
       declarations: [StatusComponent],
+      providers: [provideZonelessChangeDetection()],
     }).compileComponents();
   });
 
