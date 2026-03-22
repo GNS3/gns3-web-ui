@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, Inject, OnInit, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, OnInit, inject} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
 import {BehaviorSubject, forkJoin, timer} from "rxjs";
@@ -33,7 +33,10 @@ import {RoleService} from "@services/role.service";
   selector: 'app-add-role-to-group',
   templateUrl: './add-role-to-group.component.html',
   styleUrls: ['./add-role-to-group.component.scss'],
-  imports: [CommonModule, FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatIconModule, MatProgressSpinnerModule]
+  imports: [CommonModule, FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatIconModule, MatProgressSpinnerModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class AddRoleToGroupComponent implements OnInit {
   private dialog = inject(MatDialogRef<AddRoleToGroupComponent>);
