@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { inject, TestBed } from '@angular/core/testing';
+import { inject, TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 import { environment } from 'environments/environment';
 import { Controller } from '@models/controller';
 import { VirtualBoxTemplate } from '@models/templates/virtualbox-template';
@@ -18,7 +18,7 @@ describe('VirtualBoxService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpController, VirtualBoxService],
+      providers: [provideZonelessChangeDetection(), HttpController, VirtualBoxService],
     });
 
     httpClient = TestBed.get(HttpClient);
