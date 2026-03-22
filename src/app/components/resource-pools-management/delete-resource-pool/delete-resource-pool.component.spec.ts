@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DeleteResourcePoolComponent } from './delete-resource-pool.component';
@@ -11,10 +12,11 @@ describe('DeleteResourcePoolComponent', () => {
   let component: DeleteResourcePoolComponent;
   let fixture: ComponentFixture<DeleteResourcePoolComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [ DeleteResourcePoolComponent ],
       providers:[
+        provideZonelessChangeDetection(),
         {provide: MatDialogRef, useClass: FakeMatDialogRef},
         {provide: MAT_DIALOG_DATA, useValue: {}}
       ]
