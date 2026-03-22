@@ -19,10 +19,9 @@ import { ToasterService } from '@services/toaster.service';
 import { PacketFiltersDialogComponent } from '../packet-filters/packet-filters.component';
 
 @Component({
-  standalone: true,
   selector: 'app-start-capture',
   templateUrl: './start-capture.component.html',
-  styleUrls: ['./start-capture.component.scss'],
+  styleUrl: './start-capture.component.scss',
   imports: [
     CommonModule,
     FormsModule,
@@ -34,9 +33,7 @@ import { PacketFiltersDialogComponent } from '../packet-filters/packet-filters.c
     MatSelectModule,
     MatCheckboxModule
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StartCaptureDialogComponent implements OnInit {
   controller: Controller;
