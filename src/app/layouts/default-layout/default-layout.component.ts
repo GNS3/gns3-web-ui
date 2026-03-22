@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, Component, HostListener, OnDestroy, OnInit, ViewEncapsulation, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit, ViewEncapsulation, inject } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ProjectService } from '@services/project.service';
-import { Subscription } from 'rxjs';
+import { filter, Subscription } from 'rxjs';
 import { ProgressService } from '../../common/progress/progress.service';
 import { NewTemplateDialogComponent } from '@components/project-map/new-template-dialog/new-template-dialog.component';
 import { Controller } from '@models/controller';
@@ -64,19 +64,23 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private projectService = inject(ProjectService);
+  private cd = inject(ChangeDetectorRef);
 
   ngOnInit() {
-    this.router.events.subscribe((data) => {
-      if (data instanceof NavigationEnd) {
-        this.controllerId = this.route.children[0].snapshot.paramMap.get('controller_id');
+    // Use filter and proper subscription for NavigationEnd
+    this.routeSubscription = this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe(() => {
+        // Recursively traverse the route tree to find controller_id
+        this.controllerId = this.getParamFromRoute(this.route, 'controller_id');
         this.getData();
-      }
-    });
+        this.checkIfUserIsLoginPage();
+        this.cd.markForCheck();
+      });
 
-    this.checkIfUserIsLoginPage();
-    this.routeSubscription = this.router.events.subscribe((val) => {
-      if (val instanceof NavigationEnd) this.checkIfUserIsLoginPage();
-    });
+    // Initial load
+    this.controllerId = this.getParamFromRoute(this.route, 'controller_id');
+    this.getData();
 
     this.recentlyOpenedcontrollerId = this.recentlyOpenedProjectService.getcontrollerId();
     this.recentlyOpenedProjectId = this.recentlyOpenedProjectService.getProjectId();
@@ -100,6 +104,24 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
 
     // stop controllers only when in Electron (not applicable for web)
     this.shouldStopControllersOnClosing = false;
+  }
+
+  /**
+   * Recursively traverse the route tree to find a parameter value.
+   * This is more reliable than just checking children[0] because
+   * the route structure may vary depending on which child routes are active.
+   */
+  private getParamFromRoute(route: ActivatedRoute, paramName: string): string | null {
+    let child = route;
+    // Traverse the entire route tree
+    while (child.firstChild) {
+      child = child.firstChild;
+      // Check current level params
+      const param = child.snapshot.paramMap.get(paramName);
+      if (param) return param;
+    }
+    // If no param found in tree, check root params
+    return child.snapshot.paramMap.get(paramName);
   }
 
   goToDocumentation() {

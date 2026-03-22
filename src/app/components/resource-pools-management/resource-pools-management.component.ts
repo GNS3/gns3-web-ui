@@ -13,7 +13,7 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {MatDialogModule, MatDialog} from "@angular/material/dialog";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, RouterModule} from "@angular/router";
 import {ControllerService} from "@services/controller.service";
 import {ToasterService} from "@services/toaster.service";
 import {forkJoin} from "rxjs";
@@ -28,7 +28,7 @@ import {ResourcePoolsService} from "@services/resource-pools.service";
   selector: 'app-resource-pools-management',
   templateUrl: './resource-pools-management.component.html',
   styleUrl: './resource-pools-management.component.scss',
-  imports: [CommonModule, FormsModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule],
+  imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResourcePoolsManagementComponent implements OnInit {

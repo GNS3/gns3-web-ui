@@ -15,7 +15,7 @@ import {
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router, RouterModule } from '@angular/router';
 import { ExportPortableProjectComponent } from '@components/export-portable-project/export-portable-project.component';
 import { environment } from 'environments/environment';
 import * as Mousetrap from 'mousetrap';
@@ -134,6 +134,7 @@ import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edit
     MatCheckboxModule,
     MatIconModule,
     MatMenuModule,
+    RouterModule,
     D3MapComponent,
     ExperimentalMapComponent,
     ContextMenuComponent,
