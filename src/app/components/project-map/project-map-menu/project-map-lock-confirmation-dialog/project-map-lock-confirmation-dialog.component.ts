@@ -4,14 +4,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
-  standalone: true,
   selector: 'app-project-map-lock-confirmation-dialog',
   templateUrl: './project-map-lock-confirmation-dialog.component.html',
-  styleUrls: ['./project-map-lock-confirmation-dialog.component.scss'],
+  styleUrl: './project-map-lock-confirmation-dialog.component.scss',
   imports: [MatDialogModule, MatButtonModule, MatDividerModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectMapLockConfirmationDialogComponent implements OnInit {
   public dialogRef = inject(MatDialogRef<ProjectMapLockConfirmationDialogComponent>);
