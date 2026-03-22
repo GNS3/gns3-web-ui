@@ -23,15 +23,12 @@ import { ThemeService } from '@services/theme.service';
 import { XtermContextMenuService } from '@services/xterm-context-menu.service';
 
 @Component({
-  standalone: true,
   encapsulation: ViewEncapsulation.None,
   selector: 'app-web-console',
   templateUrl: './web-console.component.html',
   styleUrls: ['../../../../../node_modules/xterm/css/xterm.css', './web-console.component.scss'],
   imports: [CommonModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly controller = input<Controller>(undefined);
