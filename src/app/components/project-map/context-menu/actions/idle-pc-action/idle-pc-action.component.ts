@@ -10,13 +10,10 @@ import { IdlePCDialogComponent } from '@components/project-map/context-menu/dial
 import { NodeService } from '@services/node.service';
 
 @Component({
-  standalone: true,
   selector: 'app-idle-pc-action',
   templateUrl: './idle-pc-action.component.html',
   imports: [CommonModule, MatButtonModule, MatIconModule, MatMenuModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IdlePcActionComponent {
   private nodeService = inject(NodeService);
