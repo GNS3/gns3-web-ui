@@ -6,14 +6,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 
 @Component({
-  standalone: true,
   selector: 'app-built-in-preferences',
   templateUrl: './built-in-preferences.component.html',
-  styleUrls: ['./built-in-preferences.component.scss', '../preferences.component.scss'],
+  styleUrl: './built-in-preferences.component.scss',
   imports: [CommonModule, RouterModule, MatButtonModule, MatIconModule, MatListModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BuiltInPreferencesComponent implements OnInit {
   private route = inject(ActivatedRoute);
