@@ -3,14 +3,11 @@ import { ActivatedRoute } from '@angular/router';
 import { StatusInfoComponent } from './status-info/status-info.component';
 
 @Component({
-  standalone: true,
   selector: 'app-system-status',
   templateUrl: './system-status.component.html',
-  styleUrls: ['./system-status.component.scss'],
+  styleUrl: './system-status.component.scss',
   imports: [StatusInfoComponent],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SystemStatusComponent implements OnInit {
   public controllerId: string = '';
