@@ -6,7 +6,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatDividerModule } from '@angular/material/divider';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 
 import { NodesMenuConfirmationDialogComponent } from './nodes-menu-confirmation-dialog.component';
 
@@ -14,8 +14,8 @@ describe('NodesMenuConfirmationDialogComponent', () => {
   let component: NodesMenuConfirmationDialogComponent;
   let fixture: ComponentFixture<NodesMenuConfirmationDialogComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports:[
         MatIconModule,
         MatToolbarModule,
@@ -26,7 +26,7 @@ describe('NodesMenuConfirmationDialogComponent', () => {
         MatDividerModule,
       ],
       providers: [
-
+        provideZonelessChangeDetection(),
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: MatDialogRef, useValue: {} },
       ],
