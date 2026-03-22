@@ -9,13 +9,10 @@ import { Controller } from '@models/controller';
 import { StartCaptureDialogComponent } from '../../../packet-capturing/start-capture/start-capture.component';
 
 @Component({
-  standalone: true,
   selector: 'app-start-capture-action',
   templateUrl: './start-capture-action.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StartCaptureActionComponent {
   private dialog = inject(MatDialog);
