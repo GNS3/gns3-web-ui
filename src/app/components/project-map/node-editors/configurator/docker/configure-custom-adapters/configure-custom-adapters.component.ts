@@ -12,14 +12,11 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: true,
   selector: 'app-configure-custom-adapters',
   templateUrl: './configure-custom-adapters.component.html',
-  styleUrls: ['./configure-custom-adapters.component.scss'],
+  styleUrl: './configure-custom-adapters.component.scss',
   imports: [CommonModule, FormsModule, MatDialogModule, MatListModule, MatInputModule, MatButtonModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigureCustomAdaptersDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfigureCustomAdaptersDialogComponent>);
