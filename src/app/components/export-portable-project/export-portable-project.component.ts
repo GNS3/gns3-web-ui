@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UntypedFormBuilder, UntypedFormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -29,7 +29,10 @@ import { ProjectService } from '@services/project.service';
     MatSelectModule,
     MatCheckboxModule,
     MatDividerModule
-  ]
+  ],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ExportPortableProjectComponent implements OnInit {
   export_project_form: UntypedFormGroup;
@@ -41,7 +44,7 @@ export class ExportPortableProjectComponent implements OnInit {
   project: Project;
   index: number = 4;
   fileName: string;
-  isExport: boolean = false;
+  readonly isExport = signal(false);
 
   public dialogRef = inject(MatDialogRef<ExportPortableProjectComponent>);
   @Inject(MAT_DIALOG_DATA) public data: any;
@@ -86,7 +89,7 @@ export class ExportPortableProjectComponent implements OnInit {
   }
 
   exportPortableProject() {
-    this.isExport = true;
+    this.isExport.set(true);
     this.export_project_form.value.compression = this.export_project_form.value.compression.value ?? 'zstd';
      window.location.assign(this.projectService.getexportPortableProjectPath(this.controller, this.project.project_id, this.export_project_form.value))
      this.dialogRef.close();
