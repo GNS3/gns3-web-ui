@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 import { environment } from 'environments/environment';
 import { Controller } from '@models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
@@ -60,7 +60,7 @@ describe('HttpController', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpController],
+      providers: [provideZonelessChangeDetection(), HttpController],
     });
 
     httpClient = TestBed.get(HttpClient);
