@@ -30,12 +30,9 @@ import { OverlayContainer } from '@angular/cdk/overlay';
  * Inspired by FlowNet-Lab ChatInput component
  */
 @Component({
-  standalone: true,
   selector: 'app-chat-input-area',
   imports: [CommonModule, FormsModule, MatIconModule, MatRippleModule, MatMenuModule, MatDividerModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="chat-input-area">
       <div class="input-wrapper">
