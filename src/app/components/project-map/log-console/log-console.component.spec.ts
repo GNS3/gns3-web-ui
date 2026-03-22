@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { EventEmitter, NO_ERRORS_SCHEMA } from '@angular/core';
+import { EventEmitter, NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatMenuModule } from '@angular/material/menu';
 import { BrowserModule } from '@angular/platform-browser';
@@ -45,10 +45,11 @@ describe('LogConsoleComponent', () => {
 
   let httpController = new HttpController({} as HttpClient, {} as ControllerErrorHandler);
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule, MatMenuModule, BrowserModule, MatSnackBarModule],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ProjectWebServiceHandler, useValue: mockedProjectWebServiceHandler },
         { provide: NodeService, useValue: mockedNodeService },
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
