@@ -7,7 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 
 import { ProjectMapLockConfirmationDialogComponent } from './project-map-lock-confirmation-dialog.component';
 
@@ -15,8 +15,8 @@ describe('ProjectMapLockConfirmationDialogComponent', () => {
   let component: ProjectMapLockConfirmationDialogComponent;
   let fixture: ComponentFixture<ProjectMapLockConfirmationDialogComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports:[
         MatButtonModule,
         MatIconModule,
@@ -28,7 +28,7 @@ describe('ProjectMapLockConfirmationDialogComponent', () => {
         MatSnackBarModule,
       ],
       providers: [
-
+        provideZonelessChangeDetection(),
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: MatDialogRef, useValue: {} },
       ],
