@@ -20,10 +20,9 @@ import { ToasterService } from '@services/toaster.service';
 import { VersionService } from '@services/version.service';
 
 @Component({
-  standalone: true,
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
+  styleUrl: './login.component.scss',
   encapsulation: ViewEncapsulation.None,
   imports: [
     CommonModule,
@@ -37,9 +36,7 @@ import { VersionService } from '@services/version.service';
     MatIconModule,
     MatError
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit, DoCheck {
   private loginService = inject(LoginService);
