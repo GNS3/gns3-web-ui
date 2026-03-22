@@ -8,13 +8,10 @@ import { Controller } from '@models/controller';
 import { PacketCaptureService } from '@services/packet-capture.service';
 
 @Component({
-  standalone: true,
   selector: 'app-start-capture-on-started-link-action',
   templateUrl: './start-capture-on-started-link.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StartCaptureOnStartedLinkActionComponent {
   private packetCaptureService = inject(PacketCaptureService);
