@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 import { SettingsService } from '../settings.service';
 import { ConsoleService } from './console.service';
 
@@ -7,6 +7,9 @@ describe('ConsoleService', () => {
   let settings: SettingsService;
 
   beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection(), SettingsService],
+    });
     let defaultConsoleService = {
       get: () => 'default',
     };
