@@ -10,13 +10,10 @@ import { Controller } from '@models/controller';
 import { Router } from '@angular/router';
 
 @Component({
-  standalone: true,
   selector: 'app-http-console-new-tab-action',
   templateUrl: './http-console-new-tab-action.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HttpConsoleNewTabActionComponent implements OnInit {
   private nodeConsoleService = inject(NodeConsoleService);
