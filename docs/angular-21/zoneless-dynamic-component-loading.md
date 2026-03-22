@@ -152,6 +152,24 @@ ngOnInit() {
 
 - `src/app/components/project-map/project-map.component.ts` - Dynamic component loading
 - `src/app/components/topology-summary/topology-summary.component.ts` - Async data loading
+- `src/app/components/project-map/context-console-menu/context-console-menu.component.ts` - Dynamic component loading (fixed)
+- `src/app/components/project-map/context-menu/actions/console-device-action-browser/console-device-action-browser.component.ts` - Async data loading (fixed)
+
+## All Components with Dynamic Loading
+
+The following components in this project use `ViewContainerRef.createComponent` and have been fixed for zoneless mode:
+
+1. **project-map.component.ts** - Creates TopologySummaryComponent
+   - Fixed: Added `this.instance.changeDetectorRef.detectChanges()` after `createComponent()`
+
+2. **context-console-menu.component.ts** - Creates ConsoleDeviceActionBrowserComponent
+   - Fixed: Added `this.componentBrowserRef.changeDetectorRef.detectChanges()` after `createComponent()`
+
+3. **topology-summary.component.ts** - Dynamically loaded component with async data
+   - Fixed: Added `this.cd.markForCheck()` in all async subscription callbacks
+
+4. **console-device-action-browser.component.ts** - Dynamically loaded component with async data
+   - Fixed: Added `this.cd.markForCheck()` in async subscription callback
 
 ## References
 

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, inject, input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -24,6 +24,7 @@ export class ConsoleDeviceActionBrowserComponent {
   private deviceService = inject(DeviceDetectorService);
   private protocolHandlerService = inject(ProtocolHandlerService);
   private vncConsoleService = inject(VncConsoleService);
+  private cd = inject(ChangeDetectorRef);
 
   readonly controller = input<Controller>(undefined);
   node = signal<Node | undefined>(undefined);
@@ -31,6 +32,8 @@ export class ConsoleDeviceActionBrowserComponent {
   openConsole(auxiliary: boolean = false) {
     this.nodeService.getNode(this.controller(), this.node()).subscribe((node: Node) => {
       this.node.set(node);
+      // In zoneless mode, mark for check after async data arrives
+      this.cd.markForCheck();
       this.startConsole(auxiliary);
     });
   }

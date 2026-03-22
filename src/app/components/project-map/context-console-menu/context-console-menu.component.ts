@@ -86,6 +86,8 @@ export class ContextConsoleMenuComponent implements OnInit {
     this.componentBrowserRef = this.container().createComponent(ConsoleDeviceActionBrowserComponent);
     this.componentBrowserRef.setInput('controller', this.controller);
     this.componentBrowserRef.setInput('node', this.node);
+    // In zoneless mode, createComponent doesn't automatically trigger change detection
+    this.componentBrowserRef.changeDetectorRef.detectChanges();
     this.componentBrowserRef.instance.openConsole();
   }
 
