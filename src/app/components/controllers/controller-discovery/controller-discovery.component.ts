@@ -13,14 +13,11 @@ import { ControllerService } from '@services/controller.service';
 import { VersionService } from '@services/version.service';
 
 @Component({
-  standalone: true,
   selector: 'app-controller-discovery',
   templateUrl: './controller-discovery.component.html',
-  styleUrls: ['./controller-discovery.component.scss'],
+  styleUrl: './controller-discovery.component.scss',
   imports: [CommonModule, MatCardModule, MatButtonModule, MatDividerModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ControllerDiscoveryComponent implements OnInit {
   private versionService = inject(VersionService);
