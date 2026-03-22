@@ -1,5 +1,6 @@
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -34,10 +35,10 @@ describe('DefaultLayoutComponent', () => {
   let httpController: HttpController;
   let errorHandler: ControllerErrorHandler;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     controllerManagementService.controllerStatusChanged = new Subject<ControllerStateEvent>();
 
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       declarations: [DefaultLayoutComponent, ProgressComponent],
       imports: [
         MatIconModule,
@@ -50,6 +51,7 @@ describe('DefaultLayoutComponent', () => {
         AppTestingModule,
       ],
       providers: [
+        provideZonelessChangeDetection(),
         {
           provide: ControllerManagementService,
           useValue: controllerManagementService,

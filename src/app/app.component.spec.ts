@@ -1,5 +1,6 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -13,11 +14,11 @@ describe('AppComponent', () => {
   let fixture: ComponentFixture<AppComponent>;
   let settingsService: SettingsService;
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [AppComponent],
       imports: [RouterTestingModule, MatIconModule, HttpClientTestingModule, AppTestingModule],
-      providers: [SettingsService, ProgressService],
+      providers: [provideZonelessChangeDetection(), SettingsService, ProgressService],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
