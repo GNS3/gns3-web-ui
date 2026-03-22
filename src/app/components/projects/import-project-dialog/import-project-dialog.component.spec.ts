@@ -1,4 +1,4 @@
-import { DebugElement } from '@angular/core';
+import { DebugElement, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -72,8 +72,8 @@ describe('ImportProjectDialogComponent', () => {
     close: jasmine.createSpy('close'),
   };
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [
         MatTableModule,
         MatTooltipModule,
@@ -90,6 +90,7 @@ describe('ImportProjectDialogComponent', () => {
         RouterTestingModule.withRoutes([]),
       ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: MatDialogRef, useValue: dialogRef },
         { provide: MAT_DIALOG_DATA, useValue: [] },
         { provide: ProjectService, useClass: MockedProjectService },
