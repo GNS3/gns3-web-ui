@@ -9,14 +9,11 @@ import { Location } from '@angular/common';
 const adButlerResponseBodyRegex: RegExp = /<a href="(.*)">(.*)<\/a><br\/>(.*)<br\/>\s*<button><a .*>(.*)<\/a>\s*<\/button>/i;
 
 @Component({
-  standalone: true,
   selector: 'app-adbutler',
   templateUrl: './adbutler.component.html',
-  styleUrls: ['./adbutler.component.scss'],
+  styleUrl: './adbutler.component.scss',
   imports: [CommonModule, MatIconModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdbutlerComponent implements OnInit {
   private httpClient = inject(HttpClient);
