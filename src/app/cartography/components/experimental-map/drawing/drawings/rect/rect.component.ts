@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, input } from '@angular/core';
+import { Component, OnInit, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { QtDasharrayFixer } from '../../../../../helpers/qt-dasharray-fixer';
 import { RectElement } from '../../../../../models/drawings/rect-element';
 
@@ -8,6 +8,9 @@ import { RectElement } from '../../../../../models/drawings/rect-element';
   templateUrl: './rect.component.html',
   styleUrls: ['./rect.component.scss'],
   imports: [],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class RectComponent implements OnInit {
   readonly rect = input<RectElement>(undefined, { alias: 'app-rect' });

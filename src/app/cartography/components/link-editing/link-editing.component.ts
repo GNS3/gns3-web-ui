@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject, input } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { select } from 'd3-selection';
 import { Subscription } from 'rxjs';
 import { LinksEventSource } from '../../events/links-event-source';
@@ -11,6 +11,9 @@ import { LinksWidget } from '../../widgets/links';
   templateUrl: './link-editing.component.html',
   styleUrls: ['./link-editing.component.scss'],
   imports: [],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class LinkEditingComponent implements OnInit, OnDestroy {
   private linkEditedSubscription: Subscription;

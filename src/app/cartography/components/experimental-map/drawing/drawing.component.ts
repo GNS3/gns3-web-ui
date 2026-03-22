@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { DrawingsEventSource } from '../../../events/drawings-event-source';
 import { DraggedDataEvent } from '../../../events/event-source';
 import { SvgToDrawingConverter } from '../../../helpers/svg-to-drawing-converter';
@@ -15,7 +15,10 @@ import { DraggableComponent } from '../draggable/draggable.component';
   selector: '[app-drawing]',
   templateUrl: './drawing.component.html',
   styleUrls: ['./drawing.component.scss'],
-  imports: [DraggableComponent]
+  imports: [DraggableComponent],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DrawingComponent implements OnInit {
   @Input('app-drawing') drawing: MapDrawing;

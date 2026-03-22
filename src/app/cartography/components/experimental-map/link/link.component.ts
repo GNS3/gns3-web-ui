@@ -9,6 +9,7 @@ import {
   inject,
   input,
   viewChild,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MultiLinkCalculatorHelper } from '../../../helpers/multi-link-calculator-helper';
@@ -25,6 +26,9 @@ import { StatusComponent } from '../status/status.component';
   templateUrl: './link.component.html',
   styleUrls: ['./link.component.scss'],
   imports: [StatusComponent],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class LinkComponent implements OnInit, OnDestroy {
   @Input('app-link') link: MapLink;

@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, input } from '@angular/core';
+import { Component, OnInit, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { QtDasharrayFixer } from '../../../../../helpers/qt-dasharray-fixer';
 import { LineElement } from '../../../../../models/drawings/line-element';
 
@@ -8,6 +8,9 @@ import { LineElement } from '../../../../../models/drawings/line-element';
   templateUrl: './line.component.html',
   styleUrls: ['./line.component.scss'],
   imports: [],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class LineComponent implements OnInit {
   readonly line = input<LineElement>(undefined, { alias: 'app-line' });

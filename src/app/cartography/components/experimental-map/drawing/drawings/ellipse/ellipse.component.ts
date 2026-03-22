@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, input } from '@angular/core';
+import { Component, OnInit, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { QtDasharrayFixer } from '../../../../../helpers/qt-dasharray-fixer';
 import { EllipseElement } from '../../../../../models/drawings/ellipse-element';
 
@@ -8,6 +8,9 @@ import { EllipseElement } from '../../../../../models/drawings/ellipse-element';
   templateUrl: './ellipse.component.html',
   styleUrls: ['./ellipse.component.scss'],
   imports: [],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class EllipseComponent implements OnInit {
   readonly ellipse = input<EllipseElement>(undefined, { alias: 'app-ellipse' });

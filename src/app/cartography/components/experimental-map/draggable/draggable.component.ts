@@ -8,6 +8,7 @@ import {
   Output,
   inject,
   input,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { fromEvent, combineLatest, Observable, Subscription } from 'rxjs';
 import { map, mergeMap, skipUntil, take, tap, startWith } from 'rxjs/operators';
@@ -23,6 +24,9 @@ export class DraggableDraggedEvent {
   template: ` <ng-content></ng-content> `,
   styleUrls: ['./draggable.component.scss'],
   imports: [],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DraggableComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly item = input<Point>(undefined, { alias: 'app-draggable' });
