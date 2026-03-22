@@ -1,4 +1,4 @@
-import {ComponentFixture, TestBed } from '@angular/core/testing';
+import {ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { QtDasharrayFixer } from 'app/cartography/helpers/qt-dasharray-fixer';
 import { RectComponent } from './rect.component';
 
@@ -6,10 +6,10 @@ describe('RectComponent', () => {
   let component: RectComponent;
   let fixture: ComponentFixture<RectComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [RectComponent],
-      providers:[QtDasharrayFixer]
+      providers:[provideZonelessChangeDetection(), QtDasharrayFixer]
     }).compileComponents();
   });
 

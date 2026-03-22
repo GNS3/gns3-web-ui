@@ -1,13 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { ImageComponent } from './image.component';
 
 describe('ImageComponent', () => {
   let component: ImageComponent;
   let fixture: ComponentFixture<ImageComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [ImageComponent],
+      providers: [provideZonelessChangeDetection()],
     }).compileComponents();
   });
 

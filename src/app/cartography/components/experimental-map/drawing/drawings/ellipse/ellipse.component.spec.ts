@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { QtDasharrayFixer } from 'app/cartography/helpers/qt-dasharray-fixer';
 import { EllipseComponent } from './ellipse.component';
 
@@ -6,10 +6,10 @@ describe('EllipseComponent', () => {
   let component: EllipseComponent;
   let fixture: ComponentFixture<EllipseComponent>;
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+   TestBed.configureTestingModule({
       declarations: [EllipseComponent],
-      providers:[QtDasharrayFixer]
+      providers:[provideZonelessChangeDetection(), QtDasharrayFixer]
     }).compileComponents();
   });
 
