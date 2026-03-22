@@ -23,14 +23,11 @@ import { NonNegativeValidator } from '../../../../validators/non-negative-valida
 import { RotationValidator } from '../../../../validators/rotation-validator';
 
 @Component({
-  standalone: true,
   selector: 'app-style-editor',
   templateUrl: './style-editor.component.html',
-  styleUrls: ['./style-editor.component.scss'],
+  styleUrl: './style-editor.component.scss',
   imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StyleEditorDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<StyleEditorDialogComponent>);
