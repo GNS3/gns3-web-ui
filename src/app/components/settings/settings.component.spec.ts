@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -28,12 +29,12 @@ describe('SettingsComponent', () => {
   let consoleService;
   let updatesService = autoSpy(UpdatesService);
 
-  beforeEach(async () => {
+  beforeEach(() => {
     consoleService = {
       command: 'command',
     };
 
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [
         MatExpansionModule,
         MatCheckboxModule,
@@ -44,6 +45,7 @@ describe('SettingsComponent', () => {
         MatInputModule,
       ],
       providers: [
+        provideZonelessChangeDetection(),
         SettingsService,
         { provide: ToasterService, useClass: MockedToasterService },
         { provide: ConsoleService, useValue: consoleService },
