@@ -1,4 +1,4 @@
-<div class="content" *ngIf="isReady; else loading">
+<div class="content" *ngIf="isReady(); else loading">
   <div class="default-header">
     <div class="row">
       <h1 class="col">Access Control List (ACL)</h1>
@@ -19,7 +19,7 @@
   </form>
 
   <div class="default-content">
-    <table mat-table [dataSource]="dataSource | aceFilter: searchText:endpoints " class="mat-elevation-z8" matSort #acesSort="matSort">
+    <table mat-table [dataSource]="dataSource | aceFilter: searchText:endpoints() " class="mat-elevation-z8" matSort #acesSort="matSort">
 
       <ng-container matColumnDef="select" >
         <th mat-header-cell *matHeaderCellDef class="small-col">

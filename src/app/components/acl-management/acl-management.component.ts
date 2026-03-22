@@ -11,7 +11,7 @@
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
 
-import {Component, OnInit, QueryList, ViewChildren, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChildren, inject, signal} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -41,7 +41,10 @@ import { Endpoint } from "@models/api/endpoint";
   selector: 'app-acl-management',
   templateUrl: './acl-management.component.html',
   styleUrls: ['./acl-management.component.scss'],
-  imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatCardModule]
+  imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatCardModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class AclManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -57,9 +60,9 @@ export class AclManagementComponent implements OnInit {
   selection = new SelectionModel<ACE>(true, []);
   aces: ACE[];
   dataSource = new MatTableDataSource<ACE>();
-  isReady = false;
+  readonly isReady = signal(false);
   searchText = '';
-  endpoints: Endpoint[];
+  readonly endpoints = signal<Endpoint[]>([]);
 
   constructor() { }
 
@@ -69,7 +72,7 @@ export class AclManagementComponent implements OnInit {
       this.controller = controller;
       this.aclService.getEndpoints(this.controller)
         .subscribe((endpoints: Endpoint[]) => {
-          this.endpoints = endpoints
+          this.endpoints.set(endpoints);
           this.refresh();
         })
     });
@@ -101,8 +104,8 @@ export class AclManagementComponent implements OnInit {
 
   refresh() {
     this.aclService.list(this.controller).subscribe((aces: ACE[]) => {
-      this.isReady = true;
-      this.aces = aces
+      this.isReady.set(true);
+      this.aces = aces;
       this.dataSource.data = aces;
       this.selection.clear();
     });
@@ -114,7 +117,7 @@ export class AclManagementComponent implements OnInit {
       height: '500px',
       autoFocus: false,
       disableClose: true,
-      data: {endpoints: this.endpoints}
+      data: {endpoints: this.endpoints()}
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;
@@ -170,8 +173,8 @@ export class AclManagementComponent implements OnInit {
   }
 
   getNameByUuidFromEndpoint(uuid: string): string {
-    if (this.endpoints) {
-      const elt = this.endpoints.filter((endpoint: Endpoint) => endpoint.endpoint.includes(uuid))
+    if (this.endpoints()) {
+      const elt = this.endpoints().filter((endpoint: Endpoint) => endpoint.endpoint.includes(uuid))
       if (elt.length >= 1) {
         return elt[0].name
       }
