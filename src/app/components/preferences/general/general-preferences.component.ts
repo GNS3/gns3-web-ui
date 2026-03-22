@@ -2,13 +2,10 @@ import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/cor
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  standalone: true,
   selector: 'app-general-preferences',
   templateUrl: './general-preferences.component.html',
-  styleUrls: ['./general-preferences.component.scss'],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  styleUrl: './general-preferences.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GeneralPreferencesComponent implements OnInit {
   private route = inject(ActivatedRoute);
