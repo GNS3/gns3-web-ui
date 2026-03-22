@@ -1,14 +1,11 @@
 import { ChangeDetectorRef, Component, ElementRef, Input, inject, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
-  standalone: true,
   selector: '[app-status]',
   templateUrl: './status.component.html',
-  styleUrls: ['./status.component.scss'],
+  styleUrl: './status.component.scss',
   imports: [],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatusComponent {
   static STOPPED_STATUS_RECT_WIDTH = 10;
