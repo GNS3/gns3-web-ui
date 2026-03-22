@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 import { ExternalSoftwareDefinitionService } from './external-software-definition.service';
 import { PlatformService } from './platform.service';
 
@@ -27,7 +27,7 @@ describe('ExternalSoftwareDefinitionService', () => {
 
   beforeEach(() =>
     TestBed.configureTestingModule({
-      providers: [ExternalSoftwareDefinitionService, { provide: PlatformService, useValue: platformServiceMock }],
+      providers: [provideZonelessChangeDetection(), ExternalSoftwareDefinitionService, { provide: PlatformService, useValue: platformServiceMock }],
     })
   );
 
