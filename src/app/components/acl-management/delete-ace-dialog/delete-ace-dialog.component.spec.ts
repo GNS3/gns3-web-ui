@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 import { DeleteAceDialogComponent } from './delete-ace-dialog.component';
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material/dialog";
@@ -13,11 +14,12 @@ describe('DeleteAceDialogComponent', () => {
   let component: DeleteAceDialogComponent;
   let fixture: ComponentFixture<DeleteAceDialogComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [ DeleteAceDialogComponent ],
       imports: [ MatDialogModule, MatButtonModule ],
       providers: [
+        provideZonelessChangeDetection(),
         {provide: MatDialogRef, useClass: FakeMatDialogRef},
         {provide: MAT_DIALOG_DATA, useValue: {}}
       ],

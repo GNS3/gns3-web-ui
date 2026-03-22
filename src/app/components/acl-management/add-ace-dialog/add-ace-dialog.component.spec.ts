@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 import { AddAceDialogComponent } from './add-ace-dialog.component';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
@@ -31,8 +32,8 @@ describe('AddAceDialogComponent', () => {
   let component: AddAceDialogComponent;
   let fixture: ComponentFixture<AddAceDialogComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [ AddAceDialogComponent, AutocompleteComponent ],
       imports: [
         CommonModule,
@@ -49,6 +50,7 @@ describe('AddAceDialogComponent', () => {
         MatInputModule
       ],
       providers: [
+        provideZonelessChangeDetection(),
         {provide: MatDialogRef, useClass: FakeMatDialogRef},
         {provide: AclService, useClass: FakeAclService},
         {provide: UserService, useClass: FakeUserService},

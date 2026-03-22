@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 import { AclManagementComponent } from './acl-management.component';
 import {ActivatedRoute} from "@angular/router";
@@ -35,10 +36,11 @@ describe('AclManagementComponent', () => {
   let component: AclManagementComponent;
   let fixture: ComponentFixture<AclManagementComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [ AclManagementComponent ],
       providers: [
+        provideZonelessChangeDetection(),
         {provide: ToasterService, useClass: FakeToastService},
         {provide: ActivatedRoute, useClass: FakeActivatedRoute},
         {provide: MatDialog, useClass: FakeMatDialog},

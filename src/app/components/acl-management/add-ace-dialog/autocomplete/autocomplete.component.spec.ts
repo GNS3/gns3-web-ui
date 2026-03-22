@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 
 import { AutocompleteComponent } from './autocomplete.component';
 import { MatAutocompleteModule } from "@angular/material/autocomplete";
@@ -12,8 +13,8 @@ describe('AutocompleteComponent', () => {
   let component: AutocompleteComponent<any>;
   let fixture: ComponentFixture<AutocompleteComponent<any>>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [ AutocompleteComponent ],
       imports: [
         CommonModule,
