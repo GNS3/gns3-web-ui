@@ -1,26 +1,21 @@
-// import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
+import { ExperimentalMapComponent } from './experimental-map.component';
 
-// import { MapComponent } from './map.component';
+describe('ExperimentalMapComponent', () => {
+  let component: ExperimentalMapComponent;
+  let fixture: ComponentFixture<ExperimentalMapComponent>;
 
-// describe('MapComponent', () => {
-//   let component: MapComponent;
-//   let fixture: ComponentFixture<MapComponent>;
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection()],
+      declarations: [ExperimentalMapComponent],
+    });
+    fixture = TestBed.createComponent(ExperimentalMapComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-//   beforeEach(async(() => {
-//     TestBed.configureTestingModule({
-//       declarations: [ MapComponent ]
-//     })
-//     .compileComponents();
-//   }));
-
-//   // beforeEach(() => {
-//   //   fixture = TestBed.createComponent(MapComponent);
-//   //   component = fixture.componentInstance;
-//   //   fixture.detectChanges();
-//   // });
-//   //
-//   // it('should create', () => {
-//   //   expect(component).toBeTruthy();
-//   // });
-// });
-// //
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});
