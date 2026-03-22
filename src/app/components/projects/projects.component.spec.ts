@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatBottomSheetModule } from '@angular/material/bottom-sheet';
@@ -36,8 +36,8 @@ xdescribe('ProjectsComponent', () => {
   let progressService: ProgressService;
   let mockedProjectService: MockedProjectService = new MockedProjectService();
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [
         MatTableModule,
         MatTooltipModule,
@@ -53,6 +53,7 @@ xdescribe('ProjectsComponent', () => {
         RouterTestingModule.withRoutes([]),
       ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ControllerService, useClass: MockedControllerService },
         { provide: ProjectService, useValue: mockedProjectService },
         { provide: SettingsService },
