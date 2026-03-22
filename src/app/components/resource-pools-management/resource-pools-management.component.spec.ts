@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ResourcePoolsManagementComponent } from './resource-pools-management.component';
@@ -41,9 +42,10 @@ describe('ResourcePoolsManagementComponent', () => {
   let component: ResourcePoolsManagementComponent;
   let fixture: ComponentFixture<ResourcePoolsManagementComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         {provide: ToasterService, useClass: FakeToastService},
         {provide: ActivatedRoute, useClass: FakeActivatedRoute},
         {provide: ResourcePoolsService, useClass: FakeResourcePoolService},
