@@ -19,16 +19,13 @@ export interface ToolDetailsDialogData {
  */
 @Component({
   selector: 'app-tool-details-dialog',
-  standalone: true,
   imports: [
     CommonModule,
     MatIconModule,
     MatDialogModule,
     NgxJsonViewerModule
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="dialog-header">
       <h2 mat-dialog-title class="dialog-title">
