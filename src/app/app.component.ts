@@ -1,5 +1,5 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { Component, HostBinding, OnInit, inject } from '@angular/core';
+import { Component, HostBinding, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
@@ -19,10 +19,13 @@ import { GlobalUploadIndicatorComponent } from './components/global-upload-indic
     CommonModule,
     RouterModule,
     GlobalUploadIndicatorComponent,
-  ]
+  ],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class AppComponent implements OnInit {
-  public darkThemeEnabled: boolean = false;
+  public darkThemeEnabled = signal<boolean>(false);
 
   private overlayContainer = inject(OverlayContainer);
   private iconReg = inject(MatIconRegistry);
@@ -52,9 +55,9 @@ export class AppComponent implements OnInit {
 
   applyTheme(theme: string) {
     if (theme === 'dark-theme') {
-      this.darkThemeEnabled = true;
+      this.darkThemeEnabled.set(true);
     } else {
-      this.darkThemeEnabled = false;
+      this.darkThemeEnabled.set(false);
     }
     const classList = this.overlayContainer.getContainerElement().classList;
     classList.remove('dark-theme', 'light-theme', 'dark', 'light');
