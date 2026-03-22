@@ -195,7 +195,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   readonly contextMenu = viewChild(ContextMenuComponent);
   readonly mapChild = viewChild(D3MapComponent);
   @ViewChild(ProjectMapMenuComponent) projectMapMenuComponent: ProjectMapMenuComponent;
-  readonly topologySummaryContainer = viewChild('topologySummaryContainer', { read: ViewContainerRef });
+  @ViewChild('topologySummaryContainer', { read: ViewContainerRef, static: true }) topologySummaryContainer!: ViewContainerRef;
 
   private projectMapSubscription: Subscription = new Subscription();
 
@@ -298,17 +298,22 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   async lazyLoadTopologySummary() {
     if (this.isTopologySummaryVisible) {
+      // In zoneless mode, we need to explicitly notify Angular after async operations
       const { TopologySummaryComponent } = await import('../topology-summary/topology-summary.component');
-      this.instance = this.viewContainerRef.createComponent(TopologySummaryComponent);
+      this.instance = this.topologySummaryContainer.createComponent(TopologySummaryComponent);
 
       // const componentFactory = this.cfr.resolveComponentFactory(TopologySummaryComponent);
       // this.instance = this.topologySummaryContainer.createComponent(componentFactory, null, this.injector);
       this.instance.instance.controller = this.controller;
       this.instance.instance.project = this.project;
+      // In zoneless mode, createComponent doesn't automatically trigger change detection
+      // We need to explicitly detect changes to ensure the component is rendered
+      this.instance.changeDetectorRef.detectChanges();
     } else if (this.instance) {
       if (this.instance.instance) {
         this.instance.instance.ngOnDestroy();
         this.instance.destroy();
+        this.instance = null;
       }
     }
   }
@@ -877,6 +882,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.isTopologySummaryVisible = visible;
     this.mapSettingsService.toggleTopologySummary(this.isTopologySummaryVisible);
     this.lazyLoadTopologySummary();
+    this.cd.markForCheck();
   }
 
   public toggleNotifications(visible: boolean) {

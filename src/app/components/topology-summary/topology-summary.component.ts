@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSelectModule } from '@angular/material/select';
@@ -30,6 +30,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
   private computeService = inject(ComputeService);
   private linksDataSource = inject(LinksDataSource);
   private themeService = inject(ThemeService);
+  private cd = inject(ChangeDetectorRef);
 
   @Input() controller: Controller;
   @Input() project: Project;
@@ -73,15 +74,21 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         } else {
           this.filteredNodes = nodes.sort(this.compareDesc);
         }
+        // In zoneless mode, we need to mark for check after async updates
+        this.cd.markForCheck();
       })
     );
 
     this.projectService.getStatistics(this.controller, this.project.project_id).subscribe((stats) => {
       this.projectsStatistics = stats;
+      // In zoneless mode, trigger change detection when async data arrives
+      this.cd.markForCheck();
     });
 
     this.computeService.getComputes(this.controller).subscribe((computes) => {
       this.computes = computes;
+      // In zoneless mode, trigger change detection when async data arrives
+      this.cd.markForCheck();
     });
 
     this.revertPosition();
