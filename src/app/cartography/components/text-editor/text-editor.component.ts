@@ -8,6 +8,8 @@ import {
   inject,
   input,
   viewChild,
+  signal,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { select } from 'd3-selection';
 import { Subscription } from 'rxjs';
@@ -35,15 +37,18 @@ import { Node } from '../../models/node';
   templateUrl: './text-editor.component.html',
   styleUrls: ['./text-editor.component.scss'],
   imports: [],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class TextEditorComponent implements OnInit, OnDestroy {
   readonly temporaryTextElement = viewChild<ElementRef>('temporaryTextElement');
   readonly svg = input<SVGSVGElement>(undefined);
   readonly controller = input<Controller>(undefined);
 
-  leftPosition: string = '0px';
-  topPosition: string = '0px';
-  innerText: string = '';
+  leftPosition = signal<string>('0px');
+  topPosition = signal<string>('0px');
+  innerText = signal<string>('');
 
   private editingDrawingId: string;
   private editedElement: any;
@@ -78,8 +83,8 @@ export class TextEditorComponent implements OnInit, OnDestroy {
 
   activateTextAdding() {
     let addTextListener = (event: MouseEvent) => {
-      this.leftPosition = event.pageX.toString() + 'px';
-      this.topPosition = event.pageY.toString() + 'px';
+      this.leftPosition.set(event.pageX.toString() + 'px');
+      this.topPosition.set(event.pageY.toString() + 'px');
       const temporaryTextElement = this.temporaryTextElement();
       this.renderer.setStyle(temporaryTextElement.nativeElement, 'display', 'initial');
       this.renderer.setStyle(
@@ -100,7 +105,7 @@ export class TextEditorComponent implements OnInit, OnDestroy {
           )
         );
         this.deactivateTextAdding();
-        this.innerText = '';
+        this.innerText.set('');
         temporaryTextElementValue.nativeElement.innerText = '';
         temporaryTextElementValue.nativeElement.removeEventListener('focusout', this.textListener);
         this.renderer.setStyle(temporaryTextElementValue.nativeElement, 'display', 'none');
@@ -149,8 +154,8 @@ export class TextEditorComponent implements OnInit, OnDestroy {
           (elem.label.originalY + this.editedNode.y + 4) * this.context.transformation.k +
           this.context.getZeroZeroTransformationPoint().y +
           this.context.transformation.y;
-        this.leftPosition = x.toString() + 'px';
-        this.topPosition = y.toString() + 'px';
+        this.leftPosition.set(x.toString() + 'px');
+        this.topPosition.set(y.toString() + 'px');
         temporaryTextElement.nativeElement.innerText = elem.label.text;
 
         let styleProperties: StyleProperty[] = [];
@@ -194,7 +199,7 @@ export class TextEditorComponent implements OnInit, OnDestroy {
               .attr('visibility', 'visible')
               .classed('editingMode', false);
 
-            this.innerText = '';
+            this.innerText.set('');
             temporaryTextElement.nativeElement.innerText = '';
             temporaryTextElement.nativeElement.removeEventListener('focusout', this.textListener);
 
@@ -236,8 +241,8 @@ export class TextEditorComponent implements OnInit, OnDestroy {
           Number(transformData[1].split(/,/)[1]) * this.context.transformation.k +
           this.context.getZeroZeroTransformationPoint().y +
           this.context.transformation.y;
-        this.leftPosition = x.toString() + 'px';
-        this.topPosition = y.toString() + 'px';
+        this.leftPosition.set(x.toString() + 'px');
+        this.topPosition.set(y.toString() + 'px');
         temporaryTextElement.nativeElement.innerText = elem.text;
 
         this.renderer.setStyle(temporaryTextElement.nativeElement, 'color', elem.fill);
@@ -256,7 +261,7 @@ export class TextEditorComponent implements OnInit, OnDestroy {
             .attr('visibility', 'visible')
             .classed('editingMode', false);
 
-          this.innerText = '';
+          this.innerText.set('');
           temporaryTextElement.nativeElement.innerText = '';
           temporaryTextElement.nativeElement.removeEventListener('focusout', this.textListener);
 

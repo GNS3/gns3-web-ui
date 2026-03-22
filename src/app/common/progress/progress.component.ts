@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -21,26 +21,29 @@ import { ProgressService } from './progress.service';
     MatTooltipModule,
     RouterLink,
   ],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ProgressComponent implements OnInit, OnDestroy {
   private progressService = inject(ProgressService);
   private router = inject(Router);
 
-  visible = false;
-  error: any = null;
+  visible = signal(false);
+  error = signal<any>(null);
   routerSubscription: Subscription;
 
   ngOnInit() {
     this.progressService.state.subscribe((state) => {
-      this.visible = state.visible;
+      this.visible.set(state.visible);
 
       // only set error state once; ignore next "correct" states
-      if (state.error && !this.error) {
-        this.error = state.error;
+      if (state.error && !this.error()) {
+        this.error.set(state.error);
       }
 
       if (state.clear) {
-        this.error = null;
+        this.error.set(null);
       }
     });
 
