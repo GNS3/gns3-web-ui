@@ -8,14 +8,11 @@ import { Controller } from '@models/controller';
 import { ControllerService } from '@services/controller.service';
 
 @Component({
-  standalone: true,
   selector: 'app-bundled-controller-finder',
   templateUrl: './bundled-controller-finder.component.html',
-  styleUrls: ['./bundled-controller-finder.component.scss'],
+  styleUrl: './bundled-controller-finder.component.scss',
   imports: [ProgressComponent],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BundledControllerFinderComponent implements OnInit {
   private router = inject(Router);
