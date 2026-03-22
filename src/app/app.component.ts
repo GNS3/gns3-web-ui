@@ -1,5 +1,5 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { Component, HostBinding, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
@@ -11,18 +11,18 @@ import { RouterModule } from '@angular/router';
 import { GlobalUploadIndicatorComponent } from './components/global-upload-indicator/global-upload-indicator.component';
 
 @Component({
-  standalone: true,
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  styleUrl: './app.component.scss',
   imports: [
     CommonModule,
     RouterModule,
     GlobalUploadIndicatorComponent,
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  host: {
+    class: 'componentCssClass',
+  },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {
   public darkThemeEnabled = signal<boolean>(false);
@@ -44,8 +44,6 @@ export class AppComponent implements OnInit {
     });
   }
 
-  @HostBinding('class') componentCssClass;
-
   ngOnInit(): void {
     this.applyTheme(this.themeService.savedTheme + '-theme');
     this.themeService.themeChanged.subscribe((event: string) => {
@@ -63,7 +61,6 @@ export class AppComponent implements OnInit {
     classList.remove('dark-theme', 'light-theme', 'dark', 'light');
     classList.add(theme);
     classList.add(theme === 'dark-theme' ? 'dark' : 'light');
-    this.componentCssClass = theme;
   }
 
   checkEvent(routerEvent): void {
