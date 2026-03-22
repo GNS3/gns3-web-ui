@@ -11,13 +11,10 @@ import { Router } from '@angular/router';
 import { MapSettingsService } from '@services/mapsettings.service';
 
 @Component({
-  standalone: true,
   selector: 'app-http-console-action',
   templateUrl: './http-console-action.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HttpConsoleActionComponent implements OnInit {
   private nodeConsoleService = inject(NodeConsoleService);
