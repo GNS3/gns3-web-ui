@@ -28,10 +28,9 @@ import { AiProfileDialogComponent } from '@components/user-management/user-detai
 import { ConfirmDialogComponent } from '@components/user-management/user-detail/ai-profile-tab/ai-profile-dialog/confirm-dialog/confirm-dialog.component';
 
 @Component({
-  standalone: true,
   selector: 'app-group-ai-profile-tab',
   templateUrl: './group-ai-profile-tab.component.html',
-  styleUrls: ['./group-ai-profile-tab.component.scss'],
+  styleUrl: './group-ai-profile-tab.component.scss',
   imports: [
     CommonModule,
     MatDialogModule,
@@ -46,9 +45,7 @@ import { ConfirmDialogComponent } from '@components/user-management/user-detail/
     MatCardModule,
     MatProgressSpinnerModule,
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
