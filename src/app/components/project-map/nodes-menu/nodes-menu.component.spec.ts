@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,10 +21,11 @@ xdescribe('NodesMenuComponent', () => {
   let mockedNodeService: MockedNodeService = new MockedNodeService();
   let mockedNodesDataSource: MockedNodesDataSource = new MockedNodesDataSource();
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [MatButtonModule, MatIconModule, CommonModule, NoopAnimationsModule],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: NodeService, useValue: mockedNodeService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
