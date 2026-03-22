@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
@@ -31,8 +31,8 @@ describe('VpcsTemplatesComponent', () => {
   let mockedVpcsService = new MockedVpcsService();
   let activatedRoute = new MockedActivatedRoute().get();
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+   TestBed.configureTestingModule({
       imports: [
         MatIconModule,
         MatToolbarModule,
@@ -43,6 +43,7 @@ describe('VpcsTemplatesComponent', () => {
         RouterTestingModule.withRoutes([]),
       ],
       providers: [
+        provideZonelessChangeDetection(),
         {
           provide: ActivatedRoute,
           useValue: activatedRoute,
