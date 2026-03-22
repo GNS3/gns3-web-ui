@@ -13,14 +13,11 @@ import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
 
 @Component({
-  standalone: true,
   selector: 'app-text-added',
   templateUrl: './text-added.component.html',
-  styleUrls: ['./text-added.component.scss'],
+  styleUrl: './text-added.component.scss',
   imports: [],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TextAddedComponent implements OnInit, OnDestroy {
   readonly controller = input<Controller>(undefined);
