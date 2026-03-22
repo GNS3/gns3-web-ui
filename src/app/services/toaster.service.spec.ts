@@ -1,4 +1,4 @@
-import { inject, TestBed } from '@angular/core/testing';
+import { inject, TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ToasterService } from './toaster.service';
 
@@ -39,7 +39,7 @@ class MockedSnackBar {
 describe('ToasterService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ToasterService, { provide: MatSnackBar, useClass: MockedSnackBar }],
+      providers: [provideZonelessChangeDetection(), ToasterService, { provide: MatSnackBar, useClass: MockedSnackBar }],
     });
   });
 
