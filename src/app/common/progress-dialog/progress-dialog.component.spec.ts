@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,8 +13,8 @@ describe('ProgressDialogComponent', () => {
   let component: ProgressDialogComponent;
   let fixture: ComponentFixture<ProgressDialogComponent>;
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [ProgressDialogComponent],
       imports:[
         MatIconModule,
@@ -24,6 +25,7 @@ describe('ProgressDialogComponent', () => {
         MatProgressBarModule
       ],
       providers:[
+        provideZonelessChangeDetection(),
         { provide: MatDialogRef, useValue: {}},
         { provide: MAT_DIALOG_DATA, useValue: {}},
       ],

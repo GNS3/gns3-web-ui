@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { SettingsService } from '@services/settings.service';
 import { ToasterService } from '@services/toaster.service';
 import { MockedToasterService } from '@services/toaster.service.spec';
@@ -9,9 +10,10 @@ describe('ToasterErrorHandler', () => {
   let toasterService: MockedToasterService;
   let settingsService: SettingsService;
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ToasterService, useClass: MockedToasterService },
         { provide: SettingsService},
         ToasterErrorHandler,

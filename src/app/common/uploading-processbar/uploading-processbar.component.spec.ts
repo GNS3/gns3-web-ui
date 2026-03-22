@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { MatSnackBarModule, MatSnackBarRef, MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { UploadServiceService } from './upload-service.service';
@@ -11,8 +12,8 @@ describe('UploadingProcessbarComponent', () => {
   let component: UploadingProcessbarComponent;
   let fixture: ComponentFixture<UploadingProcessbarComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [UploadingProcessbarComponent],
       imports:[
         MatSnackBarModule,
@@ -20,6 +21,7 @@ describe('UploadingProcessbarComponent', () => {
         MatButtonModule
       ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: MAT_SNACK_BAR_DATA, useValue: {} },
         { provide: MatSnackBarRef, useValue: {} },
         { provide:  UploadServiceService, useClass: UploadServiceService },

@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
@@ -23,10 +24,10 @@ describe('ProgressComponent', () => {
   let progressService: ProgressService;
   let router: MockedRouter = new MockedRouter();
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [RouterTestingModule, MatProgressSpinnerModule, MatIconModule],
-      providers: [ProgressService, { provide: Router, useValue: router }],
+      providers: [provideZonelessChangeDetection(), ProgressService, { provide: Router, useValue: router }],
       declarations: [ProgressComponent],
     }).compileComponents();
 
