@@ -18,11 +18,10 @@ import { ProjectService } from '@services/project.service';
 import { ThemeService } from '@services/theme.service';
 
 @Component({
-  standalone: true,
   selector: 'app-topology-summary',
   templateUrl: './topology-summary.component.html',
-  styleUrls: ['./topology-summary.component.scss'],
-  changeDetection: ChangeDetectionStrategy.Default,
+  styleUrl: './topology-summary.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, MatTabsModule, MatSelectModule, MatOptionModule, MatDividerModule]
 })
 export class TopologySummaryComponent implements OnInit, OnDestroy {
