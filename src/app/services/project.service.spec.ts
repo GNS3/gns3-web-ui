@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 import { environment } from 'environments/environment';
 import { of } from 'rxjs';
 import { Project } from '@models/project';
@@ -72,6 +72,7 @@ describe('ProjectService', () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
       providers: [
+        provideZonelessChangeDetection(),
         HttpController,
         ProjectService,
         RecentlyOpenedProjectService,
