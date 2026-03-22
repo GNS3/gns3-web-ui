@@ -8,13 +8,10 @@ import { Controller } from '@models/controller';
 import { LinkStyleEditorDialogComponent } from '../../../drawings-editors/link-style-editor/link-style-editor.component';
 
 @Component({
-  standalone: true,
   selector: 'app-edit-link-style-action',
   templateUrl: './edit-link-style-action.component.html',
   imports: [CommonModule, MatDialogModule, MatIconModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditLinkStyleActionComponent implements OnChanges {
   private dialog = inject(MatDialog);
