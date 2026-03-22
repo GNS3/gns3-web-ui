@@ -1,5 +1,5 @@
-import { EventEmitter } from '@angular/core';
-import { async, ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { EventEmitter, provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { select } from 'd3-selection';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { DraggableDrag, DraggableEnd, DraggableStart } from '../../events/draggable';
@@ -42,7 +42,7 @@ describe('DraggableSelectionComponent', () => {
   let interfaceLabelDragEventEmitter: EventEmitter<DraggableDrag<MapLinkNode>>;
   let interfaceLabelEndEventEmitter: EventEmitter<DraggableEnd<MapLinkNode>>;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     mockedGraphDataManager = new MockedGraphDataManager();
 
     nodesStartEventEmitter = new EventEmitter<DraggableStart<MapNode>>();
@@ -111,8 +111,9 @@ describe('DraggableSelectionComponent', () => {
       interfaceDragged: { emit: () => {} },
     };
 
-   await TestBed.configureTestingModule({
+   TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         { provide: NodesWidget, useValue: nodesWidgetStub },
         { provide: DrawingsWidget, useValue: drawingsWidgetStub },
         { provide: LinksWidget, useValue: linksWidgetStub },
