@@ -20,7 +20,6 @@ import {
  * Displays and manages chat sessions
  */
 @Component({
-  standalone: true,
   selector: 'app-chat-session-list',
   imports: [
     CommonModule,
@@ -32,9 +31,7 @@ import {
     MatDialogModule,
     MatDividerModule,
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="chat-session-list">
       <!-- New session button -->
