@@ -1,13 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { AdbutlerComponent } from './adbutler.component';
 
 xdescribe('AdbutlerComponent', () => {
   let component: AdbutlerComponent;
   let fixture: ComponentFixture<AdbutlerComponent>;
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+   TestBed.configureTestingModule({
       declarations: [AdbutlerComponent],
+      providers: [provideZonelessChangeDetection()],
     }).compileComponents();
   });
 

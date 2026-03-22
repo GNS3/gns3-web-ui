@@ -1,4 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick, provideZonelessChangeDetection } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { Observable } from 'rxjs/Rx';
@@ -17,12 +17,13 @@ xdescribe('ControllerDiscoveryComponent', () => {
   let mockedVersionService: MockedVersionService;
   let mockedControllerService: MockedControllerService;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     mockedControllerService = new MockedControllerService();
     mockedVersionService = new MockedVersionService();
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [MatCardModule, MatDividerModule],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: VersionService, useFactory: () => mockedVersionService },
         { provide: ControllerService, useFactory: () => mockedControllerService },
         ControllerDatabase,

@@ -1,4 +1,4 @@
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
@@ -19,7 +19,7 @@ describe('BundledControllerFinderComponent', () => {
   let controllerServiceMock: jasmine.SpyObj<ControllerService>;
 
 
-  beforeEach(async () => {
+  beforeEach(() => {
     router = {
       navigate: jasmine.createSpy('navigate'),
     };
@@ -31,8 +31,9 @@ describe('BundledControllerFinderComponent', () => {
     ]);
 
 
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         { provide: Router, useValue: router },
         { provide: ControllerService, useValue: controllerServiceMock },
         { provide: ProgressService, useValue: progressService },

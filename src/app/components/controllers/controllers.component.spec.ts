@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
 import { MatSortModule } from '@angular/material/sort';
@@ -24,7 +24,7 @@ describe('ControllersComponent', () => {
   let mockedRouter: MockedRouter
   let mockedControllerManagementService: any;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     controllerMockedService = new MockedControllerService();
     // Add missing properties that the component expects
     controllerMockedService['isServiceInitialized'] = true;
@@ -43,7 +43,7 @@ describe('ControllersComponent', () => {
       stop: jasmine.createSpy('stop').and.returnValue(Promise.resolve())
     };
 
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       declarations: [ControllersComponent],
       imports: [
         MatDialogModule,
@@ -54,6 +54,7 @@ describe('ControllersComponent', () => {
         NoopAnimationsModule
       ],
       providers: [
+        provideZonelessChangeDetection(),
         MatDialog,
         ControllerDatabase,
         MatBottomSheet,
