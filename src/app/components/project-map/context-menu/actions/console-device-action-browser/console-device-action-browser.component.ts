@@ -13,13 +13,10 @@ import { VncConsoleService } from '@services/vnc-console.service';
 import * as ipaddr from 'ipaddr.js';
 
 @Component({
-  standalone: true,
   selector: 'app-console-device-action-browser',
   templateUrl: './console-device-action-browser.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConsoleDeviceActionBrowserComponent {
   private toasterService = inject(ToasterService);
