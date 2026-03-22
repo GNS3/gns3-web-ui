@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -19,7 +19,10 @@ import { ToasterService } from '@services/toaster.service';
   templateUrl: './direct-link.component.html',
   styleUrls: ['./direct-link.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule]
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class DirectLinkComponent implements OnInit {
   private controllerService = inject(ControllerService);
@@ -28,7 +31,7 @@ export class DirectLinkComponent implements OnInit {
   private router = inject(Router);
   private toasterService = inject(ToasterService);
 
-  public controllerOptionsVisibility = false;
+  readonly controllerOptionsVisibility = signal(false);
   public controllerIp;
   public controllerPort;
   public projectId;
@@ -71,7 +74,7 @@ export class DirectLinkComponent implements OnInit {
     if (controller) {
       this.router.navigate(['/controller', controller.id, 'project', this.projectId]);
     } else {
-      this.controllerOptionsVisibility = true;
+      this.controllerOptionsVisibility.set(true);
     }
   }
 
