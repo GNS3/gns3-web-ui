@@ -8,14 +8,11 @@ import { LinkNode } from '@models/link-node';
 import { Port } from '@models/port';
 
 @Component({
-  standalone: true,
   selector: 'app-node-select-interface',
   templateUrl: './node-select-interface.component.html',
-  styleUrls: ['./node-select-interface.component.scss'],
+  styleUrl: './node-select-interface.component.scss',
   imports: [CommonModule, MatMenuModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodeSelectInterfaceComponent implements OnInit {
   readonly links = input<Link[]>(undefined);
