@@ -4,14 +4,11 @@ import { FontFixer } from '../../../../../helpers/font-fixer';
 import { TextElement } from '../../../../../models/drawings/text-element';
 
 @Component({
-  standalone: true,
   selector: '[app-text]',
   templateUrl: './text.component.html',
-  styleUrls: ['./text.component.scss'],
+  styleUrl: './text.component.scss',
   imports: [],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TextComponent implements OnInit, DoCheck {
   static MARGIN = 4;
