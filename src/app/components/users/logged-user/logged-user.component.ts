@@ -13,14 +13,11 @@ import { Controller } from '@models/controller';
 import { ChangeUserPasswordComponent } from "@components/user-management/user-detail/change-user-password/change-user-password.component";
 
 @Component({
-  standalone: true,
   selector: 'app-logged-user',
   templateUrl: './logged-user.component.html',
-  styleUrls: ['./logged-user.component.scss'],
+  styleUrl: './logged-user.component.scss',
   imports: [CommonModule, RouterModule, MatCardModule, MatListModule, MatButtonModule, MatDialogModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoggedUserComponent implements OnInit {
     private route = inject(ActivatedRoute);
