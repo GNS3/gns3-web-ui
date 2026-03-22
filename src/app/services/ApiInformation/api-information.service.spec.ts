@@ -1,6 +1,6 @@
 import {ApiInformationService, IPathDict} from "@services/ApiInformation/api-information.service";
 import {HttpClient} from "@angular/common/http";
-import {fakeAsync, TestBed, tick} from "@angular/core/testing";
+import {fakeAsync, provideZonelessChangeDetection, TestBed, tick} from "@angular/core/testing";
 import {Observable, of, ReplaySubject} from "rxjs";
 import {Controller} from "@models/controller";
 import {getTestController} from "@services/testing";
@@ -15,7 +15,7 @@ describe('ApiInformationService', () => {
   beforeEach(() => {
     const spy = jasmine.createSpyObj('HttpClient', ['get']);
     TestBed.configureTestingModule({
-      providers: [ApiInformationService, {provide: HttpClient, useValue: spy}],
+      providers: [provideZonelessChangeDetection(), ApiInformationService, {provide: HttpClient, useValue: spy}],
     });
     httpClientSpy = TestBed.inject(HttpClient) as jasmine.SpyObj<HttpClient>
     httpClientSpy.get.and.returnValue(EMPTY);
