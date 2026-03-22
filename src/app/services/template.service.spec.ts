@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 import { environment } from 'environments/environment';
 import { Controller } from '@models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
@@ -15,7 +15,7 @@ describe('TemplateService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [TemplateService, HttpController, HttpClient],
+      providers: [provideZonelessChangeDetection(), TemplateService, HttpController, HttpClient],
     });
 
     httpClient = TestBed.get(HttpClient);
