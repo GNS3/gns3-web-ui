@@ -11,14 +11,11 @@ import { MapDrawing } from '../../../models/map/map-drawing';
 import { DraggableComponent } from '../draggable/draggable.component';
 
 @Component({
-  standalone: true,
   selector: '[app-drawing]',
   templateUrl: './drawing.component.html',
-  styleUrls: ['./drawing.component.scss'],
+  styleUrl: './drawing.component.scss',
   imports: [DraggableComponent],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DrawingComponent implements OnInit {
   @Input('app-drawing') drawing: MapDrawing;
