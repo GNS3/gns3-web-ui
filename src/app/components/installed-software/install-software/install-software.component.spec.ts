@@ -1,14 +1,14 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { InstallSoftwareComponent } from './install-software.component';
 
 describe('InstallSoftwareComponent', () => {
   let component: InstallSoftwareComponent;
   let fixture: ComponentFixture<InstallSoftwareComponent>;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [InstallSoftwareComponent],
-      providers: []
+      providers: [provideZonelessChangeDetection()]
     }).compileComponents();
   });
 
