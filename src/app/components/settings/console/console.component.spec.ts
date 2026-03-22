@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
@@ -17,7 +18,7 @@ describe('ConsoleComponent', () => {
   let router;
   let toaster: MockedToasterService;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     consoleService = {
       command: 'command',
     };
@@ -28,8 +29,9 @@ describe('ConsoleComponent', () => {
 
     toaster = new MockedToasterService();
 
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ConsoleService, useValue: consoleService },
         { provide: ToasterService, useValue: toaster },
         { provide: Router, useValue: router },
