@@ -39,14 +39,11 @@ import {HttpErrorResponse} from "@angular/common/http";
 
 
 @Component({
-  standalone: true,
   selector: 'app-role-management',
   templateUrl: './role-management.component.html',
-  styleUrls: ['./role-management.component.scss'],
+  styleUrl: './role-management.component.scss',
   imports: [CommonModule, FormsModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule, RoleFilterPipe],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoleManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);
