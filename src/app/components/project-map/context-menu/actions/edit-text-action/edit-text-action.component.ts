@@ -12,13 +12,10 @@ import { Controller } from '@models/controller';
 import { TextEditorDialogComponent } from '../../../drawings-editors/text-editor/text-editor.component';
 
 @Component({
-  standalone: true,
   selector: 'app-edit-text-action',
   templateUrl: './edit-text-action.component.html',
   imports: [CommonModule, MatDialogModule, MatIconModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditTextActionComponent implements OnInit {
   private dialog = inject(MatDialog);
