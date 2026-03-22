@@ -3,14 +3,11 @@ import { QtDasharrayFixer } from '../../../../../helpers/qt-dasharray-fixer';
 import { RectElement } from '../../../../../models/drawings/rect-element';
 
 @Component({
-  standalone: true,
   selector: '[app-rect]',
   templateUrl: './rect.component.html',
-  styleUrls: ['./rect.component.scss'],
+  styleUrl: './rect.component.scss',
   imports: [],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RectComponent implements OnInit {
   readonly rect = input<RectElement>(undefined, { alias: 'app-rect' });
