@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {Component, OnInit, QueryList, ViewChild, ViewChildren, inject} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChild, ViewChildren, inject, signal} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, ActivatedRoute, Router } from "@angular/router";
@@ -40,7 +40,10 @@ import { DeleteGroupDialogComponent } from "@components/group-management/delete-
   selector: 'app-group-management',
   templateUrl: './group-management.component.html',
   styleUrls: ['./group-management.component.scss'],
-  imports: [CommonModule, FormsModule, RouterModule, MatSort, MatDialogModule, MatTableModule, MatPaginator, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatCardModule]
+  imports: [CommonModule, FormsModule, RouterModule, MatSort, MatDialogModule, MatTableModule, MatPaginator, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatCardModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class GroupManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -54,12 +57,12 @@ export class GroupManagementComponent implements OnInit {
   @ViewChildren('groupsPaginator') groupsPaginator: QueryList<MatPaginator>;
   @ViewChildren('groupsSort') groupsSort: QueryList<MatSort>;
 
-  public displayedColumns = ['select', 'name', 'created_at', 'updated_at', 'is_builtin', 'delete'];
+  readonly displayedColumns = signal(['select', 'name', 'created_at', 'updated_at', 'is_builtin', 'delete']);
   selection = new SelectionModel<Group>(true, []);
   groups: Group[];
   dataSource = new MatTableDataSource<Group>();
   searchText: string;
-  isReady = false;
+  readonly isReady = signal(false);
 
   constructor() {
   }
@@ -116,7 +119,7 @@ export class GroupManagementComponent implements OnInit {
 
   refresh() {
     this.groupService.getGroups(this.controller).subscribe((groups: Group[]) => {
-      this.isReady = true;
+      this.isReady.set(true);
       this.groups = groups;
       this.dataSource.data = groups;
       this.selection.clear();
