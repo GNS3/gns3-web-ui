@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
 import { MapPortToPortConverter } from '../../../cartography/converters/map/map-port-to-port-converter';
@@ -17,6 +17,9 @@ import { ProjectService } from '@services/project.service';
   templateUrl: './link-created.component.html',
   styleUrls: ['./link-created.component.scss'],
   imports: [],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class LinkCreatedComponent implements OnInit, OnDestroy {
   readonly controller = input<Controller>(undefined);
