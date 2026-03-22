@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NodeSelectInterfaceComponent } from './node-select-interface.component';
 
@@ -5,8 +6,9 @@ describe('NodeSelectInterfaceComponent', () => {
   let component: NodeSelectInterfaceComponent;
   let fixture: ComponentFixture<NodeSelectInterfaceComponent>;
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideZonelessChangeDetection()],
       declarations: [NodeSelectInterfaceComponent],
     }).compileComponents();
   });
