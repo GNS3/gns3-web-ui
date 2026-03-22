@@ -7,14 +7,11 @@ import { MatListModule } from '@angular/material/list';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
-  standalone: true,
   selector: 'app-help',
   templateUrl: './help.component.html',
-  styleUrls: ['./help.component.scss'],
+  styleUrl: './help.component.scss',
   imports: [MatTabsModule, MatButtonModule, MatExpansionModule, MatListModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HelpComponent implements OnInit {
   private httpClient = inject(HttpClient);
