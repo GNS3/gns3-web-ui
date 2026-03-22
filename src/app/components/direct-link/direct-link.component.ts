@@ -14,15 +14,12 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: true,
   selector: 'app-direct-link',
   templateUrl: './direct-link.component.html',
-  styleUrls: ['./direct-link.component.scss'],
+  styleUrl: './direct-link.component.scss',
   encapsulation: ViewEncapsulation.None,
   imports: [CommonModule, ReactiveFormsModule, RouterModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DirectLinkComponent implements OnInit {
   private controllerService = inject(ControllerService);
