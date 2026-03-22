@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 import { ProgressService, State } from './progress.service';
 
 describe('ProgressService', () => {
@@ -6,7 +6,7 @@ describe('ProgressService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ProgressService],
+      providers: [provideZonelessChangeDetection(), ProgressService],
     });
 
     progressService = TestBed.get(ProgressService);
