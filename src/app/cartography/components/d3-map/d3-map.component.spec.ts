@@ -5,8 +5,8 @@ describe('D3MapComponent', () => {
   let component: D3MapComponent;
   let fixture: ComponentFixture<D3MapComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [D3MapComponent],
       providers: [provideZonelessChangeDetection()],
     }).compileComponents();
