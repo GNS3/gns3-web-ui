@@ -10,7 +10,7 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ActivatedRoute, Router, RouterModule} from "@angular/router";
 import {MatTabsModule} from '@angular/material/tabs';
@@ -22,7 +22,10 @@ import {ControllerService} from "@services/controller.service";
   selector: 'app-management',
   templateUrl: './management.component.html',
   styleUrls: ['./management.component.scss'],
-  imports: [CommonModule, RouterModule, MatTabsModule]
+  imports: [CommonModule, RouterModule, MatTabsModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -30,7 +33,7 @@ export class ManagementComponent implements OnInit {
   private controllerService = inject(ControllerService);
 
   controller: Controller;
-  links = ['users', 'groups', 'roles', 'pools', 'ACL'];
+  readonly links = signal(['users', 'groups', 'roles', 'pools', 'ACL']);
 
   constructor() { }
 

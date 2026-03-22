@@ -1,6 +1,6 @@
 <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
 <nav mat-tab-nav-bar [tabPanel]="tabPanel">
-  <a mat-tab-link *ngFor="let link of links"
+  <a mat-tab-link *ngFor="let link of links()"
      routerLink="./{{link}}"
      routerLinkActive
      #rla="routerLinkActive">
