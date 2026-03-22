@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -7,7 +7,10 @@ import { MatButtonModule } from '@angular/material/button';
   selector: 'app-install-software',
   templateUrl: './install-software.component.html',
   styleUrls: ['./install-software.component.scss'],
-  imports: [CommonModule, MatButtonModule]
+  imports: [CommonModule, MatButtonModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class InstallSoftwareComponent implements OnInit, OnDestroy, OnChanges {
   @Input('software')
@@ -16,9 +19,9 @@ export class InstallSoftwareComponent implements OnInit, OnDestroy, OnChanges {
   @Output()
   installedChanged = new EventEmitter();
 
-  public disabled = false;
-  public readyToInstall = true;
-  public buttonText: string;
+  readonly disabled = signal(false);
+  readonly readyToInstall = signal(true);
+  readonly buttonText = signal('');
 
   constructor() {}
 
@@ -34,17 +37,17 @@ export class InstallSoftwareComponent implements OnInit, OnDestroy, OnChanges {
 
   install() {
     // Installation is not supported in web mode
-    this.disabled = true;
-    this.buttonText = 'Not supported';
+    this.disabled.set(true);
+    this.buttonText.set('Not supported');
   }
 
   private updateButton() {
-    this.disabled = this.software.installed;
+    this.disabled.set(this.software.installed);
 
     if (this.software.installed) {
-      this.buttonText = 'Installed';
+      this.buttonText.set('Installed');
     } else {
-      this.buttonText = 'Install';
+      this.buttonText.set('Install');
     }
   }
 }
