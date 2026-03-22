@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -44,8 +44,8 @@ xdescribe('AddIouTemplateComponent', () => {
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+   TestBed.configureTestingModule({
       imports: [
         MatStepperModule,
         FormsModule,
@@ -66,6 +66,7 @@ xdescribe('AddIouTemplateComponent', () => {
         ]),
       ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ActivatedRoute, useValue: activatedRoute },
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: IouService, useValue: mockedIouService },
