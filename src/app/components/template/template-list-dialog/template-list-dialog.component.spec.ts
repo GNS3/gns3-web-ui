@@ -1,4 +1,5 @@
 import { HttpClient } from '@angular/common/http';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -23,11 +24,12 @@ describe('TemplateListDialogComponent', () => {
   let component: TemplateListDialogComponent;
   let fixture: ComponentFixture<TemplateListDialogComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [TemplateListDialogComponent, TemplateFilter],
       imports: [ReactiveFormsModule, FormsModule, RouterTestingModule, MatFormFieldModule, MatInputModule, MatSelectModule, NoopAnimationsModule],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: TemplateService, useClass: TemplateMocksService },
         { provide: ToasterService, useValue: MockedToasterService },
         { provide: MatDialogRef, useValue: {} },
