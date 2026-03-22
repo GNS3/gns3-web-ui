@@ -9,10 +9,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ProgressService } from './progress.service';
 
 @Component({
-  standalone: true,
   selector: 'app-progress',
   templateUrl: './progress.component.html',
-  styleUrls: ['./progress.component.scss'],
+  styleUrl: './progress.component.scss',
   imports: [
     CommonModule,
     MatProgressSpinnerModule,
@@ -21,9 +20,7 @@ import { ProgressService } from './progress.service';
     MatTooltipModule,
     RouterLink,
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProgressComponent implements OnInit, OnDestroy {
   private progressService = inject(ProgressService);
