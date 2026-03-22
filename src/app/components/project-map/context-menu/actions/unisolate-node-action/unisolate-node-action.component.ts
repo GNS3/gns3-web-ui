@@ -8,13 +8,10 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
-  standalone: true,
   selector: 'app-unisolate-node-action',
   templateUrl: './unisolate-node-action.component.html',
   imports: [CommonModule, MatButtonModule, MatIconModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UnisolateNodeActionComponent implements OnInit {
   private nodeService = inject(NodeService);
