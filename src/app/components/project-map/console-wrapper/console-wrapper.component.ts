@@ -34,10 +34,9 @@ import { WebConsoleComponent } from '../web-console/web-console.component';
 import { LogConsoleComponent } from '../log-console/log-console.component';
 
 @Component({
-  standalone: true,
   selector: 'app-console-wrapper',
   templateUrl: './console-wrapper.component.html',
-  styleUrls: ['./console-wrapper.component.scss'],
+  styleUrl: './console-wrapper.component.scss',
   imports: [
     CommonModule,
     FormsModule,
@@ -51,9 +50,7 @@ import { LogConsoleComponent } from '../log-console/log-console.component';
     WebConsoleComponent,
     LogConsoleComponent,
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
