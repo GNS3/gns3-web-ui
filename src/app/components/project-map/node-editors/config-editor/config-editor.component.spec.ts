@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
@@ -26,8 +27,8 @@ describe('ConfigEditorDialogComponent', () => {
   };
   let mockedNodeService: MockedNodeService = new MockedNodeService();
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [
         MatDialogModule,
         MatFormFieldModule,
@@ -37,6 +38,7 @@ describe('ConfigEditorDialogComponent', () => {
         MatTabsModule,
       ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: MatDialogRef, useValue: dialogRef },
         { provide: MAT_DIALOG_DATA, useValue: [] },
         { provide: NodeService, useValue: mockedNodeService },
