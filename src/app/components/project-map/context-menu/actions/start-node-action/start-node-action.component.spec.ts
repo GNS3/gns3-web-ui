@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MockedNodeService } from 'app/components/project-map/project-map.component.spec';
@@ -13,11 +14,12 @@ describe('StartNodeActionComponent', () => {
   let mockedNodeService: MockedNodeService;
   let mockedToasterService: MockedToasterService;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [StartNodeActionComponent],
       imports:[MatProgressSpinnerModule ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: NodeService, useValue: mockedNodeService },
         { provide: HttpController, useValue: {} },
         { provide: ToasterService, useValue: mockedToasterService },
