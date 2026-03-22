@@ -10,7 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BehaviorSubject, interval, merge, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Controller, ControllerProtocol } from '@models/controller';
@@ -22,12 +22,11 @@ import { AddControllerDialogComponent } from './add-controller-dialog/add-contro
 import { ControllerDiscoveryComponent } from './controller-discovery/controller-discovery.component';
 
 @Component({
-  standalone: true,
   selector: 'app-controller-list',
   templateUrl: './controllers.component.html',
-  styleUrls: ['./controllers.component.scss'],
+  styleUrl: './controllers.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, MatDialogModule, MatSortModule, MatTableModule, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatBottomSheetModule, ControllerDiscoveryComponent]
+  imports: [CommonModule, FormsModule, RouterModule, MatDialogModule, MatSortModule, MatTableModule, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatBottomSheetModule, ControllerDiscoveryComponent]
 })
 export class ControllersComponent implements OnInit, OnDestroy {
   private dialog = inject(MatDialog);
