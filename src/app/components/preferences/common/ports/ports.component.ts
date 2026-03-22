@@ -14,14 +14,11 @@ import { BuiltInTemplatesConfigurationService } from '@services/built-in-templat
 import { ToasterService } from "@services/toaster.service";
 
 @Component({
-  standalone: true,
   selector: 'app-ports',
   templateUrl: './ports.component.html',
   styleUrls: ['../../preferences.component.scss'],
   imports: [CommonModule, FormsModule, MatTableModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatTooltipModule, MatOptionModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PortsComponent implements OnInit {
   @Input() ethernetPorts: PortsMappingEntity[] = [];
