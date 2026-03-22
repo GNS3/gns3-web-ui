@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
@@ -28,10 +29,11 @@ describe('BringToFrontActionComponent', () => {
   let nodeService = new MockedNodeService();
   let nodesDataSource = new MockedNodesDataSource();
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: DrawingService, useValue: drawingService },
         { provide: DrawingsDataSource, useValue: drawingsDataSource },
         { provide: NodeService, useValue: nodeService },
