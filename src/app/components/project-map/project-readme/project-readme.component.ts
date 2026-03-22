@@ -9,14 +9,11 @@ import { ProjectService } from '@services/project.service';
 import { marked } from 'marked';
 
 @Component({
-  standalone: true,
   selector: 'app-project-readme',
   templateUrl: './project-readme.component.html',
-  styleUrls: ['./project-readme.component.scss'],
+  styleUrl: './project-readme.component.scss',
   imports: [CommonModule, MatDialogModule, MatButtonModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectReadmeComponent implements AfterViewInit {
   readonly text = viewChild<ElementRef>('text');
