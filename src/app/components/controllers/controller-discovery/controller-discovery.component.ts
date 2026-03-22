@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { forkJoin, from, of, Observable } from 'rxjs';
@@ -17,7 +17,10 @@ import { VersionService } from '@services/version.service';
   selector: 'app-controller-discovery',
   templateUrl: './controller-discovery.component.html',
   styleUrls: ['./controller-discovery.component.scss'],
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatDividerModule]
+  imports: [CommonModule, MatCardModule, MatButtonModule, MatDividerModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class ControllerDiscoveryComponent implements OnInit {
   private versionService = inject(VersionService);
@@ -32,7 +35,7 @@ export class ControllerDiscoveryComponent implements OnInit {
     },
   ];
 
-  discoveredController: Controller;
+  readonly discoveredController = signal<Controller | null>(null);
 
   constructor() {}
 
@@ -56,7 +59,7 @@ export class ControllerDiscoveryComponent implements OnInit {
     });
 
     if (discovered.length > 0) {
-      this.discoveredController = discovered.shift();
+      this.discoveredController.set(discovered.shift());
     }
   }
 
@@ -84,7 +87,7 @@ export class ControllerDiscoveryComponent implements OnInit {
           });
         });
         if (discovered.length > 0) {
-          this.discoveredController = discovered.shift();
+          this.discoveredController.set(discovered.shift());
         }
       },
       (error) => {}
@@ -122,7 +125,7 @@ export class ControllerDiscoveryComponent implements OnInit {
   }
 
   ignore(controller: Controller) {
-    this.discoveredController = null;
+    this.discoveredController.set(null);
   }
 
   accept(controller: Controller) {
@@ -135,7 +138,7 @@ export class ControllerDiscoveryComponent implements OnInit {
 
     this.controllerService.create(controller).then((created: Controller) => {
       this.controllerDatabase.addController(created);
-      this.discoveredController = null;
+      this.discoveredController.set(null);
     });
   }
 }
