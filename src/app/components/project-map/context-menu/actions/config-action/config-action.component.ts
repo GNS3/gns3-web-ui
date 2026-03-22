@@ -20,13 +20,10 @@ import { ConfiguratorDialogVmwareComponent } from '../../../node-editors/configu
 import { ConfiguratorDialogVpcsComponent } from '../../../node-editors/configurator/vpcs/configurator-vpcs.component';
 
 @Component({
-  standalone: true,
   selector: 'app-config-node-action',
   templateUrl: './config-action.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigActionComponent {
   private dialog = inject(MatDialog);
