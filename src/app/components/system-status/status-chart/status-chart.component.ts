@@ -6,14 +6,11 @@ import { NgCircleProgressModule } from 'ng-circle-progress';
 import { ComputeStatistics } from '@models/computeStatistics';
 
 @Component({
-  standalone: true,
   selector: 'app-status-chart',
   templateUrl: './status-chart.component.html',
-  styleUrls: ['./status-chart.component.scss'],
+  styleUrl: './status-chart.component.scss',
   imports: [CommonModule, MatCardModule, MatChipsModule, NgCircleProgressModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatusChartComponent implements OnInit {
   readonly computeStatistics = input<ComputeStatistics>(undefined);
