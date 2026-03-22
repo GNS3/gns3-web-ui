@@ -11,14 +11,11 @@ import { NodesDataSource } from '../../../cartography/datasources/nodes-datasour
  * Displays a list of console-capable devices in the sidebar
  */
 @Component({
-  standalone: true,
   selector: 'app-console-devices-panel',
   templateUrl: './console-devices-panel.component.html',
-  styleUrls: ['./console-devices-panel.component.scss'],
+  styleUrl: './console-devices-panel.component.scss',
   imports: [CommonModule, MatIconModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
   private nodesDataSource = inject(NodesDataSource);
