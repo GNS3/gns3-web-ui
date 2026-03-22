@@ -12,14 +12,11 @@ import { LinkService } from '@services/link.service';
 import { ProjectService } from '@services/project.service';
 
 @Component({
-  standalone: true,
   selector: 'app-link-created',
   templateUrl: './link-created.component.html',
-  styleUrls: ['./link-created.component.scss'],
+  styleUrl: './link-created.component.scss',
   imports: [],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LinkCreatedComponent implements OnInit, OnDestroy {
   readonly controller = input<Controller>(undefined);
