@@ -25,14 +25,11 @@ import {DeleteResourcePoolComponent} from "@components/resource-pools-management
 import {ResourcePoolsService} from "@services/resource-pools.service";
 
 @Component({
-  standalone: true,
   selector: 'app-resource-pools-management',
   templateUrl: './resource-pools-management.component.html',
-  styleUrls: ['./resource-pools-management.component.scss'],
+  styleUrl: './resource-pools-management.component.scss',
   imports: [CommonModule, FormsModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResourcePoolsManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);
