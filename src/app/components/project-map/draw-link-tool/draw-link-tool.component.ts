@@ -14,14 +14,11 @@ import { NodeSelectInterfaceComponent } from '@components/project-map/node-selec
 import { Link } from '@models/link';
 
 @Component({
-  standalone: true,
   selector: 'app-draw-link-tool',
   templateUrl: './draw-link-tool.component.html',
-  styleUrls: ['./draw-link-tool.component.scss'],
+  styleUrl: './draw-link-tool.component.scss',
   imports: [CommonModule, NodeSelectInterfaceComponent],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DrawLinkToolComponent implements OnInit, OnDestroy {
   readonly links = input<Link[]>(undefined);
