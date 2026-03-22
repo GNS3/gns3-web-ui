@@ -22,13 +22,10 @@ export interface ConfirmationDialogData {
  */
 @Component({
   selector: 'app-confirmation-dialog',
-  standalone: true,
   templateUrl: './confirmation-dialog.component.html',
-  styleUrls: ['./confirmation-dialog.component.scss'],
+  styleUrl: './confirmation-dialog.component.scss',
   imports: [CommonModule, MatIconModule, MatButtonModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmationDialogComponent {
   constructor(
