@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, Renderer2, ViewEncapsulation, inject } from '@angular/core';
+import { Component, Inject, OnInit, Renderer2, ViewEncapsulation, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatSnackBarRef, MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -12,12 +12,15 @@ import { UploadServiceService } from './upload-service.service';
   styleUrls: ['./uploading-processbar.component.scss'],
   encapsulation: ViewEncapsulation.None,
   imports: [MatButtonModule, MatProgressBarModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class UploadingProcessbarComponent implements OnInit {
   private _snackRef = inject(MatSnackBarRef<UploadingProcessbarComponent>);
   private _US = inject(UploadServiceService);
 
-  uploadProgress: number = 0
+  uploadProgress = signal<number>(0);
   subscription: Subscription;
   upload_file_type:string
 
@@ -26,8 +29,8 @@ export class UploadingProcessbarComponent implements OnInit {
   ngOnInit() {
    this.upload_file_type =  this.data.upload_file_type
     this.subscription = this._US.currentCount.subscribe((count:number) => {
-      this.uploadProgress = count;
-      if (this.uploadProgress === 100 || this.uploadProgress == null ) {
+      this.uploadProgress.set(count);
+      if (this.uploadProgress() === 100 || this.uploadProgress() == null ) {
         this.dismiss()
       }
     })
