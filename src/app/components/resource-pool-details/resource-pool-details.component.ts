@@ -23,14 +23,11 @@ import {
 } from "@components/resource-pool-details/delete-resource-confirmation-dialog/delete-resource-confirmation-dialog.component";
 
 @Component({
-  standalone: true,
   selector: 'app-resource-pool-details',
   templateUrl: './resource-pool-details.component.html',
-  styleUrls: ['./resource-pool-details.component.scss'],
+  styleUrl: './resource-pool-details.component.scss',
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatDividerModule, MatAutocompleteModule, MatDialogModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResourcePoolDetailsComponent implements OnInit {
   private toastService = inject(ToasterService);
