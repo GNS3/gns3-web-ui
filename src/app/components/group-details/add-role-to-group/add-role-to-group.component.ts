@@ -29,14 +29,11 @@ import {Role} from "@models/api/role";
 import {RoleService} from "@services/role.service";
 
 @Component({
-  standalone: true,
   selector: 'app-add-role-to-group',
   templateUrl: './add-role-to-group.component.html',
-  styleUrls: ['./add-role-to-group.component.scss'],
+  styleUrl: './add-role-to-group.component.scss',
   imports: [CommonModule, FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatIconModule, MatProgressSpinnerModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddRoleToGroupComponent implements OnInit {
   private dialog = inject(MatDialogRef<AddRoleToGroupComponent>);
