@@ -36,14 +36,11 @@ import { DeleteGroupDialogComponent } from "@components/group-management/delete-
 
 
 @Component({
-  standalone: true,
   selector: 'app-group-management',
   templateUrl: './group-management.component.html',
-  styleUrls: ['./group-management.component.scss'],
+  styleUrl: './group-management.component.scss',
   imports: [CommonModule, FormsModule, RouterModule, MatSort, MatDialogModule, MatTableModule, MatPaginator, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatCardModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GroupManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);
