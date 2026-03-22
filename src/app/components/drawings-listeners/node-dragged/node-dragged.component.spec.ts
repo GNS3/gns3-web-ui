@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { Observable } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
@@ -16,9 +16,10 @@ describe('NodeDraggedComponent', () => {
   let mockedNodeService = new MockedNodeService();
   let mockedNodesEventSource = new NodesEventSource();
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+   TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
         { provide: NodeService, useValue: mockedNodeService },
         { provide: NodesEventSource, useValue: mockedNodesEventSource },

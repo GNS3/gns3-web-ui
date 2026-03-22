@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { Observable } from 'rxjs';
 import { MapLabelToLabelConverter } from '../../../cartography/converters/map/map-label-to-label-converter';
 import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
@@ -30,9 +30,10 @@ describe('LinkCreatedComponent', () => {
   let mockedLinksEventSource = new LinksEventSource();
   let project = new Project();
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+   TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ProjectService, useClass: MockedProjectService },
         { provide: LinkService, useValue: mockedLinkService },
         { provide: LinksDataSource, useClass: LinksDataSource },

@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { Observable } from 'rxjs';
 import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
@@ -18,9 +18,10 @@ describe('InterfaceLabelDraggedComponent', () => {
   let mockedLinksEventSource = new LinksEventSource();
   let mockedLinksDataSource = new LinksDataSource();
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       providers: [
+        provideZonelessChangeDetection(),
         { provide: LinkService, useValue: mockedLinkService },
         { provide: LinksDataSource, useValue: mockedLinksDataSource },
         { provide: LinksEventSource, useValue: mockedLinksEventSource },
