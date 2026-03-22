@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, NO_ERRORS_SCHEMA } from '@angular/core';
+import { ChangeDetectorRef, NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { BrowserModule } from '@angular/platform-browser';
@@ -14,10 +14,11 @@ describe('ContextMenuComponent', () => {
   let component: ContextMenuComponent;
   let fixture: ComponentFixture<ContextMenuComponent>;
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [MatMenuModule, BrowserModule],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ChangeDetectorRef },
         { provide: ProjectService, useClass: MockedProjectService },
       ],
