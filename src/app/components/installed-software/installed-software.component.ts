@@ -1,5 +1,5 @@
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
 import { DataSource } from '@angular/cdk/table';
-import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -12,11 +12,14 @@ import { InstallSoftwareComponent } from './install-software/install-software.co
   selector: 'app-installed-software',
   templateUrl: './installed-software.component.html',
   styleUrls: ['./installed-software.component.scss'],
-  imports: [CommonModule, MatTableModule, AdbutlerComponent, InstallSoftwareComponent]
+  imports: [CommonModule, MatTableModule, AdbutlerComponent, InstallSoftwareComponent],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class InstalledSoftwareComponent implements OnInit {
-  dataSource: InstalledSoftwareDataSource;
-  displayedColumns = ['name', 'actions'];
+  readonly dataSource = signal<InstalledSoftwareDataSource | null>(null);
+  readonly displayedColumns = signal(['name', 'actions']);
 
   private installedSoftwareService = inject(InstalledSoftwareService);
   private changeDetectorRef = inject(ChangeDetectorRef);
@@ -24,11 +27,11 @@ export class InstalledSoftwareComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    this.dataSource = new InstalledSoftwareDataSource(this.installedSoftwareService);
+    this.dataSource.set(new InstalledSoftwareDataSource(this.installedSoftwareService));
   }
 
   onInstalled(event) {
-    this.dataSource.refresh();
+    this.dataSource()?.refresh();
     /**
      * During software installation we are not performing any user action
      * in browser hence Angular doesn't know something suppose to change.
