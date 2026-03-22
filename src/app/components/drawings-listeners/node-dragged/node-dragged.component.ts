@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
@@ -15,6 +15,9 @@ import { NodeService } from '@services/node.service';
   templateUrl: './node-dragged.component.html',
   styleUrls: ['./node-dragged.component.scss'],
   imports: [],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class NodeDraggedComponent implements OnInit, OnDestroy {
   readonly controller = input<Controller>(undefined);
