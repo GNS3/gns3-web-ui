@@ -27,10 +27,9 @@ import { MatListModule } from '@angular/material/list';
 import { ControllerDiscoveryComponent } from '@components/controllers/controller-discovery/controller-discovery.component';
 
 @Component({
-  standalone: true,
   selector: 'app-image-manager',
   templateUrl: './image-manager.component.html',
-  styleUrls: ['./image-manager.component.scss'],
+  styleUrl: './image-manager.component.scss',
   imports: [
     CommonModule,
     RouterModule,
@@ -48,9 +47,7 @@ import { ControllerDiscoveryComponent } from '@components/controllers/controller
     MatListModule,
     ControllerDiscoveryComponent,
   ],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImageManagerComponent implements OnInit, OnDestroy {
   controller: Controller;
