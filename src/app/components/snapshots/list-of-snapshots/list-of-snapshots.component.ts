@@ -19,14 +19,11 @@ import { ToasterService } from '@services/toaster.service';
 import { NameFilter } from '@filters/nameFilter.pipe';
 
 @Component({
-  standalone: true,
   selector: 'app-list-of-snapshots',
   templateUrl: './list-of-snapshots.component.html',
-  styleUrls: ['./list-of-snapshots.component.scss'],
+  styleUrl: './list-of-snapshots.component.scss',
   imports: [CommonModule, FormsModule, MatTableModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule, MatInputModule, MatCardModule, NameFilter],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListOfSnapshotsComponent implements OnInit {
   private route = inject(ActivatedRoute);
