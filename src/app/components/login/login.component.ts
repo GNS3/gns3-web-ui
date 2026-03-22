@@ -1,4 +1,4 @@
-import { Component, DoCheck, OnInit, ViewEncapsulation, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DoCheck, OnInit, ViewEncapsulation, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -36,7 +36,10 @@ import { VersionService } from '@services/version.service';
     MatButtonModule,
     MatIconModule,
     MatError
-  ]
+  ],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class LoginComponent implements OnInit, DoCheck {
   private loginService = inject(LoginService);
@@ -49,12 +52,12 @@ export class LoginComponent implements OnInit, DoCheck {
   private themeService = inject(ThemeService);
 
   private controller: Controller;
-  public version: string;
-  public isLightThemeEnabled: boolean = false;
-  public loginError: boolean = false;
-  public returnUrl: string = '';
-  public isRememberMe: boolean = false;
-  public isRememberMeChecked: boolean = false;
+  readonly returnUrl = signal('');
+  public version = signal('');
+  public isLightThemeEnabled = signal(false);
+  public loginError = signal(false);
+  public isRememberMe = signal(false);
+  public isRememberMeChecked = signal(false);
 
   loginForm = new UntypedFormGroup({
     username: new UntypedFormControl('', [Validators.required]),
@@ -65,7 +68,7 @@ export class LoginComponent implements OnInit, DoCheck {
 
   async ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+    this.returnUrl.set(this.route.snapshot.queryParams['returnUrl'] || '/');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
       this.controller = controller;
 
@@ -74,19 +77,19 @@ export class LoginComponent implements OnInit, DoCheck {
       }
 
       this.versionService.get(this.controller).subscribe((version: Version) => {
-        this.version = version.version;
+        this.version.set(version.version);
       });
     });
 
     this.themeService.getActualTheme() === 'light'
-      ? (this.isLightThemeEnabled = true)
-      : (this.isLightThemeEnabled = false);
+      ? this.isLightThemeEnabled.set(true)
+      : this.isLightThemeEnabled.set(false);
 
     let getCurrentUser = JSON.parse(localStorage.getItem(`isRememberMe`)) ?? null;
     if (getCurrentUser && getCurrentUser.isRememberMe) {
       this.loginForm.get('username').setValue(getCurrentUser.username);
       this.loginForm.get('password').setValue(getCurrentUser.password);
-      this.isRememberMeChecked = getCurrentUser.isRememberMe;
+      this.isRememberMeChecked.set(getCurrentUser.isRememberMe);
     }
   }
 
@@ -108,15 +111,15 @@ export class LoginComponent implements OnInit, DoCheck {
         controller.tokenExpired = false;
         await this.controllerService.update(controller);
 
-        if (this.returnUrl.length <= 1) {
+        if (this.returnUrl().length <= 1) {
           this.router.navigate(['/controller', this.controller.id, 'projects']);
         } else {
-          this.router.navigateByUrl(this.returnUrl);
+          this.router.navigateByUrl(this.returnUrl());
         }
       },
       (error) => {
-        this.isRememberMe = false;
-        this.loginError = true;
+        this.isRememberMe.set(false);
+        this.loginError.set(true);
       }
     );
   }
@@ -128,18 +131,18 @@ export class LoginComponent implements OnInit, DoCheck {
         password: this.loginForm.get('password').value,
         isRememberMe: ev.checked,
       };
-      this.isRememberMeChecked = ev.checked;
+      this.isRememberMeChecked.set(ev.checked);
       localStorage.setItem(`isRememberMe`, JSON.stringify(current_user));
     } else {
       localStorage.removeItem(`isRememberMe`);
       this.loginForm.reset();
-      this.isRememberMe = ev.checked;
+      this.isRememberMe.set(ev.checked);
     }
   }
 
   ngDoCheck() {
     if (this.loginForm.get('username').valid && this.loginForm.get('password').valid) {
-      this.isRememberMe = true;
+      this.isRememberMe.set(true);
     }
   }
 }

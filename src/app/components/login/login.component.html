@@ -3,11 +3,11 @@
     <mat-card class="matCard">
       <div class="loginTitle">
         <div class="loginIcon">
-          <mat-icon class="mat-icon-login" *ngIf="!isLightThemeEnabled" svgIcon="gns3"></mat-icon>
-          <mat-icon class="mat-icon-login" *ngIf="isLightThemeEnabled" svgIcon="gns3black"></mat-icon>
+          <mat-icon class="mat-icon-login" *ngIf="!isLightThemeEnabled()" svgIcon="gns3"></mat-icon>
+          <mat-icon class="mat-icon-login" *ngIf="isLightThemeEnabled()" svgIcon="gns3black"></mat-icon>
           <div>
             <h1>GNS3</h1>
-            <h6>v{{ version }}</h6>
+            <h6>v{{ version() }}</h6>
           </div>
         </div>
       </div>
@@ -22,8 +22,8 @@
           <mat-error *ngIf="loginForm.get('password').hasError('required')">You must enter password</mat-error>
         </mat-form-field>
         <mat-checkbox
-          [disabled]="!isRememberMe"
-          [checked]="isRememberMeChecked"
+          [disabled]="!isRememberMe()"
+          [checked]="isRememberMeChecked()"
           class="margin-left"
           color="primary"
           (change)="rememberMe($event)"
@@ -36,11 +36,11 @@
     </mat-card>
 
     <div class="errorMessage">
-      <mat-error *ngIf="loginError">Authentication was unsuccessful</mat-error>
+      <mat-error *ngIf="loginError()">Authentication was unsuccessful</mat-error>
     </div>
 
     <div class="errorMessage">
-      <mat-error *ngIf="loginError">The default username and password is admin</mat-error>
+      <mat-error *ngIf="loginError()">The default username and password is admin</mat-error>
     </div>
   </div>
 </div>
