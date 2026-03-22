@@ -20,14 +20,11 @@ import { LinksWidget } from '../../widgets/links';
 import { NodesWidget } from '../../widgets/nodes';
 
 @Component({
-  standalone: true,
   selector: 'app-draggable-selection',
   templateUrl: './draggable-selection.component.html',
-  styleUrls: ['./draggable-selection.component.scss'],
+  styleUrl: './draggable-selection.component.scss',
   imports: [],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DraggableSelectionComponent implements OnInit, OnDestroy {
   private start: Subscription;
