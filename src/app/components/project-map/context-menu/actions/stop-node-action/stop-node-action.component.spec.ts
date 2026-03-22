@@ -1,3 +1,4 @@
+import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MockedNodeService } from 'app/components/project-map/project-map.component.spec';
 import { HttpController } from 'app/services/http-controller.service';
@@ -9,10 +10,11 @@ describe('StopNodeActionComponent', () => {
   let fixture: ComponentFixture<StopNodeActionComponent>;
   let mockedNodeService : MockedNodeService
   
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [StopNodeActionComponent],
       providers:[
+        provideZonelessChangeDetection(),
         {provide:NodeService , useValue: mockedNodeService},
       ]
     }).compileComponents();
