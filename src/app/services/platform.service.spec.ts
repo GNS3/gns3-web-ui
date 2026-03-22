@@ -1,4 +1,4 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 
 import { PlatformService } from './platform.service';
 
@@ -7,7 +7,7 @@ describe('PlatformService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [PlatformService],
+      providers: [provideZonelessChangeDetection(), PlatformService],
     });
   });
 
