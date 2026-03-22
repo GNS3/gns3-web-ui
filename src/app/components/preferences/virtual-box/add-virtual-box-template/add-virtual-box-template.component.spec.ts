@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
@@ -40,8 +40,8 @@ describe('AddVirtualBoxTemplateComponent', () => {
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [
         FormsModule,
         ReactiveFormsModule,
@@ -56,6 +56,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
         ]),
       ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: ActivatedRoute, useValue: activatedRoute },
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: VirtualBoxService, useValue: mockedVirtualBoxService },
