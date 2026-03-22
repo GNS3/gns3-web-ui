@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { MultiLinkCalculatorHelper } from 'app/cartography/helpers/multi-link-calculator-helper';
 import { LinkComponent } from './link.component';
 import { StatusComponent } from '../status/status.component';
@@ -6,10 +6,11 @@ import { StatusComponent } from '../status/status.component';
 describe('LinkComponent', () => {
   let component: LinkComponent;
   let fixture: ComponentFixture<LinkComponent>;
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [LinkComponent, StatusComponent],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: MultiLinkCalculatorHelper, useValue: {} }
       ]
     }).compileComponents();

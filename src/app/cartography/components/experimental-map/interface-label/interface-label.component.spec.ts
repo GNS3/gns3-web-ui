@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, ElementRef, Injectable } from '@angular/core';
+import { ChangeDetectorRef, ElementRef, Injectable, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CssFixer } from 'app/cartography/helpers/css-fixer';
 import { InterfaceLabelComponent } from './interface-label.component';
@@ -13,10 +13,11 @@ xdescribe('InterfaceLabelComponent', () => {
   let component: InterfaceLabelComponent;
   let fixture: ComponentFixture<InterfaceLabelComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [InterfaceLabelComponent],
       providers: [
+        provideZonelessChangeDetection(),
         CssFixer,
         ChangeDetectorRef,
         { provide: ElementRef, useValue: new MockElementRef() },

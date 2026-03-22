@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { FontFixer } from 'app/cartography/helpers/font-fixer';
 import { TextComponent } from './text.component';
 
@@ -6,10 +6,10 @@ describe('TextComponent', () => {
   let component: TextComponent;
   let fixture: ComponentFixture<TextComponent>;
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+   TestBed.configureTestingModule({
       declarations: [TextComponent],
-      providers:[FontFixer]
+      providers:[provideZonelessChangeDetection(), FontFixer]
     }).compileComponents();
   });
 

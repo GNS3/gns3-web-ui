@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { NodesEventSource } from 'app/cartography/events/nodes-event-source';
 import { CssFixer } from 'app/cartography/helpers/css-fixer';
 import { FontFixer } from 'app/cartography/helpers/font-fixer';
@@ -9,10 +9,11 @@ describe('NodeComponent', () => {
   let component: NodeComponent;
   let fixture: ComponentFixture<NodeComponent>;
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+   TestBed.configureTestingModule({
       declarations: [NodeComponent, DraggableComponent],
       providers:[
+        provideZonelessChangeDetection(),
         CssFixer,
         FontFixer,
         NodesEventSource,
