@@ -10,13 +10,10 @@ import { ToasterService } from '@services/toaster.service';
 import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog.component';
 
 @Component({
-  standalone: true,
   selector: 'app-export-config-action',
   templateUrl: './export-config-action.component.html',
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExportConfigActionComponent {
   private nodeService = inject(NodeService);
