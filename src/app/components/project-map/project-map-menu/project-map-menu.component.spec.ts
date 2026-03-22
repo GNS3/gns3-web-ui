@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -36,8 +36,8 @@ describe('ProjectMapMenuComponent', () => {
   let mockedDrawingsDataSource = new MockedDrawingsDataSource();
   let mockedDrawingsEventSource = new DrawingsEventSource();
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       imports: [
         MatIconModule,
         MatDialogModule,
@@ -48,6 +48,7 @@ describe('ProjectMapMenuComponent', () => {
         NoopAnimationsModule,
       ],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: DrawingService, useValue: drawingService },
         { provide: DrawingsDataSource, useValue: mockedDrawingsDataSource },
         { provide: DrawingsEventSource, useValue: mockedDrawingsEventSource },
