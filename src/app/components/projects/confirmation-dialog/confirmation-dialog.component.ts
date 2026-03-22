@@ -4,14 +4,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { Project } from '@models/project';
 
 @Component({
-  standalone: true,
   selector: 'app-import-project-dialog',
   templateUrl: 'confirmation-dialog.component.html',
-  styleUrls: ['confirmation-dialog.component.scss'],
+  styleUrl: 'confirmation-dialog.component.scss',
   imports: [MatDialogModule, MatButtonModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmationDialogComponent implements OnInit {
   public dialogRef = inject(MatDialogRef<ConfirmationDialogComponent>);
