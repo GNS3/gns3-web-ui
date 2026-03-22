@@ -10,14 +10,11 @@ import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
 
 @Component({
-  standalone: true,
   selector: 'app-drawing-resized',
   templateUrl: './drawing-resized.component.html',
-  styleUrls: ['./drawing-resized.component.scss'],
+  styleUrl: './drawing-resized.component.scss',
   imports: [],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DrawingResizedComponent implements OnInit, OnDestroy {
   readonly controller = input<Controller>(undefined);
