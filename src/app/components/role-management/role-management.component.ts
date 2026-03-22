@@ -25,7 +25,7 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {MatDialogModule, MatDialog} from "@angular/material/dialog";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Router, RouterModule} from "@angular/router";
 import {ProgressService} from "../../common/progress/progress.service";
 import {ControllerService} from "@services/controller.service";
 import {ToasterService} from "@services/toaster.service";
@@ -42,7 +42,7 @@ import {HttpErrorResponse} from "@angular/common/http";
   selector: 'app-role-management',
   templateUrl: './role-management.component.html',
   styleUrl: './role-management.component.scss',
-  imports: [CommonModule, FormsModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule, RoleFilterPipe],
+  imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatPaginator, MatSort, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatProgressSpinnerModule, RoleFilterPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoleManagementComponent implements OnInit {
