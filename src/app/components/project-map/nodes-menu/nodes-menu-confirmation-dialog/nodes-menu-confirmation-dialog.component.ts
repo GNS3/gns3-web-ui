@@ -4,14 +4,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
-  standalone: true,
   selector: 'app-nodes-menu-confirmation-dialog',
   templateUrl: './nodes-menu-confirmation-dialog.component.html',
-  styleUrls: ['./nodes-menu-confirmation-dialog.component.scss'],
+  styleUrl: './nodes-menu-confirmation-dialog.component.scss',
   imports: [MatDialogModule, MatButtonModule, MatDividerModule],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesMenuConfirmationDialogComponent implements OnInit {
   public dialogRef = inject(MatDialogRef<NodesMenuConfirmationDialogComponent>);
