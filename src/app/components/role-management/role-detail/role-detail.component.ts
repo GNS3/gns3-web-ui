@@ -34,14 +34,11 @@ import { map } from "rxjs/operators";
 import { PrivilegeComponent } from "@components/role-management/role-detail/privilege/privilege.component";
 
 @Component({
-  standalone: true,
   selector: 'app-role-detail',
   templateUrl: './role-detail.component.html',
-  styleUrls: ['./role-detail.component.scss'],
+  styleUrl: './role-detail.component.scss',
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatCheckboxModule, MatDividerModule, PrivilegeComponent],
-  // TODO: This component has been partially migrated to be zoneless-compatible.
-  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
-  changeDetection: ChangeDetectionStrategy.Default,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoleDetailComponent implements OnInit {
   private roleService = inject(RoleService);
