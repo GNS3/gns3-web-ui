@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnChanges, OnInit, Output, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, OnChanges, OnInit, Output, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -14,6 +14,9 @@ import { map, startWith } from 'rxjs/operators';
   templateUrl: './autocomplete.component.html',
   styleUrls: ['./autocomplete.component.scss'],
   imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule],
+  // TODO: This component has been partially migrated to be zoneless-compatible.
+  // After testing, this should be updated to ChangeDetectionStrategy.OnPush.
+  changeDetection: ChangeDetectionStrategy.Default,
 })
 export class AutocompleteComponent<T> implements OnChanges {
   readonly data = input<T[]>(undefined);
