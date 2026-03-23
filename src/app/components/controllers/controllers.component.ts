@@ -226,9 +226,9 @@ export class ControllersComponent implements OnInit, OnDestroy {
   }
 
   deleteController(controller: Controller ) {
-    this.bottomSheet.open(ConfirmationBottomSheetComponent);
-    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
-    bottomSheetRef.instance.message = 'Do you want to delete the controller?';
+    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
+      data: { message: 'Do you want to delete the controller?' }
+    });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
         this.controllerService.delete(controller).then(() => {

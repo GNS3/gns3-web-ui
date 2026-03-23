@@ -41,9 +41,9 @@ export class DeleteActionComponent implements OnInit {
   ngOnInit() {}
 
   confirmDelete() {
-    this.bottomSheet.open(ConfirmationBottomSheetComponent);
-    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
-    bottomSheetRef.instance.message = 'Do you want to delete all selected objects?';
+    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
+      data: { message: 'Do you want to delete all selected objects?' }
+    });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
         this.delete();

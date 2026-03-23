@@ -529,9 +529,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   deleteItems() {
-    this.bottomSheet.open(ConfirmationBottomSheetComponent);
-    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
-    bottomSheetRef.instance.message = 'Do you want to delete all selected objects?';
+    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
+      data: { message: 'Do you want to delete all selected objects?' }
+    });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
         const selected = this.selectionManager.getSelected();
@@ -1080,9 +1080,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public closeProject() {
-    this.bottomSheet.open(ConfirmationBottomSheetComponent);
-    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
-    bottomSheetRef.instance.message = 'Do you want to close the project?';
+    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
+      data: { message: 'Do you want to close the project?' }
+    });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
         this.projectService.close(this.controller, this.project.project_id).subscribe(() => {
@@ -1093,9 +1093,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public deleteProject() {
-    this.bottomSheet.open(ConfirmationBottomSheetComponent);
-    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
-    bottomSheetRef.instance.message = 'Do you want to delete the project?';
+    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
+      data: { message: 'Do you want to delete the project?' }
+    });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
         this.projectService.delete(this.controller, this.project.project_id).subscribe(() => {
