@@ -6,29 +6,35 @@
       <mat-card class="matCard">
         <mat-tab-group *ngIf="name">
           <mat-tab label="Ethernet interfaces">
-            <div class="form-field" *ngFor="let port of portsMappingEthernet">
-              <div class="form-field">{{ port.name }}</div>
-              <br /><br />
-            </div>
+            @for (port of portsMappingEthernet; track port.name) {
+              <div class="form-field">
+                <div class="form-field">{{ port.name }}</div>
+                <br /><br />
+              </div>
+            }
             <mat-form-field class="select">
               <mat-select
                 placeholder="Ethernet interface"
                 [ngModelOptions]="{ standalone: true }"
                 [(ngModel)]="ethernetInterface"
               >
-                <mat-option *ngFor="let type of ethernetInterfaces" [value]="type">
-                  {{ type }}
-                </mat-option>
+                @for (type of ethernetInterfaces; track type) {
+                  <mat-option [value]="type">
+                    {{ type }}
+                  </mat-option>
+                }
               </mat-select>
             </mat-form-field>
             <button mat-button class="form-field" (click)="onAddEthernetInterface()">Add</button>
           </mat-tab>
 
           <mat-tab label="TAP interfaces">
-            <div class="form-field" *ngFor="let port of portsMappingTap">
-              <div class="form-field">{{ port.name }}</div>
-              <br /><br />
-            </div>
+            @for (port of portsMappingTap; track port.name) {
+              <div class="form-field">
+                <div class="form-field">{{ port.name }}</div>
+                <br /><br />
+              </div>
+            }
             <mat-form-field class="form-field">
               <input matInput type="text" [(ngModel)]="tapInterface" placeholder="TAP interface" />
             </mat-form-field>
@@ -48,21 +54,25 @@
             <mat-form-field class="form-field tags-field">
               <mat-label>Tags</mat-label>
               <mat-chip-grid #chipList>
-                <mat-chip *ngFor="let tag of node?.tags" (removed)="removeTag(tag)">
-                  {{ tag }}
-                  <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
+                @for (tag of node?.tags; track tag) {
+                  <mat-chip (removed)="removeTag(tag)">
+                    {{ tag }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                }
+                <input matInput placeholder="Add tags"
+                       [matChipInputFor]="chipList"
+                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                       (matChipInputTokenEnd)="addTag($event)" />
               </mat-chip-grid>
-              <input matInput placeholder="Add tags"
-                     [matChipInputFor]="chipList"
-                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                     (matChipInputTokenEnd)="addTag($event)" />
             </mat-form-field>
             <mat-form-field class="select">
               <mat-select placeholder="Console type" [(ngModel)]="node.console_type">
-                <mat-option *ngFor="let type of consoleTypes" [value]="type">
-                  {{ type }}
-                </mat-option>
+                @for (type of consoleTypes; track type) {
+                  <mat-option [value]="type">
+                    {{ type }}
+                  </mat-option>
+                }
               </mat-select>
             </mat-form-field>
             <mat-form-field class="form-field">
