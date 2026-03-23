@@ -48,12 +48,14 @@
               <input matInput placeholder="filter members" [(ngModel)]="searchMembers"/>
             </mat-form-field>
           </div>
-          <div *ngFor="let user of members() | membersFilter: searchMembers | paginator: pageEvent">
-            <a [routerLink]="['/controller', controller.id, 'management','users', user.user_id]">
-              <div>{{user.username}}</div>
-            </a>
-            <mat-icon class="clickable" (click)="openRemoveUserDialog(user)">delete</mat-icon>
-          </div>
+          @for (user of members() | membersFilter: searchMembers | paginator: pageEvent; track user.user_id) {
+            <div>
+              <a [routerLink]="['/controller', controller.id, 'management','users', user.user_id]">
+                <div>{{user.username}}</div>
+              </a>
+              <mat-icon class="clickable" (click)="openRemoveUserDialog(user)">delete</mat-icon>
+            </div>
+          }
           <mat-paginator [length]="members().length" (page)="pageEvent = $event"
                          [pageSizeOptions]="[5, 20, 50, 100]"></mat-paginator>
         </div>

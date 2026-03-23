@@ -37,9 +37,11 @@
                    [formControl]="addResourceFormControl"
                    [matAutocomplete]="auto">
             <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-              <mat-option *ngFor="let option of addResourceFilteredOptions | async" [value]="option">
-                {{option}}
-              </mat-option>
+              @for (option of addResourceFilteredOptions | async; track option) {
+                <mat-option [value]="option">
+                  {{option}}
+                </mat-option>
+              }
             </mat-autocomplete>
           </div>
           <div>
@@ -48,14 +50,16 @@
             </button>
           </div>
         </div>
-          <div class="ownedResources" *ngFor="let resource of pool().resources">
-            <div>{{resource.name}}</div>
-            <div>
-              <button mat-button>
-                <mat-icon (click)="deleteResource(resource)">delete</mat-icon>
-              </button>
+          @for (resource of pool().resources; track resource.name) {
+            <div class="ownedResources">
+              <div>{{resource.name}}</div>
+              <div>
+                <button mat-button>
+                  <mat-icon (click)="deleteResource(resource)">delete</mat-icon>
+                </button>
+              </div>
             </div>
-          </div>
+          }
       </div>
     </div>
   </div>
