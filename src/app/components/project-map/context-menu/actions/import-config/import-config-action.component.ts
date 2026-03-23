@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, ElementRef, inject, input, viewChild, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -14,7 +13,7 @@ import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog
   selector: 'app-import-config-action',
   templateUrl: './import-config-action.component.html',
   styleUrl: './import-config-action.component.scss',
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [ MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImportConfigActionComponent {

@@ -1,4 +1,6 @@
-<button mat-menu-item *ngIf="!link().suspend" (click)="suspendLink()">
-  <mat-icon>pause</mat-icon>
-  <span>Suspend</span>
-</button>
+@if (link()?.suspend === false) {
+  <button mat-menu-item (click)="suspendLink()">
+    <mat-icon>pause</mat-icon>
+    <span>Suspend</span>
+  </button>
+}

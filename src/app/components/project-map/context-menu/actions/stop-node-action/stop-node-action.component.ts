@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, OnChanges, OnInit, inject, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Node } from '../../../../../cartography/models/node';
@@ -9,7 +8,7 @@ import { NodeService } from '@services/node.service';
 @Component({
   selector: 'app-stop-node-action',
   templateUrl: './stop-node-action.component.html',
-  imports: [CommonModule, MatButtonModule, MatIconModule],
+  imports: [ MatButtonModule, MatIconModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StopNodeActionComponent implements OnInit, OnChanges {

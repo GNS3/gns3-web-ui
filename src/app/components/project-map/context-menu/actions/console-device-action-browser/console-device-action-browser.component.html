@@ -2,11 +2,9 @@
   <mat-icon>web_asset</mat-icon>
   <span>Console</span>
 </button>
-<button
-  mat-menu-item
-  *ngIf="node() && (node().node_type === 'docker' || node().node_type === 'dynamips' || node().node_type === 'qemu')"
-  (click)="openConsole(auxiliary=true)"
->
-  <mat-icon>web_asset</mat-icon>
-  <span>Auxiliary console</span>
-</button>
+@if (node()?.node_type === 'docker' || node()?.node_type === 'dynamips' || node()?.node_type === 'qemu') {
+  <button mat-menu-item (click)="openConsole(auxiliary=true)">
+    <mat-icon>web_asset</mat-icon>
+    <span>Auxiliary console</span>
+  </button>
+}

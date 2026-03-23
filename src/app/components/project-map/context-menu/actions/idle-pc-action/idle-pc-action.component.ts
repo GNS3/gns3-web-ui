@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -12,7 +11,7 @@ import { NodeService } from '@services/node.service';
 @Component({
   selector: 'app-idle-pc-action',
   templateUrl: './idle-pc-action.component.html',
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [ MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IdlePcActionComponent {

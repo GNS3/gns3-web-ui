@@ -1,4 +1,6 @@
-<button mat-menu-item *ngIf="filteredNodes.length > 0" (click)="reloadNodes()">
-  <mat-icon>refresh</mat-icon>
-  <span>Reload</span>
-</button>
+@if (filteredNodes.length > 0) {
+  <button mat-menu-item (click)="reloadNodes()">
+    <mat-icon>refresh</mat-icon>
+    <span>Reload</span>
+  </button>
+}

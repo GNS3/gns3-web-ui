@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, OnChanges, inject, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { ImageElement } from '../../../../../cartography/models/drawings/image-element';
@@ -10,7 +9,7 @@ import { StyleEditorDialogComponent } from '../../../drawings-editors/style-edit
 @Component({
   selector: 'app-edit-style-action',
   templateUrl: './edit-style-action.component.html',
-  imports: [CommonModule, MatDialogModule],
+  imports: [ MatDialogModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditStyleActionComponent implements OnChanges {

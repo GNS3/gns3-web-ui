@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, OnChanges, inject, input, ChangeDet
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { CommonModule } from '@angular/common';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../../../cartography/models/drawing';
@@ -15,7 +14,7 @@ import { ProjectService } from '@services/project.service';
 @Component({
   selector: 'app-lock-action',
   templateUrl: './lock-action.component.html',
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [ MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LockActionComponent implements OnChanges {

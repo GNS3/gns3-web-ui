@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit, inject, input } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Node } from '../../../../../cartography/models/node';
@@ -12,7 +11,7 @@ import { ToasterService } from '@services/toaster.service';
 @Component({
   selector: 'app-console-device-action',
   templateUrl: './console-device-action.component.html',
-  imports: [CommonModule, MatButtonModule, MatIconModule],
+  imports: [ MatButtonModule, MatIconModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConsoleDeviceActionComponent implements OnInit {
