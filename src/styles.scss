@@ -140,3 +140,13 @@ mat-menu-panel {
     box-shadow: none;
   }
 }
+
+/* =============================================
+// Edit Controller Dialog
+// ============================================= */
+.edit-controller-dialog-panel {
+  .mat-mdc-dialog-surface {
+    background: var(--mat-sys-background);
+    color: var(--mat-sys-on-background);
+  }
+}

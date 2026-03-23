@@ -238,6 +238,8 @@ this.renderer.addClass(el, 'custom-style-' + this.variant);
 
 **Rule**: For dialog fine-tuning, define dedicated `panelClass` in the global `styles.scss`. Do not "hook" dialog styles in component local scope.
 
+**Important**: `ViewEncapsulation.None` is strictly prohibited for styling dialogs.
+
 ```typescript
 // ✅ Correct: Use panelClass
 const dialogRef = this.dialog.open(MyDialogComponent, {
@@ -247,11 +249,23 @@ const dialogRef = this.dialog.open(MyDialogComponent, {
 ```
 
 ```scss
-// ✅ Correct: Define in global styles.scss
-.mat-mdc-dialog-panel.my-custom-dialog-panel {
-  --mdc-dialog-container-max-width: 800px;
-  --mdc-dialog-container-min-width: 400px;
+// ✅ Correct: Define in global styles.scss using Material dialog selectors
+.my-custom-dialog-panel {
+  .mdc-dialog__surface,
+  .mat-mdc-dialog-surface {
+    background: var(--mat-sys-surface);
+    color: var(--mat-sys-on-surface);
+  }
 }
+```
+
+```scss
+// ❌ Wrong: Using ViewEncapsulation.None
+// my-dialog.component.ts
+@Component({
+  encapsulation: ViewEncapsulation.None, // ❌ STRICTLY PROHIBITED
+  // ...
+})
 ```
 
 ```scss
@@ -435,6 +449,7 @@ Before committing code, ensure:
 
 - [ ] No `!important` usage
 - [ ] No `::ng-deep` usage
+- [ ] No `ViewEncapsulation.None` usage
 - [ ] No hardcoded color values
 - [ ] Material theme variables used
 - [ ] Dialog styles use `panelClass`
@@ -449,5 +464,6 @@ Before committing code, ensure:
 |---------|------|---------|
 | 1.0 | 2026-03-20 | Initial release |
 | 1.1 | 2026-03-23 | Added Material 3 color variable reference, improved color management documentation |
+| 1.2 | 2026-03-24 | Added ViewEncapsulation.None prohibition, updated dialog styling examples |
 
-**Last Updated**: 2026-03-23
+**Last Updated**: 2026-03-24

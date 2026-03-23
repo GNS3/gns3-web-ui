@@ -254,6 +254,7 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
       width: '400px',
       autoFocus: false,
       disableClose: true,
+      panelClass: 'edit-controller-dialog-panel',
       data: { controller: controller }
     });
 
