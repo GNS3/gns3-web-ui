@@ -184,6 +184,7 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
       width: '350px',
       autoFocus: false,
       disableClose: true,
+      panelClass: 'add-controller-dialog-panel',
     });
 
     dialogRef.afterClosed().subscribe((controller) => {

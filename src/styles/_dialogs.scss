@@ -1,0 +1,41 @@
+/**
+ * GNS3 Web UI - Dialog Styles
+ *
+ * All Material dialog styles are centralized here.
+ * Use panelClass to target specific dialogs.
+ */
+
+/* =============================================
+// Confirmation Dialog
+// ============================================= */
+.confirmation-dialog-panel {
+  /* Material Dialog Container - transparent */
+  mat-dialog-container,
+  .mat-dialog-container {
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+  }
+}
+
+/* =============================================
+// Edit Controller Dialog
+// ============================================= */
+.edit-controller-dialog-panel {
+  .mdc-dialog__surface,
+  .mat-mdc-dialog-surface {
+    background: var(--mat-sys-surface);
+    color: var(--mat-sys-on-surface);
+  }
+}
+
+/* =============================================
+// Add Controller Dialog
+// ============================================= */
+.add-controller-dialog-panel {
+  .mdc-dialog__surface,
+  .mat-mdc-dialog-surface {
+    background: var(--mat-sys-surface);
+    color: var(--mat-sys-on-surface);
+  }
+}

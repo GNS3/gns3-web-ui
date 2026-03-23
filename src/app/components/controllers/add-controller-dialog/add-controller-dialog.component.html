@@ -1,35 +1,25 @@
-<h1 mat-dialog-title>Add controller</h1>
+<h2 mat-dialog-title>Add controller</h2>
 <form [formGroup]="controllerForm">
   <div mat-dialog-content>
-    <mat-form-field>
-      <input matInput tabindex="1" formControlName="name" placeholder="Name" />
+    <mat-form-field appearance="fill" class="full-width-field">
+      <mat-label>Name</mat-label>
+      <input matInput tabindex="1" formControlName="name" placeholder="Controller name" />
       <mat-error *ngIf="controllerForm.get('name').hasError('required')">You must enter a value</mat-error>
     </mat-form-field>
 
-    <!-- <mat-form-field>
-      <mat-select placeholder="Location" formControlName="location">
-        <mat-option *ngFor="let location of locations" [value]="location.key"> {{ location.name }} </mat-option>
-      </mat-select>
-    </mat-form-field> -->
-
-    <!-- <mat-form-field *ngIf="controllerForm.get('location').value === 'local'">
-      <input matInput tabindex="1" formControlName="path" placeholder="Local controller path" />
+    <mat-form-field appearance="fill" class="full-width-field">
+      <mat-label>Host</mat-label>
+      <input matInput tabindex="1" formControlName="host" placeholder="127.0.0.1" />
     </mat-form-field>
 
-    <mat-form-field *ngIf="controllerForm.get('location').value === 'local'">
-      <input matInput tabindex="1" formControlName="ubridge_path" placeholder="Ubridge path" />
-    </mat-form-field> -->
-
-    <mat-form-field>
-      <input matInput tabindex="1" formControlName="host" placeholder="Host" />
+    <mat-form-field appearance="fill" class="full-width-field">
+      <mat-label>Port</mat-label>
+      <input matInput type="number" tabindex="1" formControlName="port" placeholder="3080" />
     </mat-form-field>
 
-    <mat-form-field>
-      <input matInput tabindex="1" formControlName="port" placeholder="Port" />
-    </mat-form-field>
-
-    <mat-form-field>
-      <mat-select placeholder="Protocol" formControlName="protocol">
+    <mat-form-field appearance="fill" class="full-width-field">
+      <mat-label>Protocol</mat-label>
+      <mat-select formControlName="protocol">
         @for (protocol of protocols; track protocol.key) {
           <mat-option [value]="protocol.key"> {{ protocol.name }} </mat-option>
         }
@@ -37,17 +27,21 @@
     </mat-form-field>
   </div>
 
-  <div mat-dialog-content *ngIf="connectionError">
-    <mat-error>{{ connectionError }}</mat-error>
-  </div>
+  @if (connectionError) {
+    <div mat-dialog-content>
+      <mat-error>{{ connectionError }}</mat-error>
+    </div>
+  }
 
-  <div mat-dialog-actions>
+  <div mat-dialog-actions align="end">
     <button mat-button (click)="onNoClick()" tabindex="-1" color="accent">Cancel</button>
     <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary" [disabled]="isCheckingConnection">
       Add
     </button>
-    <button mat-button (click)="onAddAnywayClick()" mat-raised-button color="warn" *ngIf="canAddAnyway">
-      Add anyway
-    </button>
+    @if (canAddAnyway) {
+      <button mat-button (click)="onAddAnywayClick()" mat-raised-button color="warn">
+        Add anyway
+      </button>
+    }
   </div>
 </form>

@@ -5,6 +5,8 @@
  * Theme switching is handled by ThemeService.
  */
 
+@use 'styles/dialogs' as *;
+
 /* =============================================
 // Global markdown list fix
 // ============================================= */
@@ -125,28 +127,4 @@ mat-menu-panel {
 .ai-chat-container .session-list-icon {
   flex-shrink: 0;
   vertical-align: middle;
-}
-
-/* =============================================
-// Confirmation Dialog - Outer transparent, inner with color
-// ============================================= */
-
-.confirmation-dialog-panel {
-  /* Material Dialog Container - transparent */
-  mat-dialog-container,
-  .mat-dialog-container {
-    background: transparent;
-    padding: 0;
-    box-shadow: none;
-  }
-}
-
-/* =============================================
-// Edit Controller Dialog
-// ============================================= */
-.edit-controller-dialog-panel {
-  .mat-mdc-dialog-surface {
-    background: var(--mat-sys-background);
-    color: var(--mat-sys-on-background);
-  }
 }
