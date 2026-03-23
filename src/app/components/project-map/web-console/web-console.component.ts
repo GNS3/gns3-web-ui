@@ -144,22 +144,20 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // Use requestAnimationFrame to ensure DOM is fully rendered
         requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            try {
-              // Fit terminal to container
-              this.fitAddon.fit();
+          try {
+            // Fit terminal to container
+            this.fitAddon.fit();
 
-              // Also update columns/rows for service
-              const cols = this.term.cols;
-              const rows = this.term.rows;
-              this.consoleService.setNumberOfColumns(cols);
-              this.consoleService.setNumberOfRows(rows);
-            } catch (e) {
-              // Ignore fit errors when element is not visible
-            }
+            // Also update columns/rows for service
+            const cols = this.term.cols;
+            const rows = this.term.rows;
+            this.consoleService.setNumberOfColumns(cols);
+            this.consoleService.setNumberOfRows(rows);
+          } catch (e) {
+            // Ignore fit errors when element is not visible
+          }
 
-            this.cdr.markForCheck();
-          });
+          this.cdr.markForCheck();
         });
       }
     });

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, input } from '@angular/core';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Label } from '../../../../../cartography/models/label';
 import { Node } from '../../../../../cartography/models/node';
@@ -13,7 +14,7 @@ import { TextEditorDialogComponent } from '../../../drawings-editors/text-editor
 @Component({
   selector: 'app-edit-text-action',
   templateUrl: './edit-text-action.component.html',
-  imports: [ MatDialogModule, MatIconModule],
+  imports: [ MatDialogModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditTextActionComponent implements OnInit {

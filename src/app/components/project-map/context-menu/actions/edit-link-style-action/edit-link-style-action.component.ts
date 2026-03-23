@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnChanges, inject, input } from '@angular/core';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { Link } from '@models/link';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
@@ -9,7 +10,7 @@ import { LinkStyleEditorDialogComponent } from '../../../drawings-editors/link-s
 @Component({
   selector: 'app-edit-link-style-action',
   templateUrl: './edit-link-style-action.component.html',
-  imports: [ MatDialogModule, MatIconModule],
+  imports: [ MatDialogModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditLinkStyleActionComponent implements OnChanges {
