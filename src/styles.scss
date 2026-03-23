@@ -1,8 +1,8 @@
 /**
  * GNS3 Web UI - Global Styles
  *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
+ * Using Angular Material prebuilt themes with built-in design tokens.
+ * Theme switching is handled by ThemeService.
  */
 
 /* =============================================
@@ -21,59 +21,11 @@ app-chat-message-list markdown li p {
   margin: 0;
 }
 
-/* body background-color is now controlled dynamically by ThemeService and applyMapBackground() */
-
-/* =============================================
-// Logo and Link Styles
-// ============================================= */
-img.logo-header {
-  width: var(--gns3-logo-size, 50px);
-}
-
-a.table-link {
-  color: var(--mat-app-primary-color);
-  transition: color var(--gns3-duration-fast) var(--gns3-easing-default);
-
-  &:hover {
-    color: var(--mat-app-primary-color);
-    filter: brightness(1.2);
-  }
-}
-
-/* =============================================
-// Snackbar Styles
-// ============================================= */
-.snackabar-success {
-  background: var(--mat-app-primary-color);
-  color: var(--mat-app-on-primary-color);
-  font-weight: var(--gns3-font-weight-medium);
-}
-
-.uplaoding-file-snackabar {
-  background: var(--gns3-surface);
-  color: var(--mat-app-on-surface-color);
-  max-width: 80%;
-  font-weight: var(--gns3-font-weight-medium);
-}
-
-.snackbar-warning {
-  background: var(--gns3-color-warning);
-  color: var(--mat-app-on-warning-color);
-  font-weight: var(--gns3-font-weight-medium);
-}
-
-.snackbar-error {
-  background: var(--mat-app-error-color);
-  color: var(--mat-app-on-error-color);
-  white-space: pre-wrap;
-  font-weight: var(--gns3-font-weight-medium);
-}
-
 /* =============================================
 // Dialog Styles
 // ============================================= */
 .mat-dialog-actions {
-  margin-bottom: calc(-1 * var(--gns3-spacing-md));
+  margin-bottom: -12px;
 }
 
 /* =============================================
@@ -101,23 +53,6 @@ mat-menu-panel {
 }
 
 /* =============================================
-// Tooltip Styles
-// ============================================= */
-.custom-tooltip {
-  background-color: var(--mat-app-tooltip-container-color);
-  color: var(--mat-app-on-tooltip-container-color);
-}
-
-.permission-tooltip {
-  max-width: unset;
-  background-color: var(--mat-app-tooltip-container-color);
-  color: var(--mat-app-on-tooltip-container-color);
-  white-space: pre-line;
-  font-size: var(--gns3-font-size-xs);
-  font-family: var(--gns3-font-family-mono);
-}
-
-/* =============================================
 // Tab Styles
 // ============================================= */
 .mat-tab-body-content {
@@ -130,8 +65,8 @@ mat-menu-panel {
 }
 
 .mat-tab-label {
-  padding: 0 var(--gns3-spacing-sm);
-  min-width: var(--gns3-tab-min-width, 152px);
+  padding: 0 8px;
+  min-width: 152px;
 }
 
 .mat-tab-header-pagination-controls-enabled .mat-tab-header-pagination {
@@ -143,15 +78,14 @@ mat-menu-panel {
 // ============================================= */
 .ethernet_link,
 .serial_link {
-  transition: stroke-width var(--gns3-duration-fast) var(--gns3-easing-default),
-              stroke var(--gns3-duration-fast) var(--gns3-easing-default);
+  transition: stroke-width 150ms cubic-bezier(0.4, 0, 0.2, 1),
+              stroke 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .ethernet_link:hover,
 .serial_link:hover {
-  stroke-width: var(--gns3-link-hover-width, 4px);
+  stroke-width: 4px;
   cursor: pointer;
-  stroke: var(--mat-app-error-color);
 }
 
 /* =============================================
@@ -164,122 +98,18 @@ mat-menu-panel {
  */
 
 /* =============================================
-// AI Chat Session Menu Icon Colors
-// Target SVG icons (.menu-item-icon) inside Material menus
+// AI Chat Menu Icon Alignment
 // ============================================= */
-
-/* Dark theme (default) - high contrast icons for AI Chat menus */
-.mat-menu-panel .menu-item-icon {
-  fill: var(--mat-app-on-surface-color);
-  flex-shrink: 0;
-  vertical-align: middle;
-  transition: fill var(--gns3-duration-fast) var(--gns3-easing-default);
-}
 
 /* Fix alignment: menu items with icons */
 .mat-menu-panel .mat-menu-item {
   display: flex;
   align-items: center;
-  gap: var(--gns3-spacing-md);
-}
-
-.mat-menu-panel .delete-icon {
-  fill: var(--mat-app-error-color);
+  gap: 12px;
 }
 
 .mat-menu-panel .mat-menu-item:hover .menu-item-icon {
-  fill: var(--gns3-color-success);
-}
-
-.mat-menu-panel .mat-menu-item:hover .delete-icon {
-  fill: var(--mat-app-error-color);
-  filter: brightness(1.2);
-}
-
-/* Light theme override */
-.lightTheme .mat-menu-panel .menu-item-icon,
-.theme-light .mat-menu-panel .menu-item-icon {
-  fill: var(--mat-app-on-surface-color);
-}
-
-.lightTheme .mat-menu-panel .delete-icon,
-.theme-light .mat-menu-panel .delete-icon {
-  fill: var(--mat-app-error-color);
-}
-
-.lightTheme .mat-menu-panel .mat-menu-item:hover .menu-item-icon,
-.theme-light .mat-menu-panel .mat-menu-item:hover .menu-item-icon {
-  fill: var(--mat-app-primary-color);
-}
-
-/* =============================================
-// AI Chat Sidebar Icon Colors (Session List Component)
-// These icons are inside AI Chat container but need global styles
-// ============================================= */
-
-/* Menu icon (three dots) in session list */
-.ai-chat-container .menu-icon,
-.mat-menu-panel .menu-icon {
-  fill: var(--mat-app-on-surface-variant-color);
-  transition: fill var(--gns3-duration-fast) var(--gns3-easing-default);
-}
-
-/* Session list icon (New Chat +) */
-.ai-chat-container .session-list-icon {
-  fill: var(--mat-app-on-surface-color);
-  transition: fill var(--gns3-duration-fast) var(--gns3-easing-default);
-}
-
-/* Session icon (chat bubble) */
-.ai-chat-container .session-icon {
-  fill: rgba(255, 255, 255, 0.6);
-  transition: fill var(--gns3-duration-fast) var(--gns3-easing-default);
-}
-
-/* Pin icon */
-.ai-chat-container .pin-icon {
-  fill: var(--gns3-color-success);
-}
-
-/* No sessions icon */
-.ai-chat-container .no-sessions-icon {
-  fill: rgba(255, 255, 255, 0.3);
-}
-
-/* Hover effects for sidebar icons */
-.ai-chat-container .new-session-button:hover .session-list-icon,
-.ai-chat-container .session-item:hover .session-icon,
-.ai-chat-container .session-menu-button:hover .menu-icon {
-  fill: var(--mat-app-on-surface-color);
-}
-
-/* Light theme override for sidebar icons */
-.lightTheme .ai-chat-container .menu-icon,
-.lightTheme .ai-chat-container .session-list-icon,
-.lightTheme .ai-chat-container .session-icon,
-.theme-light .ai-chat-container .menu-icon,
-.theme-light .ai-chat-container .session-list-icon,
-.theme-light .ai-chat-container .session-icon {
-  fill: rgba(0, 0, 0, 0.6);
-}
-
-.lightTheme .ai-chat-container .pin-icon,
-.theme-light .ai-chat-container .pin-icon {
-  fill: var(--mat-app-primary-color);
-}
-
-.lightTheme .ai-chat-container .no-sessions-icon,
-.theme-light .ai-chat-container .no-sessions-icon {
-  fill: rgba(0, 0, 0, 0.3);
-}
-
-.lightTheme .ai-chat-container .new-session-button:hover .session-list-icon,
-.lightTheme .ai-chat-container .session-item:hover .session-icon,
-.lightTheme .ai-chat-container .session-menu-button:hover .menu-icon,
-.theme-light .ai-chat-container .new-session-button:hover .session-list-icon,
-.theme-light .ai-chat-container .session-item:hover .session-icon,
-.theme-light .ai-chat-container .session-menu-button:hover .menu-icon {
-  fill: rgba(0, 0, 0, 0.87);
+  fill: #4caf50;
 }
 
 /* =============================================
@@ -289,7 +119,7 @@ mat-menu-panel {
 .ai-chat-container .new-session-button .mat-button-wrapper {
   display: flex;
   align-items: center;
-  gap: var(--gns3-spacing-sm);
+  gap: 8px;
 }
 
 .ai-chat-container .session-list-icon {
