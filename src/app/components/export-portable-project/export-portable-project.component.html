@@ -20,9 +20,11 @@
       <div class="col-md-8">
         <mat-form-field class="input-full-width">
           <mat-select formControlName="compression" (selectionChange)="selectCompression($event)" required>
-            <mat-option *ngFor="let compressionValue of compression_methods" [value]="compressionValue">{{
-              compressionValue?.name
-            }}</mat-option>
+            @for (compressionValue of compression_methods; track compressionValue?.name) {
+              <mat-option [value]="compressionValue">{{
+                compressionValue?.name
+              }}</mat-option>
+            }
           </mat-select>
         </mat-form-field>
       </div>
@@ -32,9 +34,11 @@
       <div class="col-md-8">
         <mat-form-field class="input-full-width">
           <mat-select formControlName="compression_level">
-            <mat-option *ngFor="let compressionLevel of compression_filter_value" [value]="compressionLevel">{{
-              compressionLevel
-            }}</mat-option>
+            @for (compressionLevel of compression_filter_value; track compressionLevel) {
+              <mat-option [value]="compressionLevel">{{
+                compressionLevel
+              }}</mat-option>
+            }
           </mat-select>
         </mat-form-field>
       </div>

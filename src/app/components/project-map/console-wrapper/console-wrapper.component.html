@@ -37,20 +37,22 @@
         (mousedown)="toggleDragging(true)"
       >
         <mat-tab-group class="tabs" [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
-          <mat-tab *ngFor="let node of nodes; let index = index" [label]="tab">
-            <ng-template mat-tab-label>
-              <div class="col" style="margin-left: 20px">{{ node.name }}</div>
-              <button
-                [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-                style="color: white"
-                mat-icon-button
-                (mousedown)="$event.stopPropagation()"
-                (click)="removeTab(index)"
-              >
-                <mat-icon>close</mat-icon>
-              </button>
-            </ng-template>
-          </mat-tab>
+          @for (node of nodes; track $index; let index = $index) {
+            <mat-tab [label]="tab">
+              <ng-template mat-tab-label>
+                <div class="col" style="margin-left: 20px">{{ node.name }}</div>
+                <button
+                  [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
+                  style="color: white"
+                  mat-icon-button
+                  (mousedown)="$event.stopPropagation()"
+                  (click)="removeTab(index)"
+                >
+                  <mat-icon>close</mat-icon>
+                </button>
+              </ng-template>
+            </mat-tab>
+          }
 
           <mat-tab>
             <ng-template mat-tab-label>
@@ -119,10 +121,12 @@
       >
       </app-log-console>
 
-      <div class="xterm-console" [hidden]="isMinimized" *ngFor="let node of nodes; let index = index">
-        <app-web-console [hidden]="!(selected.value === index)" [controller]="controller()" [node]="nodes[index]">
-        </app-web-console>
-      </div>
+      @for (node of nodes; track $index; let index = $index) {
+        <div class="xterm-console" [hidden]="isMinimized">
+          <app-web-console [hidden]="!(selected.value === index)" [controller]="controller()" [node]="nodes[index]">
+          </app-web-console>
+        </div>
+      }
     </div>
   </div>
 </div>

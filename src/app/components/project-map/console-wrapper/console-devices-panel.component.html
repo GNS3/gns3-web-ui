@@ -16,20 +16,21 @@
 
   <!-- Device List -->
   <div class="device-list" *ngIf="!collapsed()">
-    <div
-      *ngFor="let node of nodes()"
-      class="device-item"
-      [class.started]="isDeviceStarted(node)"
-      (click)="onDeviceClick(node)"
-    >
-      <div class="device-info">
-        <div class="device-status-indicator" [style.backgroundColor]="getStatusColor(node.status)"></div>
-        <div class="device-details">
-          <div class="device-name">{{ node.name }}</div>
+    @for (node of nodes(); track node.id) {
+      <div
+        class="device-item"
+        [class.started]="isDeviceStarted(node)"
+        (click)="onDeviceClick(node)"
+      >
+        <div class="device-info">
+          <div class="device-status-indicator" [style.backgroundColor]="getStatusColor(node.status)"></div>
+          <div class="device-details">
+            <div class="device-name">{{ node.name }}</div>
+          </div>
         </div>
+        <mat-icon class="device-icon" [class.disabled]="!isDeviceStarted(node)"> terminal </mat-icon>
       </div>
-      <mat-icon class="device-icon" [class.disabled]="!isDeviceStarted(node)"> terminal </mat-icon>
-    </div>
+    }
 
     <!-- Empty State -->
     <div *ngIf="nodes().length === 0" class="empty-state">
