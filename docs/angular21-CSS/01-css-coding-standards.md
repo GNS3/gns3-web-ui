@@ -234,11 +234,25 @@ this.renderer.addClass(el, 'custom-style-' + this.variant);
 
 ---
 
-## 11. Dialog Styles Must Be Defined in Global styles.scss
+## 11. Dialog Styles Must Be Centralized
 
-**Rule**: For dialog fine-tuning, define dedicated `panelClass` in the global `styles.scss`. Do not "hook" dialog styles in component local scope.
+**Rule**: All dialog styles must be centralized in `src/styles/_dialogs.scss` and imported into `styles.scss` using `@use`. Do not define dialog styles in component local scope.
 
-**Important**: `ViewEncapsulation.None` is strictly prohibited for styling dialogs.
+**Important**: `ViewEncapsulation.None` and `::ng-deep` are strictly prohibited for styling dialogs.
+
+### File Structure
+
+```
+src/styles/
+├── _dialogs.scss          # Centralized dialog styles
+├── _index.scss           # Theme imports (internal use)
+├── styles.scss           # Global styles + @use for dialogs
+└── material3-themes/     # Theme variable files
+```
+
+### Implementation Steps
+
+**Step 1**: Add `panelClass` when opening the dialog
 
 ```typescript
 // ✅ Correct: Use panelClass
@@ -248,8 +262,12 @@ const dialogRef = this.dialog.open(MyDialogComponent, {
 });
 ```
 
+**Step 2**: Create centralized dialog styles in `src/styles/_dialogs.scss`
+
 ```scss
-// ✅ Correct: Define in global styles.scss using Material dialog selectors
+/* =============================================
+// My Custom Dialog
+// ============================================= */
 .my-custom-dialog-panel {
   .mdc-dialog__surface,
   .mat-mdc-dialog-surface {
@@ -258,6 +276,15 @@ const dialogRef = this.dialog.open(MyDialogComponent, {
   }
 }
 ```
+
+**Step 3**: Import in `styles.scss` using `@use`
+
+```scss
+// styles.scss
+@use 'styles/dialogs' as *;
+```
+
+### Why Not ViewEncapsulation.None?
 
 ```scss
 // ❌ Wrong: Using ViewEncapsulation.None
@@ -268,13 +295,19 @@ const dialogRef = this.dialog.open(MyDialogComponent, {
 })
 ```
 
+Dialogs are rendered outside the component's host element in Angular's overlay system, so `ViewEncapsulation.None` does not apply to dialog content.
+
+### Why Not ::ng-deep?
+
 ```scss
-// ❌ Wrong: Modifying dialog styles in component scope
+// ❌ Wrong: Using ::ng-deep
 // my-dialog.component.scss
 ::ng-deep .mat-mdc-dialog-container {
-  max-width: 800px;
+  max-width: 800px; // ❌ DEPRECATED
 }
 ```
+
+`::ng-deep` is deprecated and should never be used.
 
 ---
 
@@ -465,5 +498,6 @@ Before committing code, ensure:
 | 1.0 | 2026-03-20 | Initial release |
 | 1.1 | 2026-03-23 | Added Material 3 color variable reference, improved color management documentation |
 | 1.2 | 2026-03-24 | Added ViewEncapsulation.None prohibition, updated dialog styling examples |
+| 1.3 | 2026-03-24 | Updated dialog section: centralized in _dialogs.scss with @use import |
 
 **Last Updated**: 2026-03-24
