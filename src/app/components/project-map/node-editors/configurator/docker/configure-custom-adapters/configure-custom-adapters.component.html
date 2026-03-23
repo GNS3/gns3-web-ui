@@ -8,14 +8,16 @@
 
   <div>
     <mat-list>
-      <mat-list-item *ngFor="let adapter of adapters; index as i">
-        <div class="header">
-          <span class="column"> Adapter {{ adapter.adapter_number }} </span>
-          <span class="column">
-            <input matInput type="text" [(ngModel)]="adapter.port_name" placeholder="Edit port name" />
-          </span>
-        </div>
-      </mat-list-item>
+      @for (adapter of adapters; track $index; let i = $index) {
+        <mat-list-item>
+          <div class="header">
+            <span class="column"> Adapter {{ adapter.adapter_number }} </span>
+            <span class="column">
+              <input matInput type="text" [(ngModel)]="adapter.port_name" placeholder="Edit port name" />
+            </span>
+          </div>
+        </mat-list-item>
+      }
     </mat-list>
   </div>
 </div>

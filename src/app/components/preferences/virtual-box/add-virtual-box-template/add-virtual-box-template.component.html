@@ -22,9 +22,11 @@
       <form [formGroup]="vmForm">
         <mat-form-field class="form-field">
           <mat-select placeholder="VM list" formControlName="vm">
-            <mat-option *ngFor="let vm of virtualMachines" [value]="vm">
-              {{ vm.vmname }}
-            </mat-option>
+            @for (vm of virtualMachines; track vm) {
+              <mat-option [value]="vm">
+                {{ vm.vmname }}
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
       </form>
