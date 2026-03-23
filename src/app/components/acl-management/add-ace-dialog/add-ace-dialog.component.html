@@ -49,7 +49,9 @@
     <div>
       <div class="typeSelect">
         <mat-select placeholder="User/Group" formControlName="type">
-          <mat-option *ngFor="let t of types" [value]="t">{{t.charAt(0).toUpperCase() + t.slice(1)}}</mat-option>
+          @for (t of types; track t) {
+            <mat-option [value]="t">{{t.charAt(0).toUpperCase() + t.slice(1)}}</mat-option>
+          }
         </mat-select>
       </div>
 

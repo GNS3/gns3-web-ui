@@ -8,9 +8,11 @@
   </mat-form-field>
 </div>
 
-<div class="userList" *ngFor="let user of displayedUsers | async">
-  <div>{{user.username}}</div>
-  <div>{{user.email}}</div>
-  <mat-icon (click)="addUser(user)" *ngIf="!loading">add</mat-icon>
-  <mat-spinner *ngIf="loading"></mat-spinner>
-</div>
+@for (user of displayedUsers | async; track user.username) {
+  <div class="userList">
+    <div>{{user.username}}</div>
+    <div>{{user.email}}</div>
+    <mat-icon (click)="addUser(user)" *ngIf="!loading">add</mat-icon>
+    <mat-spinner *ngIf="loading"></mat-spinner>
+  </div>
+}

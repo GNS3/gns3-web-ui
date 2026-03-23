@@ -29,20 +29,24 @@
            [matAutocomplete]="auto"
            [formControl]="autocompleteControl">
     <mat-autocomplete #auto="matAutocomplete"[displayWith]="displayFn" (optionSelected)='selectedUser($event.option.value)'>
-      <mat-option *ngFor="let user of filteredUsers | async" [value]="user" >
-        {{user.username}} - {{user.email}}
-      </mat-option>
+      @for (user of filteredUsers | async; track user) {
+        <mat-option [value]="user" >
+          {{user.username}} - {{user.email}}
+        </mat-option>
+      }
     </mat-autocomplete>
   </mat-form-field>
 
   <div class="users">
-    <div *ngFor="let user of usersToAdd">
-      <div class="userList">
-        <div>{{user.username}}</div>
-        <div>{{user.email}}</div>
-        <mat-icon (click)="delUser(user)">delete</mat-icon>
+    @for (user of usersToAdd; track user.username) {
+      <div>
+        <div class="userList">
+          <div>{{user.username}}</div>
+          <div>{{user.email}}</div>
+          <mat-icon (click)="delUser(user)">delete</mat-icon>
+        </div>
       </div>
-    </div>
+    }
   </div>
 
 

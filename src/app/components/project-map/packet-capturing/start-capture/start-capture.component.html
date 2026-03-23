@@ -4,9 +4,11 @@
   <form [formGroup]="inputForm">
     <mat-form-field class="input-field">
       <mat-select placeholder="Link type" formControlName="linkType" ngDefaultControl>
-        <mat-option *ngFor="let type of linkTypes" [value]="type[1]">
-          {{ type[0] }}
-        </mat-option>
+        @for (type of linkTypes; track type[1]) {
+          <mat-option [value]="type[1]">
+            {{ type[0] }}
+          </mat-option>
+        }
       </mat-select>
     </mat-form-field>
     <mat-form-field class="input-field">
