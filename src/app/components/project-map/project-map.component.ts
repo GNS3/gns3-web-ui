@@ -11,6 +11,7 @@ import {
   viewChild,
   signal,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
@@ -131,6 +132,7 @@ import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edit
   },
   imports: [
     CommonModule,
+    FormsModule,
     MatButtonModule,
     MatCheckboxModule,
     MatIconModule,
@@ -290,6 +292,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.settings = this.settingsService.getAll();
     this.symbolScaling = this.mapSettingsService.getSymbolScaling();
+    this.cd.markForCheck();
     this.isConsoleVisible = this.mapSettingsService.isLogConsoleVisible;
     this.mapSettingsService.logConsoleSubject.subscribe((value) => (this.isConsoleVisible = value));
     this.notificationsVisibility = localStorage.getItem('notificationsVisibility') === 'true' ? true : false;
