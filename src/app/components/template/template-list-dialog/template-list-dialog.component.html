@@ -24,9 +24,11 @@
       (selectionChange)="filterTemplates($event)"
       [(ngModel)]="selectedType" ngDefaultControl
     >
-      <mat-option *ngFor="let type of templateTypes" [value]="type">
-        {{ type }}
-      </mat-option>
+      @for (type of templateTypes; track type) {
+        <mat-option [value]="type">
+          {{ type }}
+        </mat-option>
+      }
     </mat-select>
   </mat-form-field>
   <mat-form-field class="form-field">
@@ -36,9 +38,11 @@
       (selectionChange)="chooseTemplate($event)"
       [(ngModel)]="selectedTemplate" ngDefaultControl
     >
-      <mat-option *ngFor="let template of filteredTemplates | templatefilter: searchText" [value]="template">
-        {{ template.name }}
-      </mat-option>
+      @for (template of filteredTemplates | templatefilter: searchText; track template.name) {
+        <mat-option [value]="template">
+          {{ template.name }}
+        </mat-option>
+      }
     </mat-select>
   </mat-form-field>
 
@@ -56,9 +60,11 @@
     </mat-form-field>
   </form>
   <mat-select *ngIf="selectedTemplate" placeholder="Choose controller for node" [(value)]="selectedTemplate.compute_id">
-    <mat-option *ngFor="let type of nodeControllers" [value]="type">
-      {{ type }}
-    </mat-option>
+    @for (type of nodeControllers; track type) {
+      <mat-option [value]="type">
+        {{ type }}
+      </mat-option>
+    }
   </mat-select>
 
   <div class="title-container">

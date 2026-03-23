@@ -44,19 +44,23 @@
            [matAutocomplete]="auto"
            [formControl]="autocompleteControl">
     <mat-autocomplete #auto="matAutocomplete"[displayWith]="displayFn" (optionSelected)='selectedGroup($event.option.value)'>
-      <mat-option *ngFor="let group of filteredGroups | async" [value]="group" >
-        {{group.name}}
-      </mat-option>
+      @for (group of filteredGroups | async; track group) {
+        <mat-option [value]="group" >
+          {{group.name}}
+        </mat-option>
+      }
     </mat-autocomplete>
   </mat-form-field>
 
   <div class="groups">
-    <div  *ngFor="let group of groupsToAdd">
-      <div class="groupList">
-        <div>{{group.name}}</div>
-        <mat-icon (click)="deleteGroup(group)" >delete</mat-icon>
+    @for (group of groupsToAdd; track group.name) {
+      <div>
+        <div class="groupList">
+          <div>{{group.name}}</div>
+          <mat-icon (click)="deleteGroup(group)" >delete</mat-icon>
+        </div>
       </div>
-    </div>
+    }
   </div>
 
 
