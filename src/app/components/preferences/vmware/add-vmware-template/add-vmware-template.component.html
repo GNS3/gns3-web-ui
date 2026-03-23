@@ -16,9 +16,11 @@
       <form [formGroup]="templateNameForm">
         <mat-form-field class="form-field">
           <mat-select placeholder="VM list" formControlName="templateName">
-            <mat-option *ngFor="let vm of virtualMachines" [value]="vm">
-              {{ vm.vmname }}
-            </mat-option>
+            @for (vm of virtualMachines; track vm) {
+              <mat-option [value]="vm">
+                {{ vm.vmname }}
+              </mat-option>
+            }
           </mat-select> </mat-form-field
         ><br />
         <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="vmwareTemplate.linked_clone">

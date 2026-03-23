@@ -22,18 +22,20 @@
   </mat-form-field>
 </form>
 <div class="wrapper">
-  <div class="buttonWrapper" *ngFor="let symbol of filteredSymbols | filenamefilter: searchText">
-    <button
-      [ngClass]="{ buttonSelected: isSelected === symbol.symbol_id }"
-      class="button"
-      (click)="setSelected(symbol.symbol_id)"
-    >
-      <img
-        lazyimg
-        [ngClass]="{ imageSelected: isSelected === symbol.symbol_id }"
-        class="image"
-        [src]="getImageSourceForTemplate(symbol.symbol_id)"
-      />
-    </button>
-  </div>
+  @for (symbol of filteredSymbols | filenamefilter: searchText; track symbol.symbol_id) {
+    <div class="buttonWrapper">
+      <button
+        [ngClass]="{ buttonSelected: isSelected === symbol.symbol_id }"
+        class="button"
+        (click)="setSelected(symbol.symbol_id)"
+      >
+        <img
+          lazyimg
+          [ngClass]="{ imageSelected: isSelected === symbol.symbol_id }"
+          class="image"
+          [src]="getImageSourceForTemplate(symbol.symbol_id)"
+        />
+      </button>
+    </div>
+  }
 </div>

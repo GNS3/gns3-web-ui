@@ -40,16 +40,20 @@
 </mat-form-field>
 <mat-form-field class="select">
   <mat-select placeholder="Type" [ngModelOptions]="{ standalone: true }" [(ngModel)]="newPort.type">
-    <mat-option *ngFor="let type of portTypes" [value]="type">
-      {{ type }}
-    </mat-option>
+    @for (type of portTypes(); track type) {
+      <mat-option [value]="type">
+        {{ type }}
+      </mat-option>
+    }
   </mat-select>
 </mat-form-field>
 <mat-form-field class="select">
   <mat-select placeholder="EtherType" [ngModelOptions]="{ standalone: true }" [(ngModel)]="newPort.ethertype">
-    <mat-option *ngFor="let type of etherTypes" [value]="type">
-      {{ type }}
-    </mat-option>
+    @for (type of etherTypes(); track type) {
+      <mat-option [value]="type">
+        {{ type }}
+      </mat-option>
+    }
   </mat-select>
 </mat-form-field>
 <button mat-button class="form-field" (click)="onAdd()">Add</button>
