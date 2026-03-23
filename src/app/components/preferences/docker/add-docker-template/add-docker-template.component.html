@@ -35,9 +35,11 @@
               [ngModelOptions]="{ standalone: true }"
               [(ngModel)]="selectedImage"
             >
-              <mat-option *ngFor="let image of dockerImages" [value]="image">
-                {{ image.image }}
-              </mat-option>
+              @for (image of dockerImages; track image.image) {
+                <mat-option [value]="image">
+                  {{ image.image }}
+                </mat-option>
+              }
             </mat-select>
             <div *ngIf="newImageSelected">
               <mat-form-field class="form-field">
@@ -81,9 +83,11 @@
             [ngModelOptions]="{ standalone: true }"
             [(ngModel)]="dockerTemplate.console_type"
           >
-            <mat-option *ngFor="let type of consoleTypes" [value]="type">
-              {{ type }}
-            </mat-option>
+            @for (type of consoleTypes; track type) {
+              <mat-option [value]="type">
+                {{ type }}
+              </mat-option>
+            }
           </mat-select>
         </mat-step>
 
@@ -93,9 +97,11 @@
             [ngModelOptions]="{ standalone: true }"
             [(ngModel)]="dockerTemplate.aux_type"
           >
-            <mat-option *ngFor="let type of auxConsoleTypes" [value]="type">
-              {{ type }}
-            </mat-option>
+            @for (type of auxConsoleTypes; track type) {
+              <mat-option [value]="type">
+                {{ type }}
+              </mat-option>
+            }
           </mat-select>
         </mat-step>
 

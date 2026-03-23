@@ -40,9 +40,11 @@
               placeholder="Category"
               [(ngModel)]="dockerTemplate.category"
             >
-              <mat-option *ngFor="let category of categories" [value]="category[1]">
-                {{ category[0] }}
-              </mat-option>
+              @for (category of categories; track category[1]) {
+                <mat-option [value]="category[1]">
+                  {{ category[0] }}
+                </mat-option>
+              }
             </mat-select>
           </mat-form-field>
           <mat-form-field class="form-field">
@@ -57,10 +59,12 @@
           <mat-form-field class="form-field tags-field">
             <mat-label>Tags</mat-label>
             <mat-chip-grid #chipList>
-              <mat-chip *ngFor="let tag of dockerTemplate?.tags" (removed)="removeTag(tag)">
-                {{ tag }}
-                <mat-icon matChipRemove>cancel</mat-icon>
-              </mat-chip>
+              @for (tag of dockerTemplate?.tags; track tag) {
+                <mat-chip (removed)="removeTag(tag)">
+                  {{ tag }}
+                  <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+              }
             </mat-chip-grid>
             <input matInput placeholder="Add tags"
                    [matChipInputFor]="chipList"
@@ -99,9 +103,11 @@
               placeholder="Console type"
               [(ngModel)]="dockerTemplate.console_type"
             >
-              <mat-option *ngFor="let type of consoleTypes" [value]="type">
-                {{ type }}
-              </mat-option>
+              @for (type of consoleTypes; track type) {
+                <mat-option [value]="type">
+                  {{ type }}
+                </mat-option>
+              }
             </mat-select>
           </mat-form-field>
           <mat-form-field class="select">
@@ -110,9 +116,11 @@
               placeholder="Auxiliary console type"
               [(ngModel)]="dockerTemplate.aux_type"
             >
-              <mat-option *ngFor="let type of auxConsoleTypes" [value]="type">
-                {{ type }}
-              </mat-option>
+              @for (type of auxConsoleTypes; track type) {
+                <mat-option [value]="type">
+                  {{ type }}
+                </mat-option>
+              }
             </mat-select>
           </mat-form-field>
           <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="dockerTemplate.console_auto_start">
@@ -124,9 +132,11 @@
               placeholder="VNC console resolution"
               [(ngModel)]="dockerTemplate.console_resolution"
             >
-              <mat-option *ngFor="let resolution of consoleResolutions" [value]="resolution">
-                {{ resolution }}
-              </mat-option>
+              @for (resolution of consoleResolutions; track resolution) {
+                <mat-option [value]="resolution">
+                  {{ resolution }}
+                </mat-option>
+              }
             </mat-select>
           </mat-form-field>
           <mat-form-field class="form-field">

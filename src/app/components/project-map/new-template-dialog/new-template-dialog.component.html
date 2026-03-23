@@ -34,9 +34,11 @@
           placeholder="Category"
           [(ngModel)]="category"
         >
-          <mat-option *ngFor="let category of categories" [value]="category">
-            {{ category }}
-          </mat-option>
+          @for (category of categories; track category) {
+            <mat-option [value]="category">
+              {{ category }}
+            </mat-option>
+          }
         </mat-select>
       </div>
 
@@ -142,7 +144,7 @@
             <mat-icon aria-label="Refresh list of images">refresh</mat-icon></button
           ><br />
           <div>
-            <div *ngFor="let version of applianceToInstall.versions">
+            @for (version of applianceToInstall.versions; track version.name) {
               <div class="list-item">
                 <span>{{ applianceToInstall.name }} version {{ version.name }}</span>
 
@@ -350,7 +352,7 @@
                   </button>
                 </div>
               </div>
-            </div>
+            }
           </div>
         </div>
       </div>
@@ -374,33 +376,35 @@
             <mat-icon aria-label="Refresh list of images">refresh</mat-icon></button
           ><br />
           <mat-list>
-            <mat-list-item *ngFor="let image of applianceToInstall.images">
-              <div class="list-item">
-                <span>
-                  {{ image.filename }}
-                </span>
-                <div>
-                  <span *ngIf="checkImageFromVersion(image.filename)">
-                    <mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
+            @for (image of applianceToInstall.images; track image.filename) {
+              <mat-list-item>
+                <div class="list-item">
+                  <span>
+                    {{ image.filename }}
                   </span>
-                  <span *ngIf="!checkImageFromVersion(image.filename)">
-                    <mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
-                  </span>
-                  <input
-                    type="file"
-                    class="non-visible"
-                    #file2
-                    (change)="importImage($event, image.filename)"
-                    ng2FileSelect
-                    [uploader]="uploaderImage"
-                  />
-                  <button class="button" mat-raised-button (click)="file2.click()">Import</button>
-                  <button class="button" mat-raised-button color="primary" (click)="createIosTemplate(image)">
-                    Create
-                  </button>
+                  <div>
+                    <span *ngIf="checkImageFromVersion(image.filename)">
+                      <mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
+                    </span>
+                    <span *ngIf="!checkImageFromVersion(image.filename)">
+                      <mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
+                    </span>
+                    <input
+                      type="file"
+                      class="non-visible"
+                      #file2
+                      (change)="importImage($event, image.filename)"
+                      ng2FileSelect
+                      [uploader]="uploaderImage"
+                    />
+                    <button class="button" mat-raised-button (click)="file2.click()">Import</button>
+                    <button class="button" mat-raised-button color="primary" (click)="createIosTemplate(image)">
+                      Create
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </mat-list-item>
+              </mat-list-item>
+            }
           </mat-list>
         </div>
       </div>
@@ -417,33 +421,35 @@
             <mat-icon aria-label="Refresh list of images">refresh</mat-icon></button
           ><br />
           <mat-list>
-            <mat-list-item *ngFor="let image of applianceToInstall.images">
-              <div class="list-item">
-                <span>
-                  {{ image.filename }}
-                </span>
-                <span *ngIf="checkImageFromVersion(image.filename)">
-                  <mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
-                </span>
-                <span *ngIf="!checkImageFromVersion(image.filename)">
-                  <mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
-                </span>
-                <div>
-                  <input
-                    type="file"
-                    class="non-visible"
-                    #file2
-                    (change)="importImage($event, image.filename)"
-                    ng2FileSelect
-                    [uploader]="uploaderImage"
-                  />
-                  <button class="button" mat-raised-button (click)="file2.click()">Import</button>
-                  <button class="button" mat-raised-button color="primary" (click)="createIouTemplate(image)">
-                    Create
-                  </button>
+            @for (image of applianceToInstall.images; track image.filename) {
+              <mat-list-item>
+                <div class="list-item">
+                  <span>
+                    {{ image.filename }}
+                  </span>
+                  <span *ngIf="checkImageFromVersion(image.filename)">
+                    <mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
+                  </span>
+                  <span *ngIf="!checkImageFromVersion(image.filename)">
+                    <mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
+                  </span>
+                  <div>
+                    <input
+                      type="file"
+                      class="non-visible"
+                      #file2
+                      (change)="importImage($event, image.filename)"
+                      ng2FileSelect
+                      [uploader]="uploaderImage"
+                    />
+                    <button class="button" mat-raised-button (click)="file2.click()">Import</button>
+                    <button class="button" mat-raised-button color="primary" (click)="createIouTemplate(image)">
+                      Create
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </mat-list-item>
+              </mat-list-item>
+            }
           </mat-list>
         </div>
       </div>
