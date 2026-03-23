@@ -107,10 +107,24 @@ mat-cell {
   color: rgba(0, 0, 0, 0.87);
 }
 
-// Name column - left align
+// Name column - left align with overflow handling
 mat-cell[mat-column="name"] {
   justify-content: flex-start;
   font-weight: 500;
+  max-width: 200px;
+
+  .table-link,
+  span {
+    width: 100%;
+  }
+
+  .text-overflow {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 // Status column - center align

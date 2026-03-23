@@ -49,11 +49,11 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
             <mat-cell *matCellDef="let row">
               @if (getControllerStatus(row) === 'running') {
-                <a [routerLink]="['/controller', row.id, 'login']" class="table-link">
-                  {{ row.name }}
+                <a [routerLink]="['/controller', row.id, 'login']" class="table-link" matTooltip="{{ row.name }}" matTooltipPosition="above">
+                  <span class="text-overflow">{{ row.name }}</span>
                 </a>
               } @else {
-                <span>{{ row.name }}</span>
+                <span matTooltip="{{ row.name }}" matTooltipPosition="above" class="text-overflow">{{ row.name }}</span>
               }
             </mat-cell>
           </ng-container>

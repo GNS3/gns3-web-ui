@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BehaviorSubject, interval, merge, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -28,7 +29,7 @@ import { ControllerDiscoveryComponent } from './controller-discovery/controller-
   templateUrl: './controllers.component.html',
   styleUrl: './controllers.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterModule, MatDialogModule, MatSortModule, MatTableModule, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatBottomSheetModule, MatMenuModule, ControllerDiscoveryComponent]
+  imports: [CommonModule, FormsModule, RouterModule, MatDialogModule, MatSortModule, MatTableModule, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatBottomSheetModule, MatMenuModule, MatTooltipModule, ControllerDiscoveryComponent]
 })
 export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
   private dialog = inject(MatDialog);
