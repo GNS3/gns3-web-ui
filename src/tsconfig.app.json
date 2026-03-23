@@ -14,9 +14,7 @@
     "types": []
   },
   "files": [
-    "main.ts",
-    "main.electron.ts",
-    "polyfills.ts"
+    "main.ts"
   ],
   "include": [
     // "../src/**/*"
