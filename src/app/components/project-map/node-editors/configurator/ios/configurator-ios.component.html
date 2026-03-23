@@ -133,46 +133,48 @@
           <mat-tab label="Slots">
             <br />
             <h6>Adapters</h6>
-            <div *ngFor="let index of [0, 1, 2, 3, 4, 5, 6]">
-              <mat-select
-                placeholder="Slot {{ index }}"
-                [(ngModel)]="networkAdaptersForNode[index]"
-                [ngModelOptions]="{ standalone: true }"
-                *ngIf="adapterMatrix[node.properties.platform][node.properties.chassis || ''][index]"
-              >
-                <mat-option
-                  *ngIf="adapterMatrix[node.properties.platform][node.properties.chassis || ''][index].length > 1 &&
-                  !adapterMatrix[node.properties.platform][node.properties.chassis || ''][index][0].startsWith('C7200')"
-                  [value]=""
+            @for (index of [0, 1, 2, 3, 4, 5, 6]; track index) {
+              @if (adapterMatrix[node.properties.platform][node.properties.chassis || ''][index]) {
+                <mat-select
+                  placeholder="Slot {{ index }}"
+                  [(ngModel)]="networkAdaptersForNode[index]"
+                  [ngModelOptions]="{ standalone: true }"
                 >
-                  {{ "" }}
-                </mat-option>
-                <mat-option
-                  *ngFor="let option of adapterMatrix[node.properties.platform][node.properties.chassis || ''][index]"
-                  [value]="option"
-                >
-                  {{ option }}
-                </mat-option>
-              </mat-select>
-            </div>
+                  @if (adapterMatrix[node.properties.platform][node.properties.chassis || ''][index].length > 1 &&
+                      !adapterMatrix[node.properties.platform][node.properties.chassis || ''][index][0].startsWith('C7200')) {
+                    <mat-option [value]="">
+                      {{ "" }}
+                    </mat-option>
+                  }
+                  @for (option of adapterMatrix[node.properties.platform][node.properties.chassis || ''][index]; track option) {
+                    <mat-option [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  }
+                </mat-select>
+              }
+            }
             <br />
             <div *ngIf="wicMatrix[node.properties.platform]">
               <h6>WICs</h6>
-              <div *ngFor="let index of [0, 1, 2]">
-                <mat-select
-                  placeholder="WIC {{ index }}"
-                  [(ngModel)]="wicsForNode[index]"
-                  [ngModelOptions]="{ standalone: true }"
-                  *ngIf="wicMatrix[node.properties.platform][index]"
-                >
-                  <mat-option [value]="">
-                    {{ "" }}
-                  </mat-option>
-                  <mat-option *ngFor="let option of wicMatrix[node.properties.platform][index]" [value]="option">
-                    {{ option }}
-                  </mat-option>
-                </mat-select>
-              </div>
+              @for (index of [0, 1, 2]; track index) {
+                @if (wicMatrix[node.properties.platform][index]) {
+                  <mat-select
+                    placeholder="WIC {{ index }}"
+                    [(ngModel)]="wicsForNode[index]"
+                    [ngModelOptions]="{ standalone: true }"
+                  >
+                    <mat-option [value]="">
+                      {{ "" }}
+                    </mat-option>
+                    @for (option of wicMatrix[node.properties.platform][index]; track option) {
+                      <mat-option [value]="option">
+                        {{ option }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                }
+              }
             </div>
           </mat-tab>
 

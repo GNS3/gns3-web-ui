@@ -16,40 +16,50 @@
         </form>
         <mat-form-field class="form-field">
           <mat-select placeholder="Image format" [(ngModel)]="qemuImg.format">
-            <mat-option *ngFor="let format of formatOptions" [value]="format">
-              {{ format }}
-            </mat-option>
+            @for (format of formatOptions; track format) {
+              <mat-option [value]="format">
+                {{ format }}
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
         <div *ngIf="qemuImg.format === 'qcow2'">
           Size options
           <mat-form-field class="form-field">
             <mat-select placeholder="Image format" [(ngModel)]="qemuImg.preallocation">
-              <mat-option *ngFor="let preallocation of preallocationsOptions" [value]="preallocation">
-                {{ preallocation }}
-              </mat-option>
+              @for (preallocation of preallocationsOptions; track preallocation) {
+                <mat-option [value]="preallocation">
+                  {{ preallocation }}
+                </mat-option>
+              }
             </mat-select>
           </mat-form-field>
           <mat-form-field class="form-field">
             <mat-select placeholder="Cluster size" [(ngModel)]="qemuImg.cluster_size">
-              <mat-option *ngFor="let clusterSize of clusterSizeOptions" [value]="clusterSize.value">
-                {{ clusterSize.name }}
-              </mat-option>
+              @for (clusterSize of clusterSizeOptions; track clusterSize.value) {
+                <mat-option [value]="clusterSize.value">
+                  {{ clusterSize.name }}
+                </mat-option>
+              }
             </mat-select>
           </mat-form-field>
           Refcounts
           <mat-form-field class="form-field">
             <mat-select placeholder="Lazy refcounts" [(ngModel)]="qemuImg.lazy_refcounts">
-              <mat-option *ngFor="let lazyRefcount of lazyRefcountsOptions" [value]="lazyRefcount">
-                {{ lazyRefcount }}
-              </mat-option>
+              @for (lazyRefcount of lazyRefcountsOptions; track lazyRefcount) {
+                <mat-option [value]="lazyRefcount">
+                  {{ lazyRefcount }}
+                </mat-option>
+              }
             </mat-select>
           </mat-form-field>
           <mat-form-field class="form-field">
             <mat-select placeholder="Refcount entry size" [(ngModel)]="qemuImg.refcount_bits">
-              <mat-option *ngFor="let clusterSize of clusterSizeOptions" [value]="clusterSize.value">
-                {{ clusterSize.name }}
-              </mat-option>
+              @for (clusterSize of clusterSizeOptions; track clusterSize.value) {
+                <mat-option [value]="clusterSize.value">
+                  {{ clusterSize.name }}
+                </mat-option>
+              }
             </mat-select>
           </mat-form-field>
         </div>
@@ -86,9 +96,11 @@
             > </mat-radio-group
           ><br /><br />
           <mat-select placeholder="Zeroed grain" [(ngModel)]="qemuImg.zeroed_grain">
-            <mat-option *ngFor="let option of zeroedGrainOptions" [value]="option">
-              {{ option }}
-            </mat-option>
+            @for (option of zeroedGrainOptions; track option) {
+              <mat-option [value]="option">
+                {{ option }}
+              </mat-option>
+            }
           </mat-select>
         </div>
         <form [formGroup]="inputForm">
