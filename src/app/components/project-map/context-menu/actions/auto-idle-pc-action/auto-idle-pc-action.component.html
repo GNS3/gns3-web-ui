@@ -1,4 +1,4 @@
-<button mat-menu-item *ngIf="node().node_type === 'dynamips'" (click)="autoIdlePC()">
+<button mat-menu-item *ngIf="node() && node().node_type === 'dynamips'" (click)="autoIdlePC()">
   <mat-icon>query_builder</mat-icon>
   <span>Auto Idle-PC</span>
 </button>
