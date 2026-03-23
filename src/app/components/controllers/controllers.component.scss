@@ -1,25 +1,38 @@
 /**
  * GNS3 Controllers Component Styles
- * Enhanced with modern design improvements
+ * BEM naming applied, Material theme variables used
  */
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 
 /* =============================================
 // Header
 // ============================================= */
-.default-header {
+.controllers__header {
   max-width: 1000px;
   margin: 0 auto;
+
+  h1 {
+    font-size: 32px;
+    font-weight: 500;
+  }
 }
 
-.default-header h1 {
-  font-size: 32px;
-  font-weight: 500;
+/* =============================================
+// Content
+// ============================================= */
+.controllers__content {
+  // Content wrapper
 }
 
 /* =============================================
 // Buttons Bar
 // ============================================= */
-.buttons-bar {
+.controllers__buttons-bar {
   padding-top: 0;
   display: flex;
   justify-content: flex-end;
@@ -27,14 +40,14 @@
   margin: 0 auto;
 }
 
-.button {
+.controllers__button {
   margin: 12px 0;
 }
 
 /* =============================================
 // Search
 // ============================================= */
-.controllers-search-form {
+.controllers__search-form {
   display: flex;
   justify-content: center;
   margin: 16px auto;
@@ -42,14 +55,14 @@
   max-width: 1000px;
 }
 
-.controllers-search {
+.controllers__search {
   width: 100%;
 }
 
 /* =============================================
 // Table Styles
 // ============================================= */
-.table-container {
+.controllers__table-container {
   border-radius: 12px;
   overflow: hidden;
   width: 100%;
@@ -63,9 +76,37 @@
 mat-row {
   transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
   cursor: default;
+  position: relative;
 
   &:hover {
     background-color: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
+  }
+
+  // Row left border indicator - Running state
+  &.controllers__row--running {
+    border-left: 3px solid var(--mat-sys-tertiary);
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--mat-sys-tertiary) 4%, transparent);
+    }
+  }
+
+  // Row left border indicator - Starting state
+  &.controllers__row--starting {
+    border-left: 3px solid var(--mat-sys-secondary);
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--mat-sys-secondary) 4%, transparent);
+    }
+  }
+
+  // Row left border indicator - Stopped state
+  &.controllers__row--stopped {
+    border-left: 3px solid var(--mat-sys-outline);
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--mat-sys-outline) 6%, transparent);
+    }
   }
 }
 
@@ -116,20 +157,36 @@ mat-cell[mat-column="name"] {
   font-weight: 500;
 }
 
+// Non-running name - secondary color
+.controllers__name--inactive {
+  color: var(--mat-sys-on-surface-variant);
+  transition: color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    color: var(--mat-sys-on-surface);
+  }
+}
+
 // Status column - center align
 mat-cell[mat-column="status"] {
   justify-content: center;
 }
 
-// Actions column - right align
-mat-cell[mat-column="actions"] {
+// Actions column - right align (merged with duplicate at line ~270)
+mat-cell[mat-column="actions"],
+mat-header-cell[mat-column="actions"] {
   justify-content: flex-end;
+  padding: 0 16px;
+}
+
+mat-cell[mat-column="actions"] {
+  overflow: visible;
 }
 
 /* =============================================
 // Status Indicator
 // ============================================= */
-.status-indicator {
+.controllers__status-indicator {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -137,66 +194,75 @@ mat-cell[mat-column="actions"] {
   border-radius: 20px;
   font-size: 13px;
   font-weight: 500;
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+              color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+              transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  animation: status-fade-in 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  // Default: Gray/Outline (Stopped state)
+  background-color: color-mix(in srgb, var(--mat-sys-outline) 12%, transparent);
+  color: var(--mat-sys-on-surface-variant);
+  border: 1px solid var(--mat-sys-outline);
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  }
 }
 
-.status-dot {
+.controllers__status-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  position: relative;
+  background-color: var(--mat-sys-outline);
+  transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.status-running {
-  background-color: color-mix(in srgb, var(--mat-sys-tertiary) 8%, transparent);
+// Running: Green/Tertiary
+.controllers__status--running {
+  background-color: color-mix(in srgb, var(--mat-sys-tertiary) 12%, transparent);
   color: var(--mat-sys-tertiary);
-  border: 1px solid color-mix(in srgb, var(--mat-sys-tertiary) 20%, transparent);
+  border: 1px solid var(--mat-sys-tertiary);
 
-  .status-dot {
+  .controllers__status-dot {
     background-color: var(--mat-sys-tertiary);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-tertiary) 10%, transparent);
     animation: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-tertiary) 16%, transparent);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-tertiary) 20%, transparent);
+    background-color: color-mix(in srgb, var(--mat-sys-tertiary) 20%, transparent);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-tertiary) 25%, transparent);
   }
 }
 
-.status-starting {
-  background-color: color-mix(in srgb, var(--mat-sys-secondary) 8%, transparent);
+// Starting: Orange/Secondary
+.controllers__status--starting {
+  background-color: color-mix(in srgb, var(--mat-sys-secondary) 12%, transparent);
   color: var(--mat-sys-secondary);
-  border: 1px solid color-mix(in srgb, var(--mat-sys-secondary) 20%, transparent);
+  border: 1px solid var(--mat-sys-secondary);
 
-  .status-dot {
+  .controllers__status-dot {
     background-color: var(--mat-sys-secondary);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-secondary) 10%, transparent);
     animation: pulse-orange 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-secondary) 16%, transparent);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-secondary) 20%, transparent);
+    background-color: color-mix(in srgb, var(--mat-sys-secondary) 20%, transparent);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-secondary) 25%, transparent);
   }
 }
 
-.status-stopped {
-  background-color: color-mix(in srgb, var(--mat-sys-error) 8%, transparent);
-  color: var(--mat-sys-error);
-  border: 1px solid color-mix(in srgb, var(--mat-sys-error) 20%, transparent);
+// Stopped: Gray/Outline (no additional styles needed, uses base class)
 
-  .status-dot {
-    background-color: var(--mat-sys-error);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-error) 10%, transparent);
+@keyframes status-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-4px);
   }
-
-  &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-error) 16%, transparent);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-error) 15%, transparent);
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
 
@@ -225,7 +291,7 @@ mat-cell[mat-column="actions"] {
 /* =============================================
 // Table Link
 // ============================================= */
-.table-link {
+.controllers__link {
   transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-block;
   transform-origin: left center;
@@ -247,6 +313,7 @@ mat-cell[mat-column="actions"] {
 
   &:hover {
     color: color-mix(in srgb, var(--mat-sys-primary) 80%, black);
+    transform: translateY(-2px);
 
     &::after {
       width: 100%;
@@ -257,22 +324,10 @@ mat-cell[mat-column="actions"] {
 /* =============================================
 // Action Buttons
 // ============================================= */
-.actions-cell {
+.controllers__actions-cell {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-}
-
-// Actions column width
-mat-cell[mat-column="actions"] {
-  justify-content: flex-end;
-  padding: 0 16px;
-  overflow: visible;
-}
-
-mat-header-cell[mat-column="actions"] {
-  justify-content: flex-end;
-  padding: 0 16px;
 }
 
 // Icon buttons - Material Design 3 style
@@ -321,7 +376,7 @@ button[mat-icon-button] {
 }
 
 // Primary action button (Projects/Open) - uses primary theme color
-.primary-action-btn {
+.controllers__primary-action-btn {
   margin-right: 4px;
 
   &::before {
@@ -385,67 +440,67 @@ button[color="warn"] {
 /* =============================================
 // Empty State
 // ============================================= */
-.empty-state {
+.controllers__empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 64px 24px;
   text-align: center;
-}
 
-.empty-state mat-icon {
-  font-size: 64px;
-  width: 64px;
-  height: 64px;
-  margin-bottom: 16px;
-  opacity: 0.4;
-  color: var(--mat-sys-on-surface-variant);
-}
+  mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    margin-bottom: 16px;
+    opacity: 0.4;
+    color: var(--mat-sys-on-surface-variant);
+  }
 
-.empty-state h3 {
-  font-size: 20px;
-  font-weight: 500;
-  margin: 0 0 8px 0;
-  color: var(--mat-sys-on-surface);
-}
+  h3 {
+    font-size: 20px;
+    font-weight: 500;
+    margin: 0 0 8px 0;
+    color: var(--mat-sys-on-surface);
+  }
 
-.empty-state p {
-  font-size: 14px;
-  color: color-mix(in srgb, var(--mat-sys-on-surface) 60%, transparent);
-  margin: 0 0 24px 0;
+  p {
+    font-size: 14px;
+    color: color-mix(in srgb, var(--mat-sys-on-surface) 60%, transparent);
+    margin: 0 0 24px 0;
+  }
 }
 
 /* =============================================
 // Responsive Design
 // ============================================= */
 @media (max-width: 768px) {
-  .button {
+  .controllers__button {
     margin: 8px 0;
     width: 100%;
   }
 
-  .actions-cell {
+  .controllers__actions-cell {
     flex-wrap: wrap;
     gap: 4px;
   }
 
-  .primary-action-btn {
+  .controllers__primary-action-btn {
     margin-right: 4px;
   }
 
-  /* Hide less important columns on mobile */
+  // Hide less important columns on mobile
   .hide-mobile {
     display: none;
   }
 
-  /* Show combined host:port on mobile only */
+  // Show combined host:port on mobile only
   .hide-desktop {
     display: inline;
   }
 
   // Adjust status indicator for mobile
-  .status-indicator {
+  .controllers__status-indicator {
     padding: 4px 10px;
     font-size: 12px;
   }
@@ -457,7 +512,7 @@ button[color="warn"] {
 }
 
 @media (min-width: 769px) {
-  /* Hide combined host:port on desktop */
+  // Hide combined host:port on desktop
   .hide-desktop {
     display: none;
   }

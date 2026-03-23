@@ -1,15 +1,15 @@
-<div class="content">
-  <div class="default-header">
+<div class="controllers">
+  <div class="controllers__header">
     <h1>Controllers</h1>
   </div>
 
-  <div class="default-content">
+  <div class="controllers__content">
     <!-- Controller Discovery -->
     <app-controller-discovery />
 
     <!-- Search -->
-    <form class="controllers-search-form">
-      <mat-form-field class="controllers-search">
+    <form class="controllers__search-form">
+      <mat-form-field class="controllers__search">
         <mat-icon matPrefix>search</mat-icon>
         <input
           matInput
@@ -23,7 +23,7 @@
 
     <!-- Empty State -->
     @if (!controllerDatabase || controllerDatabase.data.length === 0) {
-      <div class="empty-state">
+      <div class="controllers__empty-state">
         <mat-icon>cloud_off</mat-icon>
         <h3>No controllers found</h3>
         <p>Add a controller to get started with GNS3</p>
@@ -36,7 +36,7 @@
 
     <!-- Controllers Table -->
     @if (controllerDatabase) {
-      <div class="mat-elevation-z8 table-container">
+      <div class="controllers__table-container">
         <mat-table #table [dataSource]="dataSource" matSort>
           <!-- ID Column (hidden on mobile) -->
           <ng-container matColumnDef="id">
@@ -49,11 +49,11 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
             <mat-cell *matCellDef="let row">
               @if (getControllerStatus(row) === 'running') {
-                <a [routerLink]="['/controller', row.id, 'login']" class="table-link">
+                <a [routerLink]="['/controller', row.id, 'login']" class="controllers__link">
                   {{ row.name }}
                 </a>
               } @else {
-                <span>{{ row.name }}</span>
+                <span class="controllers__name--inactive">{{ row.name }}</span>
               }
             </mat-cell>
           </ng-container>
@@ -64,20 +64,20 @@
             <mat-cell *matCellDef="let row">
               @switch (getControllerStatus(row)) {
                 @case ('running') {
-                  <div class="status-indicator status-running">
-                    <span class="status-dot"></span>
+                  <div class="controllers__status-indicator controllers__status--running">
+                    <span class="controllers__status-dot"></span>
                     <span>Running</span>
                   </div>
                 }
                 @case ('starting') {
-                  <div class="status-indicator status-starting">
-                    <span class="status-dot"></span>
+                  <div class="controllers__status-indicator controllers__status--starting">
+                    <span class="controllers__status-dot"></span>
                     <span>Starting</span>
                   </div>
                 }
                 @default {
-                  <div class="status-indicator status-stopped">
-                    <span class="status-dot"></span>
+                  <div class="controllers__status-indicator controllers__status--stopped">
+                    <span class="controllers__status-dot"></span>
                     <span>Stopped</span>
                   </div>
                 }
@@ -110,7 +110,7 @@
           <ng-container matColumnDef="actions">
             <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
             <mat-cell *matCellDef="let row">
-              <div class="actions-cell">
+              <div class="controllers__actions-cell">
                 <!-- Primary Action: Go to Projects (only for running controllers) -->
                 @if (getControllerStatus(row) === 'running') {
                   <button
@@ -169,15 +169,20 @@
           </ng-container>
 
           <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-          <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+          <mat-row
+            *matRowDef="let row; columns: displayedColumns"
+            [class.controllers__row--running]="getControllerStatus(row) === 'running'"
+            [class.controllers__row--starting]="getControllerStatus(row) === 'starting'"
+            [class.controllers__row--stopped]="getControllerStatus(row) === 'stopped'"
+          ></mat-row>
         </mat-table>
       </div>
     }
 
     <!-- Add Controller Button -->
     @if (!controllerDatabase || controllerDatabase.data.length > 0) {
-      <div class="buttons-bar">
-        <button mat-raised-button class="button" color="primary" (click)="createModal()">
+      <div class="controllers__buttons-bar">
+        <button mat-raised-button class="controllers__button" color="primary" (click)="createModal()">
           <mat-icon>add</mat-icon>
           Add Controller
         </button>
