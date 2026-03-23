@@ -1,59 +1,20 @@
 /**
- * GNS3 Web UI - Angular Material Theme System
+ * GNS3 Web UI - Theme Styles
  *
- * This file implements the theme system using Angular Material APIs:
- * - MDC Web components
- * - CSS Custom Properties (CSS Variables)
+ * This file contains custom styles that work with Angular Material prebuilt themes.
+ * The actual theme switching is handled by ThemeService which dynamically loads:
+ * - Dark theme: pink-bluegrey.css
+ * - Light theme: deeppurple-amber.css
  *
  * Author: Frontend Team
- * Updated: 2026-03-20 for Angular 17
+ * Updated: 2026-03-23 for Angular Material prebuilt themes
  */
 
-@use '@angular/material' as mat;
 @import '~material-design-icons/iconfont/material-icons.css';
 @import '~typeface-roboto/index.css';
 
-// Include core styles for all Material components
-@include mat.core();
-
 // =============================================
-// 1. Define GNS3 Themes (Angular 14 compatible)
-// =============================================
-
-// Define custom palettes using M2 APIs for Angular 18
-$gns3-primary: mat.m2-define-palette(mat.$m2-cyan-palette, 700, 500, 900);
-$gns3-accent: mat.m2-define-palette(mat.$m2-blue-grey-palette, A200, A100, A700);
-$gns3-warn: mat.m2-define-palette(mat.$m2-red-palette, 700);
-
-// Dark theme
-$gns3-dark-theme: mat.m2-define-dark-theme((
-  color: (
-    primary: $gns3-primary,
-    accent: $gns3-accent,
-    warn: $gns3-warn,
-  ),
-  density: 0,
-));
-
-// Light theme
-$gns3-light-theme: mat.m2-define-light-theme((
-  color: (
-    primary: $gns3-primary,
-    accent: $gns3-accent,
-    warn: $gns3-warn,
-  ),
-  density: 0,
-));
-
-// =============================================
-// 2. Apply Default Theme (Dark)
-// =============================================
-
-// Include all component themes using core theme
-@include mat.all-component-themes($gns3-dark-theme);
-
-// =============================================
-// 3. GNS3 Custom Design Tokens
+// GNS3 Custom Design Tokens
 // =============================================
 
 :root {
@@ -120,22 +81,7 @@ $gns3-light-theme: mat.m2-define-light-theme((
 }
 
 // =============================================
-// 4. Light Theme Override
-// =============================================
-
-.theme-light,
-.light-theme {
-  // Include all component themes for light theme using core theme
-  @include mat.all-component-themes($gns3-light-theme);
-
-  // Override custom tokens for light theme
-  --gns3-dark-bg: #ffffff;
-  --gns3-light-bg: #f5f5f5;
-  --gns3-surface: #ffffff;
-}
-
-// =============================================
-// 5. Global Style Overrides
+// Global Style Overrides
 // =============================================
 
 // Custom Scrollbar Styles
@@ -163,257 +109,39 @@ $gns3-light-theme: mat.m2-define-light-theme((
   scrollbar-color: rgba(0, 151, 167, 0.5) rgba(0, 0, 0, 0.1);
 }
 
-// Markdown Content Styles
-app-chat-message-list,
-markdown,
-.markdown {
-  color: rgba(255, 255, 255, 0.87);
+// =============================================
+// Light Theme Overrides
+// =============================================
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    color: rgba(255, 255, 255, 0.87);
-    margin-top: var(--gns3-spacing-md);
-    margin-bottom: var(--gns3-spacing-sm);
-  }
-
-  p {
-    margin: var(--gns3-spacing-xs) 0;
-    line-height: 1.6;
-  }
-
-  ul,
-  ol {
-    margin: var(--gns3-spacing-xs) 0;
-    padding-left: var(--gns3-spacing-lg);
-  }
-
-  li {
-    margin: var(--gns3-spacing-xs) 0;
-  }
-
-  code {
-    background-color: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.87);
-    padding: 2px 6px;
-    border-radius: var(--gns3-radius-xs);
-    font-family: 'Courier New', monospace;
-    font-size: 0.9em;
-  }
-
-  pre {
-    background-color: rgba(255, 255, 255, 0.05);
-    padding: var(--gns3-spacing-md);
-    border-radius: var(--gns3-radius-md);
-    overflow-x: auto;
-    margin: var(--gns3-spacing-md) 0;
-
-    code {
-      background-color: transparent;
-      padding: 0;
-    }
-  }
-
-  a {
-    color: var(--gns3-cyan-light);
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-
-  blockquote {
-    border-left: 4px solid var(--gns3-cyan-light);
-    padding-left: var(--gns3-spacing-md);
-    margin: var(--gns3-spacing-md) 0;
-    color: rgba(255, 255, 255, 0.7);
-  }
-
-  table {
-    border-collapse: collapse;
-    width: 100%;
-    margin: var(--gns3-spacing-md) 0;
-
-    th,
-    td {
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      padding: var(--gns3-spacing-sm);
-    }
-
-    th {
-      background-color: rgba(255, 255, 255, 0.05);
-      font-weight: 500;
-    }
-  }
-
-  img {
-    max-width: 100%;
-    height: auto;
-  }
+.theme-light,
+.light-theme,
+.theme-light .mat-app-background {
+  --gns3-dark-bg: #ffffff;
+  --gns3-light-bg: #f5f5f5;
+  --gns3-surface: #ffffff;
 }
 
 // =============================================
-// 6. Utility Classes
+// Dark Theme Overrides
 // =============================================
 
-// Text Utilities
-.text-primary {
-  color: var(--gns3-cyan-light);
-}
-
-.text-secondary {
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.text-error {
-  color: var(--mat-app-error-color);
-}
-
-.text-success {
-  color: var(--gns3-color-success);
-}
-
-// Background Utilities
-.bg-primary {
-  background-color: var(--gns3-cyan);
-}
-
-.bg-surface {
-  background-color: var(--gns3-surface);
-}
-
-.bg-error {
-  background-color: var(--mat-app-error-color);
-}
-
-// Spacing Utilities
-.mt-xs {
-  margin-top: var(--gns3-spacing-xs);
-}
-
-.mt-sm {
-  margin-top: var(--gns3-spacing-sm);
-}
-
-.mt-md {
-  margin-top: var(--gns3-spacing-md);
-}
-
-.mt-lg {
-  margin-top: var(--gns3-spacing-lg);
-}
-
-.mb-xs {
-  margin-bottom: var(--gns3-spacing-xs);
-}
-
-.mb-sm {
-  margin-bottom: var(--gns3-spacing-sm);
-}
-
-.mb-md {
-  margin-bottom: var(--gns3-spacing-md);
-}
-
-.mb-lg {
-  margin-bottom: var(--gns3-spacing-lg);
-}
-
-.p-xs {
-  padding: var(--gns3-spacing-xs);
-}
-
-.p-sm {
-  padding: var(--gns3-spacing-sm);
-}
-
-.p-md {
-  padding: var(--gns3-spacing-md);
-}
-
-.p-lg {
-  padding: var(--gns3-spacing-lg);
-}
-
-// Border Radius Utilities
-.rounded-sm {
-  border-radius: var(--gns3-radius-sm);
-}
-
-.rounded-md {
-  border-radius: var(--gns3-radius-md);
-}
-
-.rounded-lg {
-  border-radius: var(--gns3-radius-lg);
-}
-
-.rounded-full {
-  border-radius: var(--gns3-radius-full);
-}
-
-// Shadow Utilities
-.shadow-sm {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.shadow-md {
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.shadow-lg {
-  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+.theme-dark,
+.dark-theme,
+.dark-theme .mat-app-background {
+  --gns3-dark-bg: #20313b;
+  --gns3-light-bg: #e8ecef;
+  --gns3-surface: #263238;
 }
 
 // =============================================
-// 7. Print Styles
+// Print Styles
 // =============================================
 
 @media print {
-  // Use light theme for better print quality
-  .theme-light,
-  .light-theme {
-    @include mat.all-component-themes($gns3-light-theme);
-  }
-
   // Hide non-essential elements
   .no-print,
   .mat-toolbar,
   .mat-sidenav {
     display: none;
   }
-}
-
-// =============================================
-// 8. Menu Style Overrides
-// =============================================
-
-.mat-menu-panel .mat-menu-item:not([disabled]):hover {
-  background-color: var(--mat-app-error-color);
-}
-
-.mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-program-focused,
-.mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-keyboard-focused {
-  background-color: var(--mat-app-error-color);
-}
-
-.light-theme .mat-menu-panel .mat-menu-item:not([disabled]):hover,
-.light-theme .mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-program-focused,
-.light-theme .mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-keyboard-focused {
-  color: var(--mat-app-on-error-color);
-}
-
-.light-theme .mat-menu-panel .mat-menu-item:not([disabled]):hover .mat-icon,
-.light-theme .mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-program-focused .mat-icon,
-.light-theme .mat-menu-panel:not(.context-menu-items) .mat-menu-item:not([disabled]).cdk-keyboard-focused .mat-icon {
-  color: var(--mat-app-on-error-color);
-}
-
-.mat-menu-panel:not(.context-menu-items) .mat-menu-item {
-  height: var(--gns3-spacing-xl);
-  line-height: var(--gns3-spacing-xl);
 }

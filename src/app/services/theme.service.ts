@@ -3,7 +3,16 @@ import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 /**
- * Theme type definition
+ * Available prebuilt themes
+ * - deeppurple-amber: Light theme (deeppurple primary, amber accent)
+ * - indigo-pink: Light theme (indigo primary, pink accent)
+ * - pink-bluegrey: Dark theme (pink primary, bluegrey accent)
+ * - purple-green: Dark theme (purple primary, green accent)
+ */
+export type PrebuiltTheme = 'deeppurple-amber' | 'indigo-pink' | 'pink-bluegrey' | 'purple-green';
+
+/**
+ * Theme type for internal use (maps to light/dark)
  */
 export type ThemeType = 'light' | 'dark';
 
@@ -15,61 +24,88 @@ export type MapThemeType = 'light' | 'dark' | 'auto';
 /**
  * Token for default theme
  */
-export const DEFAULT_THEME_TOKEN = new InjectionToken<ThemeType>('DEFAULT_THEME_TOKEN', {
+export const DEFAULT_THEME_TOKEN = new InjectionToken<PrebuiltTheme>('DEFAULT_THEME_TOKEN', {
   providedIn: 'root',
-  factory: () => 'dark' as ThemeType
+  factory: () => 'pink-bluegrey' as PrebuiltTheme
 });
 
 /**
  * GNS3 Theme Service
  *
- * Manages application theming with support for:
- * - CSS variable-based theming (new system)
- * - Class-based theming (legacy system for backward compatibility)
- * - Separate map theme (can be independent or follow global theme)
- * - Persistent theme preferences via localStorage
+ * Manages application theming using Angular Material prebuilt themes:
+ * - deeppurple-amber: Light theme
+ * - indigo-pink: Light theme
+ * - pink-bluegrey: Dark theme
+ * - purple-green: Dark theme
+ *
+ * Supports persistent theme preferences via localStorage
  */
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private _darkMode$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   darkMode$: Observable<boolean> = this._darkMode$.asObservable();
-  theme$: Observable<[string, boolean]>;
 
-  // Event emitters for backward compatibility
+  // Event emitters
   public themeChanged = new EventEmitter<string>();
   public mapThemeChanged = new EventEmitter<string>();
 
   // Current theme state
-  private currentTheme: ThemeType = 'dark';
+  private currentTheme: PrebuiltTheme = 'pink-bluegrey';
   private currentMapTheme: MapThemeType = 'auto';
 
   // Public properties for backward compatibility
-  public savedTheme: string = 'dark';
+  public savedTheme: string = 'pink-bluegrey';
   public savedMapTheme: string = 'auto';
+
+  // Dynamic theme link element
+  private themeLinkElement: HTMLLinkElement | null = null;
+
+  // All available prebuilt themes
+  readonly availableThemes: { key: PrebuiltTheme; label: string; type: ThemeType }[] = [
+    { key: 'deeppurple-amber', label: 'Deep Purple & Amber', type: 'light' },
+    { key: 'indigo-pink', label: 'Indigo & Pink', type: 'light' },
+    { key: 'pink-bluegrey', label: 'Pink & Bluegrey', type: 'dark' },
+    { key: 'purple-green', label: 'Purple & Green', type: 'dark' },
+  ];
+
+  // Prebuilt theme paths
+  private readonly prebuiltThemes: Record<PrebuiltTheme, string> = {
+    'deeppurple-amber': 'node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css',
+    'indigo-pink': 'node_modules/@angular/material/prebuilt-themes/indigo-pink.css',
+    'pink-bluegrey': 'node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css',
+    'purple-green': 'node_modules/@angular/material/prebuilt-themes/purple-green.css',
+  };
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
-    @Inject(DEFAULT_THEME_TOKEN) defaultTheme: ThemeType
+    @Inject(DEFAULT_THEME_TOKEN) defaultTheme: PrebuiltTheme
   ) {
     // Initialize theme from localStorage or use default
-    const savedTheme = localStorage.getItem('theme') as ThemeType | null;
+    const savedTheme = localStorage.getItem('theme') as PrebuiltTheme | null;
     this.currentTheme = savedTheme || defaultTheme;
-    this.savedTheme = this.currentTheme; // Sync public property
+    this.savedTheme = this.currentTheme;
 
     // Initialize map theme
     const savedMapTheme = localStorage.getItem('mapTheme') as MapThemeType | null;
     this.currentMapTheme = savedMapTheme || 'auto';
-    this.savedMapTheme = this.currentMapTheme; // Sync public property
+    this.savedMapTheme = this.currentMapTheme;
 
     // Apply theme on initialization
     this.applyTheme(this.currentTheme);
   }
 
   /**
-   * Get the current global theme
+   * Get the current theme key
    */
-  getActualTheme(): ThemeType {
+  getCurrentTheme(): PrebuiltTheme {
     return this.currentTheme;
+  }
+
+  /**
+   * Get the current theme type (light or dark)
+   */
+  getThemeType(): ThemeType {
+    return this.isDarkTheme(this.currentTheme) ? 'dark' : 'light';
   }
 
   /**
@@ -77,47 +113,75 @@ export class ThemeService {
    */
   getActualMapTheme(): ThemeType {
     if (this.currentMapTheme === 'auto') {
-      return this.currentTheme;
+      return this.getThemeType();
     }
     return this.currentMapTheme;
   }
 
   /**
-   * Set the global theme (legacy method for backward compatibility)
-   * @deprecated Use setTheme() instead
+   * Get the current theme type ('light' | 'dark')
+   * @deprecated Use getThemeType() instead
    */
-  setDarkMode(isDark: boolean): void {
-    this.setTheme(isDark ? 'dark' : 'light');
+  getActualTheme(): ThemeType {
+    return this.getThemeType();
+  }
+
+  /**
+   * Check if a theme is a dark theme
+   */
+  private isDarkTheme(theme: PrebuiltTheme): boolean {
+    return theme === 'pink-bluegrey' || theme === 'purple-green';
   }
 
   /**
    * Set the global theme
-   * @param theme The theme to apply ('light' | 'dark')
+   * @param theme The theme key to apply
    */
-  setTheme(theme: ThemeType): void {
+  setTheme(theme: PrebuiltTheme): void {
+    if (this.currentTheme === theme) {
+      return;
+    }
+
     this.currentTheme = theme;
-    this.savedTheme = theme; // Update public property
+    this.savedTheme = theme;
     this.applyTheme(theme);
     this.saveThemePreference(theme);
 
-    // Emit legacy event for backward compatibility
-    this.themeChanged.emit(theme === 'dark' ? 'dark-theme' : 'light-theme');
+    // Emit events
+    this.themeChanged.emit(theme);
 
-    // If map theme is set to auto, notify the map too
     if (this.currentMapTheme === 'auto') {
       this.mapThemeChanged.emit(theme);
     }
 
-    // Update BehaviorSubject
-    this._darkMode$.next(theme === 'dark');
+    this._darkMode$.next(this.isDarkTheme(theme));
   }
 
   /**
-   * Toggle between light and dark themes
+   * Toggle between a dark and light theme (preserves the accent pairing)
    */
   toggleTheme(): void {
-    const newTheme: ThemeType = this.currentTheme === 'light' ? 'dark' : 'light';
+    const currentType = this.getThemeType();
+    let newTheme: PrebuiltTheme;
+
+    if (currentType === 'dark') {
+      // Switch to light theme
+      newTheme = this.availableThemes.find(t => t.type === 'light' && t.key.startsWith('deeppurple'))?.key || 'deeppurple-amber';
+    } else {
+      // Switch to dark theme
+      newTheme = this.availableThemes.find(t => t.type === 'dark' && t.key.startsWith('pink'))?.key || 'pink-bluegrey';
+    }
+
     this.setTheme(newTheme);
+  }
+
+  /**
+   * Set dark mode (legacy method for backward compatibility)
+   * @deprecated Use setTheme() instead
+   */
+  setDarkMode(isDark: boolean): void {
+    const targetTheme = isDark ? 'pink-bluegrey' : 'deeppurple-amber';
+    this.setTheme(targetTheme);
   }
 
   /**
@@ -126,85 +190,63 @@ export class ThemeService {
    */
   setMapTheme(theme: MapThemeType): void {
     this.currentMapTheme = theme;
-    this.savedMapTheme = theme; // Update public property
+    this.savedMapTheme = theme;
     localStorage.setItem('mapTheme', theme);
 
-    // Emit the actual theme (resolving 'auto')
     this.mapThemeChanged.emit(this.getActualMapTheme());
   }
 
   /**
    * Restore theme preference from localStorage
-   * Called on app initialization
    */
   restoreTheme(): void {
-    const savedTheme = localStorage.getItem('theme') as ThemeType | null;
-    if (savedTheme) {
+    const savedTheme = localStorage.getItem('theme') as PrebuiltTheme | null;
+    if (savedTheme && this.prebuiltThemes[savedTheme]) {
       this.setTheme(savedTheme);
     }
   }
 
   /**
-   * Apply theme to DOM
-   * @param theme The theme to apply
+   * Apply theme to DOM by dynamically loading/unloading the prebuilt theme CSS
+   * @param theme The theme key to apply
    */
-  private applyTheme(theme: ThemeType): void {
+  private applyTheme(theme: PrebuiltTheme): void {
+    const head = this.document.head;
+    const existingLinkId = 'angular-material-prebuilt-theme';
+
+    // Remove existing theme link if present
+    const existingLink = this.document.getElementById(existingLinkId);
+    if (existingLink) {
+      existingLink.remove();
+    }
+
+    // Remove all theme-related classes from html and body
     const htmlElement = this.document.documentElement;
     const bodyElement = this.document.body;
 
-    // Remove all theme classes first
-    htmlElement.classList.remove('theme-dark', 'theme-light');
-    htmlElement.classList.remove('dark-theme', 'light-theme');
-    htmlElement.classList.remove('darkTheme', 'lightTheme');
+    htmlElement.classList.remove('theme-dark', 'theme-light', 'dark-theme', 'light-theme', 'darkTheme', 'lightTheme');
+    bodyElement.classList.remove('darkTheme', 'lightTheme');
 
-    // Apply new theme class (new system)
-    htmlElement.classList.add(`theme-${theme}`);
+    // Determine theme type
+    const isDark = this.isDarkTheme(theme);
 
-    // Apply legacy theme class for backward compatibility
-    htmlElement.classList.add(theme === 'dark' ? 'dark-theme' : 'light-theme');
+    // Add theme class to html
+    htmlElement.classList.add(`theme-${isDark ? 'dark' : 'light'}`);
+    htmlElement.classList.add(isDark ? 'dark-theme' : 'light-theme');
+    bodyElement.classList.add(isDark ? 'darkTheme' : 'lightTheme');
 
-    // Apply theme class to body (some components use this)
-    bodyElement.classList.remove('lightTheme', 'darkTheme');
-    bodyElement.classList.add(theme === 'dark' ? 'darkTheme' : 'lightTheme');
-
-    // Set background color
-    const backgroundColor = theme === 'dark' ? '#20313b' : '#e8ecef';
-    bodyElement.style.backgroundColor = backgroundColor;
-
-    // Set CSS variable for background color
-    htmlElement.style.setProperty('--gns3-bg-color', backgroundColor);
-    htmlElement.style.setProperty('--mat-app-background-color', backgroundColor);
-
-    // Update other CSS variables based on theme
-    if (theme === 'dark') {
-      this.applyDarkThemeVariables(htmlElement);
-    } else {
-      this.applyLightThemeVariables(htmlElement);
-    }
-  }
-
-  /**
-   * Apply dark theme specific CSS variables
-   */
-  private applyDarkThemeVariables(element: HTMLElement): void {
-    element.style.setProperty('--gns3-text-color', 'rgba(255, 255, 255, 0.87)');
-    element.style.setProperty('--gns3-surface-color', '#263238');
-    element.style.setProperty('--gns3-border-color', 'rgba(255, 255, 255, 0.12)');
-  }
-
-  /**
-   * Apply light theme specific CSS variables
-   */
-  private applyLightThemeVariables(element: HTMLElement): void {
-    element.style.setProperty('--gns3-text-color', 'rgba(0, 0, 0, 0.87)');
-    element.style.setProperty('--gns3-surface-color', '#ffffff');
-    element.style.setProperty('--gns3-border-color', 'rgba(0, 0, 0, 0.12)');
+    // Create and append new theme link
+    this.themeLinkElement = this.document.createElement('link');
+    this.themeLinkElement.id = existingLinkId;
+    this.themeLinkElement.rel = 'stylesheet';
+    this.themeLinkElement.href = this.prebuiltThemes[theme];
+    head.appendChild(this.themeLinkElement);
   }
 
   /**
    * Save theme preference to localStorage
    */
-  private saveThemePreference(theme: ThemeType): void {
+  private saveThemePreference(theme: PrebuiltTheme): void {
     localStorage.setItem('theme', theme);
   }
 
@@ -212,13 +254,13 @@ export class ThemeService {
    * Check if current theme is dark
    */
   isDarkMode(): boolean {
-    return this.currentTheme === 'dark';
+    return this.isDarkTheme(this.currentTheme);
   }
 
   /**
    * Check if current theme is light
    */
   isLightMode(): boolean {
-    return this.currentTheme === 'light';
+    return !this.isDarkTheme(this.currentTheme);
   }
 }
