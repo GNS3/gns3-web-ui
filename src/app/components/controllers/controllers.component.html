@@ -114,14 +114,14 @@
                 <!-- Primary Action: Go to Projects (only for running controllers) -->
                 @if (getControllerStatus(row) === 'running') {
                   <button
-                    mat-stroked-button
+                    mat-icon-button
+                    color="primary"
                     class="primary-action-btn"
                     (click)="openProjects(row)"
                     matTooltip="Go to projects"
                     matTooltipPosition="left"
                   >
-                    <mat-icon>arrow_forward</mat-icon>
-                    <span class="hide-mobile">Projects</span>
+                    <mat-icon>folder_open</mat-icon>
                   </button>
                 }
 
@@ -154,41 +154,15 @@
                   <mat-spinner [diameter]="24"></mat-spinner>
                 }
 
-                <!-- More Actions Menu -->
+                <!-- Delete Controller -->
                 <button
                   mat-icon-button
-                  [matMenuTriggerFor]="menu"
-                  matTooltip="More actions"
-                  matTooltipPosition="right"
+                  color="warn"
+                  matTooltip="Delete controller"
+                  (click)="deleteController(row)"
                 >
-                  <mat-icon>more_vert</mat-icon>
+                  <mat-icon>delete</mat-icon>
                 </button>
-
-                <mat-menu #menu="matMenu">
-                  @if (getControllerStatus(row) === 'running') {
-                    <button mat-menu-item (click)="openProjects(row)">
-                      <mat-icon>folder_open</mat-icon>
-                      <span>Open Projects</span>
-                    </button>
-                  }
-                  @if (row.location === 'local' && getControllerStatus(row) === 'stopped') {
-                    <button mat-menu-item (click)="startController(row)">
-                      <mat-icon>play_arrow</mat-icon>
-                      <span>Start</span>
-                    </button>
-                  }
-                  @if (row.location === 'local' && getControllerStatus(row) === 'running') {
-                    <button mat-menu-item (click)="stopController(row)">
-                      <mat-icon>stop</mat-icon>
-                      <span>Stop</span>
-                    </button>
-                  }
-                  <mat-divider />
-                  <button mat-menu-item (click)="deleteController(row)" class="delete-action">
-                    <mat-icon>delete</mat-icon>
-                    <span>Delete Controller</span>
-                  </button>
-                </mat-menu>
               </div>
             </mat-cell>
           </ng-container>

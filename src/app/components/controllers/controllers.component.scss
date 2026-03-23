@@ -258,7 +258,18 @@ mat-cell[mat-column="actions"] {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 6px;
+  gap: 4px;
+}
+
+// Actions column width
+mat-cell[mat-column="actions"] {
+  justify-content: flex-end;
+  padding: 0 12px;
+}
+
+mat-header-cell[mat-column="actions"] {
+  justify-content: flex-end;
+  padding: 0 12px;
 }
 
 // Icon buttons
@@ -281,34 +292,20 @@ button[mat-icon-button] {
   }
 }
 
-// Primary action button
+// Primary action button (Projects/Open) - uses primary theme color
 .primary-action-btn {
-  margin-right: 8px;
-  font-weight: 500;
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  margin-right: 4px;
 
   &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+    background-color: var(--mat-standard-button-hover-state-layer-color, rgba(0, 0, 0, 0.04));
+    transform: scale(1.15);
   }
 }
 
-// Delete action
-.delete-action {
-  color: #d32f2f;
-
+// Delete button - uses error/warn theme color
+button[color="warn"] {
   &:hover {
-    background-color: #ffebee;
+    background-color: rgba(244, 67, 54, 0.1);
   }
 }
 
