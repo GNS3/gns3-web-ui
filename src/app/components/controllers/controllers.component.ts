@@ -238,7 +238,8 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   deleteController(controller: Controller ) {
     const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
-      data: { message: 'Do you want to delete the controller?' }
+      data: { message: 'Do you want to delete the controller?' },
+      panelClass: 'confirmation-bottom-sheet',
     });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {

@@ -3,20 +3,60 @@
  */
 
 .dialogWrapper {
-  background-color: var(--gns3-surface);
-  padding: var(--gns3-spacing-xs) var(--gns3-spacing-md);
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  padding: var(--mat-sys-spacing, 16px) 24px;
   margin-bottom: -8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.dialogWrapper.lightTheme,
-.dialogWrapper.theme-light {
-  background-color: white;
+  gap: 16px;
+  border-radius: 28px 28px 0 0;
+  box-shadow: 0 -2px 10px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
 }
 
 .title {
-  margin-right: var(--gns3-spacing-sm);
-  margin-left: var(--gns3-spacing-sm);
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
+
+.dialogActions {
+  display: flex;
+  gap: 8px;
+}
+
+// Cancel button - outlined style
+.dialogActions .cancelBtn {
+  color: var(--mat-sys-on-surface-variant);
+  border: 1px solid var(--mat-sys-outline);
+  padding: 8px 16px;
+  border-radius: 20px;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+    border-color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+// Confirm button - filled style
+.dialogActions .confirmBtn {
+  background-color: var(--mat-sys-error);
+  color: var(--mat-sys-on-error);
+  padding: 8px 16px;
+  border-radius: 20px;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--mat-sys-error) 25%, transparent);
+
+  &:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-error) 35%, transparent);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
 }

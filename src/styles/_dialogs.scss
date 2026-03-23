@@ -39,3 +39,13 @@
     color: var(--mat-sys-on-surface);
   }
 }
+
+/* =============================================
+// Confirmation Bottom Sheet
+// ============================================= */
+.confirmation-bottom-sheet {
+  .mat-bottom-sheet-container {
+    background: transparent;
+    box-shadow: none;
+  }
+}
