@@ -55,8 +55,8 @@
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow, #000000) 8%, transparent);
-  background: var(--mat-sys-surface, #ffffff);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 8%, transparent);
+  background: var(--mat-sys-surface);
 }
 
 // Table row styles
@@ -65,17 +65,17 @@ mat-row {
   cursor: default;
 
   &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-on-surface, #1f1f1f) 3%, transparent);
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
   }
 }
 
 // Zebra striping - even rows
 mat-row:nth-child(even) {
-  background-color: color-mix(in srgb, var(--mat-sys-on-surface, #1f1f1f) 1%, transparent);
+  background-color: color-mix(in srgb, var(--mat-sys-on-surface) 1%, transparent);
 }
 
 mat-row:nth-child(even):hover {
-  background-color: color-mix(in srgb, var(--mat-sys-on-surface, #1f1f1f) 4%, transparent);
+  background-color: color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent);
 }
 
 // Header row styles
@@ -83,12 +83,12 @@ mat-row:nth-child(even):hover {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: linear-gradient(to bottom, var(--mat-sys-surface-container-low, #f5f5f5), var(--mat-sys-surface-container, #eeeeee));
+  background: linear-gradient(to bottom, var(--mat-sys-surface-container-low), var(--mat-sys-surface-container));
 
   mat-header-cell {
     font-size: 13px;
     font-weight: 600;
-    color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.7));
+    color: var(--mat-sys-on-surface-variant);
     letter-spacing: 0.5px;
     text-transform: uppercase;
   }
@@ -107,7 +107,7 @@ mat-cell {
 
 mat-cell {
   font-size: 14px;
-  color: var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87));
+  color: var(--mat-sys-on-surface);
 }
 
 // Name column - left align
@@ -148,55 +148,55 @@ mat-cell[mat-column="actions"] {
 }
 
 .status-running {
-  background-color: color-mix(in srgb, var(--mat-sys-tertiary, #4caf50) 8%, transparent);
-  color: var(--mat-sys-tertiary, #2e7d32);
-  border: 1px solid color-mix(in srgb, var(--mat-sys-tertiary, #4caf50) 20%, transparent);
+  background-color: color-mix(in srgb, var(--mat-sys-tertiary) 8%, transparent);
+  color: var(--mat-sys-tertiary);
+  border: 1px solid color-mix(in srgb, var(--mat-sys-tertiary) 20%, transparent);
 
   .status-dot {
-    background-color: var(--mat-sys-tertiary, #4caf50);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-tertiary, #4caf50) 10%, transparent);
+    background-color: var(--mat-sys-tertiary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-tertiary) 10%, transparent);
     animation: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-tertiary, #4caf50) 16%, transparent);
+    background-color: color-mix(in srgb, var(--mat-sys-tertiary) 16%, transparent);
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-tertiary, #4caf50) 20%, transparent);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-tertiary) 20%, transparent);
   }
 }
 
 .status-starting {
-  background-color: color-mix(in srgb, var(--mat-sys-secondary, #ff9800) 8%, transparent);
-  color: var(--mat-sys-secondary, #f57c00);
-  border: 1px solid color-mix(in srgb, var(--mat-sys-secondary, #ff9800) 20%, transparent);
+  background-color: color-mix(in srgb, var(--mat-sys-secondary) 8%, transparent);
+  color: var(--mat-sys-secondary);
+  border: 1px solid color-mix(in srgb, var(--mat-sys-secondary) 20%, transparent);
 
   .status-dot {
-    background-color: var(--mat-sys-secondary, #ff9800);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-secondary, #ff9800) 10%, transparent);
+    background-color: var(--mat-sys-secondary);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-secondary) 10%, transparent);
     animation: pulse-orange 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-secondary, #ff9800) 16%, transparent);
+    background-color: color-mix(in srgb, var(--mat-sys-secondary) 16%, transparent);
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-secondary, #ff9800) 20%, transparent);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-secondary) 20%, transparent);
   }
 }
 
 .status-stopped {
-  background-color: color-mix(in srgb, var(--mat-sys-error, #f44336) 8%, transparent);
-  color: var(--mat-sys-error, #c62828);
-  border: 1px solid color-mix(in srgb, var(--mat-sys-error, #f44336) 20%, transparent);
+  background-color: color-mix(in srgb, var(--mat-sys-error) 8%, transparent);
+  color: var(--mat-sys-error);
+  border: 1px solid color-mix(in srgb, var(--mat-sys-error) 20%, transparent);
 
   .status-dot {
-    background-color: var(--mat-sys-error, #ef5350);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-error, #f44336) 10%, transparent);
+    background-color: var(--mat-sys-error);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--mat-sys-error) 10%, transparent);
   }
 
   &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-error, #f44336) 16%, transparent);
+    background-color: color-mix(in srgb, var(--mat-sys-error) 16%, transparent);
     transform: translateY(-1px);
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-error, #f44336) 15%, transparent);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-error) 15%, transparent);
   }
 }
 
@@ -229,7 +229,7 @@ mat-cell[mat-column="actions"] {
   transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-block;
   transform-origin: left center;
-  color: var(--mat-sys-primary, #1976d2);
+  color: var(--mat-sys-primary);
   text-decoration: none;
   font-weight: 500;
   position: relative;
@@ -246,7 +246,7 @@ mat-cell[mat-column="actions"] {
   }
 
   &:hover {
-    color: color-mix(in srgb, var(--mat-sys-primary, #1976d2) 80%, black);
+    color: color-mix(in srgb, var(--mat-sys-primary) 80%, black);
 
     &::after {
       width: 100%;
@@ -285,24 +285,24 @@ button[mat-icon-button] {
   transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 50%;
   --mat-icon-button-state-layer-size: 32px;
-  --mat-icon-button-icon-size: 20px;  // 从18px增加到20px
+  --mat-icon-button-icon-size: 20px;
 
   &::before {
     content: '';
     position: absolute;
     inset: 0;
     border-radius: inherit;
-    background-color: var(--mat-icon-button-state-layer, var(--mat-sys-on-surface-variant, #1f1f1f));
+    background-color: var(--mat-icon-button-state-layer);
     opacity: 0;
     transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   &:hover::before {
-    opacity: var(--mat-icon-button-hover-state-layer-opacity, 0.08);
+    opacity: var(--mat-icon-button-hover-state-layer-opacity);
   }
 
   &:active::before {
-    opacity: var(--mat-icon-button-pressed-state-layer-opacity, 0.12);
+    opacity: var(--mat-icon-button-pressed-state-layer-opacity);
   }
 
   mat-icon {
@@ -325,7 +325,7 @@ button[mat-icon-button] {
   margin-right: 4px;
 
   &::before {
-    background-color: var(--mat-sys-primary, #1976d2);
+    background-color: var(--mat-sys-primary);
   }
 
   &:hover::before {
@@ -333,14 +333,14 @@ button[mat-icon-button] {
   }
 
   &:hover mat-icon {
-    color: var(--mat-sys-primary, #1976d2);
+    color: var(--mat-sys-primary);
   }
 }
 
 // Start controller button - uses success/green
 button[mat-icon-button]:has(.mat-icon[aria-label*="Start"]) {
   &::before {
-    background-color: var(--mat-sys-tertiary, #4caf50);
+    background-color: var(--mat-sys-tertiary);
   }
 
   &:hover::before {
@@ -348,14 +348,14 @@ button[mat-icon-button]:has(.mat-icon[aria-label*="Start"]) {
   }
 
   &:hover mat-icon {
-    color: var(--mat-sys-tertiary, #4caf50);
+    color: var(--mat-sys-tertiary);
   }
 }
 
 // Stop controller button - uses warning/orange
 button[mat-icon-button]:has(.mat-icon[aria-label*="Stop"]) {
   &::before {
-    background-color: var(--mat-sys-error, #ff9800);
+    background-color: var(--mat-sys-error);
   }
 
   &:hover::before {
@@ -363,14 +363,14 @@ button[mat-icon-button]:has(.mat-icon[aria-label*="Stop"]) {
   }
 
   &:hover mat-icon {
-    color: var(--mat-sys-error, #ff9800);
+    color: var(--mat-sys-error);
   }
 }
 
 // Delete button - uses error/warn theme color
 button[color="warn"] {
   &::before {
-    background-color: var(--mat-sys-error, #f44336);
+    background-color: var(--mat-sys-error);
   }
 
   &:hover::before {
@@ -378,7 +378,7 @@ button[color="warn"] {
   }
 
   &:hover mat-icon {
-    color: var(--mat-sys-error, #f44336);
+    color: var(--mat-sys-error);
   }
 }
 
@@ -400,19 +400,19 @@ button[color="warn"] {
   height: 64px;
   margin-bottom: 16px;
   opacity: 0.4;
-  color: var(--mat-sys-on-surface-variant, #9e9e9e);
+  color: var(--mat-sys-on-surface-variant);
 }
 
 .empty-state h3 {
   font-size: 20px;
   font-weight: 500;
   margin: 0 0 8px 0;
-  color: var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87));
+  color: var(--mat-sys-on-surface);
 }
 
 .empty-state p {
   font-size: 14px;
-  color: color-mix(in srgb, var(--mat-sys-on-surface, #1f1f1f) 60%, transparent);
+  color: color-mix(in srgb, var(--mat-sys-on-surface) 60%, transparent);
   margin: 0 0 24px 0;
 }
 
