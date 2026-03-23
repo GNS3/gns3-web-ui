@@ -1,5 +1,6 @@
+@if (export_project_form) {
 <form
-  [formGroup]="export_project_form" *ngIf="export_project_form"
+  [formGroup]="export_project_form"
   (ngSubmit)="export_project_form.valid && exportPortableProject()"
 >
   <div class="row">
@@ -75,3 +76,4 @@
     </div>
   </div>
 </form>
+}
