@@ -3,6 +3,10 @@ import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/materia
 import { MatButtonModule } from '@angular/material/button';
 import { Project } from '@models/project';
 
+interface ConfirmationDialogData {
+  existingProject: Project;
+}
+
 @Component({
   selector: 'app-import-project-dialog',
   templateUrl: 'confirmation-dialog.component.html',
@@ -16,8 +20,8 @@ export class ConfirmationDialogComponent implements OnInit {
   public confirmationMessage = signal('');
   public isOpen = signal(false);
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
-    this.existingProject = data['existingProject'];
+  constructor(@Inject(MAT_DIALOG_DATA) public data: ConfirmationDialogData) {
+    this.existingProject = data.existingProject;
   }
 
   ngOnInit() {
