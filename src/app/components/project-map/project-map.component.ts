@@ -916,7 +916,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     } else {
       localStorage.removeItem('gridVisibility');
     }
-    this.mapChild().gridVisibility = this.gridVisibility ? 1 : 0;
+    this.mapChild().gridVisibility.set(this.gridVisibility ? 1 : 0);
+    this.mapChild().applyMapSettingsChanges();
   }
 
   public toggleSnapToGrid(enabled: boolean) {

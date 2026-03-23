@@ -10,6 +10,7 @@ import {
   SimpleChange,
   inject,
   input,
+  signal,
   viewChild,
 } from '@angular/core';
 import { select, Selection } from 'd3-selection';
@@ -78,7 +79,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   protected settings = {
     show_interface_labels: true,
   };
-  public gridVisibility: number = 0;
+  public gridVisibility = signal(0);
 
   public nodeGridX: number = 0;
   public nodeGridY: number = 0;
@@ -194,7 +195,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
       })
     );
 
-    this.gridVisibility = localStorage.getItem('gridVisibility') === 'true' ? 1 : 0;
+    this.gridVisibility.set(localStorage.getItem('gridVisibility') === 'true' ? 1 : 0);
     this.mapSettingsService.isScrollDisabled.subscribe((val) => this.resize(val));
 
     // Recalculate canvas size live during node drags so scrollbars appear as
