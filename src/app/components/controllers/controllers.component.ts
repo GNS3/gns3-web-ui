@@ -20,6 +20,7 @@ import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { AddControllerDialogComponent } from './add-controller-dialog/add-controller-dialog.component';
+import { EditControllerDialogComponent } from './edit-controller-dialog/edit-controller-dialog.component';
 import { ControllerDiscoveryComponent } from './controller-discovery/controller-discovery.component';
 
 @Component({
@@ -243,6 +244,26 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
           this.controllerDatabase.remove(controller);
           this.changeDetector.markForCheck();
         });
+      }
+    });
+  }
+
+  editController(controller: Controller) {
+    const dialogRef = this.dialog.open(EditControllerDialogComponent, {
+      width: '400px',
+      autoFocus: false,
+      disableClose: true,
+      data: { controller: controller }
+    });
+
+    // Pass the controller to the dialog component
+    dialogRef.componentRef.instance.controller = controller;
+
+    dialogRef.afterClosed().subscribe((updatedController: Controller) => {
+      if (updatedController) {
+        // Update the controller in the database
+        this.controllerDatabase.update(updatedController);
+        this.changeDetector.markForCheck();
       }
     });
   }

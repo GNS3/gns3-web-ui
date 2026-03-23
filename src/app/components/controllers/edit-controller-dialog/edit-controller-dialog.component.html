@@ -1,0 +1,43 @@
+<h2 mat-dialog-title>Edit Controller</h2>
+<mat-dialog-content>
+  <form [formGroup]="controllerForm">
+    <mat-form-field appearance="fill" class="full-width-field">
+      <mat-label>Name</mat-label>
+      <input matInput formControlName="name" placeholder="Controller name" />
+      @if (controllerForm.get('name').hasError('required')) {
+        <mat-error>Name is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width-field">
+      <mat-label>Host</mat-label>
+      <input matInput formControlName="host" placeholder="127.0.0.1" />
+      @if (controllerForm.get('host').hasError('required')) {
+        <mat-error>Host is required</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width-field">
+      <mat-label>Port</mat-label>
+      <input matInput type="number" formControlName="port" placeholder="3080" />
+      @if (controllerForm.get('port').hasError('required')) {
+        <mat-error>Port is required</mat-error>
+      }
+      @if (controllerForm.get('port').hasError('min')) {
+        <mat-error>Port must be at least 1</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width-field">
+      <mat-label>Protocol</mat-label>
+      <mat-select formControlName="protocol">
+        <mat-option value="http:">HTTP</mat-option>
+        <mat-option value="https:">HTTPS</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSave()" [disabled]="!controllerForm.valid">Save</button>
+</mat-dialog-actions>

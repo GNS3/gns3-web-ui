@@ -154,6 +154,15 @@
                   <mat-spinner [diameter]="24"></mat-spinner>
                 }
 
+                <!-- Edit Controller -->
+                <button
+                  mat-icon-button
+                  matTooltip="Edit controller"
+                  (click)="editController(row)"
+                >
+                  <mat-icon>edit</mat-icon>
+                </button>
+
                 <!-- Delete Controller -->
                 <button
                   mat-icon-button
