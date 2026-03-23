@@ -1,5 +1,5 @@
 import { DataSource } from '@angular/cdk/collections';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, AfterViewInit, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
@@ -10,6 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BehaviorSubject, interval, merge, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -26,12 +27,12 @@ import { ControllerDiscoveryComponent } from './controller-discovery/controller-
   templateUrl: './controllers.component.html',
   styleUrl: './controllers.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterModule, MatDialogModule, MatSortModule, MatTableModule, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatBottomSheetModule, ControllerDiscoveryComponent]
+  imports: [CommonModule, FormsModule, RouterModule, MatDialogModule, MatSortModule, MatTableModule, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatBottomSheetModule, MatMenuModule, ControllerDiscoveryComponent]
 })
-export class ControllersComponent implements OnInit, OnDestroy {
+export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
   private dialog = inject(MatDialog);
   private controllerService = inject(ControllerService);
-  private controllerDatabase = inject(ControllerDatabase);
+  protected controllerDatabase = inject(ControllerDatabase);
   private controllerManagement = inject(ControllerManagementService);
   private changeDetector = inject(ChangeDetectorRef);
   private bottomSheet = inject(MatBottomSheet);
@@ -48,7 +49,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
   private startingTimeouts: Map<string, ReturnType<typeof setTimeout>> = new Map();
   private statusRefreshSubscription: Subscription;
 
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
 
   constructor() { }
 
@@ -89,11 +90,6 @@ export class ControllersComponent implements OnInit, OnDestroy {
       });
     }
 
-    this.sort.sort(<MatSortable>{
-      id: 'id',
-      start: 'asc',
-    });
-    this.dataSource = new ControllerDataSource(this.controllerDatabase, this.sort);
     this.startStatusAutoRefresh();
 
     this.controllerStatusSubscription = this.controllerManagement.controllerStatusChanged.subscribe((controllerStatus) => {
@@ -146,6 +142,16 @@ export class ControllersComponent implements OnInit, OnDestroy {
         this.changeDetector.markForCheck();
       }
     });
+  }
+
+  ngAfterViewInit(): void {
+    if (this.sort) {
+      this.sort.sort(<MatSortable>{
+        id: 'id',
+        start: 'asc',
+      });
+      this.dataSource = new ControllerDataSource(this.controllerDatabase, this.sort);
+    }
   }
 
   ngOnDestroy() {
