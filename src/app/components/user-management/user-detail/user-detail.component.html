@@ -73,10 +73,12 @@
       <mat-tab label="Groups">
         <div class="user-groups">
           <ul>
-            <li *ngFor="let group of groups">
-              <a [routerLink]="['/controller', controller.id, 'management','groups', group.user_group_id]"
-                 class="table-link">{{ group.name }}</a>
-            </li>
+            @for (group of groups; track group.user_group_id) {
+              <li>
+                <a [routerLink]="['/controller', controller.id, 'management','groups', group.user_group_id]"
+                   class="table-link">{{ group.name }}</a>
+              </li>
+            }
           </ul>
         </div>
       </mat-tab>

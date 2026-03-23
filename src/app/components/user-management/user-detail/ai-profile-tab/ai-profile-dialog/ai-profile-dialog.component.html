@@ -39,9 +39,11 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Select LLM Provider</mat-label>
         <mat-select [value]="selectedPresetId" (selectionChange)="onPresetChange($event.value)">
-          <mat-option *ngFor="let preset of basicModePresets" [value]="preset.id">
-            {{ preset.label }}
-          </mat-option>
+          @for (preset of basicModePresets; track preset.id) {
+            <mat-option [value]="preset.id">
+              {{ preset.label }}
+            </mat-option>
+          }
         </mat-select>
         <mat-hint>Select a preset to auto-configure</mat-hint>
       </mat-form-field>
@@ -50,9 +52,11 @@
       <mat-form-field appearance="outline" class="full-width" *ngIf="selectedPreset && selectedPresetId !== 'custom' && !useCustomModel">
         <mat-label>Model Name</mat-label>
         <mat-select [value]="form.get('model')?.value" (selectionChange)="onModelChange($event.value)">
-          <mat-option *ngFor="let model of selectedPreset.models" [value]="model">
-            {{ model }}
-          </mat-option>
+          @for (model of selectedPreset.models; track model) {
+            <mat-option [value]="model">
+              {{ model }}
+            </mat-option>
+          }
         </mat-select>
         <mat-hint>Select a model from the list</mat-hint>
       </mat-form-field>
@@ -84,9 +88,11 @@
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Copilot Mode</mat-label>
         <mat-select formControlName="copilot_mode">
-          <mat-option *ngFor="let mode of copilotModes" [value]="mode.value">
-            {{ mode.label }}
-          </mat-option>
+          @for (mode of copilotModes; track mode.value) {
+            <mat-option [value]="mode.value">
+              {{ mode.label }}
+            </mat-option>
+          }
         </mat-select>
         <mat-hint>{{ getCopilotModeDescription() }}</mat-hint>
       </mat-form-field>
@@ -126,9 +132,11 @@
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Model Type</mat-label>
       <mat-select formControlName="model_type">
-        <mat-option *ngFor="let type of modelTypes" [value]="type.value">
-          {{ type.label }} <span class="option-hint">- {{ type.description }}</span>
-        </mat-option>
+        @for (type of modelTypes; track type.value) {
+          <mat-option [value]="type.value">
+            {{ type.label }} <span class="option-hint">- {{ type.description }}</span>
+          </mat-option>
+        }
       </mat-select>
       <mat-hint>
         <span class="warning-hint">Reserved field. Currently only 'text' model type is supported by the backend. Other options are for future use.</span>
@@ -139,9 +147,11 @@
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Select LLM Provider</mat-label>
       <mat-select [value]="selectedPresetId" (selectionChange)="onPresetChange($event.value)">
-        <mat-option *ngFor="let preset of providerPresets" [value]="preset.id">
-          {{ preset.label }}
-        </mat-option>
+        @for (preset of providerPresets; track preset.id) {
+          <mat-option [value]="preset.id">
+            {{ preset.label }}
+          </mat-option>
+        }
       </mat-select>
       <mat-hint>Select a preset to auto-configure, or choose Custom for manual setup</mat-hint>
     </mat-form-field>
@@ -150,9 +160,11 @@
     <mat-form-field appearance="outline" class="full-width" *ngIf="selectedPreset && selectedPresetId !== 'custom' && !useCustomModel">
       <mat-label>Model Name</mat-label>
       <mat-select [value]="form.get('model')?.value" (selectionChange)="onModelChange($event.value)">
-        <mat-option *ngFor="let model of selectedPreset.models" [value]="model">
-          {{ model }}
-        </mat-option>
+        @for (model of selectedPreset.models; track model) {
+          <mat-option [value]="model">
+            {{ model }}
+          </mat-option>
+        }
         <mat-option value="__custom__">Custom model name...</mat-option>
       </mat-select>
       <mat-hint>Select a model from the list or choose Custom to enter manually</mat-hint>
@@ -174,9 +186,11 @@
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Model Provider</mat-label>
       <mat-select formControlName="provider" placeholder="Select provider">
-        <mat-option *ngFor="let provider of supportedProviders" [value]="provider.value">
-          {{ provider.label }}
-        </mat-option>
+        @for (provider of supportedProviders; track provider.value) {
+          <mat-option [value]="provider.value">
+            {{ provider.label }}
+          </mat-option>
+        }
       </mat-select>
       <mat-error>Provider is required</mat-error>
       <mat-hint>For providers with OpenAI-compatible API, select "OpenAI" and customize the Base URL below</mat-hint>
@@ -227,9 +241,11 @@
       <mat-form-field appearance="outline" class="half-width">
         <mat-label>Context Strategy</mat-label>
         <mat-select formControlName="context_strategy">
-          <mat-option *ngFor="let strategy of contextStrategies" [value]="strategy.value">
-            {{ strategy.label }}
-          </mat-option>
+          @for (strategy of contextStrategies; track strategy.value) {
+            <mat-option [value]="strategy.value">
+              {{ strategy.label }}
+            </mat-option>
+          }
         </mat-select>
         <mat-hint>{{ getContextStrategyDescription() }}</mat-hint>
       </mat-form-field>
@@ -237,9 +253,11 @@
       <mat-form-field appearance="outline" class="half-width">
         <mat-label>Copilot Mode</mat-label>
         <mat-select formControlName="copilot_mode">
-          <mat-option *ngFor="let mode of copilotModes" [value]="mode.value">
-            {{ mode.label }}
-          </mat-option>
+          @for (mode of copilotModes; track mode.value) {
+            <mat-option [value]="mode.value">
+              {{ mode.label }}
+            </mat-option>
+          }
         </mat-select>
         <mat-hint>{{ getCopilotModeDescription() }}</mat-hint>
       </mat-form-field>
@@ -266,21 +284,23 @@
       </div>
 
       <div class="custom-fields-list" *ngIf="customFields.length > 0; else emptyCustomFields">
-        <div class="custom-field-row" *ngFor="let field of customFields; let i = index; trackBy: trackByFn">
-          <mat-form-field appearance="outline" class="field-key">
-            <mat-label>Key</mat-label>
-            <input matInput [(ngModel)]="field.key" [ngModelOptions]="{standalone: true}">
-          </mat-form-field>
+        @for (field of customFields; track $index; let i = $index) {
+          <div class="custom-field-row">
+            <mat-form-field appearance="outline" class="field-key">
+              <mat-label>Key</mat-label>
+              <input matInput [(ngModel)]="field.key" [ngModelOptions]="{standalone: true}">
+            </mat-form-field>
 
-          <mat-form-field appearance="outline" class="field-value">
-            <mat-label>Value</mat-label>
-            <input matInput [(ngModel)]="field.value" [ngModelOptions]="{standalone: true}">
-          </mat-form-field>
+            <mat-form-field appearance="outline" class="field-value">
+              <mat-label>Value</mat-label>
+              <input matInput [(ngModel)]="field.value" [ngModelOptions]="{standalone: true}">
+            </mat-form-field>
 
-          <button mat-icon-button (click)="removeCustomField(i)" color="warn" class="delete-btn">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
+            <button mat-icon-button (click)="removeCustomField(i)" color="warn" class="delete-btn">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        }
       </div>
 
       <ng-template #emptyCustomFields>

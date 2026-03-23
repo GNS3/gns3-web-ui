@@ -6,8 +6,10 @@
     [displayWith]="displayFn()"
     (optionSelected)="onSelection.emit($event.option.value)"
   >
-    <mat-option *ngFor="let elt of filteredData | async" [value]="elt">
-      {{ displayFn()(elt) }}
-    </mat-option>
+    @for (elt of filteredData | async; track elt) {
+      <mat-option [value]="elt">
+        {{ displayFn()(elt) }}
+      </mat-option>
+    }
   </mat-autocomplete>
 </mat-form-field>
