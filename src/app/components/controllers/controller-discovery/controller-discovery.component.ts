@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
-import { forkJoin, from, of, Observable } from 'rxjs';
+import { forkJoin, from, of, Observable, Subscription } from 'rxjs';
 import { catchError, map, mergeMap } from 'rxjs/operators';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,11 +19,12 @@ import { VersionService } from '@services/version.service';
   imports: [CommonModule, MatCardModule, MatButtonModule, MatDividerModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ControllerDiscoveryComponent implements OnInit {
+export class ControllerDiscoveryComponent implements OnInit, OnDestroy {
   private versionService = inject(VersionService);
   private controllerService = inject(ControllerService);
   private controllerDatabase = inject(ControllerDatabase);
   private route = inject(ActivatedRoute);
+  private serviceInitializedSubscription: Subscription;
 
   private defaultControllers = [
     {
@@ -38,11 +39,17 @@ export class ControllerDiscoveryComponent implements OnInit {
 
   ngOnInit() {
     if (this.controllerService.isServiceInitialized) this.discoverFirstController();
-    this.controllerService.serviceInitialized.subscribe(async (value: boolean) => {
+    this.serviceInitializedSubscription = this.controllerService.serviceInitialized.subscribe(async (value: boolean) => {
       if (value) {
         this.discoverFirstController();
       }
     });
+  }
+
+  ngOnDestroy() {
+    if (this.serviceInitializedSubscription) {
+      this.serviceInitializedSubscription.unsubscribe();
+    }
   }
 
   async discoverFirstController() {

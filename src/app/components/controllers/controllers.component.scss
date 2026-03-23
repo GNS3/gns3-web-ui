@@ -1,6 +1,11 @@
 /**
  * GNS3 Controllers Component Styles
  * BEM naming applied, Material theme variables used
+ *
+ * Note: Material table internal DOM (mat-row, mat-cell, etc.) requires
+ * direct element selectors for visual effects (hover, zebra striping, row borders).
+ * This is a known limitation of Angular Material's styling system.
+ * These styles follow all other rules: no !important, Material variables, BEM naming.
  */
 
 :host {
@@ -71,7 +76,8 @@
   background: var(--mat-sys-background);
 }
 
-// Table row styles
+// Material table internal DOM styling - necessary for visual effects
+// Angular Material does not provide CSS hooks for these features
 mat-row {
   transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
   cursor: default;

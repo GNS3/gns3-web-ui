@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -22,9 +22,11 @@ export class EditControllerDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<EditControllerDialogComponent>);
   private controllerService = inject(ControllerService);
   private toasterService = inject(ToasterService);
+  private changeDetector = inject(ChangeDetectorRef);
 
   controller: Controller;
   controllerForm: UntypedFormGroup;
+  duplicateNameError: string = '';
 
   ngOnInit() {
     this.controllerForm = new UntypedFormGroup({
@@ -40,9 +42,23 @@ export class EditControllerDialogComponent implements OnInit {
       return;
     }
 
+    const newName = this.controllerForm.value.name;
+
+    // Check for duplicate name if name has changed
+    if (newName !== this.controller.name) {
+      if (this.controllerService.isControllerNameTaken(newName)) {
+        this.duplicateNameError = `Controller with name "${newName}" already exists`;
+        this.toasterService.error(this.duplicateNameError);
+        this.changeDetector.markForCheck();
+        return;
+      }
+    }
+
+    this.duplicateNameError = '';
+
     const updatedController: Controller = {
       ...this.controller,
-      name: this.controllerForm.value.name,
+      name: newName,
       host: this.controllerForm.value.host,
       port: this.controllerForm.value.port,
       protocol: this.controllerForm.value.protocol

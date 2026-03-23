@@ -4,7 +4,9 @@
     <mat-form-field appearance="fill" class="full-width-field">
       <mat-label>Name</mat-label>
       <input matInput tabindex="1" formControlName="name" placeholder="Controller name" />
-      <mat-error *ngIf="controllerForm.get('name').hasError('required')">You must enter a value</mat-error>
+      @if (controllerForm.get('name').hasError('required')) {
+        <mat-error>You must enter a value</mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width-field">

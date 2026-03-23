@@ -35,6 +35,10 @@
         <mat-option value="https:">HTTPS</mat-option>
       </mat-select>
     </mat-form-field>
+
+    @if (duplicateNameError) {
+      <mat-error>{{ duplicateNameError }}</mat-error>
+    }
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
