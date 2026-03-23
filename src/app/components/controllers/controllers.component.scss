@@ -327,6 +327,7 @@ mat-cell[mat-column="actions"] {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 4px;
 }
 
 // Icon buttons - Material Design 3 style
@@ -366,7 +367,7 @@ button[mat-icon-button] {
   }
 
   &:hover mat-icon {
-    transform: scale(1.08);
+    transform: scale(1.15);
   }
 
   &:active mat-icon {
