@@ -35,7 +35,7 @@
     }
 
     <!-- Controllers Table -->
-    @if (controllerDatabase && controllerDatabase.data.length > 0) {
+    @if (controllerDatabase) {
       <div class="mat-elevation-z8 table-container">
         <mat-table #table [dataSource]="dataSource" matSort>
           <!-- ID Column (hidden on mobile) -->

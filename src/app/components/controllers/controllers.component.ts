@@ -39,7 +39,7 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
-  dataSource: ControllerDataSource;
+  dataSource: ControllerDataSource | null = null;
   displayedColumns = ['id', 'name', 'status', 'location', 'ip', 'port', 'actions'];
   controllerStatusSubscription: Subscription;
   searchText: string = '';
@@ -150,7 +150,9 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
         id: 'id',
         start: 'asc',
       });
+      // Always create dataSource when MatSort is available
       this.dataSource = new ControllerDataSource(this.controllerDatabase, this.sort);
+      this.changeDetector.markForCheck();
     }
   }
 
