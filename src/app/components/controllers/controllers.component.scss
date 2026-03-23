@@ -83,10 +83,10 @@ mat-row {
 
   // Row left border indicator - Running state
   &.controllers__row--running {
-    border-left: 3px solid var(--mat-sys-tertiary);
+    border-left: 3px solid var(--custom-mat-sys-success);
 
     &:hover {
-      background-color: color-mix(in srgb, var(--mat-sys-tertiary) 4%, transparent);
+      background-color: color-mix(in srgb, var(--custom-mat-sys-success) 4%, transparent);
     }
   }
 
@@ -101,10 +101,10 @@ mat-row {
 
   // Row left border indicator - Stopped state
   &.controllers__row--stopped {
-    border-left: 3px solid var(--mat-sys-outline);
+    border-left: 3px solid var(--custom-mat-sys-neutral);
 
     &:hover {
-      background-color: color-mix(in srgb, var(--mat-sys-outline) 6%, transparent);
+      background-color: color-mix(in srgb, var(--custom-mat-sys-neutral) 6%, transparent);
     }
   }
 }
@@ -199,10 +199,10 @@ mat-cell[mat-column="actions"] {
               box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
   animation: status-fade-in 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
-  // Default: Gray/Outline (Stopped state)
-  background-color: color-mix(in srgb, var(--mat-sys-outline) 12%, transparent);
-  color: var(--mat-sys-on-surface-variant);
-  border: 1px solid var(--mat-sys-outline);
+  // Default: Gray/Neutral (Stopped state)
+  background-color: var(--custom-mat-sys-neutral-container);
+  color: var(--custom-mat-sys-neutral);
+  border: 1px solid var(--custom-mat-sys-neutral);
 
   &:hover {
     transform: translateY(-1px);
@@ -214,24 +214,24 @@ mat-cell[mat-column="actions"] {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--mat-sys-outline);
+  background-color: var(--custom-mat-sys-neutral);
   transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-// Running: Green/Tertiary
+// Running: Green/Success
 .controllers__status--running {
-  background-color: color-mix(in srgb, var(--mat-sys-tertiary) 12%, transparent);
-  color: var(--mat-sys-tertiary);
-  border: 1px solid var(--mat-sys-tertiary);
+  background-color: var(--custom-mat-sys-success-container);
+  color: var(--custom-mat-sys-success);
+  border: 1px solid var(--custom-mat-sys-success);
 
   .controllers__status-dot {
-    background-color: var(--mat-sys-tertiary);
+    background-color: var(--custom-mat-sys-success);
     animation: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-tertiary) 20%, transparent);
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-tertiary) 25%, transparent);
+    background-color: color-mix(in srgb, var(--custom-mat-sys-success) 20%, var(--custom-mat-sys-success-container));
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--custom-mat-sys-success) 25%, transparent);
   }
 }
 
@@ -252,7 +252,7 @@ mat-cell[mat-column="actions"] {
   }
 }
 
-// Stopped: Gray/Outline (no additional styles needed, uses base class)
+// Stopped: uses base class styles
 
 @keyframes status-fade-in {
   from {

@@ -232,4 +232,24 @@
    * Container color for surface with highest elevation.
    */
   --mat-sys-surface-container-highest: #E6E0E9;
+
+  // ============================================
+  // CUSTOM/SEMANTIC COLORS (Non-standard M3 tokens)
+  // ============================================
+
+  /**
+   * Success color for positive states (e.g., Running).
+   * Light theme: Green
+   */
+  --custom-mat-sys-success: #2E7D32;
+  --custom-mat-sys-on-success: #FFFFFF;
+  --custom-mat-sys-success-container: #C8E6C9;
+
+  /**
+   * Neutral color for inactive/Stopped states.
+   * Light theme: Gray
+   */
+  --custom-mat-sys-neutral: #757575;
+  --custom-mat-sys-on-neutral: #FFFFFF;
+  --custom-mat-sys-neutral-container: #E0E0E0;
 }
