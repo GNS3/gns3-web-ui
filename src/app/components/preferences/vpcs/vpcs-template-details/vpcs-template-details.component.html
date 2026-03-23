@@ -51,15 +51,17 @@
         <mat-form-field class="form-field tags-field">
           <mat-label>Tags</mat-label>
           <mat-chip-grid #chipList>
-            <mat-chip *ngFor="let tag of vpcsTemplate?.tags" (removed)="removeTag(tag)">
-              {{ tag }}
-              <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
+            @for (tag of vpcsTemplate?.tags; track tag) {
+              <mat-chip (removed)="removeTag(tag)">
+                {{ tag }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+            }
+            <input matInput placeholder="Add tags"
+                   [matChipInputFor]="chipList"
+                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                   (matChipInputTokenEnd)="addTag($event)" />
           </mat-chip-grid>
-          <input matInput placeholder="Add tags"
-                 [matChipInputFor]="chipList"
-                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                 (matChipInputTokenEnd)="addTag($event)" />
         </mat-form-field>
         <mat-form-field class="form-field">
           <mat-select
@@ -67,9 +69,11 @@
             [ngModelOptions]="{ standalone: true }"
             [(ngModel)]="vpcsTemplate.category"
           >
-            <mat-option *ngFor="let category of categories" [value]="category[1]">
-              {{ category[0] }}
-            </mat-option>
+            @for (category of categories; track category[1]) {
+              <mat-option [value]="category[1]">
+                {{ category[0] }}
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
         <mat-form-field class="select">
@@ -78,9 +82,11 @@
             [ngModelOptions]="{ standalone: true }"
             [(ngModel)]="vpcsTemplate.console_type"
           >
-            <mat-option *ngFor="let type of consoleTypes" [value]="type">
-              {{ type }}
-            </mat-option>
+            @for (type of consoleTypes; track type) {
+              <mat-option [value]="type">
+                {{ type }}
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
         <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="vpcsTemplate.console_auto_start">

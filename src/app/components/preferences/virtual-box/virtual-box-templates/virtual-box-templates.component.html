@@ -34,19 +34,21 @@
   <div class="default-content" *ngIf="virtualBoxTemplates.length">
     <div class="listcontainer mat-elevation-z8">
       <mat-nav-list *ngIf="controller">
-        <div class="list-item" *ngFor="let template of virtualBoxTemplates">
-          <mat-list-item class="template-name" routerLink="{{ template.template_id }}">{{
-            template.name
-          }}</mat-list-item>
-          <button mat-button class="menu-button" [matMenuTriggerFor]="menu">
-            <mat-icon>more_vert</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="deleteTemplate(template)">
-              <mat-icon>delete</mat-icon><span>Delete</span>
+        @for (template of virtualBoxTemplates; track template.template_id) {
+          <div class="list-item">
+            <mat-list-item class="template-name" routerLink="{{ template.template_id }}">{{
+              template.name
+            }}</mat-list-item>
+            <button mat-button class="menu-button" [matMenuTriggerFor]="menu">
+              <mat-icon>more_vert</mat-icon>
             </button>
-          </mat-menu>
-        </div>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="deleteTemplate(template)">
+                <mat-icon>delete</mat-icon><span>Delete</span>
+              </button>
+            </mat-menu>
+          </div>
+        }
       </mat-nav-list>
     </div>
   </div>
