@@ -33,7 +33,9 @@
     </mat-form-field>
     <mat-form-field class="form-field">
       <mat-select placeholder="Border style" [ngModelOptions]="{ standalone: true }" [(ngModel)]="element.stroke_dasharray">
-        <mat-option *ngFor="let type of borderTypes" [value]="type.value"> {{ type.name }} </mat-option>
+        @for (type of borderTypes; track type.value) {
+          <mat-option [value]="type.value"> {{ type.name }} </mat-option>
+        }
       </mat-select>
     </mat-form-field>
 

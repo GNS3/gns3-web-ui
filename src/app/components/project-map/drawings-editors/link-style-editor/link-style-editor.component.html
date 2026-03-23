@@ -21,7 +21,9 @@
 
     <mat-form-field class="form-field">
         <mat-select placeholder="Type" formControlName="type">
-            <mat-option *ngFor="let type of borderTypes" [value]="type"> {{ type }} </mat-option>
+            @for (type of borderTypes; track type) {
+              <mat-option [value]="type"> {{ type }} </mat-option>
+            }
         </mat-select>
     </mat-form-field>
   </form>
