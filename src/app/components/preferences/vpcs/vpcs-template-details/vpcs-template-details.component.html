@@ -69,7 +69,7 @@
             [ngModelOptions]="{ standalone: true }"
             [(ngModel)]="vpcsTemplate.category"
           >
-            @for (category of categories; track category[1]) {
+            @for (category of categories; track $index) {
               <mat-option [value]="category[1]">
                 {{ category[0] }}
               </mat-option>
