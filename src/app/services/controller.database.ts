@@ -34,12 +34,21 @@ export class ControllerDatabase {
     return this.data.find((controller) => controller.name === controllerName);
   }
 
+  public findById(controllerId: number) {
+    return this.data.find((controller) => controller.id === controllerId);
+  }
+
   public findIndex(controllerName: string) {
     return this.data.findIndex((controller) => controller.name === controllerName);
   }
 
+  public findIndexById(controllerId: number) {
+    return this.data.findIndex((controller) => controller.id === controllerId);
+  }
+
   public update(controller: Controller ) {
-    const index = this.findIndex(controller.name);
+    // Use id to find the controller, since name might be changed
+    const index = this.findIndexById(controller.id);
     if (index >= 0) {
       this.data[index] = controller;
       this.dataChange.next(this.data.slice());
