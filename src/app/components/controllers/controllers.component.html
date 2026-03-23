@@ -49,11 +49,11 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
             <mat-cell *matCellDef="let row">
               @if (getControllerStatus(row) === 'running') {
-                <a [routerLink]="['/controller', row.id, 'login']" class="table-link" matTooltip="{{ row.name }}" matTooltipPosition="above">
-                  <span class="text-overflow">{{ row.name }}</span>
+                <a [routerLink]="['/controller', row.id, 'login']" class="table-link">
+                  {{ row.name }}
                 </a>
               } @else {
-                <span matTooltip="{{ row.name }}" matTooltipPosition="above" class="text-overflow">{{ row.name }}</span>
+                <span>{{ row.name }}</span>
               }
             </mat-cell>
           </ng-container>
@@ -118,8 +118,6 @@
                     color="primary"
                     class="primary-action-btn"
                     (click)="openProjects(row)"
-                    matTooltip="Go to projects"
-                    matTooltipPosition="left"
                   >
                     <mat-icon>folder_open</mat-icon>
                   </button>
@@ -129,8 +127,6 @@
                 @if (row.location === 'local' && getControllerStatus(row) === 'stopped') {
                   <button
                     mat-icon-button
-                    matTooltip="Start controller"
-                    matTooltipClass="custom-tooltip"
                     (click)="startController(row)"
                   >
                     <mat-icon aria-label="Start controller">play_arrow</mat-icon>
@@ -141,8 +137,6 @@
                 @if (row.location === 'local' && getControllerStatus(row) === 'running') {
                   <button
                     mat-icon-button
-                    matTooltip="Stop controller"
-                    matTooltipClass="custom-tooltip"
                     (click)="stopController(row)"
                   >
                     <mat-icon aria-label="Stop controller">stop</mat-icon>
@@ -157,7 +151,6 @@
                 <!-- Edit Controller -->
                 <button
                   mat-icon-button
-                  matTooltip="Edit controller"
                   (click)="editController(row)"
                 >
                   <mat-icon>edit</mat-icon>
@@ -167,7 +160,6 @@
                 <button
                   mat-icon-button
                   color="warn"
-                  matTooltip="Delete controller"
                   (click)="deleteController(row)"
                 >
                   <mat-icon>delete</mat-icon>
