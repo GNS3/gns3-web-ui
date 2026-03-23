@@ -17,15 +17,17 @@
               <mat-form-field class="form-field tags-field">
                 <mat-label>Tags</mat-label>
                 <mat-chip-grid #chipList>
-                  <mat-chip *ngFor="let tag of node?.tags" (removed)="removeTag(tag)">
-                    {{ tag }}
-                    <mat-icon matChipRemove>cancel</mat-icon>
-                  </mat-chip>
+                  @for (tag of node?.tags; track tag) {
+                    <mat-chip (removed)="removeTag(tag)">
+                      {{ tag }}
+                      <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                  }
+                  <input matInput placeholder="Add tags"
+                         [matChipInputFor]="chipList"
+                         [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                         (matChipInputTokenEnd)="addTag($event)" />
                 </mat-chip-grid>
-                <input matInput placeholder="Add tags"
-                       [matChipInputFor]="chipList"
-                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                       (matChipInputTokenEnd)="addTag($event)" />
               </mat-form-field>
               <mat-form-field class="form-field">
                 <input matInput type="text" formControlName="path" placeholder="IOS image path"/>
@@ -33,30 +35,38 @@
             </form>
             <mat-form-field class="select" *ngIf="node.properties.midplane">
               <mat-select placeholder="Midplane" [(ngModel)]="node.properties.midplane">
-                <mat-option *ngFor="let type of MidplaneTypes" [value]="type">
-                  {{ type }}
-                </mat-option>
+                @for (type of MidplaneTypes; track type) {
+                  <mat-option [value]="type">
+                    {{ type }}
+                  </mat-option>
+                }
               </mat-select>
             </mat-form-field>
             <mat-form-field class="select" *ngIf="node.properties.npe">
               <mat-select placeholder="NPE" [(ngModel)]="node.properties.npe">
-                <mat-option *ngFor="let type of NPETypes" [value]="type">
-                  {{ type }}
-                </mat-option>
+                @for (type of NPETypes; track type) {
+                  <mat-option [value]="type">
+                    {{ type }}
+                  </mat-option>
+                }
               </mat-select>
             </mat-form-field>
             <mat-form-field class="select">
               <mat-select placeholder="Console type" [(ngModel)]="node.console_type">
-                <mat-option *ngFor="let type of consoleTypes" [value]="type">
-                  {{ type }}
-                </mat-option>
+                @for (type of consoleTypes; track type) {
+                  <mat-option [value]="type">
+                    {{ type }}
+                  </mat-option>
+                }
               </mat-select>
             </mat-form-field>
             <mat-form-field class="select">
               <mat-select placeholder="Auxiliary console type" [(ngModel)]="node.properties.aux_type">
-                <mat-option *ngFor="let type of consoleTypes" [value]="type">
-                  {{ type }}
-                </mat-option>
+                @for (type of consoleTypes; track type) {
+                  <mat-option [value]="type">
+                    {{ type }}
+                  </mat-option>
+                }
               </mat-select>
             </mat-form-field>
             <mat-checkbox [(ngModel)]="node.console_auto_start"> Auto start console </mat-checkbox><br />
