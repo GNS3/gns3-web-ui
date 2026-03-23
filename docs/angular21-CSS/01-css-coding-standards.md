@@ -1,20 +1,20 @@
-# GNS3 Web UI CSS 样式规范
+# GNS3 Web UI CSS Style Guide
 
-本文档定义了 GNS3 Web UI 项目的样式编码规范，确保样式代码的一致性、可维护性和性能。
+This document defines the CSS coding standards for the GNS3 Web UI project, ensuring consistency, maintainability, and performance in styling.
 
 ---
 
-## 1. Angular Material 默认样式优先
+## 1. Angular Material Default Styles First
 
-**规则**：优先使用 Angular Material 提供的默认样式，避免不必要的样式覆盖。
+**Rule**: Prefer Angular Material's default styles. Avoid unnecessary style overrides.
 
 ```scss
-// ✅ 正确：使用 Material 提供的默认样式
+// ✅ Correct: Use Material's default styles
 mat-form-field {
   width: 100%;
 }
 
-// ❌ 错误：覆盖 Material 默认样式
+// ❌ Wrong: Override Material's default styles
 .mat-mdc-form-field {
   height: 50px;
 }
@@ -22,38 +22,40 @@ mat-form-field {
 
 ---
 
-## 2. 无颜色备用值
+## 2. No Color Fallback Values
 
-**规则**：禁止硬编码颜色值作为备用值，所有颜色应通过 Material 主题变量获取。
+**Rule**: Never use hardcoded color values as fallbacks. All colors must be obtained through Material theme variables.
 
 ```scss
-// ✅ 正确：使用 CSS 变量或 Material 主题
+// ✅ Correct: Use CSS variables or Material theme tokens
 .card {
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
 }
 
-// ❌ 错误：硬编码备用颜色
+// ❌ Wrong: Hardcoded fallback colors
 .card {
   background-color: var(--mat-sys-surface, #ffffff);
   color: var(--mat-sys-on-surface, #000000);
 }
 ```
 
+> **Important**: If a Material theme variable is undefined, add it to the theme supplement file. Never use fallbacks as a workaround.
+
 ---
 
-## 3. 禁止自定义背景色或其他颜色
+## 3. No Custom Colors in Components
 
-**规则**：禁止在组件中自定义背景色、文本色等颜色，所有颜色必须引用 Material 主题 Token。
+**Rule**: Do not define custom background colors, text colors, or other colors in components. All colors must reference Material theme tokens.
 
 ```scss
-// ✅ 正确：使用 Material 主题变量
+// ✅ Correct: Use Material theme variables
 .button {
   background-color: var(--mat-sys-primary);
   color: var(--mat-sys-on-primary);
 }
 
-// ❌ 错误：自定义颜色
+// ❌ Wrong: Custom colors
 .button {
   background-color: #2196f3;
   color: white;
@@ -62,17 +64,17 @@ mat-form-field {
 
 ---
 
-## 4. 禁止 !important
+## 4. No `!important`
 
-**规则**：严格禁止使用 `!important`，应通过选择器 specificity 解决样式优先级问题。
+**Rule**: Strictly prohibited. Solve style specificity through selector specificity.
 
 ```scss
-// ✅ 正确：通过选择器提升优先级
+// ✅ Correct: Increase priority through selectors
 .form-field.mat-mdc-form-field {
   width: 100%;
 }
 
-// ❌ 错误：使用 !important
+// ❌ Wrong: Using !important
 .form-field {
   width: 100% !important;
 }
@@ -80,17 +82,17 @@ mat-form-field {
 
 ---
 
-## 5. 禁止 ::ng-deep
+## 5. No `::ng-deep`
 
-**规则**：`::ng-deep` 是已弃用的 API，禁止使用。应使用 ViewEncapsulation 或全局样式。
+**Rule**: `::ng-deep` is deprecated. Do not use it. Use ViewEncapsulation or global styles.
 
 ```scss
-// ✅ 正确：使用组件样式或全局样式
+// ✅ Correct: Use component styles or global styles
 :host {
   display: block;
 }
 
-// ❌ 错误：使用 ::ng-deep
+// ❌ Wrong: Using ::ng-deep
 ::ng-deep .mat-mdc-button {
   border-radius: 8px;
 }
@@ -98,12 +100,12 @@ mat-form-field {
 
 ---
 
-## 6. 清理冗余样式代码
+## 6. Clean Up Redundant Styles
 
-**规则**：定期清理未使用和重复的样式代码，保持样式文件精简。
+**Rule**: Regularly clean up unused and duplicate style code. Keep style files lean.
 
 ```scss
-// ❌ 错误：冗余样式
+// ❌ Wrong: Redundant styles
 .card {
   width: 100%;
   margin: 0;
@@ -115,7 +117,7 @@ mat-form-field {
   margin: 0;
 }
 
-// ✅ 正确：合并重复样式
+// ✅ Correct: Merge duplicate styles
 .card {
   width: 100%;
   margin: 0;
@@ -125,23 +127,23 @@ mat-form-field {
 
 ---
 
-## 7. 禁止修改第三方组件内层 DOM
+## 7. Do Not Modify Third-Party Component Inner DOM
 
-**规则**：严禁在组件内部尝试修改第三方组件（Angular Material）的内层 DOM 结构。
+**Rule**: Strictly prohibited from modifying the inner DOM structure of third-party components (Angular Material).
 
-如果必须修改 Angular Material 组件的尺寸或边距，应优先使用：
+If you must modify the size or margin of an Angular Material component, prefer:
 
-1. **CSS 变量（Custom Properties）**
-2. **Density（密度）系统**
+1. **CSS Variables (Custom Properties)**
+2. **Density System**
 
 ```scss
-// ✅ 正确：使用 CSS 变量
+// ✅ Correct: Use CSS variables
 mat-form-field {
   --mdc-text-field-container-height: 56px;
   --mat-form-field-container-justify-content: center;
 }
 
-// ✅ 正确：使用 Density
+// ✅ Correct: Use Density
 @use '@angular/material' as mat;
 
 mat-form-field {
@@ -151,38 +153,38 @@ mat-form-field {
 
 ---
 
-## 8. 组件 :host 布局属性明确定义
+## 8. Component :host Layout Properties Must Be Clearly Defined
 
-**规则**：所有组件都应明确定义 `:host` 的布局属性，避免在父组件中对子组件标签直接写 width/height。
+**Rule**: All components should clearly define `:host` layout properties. Avoid directly setting width/height on child component tags in parent components.
 
 ```scss
-// ✅ 正确：组件自身定义布局
+// ✅ Correct: Component defines its own layout
 :host {
   display: block;
   width: 100%;
   height: 100%;
 }
 
-// ❌ 错误：父组件直接控制子组件尺寸
+// ❌ Wrong: Parent controls child size
 // parent.component.html
 <app-child style="width: 500px; height: 300px;"></app-child>
 ```
 
 ---
 
-## 9. 全面拥抱 CSS 自定义属性（Variables）
+## 9. Embrace CSS Custom Properties (Variables)
 
-**规则**：Angular Material 3 已全面基于 CSS 变量，禁止直接硬编码颜色值。
+**Rule**: Angular Material 3 is fully based on CSS variables. Never hardcode color values.
 
 ```scss
-// ✅ 正确：使用 Material 主题 Token
+// ✅ Correct: Use Material theme tokens
 .button {
   background-color: var(--mat-sys-primary);
   color: var(--mat-sys-on-primary);
   border-color: var(--mat-sys-outline);
 }
 
-// ❌ 错误：硬编码颜色
+// ❌ Wrong: Hardcoded colors
 .button {
   background-color: #2196f3;
   color: #ffffff;
@@ -192,12 +194,12 @@ mat-form-field {
 
 ---
 
-## 10. 样式逻辑归 HTML，样式定义归 CSS
+## 10. Style Logic Belongs in HTML, Style Definitions Belong in CSS
 
-**规则**：优先使用 `[class.is-active]="signal()"` 切换类名，禁止在 TS 逻辑中拼接复杂的样式字符串。
+**Rule**: Prefer using `[class.is-active]="signal()"` to toggle class names. Never concatenate complex style strings in TypeScript logic.
 
 ```typescript
-// ✅ 正确：使用信号控制类名
+// ✅ Correct: Use signals to control class names
 @Component({})
 export class MyComponent {
   isActive = signal(false);
@@ -209,18 +211,18 @@ export class MyComponent {
 ```
 
 ```html
-<!-- ✅ 正确：HTML 控制样式类 -->
+<!-- ✅ Correct: HTML controls style classes -->
 <button [class.active]="isActive()">Click</button>
 ```
 
 ```typescript
-// ❌ 错误：在 TS 中拼接样式字符串
+// ❌ Wrong: Concatenating style strings in TS
 this.renderer.setStyle(el, 'background-color', '#2196f3');
 this.renderer.addClass(el, 'custom-style-' + this.variant);
 ```
 
 ```scss
-// ✅ 正确：CSS 定义样式变体
+// ✅ Correct: CSS defines style variants
 .button.active {
   background-color: var(--mat-sys-primary);
 }
@@ -232,12 +234,12 @@ this.renderer.addClass(el, 'custom-style-' + this.variant);
 
 ---
 
-## 11. 弹窗样式必须在全局 styles.scss 中定义
+## 11. Dialog Styles Must Be Defined in Global styles.scss
 
-**规则**：针对弹窗的微调，必须在全局 `styles.scss` 中定义专门的 `panelClass`，禁止在组件局部作用域"钩"弹窗样式。
+**Rule**: For dialog fine-tuning, define dedicated `panelClass` in the global `styles.scss`. Do not "hook" dialog styles in component local scope.
 
 ```typescript
-// ✅ 正确：使用 panelClass
+// ✅ Correct: Use panelClass
 const dialogRef = this.dialog.open(MyDialogComponent, {
   panelClass: 'my-custom-dialog-panel',
   // ...
@@ -245,7 +247,7 @@ const dialogRef = this.dialog.open(MyDialogComponent, {
 ```
 
 ```scss
-// ✅ 正确：在全局 styles.scss 中定义
+// ✅ Correct: Define in global styles.scss
 .mat-mdc-dialog-panel.my-custom-dialog-panel {
   --mdc-dialog-container-max-width: 800px;
   --mdc-dialog-container-min-width: 400px;
@@ -253,7 +255,7 @@ const dialogRef = this.dialog.open(MyDialogComponent, {
 ```
 
 ```scss
-// ❌ 错误：在组件局部作用域修改弹窗样式
+// ❌ Wrong: Modifying dialog styles in component scope
 // my-dialog.component.scss
 ::ng-deep .mat-mdc-dialog-container {
   max-width: 800px;
@@ -262,12 +264,12 @@ const dialogRef = this.dialog.open(MyDialogComponent, {
 
 ---
 
-## 12. 强制 BEM 命名法
+## 12. Enforce BEM Naming
 
-**规则**：即使有视图封装，也建议给组件根元素一个唯一的类名，防止在全局搜索或调试时找不到样式的源头。
+**Rule**: Even with view encapsulation, give the component root element a unique class name to prevent difficulties finding style sources during global searches or debugging.
 
 ```scss
-// ✅ 正确：使用 BEM 命名法
+// ✅ Correct: Use BEM naming
 .gns3-card {
   &__header {
     padding: 16px;
@@ -284,7 +286,7 @@ const dialogRef = this.dialog.open(MyDialogComponent, {
 ```
 
 ```html
-<!-- 使用示例 -->
+<!-- Usage Example -->
 <div class="gns3-card gns3-card--disabled">
   <div class="gns3-card__header">Title</div>
   <div class="gns3-card__content">Content</div>
@@ -293,35 +295,159 @@ const dialogRef = this.dialog.open(MyDialogComponent, {
 
 ---
 
-## 附录：Material 3 主题变量参考
+## Appendix: Material Design 3 Theme Variable Reference
 
-| 用途 | CSS 变量 |
-|------|----------|
-| 主色 | `--mat-sys-primary` |
-| 主色文本 | `--mat-sys-on-primary` |
-| 背景色 | `--mat-sys-surface` |
-| 文本色 | `--mat-sys-on-surface` |
-| 轮廓色 | `--mat-sys-outline` |
-| 错误色 | `--mat-sys-error` |
-| 容器色 | `--mat-sys-primary-container` |
-| 悬停色 | `--mat-sys-hover` |
-| 聚焦色 | `--mat-sys-focus` |
+### Color System Overview
+
+Material Design 3 uses a semantic color system with system tokens (`--mat-sys-*`). These tokens provide consistent theming across light and dark modes.
+
+### Primary Colors
+
+| Token | Purpose |
+|-------|---------|
+| `--mat-sys-primary` | Main theme color for FABs, buttons, links |
+| `--mat-sys-on-primary` | Text/icons on primary color |
+| `--mat-sys-primary-container` | Light/dark variant for containers |
+| `--mat-sys-on-primary-container` | Text on primary container |
+
+### Secondary Colors
+
+| Token | Purpose |
+|-------|---------|
+| `--mat-sys-secondary` | Secondary actions, sliders, progress |
+| `--mat-sys-on-secondary` | Text on secondary color |
+| `--mat-sys-secondary-container` | Secondary containers |
+| `--mat-sys-on-secondary-container` | Text on secondary container |
+
+### Tertiary Colors
+
+| Token | Purpose |
+|-------|---------|
+| `--mat-sys-tertiary` | Checkboxes, radio, third-party integration |
+| `--mat-sys-on-tertiary` | Text on tertiary color |
+| `--mat-sys-tertiary-container` | Tertiary containers |
+| `--mat-sys-on-tertiary-container` | Text on tertiary container |
+
+### Error Colors
+
+| Token | Purpose |
+|-------|---------|
+| `--mat-sys-error` | Errors, destructive actions, validation |
+| `--mat-sys-on-error` | Text on error color |
+| `--mat-sys-error-container` | Error message containers |
+| `--mat-sys-on-error-container` | Text in error containers |
+
+### Surface Colors
+
+| Token | Purpose |
+|-------|---------|
+| `--mat-sys-background` | Page background |
+| `--mat-sys-on-background` | Text on background |
+| `--mat-sys-surface` | Cards, sheets, dialogs |
+| `--mat-sys-on-surface` | Text on surface |
+| `--mat-sys-surface-variant` | Dividers, disabled backgrounds |
+| `--mat-sys-on-surface-variant` | Placeholder, helper text |
+| `--mat-sys-outline` | Borders, dividers |
+| `--mat-sys-outline-variant` | Subtle borders |
+
+### Inverse Colors
+
+| Token | Purpose |
+|-------|---------|
+| `--mat-sys-inverse-surface` | Emphasis surfaces (dark) |
+| `--mat-sys-inverse-on-surface` | Text on inverse surface |
+| `--mat-sys-inverse-primary` | Primary on inverse surfaces |
+
+### Elevation & Utility
+
+| Token | Purpose |
+|-------|---------|
+| `--mat-sys-shadow` | Box shadows |
+| `--mat-sys-scrim` | Modal overlays |
+
+### Surface Containers (Tones)
+
+| Token | Purpose |
+|-------|---------|
+| `--mat-sys-surface-container-lowest` | Highest elevation surface |
+| `--mat-sys-surface-container-low` | Low elevation surface |
+| `--mat-sys-surface-container` | Medium elevation surface |
+| `--mat-sys-surface-container-high` | High elevation surface |
+| `--mat-sys-surface-container-highest` | Highest elevation surface |
 
 ---
 
-## 检查清单
+## Color Variable Management
 
-在提交代码前，请确保：
+### File Structure
 
-- [ ] 没有使用 `!important`
-- [ ] 没有使用 `::ng-deep`
-- [ ] 没有硬编码颜色值
-- [ ] 使用 Material 主题变量
-- [ ] 弹窗样式使用 `panelClass`
-- [ ] 组件使用 BEM 命名
-- [ ] 样式逻辑在 HTML 中控制
+```
+src/styles/
+├── material3-theme-supplement.scss    # Main entry point
+└── material3-themes/
+    ├── _index.scss                   # Imports all themes
+    ├── _deeppurple-amber.scss       # Light theme
+    ├── _indigo-pink.scss             # Light theme
+    ├── _pink-bluegrey.scss           # Dark theme
+    └── _purple-green.scss           # Dark theme
+```
+
+### How It Works
+
+1. **ThemeService** adds theme class to `<html>` element (e.g., `class="theme-pink-bluegrey"`)
+2. **Material3-theme-supplement.scss** imports theme-specific variable files
+3. **Components** use CSS variables (e.g., `var(--mat-sys-primary)`)
+
+### Adding Missing Variables
+
+If a component needs a variable that doesn't exist:
+
+1. Find the appropriate theme file in `src/styles/material3-themes/`
+2. Add the variable with the correct color value
+3. The variable will be automatically available to all components
+
+Example - adding a missing tertiary color:
+
+```scss
+// _deeppurple-amber.scss
+.theme-deeppurple-amber {
+  // ... existing variables ...
+
+  // Add missing variable
+  --mat-sys-tertiary: #7D5260;
+}
+```
+
+### Migration Workflow
+
+When migrating existing components:
+
+1. **Replace hardcoded colors** with Material variables
+2. **Remove fallback values** from existing `var()` calls
+3. **Remove redundant styles** (duplicates, unused code)
+4. **Test in all themes** (light and dark modes)
 
 ---
 
-**版本**: 1.0
-**最后更新**: 2026-03-20
+## Checklist
+
+Before committing code, ensure:
+
+- [ ] No `!important` usage
+- [ ] No `::ng-deep` usage
+- [ ] No hardcoded color values
+- [ ] Material theme variables used
+- [ ] Dialog styles use `panelClass`
+- [ ] Components use BEM naming
+- [ ] Style logic controlled in HTML
+
+---
+
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0 | 2026-03-20 | Initial release |
+| 1.1 | 2026-03-23 | Added Material 3 color variable reference, improved color management documentation |
+
+**Last Updated**: 2026-03-23

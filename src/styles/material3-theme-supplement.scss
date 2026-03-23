@@ -1,0 +1,23 @@
+/**
+ * Material Design 3 Theme Variables Supplement
+ *
+ * This file supplements the official Angular Material prebuilt themes
+ * by importing the complete Material Design 3 system variables
+ * for all available themes.
+ *
+ * Usage:
+ * Add this file to your angular.json styles array BEFORE styles.scss
+ *
+ * Each theme file contains:
+ * - Primary, Secondary, Tertiary colors
+ * - Error colors
+ * - Surface colors
+ * - Inverse colors
+ * - Shadow and elevation
+ * - Surface tones
+ *
+ * All variables include detailed comments explaining their purpose.
+ */
+
+// Import all Material 3 theme variables
+@use './material3-themes/index';
