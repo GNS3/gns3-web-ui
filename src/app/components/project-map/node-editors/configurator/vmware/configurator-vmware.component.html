@@ -14,15 +14,17 @@
               <mat-form-field class="form-field tags-field">
                 <mat-label>Tags</mat-label>
                 <mat-chip-grid #chipList>
-                  <mat-chip *ngFor="let tag of node?.tags" (removed)="removeTag(tag)">
-                    {{ tag }}
-                    <mat-icon matChipRemove>cancel</mat-icon>
-                  </mat-chip>
+                  @for (tag of node?.tags; track tag) {
+                    <mat-chip (removed)="removeTag(tag)">
+                      {{ tag }}
+                      <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip>
+                  }
+                  <input matInput placeholder="Add tags"
+                         [matChipInputFor]="chipList"
+                         [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                         (matChipInputTokenEnd)="addTag($event)" />
                 </mat-chip-grid>
-                <input matInput placeholder="Add tags"
-                       [matChipInputFor]="chipList"
-                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                       (matChipInputTokenEnd)="addTag($event)" />
               </mat-form-field>
               <mat-form-field class="select">
                 <mat-select
@@ -30,9 +32,11 @@
                   placeholder="Console type"
                   [(ngModel)]="node.console_type"
                 >
-                  <mat-option *ngFor="let type of consoleTypes" [value]="type">
-                    {{ type }}
-                  </mat-option>
+                  @for (type of consoleTypes; track type) {
+                    <mat-option [value]="type">
+                      {{ type }}
+                    </mat-option>
+                  }
                 </mat-select>
               </mat-form-field>
               <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="node.console_auto_start">
@@ -44,9 +48,11 @@
                   placeholder="On close"
                   [(ngModel)]="node.properties.on_close"
                 >
-                  <mat-option *ngFor="let option of onCloseOptions" [value]="option[1]">
-                    {{ option[0] }}
-                  </mat-option>
+                  @for (option of onCloseOptions; track option[1]) {
+                    <mat-option [value]="option[1]">
+                      {{ option[0] }}
+                    </mat-option>
+                  }
                 </mat-select>
               </mat-form-field>
             </form>
