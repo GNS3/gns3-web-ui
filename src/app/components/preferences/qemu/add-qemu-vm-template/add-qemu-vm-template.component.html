@@ -40,9 +40,11 @@
           <form [formGroup]="memoryForm">
             <mat-form-field class="form-field">
               <mat-select placeholder="Platform" [(ngModel)]="selectedPlatform" [ngModelOptions]="{ standalone: true }">
-                <mat-option *ngFor="let platform of selectPlatform()" [value]="platform">
-                  {{ platform }}
-                </mat-option>
+                @for (platform of selectPlatform(); track platform) {
+                  <mat-option [value]="platform">
+                    {{ platform }}
+                  </mat-option>
+                }
               </mat-select> </mat-form-field
             ><br />
             <mat-form-field class="form-field">
@@ -59,9 +61,11 @@
               [(ngModel)]="qemuTemplate().console_type"
               [ngModelOptions]="{ standalone: true }"
             >
-              <mat-option *ngFor="let type of consoleTypes()" [value]="type">
-                {{ type }}
-              </mat-option>
+              @for (type of consoleTypes(); track type) {
+                <mat-option [value]="type">
+                  {{ type }}
+                </mat-option>
+              }
             </mat-select>
           </mat-form-field>
         </mat-step>
@@ -73,9 +77,11 @@
               [(ngModel)]="qemuTemplate().aux_type"
               [ngModelOptions]="{ standalone: true }"
             >
-              <mat-option *ngFor="let type of auxConsoleTypes()" [value]="type">
-                {{ type }}
-              </mat-option>
+              @for (type of auxConsoleTypes(); track type) {
+                <mat-option [value]="type">
+                  {{ type }}
+                </mat-option>
+              }
             </mat-select>
           </mat-form-field>
         </mat-step>
@@ -96,9 +102,11 @@
               [ngModelOptions]="{ standalone: true }"
               [(ngModel)]="selectedImage"
             >
-              <mat-option *ngFor="let image of qemuImages()" [value]="image">
-                {{ image.filename }}
-              </mat-option>
+              @for (image of qemuImages(); track image.filename) {
+                <mat-option [value]="image">
+                  {{ image.filename }}
+                </mat-option>
+              }
             </mat-select>
             <div *ngIf="newImageSelected()">
               <input

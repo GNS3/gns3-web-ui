@@ -62,20 +62,23 @@
             <mat-select
               [ngModelOptions]="{ standalone: true }"
               placeholder="Category"
-              
             >
-              <mat-option *ngFor="let category of categories" [value]="category[1]">
-                {{ category[0] }}
-              </mat-option>
+              @for (category of categories; track category[1]) {
+                <mat-option [value]="category[1]">
+                  {{ category[0] }}
+                </mat-option>
+              }
             </mat-select>
           </mat-form-field>
           <mat-form-field class="form-field tags-field">
             <mat-label>Tags</mat-label>
             <mat-chip-grid #chipList>
-              <mat-chip *ngFor="let tag of iosTemplate?.tags" (removed)="removeTag(tag)">
-                {{ tag }}
-                <mat-icon matChipRemove>cancel</mat-icon>
-              </mat-chip>
+              @for (tag of iosTemplate?.tags; track tag) {
+                <mat-chip (removed)="removeTag(tag)">
+                  {{ tag }}
+                  <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+              }
             </mat-chip-grid>
             <input matInput placeholder="Add tags"
                    [matChipInputFor]="chipList"
@@ -114,16 +117,20 @@
         </form>
         <mat-form-field class="select">
           <mat-select placeholder="Console type" >
-            <mat-option *ngFor="let type of consoleTypes" [value]="type">
-              {{ type }}
-            </mat-option>
+            @for (type of consoleTypes; track type) {
+              <mat-option [value]="type">
+                {{ type }}
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
         <mat-form-field class="select">
           <mat-select placeholder="Auxiliary console type" >
-            <mat-option *ngFor="let type of consoleTypes" [value]="type">
-              {{ type }}
-            </mat-option>
+            @for (type of consoleTypes; track type) {
+              <mat-option [value]="type">
+                {{ type }}
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
         <mat-checkbox > Auto start console </mat-checkbox>
@@ -203,48 +210,53 @@
           <mat-panel-title> Slots </mat-panel-title>
         </mat-expansion-panel-header>
         <h6>Adapters</h6>
-        <div *ngFor="let index of [0, 1, 2, 3, 4, 5, 6]">
-          <ng-container *ngIf="adapterMatrix[iosTemplate.platform] && adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''] && adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index]">
-            <mat-select
-              placeholder="Slot {{ index }}"
-              [(ngModel)]="networkAdaptersForTemplate[index]"
-              [ngModelOptions]="{ standalone: true }"
-            >
-              <mat-option
-                *ngIf="adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index].length > 1 &&
-                !adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index][0].startsWith('C7200')"
-                [value]=""
-              >
-                {{ "" }}
-              </mat-option>
-              <mat-option
-                *ngFor="let option of adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index]"
-                [value]="option"
-              >
-                {{ option }}
-              </mat-option>
-            </mat-select>
-          </ng-container>
-        </div>
-        <br />
-        <div *ngIf="wicMatrix[iosTemplate.platform]">
-          <h6>WICs</h6>
-          <div *ngFor="let index of [0, 1, 2]">
-            <ng-container *ngIf="wicMatrix[iosTemplate.platform] && wicMatrix[iosTemplate.platform][index]">
+        @for (index of [0, 1, 2, 3, 4, 5, 6]; track index) {
+          <div>
+            <ng-container *ngIf="adapterMatrix[iosTemplate.platform] && adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''] && adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index]">
               <mat-select
-                placeholder="WIC {{ index }}"
-                [(ngModel)]="wicsForTemplate[index]"
+                placeholder="Slot {{ index }}"
+                [(ngModel)]="networkAdaptersForTemplate[index]"
                 [ngModelOptions]="{ standalone: true }"
               >
-                <mat-option [value]="">
+                <mat-option
+                  *ngIf="adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index].length > 1 &&
+                  !adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index][0].startsWith('C7200')"
+                  [value]=""
+                >
                   {{ "" }}
                 </mat-option>
-                <mat-option *ngFor="let option of wicMatrix[iosTemplate.platform][index]" [value]="option">
-                  {{ option }}
-                </mat-option>
+                @for (option of adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index]; track option) {
+                  <mat-option [value]="option">
+                    {{ option }}
+                  </mat-option>
+                }
               </mat-select>
             </ng-container>
           </div>
+        }
+        <br />
+        <div *ngIf="wicMatrix[iosTemplate.platform]">
+          <h6>WICs</h6>
+          @for (index of [0, 1, 2]; track index) {
+            <div>
+              <ng-container *ngIf="wicMatrix[iosTemplate.platform] && wicMatrix[iosTemplate.platform][index]">
+                <mat-select
+                  placeholder="WIC {{ index }}"
+                  [(ngModel)]="wicsForTemplate[index]"
+                  [ngModelOptions]="{ standalone: true }"
+                >
+                  <mat-option [value]="">
+                    {{ "" }}
+                  </mat-option>
+                  @for (option of wicMatrix[iosTemplate.platform][index]; track option) {
+                    <mat-option [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </ng-container>
+            </div>
+          }
         </div>
       </mat-expansion-panel>
       <mat-expansion-panel>
