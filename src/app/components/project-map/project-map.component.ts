@@ -9,6 +9,7 @@ import {
   ViewEncapsulation,
   inject,
   viewChild,
+  signal,
 } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
@@ -158,7 +159,7 @@ import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edit
   ],
 })
 export class ProjectMapComponent implements OnInit, OnDestroy {
-  public nodes: Node[] = [];
+  public nodes = signal<Node[]>([]);
   public links: Link[] = [];
   public drawings: Drawing[] = [];
   public symbols: Symbol[] = [];
@@ -343,7 +344,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         });
 
         if (nodesToLoad.length === 0) {
-          this.nodes = nodes;
+          this.nodes.set(nodes);
           if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
           this.mapChangeDetectorRef.detectChanges();
           return;
@@ -363,7 +364,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             nodesToLoad.forEach((node: Node) => {
               node.symbol_url = blobUrlMap.get(nodeRawUrlMap.get(node));
             });
-            this.nodes = nodes;
+            this.nodes.set(nodes);
             if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
             this.mapChangeDetectorRef.detectChanges();
           },
@@ -374,7 +375,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
                 environment.current_version
               }${nodeRawUrlMap.get(node)}`;
             });
-            this.nodes = nodes;
+            this.nodes.set(nodes);
             if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
             this.mapChangeDetectorRef.detectChanges();
           }
@@ -664,7 +665,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     const onLabelContextMenu = this.labelWidget.onContextMenu.subscribe((eventLabel: LabelContextMenu) => {
       const label = this.mapLabelToLabel.convert(eventLabel.label);
-      const node = this.nodes.find((n) => n.node_id === eventLabel.label.nodeId);
+      const node = this.nodes().find((n) => n.node_id === eventLabel.label.nodeId);
       this.contextMenu().openMenuForLabel(label, node, eventLabel.event.clientY, eventLabel.event.clientX);
     });
 
@@ -1025,10 +1026,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   exportProject() {
-    if (this.nodes.filter((node) => node.node_type === 'virtualbox').length > 0) {
+    if (this.nodes().filter((node) => node.node_type === 'virtualbox').length > 0) {
       this.toasterService.error('Map with VirtualBox machines cannot be exported.');
     } else if (
-      this.nodes.filter(
+      this.nodes().filter(
         (node) =>
           (node.status === 'started' && node.node_type === 'vpcs') ||
           (node.status === 'started' && node.node_type === 'virtualbox') ||

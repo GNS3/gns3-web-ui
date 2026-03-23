@@ -4,7 +4,7 @@
     [controller]="controller"
     [project]="project"
     [symbols]="symbols"
-    [nodes]="nodes"
+    [nodes]="nodes()"
     [links]="links"
     [drawings]="drawings"
     [width]="project.scene_width"
@@ -21,7 +21,7 @@
   <app-experimental-map
     *ngIf="settings.angular_map"
     [symbols]="symbols"
-    [nodes]="nodes"
+    [nodes]="nodes()"
     [links]="links"
     [drawings]="drawings"
     [width]="project.scene_width"

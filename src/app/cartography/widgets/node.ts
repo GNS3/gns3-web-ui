@@ -88,7 +88,15 @@ export class NodeWidget implements Widget {
         self.onContextConsoleMenu.emit(new NodeContextMenu(event, n));
       })
       .each(function (n: MapNode) {
-        if ((this as Element).getAttribute('href') !== n.symbolUrl) {
+        const currentHref = (this as Element).getAttribute('href');
+        if (currentHref !== n.symbolUrl) {
+          // Force browser to reload the image by:
+          // 1. Removing the href attribute
+          // 2. Forcing a reflow
+          // 3. Setting the new href
+          (this as Element).removeAttribute('href');
+          // Force reflow by accessing a layout property
+          void (this as Element).getClientRects();
           (this as Element).setAttribute('href', n.symbolUrl);
         }
       })
