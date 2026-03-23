@@ -44,19 +44,21 @@ export class ExportPortableProjectComponent implements OnInit {
   readonly isExport = signal(false);
 
   public dialogRef = inject(MatDialogRef<ExportPortableProjectComponent>);
-  @Inject(MAT_DIALOG_DATA) public data: any;
   private projectService = inject(ProjectService);
   private _fb = inject(UntypedFormBuilder);
 
-  constructor() {}
-
-  async ngOnInit() {
-    this.controller = this.data.controllerDetails;
-    this.project = this.data.projectDetails;
-    if( this.project){
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: any
+  ) {
+    this.controller = data.controllerDetails;
+    this.project = data.projectDetails;
+    if (this.project) {
       this.fileName = this.project.name + '.gns3project';
     }
-    await this.formControls();
+  }
+
+  ngOnInit() {
+    this.formControls();
     this.compression_methods = this.projectService.getCompression();
     this.compression_level = this.projectService.getCompressionLevel();
     this.selectCompression({ value: this.compression_methods[this.index] });
