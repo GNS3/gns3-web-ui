@@ -34,6 +34,7 @@ export class AddControllerDialogComponent implements OnInit {
   connectionError: string = '';
   canAddAnyway = false;
   isCheckingConnection = false;
+  duplicateNameError: string = '';
 
   controllerForm = new UntypedFormGroup({
     name: new UntypedFormControl('', [Validators.required]),
@@ -110,7 +111,18 @@ export class AddControllerDialogComponent implements OnInit {
       return;
     }
 
+    const controllerName = this.controllerForm.get('name').value;
+
+    // Check for duplicate name first
+    if (this.controllerService.isControllerNameTaken(controllerName)) {
+      this.duplicateNameError = `Controller with name "${controllerName}" already exists`;
+      this.toasterService.error(this.duplicateNameError);
+      this.changeDetector.markForCheck();
+      return;
+    }
+
     this.connectionError = '';
+    this.duplicateNameError = '';
     this.canAddAnyway = false;
     this.isCheckingConnection = true;
     this.changeDetector.markForCheck();
@@ -141,6 +153,16 @@ export class AddControllerDialogComponent implements OnInit {
 
   onAddAnywayClick(): void {
     if (!this.controllerForm.valid) {
+      return;
+    }
+
+    const controllerName = this.controllerForm.get('name').value;
+
+    // Check for duplicate name first
+    if (this.controllerService.isControllerNameTaken(controllerName)) {
+      this.duplicateNameError = `Controller with name "${controllerName}" already exists`;
+      this.toasterService.error(this.duplicateNameError);
+      this.changeDetector.markForCheck();
       return;
     }
 

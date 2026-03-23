@@ -82,9 +82,9 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (this.controllerService && this.controllerService.isServiceInitialized) this.getControllers();
-
     if (this.controllerService && this.controllerService.isServiceInitialized) {
+      this.getControllers();
+    } else {
       this.controllerService.serviceInitialized.subscribe(async (value: boolean) => {
         if (value) {
           this.getControllers();
@@ -193,6 +193,8 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
           created.status = 'stopped';
           this.controllerDatabase.addController(created);
           this.updateControllerOnlineStatus(created);
+          this.changeDetector.markForCheck();
+        }).catch((error) => {
           this.changeDetector.markForCheck();
         });
       }

@@ -18,7 +18,9 @@ export class ControllerService {
   getcontrollerIds() : string[]{
     let str = localStorage.getItem("controllerIds");
     if (str?.length > 0) {
-      return str.split(",");
+      const ids = str.split(",");
+      // Remove duplicates and empty strings
+      return [...new Set(ids)].filter((n) => n && n.trim().length > 0);
     }
     return [];
   }
@@ -37,7 +39,19 @@ export class ControllerService {
   }
 
   public create(controller: Controller ) {
-    controller.id = this.controllerIds.length + 1;
+    // Check for duplicate name
+    const existingControllers = this.findAllSync();
+    if (existingControllers.some((c) => c.name === controller.name)) {
+      return Promise.reject(new Error(`Controller with name "${controller.name}" already exists`));
+    }
+
+    // Generate unique ID by finding the maximum existing ID and adding 1
+    const existingIds = this.controllerIds
+      .map((n) => parseInt(n.replace('controller-', ''), 10))
+      .filter((id) => !isNaN(id));
+    const maxId = existingIds.length > 0 ? Math.max(...existingIds) : 0;
+    controller.id = maxId + 1;
+
     localStorage.setItem(`controller-${controller.id}`, JSON.stringify(controller));
 
     this.controllerIds.push(`controller-${controller.id}`);
@@ -47,6 +61,22 @@ export class ControllerService {
       resolve(controller);
     });
     return promise;
+  }
+
+  private findAllSync(): Controller[] {
+    const controllers: Controller[] = [];
+    this.controllerIds.forEach((n) => {
+      const data = localStorage.getItem(n);
+      if (data) {
+        controllers.push(JSON.parse(data));
+      }
+    });
+    return controllers;
+  }
+
+  public isControllerNameTaken(name: string): boolean {
+    const existingControllers = this.findAllSync();
+    return existingControllers.some((c) => c.name === name);
   }
 
   public update(controller: Controller ) {
@@ -63,8 +93,11 @@ export class ControllerService {
     let promise = new Promise<Controller[]>((resolve) => {
       let controllers: Controller [] = [];
       this.controllerIds.forEach((n) => {
-        let controller: Controller  = JSON.parse(localStorage.getItem(n));
-        controllers.push(controller);
+        const data = localStorage.getItem(n);
+        if (data) {
+          const controller: Controller = JSON.parse(data);
+          controllers.push(controller);
+        }
       });
       resolve(controllers);
     });
