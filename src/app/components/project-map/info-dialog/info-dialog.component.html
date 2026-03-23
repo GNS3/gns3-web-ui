@@ -4,9 +4,9 @@
   <mat-tab-group animationDuration="0ms">
     <mat-tab label="General information">
       <div class="textBox">
-        <div *ngFor="let info of infoList">
-          {{ info }}
-        </div>
+        @for (info of infoList; track info) {
+          <div>{{ info }}</div>
+        }
       </div>
     </mat-tab>
     <mat-tab label="Usage instructions">
