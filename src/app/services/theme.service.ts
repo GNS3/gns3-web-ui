@@ -70,10 +70,10 @@ export class ThemeService {
 
   // Prebuilt theme paths
   private readonly prebuiltThemes: Record<PrebuiltTheme, string> = {
-    'deeppurple-amber': 'node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css',
-    'indigo-pink': 'node_modules/@angular/material/prebuilt-themes/indigo-pink.css',
-    'pink-bluegrey': 'node_modules/@angular/material/prebuilt-themes/pink-bluegrey.css',
-    'purple-green': 'node_modules/@angular/material/prebuilt-themes/purple-green.css',
+    'deeppurple-amber': 'assets/material-themes/deeppurple-amber.css',
+    'indigo-pink': 'assets/material-themes/indigo-pink.css',
+    'pink-bluegrey': 'assets/material-themes/pink-bluegrey.css',
+    'purple-green': 'assets/material-themes/purple-green.css',
   };
 
   constructor(
