@@ -48,9 +48,11 @@
             </mat-radio-group>
             <mat-form-field class="form-field">
               <mat-select placeholder="Type" [(ngModel)]="selectedType" [ngModelOptions]="{ standalone: true }">
-                <mat-option *ngFor="let type of types()" [value]="type">
-                  {{ type }}
-                </mat-option>
+                @for (type of types(); track type) {
+                  <mat-option [value]="type">
+                    {{ type }}
+                  </mat-option>
+                }
               </mat-select>
             </mat-form-field>
             <mat-form-field class="form-field" *ngIf="!newImageSelected()">
@@ -59,9 +61,11 @@
                 [(ngModel)]="iouTemplate().path"
                 [ngModelOptions]="{ standalone: true }"
               >
-                <mat-option *ngFor="let image of iouImages()" [value]="image.path">
-                  {{ image.path }}
-                </mat-option>
+                @for (image of iouImages(); track image.path) {
+                  <mat-option [value]="image.path">
+                    {{ image.path }}
+                  </mat-option>
+                }
               </mat-select>
             </mat-form-field>
             <div *ngIf="newImageSelected()">
