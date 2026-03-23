@@ -25,8 +25,12 @@
           </mat-expansion-panel-header>
 
           <div class="theme-panel">
-            <button mat-raised-button (click)="setDarkMode(false)">Switch to light theme</button>
-            <button mat-raised-button (click)="setDarkMode(true)">Switch to dark theme</button>
+            <label class="theme-panel__label">Global theme</label>
+            <mat-radio-group [value]="currentTheme" (change)="setTheme($event.value)" class="theme-panel__radio-group">
+              @for (theme of availableThemes; track theme.key) {
+                <mat-radio-button [value]="theme.key">{{ theme.label }}</mat-radio-button>
+              }
+            </mat-radio-group>
           </div>
  
           <div class="theme-panel theme-panel--map">

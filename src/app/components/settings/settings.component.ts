@@ -8,7 +8,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { Settings, SettingsService } from '@services/settings.service';
 import { ConsoleService } from '@services/settings/console.service';
-import { ThemeService } from '@services/theme.service';
+import { ThemeService, PrebuiltTheme } from '@services/theme.service';
 import { ToasterService } from '@services/toaster.service';
 import { UpdatesService } from '@services/updates.service';
 
@@ -32,6 +32,8 @@ export class SettingsComponent implements OnInit {
   openReadme: boolean;
   openConsolesInWidget: boolean;
   mapTheme: string;
+  currentTheme: PrebuiltTheme;
+  availableThemes = this.themeService.availableThemes;
 
   ngOnInit() {
     this.settings = this.settingsService.getAll();
@@ -39,6 +41,7 @@ export class SettingsComponent implements OnInit {
     this.openReadme = this.mapSettingsService.openReadme;
     this.openConsolesInWidget = this.mapSettingsService.openConsolesInWidget;
     this.mapTheme = this.themeService.savedMapTheme;
+    this.currentTheme = this.themeService.getCurrentTheme();
     this.cdr.markForCheck();
   }
 
@@ -51,8 +54,10 @@ export class SettingsComponent implements OnInit {
     this.mapSettingsService.toggleOpenConsolesInWidget(this.openConsolesInWidget);
   }
 
-  setDarkMode(value: boolean) {
-    this.themeService.setDarkMode(value);
+  setTheme(theme: PrebuiltTheme) {
+    this.themeService.setTheme(theme);
+    this.currentTheme = theme;
+    this.cdr.markForCheck();
   }
 
     setMapTheme(theme: 'light' | 'dark' | 'auto') {
@@ -60,7 +65,7 @@ export class SettingsComponent implements OnInit {
     this.themeService.setMapTheme(theme);
     this.cdr.markForCheck();
   }
- 
+
   checkForUpdates() {
     window.open('https://gns3.com/software');
   }
