@@ -1,6 +1,8 @@
 <h1 mat-dialog-title>Are you sure you want to delete the following ACEs ?</h1>
 <ul>
-  <li *ngFor="let ace of data.aces">{{ ace.path }} </li>
+  @for (ace of data.aces; track ace.path) {
+    <li>{{ ace.path }} </li>
+  }
 </ul>
 <div mat-dialog-actions class="button-div">
   <button mat-button (click)="onCancel()" color="accent">No, cancel</button>
