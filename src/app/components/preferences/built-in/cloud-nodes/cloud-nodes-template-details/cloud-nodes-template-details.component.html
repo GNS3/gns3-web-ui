@@ -47,10 +47,12 @@
                 <mat-form-field class="form-field tags-field">
                     <mat-label>Tags</mat-label>
                     <mat-chip-grid #chipList>
-                        <mat-chip *ngFor="let tag of cloudNodeTemplate?.tags" (removed)="removeTag(tag)">
-                            {{ tag }}
-                            <mat-icon matChipRemove>cancel</mat-icon>
-                        </mat-chip>
+                        @for (tag of cloudNodeTemplate?.tags; track tag) {
+                          <mat-chip (removed)="removeTag(tag)">
+                              {{ tag }}
+                              <mat-icon matChipRemove>cancel</mat-icon>
+                          </mat-chip>
+                        }
                     </mat-chip-grid>
                     <input matInput placeholder="Add tags"
                            [matChipInputFor]="chipList"
@@ -61,18 +63,22 @@
                     <mat-select
                         placeholder="Category"
                         [(ngModel)]="cloudNodeTemplate.category">
-                        <mat-option *ngFor="let category of categories" [value]="category[1]">
-                            {{category[0]}}
-                        </mat-option>
+                        @for (category of categories; track category[1]) {
+                          <mat-option [value]="category[1]">
+                              {{category[0]}}
+                          </mat-option>
+                        }
                     </mat-select>
                 </mat-form-field>
                 <mat-form-field class="select">
                     <mat-select
                         placeholder="Console type"
                         [(ngModel)]="cloudNodeTemplate.console_type">
-                            <mat-option *ngFor="let type of consoleTypes" [value]="type">
-                                {{type}}
-                            </mat-option>
+                        @for (type of consoleTypes; track type) {
+                          <mat-option [value]="type">
+                              {{type}}
+                          </mat-option>
+                        }
                     </mat-select>
                 </mat-form-field>
                 <mat-form-field class="form-field">
@@ -100,17 +106,21 @@
                         Ethernet interfaces
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <div class="form-field" *ngFor="let port of portsMappingEthernet">
+                @for (port of portsMappingEthernet; track port) {
+                  <div class="form-field">
                     <div class="form-field">{{port.name}}</div><br/><br/>
-                </div>
+                  </div>
+                }
                 <mat-form-field class="select">
                     <mat-select
                         placeholder="Ethernet interface"
                         [ngModelOptions]="{standalone: true}"
                         [(ngModel)]="ethernetInterface">
-                            <mat-option *ngFor="let type of ethernetInterfaces" [value]="type">
-                                {{type}}
-                            </mat-option>
+                        @for (type of ethernetInterfaces; track type) {
+                          <mat-option [value]="type">
+                              {{type}}
+                          </mat-option>
+                        }
                     </mat-select>
                 </mat-form-field>
                 <button mat-button class="form-field" (click)="onAddEthernetInterface()">Add</button>
@@ -121,9 +131,11 @@
                         TAP interfaces
                     </mat-panel-title>
                 </mat-expansion-panel-header>
-                <div class="form-field" *ngFor="let port of portsMappingTap">
+                @for (port of portsMappingTap; track port) {
+                  <div class="form-field">
                     <div class="form-field">{{port.name}}</div><br/><br/>
-                </div>
+                  </div>
+                }
                 <mat-form-field class="form-field">
                     <input
                         matInput type="text"

@@ -14,13 +14,17 @@
 
                 <mat-form-field>
                     <mat-select placeholder="Location" formControlName="location">
-                      <mat-option *ngFor="let location of locations" [value]="location.key"> {{ location.name }} </mat-option>
+                      @for (location of locations; track location.key) {
+                        <mat-option [value]="location.key"> {{ location.name }} </mat-option>
+                      }
                     </mat-select>
                 </mat-form-field>
 
                 <mat-form-field>
                     <mat-select placeholder="Protocol" formControlName="protocol">
-                        <mat-option *ngFor="let protocol of protocols" [value]="protocol.key"> {{ protocol.name }} </mat-option>
+                        @for (protocol of protocols; track protocol.key) {
+                          <mat-option [value]="protocol.key"> {{ protocol.name }} </mat-option>
+                        }
                     </mat-select>
                 </mat-form-field>
             </form>
