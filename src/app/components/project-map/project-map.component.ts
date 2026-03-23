@@ -3,10 +3,8 @@ import {
   ChangeDetectorRef,
   Component,
   ComponentRef,
-  HostListener,
   OnDestroy,
   OnInit,
-  ViewChild,
   ViewContainerRef,
   ViewEncapsulation,
   inject,
@@ -122,12 +120,14 @@ import { TextAddedComponent } from '../drawings-listeners/text-added/text-added.
 import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edited.component';
 
 @Component({
-  standalone: true,
   selector: 'app-project-map',
   encapsulation: ViewEncapsulation.None,
   templateUrl: './project-map.component.html',
   styleUrls: ['./project-map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(window:keydown.escape)': 'onEscapeKey()'
+  },
   imports: [
     CommonModule,
     MatButtonModule,
@@ -194,8 +194,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   readonly contextMenu = viewChild(ContextMenuComponent);
   readonly mapChild = viewChild(D3MapComponent);
-  @ViewChild(ProjectMapMenuComponent) projectMapMenuComponent: ProjectMapMenuComponent;
-  @ViewChild('topologySummaryContainer', { read: ViewContainerRef, static: true }) topologySummaryContainer!: ViewContainerRef;
+  readonly projectMapMenuComponent = viewChild.required(ProjectMapMenuComponent);
+  readonly topologySummaryContainer = viewChild.required('topologySummaryContainer', { read: ViewContainerRef });
 
   private projectMapSubscription: Subscription = new Subscription();
 
@@ -300,10 +300,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     if (this.isTopologySummaryVisible) {
       // In zoneless mode, we need to explicitly notify Angular after async operations
       const { TopologySummaryComponent } = await import('../topology-summary/topology-summary.component');
-      this.instance = this.topologySummaryContainer.createComponent(TopologySummaryComponent);
+      this.instance = this.topologySummaryContainer().createComponent(TopologySummaryComponent);
 
       // const componentFactory = this.cfr.resolveComponentFactory(TopologySummaryComponent);
-      // this.instance = this.topologySummaryContainer.createComponent(componentFactory, null, this.injector);
+      // this.instance = this.topologySummaryContainer().createComponent(componentFactory, null, this.injector);
       this.instance.instance.controller = this.controller;
       this.instance.instance.project = this.project;
       // In zoneless mode, createComponent doesn't automatically trigger change detection
@@ -789,7 +789,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public onDrawingSaved() {
-    this.projectMapMenuComponent.resetDrawToolChoice();
+    this.projectMapMenuComponent().resetDrawToolChoice();
   }
 
   public set readonly(value) {
@@ -937,7 +937,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public hideMenu() {
-    this.projectMapMenuComponent.resetDrawToolChoice();
+    this.projectMapMenuComponent().resetDrawToolChoice();
     this.isProjectMapMenuVisible = false;
   }
 
@@ -1197,7 +1197,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   /**
    * Handle ESC key to clear highlight
    */
-  @HostListener('window:keydown.escape')
   onEscapeKey(): void {
     this.clearConsoleHighlight();
   }
