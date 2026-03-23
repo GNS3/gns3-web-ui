@@ -4,18 +4,44 @@
  */
 
 /* =============================================
+// Header
+// ============================================= */
+.default-header {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.default-header h1 {
+  font-size: 32px;
+  font-weight: 500;
+}
+
+/* =============================================
 // Buttons Bar
 // ============================================= */
 .buttons-bar {
   padding-top: 0;
+  display: flex;
+  justify-content: center;
 }
 
 .button {
   margin: 12px;
 }
 
+/* =============================================
+// Search
+// ============================================= */
+.controllers-search-form {
+  display: flex;
+  justify-content: center;
+  margin: 16px auto;
+  width: 800px;
+  max-width: 100%;
+}
+
 .controllers-search {
-  margin-top: 8px;
+  width: 100%;
 }
 
 /* =============================================
@@ -24,6 +50,23 @@
 .table-container {
   border-radius: 8px;
   overflow: hidden;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* =============================================
+// Buttons Bar
+// ============================================= */
+.buttons-bar {
+  padding-top: 0;
+  display: flex;
+  justify-content: flex-end;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.button {
+  margin: 12px;
 }
 
 mat-header-cell,
