@@ -50,6 +50,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
       defaultName: new UntypedFormControl('', Validators.required),
       scriptFile: new UntypedFormControl('', Validators.required),
       symbol: new UntypedFormControl('', Validators.required),
+      console_auto_start: new UntypedFormControl(false),
     });
   }
 
@@ -66,6 +67,9 @@ export class VpcsTemplateDetailsComponent implements OnInit {
         if (!this.vpcsTemplate.tags) {
           this.vpcsTemplate.tags = [];
         }
+        this.inputForm.patchValue({
+          console_auto_start: this.vpcsTemplate.console_auto_start,
+        });
         this.cd.markForCheck();
       });
     });
@@ -84,6 +88,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
     if (this.inputForm.invalid) {
       this.toasterService.error(`Fill all required fields`);
     } else {
+      this.vpcsTemplate.console_auto_start = this.inputForm.get('console_auto_start')?.value;
       this.vpcsService.saveTemplate(this.controller, this.vpcsTemplate).subscribe((vpcsTemplate: VpcsTemplate) => {
         this.toasterService.success('Changes saved');
       });
