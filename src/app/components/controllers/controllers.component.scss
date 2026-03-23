@@ -68,8 +68,7 @@
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 8%, transparent);
-  background: var(--mat-sys-surface);
+  background: var(--mat-sys-background);
 }
 
 // Table row styles
@@ -124,7 +123,7 @@ mat-row:nth-child(even):hover {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: linear-gradient(to bottom, var(--mat-sys-surface-container-low), var(--mat-sys-surface-container));
+  background: var(--mat-sys-background);
 
   mat-header-cell {
     font-size: 13px;
