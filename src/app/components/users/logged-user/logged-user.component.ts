@@ -1,8 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
-import { MatCardModule } from '@angular/material/card';
-import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from "@angular/material/dialog";
 import { ControllerService } from '@services/controller.service';
@@ -16,7 +14,7 @@ import { ChangeUserPasswordComponent } from "@components/user-management/user-de
   selector: 'app-logged-user',
   templateUrl: './logged-user.component.html',
   styleUrl: './logged-user.component.scss',
-  imports: [CommonModule, RouterModule, MatCardModule, MatListModule, MatButtonModule, MatDialogModule],
+  imports: [CommonModule, RouterModule, MatButtonModule, MatDialogModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoggedUserComponent implements OnInit {
@@ -43,7 +41,7 @@ export class LoggedUserComponent implements OnInit {
 
     changePassword() {
         this.dialog.open<ChangeUserPasswordComponent>(ChangeUserPasswordComponent,
-          {width: '500px', height: '300px', data: {user: this.user(), controller: this.controller, self_update: true}});
+          {width: '500px', data: {user: this.user(), controller: this.controller, self_update: true}});
     }
 
     copyToken() {
