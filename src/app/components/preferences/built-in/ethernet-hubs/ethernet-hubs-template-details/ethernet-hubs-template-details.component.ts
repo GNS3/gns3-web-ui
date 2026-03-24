@@ -23,7 +23,7 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ethernet-hubs-template-details',
   templateUrl: './ethernet-hubs-template-details.component.html',
-  styleUrls: ['./ethernet-hubs-template-details.component.scss', '../../../preferences.component.scss'],
+  styleUrl: './ethernet-hubs-template-details.component.scss',
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, SymbolsMenuComponent]
 })
 export class EthernetHubsTemplateDetailsComponent implements OnInit {
