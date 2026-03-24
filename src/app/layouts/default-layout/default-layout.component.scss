@@ -74,14 +74,14 @@ app-default-layout {
   --mat-icon-button-icon-size: 24px;
   border-radius: 50%;
   transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  color: var(--mat-sys-on-primary-container);
+  color: white;
 
   &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-on-primary-container) 8%, transparent);
+    background-color: color-mix(in srgb, white 8%, transparent);
   }
 
   &:active {
-    background-color: color-mix(in srgb, var(--mat-sys-on-primary-container) 12%, transparent);
+    background-color: color-mix(in srgb, white 12%, transparent);
   }
 }
 
