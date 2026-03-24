@@ -6,7 +6,6 @@ import {
   OnDestroy,
   OnChanges,
   SimpleChanges,
-  ViewEncapsulation,
   EventEmitter,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -48,7 +47,6 @@ import { ChatInputAreaComponent } from './chat-input-area.component';
   selector: 'app-ai-chat',
   templateUrl: './ai-chat.component.html',
   styleUrls: ['./ai-chat.component.scss'],
-  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,

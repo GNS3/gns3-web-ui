@@ -6,7 +6,6 @@ import {
   SimpleChanges,
   AfterViewChecked,
   ElementRef,
-  ViewEncapsulation,
   ChangeDetectionStrategy,
   inject,
   input,
@@ -32,7 +31,6 @@ import { ThemeService } from '@services/theme.service';
   selector: 'app-chat-message-list',
   imports: [CommonModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MarkdownModule],
   styleUrls: ['./chat-message-list.component.scss'],
-  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="chat-message-list" #messageContainer [class.auto-scroll]="autoScroll()">

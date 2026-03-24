@@ -92,10 +92,6 @@ import { ToolCall } from '@models/ai-chat.interface';
       .inline-tool-call:hover .expand-icon {
         opacity: 1;
       }
-
-      ::ng-deep .tool-status mat-spinner {
-        display: inline-block;
-      }
     `,
   ],
 })

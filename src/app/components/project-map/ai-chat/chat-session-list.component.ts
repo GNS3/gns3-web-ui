@@ -402,41 +402,6 @@ import {
         color: var(--mat-app-error);
       }
 
-      /* Session menu panel - flexible height */
-      ::ng-deep .mat-menu-panel.session-action-menu {
-        min-height: auto !important;
-        max-height: none !important;
-        height: auto !important;
-        overflow: visible !important;
-      }
-
-      ::ng-deep .session-action-menu .mat-mdc-menu-content {
-        padding: 4px 0;
-        max-height: none !important;
-      }
-
-      ::ng-deep .session-action-menu .mat-mdc-menu-item {
-        height: 40px;
-        min-height: 40px;
-        padding: 0 12px;
-      }
-
-      ::ng-deep .session-action-menu .mat-mdc-menu-item .mdc-list-item__primary-text {
-        font-size: 14px;
-      }
-
-      /* Menu item icons */
-      ::ng-deep .session-action-menu .menu-item-icon {
-        width: 20px;
-        height: 20px;
-        margin-right: 12px;
-        vertical-align: middle;
-      }
-
-      ::ng-deep .session-action-menu .delete-icon {
-        fill: var(--mat-app-error);
-      }
-
       /* Scrollbar styles */
       ::-webkit-scrollbar {
         width: 6px;

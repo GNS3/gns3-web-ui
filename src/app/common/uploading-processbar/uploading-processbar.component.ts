@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, Renderer2, ViewEncapsulation, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Inject, OnInit, Renderer2, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatSnackBarRef, MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -9,7 +9,6 @@ import { UploadServiceService } from './upload-service.service';
   selector: 'app-uploading-processbar',
   templateUrl: './uploading-processbar.component.html',
   styleUrl: './uploading-processbar.component.scss',
-  encapsulation: ViewEncapsulation.None,
   imports: [MatButtonModule, MatProgressBarModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

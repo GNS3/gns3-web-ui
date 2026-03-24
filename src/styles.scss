@@ -128,3 +128,61 @@ mat-menu-panel {
   flex-shrink: 0;
   vertical-align: middle;
 }
+
+/* =============================================
+// Tool Status Spinner in AI Chat
+// ============================================= */
+.tool-status mat-spinner {
+  display: inline-block;
+}
+
+/* =============================================
+// Session Action Menu Panel
+// ============================================= */
+.session-action-menu {
+  min-height: auto;
+  max-height: none;
+  height: auto;
+  overflow: visible;
+
+  .mat-mdc-menu-content {
+    padding: 4px 0;
+    max-height: none;
+  }
+
+  .mat-mdc-menu-item {
+    height: 40px;
+    min-height: 40px;
+    padding: 0 12px;
+  }
+
+  .mdc-list-item__primary-text {
+    font-size: 14px;
+  }
+
+  .menu-item-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    vertical-align: middle;
+  }
+
+  .delete-icon {
+    fill: var(--mat-app-error);
+  }
+}
+
+/* =============================================
+// Uploading Processbar Snack Bar
+// ============================================= */
+.uplaoding-file-snackabar .mat-snack-bar-container {
+  min-width: 450px;
+}
+
+.proccessBar-row {
+  display: flex;
+}
+
+.proccessBar-col {
+  margin: auto;
+}

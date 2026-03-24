@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, ViewEncapsulation, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -17,7 +17,6 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-direct-link',
   templateUrl: './direct-link.component.html',
   styleUrl: './direct-link.component.scss',
-  encapsulation: ViewEncapsulation.None,
   imports: [CommonModule, ReactiveFormsModule, RouterModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

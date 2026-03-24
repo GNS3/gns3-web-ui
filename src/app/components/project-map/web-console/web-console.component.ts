@@ -5,7 +5,6 @@ import {
   ElementRef,
   OnInit,
   OnDestroy,
-  ViewEncapsulation,
   ChangeDetectorRef,
   inject,
   input,
@@ -23,7 +22,6 @@ import { ThemeService } from '@services/theme.service';
 import { XtermContextMenuService } from '@services/xterm-context-menu.service';
 
 @Component({
-  encapsulation: ViewEncapsulation.None,
   selector: 'app-web-console',
   templateUrl: './web-console.component.html',
   styleUrls: ['../../../../../node_modules/xterm/css/xterm.css', './web-console.component.scss'],

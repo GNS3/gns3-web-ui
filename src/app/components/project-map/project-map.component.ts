@@ -6,7 +6,6 @@ import {
   OnDestroy,
   OnInit,
   ViewContainerRef,
-  ViewEncapsulation,
   inject,
   viewChild,
   signal,
@@ -123,7 +122,6 @@ import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edit
 
 @Component({
   selector: 'app-project-map',
-  encapsulation: ViewEncapsulation.None,
   templateUrl: './project-map.component.html',
   styleUrls: ['./project-map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

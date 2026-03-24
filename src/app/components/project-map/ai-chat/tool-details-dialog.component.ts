@@ -166,40 +166,6 @@ export interface ToolDetailsDialogData {
       font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
     }
 
-    /* ngx-json-viewer theme colors - scoped to this dialog using panelClass */
-    ::ng-deep .tool-details-dialog.dark-theme .json-container {
-      --ngx-json-string: #a5d6ff;
-      --ngx-json-number: #79c0ff;
-      --ngx-json-boolean: #ff7b72;
-      --ngx-json-date: #d29922;
-      --ngx-json-array: #ffa657;
-      --ngx-json-object: #7ee787;
-      --ngx-json-function: #fff;
-      --ngx-json-null: #8b949e;
-      --ngx-json-null-bg: rgba(235, 235, 235, 0.1);
-      --ngx-json-undefined: #f28179;
-      --ngx-json-key: #7ee787;
-      --ngx-json-separator: #8b949e;
-      --ngx-json-value: var(--mat-app-on-surface);
-    }
-
-    /* Light mode colors - scoped */
-    ::ng-deep .tool-details-dialog.light-theme .json-container {
-      --ngx-json-string: #0451a5;
-      --ngx-json-number: #098658;
-      --ngx-json-boolean: #0000ff;
-      --ngx-json-date: #795e26;
-      --ngx-json-array: #a31515;
-      --ngx-json-object: #098658;
-      --ngx-json-function: #795e26;
-      --ngx-json-null: #808080;
-      --ngx-json-null-bg: rgba(0, 0, 0, 0.04);
-      --ngx-json-undefined: #a31515;
-      --ngx-json-key: #0451a5;
-      --ngx-json-separator: #808080;
-      --ngx-json-value: var(--mat-app-on-surface);
-    }
-
     /* Scrollbar styles */
     .dialog-content::-webkit-scrollbar,
     .json-container::-webkit-scrollbar {
@@ -222,32 +188,7 @@ export interface ToolDetailsDialogData {
     .json-container::-webkit-scrollbar-thumb:hover {
       background: rgba(0, 151, 167, 0.5);
     }
-
-    /* Dialog container styling - performance optimized: removed glassmorphism */
-    ::ng-deep .tool-details-dialog .mat-dialog-container {
-      border-radius: 16px !important;
-      border: 1px solid var(--mat-app-outline-variant);
-      /* Performance optimized: removed backdrop-filter */
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 151, 167, 0.15) !important;
-    }
-
-    /* Make dialog surface transparent for glassmorphism - scoped */
-    ::ng-deep .tool-details-dialog .mat-dialog-container .mat-dialog-surface {
-      background-color: transparent !important;
-    }
-
-    /* Dark theme styling - performance optimized: fully opaque */
-    ::ng-deep .tool-details-dialog.dark-theme .mat-dialog-container {
-      background-color: rgba(32, 49, 59, 1) !important;
-    }
-
-    /* Light theme styling - performance optimized: fully opaque */
-    ::ng-deep .tool-details-dialog.light-theme .mat-dialog-container {
-      background-color: rgba(250, 250, 250, 1) !important;
-    }
-  `]
+  `
 })
 export class ToolDetailsDialogComponent {
   readonly type = signal<'tool_call' | 'tool_result'>('tool_call');

@@ -3,7 +3,6 @@ import {
   ChangeDetectorRef,
   Component,
   OnInit,
-  ViewEncapsulation,
   inject,
   input,
 } from '@angular/core';
@@ -20,7 +19,6 @@ import { Project } from '@models/project';
   standalone: true,
   selector: 'app-readme-editor',
   templateUrl: './readme-editor.component.html',
-  encapsulation: ViewEncapsulation.None,
   styleUrls: ['./readme-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, MatTabsModule],
