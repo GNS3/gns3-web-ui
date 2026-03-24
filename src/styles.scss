@@ -8,6 +8,32 @@
 @use 'styles/dialogs' as *;
 
 /* =============================================
+// GNS3 Custom Properties - Opacity Levels
+// Unified opacity values for consistent theming
+// ============================================= */
+:root {
+  // Shadow opacity levels
+  --gns3-shadow-opacity-subtle: 10%;
+  --gns3-shadow-opacity-light: 15%;
+  --gns3-shadow-opacity-normal: 20%;
+  --gns3-shadow-opacity-medium: 25%;
+  --gns3-shadow-opacity-strong: 30%;
+  --gns3-shadow-opacity-heavy: 40%;
+
+  // Border opacity levels
+  --gns3-border-opacity-subtle: 8%;
+  --gns3-border-opacity-light: 12%;
+  --gns3-border-opacity-normal: 15%;
+  --gns3-border-opacity-medium: 20%;
+  --gns3-border-opacity-strong: 25%;
+
+  // Selection opacity levels
+  --gns3-selection-opacity-light: 10%;
+  --gns3-selection-opacity-normal: 15%;
+  --gns3-selection-opacity-medium: 20%;
+}
+
+/* =============================================
 // Global markdown list fix
 // ============================================= */
 app-chat-message-list markdown p,

@@ -3,6 +3,26 @@
  * Using MD3 CSS variables
  */
 
+/* =============================================
+// Reusable Shadow Classes
+// Standardized shadow effects using GNS3 opacity variables
+// ============================================= */
+.shadow-subtle {
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--mat-sys-shadow) var(--gns3-shadow-opacity-light), transparent);
+}
+
+.shadow-normal {
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) var(--gns3-shadow-opacity-normal), transparent);
+}
+
+.shadow-medium {
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--mat-sys-shadow) var(--gns3-shadow-opacity-medium), transparent);
+}
+
+.shadow-heavy {
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--mat-sys-shadow) var(--gns3-shadow-opacity-heavy), transparent);
+}
+
 .wrapper {
   height: 500px;
 }
@@ -52,7 +72,7 @@ g.node:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent);
+  @extend .shadow-normal;
   z-index: 2;
   transition: background-color 200ms ease;
 
@@ -67,7 +87,7 @@ g.node:hover {
   }
 
   .primary-controls {
-    border-right: 1px solid color-mix(in srgb, var(--mat-sys-on-primary) 20%, transparent);
+    border-right: 1px solid color-mix(in srgb, var(--mat-sys-on-primary) var(--gns3-border-opacity-medium), transparent);
     padding-right: 16px;
     margin-right: 16px;
   }
@@ -100,7 +120,7 @@ g.node:hover {
   }
 
   .selected {
-    background: color-mix(in srgb, var(--mat-sys-on-primary) 15%, transparent);
+    background: color-mix(in srgb, var(--mat-sys-on-primary) var(--gns3-selection-opacity-normal), transparent);
 
     mat-icon {
       color: var(--mat-sys-on-primary);
@@ -121,7 +141,7 @@ g.node:hover {
   margin: 16px;
   background-color: var(--mat-sys-surface-container);
   border-radius: 4px;
-  box-shadow: 0 1px 3px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
+  @extend .shadow-subtle;
   z-index: 2;
   transition: background-color 200ms ease;
 
@@ -243,7 +263,7 @@ img {
 }
 
 .shadowed {
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent);
+  @extend .shadow-medium;
 }
 
 .non-visible {
@@ -264,7 +284,7 @@ img {
   width: 0;
   overflow: hidden;
   transition: 100ms ease;
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent);
+  @extend .shadow-medium;
   display: flex;
 
   .menu-button {
@@ -308,7 +328,7 @@ mat-divider.divider {
 }
 
 .shadow {
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent);
+  @extend .shadow-normal;
 }
 
 .mat-drawer-backdrop.mat-drawer-shown {
