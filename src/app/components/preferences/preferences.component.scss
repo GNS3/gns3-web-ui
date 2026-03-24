@@ -1,5 +1,6 @@
 /**
  * GNS3 Preferences Component Styles
+ * Using MD3 CSS variables
  */
 
 .listcontainer {
@@ -10,12 +11,12 @@
 .top-button,
 .choose-symbol-button,
 .cancel-button {
-  height: var(--gns3-spacing-lg);
-  margin-top: var(--gns3-spacing-md);
+  height: 36px;
+  margin-top: 16px;
 }
 
 .cancel-button {
-  margin-right: var(--gns3-spacing-sm);
+  margin-right: 10px;
 }
 
 .form-field,
@@ -27,7 +28,7 @@
 
 .shadowed {
   display: none;
-  transition: var(--gns3-duration-normal);
+  transition: 200ms ease;
 }
 
 .nonvisible {
@@ -37,7 +38,7 @@
 .configHideButton {
   margin-left: 80%;
   width: 20%;
-  margin-bottom: var(--gns3-spacing-sm);
+  margin-bottom: 10px;
 }
 
 .list-item {
@@ -63,20 +64,20 @@ th {
 }
 
 th.mat-header-cell {
-  padding-bottom: var(--gns3-spacing-md);
+  padding-bottom: 16px;
 }
 
 td.mat-cell {
-  padding-top: var(--gns3-spacing-md);
+  padding-top: 16px;
 }
 
 .radio-button {
   width: 50%;
-  padding-top: var(--gns3-spacing-md);
+  padding-top: 16px;
 }
 
 .radio-group {
-  margin-bottom: var(--gns3-spacing-md);
+  margin-bottom: 16px;
 }
 
 .file-name-form-field {

@@ -1,32 +1,30 @@
 /**
  * GNS3 Settings Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
+ * Using MD3 CSS variables
  */
 
 .theme-panel {
   justify-content: space-between;
   display: flex;
-  padding: var(--gns3-spacing-xs, 10px);
+  padding: 8px;
 
   &--map {
     flex-direction: column;
     border-top: 1px solid rgba(128, 128, 128, 0.3);
-    margin-top: var(--gns3-spacing-xs, 8px);
-    padding-top: var(--gns3-spacing-md, 16px);
-    gap: var(--gns3-spacing-xs, 8px);
+    margin-top: 8px;
+    padding-top: 16px;
+    gap: 8px;
   }
 
   &__label {
-    font-size: var(--gns3-font-size-sm, 14px);
+    font-size: 14px;
     font-weight: 500;
-    margin-bottom: var(--gns3-spacing-xs, 4px);
+    margin-bottom: 4px;
   }
 
   &__radio-group {
     display: flex;
-    gap: var(--gns3-spacing-md, 16px);
+    gap: 16px;
   }
 }
 

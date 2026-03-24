@@ -1,17 +1,15 @@
 /**
  * GNS3 Confirmation Dialog Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
+ * Using MD3 CSS variables
  */
 
 .dialog-container {
   position: relative;
   overflow: hidden;
-  animation: dialogSlideIn var(--gns3-duration-normal) ease-out;
-  border-radius: var(--gns3-radius-lg);
-  box-shadow: var(--gns3-shadow-xl);
-  background-color: var(--gns3-dialog-bg-dark);
+  animation: dialogSlideIn 200ms ease-out;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 30%, transparent);
+  background-color: var(--mat-sys-surface);
 }
 
 @keyframes dialogSlideIn {
@@ -25,16 +23,15 @@
   }
 }
 
-/* Header with icon */
 .dialog-header {
   display: flex;
   align-items: center;
-  gap: var(--gns3-spacing-sm);
-  padding: var(--gns3-spacing-lg) var(--gns3-spacing-xl) var(--gns3-spacing-md);
-  background: var(--mat-app-error-container-color);
-  border-bottom: 1px solid var(--mat-app-outline-variant-color);
+  gap: 10px;
+  padding: 24px 30px 16px;
+  background: var(--mat-sys-error-container);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
   margin-bottom: 4px;
-  border-radius: var(--gns3-radius-lg) var(--gns3-radius-lg) 0 0;
+  border-radius: 16px 16px 0 0;
 }
 
 .dialog-icon {
@@ -47,36 +44,34 @@
 }
 
 .warning-icon {
-  color: var(--mat-app-error-color);
+  color: var(--mat-sys-error);
 }
 
 .dialog-title {
-  font-size: var(--gns3-font-size-base);
-  font-weight: var(--gns3-font-weight-semibold);
-  color: var(--mat-app-on-surface);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
   margin: 0;
   letter-spacing: -0.2px;
 }
 
-/* Content */
 .dialog-content {
-  padding: var(--gns3-spacing-sm) var(--gns3-spacing-xl) var(--gns3-spacing-lg);
+  padding: 10px 30px 24px;
 }
 
 .dialog-message {
-  font-size: var(--gns3-font-size-sm);
-  color: var(--mat-app-on-surface-variant);
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant);
   margin: 0;
   line-height: 1.5;
   letter-spacing: -0.1px;
 }
 
-/* Actions */
 .dialog-actions {
-  padding: var(--gns3-spacing-md) var(--gns3-spacing-xl) var(--gns3-spacing-xl);
+  padding: 16px 30px 30px;
   display: flex;
   justify-content: center;
-  gap: var(--gns3-spacing-sm);
+  gap: 10px;
 }
 
 .cancel-button,
@@ -84,11 +79,11 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 7px var(--gns3-spacing-lg);
-  border-radius: var(--gns3-radius-md);
-  font-weight: var(--gns3-font-weight-medium);
-  font-size: var(--gns3-font-size-xs);
-  transition: all var(--gns3-duration-fast) ease;
+  padding: 7px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 12px;
+  transition: all 100ms ease;
   position: relative;
   overflow: hidden;
   min-width: 70px;
@@ -96,14 +91,14 @@
 }
 
 .cancel-button {
-  color: var(--mat-app-primary-color);
+  color: var(--mat-sys-primary);
   background: transparent;
-  border: 1px solid var(--mat-app-outline-color);
+  border: 1px solid var(--mat-sys-outline);
 }
 
 .cancel-button:hover {
-  background: var(--mat-app-primary-container-color);
-  border-color: var(--mat-app-primary-color);
+  background: var(--mat-sys-primary-container);
+  border-color: var(--mat-sys-primary);
   transform: translateY(-1px);
   box-shadow: 0 3px 10px rgba(0, 151, 167, 0.12);
 }
@@ -113,20 +108,20 @@
 }
 
 .cancel-button .button-icon {
-  font-size: var(--gns3-font-size-base);
-  width: var(--gns3-font-size-base);
-  height: var(--gns3-font-size-base);
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
 }
 
 .confirm-button {
-  background: var(--mat-app-error-color);
-  color: var(--mat-app-on-error-color);
+  background: var(--mat-sys-error);
+  color: var(--mat-sys-on-error);
   border: none;
   box-shadow: 0 2px 6px rgba(244, 67, 54, 0.25);
 }
 
 .confirm-button:hover {
-  background: var(--mat-app-error-color);
+  background: var(--mat-sys-error);
   opacity: 0.9;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(244, 67, 54, 0.35);
@@ -152,12 +147,11 @@
 }
 
 .confirm-button .button-icon {
-  font-size: var(--gns3-font-size-base);
-  width: var(--gns3-font-size-base);
-  height: var(--gns3-font-size-base);
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
 }
 
-/* Ripple effect */
 .cancel-button::after,
 .confirm-button::after {
   content: '';
@@ -181,9 +175,8 @@
   transition: 0s;
 }
 
-/* Accessibility focus */
 .cancel-button:focus-visible,
 .confirm-button:focus-visible {
-  outline: 2px solid var(--mat-app-primary-color);
+  outline: 2px solid var(--mat-sys-primary);
   outline-offset: 2px;
 }
