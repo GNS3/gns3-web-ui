@@ -1,5 +1,6 @@
 /**
  * GNS3 Edit Project Dialog Component Styles
+ * Using MD3 CSS variables
  */
 
 table {
@@ -15,9 +16,9 @@ th {
 }
 
 th.mat-header-cell {
-  padding-bottom: var(--gns3-spacing-md);
+  padding-bottom: 16px;
 }
 
 td.mat-cell {
-  padding-top: var(--gns3-spacing-md);
+  padding-top: 16px;
 }
