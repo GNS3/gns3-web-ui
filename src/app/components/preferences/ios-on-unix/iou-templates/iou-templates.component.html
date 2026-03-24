@@ -1,65 +1,60 @@
-<div class="content">
-  <div class="default-header">
-    <div class="row">
-      <div class="col col-md-1">
-        <button
-          class="top-button"
-          class="cancel-button"
-          routerLink="/controller/{{ controller?.id }}/preferences"
-          mat-button
-        >
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-      </div>
-      <div class="col col-md-10">
-        <h1 class="col">IOU device templates</h1>
-      </div>
-      <div class="col col-md-1">
-        @if (controller) {
-          <button
-            class="top-button cancel-button"
-            matTooltip="Add IOU device template"
-            matTooltipClass="custom-tooltip"
-            routerLink="/controller/{{ controller?.id }}/preferences/iou/addtemplate"
-            mat-button
-          >
-            <mat-icon>add_circle_outline</mat-icon>
-          </button>
-        }
-      </div>
-    </div>
-  </div>
-  @if (!iouTemplates.length) {
-    <app-empty-templates-list></app-empty-templates-list>
-  }
-  @if (iouTemplates.length) {
-    <div class="default-content">
-      <div class="listcontainer mat-elevation-z8">
-        <mat-nav-list>
-          @for (template of iouTemplates; track template.template_id) {
-            <div class="list-item">
-              <mat-list-item class="template-name" routerLink="{{ template.template_id }}">{{
-                template.name
-              }}</mat-list-item>
-              <button mat-button class="menu-button" [matMenuTriggerFor]="menu">
-                <mat-icon>more_vert</mat-icon>
+<div class="iou-templates">
+  <header class="iou-templates__header">
+    @if (controller) {
+      <button
+        class="iou-templates__back-btn"
+        [routerLink]="'/controller/' + controller.id + '/preferences'"
+        mat-icon-button>
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+    }
+    <h1 class="iou-templates__title">IOU device templates</h1>
+    @if (controller) {
+      <button
+        class="iou-templates__add-btn"
+        matTooltip="Add IOU device template"
+        matTooltipClass="custom-tooltip"
+        [routerLink]="'/controller/' + controller.id + '/preferences/iou/addtemplate'"
+        mat-icon-button>
+        <mat-icon>add_circle_outline</mat-icon>
+      </button>
+    }
+  </header>
+
+  <main class="iou-templates__content">
+    @if (!iouTemplates.length) {
+      <app-empty-templates-list></app-empty-templates-list>
+    }
+
+    @if (iouTemplates.length) {
+      <nav class="iou-templates__list">
+        @for (template of iouTemplates; track template.template_id) {
+          <a
+            class="iou-templates__list-item"
+            [routerLink]="template.template_id">
+            <mat-icon class="iou-templates__list-icon">settings_ethernet</mat-icon>
+            <span class="iou-templates__list-name">{{ template.name }}</span>
+            <button mat-icon-button [matMenuTriggerFor]="menu" class="iou-templates__menu-btn">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="deleteTemplate(template)">
+                <mat-icon>delete</mat-icon>
+                <span>Delete</span>
               </button>
-              <mat-menu #menu="matMenu">
-                <button mat-menu-item (click)="deleteTemplate(template)">
-                  <mat-icon>delete</mat-icon><span>Delete</span>
-                </button>
-                <button mat-menu-item (click)="copyTemplate(template)">
-                  <mat-icon>content_copy</mat-icon><span>Copy</span>
-                </button>
-                <button mat-menu-item routerLink="{{ template.template_id }}">
-                  <mat-icon>edit</mat-icon><span>Edit</span>
-                </button>
-              </mat-menu>
-            </div>
-          }
-        </mat-nav-list>
-      </div>
-    </div>
-  }
+              <button mat-menu-item (click)="copyTemplate(template)">
+                <mat-icon>content_copy</mat-icon>
+                <span>Copy</span>
+              </button>
+              <button mat-menu-item [routerLink]="template.template_id">
+                <mat-icon>edit</mat-icon>
+                <span>Edit</span>
+              </button>
+            </mat-menu>
+          </a>
+        }
+      </nav>
+    }
+  </main>
 </div>
-<app-delete-template #deleteComponent [controller]="controller" (deleteEvent)="onDeleteEvent()"> </app-delete-template>
+<app-delete-template #deleteComponent [controller]="controller" (deleteEvent)="onDeleteEvent()"></app-delete-template>

@@ -1,53 +1,61 @@
-<div class="content">
-  <div class="default-header">
-    <div class="row">
-      <div class="col col-md-1">
-        @if (controller()) {
-          <button
-            class="top-button"
-            class="cancel-button"
-            mat-button
-            (click)="goBack()"
-          >
-            <mat-icon>arrow_back</mat-icon>
-          </button>
-        }
-      </div>
-      <div class="col col-md-11">
-        <h1 class="col">New IOU device template</h1>
-      </div>
-    </div>
-  </div>
-  <div class="default-content">
-    <div class="container mat-elevation-z8">
-      <mat-vertical-stepper [linear]="true">
+<div class="iou-add">
+  <header class="iou-add__header">
+    @if (controller()) {
+      <button
+        class="iou-add__back-btn"
+        (click)="goBack()"
+        mat-icon-button>
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+    }
+    <h1 class="iou-add__title">New IOU device template</h1>
+  </header>
+
+  <main class="iou-add__content">
+    <section class="iou-add__form-card">
+      <mat-vertical-stepper [linear]="true" class="iou-add__stepper">
         <mat-step label="Controller type" [completed]="isLocalComputerChosen()">
-          <mat-radio-group class="radio-group">
-            <mat-radio-button class="radio-button" value="1" (click)="setControllerType('local')" checked
-              >Run this IOU device locally</mat-radio-button
-            >
+          <mat-radio-group class="iou-add__radio-group">
+            <mat-radio-button
+              class="iou-add__radio"
+              value="1"
+              (click)="setControllerType('local')"
+              [checked]="true">
+              Run this IOU device locally
+            </mat-radio-button>
           </mat-radio-group>
         </mat-step>
 
         <mat-step label="Name" [completed]="templateNameForm.get('templateName').value">
-          <form [formGroup]="templateNameForm">
-            <mat-form-field class="form-field">
+          <form [formGroup]="templateNameForm" class="iou-add__form">
+            <mat-form-field appearance="fill" class="iou-add__field">
+              <mat-label>Template name</mat-label>
               <input matInput placeholder="Name" type="text" formControlName="templateName" />
             </mat-form-field>
           </form>
         </mat-step>
 
         <mat-step label="Image">
-          <form [formGroup]="imageForm">
-            <mat-radio-group class="radio-group">
-              <mat-radio-button class="radio-button" value="1" (click)="setDiskImage('existingImage')" checked
-                >Existing image</mat-radio-button
-              >
-              <mat-radio-button class="radio-button" value="2" (click)="setDiskImage('newImage')"
-                >New image</mat-radio-button
-              >
+          <form [formGroup]="imageForm" class="iou-add__form">
+            <mat-radio-group class="iou-add__radio-group">
+              <mat-radio-button
+                class="iou-add__radio"
+                value="1"
+                (click)="setDiskImage('existingImage')"
+                [checked]="!newImageSelected()">
+                Existing image
+              </mat-radio-button>
+              <mat-radio-button
+                class="iou-add__radio"
+                value="2"
+                (click)="setDiskImage('newImage')"
+                [checked]="newImageSelected()">
+                New image
+              </mat-radio-button>
             </mat-radio-group>
-            <mat-form-field class="form-field">
+
+            <mat-form-field appearance="fill" class="iou-add__field">
+              <mat-label>Type</mat-label>
               <mat-select placeholder="Type" [(ngModel)]="selectedType" [ngModelOptions]="{ standalone: true }">
                 @for (type of types(); track type) {
                   <mat-option [value]="type">
@@ -56,13 +64,11 @@
                 }
               </mat-select>
             </mat-form-field>
+
             @if (!newImageSelected()) {
-              <mat-form-field class="form-field">
-                <mat-select
-                  placeholder="IOU image"
-                  [(ngModel)]="iouTemplate().path"
-                  [ngModelOptions]="{ standalone: true }"
-                >
+              <mat-form-field appearance="fill" class="iou-add__field">
+                <mat-label>IOU image</mat-label>
+                <mat-select placeholder="IOU image" [(ngModel)]="iouTemplate().path" [ngModelOptions]="{ standalone: true }">
                   @for (image of iouImages(); track image.path) {
                     <mat-option [value]="image.path">
                       {{ image.path }}
@@ -71,19 +77,23 @@
                 </mat-select>
               </mat-form-field>
             }
+
             @if (newImageSelected()) {
-              <div>
+              <div class="iou-add__file-row">
                 <input
                   type="file"
                   accept=".bin, .image, .iol"
                   #file
-                  class="nonvisible"
+                  class="iou-add__file-input"
                   (change)="uploadImageFile($event)"
                   ng2FileSelect
                   [uploader]="uploader()"
                 />
-                <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
-                <mat-form-field class="file-name-form-field">
+                <button mat-raised-button color="primary" (click)="file.click()" class="iou-add__browse-btn">
+                  Browse
+                </button>
+                <mat-form-field appearance="fill" class="iou-add__field iou-add__field--flex">
+                  <mat-label>IOU image</mat-label>
                   <input matInput type="text" formControlName="imageName" placeholder="IOU image" />
                 </mat-form-field>
               </div>
@@ -91,10 +101,13 @@
           </form>
         </mat-step>
       </mat-vertical-stepper>
+    </section>
+
+    <div class="iou-add__actions">
+      <button mat-button class="iou-add__cancel-btn" (click)="goBack()">Cancel</button>
+      <button mat-raised-button color="primary" class="iou-add__submit-btn" (click)="addTemplate()">
+        Add template
+      </button>
     </div>
-    <div class="buttons-bar">
-      <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
-      <button mat-raised-button color="primary" (click)="addTemplate()">Add template</button>
-    </div>
-  </div>
+  </main>
 </div>

@@ -1,116 +1,99 @@
-<div class="content" [ngClass]="{ shadowed: isSymbolSelectionOpened }">
-  <div class="default-header">
-    <div class="form-field">
-      <div class="row">
-        <div class="col col-md-1">
-          @if (controller) {
-            <button class="top-button" class="cancel-button" mat-button (click)="goBack()">
-              <mat-icon>arrow_back</mat-icon>
-            </button>
-          }
-        </div>
-        <div class="col col-md-11">
-          <h1 class="col">IOU device template configuration</h1>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="iou-template-details" [ngClass]="{ 'iou-template-details--hidden': isSymbolSelectionOpened }">
+  <header class="iou-template-details__header">
+    @if (controller) {
+      <button
+        class="iou-template-details__back-btn"
+        (click)="goBack()"
+        mat-icon-button>
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+    }
+    <h1 class="iou-template-details__title">IOU device template configuration</h1>
+  </header>
+
   @if (iouTemplate) {
-    <div class="default-content">
-      <mat-accordion>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title> General settings </mat-panel-title>
-          </mat-expansion-panel-header>
-          <form [formGroup]="generalSettingsForm">
-            <mat-form-field class="form-field">
-              <input
-                matInput
-                formControlName="templateName"
-                type="text"
-                placeholder="Template name"
-              />
+    <main class="iou-template-details__content">
+      <section class="iou-template-details__form-card">
+        <h3 class="iou-template-details__section-title">General settings</h3>
+        <form [formGroup]="generalSettingsForm" class="iou-template-details__form">
+          <mat-form-field appearance="fill" class="iou-template-details__field">
+            <mat-label>Template name</mat-label>
+            <input matInput formControlName="templateName" type="text" placeholder="Template name" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="iou-template-details__field">
+            <mat-label>Default name format</mat-label>
+            <input matInput formControlName="defaultName" type="text" placeholder="Default name format" />
+          </mat-form-field>
+
+          <div class="iou-template-details__symbol-row">
+            <mat-form-field appearance="fill" class="iou-template-details__field iou-template-details__field--flex">
+              <mat-label>Symbol</mat-label>
+              <input matInput formControlName="symbol" type="text" placeholder="Symbol" />
             </mat-form-field>
-            <mat-form-field class="form-field">
-              <input
-                matInput
-                formControlName="defaultName"
-                type="text"
-                placeholder="Default name format"
-              />
-            </mat-form-field>
-            <mat-form-field class="form-field">
-              <input
-                matInput
-                formControlName="symbol"
-                type="text"
-                placeholder="Symbol"
-              />
-            </mat-form-field>
-            <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br /><br />
-            <mat-form-field class="form-field tags-field">
-              <mat-label>Tags</mat-label>
-              <mat-chip-grid #chipList>
-                @for (tag of iouTemplate?.tags; track tag) {
-                  <mat-chip (removed)="removeTag(tag)">
-                    {{ tag }}
-                    <mat-icon matChipRemove>cancel</mat-icon>
-                  </mat-chip>
-                }
-              </mat-chip-grid>
-              <input matInput placeholder="Add tags"
-                     [matChipInputFor]="chipList"
-                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                     (matChipInputTokenEnd)="addTag($event)" />
-            </mat-form-field>
-            <mat-form-field class="form-field">
-              <mat-select
-                [ngModelOptions]="{ standalone: true }"
-                placeholder="Category"
-              >
-                @for (category of categories; track $index) {
-                  <mat-option [value]="category[1]">
-                    {{ category[0] }}
-                  </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
+            <button mat-button class="iou-template-details__symbol-btn" (click)="chooseSymbol()">
+              Choose symbol
+            </button>
+          </div>
+
+          <mat-form-field appearance="fill" class="iou-template-details__field">
+            <mat-label>Tags</mat-label>
+            <mat-chip-grid #chipList>
+              @for (tag of iouTemplate?.tags; track tag) {
+                <mat-chip (removed)="removeTag(tag)">
+                  {{ tag }}
+                  <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+              }
+            </mat-chip-grid>
+            <input matInput placeholder="Add tags"
+                   [matChipInputFor]="chipList"
+                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                   (matChipInputTokenEnd)="addTag($event)" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="iou-template-details__field">
+            <mat-label>Category</mat-label>
+            <mat-select [ngModelOptions]="{ standalone: true }">
+              @for (category of categories; track $index) {
+                <mat-option [value]="category[1]">
+                  {{ category[0] }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <div class="iou-template-details__file-row">
             <input
               type="file"
               accept=".bin, .image, .iol"
               #file
-              class="nonvisible"
+              class="iou-template-details__file-input"
               (change)="uploadImageFile($event)"
               ngDefaultControl
             />
-            <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
-            <mat-form-field class="file-name-form-field">
-              <input
-                matInput
-                formControlName="path"
-                type="text"
-                placeholder="IOU image path"
-              />
+            <button mat-raised-button color="primary" (click)="file.click()" class="iou-template-details__browse-btn">
+              Browse
+            </button>
+            <mat-form-field appearance="fill" class="iou-template-details__field iou-template-details__field--flex">
+              <mat-label>IOU image path</mat-label>
+              <input matInput formControlName="path" type="text" placeholder="IOU image path" />
             </mat-form-field>
-            <mat-form-field class="form-field">
-              <input
-                matInput
-                formControlName="initialConfig"
-                type="text"
-                placeholder="Startup config"
-              />
-            </mat-form-field>
-            <mat-form-field class="form-field">
-              <input
-                matInput
-                type="text"
-                [ngModelOptions]="{ standalone: true }"
-                placeholder="Private config"
-              />
-            </mat-form-field>
-          </form>
-          <mat-form-field class="select">
-            <mat-select placeholder="Console type" >
+          </div>
+
+          <mat-form-field appearance="fill" class="iou-template-details__field">
+            <mat-label>Startup config</mat-label>
+            <input matInput formControlName="initialConfig" type="text" placeholder="Startup config" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="iou-template-details__field">
+            <mat-label>Private config</mat-label>
+            <input matInput type="text" [ngModelOptions]="{ standalone: true }" placeholder="Private config" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="iou-template-details__field">
+            <mat-label>Console type</mat-label>
+            <mat-select>
               @for (type of consoleTypes; track type) {
                 <mat-option [value]="type">
                   {{ type }}
@@ -118,61 +101,61 @@
               }
             </mat-select>
           </mat-form-field>
-          <mat-checkbox> Auto start console </mat-checkbox><br />
-          <mat-checkbox>
-            Enable layer 1 keepalive messages (non-functional) </mat-checkbox
-          ><br />
+
+          <mat-checkbox> Auto start console </mat-checkbox>
+          <mat-checkbox> Enable layer 1 keepalive messages (non-functional) </mat-checkbox>
           <mat-checkbox> Use default IOU values for memories </mat-checkbox>
+
           @if (!iouTemplate.use_default_iou_values) {
-            <mat-form-field class="form-field">
+            <mat-form-field appearance="fill" class="iou-template-details__field">
+              <mat-label>RAM size</mat-label>
               <input matInput type="number" min="1" placeholder="RAM size" />
               <span matSuffix>MB</span>
             </mat-form-field>
           }
+
           @if (!iouTemplate.use_default_iou_values) {
-            <mat-form-field class="form-field">
+            <mat-form-field appearance="fill" class="iou-template-details__field">
+              <mat-label>NVRAM size</mat-label>
               <input matInput type="number" min="1" placeholder="NVRAM size" />
               <span matSuffix>KB</span>
             </mat-form-field>
           }
-        </mat-expansion-panel>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title> Network </mat-panel-title>
-          </mat-expansion-panel-header>
-          <form [formGroup]="networkForm">
-            <mat-form-field class="form-field">
-              <input
-                matInput
-                formControlName="ethernetAdapters"
-                type="number"
-                placeholder="Ethernet adapters"
-              />
-            </mat-form-field>
-            <mat-form-field class="form-field">
-              <input
-                matInput
-                formControlName="serialAdapters"
-                type="number"
-                placeholder="Serial adapters"
-              />
-            </mat-form-field>
-          </form>
-        </mat-expansion-panel>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title> Usage </mat-panel-title>
-          </mat-expansion-panel-header>
-          <mat-form-field class="form-field">
-            <textarea matInput type="text" ></textarea>
+        </form>
+      </section>
+
+      <section class="iou-template-details__form-card">
+        <h3 class="iou-template-details__section-title">Network</h3>
+        <form [formGroup]="networkForm" class="iou-template-details__form">
+          <mat-form-field appearance="fill" class="iou-template-details__field">
+            <mat-label>Ethernet adapters</mat-label>
+            <input matInput formControlName="ethernetAdapters" type="number" placeholder="Ethernet adapters" />
           </mat-form-field>
-        </mat-expansion-panel>
-      </mat-accordion>
-      <div class="buttons-bar">
-        <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
-        <button mat-raised-button color="primary" (click)="onSave()">Save</button>
+
+          <mat-form-field appearance="fill" class="iou-template-details__field">
+            <mat-label>Serial adapters</mat-label>
+            <input matInput formControlName="serialAdapters" type="number" placeholder="Serial adapters" />
+          </mat-form-field>
+        </form>
+      </section>
+
+      <section class="iou-template-details__form-card">
+        <h3 class="iou-template-details__section-title">Usage</h3>
+        <mat-form-field appearance="fill" class="iou-template-details__field iou-template-details__field--full">
+          <mat-label>Usage notes</mat-label>
+          <textarea matInput type="text"></textarea>
+        </mat-form-field>
+      </section>
+
+      <div class="iou-template-details__actions">
+        <button class="iou-template-details__cancel-btn" (click)="goBack()" mat-button>
+          Cancel
+        </button>
+        <button mat-raised-button color="primary" class="iou-template-details__save-btn" (click)="onSave()">
+          Save
+        </button>
       </div>
-    </div>
+    </main>
   }
 </div>
 @if (isSymbolSelectionOpened && iouTemplate) {

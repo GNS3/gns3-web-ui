@@ -1,0 +1,198 @@
+/**
+ * GNS3 IOU Add Template Component Styles
+ * BEM naming applied, Material theme variables used
+ * Design language unified with management pages
+ */
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--mat-sys-primary-container) 0%,
+    var(--mat-sys-background) 100%
+  );
+  min-height: 100vh;
+}
+
+/* =============================================
+// Header
+// ============================================= */
+.iou-add__header {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 20px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: fadeInSlideIn 0.4s ease-out;
+}
+
+.iou-add__back-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  color: var(--mat-sys-on-surface);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+  }
+}
+
+.iou-add__title {
+  flex: 1;
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin: 0;
+}
+
+/* =============================================
+// Content
+// ============================================= */
+.iou-add__content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px 20px;
+  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+}
+
+/* =============================================
+// Form Card
+// ============================================= */
+.iou-add__form-card {
+  background: var(--mat-sys-surface);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+              0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  padding: 24px;
+}
+
+.iou-add__stepper {
+  background: transparent;
+}
+
+.iou-add__radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.iou-add__radio {
+  font-size: 16px;
+}
+
+.iou-add__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.iou-add__field {
+  width: 100%;
+}
+
+.iou-add__field--flex {
+  flex: 1;
+}
+
+.iou-add__file-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.iou-add__file-input {
+  display: none;
+}
+
+.iou-add__browse-btn {
+  margin-top: 4px;
+  height: 48px;
+}
+
+/* =============================================
+// Actions
+// ============================================= */
+.iou-add__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.iou-add__cancel-btn {
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+.iou-add__submit-btn {
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.5px;
+}
+
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 768px) {
+  .iou-add__header {
+    padding: 24px 16px 12px;
+    gap: 12px;
+  }
+
+  .iou-add__back-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .iou-add__title {
+    font-size: 24px;
+  }
+
+  .iou-add__content {
+    padding: 0 16px 16px;
+  }
+
+  .iou-add__form-card {
+    padding: 16px;
+  }
+
+  .iou-add__file-row {
+    flex-direction: column;
+  }
+
+  .iou-add__actions {
+    flex-direction: column;
+  }
+
+  .iou-add__cancel-btn,
+  .iou-add__submit-btn {
+    width: 100%;
+    height: 44px;
+  }
+}
