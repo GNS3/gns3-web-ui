@@ -15,8 +15,9 @@ import { ToasterService } from "@services/toaster.service";
 
 @Component({
   selector: 'app-ports',
+  standalone: true,
   templateUrl: './ports.component.html',
-  styleUrls: ['../../preferences.component.scss'],
+  styleUrls: ['./ports.component.scss', '../../preferences.component.scss'],
   imports: [CommonModule, FormsModule, MatTableModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatTooltipModule, MatOptionModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
