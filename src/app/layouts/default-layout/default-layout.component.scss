@@ -1,8 +1,6 @@
 /**
  * GNS3 Default Layout Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
+ * Material Design 3, BEM naming convention
  */
 
 html,
@@ -21,97 +19,111 @@ app-default-layout {
   height: 100vh;
 }
 
-.content {
-  /*flex: 1 0 auto;*/
-}
-
-.footer {
-  /*flex-shrink: 0;*/
-  padding: var(--gns3-spacing-xl);
-  margin: auto 0 0 0;
-  /*background-color: #0097a7;*/
-}
-
-.default-content {
-  margin: 0 auto;
-  max-width: var(--gns3-content-max-width);
-  padding-top: var(--gns3-spacing-xl);
-  padding-bottom: var(--gns3-spacing-xl);
-}
-
-header {
-  box-shadow: var(--gns3-shadow-md);
+/* =============================================
+// Header / Toolbar
+// ============================================= */
+.header {
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent);
   z-index: 10;
+  background-color: var(--mat-sys-primary-container);
 }
 
-/*main {*/
-/*height: 100%;*/
-/*}*/
-
-.default-header h1 {
-  font-weight: 300;
-  margin: 0;
-  font-size: var(--gns3-font-size-lg);
-  padding: 28px var(--gns3-spacing-sm);
+.header__toolbar {
+  --mat-toolbar-container-height: 64px;
+  background-color: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  box-shadow: none;
 }
 
-.default-header {
-  margin: 0 auto;
-  max-width: var(--gns3-content-max-width);
-  /*background-color: #0097a7;*/
+.header__toolbar-row {
+  height: 64px;
 }
 
-.buttons-bar {
-  padding-top: var(--gns3-spacing-sm);
-  text-align: right;
+.header__menu-btn {
+  margin-right: 8px;
 }
 
-.fill-space {
+.header__spacer {
   flex: 1 1 auto;
 }
 
-.container > * {
-  width: 100%;
+/* =============================================
+// Buttons in Toolbar
+// ============================================= */
+.header__btn {
+  --mdc-text-button-label-text-size: 14px;
+  --mdc-text-button-label-text-tracking: 0.5px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: none;
+  border-radius: 8px;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  color: var(--mat-sys-on-primary-container);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-primary-container) 8%, transparent);
+  }
+
+  &:active {
+    background-color: color-mix(in srgb, var(--mat-sys-on-primary-container) 12%, transparent);
+  }
 }
 
-.container {
-  padding: 0%;
+.header__icon-btn {
+  --mat-icon-button-state-layer-size: 40px;
+  --mat-icon-button-icon-size: 24px;
+  border-radius: 50%;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-primary-container) 8%, transparent);
+  }
+
+  &:active {
+    background-color: color-mix(in srgb, var(--mat-sys-on-primary-container) 12%, transparent);
+  }
 }
 
-.mat-dialog-content > * {
-  width: 100%;
+/* =============================================
+// Main Content
+// ============================================= */
+.main-content {
+  flex: 1 0 auto;
+  background-color: var(--mat-sys-background);
 }
 
+/* =============================================
+// Footer
+// ============================================= */
+.footer {
+  flex-shrink: 0;
+  padding: 16px 24px;
+  margin: auto 0 0 0;
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 14px;
+  text-align: center;
+  border-top: 1px solid color-mix(in srgb, var(--mat-sys-outline) 20%, transparent);
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
 @media (max-width: 768px) {
-  .default-content,
-  .default-header {
-    max-width: 100%;
-    padding-left: var(--gns3-spacing-md);
-    padding-right: var(--gns3-spacing-md);
+  .header__toolbar-row {
+    height: 56px;
   }
 
-  .default-header h1 {
-    font-size: var(--gns3-font-size-base);
-    padding: 18px 0;
+  .header__toolbar {
+    --mat-toolbar-container-height: 56px;
   }
 
-  .buttons-bar {
-    text-align: left;
+  .header__btn {
+    --mdc-text-button-label-text-size: 13px;
   }
 
   .footer {
-    font-size: var(--gns3-font-size-xs);
-    padding: var(--gns3-spacing-md);
-    text-align: center;
-  }
-
-  .mat-toolbar {
-    min-height: var(--gns3-footer-height);
-    padding: 0 var(--gns3-spacing-sm);
-  }
-
-  .mat-toolbar-row,
-  .mat-toolbar-single-row {
-    height: var(--gns3-footer-height);
+    padding: 12px 16px;
+    font-size: 12px;
   }
 }
