@@ -1,9 +1,10 @@
 /**
  * GNS3 Project Map Component Styles
+ * Using MD3 CSS variables
  */
 
 .wrapper {
-  height: var(--gns3-map-height);
+  height: 500px;
 }
 
 app-root,
@@ -14,28 +15,28 @@ app-map {
 }
 
 g.node:hover {
-  background-color: var(--mat-app-primary-color);
+  background-color: var(--mat-sys-primary);
 }
 
 .project-map {
-  background-color: var(--gns3-map-bg-dark);
+  background-color: var(--mat-sys-surface);
   min-height: 100vh;
   min-width: 100vw;
 
   .label {
-    fill: var(--mat-app-on-surface-color);
+    fill: var(--mat-sys-on-surface);
   }
 
   path.ethernet_link[stroke="#000000"] {
-    stroke: var(--mat-app-on-surface-color);
+    stroke: var(--mat-sys-on-surface);
   }
 
   path.serial_link[stroke="#800000"] {
-    stroke: var(--gns3-serial-link-bright);
+    stroke: #800000;
   }
 
   g.drawing-line-tool path {
-    stroke: var(--mat-app-on-surface-color);
+    stroke: var(--mat-sys-on-surface);
   }
 }
 
@@ -44,15 +45,15 @@ g.node:hover {
   top: 0;
   left: 0;
   right: 0;
-  height: var(--gns3-toolbar-height);
-  padding: 0 var(--gns3-toolbar-padding);
-  background-color: var(--gns3-toolbar-bg-dark);
+  height: 64px;
+  padding: 0 16px;
+  background-color: var(--mat-sys-surface-container);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: var(--gns3-shadow-md);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent);
   z-index: 2;
-  transition: background-color var(--gns3-duration-normal) var(--gns3-easing-default);
+  transition: background-color 200ms ease;
 
   .gns3-button {
     position: relative;
@@ -65,28 +66,28 @@ g.node:hover {
   }
 
   .primary-controls {
-    border-right: 1px solid var(--mat-app-outline-variant-color);
-    padding-right: var(--gns3-spacing-md);
-    margin-right: var(--gns3-spacing-md);
+    border-right: 1px solid var(--mat-sys-outline-variant);
+    padding-right: 16px;
+    margin-right: 16px;
   }
 
   .menu-button-group {
     display: flex;
     align-items: center;
-    height: var(--gns3-menu-button-group-height);
+    height: 40px;
   }
 
   .menu-button {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: var(--gns3-menu-button-height);
-    width: var(--gns3-menu-button-width);
-    margin: 0 var(--gns3-spacing-sm);
-    border-radius: var(--gns3-menu-button-radius);
+    height: 40px;
+    width: 40px;
+    margin: 0 8px;
+    border-radius: 20px;
     background: none;
-    font-size: var(--gns3-font-size-lg);
-    transition: transform var(--gns3-duration-fast) var(--gns3-easing-default);
+    font-size: 14px;
+    transition: transform 100ms ease;
   }
 
   .menu-button:hover {
@@ -98,10 +99,10 @@ g.node:hover {
   }
 
   .selected {
-    background: var(--mat-app-primary-container-color);
+    background: var(--mat-sys-primary-container);
 
     mat-icon {
-      color: var(--mat-app-primary-color);
+      color: var(--mat-sys-primary);
     }
   }
 
@@ -113,30 +114,30 @@ g.node:hover {
 
 #project-toolbar {
   position: fixed;
-  top: var(--gns3-toolbar-height);
+  top: 64px;
   left: 0;
-  width: var(--gns3-toolbar-width);
-  margin: var(--gns3-spacing-lg);
-  background-color: var(--gns3-toolbar-bg-dark);
-  border-radius: var(--gns3-radius-sm);
-  box-shadow: var(--gns3-shadow-sm);
+  width: 56px;
+  margin: 16px;
+  background-color: var(--mat-sys-surface-container);
+  border-radius: 4px;
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
   z-index: 2;
-  transition: background-color var(--gns3-duration-normal) var(--gns3-easing-default);
+  transition: background-color 200ms ease;
 
   mat-icon {
-    font-size: var(--gns3-font-size-base);
+    font-size: 14px;
   }
 
   .menu-button {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: var(--gns3-menu-button-height);
-    width: var(--gns3-menu-button-width);
-    border-radius: var(--gns3-menu-button-radius);
+    height: 40px;
+    width: 40px;
+    border-radius: 20px;
     background: none;
     margin: 2px 0;
-    transition: transform var(--gns3-duration-fast) var(--gns3-easing-default);
+    transition: transform 100ms ease;
   }
 
   .menu-button:hover {
@@ -147,13 +148,13 @@ g.node:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: var(--gns3-menu-button-height);
-    width: var(--gns3-menu-button-width);
-    border-radius: var(--gns3-menu-button-radius);
+    height: 40px;
+    width: 40px;
+    border-radius: 20px;
     background: none;
     margin: 2px 0;
-    color: var(--mat-app-on-surface-color);
-    transition: transform var(--gns3-duration-fast) var(--gns3-easing-default);
+    color: var(--mat-sys-on-surface);
+    transition: transform 100ms ease;
 
     mat-icon {
       font-size: 24px;
@@ -168,13 +169,13 @@ g.node:hover {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: var(--gns3-menu-button-height);
-    width: var(--gns3-menu-button-width);
-    border-radius: var(--gns3-menu-button-radius);
+    height: 40px;
+    width: 40px;
+    border-radius: 20px;
     background: none;
     margin: 2px 0;
-    color: var(--mat-app-on-surface-color);
-    transition: transform var(--gns3-duration-fast) var(--gns3-easing-default);
+    color: var(--mat-sys-on-surface);
+    transition: transform 100ms ease;
 
     mat-icon {
       font-size: 18px;
@@ -187,7 +188,7 @@ g.node:hover {
 
   .selection-button {
     margin-bottom: 0;
-    transition: transform var(--gns3-duration-fast) var(--gns3-easing-default);
+    transition: transform 100ms ease;
   }
 
   .selection-button:hover {
@@ -195,11 +196,11 @@ g.node:hover {
   }
 
   .snapshot-button mat-icon {
-    font-size: var(--gns3-font-size-sm);
+    font-size: 12px;
   }
 
   .snapshot-button {
-    transition: transform var(--gns3-duration-fast) var(--gns3-easing-default);
+    transition: transform 100ms ease;
   }
 
   .snapshot-button:hover {
@@ -211,7 +212,7 @@ g.node:hover {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border-top: 1px solid var(--mat-app-outline-variant-color);
+    border-top: 1px solid var(--mat-sys-outline-variant);
     padding: 5px 0;
 
     &:first-child {
@@ -230,10 +231,10 @@ img {
   background: transparent;
   top: 0;
   left: 92px;
-  background: var(--gns3-surface);
-  height: var(--gns3-menu-wrapper-height);
-  padding-top: var(--gns3-spacing-md);
-  transition: background-color var(--gns3-duration-normal) var(--gns3-easing-default);
+  background: var(--mat-sys-surface);
+  height: 48px;
+  padding-top: 16px;
+  transition: background-color 200ms ease;
 
   .arrow-button {
     outline: 0;
@@ -241,7 +242,7 @@ img {
 }
 
 .shadowed {
-  box-shadow: var(--gns3-shadow-lg);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent);
 }
 
 .non-visible {
@@ -254,24 +255,24 @@ img {
   top: 0;
   left: 92px;
   right: 0;
-  background: var(--gns3-surface);
-  height: var(--gns3-menu-wrapper-height);
-  padding-top: var(--gns3-spacing-md);
-  padding-bottom: var(--gns3-spacing-md);
+  background: var(--mat-sys-surface);
+  height: 48px;
+  padding-top: 16px;
+  padding-bottom: 16px;
   transition: 35s;
   width: 0;
   overflow: hidden;
-  transition: var(--gns3-duration-fast);
-  box-shadow: var(--gns3-shadow-lg);
+  transition: 100ms ease;
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent);
   display: flex;
 
   .menu-button {
     outline: 0;
     transition: 0.5s;
-    margin-bottom: var(--gns3-spacing-md);
+    margin-bottom: 16px;
     width: 40px;
-    margin-right: var(--gns3-spacing-md);
-    margin-left: var(--gns3-spacing-md);
+    margin-right: 16px;
+    margin-left: 16px;
     background: transparent;
     padding: 0;
     border: none;
@@ -281,12 +282,12 @@ img {
   .arrow-button {
     outline: 0;
     transition: 0.5s;
-    margin-bottom: var(--gns3-spacing-md);
+    margin-bottom: 16px;
   }
 }
 
 .extended {
-  width: var(--gns3-menu-extended-width);
+  width: 200px;
   height: 100%;
   overflow: hidden;
 }
@@ -296,7 +297,7 @@ mat-divider.divider {
   margin-left: 1px;
   margin-right: 7px;
   width: 10px;
-  color: var(--mat-app-outline-variant-color);
+  color: var(--mat-sys-outline-variant);
 }
 
 @-moz-document url-prefix() {
@@ -306,7 +307,7 @@ mat-divider.divider {
 }
 
 .shadow {
-  box-shadow: var(--gns3-shadow-md);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent);
 }
 
 .mat-drawer-backdrop.mat-drawer-shown {
@@ -327,7 +328,7 @@ mat-divider.divider {
 }
 
 line.selected {
-  stroke: var(--mat-app-primary-color);
+  stroke: var(--mat-sys-primary);
 }
 
 svg.map image:hover,
@@ -337,21 +338,21 @@ g.selected {
 }
 
 path.serial_link.selected {
-  stroke: var(--mat-app-error-color);
+  stroke: var(--mat-sys-error);
 }
 
 path.ethernet_link:hover {
-  stroke: var(--mat-app-error-color);
+  stroke: var(--mat-sys-error);
 }
 
 .selected > .interface_label_border {
-  stroke: var(--mat-app-on-surface-color);
+  stroke: var(--mat-sys-on-surface);
   fill: none;
 }
 
 .selection-line-tool .selection {
-  fill: var(--gns3-selection-fill);
-  stroke: var(--gns3-selection-stroke);
+  fill: var(--mat-sys-primary);
+  stroke: var(--mat-sys-primary);
   fill-opacity: 0.3;
   stroke-opacity: 0.7;
   stroke-width: 1;
@@ -375,14 +376,14 @@ g.node text,
 }
 
 .options-item {
-  padding-left: var(--gns3-spacing-md);
-  padding-right: var(--gns3-spacing-md);
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 .context-menu-items .mat-menu-item {
-  line-height: var(--gns3-context-menu-line-height);
-  height: var(--gns3-context-menu-height);
-  font-size: var(--gns3-font-size-xs);
+  line-height: 32px;
+  height: 32px;
+  font-size: 12px;
   padding: 0 6px;
   outline: none;
 }
@@ -402,7 +403,7 @@ g.node text,
 }
 
 .context-menu-items .mat-menu-item:hover {
-  background-color: var(--gns3-context-menu-hover);
+  background-color: var(--mat-sys-surface-container);
 }
 
 .visible {
@@ -414,11 +415,11 @@ mat-menu-panel {
 }
 
 .unmarked {
-  color: var(--mat-app-on-surface-color);
+  color: var(--mat-sys-on-surface);
 }
 
 g.node.console-highlight {
-  filter: drop-shadow(0 0 5px var(--gns3-console-highlight-red));
+  filter: drop-shadow(0 0 5px #ff0000);
 
   .node_body {
     stroke-width: 5px;
@@ -435,7 +436,7 @@ g.node.console-highlight {
 }
 
 g.node.console-highlight-connected {
-  filter: drop-shadow(0 0 3px var(--gns3-console-highlight-blue));
+  filter: drop-shadow(0 0 3px #0000ff);
 
   .node_body {
     stroke-width: 3px;
@@ -454,11 +455,11 @@ g.node.console-highlight-connected {
 g.link_body.console-highlight {
   > path.ethernet_link,
   > path.serial_link {
-    stroke: var(--gns3-console-highlight-red);
+    stroke: #ff0000;
     stroke-width: 4px;
   }
 
   .status_label text {
-    fill: var(--mat-app-on-surface-color);
+    fill: var(--mat-sys-on-surface);
   }
 }
