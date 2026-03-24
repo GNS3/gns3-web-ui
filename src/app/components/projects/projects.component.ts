@@ -216,6 +216,7 @@ export class ProjectsComponent implements OnInit {
       maxHeight: '650px',
       autoFocus: false,
       disableClose: true,
+      panelClass: 'add-controller-dialog-panel',
       data: {
         controller: this.controller,
         deleteFilesPaths: this.selection.selected,
