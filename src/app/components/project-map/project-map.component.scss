@@ -47,7 +47,8 @@ g.node:hover {
   right: 0;
   height: 64px;
   padding: 0 16px;
-  background-color: var(--mat-sys-surface-container);
+  background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -66,7 +67,7 @@ g.node:hover {
   }
 
   .primary-controls {
-    border-right: 1px solid var(--mat-sys-outline-variant);
+    border-right: 1px solid color-mix(in srgb, var(--mat-sys-on-primary) 20%, transparent);
     padding-right: 16px;
     margin-right: 16px;
   }
@@ -99,10 +100,10 @@ g.node:hover {
   }
 
   .selected {
-    background: var(--mat-sys-primary-container);
+    background: color-mix(in srgb, var(--mat-sys-on-primary) 15%, transparent);
 
     mat-icon {
-      color: var(--mat-sys-primary);
+      color: var(--mat-sys-on-primary);
     }
   }
 
