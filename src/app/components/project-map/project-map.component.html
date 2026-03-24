@@ -1,4 +1,4 @@
-<div *ngIf="project" [ngClass]="{ lightTheme: isLightThemeEnabled }" class="project-map">
+<div *ngIf="project" class="project-map">
   <app-d3-map
     *ngIf="!settings.angular_map"
     [controller]="controller"
@@ -35,7 +35,7 @@
   </app-experimental-map>
 
   <!-- Project Titlebar -->
-  <div id="project-titlebar" [ngClass]="{ lightTheme: isGlobalLightTheme }">
+  <div id="project-titlebar">
     <button
       matTooltip="Open menu"
       matTooltipClass="custom-tooltip"
@@ -44,11 +44,10 @@
       class="gns3-button menu-button"
       [matMenuTriggerFor]="mainMenu"
     >
-      <mat-icon *ngIf="!isGlobalLightTheme" svgIcon="gns3"></mat-icon>
-      <mat-icon *ngIf="isGlobalLightTheme" svgIcon="gns3black"></mat-icon>
+      <mat-icon svgIcon="gns3"></mat-icon>
     </button>
     <div class="project-titlebar-controls">
-      <div *ngIf="!readonly" [ngClass]="{ lightTheme: isGlobalLightTheme }" class="menu-button-group primary-controls">
+      <div *ngIf="!readonly" class="menu-button-group primary-controls">
         <app-template [controller]="controller" [project]="project" (onNodeCreation)="onNodeCreation($event)"> </app-template>
         <button
           matTooltip="Add a link"
@@ -73,10 +72,6 @@
         matTooltip="Toggle topology/controllers summary"
         matTooltipClass="custom-tooltip"
         matTooltipPosition="left"
-        [ngClass]="{
-          unmarkedLight: !isTopologySummaryVisible && isGlobalLightTheme,
-          marked: isTopologySummaryVisible
-        }"
         mat-icon-button
         (click)="toggleShowTopologySummary(!isTopologySummaryVisible)"
       >
@@ -181,7 +176,7 @@
   </div>
 
   <!-- Project toolbar -->
-  <div id="project-toolbar" [ngClass]="{ lightTheme: isGlobalLightTheme }">
+  <div id="project-toolbar">
     <div class="section">
       <button
         matTooltip="Selection mode"

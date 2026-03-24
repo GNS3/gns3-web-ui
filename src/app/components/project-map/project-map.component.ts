@@ -80,7 +80,6 @@ import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.se
 import { ControllerService } from '@services/controller.service';
 import { Settings, SettingsService } from '@services/settings.service';
 import { SymbolService } from '@services/symbol.service';
-import { ThemeService } from '@services/theme.service';
 import { ToasterService } from '@services/toaster.service';
 import { ToolsService } from '@services/tools.service';
 import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-dialog/add-blank-project-dialog.component';
@@ -189,9 +188,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   protected settings: Settings;
   private inReadOnlyMode = false;
-  public isLightThemeEnabled: boolean = false;
   private highlightedNodeId: string = null;
-  public isGlobalLightTheme: boolean = false;
 
   readonly contextMenu = viewChild(ContextMenuComponent);
   readonly mapChild = viewChild(D3MapComponent);
@@ -242,7 +239,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private serialLinkWidget = inject(SerialLinkWidget);
   private bottomSheet = inject(MatBottomSheet);
   private notificationService = inject(NotificationService);
-  private themeService = inject(ThemeService);
   private title = inject(Title);
   private nodeConsoleService = inject(NodeConsoleService);
   private symbolService = inject(SymbolService);
@@ -271,21 +267,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.addSubscriptions();
     this.addKeyboardListeners();
-
-    this.themeService.mapThemeChanged.subscribe((value: string) => {
-      this.isLightThemeEnabled = value === 'light';
-      this.applyMapBackground(this.isLightThemeEnabled);
-    });
-
-    this.themeService.themeChanged.subscribe((theme: string) => {
-      this.isGlobalLightTheme = this.themeService.getThemeType() === 'light';
-    });
   }
 
   getSettings() {
-    this.isLightThemeEnabled = this.themeService.getActualMapTheme() === 'light';
-    this.isGlobalLightTheme = this.themeService.getThemeType() === 'light';
-    this.applyMapBackground(this.isLightThemeEnabled);
     this.cd.detectChanges();
 
     this.settings = this.settingsService.getAll();
@@ -1204,23 +1188,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.clearConsoleHighlight();
   }
 
-  /**
-   * Apply map background color based on theme
-   */
-  private applyMapBackground(isLight: boolean): void {
-    const color = isLight ? '#e8ecef' : '#18242b';
-    document.body.style.backgroundColor = color;
-    document.documentElement.style.backgroundColor = color;
-  }
-
   public ngOnDestroy(): void {
     // Close AI Chat when leaving project
     this.onLeaveProject();
-
-    // Reset background color
-    const globalColor = this.themeService.getActualTheme() === 'light' ? '#e8ecef' : '#18242b';
-    document.body.style.backgroundColor = globalColor;
-    document.documentElement.style.backgroundColor = globalColor;
 
     this.nodeConsoleService.openConsoles = 0;
     this.title.setTitle('GNS3 Web UI');

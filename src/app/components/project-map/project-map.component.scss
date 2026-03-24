@@ -26,31 +26,16 @@ g.node:hover {
     fill: var(--mat-app-on-surface-color);
   }
 
-  &:not(.lightTheme) {
-    path.ethernet_link[stroke="#000000"] {
-      stroke: var(--mat-app-on-surface-color);
-    }
-
-    path.serial_link[stroke="#800000"] {
-      stroke: var(--gns3-serial-link-bright);
-    }
-
-    g.drawing-line-tool path {
-      stroke: var(--mat-app-on-surface-color);
-    }
+  path.ethernet_link[stroke="#000000"] {
+    stroke: var(--mat-app-on-surface-color);
   }
 
-  &.lightTheme,
-  &.theme-light {
-    background-color: var(--gns3-map-bg-light);
+  path.serial_link[stroke="#800000"] {
+    stroke: var(--gns3-serial-link-bright);
+  }
 
-    .label {
-      fill: var(--mat-app-on-surface-color);
-    }
-
-    g.drawing-line-tool path {
-      stroke: var(--mat-app-on-surface-color);
-    }
+  g.drawing-line-tool path {
+    stroke: var(--mat-app-on-surface-color);
   }
 }
 
@@ -83,11 +68,6 @@ g.node:hover {
     border-right: 1px solid var(--mat-app-outline-variant-color);
     padding-right: var(--gns3-spacing-md);
     margin-right: var(--gns3-spacing-md);
-
-    &.lightTheme,
-    &.theme-light {
-      border-right: 1px solid var(--mat-app-outline-color);
-    }
   }
 
   .menu-button-group {
@@ -128,15 +108,6 @@ g.node:hover {
   .project-titlebar-controls {
     display: flex;
     align-items: center;
-  }
-
-  &.lightTheme,
-  &.theme-light {
-    background-color: var(--mat-app-background-color);
-
-    .selected mat-icon {
-      color: var(--mat-app-primary-color);
-    }
   }
 }
 
@@ -247,49 +218,11 @@ g.node:hover {
       border: none;
     }
   }
-
-  &.lightTheme,
-  &.theme-light {
-    background-color: var(--mat-app-surface-container-color);
-
-    .zoom-button {
-      opacity: 0.7;
-      color: var(--mat-app-on-surface-color);
-    }
-
-    .reset-zoom-button {
-      opacity: 0.7;
-      color: var(--mat-app-on-surface-color);
-    }
-
-    .section {
-      border-top: 1px solid var(--mat-app-outline-variant-color);
-
-      &:first-child {
-        border: none;
-      }
-    }
-  }
 }
 
 img {
   -webkit-filter: invert(1);
   filter: invert(1);
-}
-
-.lightTheme,
-.theme-light {
-  color: var(--mat-app-on-surface-color);
-
-  #project-titlebar:not(.lightTheme):not(.theme-light),
-  #project-toolbar:not(.lightTheme):not(.theme-light) {
-    color: var(--mat-app-on-surface-color);
-  }
-}
-
-.darkTheme,
-.theme-dark {
-  color: var(--mat-app-on-surface-color);
 }
 
 #show-menu-wrapper {
@@ -482,14 +415,6 @@ mat-menu-panel {
 
 .unmarked {
   color: var(--mat-app-on-surface-color);
-}
-
-.unmarkedLight {
-  color: var(--mat-app-on-surface-color);
-}
-
-.marked {
-  color: var(--mat-app-primary-color);
 }
 
 g.node.console-highlight {
