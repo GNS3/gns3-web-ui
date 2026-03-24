@@ -1,59 +1,58 @@
-<div *ngIf="!isInstallAppliance">
-  <div class="row">
-    <div class="col-md-10">
-      <h5>Would you like to automatically install appliances for this image?</h5>
-    </div>
-    <div class="col-md-2 txt-align">
-      <button mat-button (click)="closeDialog()">
+<div class="add-image">
+  @if (!isInstallAppliance) {
+    <header class="add-image__header">
+      <h5 class="add-image__title">Would you like to automatically install appliances for this image?</h5>
+      <button mat-icon-button (click)="closeDialog()" class="add-image__close-btn">
         <mat-icon>close</mat-icon>
       </button>
-    </div>
-  </div>
+    </header>
 
-  <div mat-dialog-content>
-    <mat-radio-group
-      name="install_appliances"
-      class="choose-instal-appliance"
-      [value]="install_appliance"
-      (change)="selectInstallApplianceOption($event)"
-    >
-      <mat-radio-button [value]="true" class="instal-appliances-button" [checked]="install_appliance">
-        Yes
-      </mat-radio-button>
-      <mat-radio-button [value]="false" class="instal-appliances-button" [checked]="!install_appliance">
-        No
-      </mat-radio-button>
-    </mat-radio-group>
-  </div>
-  <div mat-dialog-actions align="end">
-    <button mat-raised-button color="primary" (click)="isInstallAppliance = !isInstallAppliance">Next</button>
-  </div>
-</div>
+    <mat-dialog-content class="add-image__content">
+      <mat-radio-group
+        name="install_appliances"
+        class="add-image__radio-group"
+        [value]="install_appliance"
+        (change)="selectInstallApplianceOption($event)"
+      >
+        <mat-radio-button [value]="true" [checked]="install_appliance">
+          Yes
+        </mat-radio-button>
+        <mat-radio-button [value]="false" [checked]="!install_appliance">
+          No
+        </mat-radio-button>
+      </mat-radio-group>
+    </mat-dialog-content>
 
-<div *ngIf="isInstallAppliance">
-  <div class="row" style="display: flex">
-    <div class="col-md-8">
-      <h5>Select image file(s) to upload</h5>
-      <p class="background-hint">
-        <mat-icon class="hint-icon">info_outline</mat-icon>
-        Uploads run in the background — you can navigate away freely.
-      </p>
-    </div>
-    <div class="col-md-2 txt-align">
-      <input
-        type="file"
-        accept=".bin,.image,.iol,.qcow2,.vmdk"
-        multiple
-        #fileInput
-        class="non-visible"
-        (change)="onFilesSelected($event)"
-      />
-      <button mat-raised-button color="primary" (click)="fileInput.click()" class="file-button">Browse</button>
-    </div>
-    <div class="col-md-2 txt-align">
-      <button mat-button (click)="closeDialog()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
-  </div>
+    <mat-dialog-actions class="add-image__actions">
+      <button mat-raised-button color="primary" (click)="isInstallAppliance = !isInstallAppliance">Next</button>
+    </mat-dialog-actions>
+  }
+
+  @if (isInstallAppliance) {
+    <header class="add-image__header">
+      <div class="add-image__header-content">
+        <h5 class="add-image__title">Select image file(s) to upload</h5>
+        <p class="add-image__hint">
+          <mat-icon class="add-image__hint-icon">info_outline</mat-icon>
+          Uploads run in the background — you can navigate away freely.
+        </p>
+      </div>
+      <div class="add-image__header-actions">
+        <input
+          type="file"
+          accept=".bin,.image,.iol,.qcow2,.vmdk"
+          multiple
+          #fileInput
+          class="add-image__file-input"
+          (change)="onFilesSelected($event)"
+        />
+        <button mat-raised-button color="primary" (click)="fileInput.click()">
+          Browse
+        </button>
+        <button mat-icon-button (click)="closeDialog()" class="add-image__close-btn">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </header>
+  }
 </div>

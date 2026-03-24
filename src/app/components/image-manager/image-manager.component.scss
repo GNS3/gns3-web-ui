@@ -1,42 +1,137 @@
 /**
  * GNS3 Image Manager Component Styles
- * Using MD3 CSS variables
+ * BEM naming applied, Material theme variables used
+ * Design language unified with management pages
  */
 
-.non-visible {
-  display: none;
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--mat-sys-primary-container) 0%,
+    var(--mat-sys-background) 100%
+  );
+  min-height: 100vh;
 }
 
-.install-all-button,
-.prune-button,
-.add-button {
-  width: 160px;
-  margin: 16px 0;
-}
-
-.prune-button,
-.install-all-button {
-  margin-right: 8px;
-}
-
-.image-manager-header {
+/* =============================================
+// Header
+// ============================================= */
+.image-manager__header {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 20px 16px;
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  gap: 16px;
+  animation: fadeInSlideIn 0.4s ease-out;
 }
 
-.title {
-  margin-right: auto;
+.image-manager__back-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  color: var(--mat-sys-on-surface);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+  }
 }
 
-.full-width {
+.image-manager__title {
+  flex: 1;
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin: 0;
+}
+
+.image-manager__actions {
+  display: flex;
+  gap: 8px;
+
+  button {
+    color: var(--mat-sys-on-surface);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+    }
+  }
+}
+
+/* =============================================
+// Content
+// ============================================= */
+.image-manager__content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px 20px;
+  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+}
+
+/* =============================================
+// Search Form
+// ============================================= */
+.image-manager__search-form {
+  margin-bottom: 16px;
+}
+
+.image-manager__search-field {
+  width: 100%;
+
+  .mat-mdc-form-icon {
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+/* =============================================
+// Table
+// ============================================= */
+.image-manager__table-container {
+  background: var(--mat-sys-surface);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+              0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+}
+
+.image-manager__row-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
   width: 100%;
 }
 
-.images-search {
-  margin-top: 8px;
+.image-manager__filename {
+  word-break: break-word;
 }
 
+.image-manager__upload-status {
+  margin-top: 4px;
+}
+
+.image-manager__upload-text {
+  display: inline-block;
+  font-size: 12px;
+  margin-top: 4px;
+  word-break: break-word;
+}
+
+.image-manager__upload-error {
+  color: var(--mat-sys-error);
+}
+
+.image-manager__row-highlight {
+  animation: row-flash 1.8s ease;
+}
+
+/* =============================================
+// Table Cells
+// ============================================= */
 mat-header-cell,
 mat-cell {
   justify-content: center;
@@ -62,27 +157,22 @@ mat-footer-cell {
   background: inherit;
 }
 
-.table-container {
-  overflow-y: visible;
-  -webkit-overflow-scrolling: touch;
-}
-
 .mat-table-sticky {
   top: 0;
   z-index: 3;
 }
 
-.row-content {
-  width: 100%;
-}
-
 .mat-column-filename {
-  flex: 2.6;
-  min-width: 300px;
+  flex: 2;
+  min-width: 250px;
 }
 
 .mat-column-image_type,
-.mat-column-image_size,
+.mat-column-image_size {
+  flex: 1;
+  min-width: 120px;
+}
+
 .mat-column-created_at {
   flex: 1;
   min-width: 140px;
@@ -90,23 +180,22 @@ mat-footer-cell {
 
 .mat-column-select,
 .mat-column-delete {
-  flex: 0 0 72px;
-  min-width: 72px;
+  flex: 0 0 60px;
+  min-width: 60px;
 }
 
-.upload-status {
-  margin-top: 4px;
-}
-
-.upload-text {
-  display: inline-block;
-  font-size: 12px;
-  margin-top: 4px;
-  word-break: break-word;
-}
-
-.row-highlight {
-  animation: row-flash 1.8s ease;
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes row-flash {
@@ -122,41 +211,51 @@ mat-footer-cell {
   }
 }
 
+/* =============================================
+// Responsive Design
+// ============================================= */
 @media (max-width: 768px) {
-  .table-container {
+  .image-manager__header {
+    padding: 24px 16px 12px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .image-manager__back-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .image-manager__title {
+    font-size: 24px;
+    order: 1;
+    flex: 1 1 100%;
+  }
+
+  .image-manager__actions {
+    order: 2;
+    margin-left: auto;
+  }
+
+  .image-manager__content {
+    padding: 0 16px 16px;
+  }
+
+  .image-manager__table-container {
     overflow-x: auto;
-    overflow-y: visible;
-  }
-
-  .image-manager-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
-
-  .title {
-    margin-right: 0;
-    margin-bottom: 4px;
-  }
-
-  .action-button {
-    width: 100%;
-    margin: 0;
-    justify-content: center;
-  }
-
-  .images-search {
-    margin-top: 8px;
   }
 
   .mat-column-filename {
-    min-width: 220px;
+    min-width: 180px;
   }
 
   .mat-column-image_type,
-  .mat-column-image_size,
+  .mat-column-image_size {
+    min-width: 90px;
+  }
+
   .mat-column-created_at {
-    min-width: 120px;
+    min-width: 100px;
   }
 
   mat-cell,

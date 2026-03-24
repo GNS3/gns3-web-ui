@@ -51,6 +51,7 @@ import { ControllerDiscoveryComponent } from '@components/controllers/controller
 })
 export class ImageManagerComponent implements OnInit, OnDestroy {
   controller: Controller;
+  controllerId: number;
   public version: string;
   dataSource: imageDataSource;
   imageDatabase = new imageDatabase();
@@ -87,7 +88,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   constructor() {}
 
   ngOnInit(): void {
-    const controller_id = parseInt(this.route.snapshot.paramMap.get('controller_id'), 10);
+    this.controllerId = parseInt(this.route.snapshot.paramMap.get('controller_id'), 10);
     const sort = this.sort();
     if (sort) {
       sort.sort(<MatSortable>{
@@ -119,7 +120,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.controllerService.get(controller_id).then((controller: Controller) => {
+    this.controllerService.get(this.controllerId).then((controller: Controller) => {
       this.controller = controller;
       if (controller.authToken) {
         this.getImages();
