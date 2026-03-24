@@ -46,13 +46,3 @@ app-default-layout {
   font-size: 14px;
   border-top: 1px solid color-mix(in srgb, var(--mat-sys-outline) 20%, transparent);
 }
-
-/* =============================================
-// Responsive Design
-// ============================================= */
-@media (max-width: 768px) {
-  .footer {
-    padding: 12px 16px;
-    font-size: 12px;
-  }
-}
