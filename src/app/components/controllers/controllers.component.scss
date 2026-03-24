@@ -1,6 +1,7 @@
 /**
  * GNS3 Controllers Component Styles
  * BEM naming applied, Material theme variables used
+ * Design language unified with login page
  *
  * Note: Material table internal DOM (mat-row, mat-cell, etc.) requires
  * direct element selectors for visual effects (hover, zebra striping, row borders).
@@ -12,6 +13,13 @@
   display: block;
   width: 100%;
   height: 100%;
+  // Subtle gradient background unified with login page
+  background: linear-gradient(
+    180deg,
+    var(--mat-sys-surface) 0%,
+    var(--mat-sys-background) 100%
+  );
+  min-height: 100vh;
 }
 
 /* =============================================
@@ -20,10 +28,14 @@
 .controllers__header {
   max-width: 1000px;
   margin: 0 auto;
+  padding: 32px 20px 16px;
+  animation: fadeInSlideIn 0.4s ease-out;
 
   h1 {
     font-size: 32px;
     font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    margin: 0;
   }
 }
 
@@ -31,7 +43,7 @@
 // Content
 // ============================================= */
 .controllers__content {
-  // Content wrapper
+  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
 }
 
 /* =============================================
@@ -43,6 +55,7 @@
   justify-content: flex-end;
   max-width: 1000px;
   margin: 0 auto;
+  padding: 0 20px 20px;
 }
 
 .controllers__buttons-bar--hidden {
@@ -51,6 +64,22 @@
 
 .controllers__button {
   margin: 12px 0;
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.5px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover:not([disabled]) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
+  }
+
+  &:active:not([disabled]) {
+    transform: translateY(0);
+  }
 }
 
 /* =============================================
@@ -62,6 +91,8 @@
   margin: 16px auto;
   width: 100%;
   max-width: 1000px;
+  padding: 0 20px;
+  animation: fadeInSlideIn 0.4s ease-out 0.05s both;
 }
 
 .controllers__search {
@@ -72,12 +103,17 @@
 // Table Styles
 // ============================================= */
 .controllers__table-container {
-  border-radius: 12px;
+  border-radius: 16px; // Unified with login page
   overflow: hidden;
   width: 100%;
   max-width: 1000px;
   margin: 0 auto;
-  background: var(--mat-sys-background);
+  background: var(--mat-sys-surface);
+  // Unified card shadows
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+              0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInSlideIn 0.4s ease-out 0.15s both;
 }
 
 .controllers__table-container--hidden {
@@ -87,12 +123,13 @@
 // Material table internal DOM styling - necessary for visual effects
 // Angular Material does not provide CSS hooks for these features
 mat-row {
-  transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
   cursor: default;
   position: relative;
 
   &:hover {
     background-color: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
+    transform: scale(1.002); // Subtle scale effect
   }
 
   // Row left border indicator - Running state
@@ -137,7 +174,7 @@ mat-row:nth-child(even):hover {
   position: sticky;
   top: 0;
   z-index: 10;
-  background: var(--mat-sys-background);
+  background: var(--mat-sys-surface);
 
   mat-header-cell {
     font-size: 13px;
@@ -185,7 +222,7 @@ mat-cell[mat-column="status"] {
   justify-content: center;
 }
 
-// Actions column - right align (merged with duplicate at line ~270)
+// Actions column - right align
 mat-cell[mat-column="actions"],
 mat-header-cell[mat-column="actions"] {
   justify-content: flex-end;
@@ -390,7 +427,7 @@ button[mat-icon-button] {
 }
 
 // Primary action button (Projects/Open) - uses primary theme color
-.controllers__primary-action-btn {
+.primary-action-btn {
   margin-right: 4px;
 
   &::before {
@@ -459,8 +496,14 @@ button[color="warn"] {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 64px 24px;
+  padding: 64px 32px;
   text-align: center;
+  margin: 20px;
+  border-radius: 16px;
+  background: var(--mat-sys-surface);
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+              0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  animation: fadeInSlideIn 0.4s ease-out 0.2s both;
 }
 
 .controllers__empty-state--hidden {
@@ -490,15 +533,48 @@ button[color="warn"] {
     color: color-mix(in srgb, var(--mat-sys-on-surface) 60%, transparent);
     margin: 0 0 24px 0;
   }
+
+  // Unified button style in empty state
+  button {
+    height: 48px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 0 24px;
+  }
+}
+
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* =============================================
 // Responsive Design
 // ============================================= */
 @media (max-width: 768px) {
+  .controllers__header {
+    padding: 24px 16px 12px;
+
+    h1 {
+      font-size: 24px;
+    }
+  }
+
   .controllers__button {
     margin: 8px 0;
     width: 100%;
+    height: 44px;
+    font-size: 15px;
   }
 
   .controllers__actions-cell {
@@ -506,7 +582,7 @@ button[color="warn"] {
     gap: 4px;
   }
 
-  .controllers__primary-action-btn {
+  .primary-action-btn {
     margin-right: 4px;
   }
 
@@ -529,6 +605,11 @@ button[color="warn"] {
   mat-cell {
     padding: 0 12px;
     font-size: 13px;
+  }
+
+  .controllers__empty-state {
+    margin: 16px;
+    padding: 48px 24px;
   }
 }
 
