@@ -1,34 +1,46 @@
-<div class="content" *ngIf="isReady(); else loading">
-  <div class="default-header">
-    <div class="row">
-      <h1 class="col">Access Control List (ACL)</h1>
-      <button class="col" mat-raised-button color="primary" (click)="deleteMultiple()" class="add-ace-button" [disabled]="selection.selected.length == 0">
+@if (isReady()) {
+  <header class="acl-management__header">
+    <h1 class="acl-management__title">Access Control List (ACL)</h1>
+    <div class="acl-management__actions">
+      <button mat-raised-button
+              color="primary"
+              class="acl-management__button"
+              [disabled]="selection.selected.length === 0"
+              (click)="deleteMultiple()">
         Delete Selected
       </button>
-      <button class="col" mat-raised-button color="primary" (click)="addACE()" class="add-ace-button">
+      <button mat-raised-button
+              color="primary"
+              class="acl-management__button"
+              (click)="addACE()">
         Add ACE
       </button>
     </div>
-  </div>
+  </header>
 
-  <form>
-    <mat-form-field class="full-width">
-      <input matInput placeholder="Search by path, user/group or role" [(ngModel)]="searchText"
-             [ngModelOptions]="{ standalone: true }"/>
+  <form class="acl-management__search-form">
+    <mat-form-field class="acl-management__search">
+      <input matInput
+             placeholder="Search by path, user/group or role"
+             [(ngModel)]="searchText"
+             [ngModelOptions]="{ standalone: true }" />
     </mat-form-field>
   </form>
 
-  <div class="default-content">
-    <table mat-table [dataSource]="dataSource | aceFilter: searchText:endpoints() " class="mat-elevation-z8" matSort #acesSort="matSort">
+  <div class="acl-management__table-container">
+    <table mat-table
+           [dataSource]="dataSource | aceFilter: searchText:endpoints()"
+           matSort
+           #acesSort="matSort">
 
-      <ng-container matColumnDef="select" >
-        <th mat-header-cell *matHeaderCellDef class="small-col">
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef class="acl-management__small-col">
           <mat-checkbox (change)="$event ? masterToggle() : null"
                         [checked]="selection.hasValue() && isAllSelected()"
                         [indeterminate]="selection.hasValue() && !isAllSelected()">
           </mat-checkbox>
         </th>
-        <td mat-cell *matCellDef="let row" class="small-col">
+        <td mat-cell *matCellDef="let row" class="acl-management__small-col">
           <mat-checkbox (click)="$event.stopPropagation()"
                         (change)="$event ? selection.toggle(row) : null"
                         [checked]="selection.isSelected(row)">
@@ -38,61 +50,67 @@
 
       <ng-container matColumnDef="path">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Path</th>
-        <td mat-cell *matCellDef="let element"> {{getNameByUuidFromEndpoint(element.path)}} </td>
+        <td mat-cell *matCellDef="let element">
+          <span class="acl-management__overflow-text">{{getNameByUuidFromEndpoint(element.path)}}</span>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="user/group">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>User/Group</th>
         <td mat-cell *matCellDef="let element">
-          <div *ngIf="element.ace_type === 'user' else groupId">{{getNameByUuidFromEndpoint(element.user_id)}}</div>
-          <ng-template #groupId>{{getNameByUuidFromEndpoint(element.group_id)}}</ng-template>
+          <span class="acl-management__overflow-text">
+            @if (element.ace_type === 'user') {
+              {{getNameByUuidFromEndpoint(element.user_id)}}
+            } @else {
+              {{getNameByUuidFromEndpoint(element.group_id)}}
+            }
+          </span>
         </td>
       </ng-container>
 
       <ng-container matColumnDef="role">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Role</th>
-        <td mat-cell *matCellDef="let element"> {{getNameByUuidFromEndpoint(element.role_id)}} </td>
+        <td mat-cell *matCellDef="let element">
+          <span class="acl-management__overflow-text">{{getNameByUuidFromEndpoint(element.role_id)}}</span>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="propagate">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Propagate</th>
-        <td mat-cell *matCellDef="let element"> {{element.propagate}} </td>
+        <td mat-cell *matCellDef="let element">{{element.propagate}}</td>
       </ng-container>
 
       <ng-container matColumnDef="allowed">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Allowed</th>
-        <td mat-cell *matCellDef="let element"> {{element.allowed}} </td>
+        <td mat-cell *matCellDef="let element">{{element.allowed}}</td>
       </ng-container>
 
       <ng-container matColumnDef="created_at">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Created</th>
-        <td mat-cell *matCellDef="let element"> {{element.created_at}} </td>
+        <td mat-cell *matCellDef="let element">
+          <span class="acl-management__overflow-text">{{element.created_at}}</span>
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="updated_at">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Last update</th>
-        <td mat-cell *matCellDef="let element"> {{element.updated_at}} </td>
-      </ng-container>
-
-      <ng-container matColumnDef="delete">
-        <th mat-header-cell *matHeaderCellDef> </th>
-        <td mat-cell *matCellDef="let element"><button mat-icon-button (click)="onDelete(element)" color="warn" class="delete-btn"><mat-icon>delete</mat-icon></button></td>
+        <td mat-cell *matCellDef="let element">
+          <span class="acl-management__overflow-text">{{element.updated_at}}</span>
+        </td>
       </ng-container>
 
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-
-
     </table>
+
     <mat-paginator #acesPaginator="matPaginator"
                    [pageSizeOptions]="[5, 10, 20]"
                    showFirstLastButtons
                    aria-label="Select page">
     </mat-paginator>
   </div>
-</div>
-<ng-template #loading>
-  <div>
-    <mat-spinner class="loader"></mat-spinner>
+} @else {
+  <div class="acl-management__loader">
+    <mat-spinner class="acl-management__spinner"></mat-spinner>
   </div>
-</ng-template>
+}

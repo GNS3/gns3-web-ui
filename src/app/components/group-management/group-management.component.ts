@@ -55,7 +55,7 @@ export class GroupManagementComponent implements OnInit {
   @ViewChildren('groupsPaginator') groupsPaginator: QueryList<MatPaginator>;
   @ViewChildren('groupsSort') groupsSort: QueryList<MatSort>;
 
-  readonly displayedColumns = signal(['select', 'name', 'created_at', 'updated_at', 'is_builtin', 'delete']);
+  readonly displayedColumns = signal(['select', 'name', 'created_at', 'updated_at', 'is_builtin']);
   selection = new SelectionModel<Group>(true, []);
   groups: Group[];
   dataSource = new MatTableDataSource<Group>();

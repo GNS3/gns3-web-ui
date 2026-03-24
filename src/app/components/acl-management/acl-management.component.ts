@@ -54,7 +54,7 @@ export class AclManagementComponent implements OnInit {
   @ViewChildren('acesPaginator') acesPaginator: QueryList<MatPaginator>;
   @ViewChildren('acesSort') acesSort: QueryList<MatSort>;
   controller: Controller;
-  public displayedColumns = ['select', 'path', 'user/group', 'role', 'propagate', 'allowed', 'updated_at', 'delete'];
+  public displayedColumns = ['select', 'path', 'user/group', 'role', 'propagate', 'allowed', 'updated_at'];
   selection = new SelectionModel<ACE>(true, []);
   aces: ACE[];
   dataSource = new MatTableDataSource<ACE>();

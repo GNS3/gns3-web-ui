@@ -44,7 +44,7 @@ export class ResourcePoolsManagementComponent implements OnInit {
   @ViewChildren('resourcePoolsPaginator') resourcePoolsPaginator: QueryList<MatPaginator>;
   @ViewChildren('resourcePoolsSort') resourcePoolsSort: QueryList<MatSort>;
 
-  public displayedColumns = ['select', 'name', 'created_at', 'updated_at', 'delete'];
+  public displayedColumns = ['select', 'name', 'created_at', 'updated_at'];
   selection = new SelectionModel<ResourcePool>(true, []);
   resourcePools = signal<ResourcePool[]>([]);
   dataSource = new MatTableDataSource<ResourcePool>();

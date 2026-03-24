@@ -10,10 +10,10 @@
 *
 * Author: Sylvain MATHIEU, Elise LEBEAU
 */
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, QueryList, ViewChild, ViewChildren, inject} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, QueryList, ViewChildren, inject, signal, computed} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {Location}  from '@angular/common';
+import {Location} from '@angular/common';
 import {ActivatedRoute, Router, RouterModule} from "@angular/router";
 import {Controller} from "@models/controller";
 import {MatSort, MatSortModule} from "@angular/material/sort";
@@ -22,6 +22,7 @@ import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
 import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
 import {MatPaginator} from "@angular/material/paginator";
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {UserService} from "@services/user.service";
@@ -34,6 +35,7 @@ import {ToasterService} from "@services/toaster.service";
 import {MatTableDataSource} from "@angular/material/table";
 import {ControllerService} from "@services/controller.service";
 import {UserFilterPipe} from "@filters/user-filter.pipe";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 @Component({
   standalone: true,
@@ -41,30 +43,42 @@ import {UserFilterPipe} from "@filters/user-filter.pipe";
   templateUrl: './user-management.component.html',
   styleUrls: ['./user-management.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatCheckboxModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatPaginator, MatSortModule, MatDialogModule, UserFilterPipe]
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatTableModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatPaginator,
+    MatSortModule,
+    MatDialogModule,
+    UserFilterPipe,
+    MatProgressSpinnerModule
+  ]
 })
 export class UserManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);
-  private router = inject(Router);
   private userService = inject(UserService);
   private progressService = inject(ProgressService);
   private controllerService = inject(ControllerService);
-  public dialog = inject(MatDialog);
+  private dialog = inject(MatDialog);
   private toasterService = inject(ToasterService);
   private location = inject(Location);
   private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
   dataSource = new MatTableDataSource<User>();
-  displayedColumns = ['select', 'username', 'full_name', 'email', 'is_active', 'last_login', 'updated_at', 'delete'];
+  displayedColumns = ['select', 'username', 'full_name', 'email', 'is_active', 'last_login', 'updated_at'];
   selection = new SelectionModel<User>(true, []);
   searchText = '';
 
   @ViewChildren('usersPaginator') usersPaginator: QueryList<MatPaginator>;
   @ViewChildren('usersSort') usersSort: QueryList<MatSort>;
   isReady = false;
-
-  constructor() { }
 
   ngOnInit() {
     const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');

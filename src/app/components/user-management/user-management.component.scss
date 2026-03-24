@@ -1,63 +1,278 @@
-.add-button {
-  height: 40px;
-  width: 160px;
-  margin: 20px;
+/**
+ * GNS3 User Management Component Styles
+ * BEM naming applied, Material theme variables used
+ * Design language unified with controllers page
+ */
+
+:host {
+  display: block;
+  width: 100%;
 }
 
-.full-width {
-  width: 940px;
-  margin-left: -470px;
-  left: 50%;
+/* =============================================
+// Header / Title Bar
+// ============================================= */
+.user-management__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  animation: fadeInSlideIn 0.4s ease-out;
 }
 
-.small-col {
-  flex-grow: 0.3;
+.user-management__title {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin: 0;
 }
 
-.active-col {
-  flex-grow: 0.5;
+.user-management__actions {
+  display: flex;
+  gap: 12px;
 }
 
-.overflow-col {
+/* =============================================
+// Buttons
+// ============================================= */
+.user-management__button {
+  margin: 12px 0;
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.5px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover:not([disabled]) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
+  }
+
+  &:active:not([disabled]) {
+    transform: translateY(0);
+  }
+}
+
+/* =============================================
+// Search
+// ============================================= */
+.user-management__search-form {
+  display: flex;
+  justify-content: center;
+  margin: 16px auto;
+  width: 100%;
+  animation: fadeInSlideIn 0.4s ease-out 0.05s both;
+}
+
+.user-management__search {
+  width: 100%;
+  max-width: 600px;
+}
+
+/* =============================================
+// Table Container
+// ============================================= */
+.user-management__table-container {
+  border-radius: 16px;
+  overflow: hidden;
+  width: 100%;
+  background: var(--mat-sys-surface);
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+              0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInSlideIn 0.4s ease-out 0.15s both;
+}
+
+.user-management__table-container--hidden {
+  display: none;
+}
+
+/* =============================================
+// Material Table Internal DOM Styling
+// ============================================= */
+mat-row {
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+  position: relative;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
+    transform: scale(1.002);
+  }
+}
+
+// Zebra striping - even rows
+mat-row:nth-child(even) {
+  background-color: color-mix(in srgb, var(--mat-sys-on-surface) 1%, transparent);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent);
+  }
+}
+
+// Header row styles
+.mat-header-row {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--mat-sys-surface);
+
+  mat-header-cell {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface-variant);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+}
+
+// Cell spacing and alignment
+mat-header-cell,
+mat-cell {
+  justify-content: center;
+  padding: 0 16px;
+}
+
+mat-cell {
+  font-size: 14px;
+  color: var(--mat-sys-on-surface);
+}
+
+// Username column - left align with link
+mat-cell[mat-column="username"] {
+  justify-content: flex-start;
+  font-weight: 500;
+}
+
+.user-management__link {
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  display: inline-block;
+  transform-origin: left center;
+  color: var(--mat-sys-primary);
+  text-decoration: none;
+  font-weight: 500;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: currentColor;
+    transition: width 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:hover {
+    color: color-mix(in srgb, var(--mat-sys-primary) 80%, black);
+    transform: translateY(-2px);
+
+    &::after {
+      width: 100%;
+    }
+  }
+}
+
+// Full name and email columns - text overflow
+.user-management__overflow-text {
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
   padding-right: 5px;
 }
 
-.custom-tooltip {
-  font-size:100px;
-  white-space: pre-line;
+// Active column
+.user-management__active-col {
+  flex-grow: 0.5;
+  justify-content: center;
 }
 
-.loader {
-  position: absolute;
-  margin: auto;
-  height: 175px;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  top: 0;
-  width: 175px;
+// Actions column - right align
+mat-cell[mat-column="actions"],
+mat-header-cell[mat-column="actions"] {
+  justify-content: flex-end;
+  padding: 0 16px;
 }
 
-.delete-btn {
-  transition: transform 0.2s ease;
+mat-cell[mat-column="actions"] {
+  overflow: visible;
 }
 
-.delete-btn:hover mat-icon {
-  transform: scale(1.35);
+// Small column for checkbox
+.user-management__small-col {
+  width: 60px;
+  min-width: 60px;
 }
 
-.table-link {
-  transition: transform 0.2s ease;
-  display: inline-block;
-  transform-origin: left center;
-  padding: 2px 4px;
-  margin: -2px -4px;
+/* =============================================
+// Loading Spinner
+// ============================================= */
+.user-management__loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
 }
 
-.table-link:hover {
-  transform: scale(1.15);
+.user-management__spinner {
+  width: 48px;
+  height: 48px;
 }
 
+/* =============================================
+// Paginator
+// ============================================= */
+mat-paginator {
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 768px) {
+  .user-management__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 0;
+  }
+
+  .user-management__actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .user-management__button {
+    width: 100%;
+    height: 44px;
+    font-size: 15px;
+  }
+
+  .user-management__actions-cell {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  mat-cell {
+    padding: 0 12px;
+    font-size: 13px;
+  }
+}

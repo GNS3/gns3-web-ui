@@ -56,7 +56,7 @@ export class RoleManagementComponent implements OnInit {
 
   controller: Controller;
   dataSource = new MatTableDataSource<Role>();
-  displayedColumns = ['select', 'name', 'description', 'delete'];
+  displayedColumns = ['select', 'name', 'description'];
   selection = new SelectionModel<Role>(true, []);
   searchText = '';
 
