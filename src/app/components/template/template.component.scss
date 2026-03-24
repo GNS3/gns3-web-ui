@@ -4,6 +4,12 @@
  * Design language unified with management pages
  */
 
+:host {
+  // Angular Material menu CSS variables
+  --mat-menu-container-max-width: 500px;
+  --mat-menu-container-width: 500px;
+}
+
 /* =============================================
 // Menu Panel
 // ============================================= */
