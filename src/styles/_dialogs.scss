@@ -22,10 +22,25 @@
 // Edit Controller Dialog
 // ============================================= */
 .edit-controller-dialog-panel {
-  .mdc-dialog__surface,
-  .mat-mdc-dialog-surface {
-    background: var(--mat-sys-surface);
+  .mat-mdc-dialog-container {
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+      box-shadow: 0 12px 40px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
+                  0 4px 12px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
+    }
+  }
+
+  .mat-mdc-dialog-title {
+    font-size: 24px;
+    font-weight: 500;
     color: var(--mat-sys-on-surface);
+    margin-bottom: 24px;
+    padding: 24px 24px 0 24px;
+  }
+
+  .mat-mdc-dialog-content {
+    padding: 0 24px;
+    margin-bottom: 16px;
   }
 }
 
@@ -33,10 +48,25 @@
 // Add Controller Dialog
 // ============================================= */
 .add-controller-dialog-panel {
-  .mdc-dialog__surface,
-  .mat-mdc-dialog-surface {
-    background: var(--mat-sys-surface);
+  .mat-mdc-dialog-container {
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+      box-shadow: 0 12px 40px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
+                  0 4px 12px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
+    }
+  }
+
+  .mat-mdc-dialog-title {
+    font-size: 24px;
+    font-weight: 500;
     color: var(--mat-sys-on-surface);
+    margin-bottom: 24px;
+    padding: 24px 24px 0 24px;
+  }
+
+  .mat-mdc-dialog-content {
+    padding: 0 24px;
+    margin-bottom: 16px;
   }
 }
 

@@ -237,12 +237,6 @@
   display: flex;
   align-items: center;
   margin-top: 8px;
-
-  ::ng-deep .mat-mdc-checkbox {
-    .mdc-checkbox__background {
-      border-radius: 4px;
-    }
-  }
 }
 
 /* =============================================
