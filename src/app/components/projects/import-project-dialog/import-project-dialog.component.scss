@@ -8,10 +8,12 @@
 }
 
 .file-button {
-  width: 100%;
+  width: calc(100% - 48px);
   height: 48px;
   margin-top: 16px;
   margin-bottom: 16px;
+  margin-left: 24px;
+  margin-right: 24px;
   border-radius: 12px;
   font-size: 16px;
   font-weight: 500;
@@ -38,11 +40,13 @@
 }
 
 .file-name-form-field {
-  width: 100%;
+  width: calc(100% - 72px);
+  margin-left: 24px;
 }
 
 .empty {
-  width: 100%;
+  width: calc(100% - 72px);
+  margin-left: 24px;
 }
 
 .delete-button {
