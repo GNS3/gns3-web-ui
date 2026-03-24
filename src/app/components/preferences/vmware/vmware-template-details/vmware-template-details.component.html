@@ -1,165 +1,172 @@
-<div class="content" [ngClass]="{ shadowed: isSymbolSelectionOpened || isConfiguratorOpened }">
-  <div class="default-header">
-    <div class="row">
-      <div class="col col-md-1">
-        @if (controller) {
-          <button class="top-button" class="cancel-button" mat-button (click)="goBack()">
-            <mat-icon>arrow_back</mat-icon>
-          </button>
-        }
-      </div>
-      <div class="col col-md-11">
-      <h1 class="col">VMware VM template configuration</h1>
-      </div>
-    </div>
-  </div>
+<div class="vmware-template-details" [ngClass]="{ 'vmware-template-details--hidden': isConfiguratorOpened || isSymbolSelectionOpened }">
+  <header class="vmware-template-details__header">
+    @if (controller) {
+      <button
+        class="vmware-template-details__back-btn"
+        (click)="goBack()"
+        mat-icon-button>
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+    }
+    <h1 class="vmware-template-details__title">VMware VM template configuration</h1>
+  </header>
+
   @if (vmwareTemplate) {
-    <div class="default-content">
-    <mat-accordion>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title> General settings </mat-panel-title>
-        </mat-expansion-panel-header>
-        <form [formGroup]="generalSettingsForm">
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              type="text"
-              
-              formControlName="templateName"
-              placeholder="Template name"
-            />
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              type="text"
-              
-              formControlName="defaultName"
-              placeholder="Default name format"
-            />
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              type="text"
-              
-              formControlName="symbol"
-              placeholder="Symbol"
-            />
-          </mat-form-field>
-          <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br /><br />
-          <mat-form-field class="form-field tags-field">
-            <mat-label>Tags</mat-label>
-            <mat-chip-grid #chipList>
-              @for (tag of vmwareTemplate?.tags; track tag) {
-                <mat-chip (removed)="removeTag(tag)">
-                  {{ tag }}
-                  <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
-              }
+    <main class="vmware-template-details__content">
+      <section class="vmware-template-details__form-card">
+        <div class="vmware-template-details__section-header" (click)="toggleSection('general')">
+          <h3 class="vmware-template-details__section-title">General settings</h3>
+          <mat-icon class="vmware-template-details__expand-icon">{{ generalSettingsExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        @if (generalSettingsExpanded) {
+          <form [formGroup]="generalSettingsForm" class="vmware-template-details__form">
+            <mat-form-field appearance="fill" class="vmware-template-details__field">
+              <mat-label>Template name</mat-label>
+              <input matInput type="text" formControlName="templateName" placeholder="Template name" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="vmware-template-details__field">
+              <mat-label>Default name format</mat-label>
+              <input matInput type="text" formControlName="defaultName" placeholder="Default name format" />
+            </mat-form-field>
+
+            <div class="vmware-template-details__symbol-row">
+              <mat-form-field appearance="fill" class="vmware-template-details__field vmware-template-details__field--flex">
+                <mat-label>Symbol</mat-label>
+                <input matInput type="text" formControlName="symbol" placeholder="Symbol" />
+              </mat-form-field>
+              <button mat-button class="vmware-template-details__symbol-btn" (click)="chooseSymbol()">
+                Choose symbol
+              </button>
+            </div>
+
+            <mat-form-field appearance="fill" class="vmware-template-details__field">
+              <mat-label>Tags</mat-label>
+              <mat-chip-grid #chipList>
+                @for (tag of vmwareTemplate?.tags; track tag) {
+                  <mat-chip (removed)="removeTag(tag)">
+                    {{ tag }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                }
+              </mat-chip-grid>
               <input matInput placeholder="Add tags"
                      [matChipInputFor]="chipList"
                      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                      (matChipInputTokenEnd)="addTag($event)" />
-            </mat-chip-grid>
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <mat-select
-              placeholder="Category"
-              [ngModelOptions]="{ standalone: true }"
+            </mat-form-field>
 
-            >
-              @for (category of categories; track $index) {
-                <mat-option [value]="category[1]">
-                  {{ category[0] }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field class="select">
-            <mat-select
-              placeholder="Console type"
-              [ngModelOptions]="{ standalone: true }"
+            <mat-form-field appearance="fill" class="vmware-template-details__field">
+              <mat-label>Category</mat-label>
+              <mat-select [ngModelOptions]="{ standalone: true }">
+                @for (category of categories; track $index) {
+                  <mat-option [value]="category[1]">
+                    {{ category[0] }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
 
-            >
-              @for (type of consoleTypes; track type) {
-                <mat-option [value]="type">
-                  {{ type }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-          <mat-checkbox [ngModelOptions]="{ standalone: true }" >
-            Auto start console
-          </mat-checkbox>
-          <mat-form-field class="form-field">
-            <mat-select
-              placeholder="On close"
-              [ngModelOptions]="{ standalone: true }"
+            <mat-form-field appearance="fill" class="vmware-template-details__field">
+              <mat-label>Console type</mat-label>
+              <mat-select [ngModelOptions]="{ standalone: true }">
+                @for (type of consoleTypes; track type) {
+                  <mat-option [value]="type">
+                    {{ type }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
 
-            >
-              @for (option of onCloseOptions; track option[1]) {
-                <mat-option [value]="option[1]">
-                  {{ option[0] }}
-                </mat-option>
-              }
-            </mat-select>
+            <mat-checkbox [ngModelOptions]="{ standalone: true }">Auto start console</mat-checkbox>
+
+            <mat-form-field appearance="fill" class="vmware-template-details__field">
+              <mat-label>On close</mat-label>
+              <mat-select [ngModelOptions]="{ standalone: true }">
+                @for (option of onCloseOptions; track option[1]) {
+                  <mat-option [value]="option[1]">
+                    {{ option[0] }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-checkbox [ngModelOptions]="{ standalone: true }">Start VM in headless mode</mat-checkbox>
+
+            <mat-checkbox [ngModelOptions]="{ standalone: true }">Use as a linked base VM (experimental)</mat-checkbox>
+          </form>
+        }
+      </section>
+
+      <section class="vmware-template-details__form-card">
+        <div class="vmware-template-details__section-header" (click)="toggleSection('network')">
+          <h3 class="vmware-template-details__section-title">Network</h3>
+          <mat-icon class="vmware-template-details__expand-icon">{{ networkExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        @if (networkExpanded) {
+          <form class="vmware-template-details__form">
+            <mat-form-field appearance="fill" class="vmware-template-details__field">
+              <mat-label>Adapters</mat-label>
+              <input matInput type="number" min="0" placeholder="Adapters" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="vmware-template-details__field">
+              <mat-label>First port name</mat-label>
+              <input matInput type="text" placeholder="First port name" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="vmware-template-details__field">
+              <mat-label>Name format</mat-label>
+              <input matInput type="text" placeholder="Name format" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="vmware-template-details__field">
+              <mat-label>Segment size</mat-label>
+              <input matInput type="number" min="0" placeholder="Segment size" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="vmware-template-details__field">
+              <mat-label>Type</mat-label>
+              <mat-select>
+                @for (type of networkTypes; track type) {
+                  <mat-option [value]="type">
+                    {{ type }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <button mat-button class="vmware-template-details__config-btn" (click)="setCustomAdaptersConfiguratorState(true)">
+              Configure custom adapters
+            </button>
+
+            <mat-checkbox>Allow GNS3 to override non custom VMware adapter</mat-checkbox>
+          </form>
+        }
+      </section>
+
+      <section class="vmware-template-details__form-card">
+        <div class="vmware-template-details__section-header" (click)="toggleSection('usage')">
+          <h3 class="vmware-template-details__section-title">Usage</h3>
+          <mat-icon class="vmware-template-details__expand-icon">{{ usageExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        @if (usageExpanded) {
+          <mat-form-field appearance="fill" class="vmware-template-details__field vmware-template-details__field--full">
+            <mat-label>Usage notes</mat-label>
+            <textarea matInput type="text"></textarea>
           </mat-form-field>
-          <mat-checkbox [ngModelOptions]="{ standalone: true }" >
-            Start VM in headless mode </mat-checkbox
-          ><br /><br />
-          <mat-checkbox [ngModelOptions]="{ standalone: true }" >
-            Use as a linked base VM (experimental)
-          </mat-checkbox>
-        </form>
-      </mat-expansion-panel>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title> Network </mat-panel-title>
-        </mat-expansion-panel-header>
-        <mat-form-field class="form-field">
-          <input matInput type="number" min="0"  placeholder="Adapters" />
-        </mat-form-field>
-        <mat-form-field class="form-field">
-          <input matInput type="text"  placeholder="First port name" />
-        </mat-form-field>
-        <mat-form-field class="form-field">
-          <input matInput type="text"  placeholder="Name format" />
-        </mat-form-field>
-        <mat-form-field class="form-field">
-          <input matInput type="number" min="0"  placeholder="Segment size" />
-        </mat-form-field>
-        <mat-form-field class="form-field">
-          <mat-select placeholder="Type" >
-            @for (type of networkTypes; track type) {
-              <mat-option [value]="type">
-                {{ type }}
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-        <button mat-button class="configButton" (click)="setCustomAdaptersConfiguratorState(true)">
-          Configure custom adapters</button
-        ><br />
-        <mat-checkbox >
-          Allow GNS3 to override non custom VMware adapter
-        </mat-checkbox>
-      </mat-expansion-panel>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title> Usage </mat-panel-title>
-        </mat-expansion-panel-header>
-        <mat-form-field class="form-field">
-          <textarea matInput type="text" ></textarea>
-        </mat-form-field>
-      </mat-expansion-panel>
-    </mat-accordion>
-    <div class="buttons-bar">
-      <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
-      <button mat-raised-button color="primary" (click)="onSave()">Save</button>
-    </div>
-  </div>
+        }
+      </section>
+
+      <div class="vmware-template-details__actions">
+        <button class="vmware-template-details__cancel-btn" (click)="goBack()" mat-button>
+          Cancel
+        </button>
+        <button mat-raised-button color="primary" class="vmware-template-details__save-btn" (click)="onSave()">
+          Save
+        </button>
+      </div>
+    </main>
   }
 </div>
 <app-custom-adapters

@@ -76,6 +76,11 @@ export class VmwareTemplateDetailsComponent implements OnInit {
   onCloseOptions = [];
   networkTypes = [];
 
+  // Section collapse states
+  generalSettingsExpanded: boolean = false;
+  networkExpanded: boolean = false;
+  usageExpanded: boolean = false;
+
   constructor() {
     this.generalSettingsForm = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
@@ -197,6 +202,20 @@ export class VmwareTemplateDetailsComponent implements OnInit {
 
     if (index >= 0) {
       this.vmwareTemplate.tags.splice(index, 1);
+    }
+  }
+
+  toggleSection(section: string): void {
+    switch (section) {
+      case 'general':
+        this.generalSettingsExpanded = !this.generalSettingsExpanded;
+        break;
+      case 'network':
+        this.networkExpanded = !this.networkExpanded;
+        break;
+      case 'usage':
+        this.usageExpanded = !this.usageExpanded;
+        break;
     }
   }
 }
