@@ -1,28 +1,26 @@
 /**
  * GNS3 Global Upload Indicator Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
+ * Using MD3 CSS variables
  */
 
 .upload-indicator-container {
   position: fixed;
-  bottom: var(--gns3-spacing-md);
-  right: var(--gns3-spacing-md);
+  bottom: 16px;
+  right: 16px;
   width: 320px;
-  background: var(--mat-app-background-color);
-  border-radius: var(--gns3-radius-sm);
-  box-shadow: var(--gns3-shadow-md);
+  background: var(--mat-sys-surface);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent);
   z-index: 2000;
   overflow: hidden;
-  font-size: var(--gns3-font-size-xs);
+  font-size: 12px;
 }
 
 .upload-indicator-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--gns3-spacing-xs) var(--gns3-spacing-xs);
+  padding: 8px 8px;
   cursor: pointer;
   background: var(--mat-sys-primary-container);
   color: var(--mat-sys-on-primary-container);
@@ -36,21 +34,21 @@
 .header-left {
   display: flex;
   align-items: center;
-  gap: var(--gns3-spacing-xs);
+  gap: 8px;
   flex: 1;
   min-width: 0;
 }
 
 .upload-icon {
-  font-size: var(--gns3-font-size-sm);
-  height: var(--gns3-font-size-sm);
-  width: var(--gns3-font-size-sm);
+  font-size: 14px;
+  height: 14px;
+  width: 14px;
   flex-shrink: 0;
 }
 
 .header-title {
   font-weight: 500;
-  font-size: var(--gns3-font-size-xs);
+  font-size: 12px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -59,7 +57,7 @@
 .header-right {
   display: flex;
   align-items: center;
-  gap: var(--gns3-spacing-xs);
+  gap: 8px;
   flex-shrink: 0;
 }
 
@@ -68,19 +66,19 @@
 }
 
 .toggle-icon {
-  font-size: var(--gns3-font-size-base);
-  height: var(--gns3-font-size-base);
-  width: var(--gns3-font-size-base);
+  font-size: 14px;
+  height: 14px;
+  width: 14px;
 }
 
 .upload-list {
   max-height: 280px;
   overflow-y: auto;
-  padding: var(--gns3-spacing-xs) 0;
+  padding: 8px 0;
 }
 
 .upload-item {
-  padding: var(--gns3-spacing-xs) var(--gns3-spacing-xs) var(--gns3-spacing-xs);
+  padding: 8px 8px 8px;
   transition: opacity 0.4s ease, max-height 0.4s ease;
   opacity: 1;
 
@@ -92,26 +90,26 @@
 .upload-item-info {
   display: flex;
   align-items: center;
-  gap: var(--gns3-spacing-xs);
+  gap: 8px;
 }
 
 .file-icon {
-  font-size: var(--gns3-font-size-sm);
-  height: var(--gns3-font-size-sm);
-  width: var(--gns3-font-size-sm);
+  font-size: 14px;
+  height: 14px;
+  width: 14px;
   flex-shrink: 0;
 
   &.status-uploading {
-    color: var(--mat-app-primary-color);
+    color: var(--mat-sys-primary);
   }
   &.status-done {
-    color: var(--mat-app-success-fixed-color);
+    color: var(--custom-mat-sys-success);
   }
   &.status-error {
-    color: var(--mat-app-error-color);
+    color: var(--mat-sys-error);
   }
   &.status-canceled {
-    color: var(--mat-app-on-surface-variant-color);
+    color: var(--mat-sys-on-surface-variant);
   }
 }
 
@@ -131,43 +129,43 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: var(--gns3-font-size-xs);
+  font-size: 12px;
   font-weight: 500;
 }
 
 .status-text {
-  font-size: var(--gns3-font-size-xs);
-  color: var(--mat-app-on-surface-variant-color);
+  font-size: 12px;
+  color: var(--mat-sys-on-surface-variant);
 
   &.status-done {
-    color: var(--mat-app-success-fixed-color);
+    color: var(--custom-mat-sys-success);
   }
   &.status-error {
-    color: var(--mat-app-error-color);
+    color: var(--mat-sys-error);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   &.status-canceled {
-    color: var(--mat-app-on-surface-variant-color);
+    color: var(--mat-sys-on-surface-variant);
   }
 }
 
 .cancel-btn {
-  width: var(--gns3-spacing-sm);
-  height: var(--gns3-spacing-sm);
-  line-height: var(--gns3-spacing-sm);
+  width: 10px;
+  height: 10px;
+  line-height: 10px;
   flex-shrink: 0;
 
   mat-icon {
-    font-size: var(--gns3-font-size-xs);
-    height: var(--gns3-font-size-xs);
-    width: var(--gns3-font-size-xs);
+    font-size: 12px;
+    height: 12px;
+    width: 12px;
   }
 }
 
 .item-progress {
-  margin-top: var(--gns3-spacing-xs);
-  height: var(--gns3-radius-xs);
-  border-radius: var(--gns3-radius-xs);
+  margin-top: 8px;
+  height: 2px;
+  border-radius: 2px;
 }
