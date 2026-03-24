@@ -1,33 +1,26 @@
-.ports__add-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  align-items: flex-start;
-  padding: 16px 24px;
+.ports {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
-.ports__field {
-  flex: 1;
-  min-width: 120px;
+.ports__add-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 16px 24px;
 }
 
 .ports__add-btn {
   margin-top: 4px;
   height: 48px;
-  flex-shrink: 0;
 }
 
 @media (max-width: 768px) {
   .ports__add-row {
     flex-direction: column;
     padding: 16px;
-  }
-
-  .ports__field {
-    width: 100%;
-  }
-
-  .ports__add-btn {
-    width: 100%;
   }
 }
