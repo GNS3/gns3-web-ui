@@ -111,10 +111,10 @@ export class AclManagementComponent implements OnInit {
 
   addACE() {
     const dialogRef = this.dialog.open(AddAceDialogComponent, {
-      width: '1200px',
-      height: '500px',
+      width: '1000px',
       autoFocus: false,
       disableClose: true,
+      panelClass: 'add-ace-dialog-panel',
       data: {endpoints: this.endpoints()}
     });
     let instance = dialogRef.componentInstance;

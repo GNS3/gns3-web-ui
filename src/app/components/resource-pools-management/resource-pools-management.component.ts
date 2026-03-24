@@ -95,7 +95,7 @@ export class ResourcePoolsManagementComponent implements OnInit {
 
   addResourcePool() {
     this.dialog
-      .open(AddResourcePoolDialogComponent, {width: '600px', height: '500px', data: {controller: this.controller}})
+      .open(AddResourcePoolDialogComponent, {width: '400px', autoFocus: false, disableClose: true, data: {controller: this.controller}})
       .afterClosed()
       .subscribe((added: boolean) => {
         if (added) {

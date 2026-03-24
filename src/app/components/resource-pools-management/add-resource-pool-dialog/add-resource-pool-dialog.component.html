@@ -1,30 +1,29 @@
 <h1 mat-dialog-title>Create new resource pool</h1>
-<form [formGroup]="poolNameForm" class="file-name-form">
-  <mat-form-field class="file-name-form-field">
-    <input
-      matInput
-      (keydown)="onKeyDown($event)"
-      type="text"
-      formControlName="poolName"
-      [ngClass]="{ 'is-invalid': form.poolName?.errors }"
-      placeholder="Please enter a resource pool name"
-    />
-    <mat-error *ngIf="form.poolName?.touched && form.poolName?.errors && form.poolName?.errors.required"
-    >Resource pool name is required</mat-error
-    >
-    <mat-error *ngIf="form.poolName?.errors && form.poolName?.errors.invalidName"
-    >Resource pool name is incorrect</mat-error
-    >
-    <mat-error *ngIf="form.poolName?.errors && form.poolName?.errors.projectExist"
-    >Resource pool with this name exists</mat-error
-    >
-  </mat-form-field>
-</form>
+<form [formGroup]="poolNameForm">
+  <div mat-dialog-content>
+    <mat-form-field appearance="fill" class="full-width-field">
+      <mat-label>Resource pool name</mat-label>
+      <input matInput
+             (keydown)="onKeyDown($event)"
+             type="text"
+             formControlName="poolName"
+             placeholder="Please enter a resource pool name" />
+      @if (form.poolName?.touched && form.poolName?.errors && form.poolName?.errors.required) {
+        <mat-error>Resource pool name is required</mat-error>
+      }
+      @if (form.poolName?.errors && form.poolName?.errors.invalidName) {
+        <mat-error>Resource pool name is incorrect</mat-error>
+      }
+      @if (form.poolName?.errors && form.poolName?.errors.projectExist) {
+        <mat-error>Resource pool with this name exists</mat-error>
+      }
+    </mat-form-field>
+  </div>
 
-  <div mat-dialog-actions class="button-div">
+  <div mat-dialog-actions align="end">
     <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
-    <button mat-button (click)="onAddClick()" tabindex="2" class="add-project-button" mat-raised-button color="primary">
+    <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary">
       Add resource pool
     </button>
   </div>
-
+</form>

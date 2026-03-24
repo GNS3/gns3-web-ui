@@ -1,7 +1,6 @@
-.input-field {
+.full-width-field {
   width: 100%;
 }
-
 
 .button-div {
   float: right;
@@ -11,12 +10,12 @@
   display: flex;
   margin: 10px;
   justify-content: space-between;
-  flex: 1 1 auto
+  flex: 1 1 auto;
 }
 
 .groups {
   display: flex;
-  height: 180px;
+  min-height: 40px;
   overflow: auto;
   flex-direction: column;
 }

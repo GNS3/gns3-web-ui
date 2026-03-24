@@ -81,6 +81,19 @@
 }
 
 /* =============================================
+// Add ACE Dialog
+// ============================================= */
+.add-ace-dialog-panel {
+  --mat-dialog-container-max-width: 1000px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 1000px;
+    max-width: 1000px;
+  }
+}
+
+/* =============================================
 // Tool Details Dialog
 // ============================================= */
 .tool-details-dialog {

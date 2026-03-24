@@ -106,7 +106,7 @@ export class GroupManagementComponent implements OnInit {
 
   addGroup() {
     this.dialog
-      .open(AddGroupDialogComponent, {width: '600px', height: '500px', data: {controller: this.controller}})
+      .open(AddGroupDialogComponent, {width: '400px', autoFocus: false, disableClose: true, data: {controller: this.controller}})
       .afterClosed()
       .subscribe((added: boolean) => {
         if (added) {
