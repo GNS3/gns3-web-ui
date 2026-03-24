@@ -72,6 +72,12 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
           if (!this.ethernetHubTemplate.tags) {
             this.ethernetHubTemplate.tags = [];
           }
+          // Fill form with template data
+          this.inputForm.patchValue({
+            templateName: this.ethernetHubTemplate.name || '',
+            defaultName: this.ethernetHubTemplate.default_name_format || '',
+            symbol: this.ethernetHubTemplate.symbol || '',
+          });
           this.cd.markForCheck();
         });
     });
