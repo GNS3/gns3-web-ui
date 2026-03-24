@@ -1,5 +1,6 @@
 /**
  * GNS3 Template List Dialog Component Styles
+ * Using MD3 CSS variables
  */
 
 .header {
@@ -7,7 +8,7 @@
   display: flex;
   align-items: baseline;
   padding: 8px 24px 0;
-  font-size: var(--gns3-font-size-lg);
+  font-size: 18px;
   justify-content: space-between;
 }
 
@@ -17,7 +18,7 @@
 }
 
 .mat-form-field {
-  font-size: var(--gns3-font-size-base);
+  font-size: 14px;
   flex-grow: 1;
 }
 
@@ -26,18 +27,18 @@
 }
 
 div {
-  scrollbar-color: darkgrey var(--gns3-surface);
+  scrollbar-color: darkgrey var(--mat-sys-surface);
   scrollbar-width: thin;
 }
 
 h6 {
-  margin-top: var(--gns3-spacing-xs);
-  margin-bottom: var(--gns3-spacing-sm);
-  color: var(--mat-app-primary-color);
+  margin-top: 4px;
+  margin-bottom: 8px;
+  color: var(--mat-sys-primary);
 }
 
 mat-table {
-  scrollbar-color: darkgrey var(--gns3-surface);
+  scrollbar-color: darkgrey var(--mat-sys-surface);
   scrollbar-width: thin;
 }
 
@@ -51,7 +52,7 @@ mat-table {
 
 ::-webkit-scrollbar-thumb {
   background-color: darkgrey;
-  outline: 1px solid var(--gns3-surface);
+  outline: 1px solid var(--mat-sys-surface);
 }
 
 .filterBox {

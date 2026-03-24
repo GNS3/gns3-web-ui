@@ -1,3 +1,8 @@
+/**
+ * GNS3 Add Image Dialog Component Styles
+ * Using MD3 CSS variables
+ */
+
 .mat-form-field {
   width: 100%;
 }
@@ -11,30 +16,30 @@
 }
 
 .file-button {
-  margin-top: var(--gns3-spacing-sm);
+  margin-top: 8px;
 }
 
 .choose-instal-appliance {
   display: flex;
   flex-direction: row;
-  margin: var(--gns3-spacing-md) 0 var(--gns3-spacing-sm);
+  margin: 16px 0 8px;
   align-items: flex-start;
 }
 
 .instal-appliances-button {
-  margin: var(--gns3-spacing-sm);
+  margin: 8px;
 }
 
 .background-hint {
   display: flex;
   align-items: center;
-  gap: var(--gns3-spacing-xs);
-  font-size: var(--gns3-font-size-xs);
-  margin: var(--gns3-spacing-xs) 0 0;
+  gap: 4px;
+  font-size: 12px;
+  margin: 4px 0 0;
 
   .hint-icon {
-    font-size: var(--gns3-font-size-sm);
-    height: var(--gns3-font-size-sm);
-    width: var(--gns3-font-size-sm);
+    font-size: 12px;
+    height: 12px;
+    width: 12px;
   }
 }

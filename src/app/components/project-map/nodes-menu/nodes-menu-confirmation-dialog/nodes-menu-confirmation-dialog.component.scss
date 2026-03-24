@@ -1,29 +1,27 @@
 /**
  * GNS3 Nodes Menu Confirmation Dialog Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
+ * Using MD3 CSS variables
  */
 
 .close-btn {
-    height: 30px;
-    width: 30px;
-    margin-left: var(--gns3-spacing-sm, 10px);
-    margin-bottom: var(--gns3-spacing-sm, 10px);
+  height: 30px;
+  width: 30px;
+  margin-left: 8px;
+  margin-bottom: 8px;
 }
 
 .close-icon {
-    font-size: var(--gns3-font-size-xs, 15px);
+  font-size: 12px;
 }
 
 .text-padding {
-    padding: var(--gns3-spacing-md, 15px) 0 0 0;
+  padding: 16px 0 0 0;
 }
 
 .mat-dialog-actions {
-    min-height: 31px;
+  min-height: 31px;
 }
 
 .heading-txt {
-    text-transform: capitalize;
+  text-transform: capitalize;
 }

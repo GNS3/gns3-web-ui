@@ -1,12 +1,10 @@
 /**
  * GNS3 New Template Dialog Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
+ * Using MD3 CSS variables
  */
 
 .radio-button {
-  margin-bottom: var(--gns3-spacing-xl, 30px);
+  margin-bottom: 24px;
 }
 
 .tableHeader {
@@ -38,7 +36,7 @@
 }
 
 .element-row:not(.expanded):hover {
-  background: var(--mat-app-surface-hover);
+  background: var(--mat-sys-surface-container);
 }
 
 .element-row.expanded {
@@ -49,34 +47,34 @@
   display: flex;
   justify-content: space-between;
   width: 100%;
-  margin-bottom: var(--gns3-spacing-md, 15px);
+  margin-bottom: 16px;
 }
 
 .list-item-inside {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  padding-left: var(--gns3-spacing-xl, 30px);
-  margin-bottom: var(--gns3-spacing-md, 15px);
+  padding-left: 24px;
+  margin-bottom: 16px;
 }
 
 .button {
-  margin-left: var(--gns3-spacing-sm, 10px);
+  margin-left: 8px;
 }
 
 .create-button {
   width: 100%;
-  margin-top: var(--gns3-spacing-sm, 10px);
-  margin-bottom: var(--gns3-spacing-sm, 10px);
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 .radio-button {
   width: 50%;
-  padding-top: var(--gns3-spacing-md, 20px);
+  padding-top: 16px;
 }
 
 .selection-group {
-  padding-bottom: var(--gns3-spacing-md, 20px);
+  padding-bottom: 16px;
 }
 
 .non-visible {

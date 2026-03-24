@@ -1,8 +1,6 @@
 /**
  * GNS3 Console Devices Panel Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
+ * Using MD3 CSS variables
  */
 
 .console-devices-panel {
@@ -10,37 +8,36 @@
   flex-direction: column;
   width: 200px;
   height: 100%;
-  background-color: var(--gns3-surface);
-  border-right: 1px solid var(--mat-app-outline-variant-color);
-  transition: width var(--gns3-duration-fast) ease;
+  background-color: var(--mat-sys-surface);
+  border-right: 1px solid var(--mat-sys-outline-variant);
+  transition: width 100ms ease;
 
   &.collapsed {
     width: 48px;
   }
 }
 
-// Panel Header
 .panel-header {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 48px;
   padding: 0 12px;
-  border-bottom: 1px solid var(--mat-app-outline-variant-color);
-  background-color: var(--mat-app-surface-container-low-color);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  background-color: var(--mat-sys-surface-container-low);
   flex-shrink: 0;
 
   &.clickable {
     cursor: pointer;
-    transition: all var(--gns3-duration-fast);
+    transition: all 100ms ease;
   }
 
   &:hover.clickable {
-    background-color: var(--mat-app-surface-container-color);
+    background-color: var(--mat-sys-surface-container);
   }
 
   &:active.clickable {
-    background-color: var(--mat-app-surface-container-high-color);
+    background-color: var(--mat-sys-surface-container-high);
   }
 }
 
@@ -48,19 +45,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--gns3-spacing-xs);
+  gap: 4px;
   margin: 0;
-  font-size: var(--gns3-font-size-sm);
+  font-size: 12px;
   font-weight: 500;
-  color: var(--mat-app-on-surface-color);
+  color: var(--mat-sys-on-surface);
 }
 
 .panel-icon {
-  font-size: var(--gns3-font-size-base);
-  width: var(--gns3-font-size-base);
-  height: var(--gns3-font-size-base);
-  color: var(--mat-app-primary-color);
-  transition: transform var(--gns3-duration-fast);
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  color: var(--mat-sys-primary);
+  transition: transform 100ms ease;
 }
 
 .header-title.clickable:hover .panel-icon {
@@ -72,28 +69,27 @@
 }
 
 .header-text {
-  font-size: var(--gns3-font-size-sm);
+  font-size: 12px;
   font-weight: 500;
   white-space: nowrap;
 }
 
-// Device list
 .device-list {
   flex: 1;
   overflow-y: auto;
-  padding: var(--gns3-spacing-xs);
+  padding: 4px;
 
   &::-webkit-scrollbar {
-    width: var(--gns3-spacing-xs);
+    width: 4px;
   }
 
   &::-webkit-scrollbar-track {
-    background: var(--mat-app-surface-container-color);
+    background: var(--mat-sys-surface-container);
   }
 
   &::-webkit-scrollbar-thumb {
-    background: var(--gns3-cyan);
-    border-radius: var(--gns3-radius-xs);
+    background: var(--mat-sys-primary);
+    border-radius: 2px;
     opacity: 0.6;
 
     &:hover {
@@ -106,35 +102,35 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--gns3-spacing-sm) var(--gns3-spacing-sm);
+  padding: 8px 8px;
   margin-bottom: 4px;
-  border-radius: var(--gns3-radius-sm);
+  border-radius: 4px;
   cursor: pointer;
-  transition: all var(--gns3-duration-fast) ease;
-  background: var(--mat-app-surface-container-low-color);
+  transition: all 100ms ease;
+  background: var(--mat-sys-surface-container-low);
 
   &:hover {
-    background: var(--mat-app-surface-container-color);
+    background: var(--mat-sys-surface-container);
     transform: translateX(4px);
-    box-shadow: 0 2px 8px var(--gns3-cyan);
+    box-shadow: 0 2px 8px var(--mat-sys-primary);
   }
 
   &.started {
-    border-left: 3px solid var(--mat-app-primary-color);
+    border-left: 3px solid var(--mat-sys-primary);
   }
 }
 
 .device-info {
   display: flex;
   align-items: center;
-  gap: var(--gns3-spacing-xs);
+  gap: 4px;
   flex: 1;
   min-width: 0;
 }
 
 .device-status-indicator {
-  width: var(--gns3-spacing-xs);
-  height: var(--gns3-spacing-xs);
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -145,31 +141,31 @@
 }
 
 .device-name {
-  font-size: var(--gns3-font-size-xs);
+  font-size: 12px;
   font-weight: 500;
-  color: var(--mat-app-on-surface-color);
+  color: var(--mat-sys-on-surface);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .device-status {
-  font-size: var(--gns3-font-size-xs);
+  font-size: 12px;
   margin-top: 2px;
   opacity: 0.8;
 }
 
 .device-icon {
-  font-size: var(--gns3-font-size-sm);
-  width: var(--gns3-font-size-sm);
-  height: var(--gns3-font-size-sm);
-  color: var(--mat-app-primary-color);
+  font-size: 12px;
+  width: 12px;
+  height: 12px;
+  color: var(--mat-sys-primary);
   flex-shrink: 0;
   opacity: 0.8;
-  transition: all var(--gns3-duration-fast) ease;
+  transition: all 100ms ease;
 
   &.disabled {
-    color: var(--mat-app-on-surface-variant-color);
+    color: var(--mat-sys-on-surface-variant);
     opacity: 0.4;
   }
 }
@@ -179,95 +175,30 @@
   transform: scale(1.1);
 }
 
-// Empty state
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: var(--gns3-spacing-xl) var(--gns3-spacing-sm);
+  padding: 24px 8px;
   text-align: center;
 }
 
 .empty-icon {
-  font-size: var(--gns3-spacing-xl);
-  width: var(--gns3-spacing-xl);
-  height: var(--gns3-spacing-xl);
-  color: var(--mat-app-on-surface-variant-color);
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  color: var(--mat-sys-on-surface-variant);
   opacity: 0.4;
-  margin-bottom: var(--gns3-spacing-sm);
+  margin-bottom: 8px;
 }
 
 .empty-text {
-  font-size: var(--gns3-font-size-xs);
-  color: var(--mat-app-on-surface-variant-color);
+  font-size: 12px;
+  color: var(--mat-sys-on-surface-variant);
   opacity: 0.8;
 }
 
-// Light theme adjustments
-.console-devices-panel.lightTheme,
-.console-devices-panel.theme-light {
-  background-color: var(--mat-app-background-color);
-  border-right-color: var(--mat-app-outline-variant-color);
-}
-
-.console-devices-panel.lightTheme .panel-header,
-.console-devices-panel.theme-light .panel-header {
-  background-color: var(--mat-app-surface-container-low-color);
-  border-bottom-color: var(--mat-app-outline-variant-color);
-
-  &.clickable:hover {
-    background-color: var(--mat-app-surface-container-color);
-  }
-
-  &.clickable:active {
-    background-color: var(--mat-app-surface-container-high-color);
-  }
-}
-
-.console-devices-panel.lightTheme .header-title,
-.console-devices-panel.theme-light .header-title {
-  color: var(--mat-app-on-surface-color);
-}
-
-.console-devices-panel.lightTheme .panel-icon,
-.console-devices-panel.theme-light .panel-icon {
-  color: var(--mat-app-primary-color);
-}
-
-.console-devices-panel.lightTheme .device-item,
-.console-devices-panel.theme-light .device-item {
-  background: var(--mat-app-surface-container-low-color);
-
-  &:hover {
-    background: var(--mat-app-surface-container-color);
-  }
-}
-
-.console-devices-panel.lightTheme .device-name,
-.console-devices-panel.theme-light .device-name {
-  color: var(--mat-app-on-surface-color);
-}
-
-.console-devices-panel.lightTheme .device-icon,
-.console-devices-panel.theme-light .device-icon {
-  &.disabled {
-    color: var(--mat-app-on-surface-variant-color);
-    opacity: 0.4;
-  }
-}
-
-.console-devices-panel.lightTheme .empty-icon,
-.console-devices-panel.theme-light .empty-icon {
-  color: var(--mat-app-on-surface-variant-color);
-}
-
-.console-devices-panel.lightTheme .empty-text,
-.console-devices-panel.theme-light .empty-text {
-  color: var(--mat-app-on-surface-variant-color);
-}
-
-// Responsive design for mobile
 @media (max-width: 768px) {
   .console-devices-panel {
     position: absolute;

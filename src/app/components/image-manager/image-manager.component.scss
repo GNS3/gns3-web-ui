@@ -1,3 +1,8 @@
+/**
+ * GNS3 Image Manager Component Styles
+ * Using MD3 CSS variables
+ */
+
 .non-visible {
   display: none;
 }
@@ -6,12 +11,12 @@
 .prune-button,
 .add-button {
   width: 160px;
-  margin: var(--gns3-spacing-md) 0;
+  margin: 16px 0;
 }
 
 .prune-button,
 .install-all-button {
-  margin-right: var(--gns3-spacing-sm);
+  margin-right: 8px;
 }
 
 .image-manager-header {
@@ -29,7 +34,7 @@
 }
 
 .images-search {
-  margin-top: var(--gns3-spacing-sm);
+  margin-top: 8px;
 }
 
 mat-header-cell,
@@ -90,13 +95,13 @@ mat-footer-cell {
 }
 
 .upload-status {
-  margin-top: var(--gns3-spacing-xs);
+  margin-top: 4px;
 }
 
 .upload-text {
   display: inline-block;
-  font-size: var(--gns3-font-size-xs);
-  margin-top: var(--gns3-spacing-xs);
+  font-size: 12px;
+  margin-top: 4px;
   word-break: break-word;
 }
 
@@ -126,12 +131,12 @@ mat-footer-cell {
   .image-manager-header {
     flex-direction: column;
     align-items: stretch;
-    gap: var(--gns3-spacing-sm);
+    gap: 8px;
   }
 
   .title {
     margin-right: 0;
-    margin-bottom: var(--gns3-spacing-xs);
+    margin-bottom: 4px;
   }
 
   .action-button {
@@ -141,7 +146,7 @@ mat-footer-cell {
   }
 
   .images-search {
-    margin-top: var(--gns3-spacing-sm);
+    margin-top: 8px;
   }
 
   .mat-column-filename {
@@ -156,7 +161,7 @@ mat-footer-cell {
 
   mat-cell,
   mat-header-cell {
-    font-size: var(--gns3-font-size-sm);
+    font-size: 12px;
   }
 }
 

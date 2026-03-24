@@ -1,5 +1,6 @@
 /**
  * GNS3 Change Symbol Dialog Component Styles
+ * Using MD3 CSS variables
  */
 
 .buttonWrapper {
@@ -36,8 +37,8 @@
   display: grid;
   grid-template-rows: auto;
   grid-template-columns: repeat(7, 1fr);
-  grid-row-gap: var(--gns3-spacing-xl);
-  grid-column-gap: var(--gns3-spacing-sm);
+  grid-row-gap: 24px;
+  grid-column-gap: 8px;
 }
 
 .radio-selection {
@@ -45,7 +46,7 @@
 }
 
 .mat-radio-button ~ .mat-radio-button {
-  margin-left: var(--gns3-spacing-md);
+  margin-left: 16px;
 }
 
 .non-visible {

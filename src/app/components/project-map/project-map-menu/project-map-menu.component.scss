@@ -1,5 +1,6 @@
 /**
  * GNS3 Project Map Menu Component Styles
+ * Using MD3 CSS variables
  */
 
 .non-visible {
@@ -7,22 +8,22 @@
 }
 
 .unmarked {
-  color: var(--mat-app-on-surface-color);
+  color: var(--mat-sys-on-surface);
 }
 
 .unmarkedLight {
-  color: var(--mat-app-on-surface-color);
+  color: var(--mat-sys-on-surface);
 }
 
 .marked {
-  color: var(--mat-app-primary-color);
+  color: var(--mat-sys-primary);
 }
 
 .ai-chat-button .ai-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--gns3-font-size-xs);
+  font-size: 12px;
   font-weight: bold;
   font-family: 'Roboto', sans-serif;
   letter-spacing: -0.5px;
@@ -36,50 +37,50 @@
 .ai-chat-button.ai-active::after {
   content: '';
   position: absolute;
-  top: var(--gns3-spacing-xs);
-  right: var(--gns3-spacing-xs);
-  width: var(--gns3-spacing-xs);
-  height: var(--gns3-spacing-xs);
-  background-color: var(--gns3-cyan-light);
+  top: 4px;
+  right: 4px;
+  width: 4px;
+  height: 4px;
+  background-color: var(--mat-sys-primary-container);
   border-radius: 50%;
-  box-shadow: 0 0 var(--gns3-spacing-sm) var(--gns3-cyan-light);
+  box-shadow: 0 0 8px var(--mat-sys-primary-container);
 }
 
 /* AI Chat minimized state */
 .ai-chat-button.ai-minimized {
   position: relative;
-  background-color: var(--mat-app-primary-container-color);
-  box-shadow: 0 0 var(--gns3-spacing-md) var(--gns3-cyan), inset 0 0 var(--gns3-spacing-sm) var(--gns3-cyan);
+  background-color: var(--mat-sys-primary-container);
+  box-shadow: 0 0 16px var(--mat-sys-primary), inset 0 0 8px var(--mat-sys-primary);
   animation: pulse-minimized 1.5s ease-in-out infinite;
-  border: var(--gns3-radius-xs) solid var(--gns3-cyan-light);
+  border: 2px solid var(--mat-sys-primary-container);
 }
 
 .ai-chat-button.ai-minimized .ai-icon {
-  color: var(--gns3-cyan-light);
-  text-shadow: 0 0 var(--gns3-spacing-sm) var(--gns3-cyan-light);
+  color: var(--mat-sys-primary-container);
+  text-shadow: 0 0 8px var(--mat-sys-primary-container);
   font-weight: 900;
 }
 
 .ai-minimize-indicator {
   position: absolute;
-  bottom: var(--gns3-spacing-xs);
+  bottom: 4px;
   left: 50%;
   transform: translateX(-50%);
-  width: var(--gns3-spacing-xs);
-  height: var(--gns3-spacing-xs);
-  background-color: var(--gns3-cyan-light);
+  width: 4px;
+  height: 4px;
+  background-color: var(--mat-sys-primary-container);
   border-radius: 50%;
-  box-shadow: 0 0 var(--gns3-spacing-xs) var(--gns3-cyan-light);
+  box-shadow: 0 0 4px var(--mat-sys-primary-container);
   animation: blink-indicator 1s ease-in-out infinite;
 }
 
 @keyframes pulse-minimized {
   0%, 100% {
-    box-shadow: 0 0 var(--gns3-spacing-md) var(--gns3-cyan), inset 0 0 var(--gns3-spacing-sm) var(--gns3-cyan);
+    box-shadow: 0 0 16px var(--mat-sys-primary), inset 0 0 8px var(--mat-sys-primary);
     transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 var(--gns3-spacing-xl) var(--gns3-cyan-light), inset 0 0 var(--gns3-spacing-md) var(--gns3-cyan);
+    box-shadow: 0 0 20px var(--mat-sys-primary-container), inset 0 0 16px var(--mat-sys-primary);
     transform: scale(1.05);
   }
 }
@@ -97,7 +98,7 @@
 
 /* Menu button hover effect */
 .menu-button {
-  transition: transform var(--gns3-duration-fast) ease;
+  transition: transform 100ms ease;
 }
 
 .menu-button:hover {

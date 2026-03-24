@@ -1,5 +1,6 @@
 /**
  * GNS3 Log Console Component Styles
+ * Using MD3 CSS variables
  */
 
 .consoleWrapper {
@@ -7,21 +8,15 @@
   flex-direction: column;
   width: 100%;
   height: 100%;
-  background: var(--mat-app-background-color);
-  color: var(--mat-app-on-background-color);
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
   overflow: hidden;
-  font-size: var(--gns3-font-size-xs);
-}
-
-.consoleWrapper.lightTheme,
-.consoleWrapper.theme-light {
-  background: var(--mat-app-background-color);
-  color: var(--mat-app-on-background-color);
+  font-size: 12px;
 }
 
 .filterButton {
   background: transparent;
-  color: var(--mat-app-on-surface-variant-color);
+  color: var(--mat-sys-on-surface-variant);
   border: none;
   margin-top: 0;
   outline: none;
@@ -36,43 +31,43 @@
 .consoleHeader {
   width: 100%;
   height: 32px;
-  font-size: var(--gns3-font-size-xs);
+  font-size: 12px;
   overflow: hidden;
   display: flex;
-  padding: var(--gns3-spacing-xs) var(--gns3-spacing-sm);
+  padding: 4px 8px;
   justify-content: space-between;
-  background: var(--gns3-surface);
+  background: var(--mat-sys-surface);
   flex-shrink: 0;
 }
 
 .console {
   flex: 1;
   overflow-y: auto;
-  padding: var(--gns3-spacing-sm);
-  color: var(--mat-app-on-surface-color);
+  padding: 8px;
+  color: var(--mat-sys-on-surface);
   font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-  font-size: var(--gns3-font-size-sm);
+  font-size: 12px;
   line-height: 1.4;
-  scrollbar-color: var(--mat-app-on-surface-variant-color) var(--gns3-surface);
+  scrollbar-color: var(--mat-sys-on-surface-variant) var(--mat-sys-surface);
   scrollbar-width: thin;
-  background: var(--mat-app-background-color);
+  background: var(--mat-sys-surface);
 }
 
 .consoleInput {
   width: 100%;
   height: 32px;
-  padding: var(--gns3-spacing-xs) var(--gns3-spacing-sm);
+  padding: 4px 8px;
   display: flex;
-  background: var(--gns3-surface);
+  background: var(--mat-sys-surface);
   flex-shrink: 0;
 }
 
 .commandLine {
   background-color: transparent;
-  color: var(--mat-app-on-surface-color);
+  color: var(--mat-sys-on-surface);
   border: none;
   font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-  font-size: var(--gns3-font-size-sm);
+  font-size: 12px;
 }
 
 .inputIcon {
@@ -80,9 +75,9 @@
 }
 
 mat-icon {
-  font-size: var(--gns3-font-size-base);
-  width: var(--gns3-font-size-base);
-  height: var(--gns3-font-size-base);
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
 }
 
 input:focus {
@@ -94,11 +89,11 @@ input:focus {
 }
 
 ::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px var(--mat-app-shadow-color);
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--mat-app-on-surface-variant-color);
+  background-color: var(--mat-sys-on-surface-variant);
 }
 
 .closeButton {

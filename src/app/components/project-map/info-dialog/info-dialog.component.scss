@@ -1,10 +1,8 @@
 /**
  * GNS3 Info Dialog Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
+ * Using MD3 CSS variables
  */
 
 .textBox {
-  margin-top: var(--gns3-spacing-sm, 10px);
+  margin-top: 8px;
 }

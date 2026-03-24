@@ -1,23 +1,21 @@
 /**
  * GNS3 Style Editor Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
+ * Using MD3 CSS variables
  */
 
 .item {
-  height: var(--gns3-spacing-md, 25px);
-  font-size: var(--gns3-font-size-xs, 10pt);
-  margin-bottom: var(--gns3-spacing-sm, 10px);
+  height: 16px;
+  font-size: 12px;
+  margin-bottom: 8px;
 }
 
 .item-name {
-  margin-bottom: var(--gns3-spacing-sm, 10px);
+  margin-bottom: 8px;
 }
 
 .item-value {
   width: 100%;
-  margin-bottom: var(--gns3-spacing-sm, 10px);
+  margin-bottom: 8px;
 }
 
 .input-color {
@@ -35,7 +33,7 @@ input:focus {
 input[type='color'] {
   -webkit-appearance: none;
   border: none;
-  height: var(--gns3-spacing-md, 25px);
+  height: 16px;
 }
 
 input[type='color']::-webkit-color-swatch-wrapper {

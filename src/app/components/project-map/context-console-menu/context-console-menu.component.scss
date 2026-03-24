@@ -1,5 +1,6 @@
 /**
  * GNS3 Context Console Menu Component Styles
+ * Using MD3 CSS variables
  */
 
 .context-menu {
@@ -8,5 +9,5 @@
 }
 
 .title {
-  margin: var(--gns3-spacing-sm);
+  margin: 8px;
 }

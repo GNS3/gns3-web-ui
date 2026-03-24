@@ -1,5 +1,6 @@
 /**
  * GNS3 Configurator Component Styles
+ * Using MD3 CSS variables
  */
 
 table {
@@ -21,7 +22,7 @@ table {
 .default-content {
   max-height: 400px;
   overflow-y: scroll;
-  scrollbar-color: var(--mat-app-on-surface-color) var(--mat-app-surface);
+  scrollbar-color: var(--mat-sys-on-surface) var(--mat-sys-surface);
   scrollbar-width: thin;
 }
 
@@ -43,7 +44,7 @@ table {
 }
 
 mat-radio-button {
-  margin-right: var(--gns3-spacing-sm);
+  margin-right: 8px;
 }
 
 ::-webkit-scrollbar {
@@ -55,7 +56,7 @@ mat-radio-button {
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--mat-app-on-surface-color);
+  background-color: var(--mat-sys-on-surface);
 }
 
 .tags-field {

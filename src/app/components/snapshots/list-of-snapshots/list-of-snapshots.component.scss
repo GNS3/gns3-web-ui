@@ -1,5 +1,6 @@
 /**
  * GNS3 List of Snapshots Component Styles
+ * Using MD3 CSS variables
  */
 
 .filter-field {
@@ -7,5 +8,5 @@
 }
 
 .mat-table {
-  margin: calc(var(--gns3-spacing-md) * -1);
+  margin: -16px;
 }

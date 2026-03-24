@@ -1,47 +1,44 @@
 /**
  * Chat Message List Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
+ * Using MD3 CSS variables
  */
 
 .chat-message-list {
   height: 100%;
   overflow-y: auto;
-  padding: var(--gns3-spacing-lg);
-  background-color: var(--mat-app-background-color);
+  padding: 16px;
+  background-color: var(--mat-sys-surface);
   scrollbar-width: thin;
-  scrollbar-color: var(--gns3-cyan) transparent;
+  scrollbar-color: var(--mat-sys-primary) transparent;
 }
 
-/* Enhanced WebKit scrollbar styling */
 .chat-message-list::-webkit-scrollbar {
   width: 8px;
 }
 
 .chat-message-list::-webkit-scrollbar-track {
   background: transparent;
-  border-radius: var(--gns3-radius-full);
+  border-radius: 9999px;
 }
 
 .chat-message-list::-webkit-scrollbar-thumb {
   background: linear-gradient(
     180deg,
-    var(--gns3-cyan),
-    var(--gns3-cyan-light)
+    var(--mat-sys-primary),
+    var(--mat-sys-primary-container)
   );
-  border-radius: var(--gns3-radius-full);
+  border-radius: 9999px;
   border: 2px solid transparent;
   background-clip: padding-box;
-  transition: all var(--gns3-duration-normal) var(--gns3-easing-default);
+  transition: all 200ms ease;
   opacity: 0.6;
 }
 
 .chat-message-list::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(
     180deg,
-    var(--gns3-cyan),
-    var(--gns3-cyan-light)
+    var(--mat-sys-primary),
+    var(--mat-sys-primary-container)
   );
   background-clip: padding-box;
   border: 2px solid transparent;
@@ -51,8 +48,8 @@
 .chat-message-list::-webkit-scrollbar-thumb:active {
   background: linear-gradient(
     180deg,
-    var(--gns3-cyan),
-    var(--gns3-cyan-light)
+    var(--mat-sys-primary),
+    var(--mat-sys-primary-container)
   );
   background-clip: padding-box;
   opacity: 1;
@@ -61,13 +58,13 @@
 .messages-container {
   display: flex;
   flex-direction: column;
-  gap: var(--gns3-spacing-lg);
+  gap: 16px;
 }
 
 .message {
   display: flex;
-  gap: var(--gns3-spacing-sm);
-  animation: fadeIn var(--gns3-duration-normal) var(--gns3-easing-out);
+  gap: 8px;
+  animation: fadeIn 200ms ease-out;
 }
 
 @keyframes fadeIn {
@@ -99,20 +96,20 @@
 }
 
 .message-avatar .avatar-text {
-  font-size: var(--gns3-font-size-sm);
-  font-weight: var(--gns3-font-weight-bold);
-  font-family: var(--gns3-font-family-base);
-  letter-spacing: var(--gns3-letter-spacing-tight);
+  font-size: 12px;
+  font-weight: 700;
+  font-family: system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.5px;
 }
 
 .user-avatar {
-  background: linear-gradient(135deg, var(--mat-app-primary-color), var(--gns3-cyan));
-  color: var(--mat-app-on-primary-color);
+  background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-primary));
+  color: var(--mat-sys-on-primary);
 }
 
 .assistant-avatar {
-  background: linear-gradient(135deg, var(--gns3-cyan), var(--gns3-cyan-light));
-  color: var(--mat-app-on-primary-color);
+  background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-primary-container));
+  color: var(--mat-sys-on-primary);
   overflow: hidden;
 }
 
@@ -123,15 +120,15 @@
 }
 
 .tool-avatar {
-  background: linear-gradient(135deg, var(--mat-app-tertiary-color), var(--mat-app-tertiary-fixed-color));
-  color: var(--mat-app-on-tertiary-color);
+  background: linear-gradient(135deg, var(--mat-sys-tertiary), var(--mat-sys-tertiary-container));
+  color: var(--mat-sys-on-tertiary);
 }
 
 .message-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: var(--gns3-spacing-1);
+  gap: 4px;
   max-width: 80%;
 }
 
@@ -145,19 +142,18 @@
 
 .message-bubble {
   padding: 10px 14px;
-  border-radius: var(--gns3-radius-lg);
+  border-radius: 16px;
   position: relative;
 }
 
 .user-bubble {
-  background: linear-gradient(135deg, var(--mat-app-primary-color), var(--gns3-cyan-dark));
-  color: var(--mat-app-on-primary-color);
-  border-bottom-right-radius: var(--gns3-radius-sm);
-  box-shadow: 0 2px 8px var(--gns3-cyan-dark);
+  background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-primary));
+  color: var(--mat-sys-on-primary);
+  border-bottom-right-radius: 4px;
+  box-shadow: 0 2px 8px var(--mat-sys-primary);
   position: relative;
   overflow: hidden;
 
-  // Subtle shine effect
   &::before {
     content: '';
     position: absolute;
@@ -172,7 +168,7 @@
       transparent
     );
     opacity: 0.1;
-    transition: left var(--gns3-duration-slow) var(--gns3-easing-default);
+    transition: left 300ms ease;
   }
 
   &:hover::before {
@@ -183,17 +179,16 @@
 .assistant-bubble {
   background: linear-gradient(
     135deg,
-    var(--mat-app-surface-container-color),
-    var(--mat-app-surface-container-high-color)
+    var(--mat-sys-surface-container),
+    var(--mat-sys-surface-container-high)
   );
-  color: var(--mat-app-on-surface-color);
-  border-bottom-left-radius: var(--gns3-radius-sm);
-  box-shadow: var(--gns3-shadow-sm);
-  border: 1px solid var(--mat-app-outline-variant-color);
+  color: var(--mat-sys-on-surface);
+  border-bottom-left-radius: 4px;
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
+  border: 1px solid var(--mat-sys-outline-variant);
   position: relative;
   overflow: hidden;
 
-  // Subtle glow on hover
   &::after {
     content: '';
     position: absolute;
@@ -208,7 +203,7 @@
       transparent
     );
     opacity: 0;
-    transition: opacity var(--gns3-duration-normal) var(--gns3-easing-default);
+    transition: opacity 200ms ease;
   }
 
   &:hover::after {
@@ -219,15 +214,14 @@
 .assistant-bubble.streaming {
   display: flex;
   align-items: flex-start;
-  gap: var(--gns3-spacing-sm);
+  gap: 8px;
   position: relative;
 
-  // Typing cursor effect at the end
   &::after {
     content: '|';
     animation: blink 1s infinite;
-    color: var(--mat-app-primary-color);
-    font-weight: var(--gns3-font-weight-bold);
+    color: var(--mat-sys-primary);
+    font-weight: 700;
     margin-left: 2px;
   }
 }
@@ -247,176 +241,169 @@
     rgba(255, 152, 0, 0.1),
     rgba(255, 152, 0, 0.1)
   );
-  color: var(--mat-app-on-surface-variant-color);
+  color: var(--mat-sys-on-surface-variant);
   text-align: center;
-  font-size: var(--gns3-font-size-xs);
-  padding: var(--gns3-spacing-sm) var(--gns3-spacing-lg);
-  border-radius: var(--gns3-radius-xl);
+  font-size: 12px;
+  padding: 8px 16px;
+  border-radius: 20px;
   margin: 0 auto;
   border: 1px solid rgba(255, 152, 0, 0.3);
 }
 
 .error-bubble {
-  background-color: var(--mat-app-error-container-color);
-  color: var(--mat-app-error-on-container-color);
+  background-color: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
   display: flex;
   align-items: center;
-  gap: var(--gns3-spacing-sm);
+  gap: 8px;
   padding: 10px 14px;
-  border-radius: var(--gns3-radius-md);
+  border-radius: 8px;
 }
 
 .error-icon {
-  color: var(--mat-app-error-on-container-color);
+  color: var(--mat-sys-on-error-container);
 }
 
 .message-text {
-  line-height: var(--gns3-line-height-normal);
+  line-height: 1.5;
   word-wrap: break-word;
   white-space: pre-wrap;
-  font-size: var(--gns3-font-size-base);
-  color: var(--mat-app-text-color);
+  font-size: 14px;
+  color: var(--mat-sys-on-surface);
 }
 
 .message-text code {
   background-color: rgba(255, 255, 255, 0.1);
   padding: 2px 6px;
-  border-radius: var(--gns3-radius-sm);
-  font-family: var(--gns3-font-family-mono);
+  border-radius: 4px;
+  font-family: monospace;
   font-size: 1em;
 }
 
 .message-text pre {
   background-color: rgba(255, 255, 255, 0.05);
-  padding: var(--gns3-spacing-sm);
-  border-radius: var(--gns3-radius-sm);
+  padding: 8px;
+  border-radius: 4px;
   overflow-x: auto;
-  margin: var(--gns3-spacing-1) 0;
-  font-size: var(--gns3-font-size-sm);
+  margin: 4px 0;
+  font-size: 12px;
 }
 
 .message-text pre code {
   background-color: transparent;
   padding: 0;
-  font-size: var(--gns3-font-size-sm);
+  font-size: 12px;
 }
 
 .message-time {
-  font-size: var(--gns3-font-size-xs);
-  color: var(--mat-app-on-surface-variant-color);
+  font-size: 12px;
+  color: var(--mat-sys-on-surface-variant);
   opacity: 0.7;
-  padding: 0 var(--gns3-spacing-1);
+  padding: 0 4px;
 }
 
 .streaming-indicator {
   flex-shrink: 0;
-  margin-top: var(--gns3-spacing-1);
-  // Performance optimized: removed animation, using static styles
+  margin-top: 4px;
   opacity: 0.9;
 
   mat-spinner circle {
-    stroke: var(--mat-app-primary-color);
+    stroke: var(--mat-sys-primary);
   }
 }
 
-// Tool calls and results
 .tool-calls-container {
   display: flex;
   flex-direction: column;
-  gap: var(--gns3-spacing-sm);
-  margin-top: var(--gns3-spacing-sm);
+  gap: 8px;
+  margin-top: 8px;
 }
 
-/* Tool call/result inline display styles */
 .tool-call-message,
 .tool-result-message {
   margin-left: 40px;
-  margin-bottom: var(--gns3-spacing-sm);
+  margin-bottom: 8px;
 }
 
-/* Tool call/result wrapper for better visual hierarchy */
 .tool-call-wrapper,
 .tool-result-wrapper {
   display: flex;
   flex-direction: column;
-  gap: var(--gns3-spacing-1);
+  gap: 4px;
 }
 
 .inline-tool-call,
 .inline-tool-result {
   display: inline-flex;
   align-items: center;
-  gap: var(--gns3-spacing-sm);
-  padding: var(--gns3-spacing-sm) 14px;
-  background: var(--mat-app-surface-container-low-color);
-  border: 1px solid var(--mat-app-outline-variant-color);
-  border-radius: var(--gns3-radius-md);
+  gap: 8px;
+  padding: 8px 14px;
+  background: var(--mat-sys-surface-container-low);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
   cursor: pointer;
-  transition: all var(--gns3-duration-fast) var(--gns3-easing-default);
+  transition: all 100ms ease;
   user-select: none;
-  font-size: var(--gns3-font-size-sm);
+  font-size: 12px;
 }
 
-/* Tool call specific styles - blue/cyan theme */
 .inline-tool-call {
-  border-left: 3px solid var(--gns3-cyan-light);
+  border-left: 3px solid var(--mat-sys-primary-container);
 }
 
 .inline-tool-call:hover {
-  background: var(--mat-app-primary-container-color);
-  border-color: var(--gns3-cyan-light);
+  background: var(--mat-sys-primary-container);
+  border-color: var(--mat-sys-primary-container);
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px var(--gns3-cyan);
+  box-shadow: 0 3px 10px var(--mat-sys-primary);
 }
 
-/* Tool result specific styles - green theme */
 .inline-tool-result {
-  border-left: 3px solid var(--gns3-color-success);
+  border-left: 3px solid #4caf50;
 }
 
 .inline-tool-result:hover {
-  background: var(--mat-app-success-container-color);
-  border-color: var(--gns3-color-success);
+  background: #e8f5e9;
+  border-color: #4caf50;
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px var(--gns3-color-success);
+  box-shadow: 0 3px 10px #4caf50;
 }
 
 .inline-tool-call .tool-icon {
   width: 16px;
   height: 16px;
   font-size: 16px;
-  color: var(--gns3-cyan-light);
+  color: var(--mat-sys-primary-container);
 }
 
 .inline-tool-result .tool-icon {
   width: 16px;
   height: 16px;
   font-size: 16px;
-  color: var(--gns3-color-success);
+  color: #4caf50;
 }
 
 .tool-name-text {
-  font-family: var(--gns3-font-family-mono);
-  font-size: var(--gns3-font-size-xs);
-  font-weight: var(--gns3-font-weight-medium);
-  color: var(--mat-app-on-surface-color);
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
 }
 
 .expand-icon {
   width: 14px;
   height: 14px;
   font-size: 14px;
-  color: var(--mat-app-on-surface-variant-color);
+  color: var(--mat-sys-on-surface-variant);
   opacity: 0.5;
 }
 
-/* Enhanced empty state styles */
 .empty-state {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 100%;
-  padding: 48px var(--gns3-spacing-lg);
+  padding: 48px 16px;
 }
 
 .empty-content {
@@ -430,7 +417,7 @@
   justify-content: center;
   width: 80px;
   height: 80px;
-  margin: 0 auto var(--gns3-spacing-xl);
+  margin: 0 auto 24px;
   background: linear-gradient(
     135deg,
     rgba(99, 102, 241, 0.1),
@@ -455,71 +442,66 @@
   width: 48px;
   height: 48px;
   font-size: 48px;
-  color: var(--mat-app-primary-color);
+  color: var(--mat-sys-primary);
 }
 
 .empty-title {
-  font-size: var(--gns3-font-size-2xl);
-  font-weight: var(--gns3-font-weight-medium);
-  color: var(--mat-app-on-surface-color);
-  margin: 0 0 var(--gns3-spacing-sm) 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin: 0 0 8px 0;
 }
 
 .empty-description {
-  font-size: var(--gns3-font-size-sm);
-  color: var(--mat-app-on-surface-variant-color);
-  margin: 0 0 var(--gns3-spacing-xl) 0;
+  font-size: 12px;
+  color: var(--mat-sys-on-surface-variant);
+  margin: 0 0 24px 0;
 }
 
 .empty-suggestions {
   display: flex;
   flex-direction: column;
-  gap: var(--gns3-spacing-sm);
+  gap: 8px;
   align-items: center;
 }
 
 .suggestion-chip {
   display: flex;
   align-items: center;
-  gap: var(--gns3-spacing-sm);
-  padding: 10px var(--gns3-spacing-lg);
-  background: var(--mat-app-surface-container-low-color);
-  border: 1px solid var(--mat-app-outline-variant-color);
-  border-radius: var(--gns3-radius-lg);
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--mat-sys-surface-container-low);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 16px;
   cursor: pointer;
-  transition: all var(--gns3-duration-fast) var(--gns3-easing-default);
+  transition: all 100ms ease;
   max-width: 280px;
   width: 100%;
   justify-content: center;
 }
 
 .suggestion-chip:hover {
-  background: var(--mat-app-primary-container-color);
-  border-color: var(--mat-app-primary-color);
+  background: var(--mat-sys-primary-container);
+  border-color: var(--mat-sys-primary);
   transform: translateY(-2px);
-  box-shadow: var(--gns3-shadow-md);
+  box-shadow: 0 4px 6px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
 }
 
 .suggestion-chip mat-icon {
   width: 18px;
   height: 18px;
   font-size: 18px;
-  color: var(--mat-app-primary-color);
+  color: var(--mat-sys-primary);
 }
 
 .suggestion-chip span {
-  font-size: var(--gns3-font-size-sm);
-  color: var(--mat-app-on-surface-color);
+  font-size: 12px;
+  color: var(--mat-sys-on-surface);
 }
 
-/* Auto scroll styles */
 .auto-scroll {
   scroll-behavior: smooth;
 }
-
-/* =============================================
-// Theme-specific overrides (using MD3 variables)
-// ============================================= */
 
 .message-text,
 .tool-name-text,

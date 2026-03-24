@@ -1,11 +1,12 @@
 /**
  * GNS3 Nodes Menu Component Styles
+ * Using MD3 CSS variables
  */
 
 .menu-button {
-  margin: 0 var(--gns3-spacing-xs);
+  margin: 0 4px;
 }
 
 .marked {
-  color: var(--mat-app-primary-color);
+  color: var(--mat-sys-primary);
 }
