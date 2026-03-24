@@ -171,7 +171,7 @@ export class ProjectsComponent implements OnInit {
 
   addBlankProject() {
     const dialogRef = this.dialog.open(AddBlankProjectDialogComponent, {
-      width: '400px',
+      width: '350px',
       autoFocus: false,
       disableClose: true,
       panelClass: 'add-controller-dialog-panel',
@@ -183,7 +183,7 @@ export class ProjectsComponent implements OnInit {
   importProject() {
     let uuid: string = '';
     const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
-      width: '400px',
+      width: '350px',
       autoFocus: false,
       disableClose: true,
       panelClass: 'add-controller-dialog-panel',
