@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatListModule } from '@angular/material/list';
@@ -10,7 +9,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
   selector: 'app-help',
   templateUrl: './help.component.html',
   styleUrl: './help.component.scss',
-  imports: [MatTabsModule, MatButtonModule, MatExpansionModule, MatListModule],
+  imports: [MatButtonModule, MatExpansionModule, MatListModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HelpComponent implements OnInit {
