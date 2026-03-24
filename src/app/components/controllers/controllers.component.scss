@@ -45,6 +45,10 @@
   margin: 0 auto;
 }
 
+.controllers__buttons-bar--hidden {
+  display: none;
+}
+
 .controllers__button {
   margin: 12px 0;
 }
@@ -74,6 +78,10 @@
   max-width: 1000px;
   margin: 0 auto;
   background: var(--mat-sys-background);
+}
+
+.controllers__table-container--hidden {
+  display: none;
 }
 
 // Material table internal DOM styling - necessary for visual effects
@@ -453,8 +461,15 @@ button[color="warn"] {
   justify-content: center;
   padding: 64px 24px;
   text-align: center;
+}
 
-  mat-icon {
+.controllers__empty-state--hidden {
+  display: none;
+}
+
+.controllers__empty-state {
+  // Only style the main empty state icon, not icons inside buttons
+  > mat-icon {
     font-size: 64px;
     width: 64px;
     height: 64px;

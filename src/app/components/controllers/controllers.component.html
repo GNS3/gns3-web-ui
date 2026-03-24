@@ -22,22 +22,25 @@
     </form>
 
     <!-- Empty State -->
-    @if (!controllerDatabase || controllerDatabase.data.length === 0) {
-      <div class="controllers__empty-state">
-        <mat-icon>cloud_off</mat-icon>
-        <h3>No controllers found</h3>
-        <p>Add a controller to get started with GNS3</p>
-        <button mat-raised-button color="primary" (click)="createModal()">
-          <mat-icon>add</mat-icon>
-          Add Controller
-        </button>
-      </div>
-    }
+    <div
+      class="controllers__empty-state"
+      [class.controllers__empty-state--hidden]="controllerDatabase && controllerDatabase.data.length > 0"
+    >
+      <mat-icon>cloud_off</mat-icon>
+      <h3>No controllers found</h3>
+      <p>Add a controller to get started with GNS3</p>
+      <button mat-raised-button color="primary" (click)="createModal()">
+        <mat-icon>add</mat-icon>
+        Add Controller
+      </button>
+    </div>
 
     <!-- Controllers Table -->
-    @if (controllerDatabase) {
-      <div class="controllers__table-container">
-        <mat-table #table [dataSource]="dataSource" matSort>
+    <div
+      class="controllers__table-container"
+      [class.controllers__table-container--hidden]="!controllerDatabase || controllerDatabase.data.length === 0"
+    >
+      <mat-table #table [dataSource]="dataSource" matSort>
           <!-- ID Column (hidden on mobile) -->
           <ng-container matColumnDef="id">
             <mat-header-cell *matHeaderCellDef mat-sort-header class="hide-mobile"> ID </mat-header-cell>
@@ -176,17 +179,17 @@
             [class.controllers__row--stopped]="getControllerStatus(row) === 'stopped'"
           ></mat-row>
         </mat-table>
-      </div>
-    }
+    </div>
 
     <!-- Add Controller Button -->
-    @if (!controllerDatabase || controllerDatabase.data.length > 0) {
-      <div class="controllers__buttons-bar">
+    <div
+      class="controllers__buttons-bar"
+      [class.controllers__buttons-bar--hidden]="!controllerDatabase || controllerDatabase.data.length === 0"
+    >
         <button mat-raised-button class="controllers__button" color="primary" (click)="createModal()">
           <mat-icon>add</mat-icon>
           Add Controller
         </button>
-      </div>
-    }
+    </div>
   </div>
 </div>
