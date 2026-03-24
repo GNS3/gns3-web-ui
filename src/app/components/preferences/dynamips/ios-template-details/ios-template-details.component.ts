@@ -60,10 +60,10 @@ export class IosTemplateDetailsComponent implements OnInit {
   advancedForm: UntypedFormGroup;
 
   // Section collapse states
-  generalSettingsExpanded: boolean = true;
-  memoryExpanded: boolean = true;
-  slotsExpanded: boolean = true;
-  advancedExpanded: boolean = true;
+  generalSettingsExpanded: boolean = false;
+  memoryExpanded: boolean = false;
+  slotsExpanded: boolean = false;
+  advancedExpanded: boolean = false;
   usageExpanded: boolean = false;
 
   constructor() {
