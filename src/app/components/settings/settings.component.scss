@@ -1,33 +1,266 @@
 /**
  * GNS3 Settings Component Styles
- * Using MD3 CSS variables
+ * BEM naming applied, Material Design 3, unified design language
  */
 
-.theme-panel {
-  justify-content: space-between;
-  display: flex;
-  padding: 8px;
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--mat-sys-primary-container) 0%,
+    var(--mat-sys-background) 100%
+  );
+  min-height: 100vh;
+}
 
-  &--map {
-    flex-direction: column;
-    border-top: 1px solid rgba(128, 128, 128, 0.3);
-    margin-top: 8px;
-    padding-top: 16px;
-    gap: 8px;
+/* =============================================
+// Header
+// ============================================= */
+.settings__header {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px 20px 16px;
+  animation: fadeInSlideIn 0.4s ease-out;
+}
+
+.settings__title {
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin: 0;
+}
+
+/* =============================================
+// Content
+// ============================================= */
+.settings__content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px 24px;
+  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+}
+
+/* =============================================
+// Card Container
+// ============================================= */
+.settings__card {
+  background: var(--mat-sys-surface);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+              0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* =============================================
+// Expansion Panel Overrides
+// ============================================= */
+::ng-deep .settings__card {
+  .mat-expansion-panel {
+    box-shadow: none;
+    border-radius: 0;
+
+    &:first-child {
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+    }
+
+    &:last-child {
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+    }
+
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
+    }
+
+    &.mat-expanded {
+      background: color-mix(in srgb, var(--mat-sys-primary-container) 30%, transparent);
+    }
   }
 
-  &__label {
-    font-size: 14px;
-    font-weight: 500;
-    margin-bottom: 4px;
+  .mat-expansion-panel-header {
+    padding: 16px 24px;
+    height: auto;
+    min-height: 64px;
+
+    &:hover {
+      background: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
+    }
   }
 
-  &__radio-group {
-    display: flex;
-    gap: 16px;
+  .mat-expansion-panel-header-description {
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .mat-expansion-panel-content {
+    padding: 8px 24px 20px;
   }
 }
 
-.fullWidth {
+/* =============================================
+// Checkbox Group
+// ============================================= */
+.settings__checkbox-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  mat-checkbox {
+    margin: 0;
+  }
+}
+
+/* =============================================
+// Theme Section
+// ============================================= */
+.settings__theme-section {
+  margin-bottom: 16px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &--map {
+    padding-top: 16px;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+    margin-top: 16px;
+  }
+}
+
+.settings__label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin-bottom: 8px;
+}
+
+.settings__radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+/* =============================================
+// Theme Option with Color Swatch
+// ============================================= */
+.settings__theme-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.settings__theme-swatch {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.settings__theme-name {
+  font-size: 14px;
+}
+
+mat-radio-button {
+  &:hover .settings__theme-swatch {
+    transform: scale(1.1);
+  }
+}
+
+/* =============================================
+// Update Section
+// ============================================= */
+.settings__update-section {
+  padding: 8px 0;
+}
+
+.settings__update-button {
   width: 100%;
+}
+
+/* =============================================
+// Actions
+// ============================================= */
+.settings__actions {
+  margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.settings__save-button {
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.5px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0 32px;
+
+  &:hover:not([disabled]) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
+  }
+
+  &:active:not([disabled]) {
+    transform: translateY(0);
+  }
+}
+
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 768px) {
+  .settings__header {
+    padding: 16px 16px 12px;
+  }
+
+  .settings__title {
+    font-size: 28px;
+  }
+
+  .settings__content {
+    padding: 0 16px 16px;
+  }
+
+  ::ng-deep .settings__card {
+    .mat-expansion-panel-header {
+      padding: 12px 16px;
+      min-height: 56px;
+    }
+
+    .mat-expansion-panel-content {
+      padding: 8px 16px 16px;
+    }
+  }
+
+  .settings__radio-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .settings__save-button {
+    width: 100%;
+    height: 44px;
+    font-size: 15px;
+  }
 }

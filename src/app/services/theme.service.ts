@@ -61,12 +61,12 @@ export class ThemeService {
   public savedTheme: string = 'pink-bluegrey';
   public savedMapTheme: string = 'auto';
 
-  // All available prebuilt themes
-  readonly availableThemes: { key: PrebuiltTheme; label: string; type: ThemeType }[] = [
-    { key: 'deeppurple-amber', label: 'Deep Purple & Amber', type: 'light' },
-    { key: 'indigo-pink', label: 'Indigo & Pink', type: 'light' },
-    { key: 'pink-bluegrey', label: 'Pink & Bluegrey', type: 'dark' },
-    { key: 'purple-green', label: 'Purple & Green', type: 'dark' },
+  // All available prebuilt themes with MD3 palette colors
+  readonly availableThemes: { key: PrebuiltTheme; label: string; type: ThemeType; primaryColor: string }[] = [
+    { key: 'deeppurple-amber', label: 'Deep Purple & Amber', type: 'light', primaryColor: '#6750A4' },
+    { key: 'indigo-pink', label: 'Indigo & Pink', type: 'light', primaryColor: '#3F51B5' },
+    { key: 'pink-bluegrey', label: 'Pink & Bluegrey', type: 'dark', primaryColor: '#E91E63' },
+    { key: 'purple-green', label: 'Purple & Green', type: 'dark', primaryColor: '#7E57C2' },
   ];
 
   constructor(
