@@ -1,6 +1,6 @@
 /**
  * GNS3 Default Layout Component Styles
- * Material Design 3, BEM naming convention
+ * Using MD3 CSS variables only
  */
 
 html,
@@ -20,69 +20,18 @@ app-default-layout {
 }
 
 /* =============================================
-// Header / Toolbar
+// Header
 // ============================================= */
 .header {
   box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent);
   z-index: 10;
-  background-color: var(--mat-sys-primary-container);
-}
-
-.header__toolbar {
-  --mat-toolbar-container-height: 64px;
-  background-color: var(--mat-sys-primary-container);
-  color: var(--mat-sys-on-primary-container);
-  box-shadow: none;
-}
-
-.header__toolbar-row {
-  height: 64px;
-}
-
-.header__menu-btn {
-  margin-right: 8px;
-}
-
-.header__spacer {
-  flex: 1 1 auto;
 }
 
 /* =============================================
-// Buttons in Toolbar
+// Spacer
 // ============================================= */
-.header__btn {
-  --mdc-text-button-label-text-size: 14px;
-  --mdc-text-button-label-text-tracking: 0.5px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  text-transform: none;
-  border-radius: 8px;
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  color: var(--mat-sys-on-primary);
-
-  &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-on-primary) 8%, transparent);
-  }
-
-  &:active {
-    background-color: color-mix(in srgb, var(--mat-sys-on-primary) 12%, transparent);
-  }
-}
-
-.header__icon-btn {
-  --mat-icon-button-state-layer-size: 40px;
-  --mat-icon-button-icon-size: 24px;
-  border-radius: 50%;
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  color: white;
-
-  &:hover {
-    background-color: color-mix(in srgb, white 8%, transparent);
-  }
-
-  &:active {
-    background-color: color-mix(in srgb, white 12%, transparent);
-  }
+.spacer {
+  flex: 1 1 auto;
 }
 
 /* =============================================
@@ -90,7 +39,6 @@ app-default-layout {
 // ============================================= */
 .main-content {
   flex: 1 0 auto;
-  background-color: var(--mat-sys-background);
 }
 
 /* =============================================
@@ -100,10 +48,8 @@ app-default-layout {
   flex-shrink: 0;
   padding: 16px 24px;
   margin: auto 0 0 0;
-  background-color: var(--mat-sys-surface);
-  color: var(--mat-sys-on-surface-variant);
-  font-size: 14px;
   text-align: center;
+  font-size: 14px;
   border-top: 1px solid color-mix(in srgb, var(--mat-sys-outline) 20%, transparent);
 }
 
@@ -111,18 +57,6 @@ app-default-layout {
 // Responsive Design
 // ============================================= */
 @media (max-width: 768px) {
-  .header__toolbar-row {
-    height: 56px;
-  }
-
-  .header__toolbar {
-    --mat-toolbar-container-height: 56px;
-  }
-
-  .header__btn {
-    --mdc-text-button-label-text-size: 13px;
-  }
-
   .footer {
     padding: 12px 16px;
     font-size: 12px;

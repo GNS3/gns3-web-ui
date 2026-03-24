@@ -1,59 +1,54 @@
 <header class="header">
-  <mat-toolbar color="primary" class="header__toolbar">
-    <button mat-icon-button class="header__icon-btn header__menu-btn" matTooltip="Open menu" matTooltipClass="custom-tooltip" [matMenuTriggerFor]="mainMenu">
+  <mat-toolbar color="primary">
+    <button mat-icon-button matTooltip="Open menu" matTooltipClass="custom-tooltip" [matMenuTriggerFor]="mainMenu">
       <mat-icon svgIcon="gns3"></mat-icon>
     </button>
 
-    <button *ngIf="!recentlyOpenedProjectId && controllerIdProjectList" mat-button class="header__btn" (click)="listProjects()">
+    <button *ngIf="!recentlyOpenedProjectId && controllerIdProjectList" mat-button (click)="listProjects()">
       Projects
     </button>
 
     <button
       *ngIf="recentlyOpenedProjectId && recentlyOpenedcontrollerId"
       mat-button
-      class="header__btn"
       (click)="backToProject()"
     >
       Back to project
     </button>
 
-    <span class="header__spacer"></span>
+    <span class="spacer"></span>
 
-    <button mat-icon-button class="header__icon-btn" [matMenuTriggerFor]="menu">
+    <button mat-icon-button [matMenuTriggerFor]="menu">
       <mat-icon>more_vert</mat-icon>
     </button>
 
     <!-- GNS3 right menu -->
     <mat-menu #menu="matMenu">
-      <button mat-menu-item class="header__menu-item" [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'systemstatus']">
+      <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'systemstatus']">
         <mat-icon>info</mat-icon>
         <span>System status</span>
       </button>
-      <button mat-menu-item class="header__menu-item" [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'settings']">
+      <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'settings']">
         <mat-icon>settings</mat-icon>
         <span>Settings</span>
       </button>
-      <button
-        mat-menu-item
-                [disabled]="!controllerId"
-        [routerLink]="['controller', controllerId, 'management', 'users']"
-      >
+      <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'management', 'users']">
         <mat-icon>groups</mat-icon>
         <span>Management</span>
       </button>
-      <button mat-menu-item class="header__menu-item" [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'help']">
+      <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'help']">
         <mat-icon>help</mat-icon>
         <span>Help</span>
       </button>
-      <button [disabled]="!controllerId" [routerLink]="['/controller', controllerId, 'loggeduser']" mat-menu-item class="header__menu-item">
+      <button mat-menu-item [disabled]="!controllerId" [routerLink]="['/controller', controllerId, 'loggeduser']">
         <mat-icon>person</mat-icon>
         <span>User info</span>
       </button>
-      <button [disabled]="!controllerId" mat-menu-item class="header__menu-item" (click)="goToDocumentation()">
+      <button mat-menu-item [disabled]="!controllerId" (click)="goToDocumentation()">
         <mat-icon>person</mat-icon>
         <span>API documentation</span>
       </button>
-      <button mat-menu-item class="header__menu-item" [disabled]="!controllerId" (click)="logout()">
+      <button mat-menu-item [disabled]="!controllerId" (click)="logout()">
         <mat-icon>highlight_off</mat-icon>
         <span>Logout</span>
       </button>
@@ -61,23 +56,23 @@
 
     <!-- GNS3 left menu -->
     <mat-menu #mainMenu="matMenu">
-      <button mat-menu-item class="header__menu-item" [routerLink]="['/controllers']">
+      <button mat-menu-item [routerLink]="['/controllers']">
         <mat-icon>developer_board</mat-icon>
         <span>Controllers</span>
       </button>
-      <button mat-menu-item class="header__menu-item" [routerLink]="['/controller', controllerId, 'projects']">
+      <button mat-menu-item [routerLink]="['/controller', controllerId, 'projects']">
         <mat-icon>work</mat-icon>
         <span>Projects</span>
       </button>
-      <button mat-menu-item class="header__menu-item" [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'preferences']">
+      <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'preferences']">
         <mat-icon>settings_applications</mat-icon>
         <span>Template preferences</span>
       </button>
-      <button mat-menu-item class="header__menu-item" [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'image-manager']">
+      <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'image-manager']">
         <mat-icon>collections</mat-icon>
         <span>Image manager</span>
       </button>
-      <button mat-menu-item class="header__menu-item" (click)="addNewTemplate()">
+      <button mat-menu-item (click)="addNewTemplate()">
         <mat-icon>control_point</mat-icon>
         <span>New template</span>
       </button>
