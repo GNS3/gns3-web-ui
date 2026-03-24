@@ -23,6 +23,47 @@
   box-shadow: 0 4px 16px color-mix(in srgb, var(--mat-sys-shadow) var(--gns3-shadow-opacity-heavy), transparent);
 }
 
+/* =============================================
+// Reusable Selection State Classes
+// Standardized selection states for different backgrounds
+// ============================================= */
+
+/* Selection on primary background (e.g., titlebar) */
+.selection-on-primary {
+  background: color-mix(in srgb, var(--mat-sys-on-primary) var(--gns3-selection-opacity-normal), transparent);
+
+  mat-icon, .icon {
+    color: var(--mat-sys-on-primary);
+  }
+}
+
+/* Selection on surface background (e.g., toolbar, menus) */
+.selection-on-surface {
+  background: var(--mat-sys-primary-container);
+
+  mat-icon, .icon {
+    color: var(--mat-sys-primary);
+  }
+}
+
+/* Selection for SVG elements on map */
+.selection-svg-stroke {
+  stroke: var(--mat-sys-primary);
+}
+
+.selection-svg-fill {
+  fill: var(--mat-sys-primary);
+  stroke: var(--mat-sys-primary);
+  fill-opacity: 0.3;
+  stroke-opacity: 0.7;
+  stroke-width: 1;
+  stroke-dasharray: 5, 5;
+}
+
+.selection-error {
+  stroke: var(--mat-sys-error);
+}
+
 .wrapper {
   height: 500px;
 }
@@ -120,11 +161,7 @@ g.node:hover {
   }
 
   .selected {
-    background: color-mix(in srgb, var(--mat-sys-on-primary) var(--gns3-selection-opacity-normal), transparent);
-
-    mat-icon {
-      color: var(--mat-sys-on-primary);
-    }
+    @extend .selection-on-primary;
   }
 
   .project-titlebar-controls {
@@ -349,7 +386,7 @@ mat-divider.divider {
 }
 
 line.selected {
-  stroke: var(--mat-sys-primary);
+  @extend .selection-svg-stroke;
 }
 
 svg.map image:hover,
@@ -359,7 +396,7 @@ g.selected {
 }
 
 path.serial_link.selected {
-  stroke: var(--mat-sys-error);
+  @extend .selection-error;
 }
 
 path.ethernet_link:hover {
@@ -372,12 +409,7 @@ path.ethernet_link:hover {
 }
 
 .selection-line-tool .selection {
-  fill: var(--mat-sys-primary);
-  stroke: var(--mat-sys-primary);
-  fill-opacity: 0.3;
-  stroke-opacity: 0.7;
-  stroke-width: 1;
-  stroke-dasharray: 5, 5;
+  @extend .selection-svg-fill;
 }
 
 g.node text,

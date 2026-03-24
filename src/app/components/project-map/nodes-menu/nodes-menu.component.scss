@@ -3,10 +3,16 @@
  * Using MD3 CSS variables
  */
 
-.menu-button {
-  margin: 0 4px;
-}
+/* =============================================
+// Selection State Classes
+// Unified selection states for menu items
+// ============================================= */
 
+/* Selected/Active state */
 .marked {
   color: var(--mat-sys-primary);
+}
+
+.menu-button {
+  margin: 0 4px;
 }

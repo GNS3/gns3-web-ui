@@ -3,6 +3,27 @@
  * Using MD3 CSS variables
  */
 
+/* =============================================
+// Selection State Classes
+// Unified selection states for menu items
+// ============================================= */
+
+/* Unselected state (default) */
+.unmarked,
+.unmarkedLight {
+  color: var(--mat-sys-on-surface);
+}
+
+/* Selected/Active state */
+.marked {
+  color: var(--mat-sys-primary);
+}
+
+/* Drawing button selected state */
+.draw-line-icon.selected {
+  stroke: var(--mat-sys-primary);
+}
+
 .non-visible {
   display: none;
 }
@@ -10,18 +31,6 @@
 /* Draw line icon - uses MD3 variables for theme-aware color */
 .draw-line-icon {
   stroke: var(--mat-sys-on-surface);
-}
-
-.unmarked {
-  color: var(--mat-sys-on-surface);
-}
-
-.unmarkedLight {
-  color: var(--mat-sys-on-surface);
-}
-
-.marked {
-  color: var(--mat-sys-primary);
 }
 
 .ai-chat-button .ai-icon {
