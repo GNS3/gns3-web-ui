@@ -28,6 +28,13 @@
                 <mat-label>Default name format</mat-label>
                 <input matInput type="text" formControlName="defaultName" placeholder="Default name format" />
               </mat-form-field>
+              <div class="ios-details__symbol-row">
+                <mat-form-field appearance="fill" class="ios-details__field ios-details__field--flex">
+                  <mat-label>Symbol</mat-label>
+                  <input matInput type="text" formControlName="symbol" placeholder="Symbol" />
+                </mat-form-field>
+                <button mat-button class="ios-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
+              </div>
             </form>
             <div class="ios-details__info-row">
               <span class="ios-details__info-label">Platform</span>
@@ -39,13 +46,6 @@
                 <span class="ios-details__info-value">{{ iosTemplate.chassis }}</span>
               </div>
             }
-            <div class="ios-details__symbol-row">
-              <mat-form-field appearance="fill" class="ios-details__field ios-details__field--flex">
-                <mat-label>Symbol</mat-label>
-                <input matInput type="text" formControlName="symbol" placeholder="Symbol" />
-              </mat-form-field>
-              <button mat-button class="ios-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
-            </div>
             <mat-form-field appearance="fill" class="ios-details__field">
               <mat-label>Category</mat-label>
               <mat-select [ngModelOptions]="{ standalone: true }" placeholder="Category">
