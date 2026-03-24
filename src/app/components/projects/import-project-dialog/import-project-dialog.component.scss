@@ -37,16 +37,16 @@
 
 .file-name-form {
   width: 100%;
+  padding: 0 24px;
+  box-sizing: border-box;
 }
 
 .file-name-form-field {
-  width: calc(100% - 72px);
-  margin-left: 24px;
+  width: 100%;
 }
 
 .empty {
-  width: calc(100% - 72px);
-  margin-left: 24px;
+  width: 100%;
 }
 
 .delete-button {
