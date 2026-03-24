@@ -194,7 +194,7 @@ export class ThemeService {
    */
   restoreTheme(): void {
     const savedTheme = localStorage.getItem('theme') as PrebuiltTheme | null;
-    if (savedTheme && this.prebuiltThemes[savedTheme]) {
+    if (savedTheme && this.availableThemes.some(t => t.key === savedTheme)) {
       this.setTheme(savedTheme);
     }
   }
