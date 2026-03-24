@@ -38,6 +38,7 @@ export class AppComponent implements OnInit {
   constructor() {
     this.iconReg.addSvgIcon('gns3', this.sanitizer.bypassSecurityTrustResourceUrl('./assets/gns3_icon.svg'));
     this.iconReg.addSvgIcon('gns3black', this.sanitizer.bypassSecurityTrustResourceUrl('./assets/gns3_icon_black.svg'));
+    this.iconReg.addSvgIcon('github', this.sanitizer.bypassSecurityTrustResourceUrl('./assets/github-icon.svg'));
 
     this.router.events.subscribe((value) => {
       this.checkEvent(value);

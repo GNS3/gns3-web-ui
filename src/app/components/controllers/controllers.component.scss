@@ -13,10 +13,10 @@
   display: block;
   width: 100%;
   height: 100%;
-  // Subtle gradient background unified with login page
+  // Unified gradient background with login page
   background: linear-gradient(
-    180deg,
-    var(--mat-sys-surface) 0%,
+    135deg,
+    var(--mat-sys-primary-container) 0%,
     var(--mat-sys-background) 100%
   );
   min-height: 100vh;
@@ -579,11 +579,57 @@ button[color="warn"] {
 // Footer
 // ============================================= */
 .controllers__footer {
-  text-align: center;
   padding: 24px 20px;
   color: var(--mat-sys-on-surface-variant);
   font-size: 14px;
   opacity: 0.7;
+}
+
+.controllers__footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1000px;
+  margin: 0 auto;
+  gap: 16px;
+}
+
+.controllers__footer-info {
+  flex: 1;
+}
+
+.controllers__footer-social {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.controllers__footer-social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--mat-sys-on-surface-variant);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+    color: var(--mat-sys-primary);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.controllers__footer-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
 }
 
 /* =============================================
@@ -653,6 +699,12 @@ button[color="warn"] {
   .controllers__footer {
     padding: 16px;
     font-size: 12px;
+  }
+
+  .controllers__footer-content {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
   }
 }
 

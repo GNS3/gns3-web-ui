@@ -109,5 +109,28 @@
         </div>
       </form>
     </mat-card>
+
+    <!-- Social Links -->
+    <div class="login-card__social">
+      <a
+        class="login-card__social-link"
+        href="https://github.com/GNS3"
+        target="_blank"
+        rel="noopener noreferrer"
+        matTooltip="GitHub"
+      >
+        <mat-icon class="login-card__social-icon" svgIcon="github"></mat-icon>
+      </a>
+      <a
+        class="login-card__social-link"
+        href="https://www.gns3.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        matTooltip="Website"
+      >
+        <mat-icon class="login-card__social-icon" *ngIf="!isLightThemeEnabled()" svgIcon="gns3"></mat-icon>
+        <mat-icon class="login-card__social-icon" *ngIf="isLightThemeEnabled()" svgIcon="gns3black"></mat-icon>
+      </a>
+    </div>
   </div>
 </div>

@@ -199,7 +199,32 @@
 
     <!-- Version Footer -->
     <footer class="controllers__footer">
-      GNS3 Web-UI &copy;2018-{{ currentYear }} v{{ version }}
+      <div class="controllers__footer-content">
+        <div class="controllers__footer-info">
+          GNS3 Web-UI &copy;2018-{{ currentYear }} v{{ version }}
+        </div>
+        <div class="controllers__footer-social">
+          <a
+            class="controllers__footer-social-link"
+            href="https://github.com/GNS3"
+            target="_blank"
+            rel="noopener noreferrer"
+            matTooltip="GitHub"
+          >
+            <mat-icon class="controllers__footer-icon" svgIcon="github"></mat-icon>
+          </a>
+          <a
+            class="controllers__footer-social-link"
+            href="https://www.gns3.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            matTooltip="Website"
+          >
+            <mat-icon class="controllers__footer-icon" *ngIf="!isLightThemeEnabled()" svgIcon="gns3"></mat-icon>
+            <mat-icon class="controllers__footer-icon" *ngIf="isLightThemeEnabled()" svgIcon="gns3black"></mat-icon>
+          </a>
+        </div>
+      </div>
     </footer>
   </div>
 </div>
