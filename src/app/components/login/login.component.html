@@ -1,4 +1,10 @@
 <div class="login-wrapper">
+  <!-- Back to Controllers Button -->
+  <a class="login-back-btn" routerLink="/controllers">
+    <mat-icon class="login-back-btn__icon" *ngIf="!isLightThemeEnabled()" svgIcon="gns3"></mat-icon>
+    <mat-icon class="login-back-btn__icon" *ngIf="isLightThemeEnabled()" svgIcon="gns3black"></mat-icon>
+  </a>
+
   <div class="login-card">
     <mat-card class="login-card__mat-card">
       <!-- Header with Logo and Version -->

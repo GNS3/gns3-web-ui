@@ -11,6 +11,45 @@
 }
 
 /* =============================================
+// Back Button
+// ============================================= */
+.login-back-btn {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--mat-sys-surface);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  z-index: 100;
+  animation: fadeIn 0.3s ease-out;
+
+  &:hover {
+    background: var(--mat-sys-surface-container);
+    box-shadow: 0 6px 16px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  }
+}
+
+.login-back-btn__icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
+  color: var(--mat-sys-on-surface);
+}
+
+/* =============================================
 // Wrapper
 // ============================================= */
 .login-wrapper {
@@ -283,6 +322,19 @@
 // Responsive Design
 // ============================================= */
 @media (max-width: 600px) {
+  .login-back-btn {
+    top: 16px;
+    left: 16px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .login-back-btn__icon {
+    font-size: 24px;
+    width: 24px;
+    height: 24px;
+  }
+
   .login-wrapper {
     padding: 16px;
   }
