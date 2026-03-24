@@ -80,6 +80,12 @@ const routes: Routes = [
   // Routes without DefaultLayout (clean pages)
   { path: 'controllers', component: ControllersComponent },
   { path: 'controller/:controller_id/login', component: LoginComponent },
+  {
+    path: 'controller/:controller_id/projects',
+    component: ProjectsComponent,
+    canActivate: [LoginGuard],
+    resolve: { controller: ControllerResolve },
+  },
 
   // Routes with DefaultLayout
   {
@@ -90,12 +96,6 @@ const routes: Routes = [
       { path: 'bundled', component: BundledControllerFinderComponent },
       { path: 'controller/:controller_id/loggeduser', component: LoggedUserComponent },
       { path : 'controller/:controller_id/image-manager', component: ImageManagerComponent},
-      {
-        path: 'controller/:controller_id/projects',
-        component: ProjectsComponent,
-        canActivate: [LoginGuard],
-        resolve: { controller: ControllerResolve },
-      },
       { path: 'controller/:controller_id/help', component: HelpComponent },
       { path: 'controller/:controller_id/settings', component: SettingsComponent },
       { path: 'controller/:controller_id/settings/console', component: ConsoleComponent },
