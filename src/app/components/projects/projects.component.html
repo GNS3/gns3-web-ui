@@ -1,24 +1,18 @@
 <div class="projects">
-  <div class="projects__header">
-    <!-- GNS3 Logo and Title -->
-    <div class="projects__header-content">
-      <mat-icon class="projects__logo-icon" *ngIf="!isLightThemeEnabled()" svgIcon="gns3"></mat-icon>
-      <mat-icon class="projects__logo-icon" *ngIf="isLightThemeEnabled()" svgIcon="gns3black"></mat-icon>
-      <h1>Projects</h1>
-    </div>
-  </div>
-
   <div class="projects__content">
-    <!-- Buttons Bar -->
-    <div class="projects__buttons-bar">
-      <button mat-raised-button class="projects__button" color="primary" (click)="addBlankProject()">
-        <mat-icon>add</mat-icon>
-        Add Blank Project
-      </button>
-      <button mat-raised-button class="projects__button" color="primary" (click)="importProject()">
-        <mat-icon>cloud_upload</mat-icon>
-        Import Project
-      </button>
+    <!-- Header with Title and Buttons -->
+    <div class="projects__header">
+      <h1 class="projects__title">Projects</h1>
+      <div class="projects__buttons-bar">
+        <button mat-raised-button class="projects__button" color="primary" (click)="addBlankProject()">
+          <mat-icon>add</mat-icon>
+          Add Blank Project
+        </button>
+        <button mat-raised-button class="projects__button" color="primary" (click)="importProject()">
+          <mat-icon>cloud_upload</mat-icon>
+          Import Project
+        </button>
+      </div>
     </div>
 
     <!-- Search -->
