@@ -273,8 +273,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   getSettings() {
-    this.cd.detectChanges();
-
     this.settings = this.settingsService.getAll();
     this.symbolScaling = this.mapSettingsService.getSymbolScaling();
     this.cd.markForCheck();
