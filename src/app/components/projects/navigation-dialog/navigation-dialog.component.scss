@@ -1,22 +1,22 @@
 /**
  * GNS3 Navigation Dialog Component Styles
+ * Using MD3 CSS variables
  */
 
 .dialogWrapper {
-  background-color: var(--gns3-surface);
-  padding: var(--gns3-spacing-xs) var(--gns3-spacing-md);
+  background-color: var(--mat-sys-surface);
+  padding: 8px 16px;
   margin-bottom: -8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.dialogWrapper.lightTheme,
-.dialogWrapper.theme-light {
-  background-color: white;
+.dialogWrapper.lightTheme {
+  background-color: var(--mat-sys-surface);
 }
 
 .title {
-  margin-right: var(--gns3-spacing-sm);
-  margin-left: var(--gns3-spacing-sm);
+  margin-right: 10px;
+  margin-left: 10px;
 }
