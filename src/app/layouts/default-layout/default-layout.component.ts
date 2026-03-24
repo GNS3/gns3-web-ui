@@ -11,7 +11,6 @@ import { ControllerManagementService } from '@services/controller-management.ser
 import { ControllerService } from '@services/controller.service';
 import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.service';
 import { ToasterService } from '@services/toaster.service';
-import { version } from '../../version';
 import { ProgressComponent } from '../../common/progress/progress.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -39,10 +38,8 @@ import { CommonModule } from '@angular/common';
 })
 export class DefaultLayoutComponent implements OnInit, OnDestroy {
   public isInstalledSoftwareAvailable = false;
-  public uiVersion = version;
   public isLoginPage = false;
   public routeSubscription;
-  public currentYear = new Date().getFullYear();
 
   controllerStatusSubscription: Subscription;
   shouldStopControllersOnClosing = true;
