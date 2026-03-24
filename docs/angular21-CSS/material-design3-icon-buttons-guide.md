@@ -318,8 +318,8 @@ See `src/app/components/controllers/controllers.component.scss` for the complete
 
 - [Angular Material CDK Table Source Code](https://github.com/angular/components/blob/main/src/cdk/table/table.ts)
 - [Material Design 3 Button Specs](https://m3.material.io/components/buttons/overview)
-- [Project CSS Coding Standards](./css-coding-standards.md)
-- [Material CSS Variables Reference](./material-css-variables-complete.md)
+- [Project CSS Coding Standards](./01-css-coding-standards.md)
+- [Material 3 CSS Variables Reference](./02-material3-css-variables.md)
 
 ---
 

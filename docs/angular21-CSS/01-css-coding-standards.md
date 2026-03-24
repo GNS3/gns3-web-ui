@@ -27,7 +27,7 @@ mat-form-field {
 **Rule**: Never use hardcoded color values as fallbacks. All colors must be obtained through Material theme variables.
 
 ```scss
-// ✅ Correct: Use CSS variables or Material theme tokens
+// ✅ Correct: Use CSS variables
 .card {
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
@@ -40,7 +40,7 @@ mat-form-field {
 }
 ```
 
-> **Important**: If a Material theme variable is undefined, add it to the theme supplement file. Never use fallbacks as a workaround.
+> **Important**: If a Material theme variable is undefined, it's a bug in the theme generation system, not a fallback situation.
 
 ---
 
@@ -244,11 +244,18 @@ this.renderer.addClass(el, 'custom-style-' + this.variant);
 
 ```
 src/styles/
-├── _dialogs.scss          # Centralized dialog styles
-├── _index.scss           # Theme imports (internal use)
-├── styles.scss           # Global styles + @use for dialogs
-└── material3-themes/     # Theme variable files
+├── _dialogs.scss                   # Centralized dialog styles
+├── _theme-generator.scss           # Theme generator (MD3 Sass Mixin)
+├── material3-theme-supplement.scss # Main entry point (imports _theme-generator)
+└── styles.scss                    # Global styles + @use for dialogs
 ```
+
+### How Theme System Works
+
+1. **ThemeService** adds theme class to `<html>` element (e.g., `class="theme-pink-bluegrey"`)
+2. **`material3-theme-supplement.scss`** calls `generate-all-themes()` mixin
+3. **`_theme-generator.scss`** generates CSS variables via `mat.define-theme()` and `mat.all-component-themes()`
+4. **Components** use CSS variables (e.g., `var(--mat-sys-primary)`)
 
 ### Implementation Steps
 
@@ -344,11 +351,9 @@ Dialogs are rendered outside the component's host element in Angular's overlay s
 
 ## Appendix: Material Design 3 Theme Variable Reference
 
-### Color System Overview
+See [Material 3 CSS Variables Reference](./02-material3-css-variables.md) for the complete variable documentation.
 
-Material Design 3 uses a semantic color system with system tokens (`--mat-sys-*`). These tokens provide consistent theming across light and dark modes.
-
-### Primary Colors
+### Quick Reference - Primary Colors
 
 | Token | Purpose |
 |-------|---------|
@@ -357,122 +362,14 @@ Material Design 3 uses a semantic color system with system tokens (`--mat-sys-*`
 | `--mat-sys-primary-container` | Light/dark variant for containers |
 | `--mat-sys-on-primary-container` | Text on primary container |
 
-### Secondary Colors
-
-| Token | Purpose |
-|-------|---------|
-| `--mat-sys-secondary` | Secondary actions, sliders, progress |
-| `--mat-sys-on-secondary` | Text on secondary color |
-| `--mat-sys-secondary-container` | Secondary containers |
-| `--mat-sys-on-secondary-container` | Text on secondary container |
-
-### Tertiary Colors
-
-| Token | Purpose |
-|-------|---------|
-| `--mat-sys-tertiary` | Checkboxes, radio, third-party integration |
-| `--mat-sys-on-tertiary` | Text on tertiary color |
-| `--mat-sys-tertiary-container` | Tertiary containers |
-| `--mat-sys-on-tertiary-container` | Text on tertiary container |
-
-### Error Colors
-
-| Token | Purpose |
-|-------|---------|
-| `--mat-sys-error` | Errors, destructive actions, validation |
-| `--mat-sys-on-error` | Text on error color |
-| `--mat-sys-error-container` | Error message containers |
-| `--mat-sys-on-error-container` | Text in error containers |
-
-### Surface Colors
+### Quick Reference - Surface Colors
 
 | Token | Purpose |
 |-------|---------|
 | `--mat-sys-background` | Page background |
-| `--mat-sys-on-background` | Text on background |
 | `--mat-sys-surface` | Cards, sheets, dialogs |
-| `--mat-sys-on-surface` | Text on surface |
-| `--mat-sys-surface-variant` | Dividers, disabled backgrounds |
-| `--mat-sys-on-surface-variant` | Placeholder, helper text |
+| `--mat-sys-surface-container-*` | Elevation levels (lowest, low, medium, high, highest) |
 | `--mat-sys-outline` | Borders, dividers |
-| `--mat-sys-outline-variant` | Subtle borders |
-
-### Inverse Colors
-
-| Token | Purpose |
-|-------|---------|
-| `--mat-sys-inverse-surface` | Emphasis surfaces (dark) |
-| `--mat-sys-inverse-on-surface` | Text on inverse surface |
-| `--mat-sys-inverse-primary` | Primary on inverse surfaces |
-
-### Elevation & Utility
-
-| Token | Purpose |
-|-------|---------|
-| `--mat-sys-shadow` | Box shadows |
-| `--mat-sys-scrim` | Modal overlays |
-
-### Surface Containers (Tones)
-
-| Token | Purpose |
-|-------|---------|
-| `--mat-sys-surface-container-lowest` | Highest elevation surface |
-| `--mat-sys-surface-container-low` | Low elevation surface |
-| `--mat-sys-surface-container` | Medium elevation surface |
-| `--mat-sys-surface-container-high` | High elevation surface |
-| `--mat-sys-surface-container-highest` | Highest elevation surface |
-
----
-
-## Color Variable Management
-
-### File Structure
-
-```
-src/styles/
-├── material3-theme-supplement.scss    # Main entry point
-└── material3-themes/
-    ├── _index.scss                   # Imports all themes
-    ├── _deeppurple-amber.scss       # Light theme
-    ├── _indigo-pink.scss             # Light theme
-    ├── _pink-bluegrey.scss           # Dark theme
-    └── _purple-green.scss           # Dark theme
-```
-
-### How It Works
-
-1. **ThemeService** adds theme class to `<html>` element (e.g., `class="theme-pink-bluegrey"`)
-2. **Material3-theme-supplement.scss** imports theme-specific variable files
-3. **Components** use CSS variables (e.g., `var(--mat-sys-primary)`)
-
-### Adding Missing Variables
-
-If a component needs a variable that doesn't exist:
-
-1. Find the appropriate theme file in `src/styles/material3-themes/`
-2. Add the variable with the correct color value
-3. The variable will be automatically available to all components
-
-Example - adding a missing tertiary color:
-
-```scss
-// _deeppurple-amber.scss
-.theme-deeppurple-amber {
-  // ... existing variables ...
-
-  // Add missing variable
-  --mat-sys-tertiary: #7D5260;
-}
-```
-
-### Migration Workflow
-
-When migrating existing components:
-
-1. **Replace hardcoded colors** with Material variables
-2. **Remove fallback values** from existing `var()` calls
-3. **Remove redundant styles** (duplicates, unused code)
-4. **Test in all themes** (light and dark modes)
 
 ---
 
@@ -496,8 +393,9 @@ Before committing code, ensure:
 | Version | Date | Changes |
 |---------|------|---------|
 | 1.0 | 2026-03-20 | Initial release |
-| 1.1 | 2026-03-23 | Added Material 3 color variable reference, improved color management documentation |
-| 1.2 | 2026-03-24 | Added ViewEncapsulation.None prohibition, updated dialog styling examples |
-| 1.3 | 2026-03-24 | Updated dialog section: centralized in _dialogs.scss with @use import |
+| 1.1 | 2026-03-23 | Added Material 3 color variable reference |
+| 1.2 | 2026-03-24 | Added ViewEncapsulation.None prohibition |
+| 1.3 | 2026-03-24 | Updated dialog section with centralized approach |
+| 2.0 | 2026-03-24 | Complete rewrite for Angular Material 21 MD3 Sass Mixin system |
 
 **Last Updated**: 2026-03-24
