@@ -23,7 +23,7 @@ import { ToasterService } from '@services/toaster.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ethernet-hubs-add-template',
   templateUrl: './ethernet-hubs-add-template.component.html',
-  styleUrls: ['./ethernet-hubs-add-template.component.scss', '../../../preferences.component.scss'],
+  styleUrl: './ethernet-hubs-add-template.component.scss',
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule]
 })
 export class EthernetHubsAddTemplateComponent implements OnInit {
