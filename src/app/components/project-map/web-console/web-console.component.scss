@@ -1,65 +1,11 @@
 /**
  * GNS3 Web Console Component Styles
+ * Using MD3 CSS variables
  */
 
-:host(.lightTheme),
-:host(.theme-light) {
-  background: var(--mat-app-background-color);
-  color: var(--mat-app-on-background-color);
-}
-
-/* =============================================
-// xterm Context Menu Styles
-// ============================================= */
-.xterm-context-menu {
-  background: var(--gns3-surface);
-  border: 1px solid var(--mat-app-outline-variant-color);
-  border-radius: var(--gns3-radius-md);
-  box-shadow: var(--gns3-shadow-lg);
-  padding: 4px 0;
-  min-width: 160px;
-  max-width: 240px;
-  font-family: var(--gns3-font-family-system);
-  font-size: var(--gns3-font-size-xs);
-  backdrop-filter: blur(8px) saturate(120%);
-  animation: contextMenuFadeIn var(--gns3-duration-fast) ease-out;
-  cursor: default;
-  user-select: none;
-
-  .xterm-context-menu-item {
-    padding: var(--gns3-spacing-sm) var(--gns3-spacing-lg);
-    color: var(--mat-app-on-surface-color);
-    cursor: pointer;
-    transition: all var(--gns3-duration-fast) ease;
-    display: flex;
-    align-items: center;
-    gap: var(--gns3-spacing-sm);
-
-    &:hover {
-      background: var(--mat-app-hover-state-layer-color);
-      color: var(--mat-app-on-surface-color);
-    }
-
-    &:active {
-      background: var(--mat-app-focus-state-layer-color);
-      color: var(--mat-app-on-surface-color);
-    }
-
-    // Keyboard shortcut hint (optional, for future use)
-    &::after {
-      content: attr(data-shortcut);
-      margin-left: auto;
-      opacity: 0.6;
-      font-size: 11px;
-    }
-  }
-
-  // Add separator if needed in future
-  .xterm-context-menu-separator {
-    height: 1px;
-    background: var(--mat-app-outline-variant-color);
-    margin: 4px 0;
-  }
+:host(.lightTheme) {
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
 }
 
 @keyframes contextMenuFadeIn {
@@ -73,14 +19,29 @@
   }
 }
 
-/* Xterm context menu - using MD3 variables */
 .xterm-context-menu {
   background: var(--mat-sys-surface);
-  border-color: var(--mat-sys-outline-variant);
-  box-shadow: var(--mat-sys-elevation-3);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent);
+  padding: 4px 0;
+  min-width: 160px;
+  max-width: 240px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 12px;
+  backdrop-filter: blur(8px) saturate(120%);
+  animation: contextMenuFadeIn 100ms ease-out;
+  cursor: default;
+  user-select: none;
 
   .xterm-context-menu-item {
+    padding: 10px 16px;
     color: var(--mat-sys-on-surface);
+    cursor: pointer;
+    transition: all 100ms ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 
     &:hover {
       background: var(--mat-sys-hover-state-layer);
@@ -88,7 +49,21 @@
     }
 
     &:active {
+      background: var(--mat-sys-focus-state-layer);
       color: var(--mat-sys-on-surface);
     }
+
+    &::after {
+      content: attr(data-shortcut);
+      margin-left: auto;
+      opacity: 0.6;
+      font-size: 11px;
+    }
+  }
+
+  .xterm-context-menu-separator {
+    height: 1px;
+    background: var(--mat-sys-outline-variant);
+    margin: 4px 0;
   }
 }
