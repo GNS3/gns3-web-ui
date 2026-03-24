@@ -19,6 +19,7 @@ import { Controller, ControllerProtocol } from '@models/controller';
 import { ControllerManagementService } from '@services/controller-management.service';
 import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
+import { ThemeService } from '@services/theme.service';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { AddControllerDialogComponent } from './add-controller-dialog/add-controller-dialog.component';
 import { EditControllerDialogComponent } from './edit-controller-dialog/edit-controller-dialog.component';
@@ -40,6 +41,7 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
   private bottomSheet = inject(MatBottomSheet);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private themeService = inject(ThemeService);
 
   dataSource: ControllerDataSource | null = null;
   displayedColumns = ['id', 'name', 'status', 'location', 'ip', 'port', 'actions'];
@@ -294,6 +296,10 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
     if (this.dataSource) {
       this.dataSource.setFilter(value);
     }
+  }
+
+  isLightThemeEnabled() {
+    return this.themeService.getActualTheme() === 'light';
   }
 }
 

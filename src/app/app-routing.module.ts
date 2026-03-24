@@ -77,14 +77,17 @@ import { GroupAcesResolver } from "@resolvers/group-ace.resolver.ts.resolver";
 import { UserAcesResolver } from "@resolvers/user-aces.resolver";
 
 const routes: Routes = [
+  // Routes without DefaultLayout (clean pages)
+  { path: 'controllers', component: ControllersComponent },
+  { path: 'controller/:controller_id/login', component: LoginComponent },
+
+  // Routes with DefaultLayout
   {
     path: '',
     component: DefaultLayoutComponent,
     children: [
       { path: '', redirectTo: 'controllers', pathMatch: 'full' },
-      { path: 'controllers', component: ControllersComponent },
       { path: 'bundled', component: BundledControllerFinderComponent },
-      { path: 'controller/:controller_id/login', component: LoginComponent },
       { path: 'controller/:controller_id/loggeduser', component: LoggedUserComponent },
       { path : 'controller/:controller_id/image-manager', component: ImageManagerComponent},
       {

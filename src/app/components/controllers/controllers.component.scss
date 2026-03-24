@@ -30,12 +30,29 @@
   margin: 0 auto;
   padding: 32px 20px 16px;
   animation: fadeInSlideIn 0.4s ease-out;
+}
 
+.controllers__header-content {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 16px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.controllers__logo-icon {
+  font-size: 72px;
+  width: 72px;
+  height: 72px;
+}
+
+.controllers__header {
   h1 {
     font-size: 32px;
     font-weight: 500;
     color: var(--mat-sys-on-surface);
     margin: 0;
+    padding-bottom: 8px;
   }
 }
 
@@ -562,6 +579,16 @@ button[color="warn"] {
 // Responsive Design
 // ============================================= */
 @media (max-width: 768px) {
+  .controllers__header-content {
+    gap: 12px;
+  }
+
+  .controllers__logo-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+  }
+
   .controllers__header {
     padding: 24px 16px 12px;
 

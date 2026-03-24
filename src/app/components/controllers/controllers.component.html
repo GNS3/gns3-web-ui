@@ -1,6 +1,11 @@
 <div class="controllers">
   <div class="controllers__header">
-    <h1>Controllers</h1>
+    <!-- GNS3 Logo and Title -->
+    <div class="controllers__header-content">
+      <mat-icon class="controllers__logo-icon" *ngIf="!isLightThemeEnabled()" svgIcon="gns3"></mat-icon>
+      <mat-icon class="controllers__logo-icon" *ngIf="isLightThemeEnabled()" svgIcon="gns3black"></mat-icon>
+      <h1>Controllers</h1>
+    </div>
   </div>
 
   <div class="controllers__content">
