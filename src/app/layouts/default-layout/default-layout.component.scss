@@ -3,20 +3,10 @@
  * Using MD3 CSS variables only
  */
 
-html,
-body {
-  height: 100%;
-}
-
-app-root,
-app-default-layout {
-  height: 100%;
-}
-
 app-default-layout {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
 }
 
 /* =============================================
