@@ -1,58 +1,49 @@
-<div class="content">
-  <div class="default-header">
-    <div class="row">
-      <div class="col-md-1">
-        <button
-          *ngIf="controller"
-          class="top-button"
-          class="cancel-button"
-          routerLink="/controller/{{ controller.id }}/preferences/builtin"
-          mat-button
-        >
-          <mat-icon>arrow_back</mat-icon>
+<div class="ethernet-hubs">
+  <header class="ethernet-hubs__header">
+    <button
+      *ngIf="controller"
+      class="ethernet-hubs__back-btn"
+      [routerLink]="'/controller/' + controller.id + '/preferences/builtin'"
+      mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="ethernet-hubs__title">Ethernet hubs templates</h1>
+    <button
+      *ngIf="controller"
+      class="ethernet-hubs__add-btn"
+      matTooltip="Add Ethernet hub template"
+      matTooltipClass="custom-tooltip"
+      [routerLink]="'/controller/' + controller.id + '/preferences/builtin/ethernet-hubs/addtemplate'"
+      mat-icon-button>
+      <mat-icon>add_circle_outline</mat-icon>
+    </button>
+  </header>
+
+  <main class="ethernet-hubs__content">
+    <app-empty-templates-list *ngIf="!ethernetHubsTemplates.length"></app-empty-templates-list>
+
+    <nav class="ethernet-hubs__list" *ngIf="ethernetHubsTemplates.length">
+      <a
+        *ngFor="let template of ethernetHubsTemplates"
+        class="ethernet-hubs__list-item"
+        [routerLink]="template.template_id">
+        <mat-icon class="ethernet-hubs__list-icon">hub</mat-icon>
+        <span class="ethernet-hubs__list-name">{{ template.name }}</span>
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="ethernet-hubs__menu-btn">
+          <mat-icon>more_vert</mat-icon>
         </button>
-      </div>
-      <div class="col-md-10">
-        <h1 class="col">Ethernet hubs templates</h1>
-      </div>
-      <div class="col-md-1">
-        <button
-          *ngIf="controller"
-          class="top-button cancel-button"
-          matTooltip="Add Ethernet hub template"
-          matTooltipClass="custom-tooltip"
-          routerLink="/controller/{{ controller.id }}/preferences/builtin/ethernet-hubs/addtemplate"
-          mat-button
-        >
-          <mat-icon>add_circle_outline</mat-icon>
-        </button>
-      </div>
-    </div>
-  </div>
-  <app-empty-templates-list *ngIf="!ethernetHubsTemplates.length"></app-empty-templates-list>
-  <div class="default-content" *ngIf="ethernetHubsTemplates.length">
-    <div class="listcontainer mat-elevation-z8">
-      <mat-nav-list *ngIf="controller">
-        @for (template of ethernetHubsTemplates; track template.template_id) {
-          <div class="list-item">
-            <mat-list-item class="template-name" routerLink="{{ template.template_id }}">{{
-              template.name
-            }}</mat-list-item>
-            <button mat-button class="menu-button" [matMenuTriggerFor]="menu">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu">
-              <button mat-menu-item (click)="deleteTemplate(template)">
-                <mat-icon>delete</mat-icon><span>Delete</span>
-              </button>
-              <button mat-menu-item  routerLink="{{ template.template_id }}">
-                <mat-icon>edit</mat-icon><span>Edit</span>
-              </button>
-            </mat-menu>
-          </div>
-        }
-      </mat-nav-list>
-    </div>
-  </div>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="deleteTemplate(template)">
+            <mat-icon>delete</mat-icon>
+            <span>Delete</span>
+          </button>
+          <button mat-menu-item [routerLink]="template.template_id">
+            <mat-icon>edit</mat-icon>
+            <span>Edit</span>
+          </button>
+        </mat-menu>
+      </a>
+    </nav>
+  </main>
 </div>
-<app-delete-template #deleteComponent [controller]="controller" (deleteEvent)="onDeleteEvent()"> </app-delete-template>
+<app-delete-template #deleteComponent [controller]="controller" (deleteEvent)="onDeleteEvent()"></app-delete-template>
