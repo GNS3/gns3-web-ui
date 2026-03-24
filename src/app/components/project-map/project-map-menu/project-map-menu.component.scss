@@ -4,6 +4,43 @@
  */
 
 /* =============================================
+// Icon Button Styles
+// ============================================= */
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+button.mat-mdc-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  --mdc-icon-button-icon-size: 20px;
+  --mat-icon-button-icon-size: 20px;
+  --mat-icon-button-state-layer-size: 40px;
+  --mdc-icon-button-state-layer-size: 40px;
+
+  .mat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    margin: 0;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+/* =============================================
 // Selection State Classes
 // Unified selection states for menu items
 // ============================================= */

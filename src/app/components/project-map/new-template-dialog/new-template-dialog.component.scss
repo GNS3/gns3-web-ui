@@ -1,82 +1,241 @@
 /**
  * GNS3 New Template Dialog Component Styles
- * Using MD3 CSS variables
+ * BEM naming applied, Material theme variables used
+ * Design language unified with management pages
  */
 
-.radio-button {
-  margin-bottom: 24px;
+.new-template {
+  &__title {
+    margin: 0;
+    padding: 24px 24px 16px;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__stepper {
+    background: transparent;
+  }
+
+  &__step {
+    background: transparent;
+  }
+
+  &__step-label {
+    font-size: 14px;
+  }
+
+  &__content {
+    padding: 16px 24px;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  &__radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__radio-button {
+    font-size: 14px;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 16px 24px 24px;
+    gap: 12px;
+  }
+
+  /* =============================================
+  // Table Header
+  // ============================================= */
+  &__table-header {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  &__filter-field {
+    flex: 1;
+  }
+
+  &__category-field {
+    width: 180px;
+  }
+
+  /* =============================================
+  // Table
+  // ============================================= */
+  &__table-container {
+    background: var(--mat-sys-surface);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  &__table {
+    width: 100%;
+  }
+
+  &__actions-cell {
+    text-align: right;
+    justify-content: flex-end;
+  }
+
+  /* =============================================
+  // Import Area
+  // ============================================= */
+  &__import-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    background: var(--mat-sys-surface);
+    border-radius: 12px;
+    border: 2px dashed var(--mat-sys-outline-variant);
+  }
+
+  &__import-button {
+    margin-top: 16px;
+  }
+
+  &__file-input {
+    display: none;
+  }
+
+  /* =============================================
+  // Install Section
+  // ============================================= */
+  &__install-section {
+    background: var(--mat-sys-surface);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  &__section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__create-button {
+    width: 100%;
+  }
+
+  /* =============================================
+  // Version Item
+  // ============================================= */
+  &__version-item {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+    &:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+  }
+
+  &__version-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  &__version-name {
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+  }
+
+  /* =============================================
+  // Image Item
+  // ============================================= */
+  &__image-list {
+    padding: 0;
+  }
+
+  &__list-item {
+    height: auto;
+    min-height: 48px;
+    padding: 8px 0;
+  }
+
+  &__image-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+
+  &__image-name {
+    font-size: 14px;
+    color: var(--mat-sys-on-surface);
+    word-break: break-word;
+  }
+
+  &__image-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+
+    mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+
+      &.mat-icon-success {
+        color: var(--mat-sys-primary);
+      }
+
+      &.mat-icon-error {
+        color: var(--mat-sys-error);
+      }
+    }
+  }
 }
 
-.tableHeader {
-  width: 100%;
-}
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 640px) {
+  .new-template {
+    &__title {
+      padding: 16px 16px 12px;
+      font-size: 18px;
+    }
 
-.filter-field {
-  width: 100%;
-}
+    &__content {
+      padding: 12px 16px;
+      max-height: 50vh;
+    }
 
-.example-container {
-  display: flex;
-  flex-direction: column;
-  max-height: 500px;
-  min-width: 300px;
-}
+    &__table-header {
+      flex-direction: column;
+      gap: 12px;
+    }
 
-.mat-table {
-  overflow: auto;
-  max-height: 500px;
-}
+    &__category-field {
+      width: 100%;
+    }
 
-.element-row {
-  position: relative;
-}
+    &__actions {
+      padding: 12px 16px 16px;
+      flex-direction: column;
+    }
 
-.element-row:not(.expanded) {
-  cursor: pointer;
-}
-
-.element-row:not(.expanded):hover {
-  background: var(--mat-sys-surface-container);
-}
-
-.element-row.expanded {
-  border-bottom-color: transparent;
-}
-
-.list-item {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 16px;
-}
-
-.list-item-inside {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding-left: 24px;
-  margin-bottom: 16px;
-}
-
-.button {
-  margin-left: 8px;
-}
-
-.create-button {
-  width: 100%;
-  margin-top: 8px;
-  margin-bottom: 8px;
-}
-
-.radio-button {
-  width: 50%;
-  padding-top: 16px;
-}
-
-.selection-group {
-  padding-bottom: 16px;
-}
-
-.non-visible {
-  display: none;
+    &__version-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+  }
 }

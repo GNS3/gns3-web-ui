@@ -49,6 +49,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatIconModule } from '@angular/material/icon';
 import { FileUploadModule } from 'ng2-file-upload';
 import { DataSourceFilter } from '../../../filters/dataSourceFilter';
 
@@ -83,6 +84,7 @@ import { DataSourceFilter } from '../../../filters/dataSourceFilter';
     MatProgressSpinnerModule,
     MatCheckboxModule,
     MatExpansionModule,
+    MatIconModule,
     FileUploadModule,
     DataSourceFilter,
   ],

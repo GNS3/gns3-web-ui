@@ -94,6 +94,19 @@
 }
 
 /* =============================================
+// New Template Dialog
+// ============================================= */
+.new-template-dialog-panel {
+  --mat-dialog-container-max-width: 800px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 800px;
+    max-width: 800px;
+  }
+}
+
+/* =============================================
 // Tool Details Dialog
 // ============================================= */
 .tool-details-dialog {

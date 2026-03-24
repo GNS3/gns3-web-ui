@@ -182,87 +182,61 @@ g.node:hover {
   z-index: 2;
   transition: background-color 200ms ease;
 
-  mat-icon {
-    font-size: 14px;
-  }
+  // 确保 toolbar 本身是 flex 容器
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-  .menu-button {
-    display: flex;
-    justify-content: center;
+  button.mat-mdc-icon-button {
+    display: inline-flex;
     align-items: center;
-    height: 40px;
-    width: 40px;
-    border-radius: 20px;
-    background: none;
-    margin: 2px 0;
-    transition: transform 100ms ease;
-  }
-
-  .menu-button:hover {
-    transform: scale(1.3);
-  }
-
-  .zoom-button {
-    display: flex;
     justify-content: center;
-    align-items: center;
-    height: 40px;
     width: 40px;
-    border-radius: 20px;
-    background: none;
-    margin: 2px 0;
-    color: var(--mat-sys-on-surface);
-    transition: transform 100ms ease;
+    height: 40px;
+    padding: 0;
+    --mdc-icon-button-icon-size: 20px;
+    --mat-icon-button-icon-size: 20px;
+    --mat-icon-button-state-layer-size: 40px;
+    --mdc-icon-button-state-layer-size: 40px;
 
-    mat-icon {
-      font-size: 24px;
+    .mat-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      font-size: 20px;
+      margin: 0;
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
     }
   }
 
-  .zoom-button:hover {
-    transform: scale(1.3);
-  }
-
-  .reset-zoom-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 40px;
+  .menu-button,
+  .zoom-button,
+  .reset-zoom-button,
+  .selection-button,
+  .snapshot-button {
     width: 40px;
+    height: 40px;
     border-radius: 20px;
-    background: none;
     margin: 2px 0;
-    color: var(--mat-sys-on-surface);
     transition: transform 100ms ease;
-
-    mat-icon {
-      font-size: 18px;
-    }
   }
 
-  .reset-zoom-button:hover {
+  .menu-button:hover,
+  .zoom-button:hover,
+  .reset-zoom-button:hover,
+  .selection-button:hover,
+  .snapshot-button:hover {
     transform: scale(1.3);
   }
 
   .selection-button {
     margin-bottom: 0;
-    transition: transform 100ms ease;
-  }
-
-  .selection-button:hover {
-    transform: scale(1.3);
-  }
-
-  .snapshot-button mat-icon {
-    font-size: 12px;
-  }
-
-  .snapshot-button {
-    transition: transform 100ms ease;
-  }
-
-  .snapshot-button:hover {
-    transform: scale(1.3);
   }
 
   .section {

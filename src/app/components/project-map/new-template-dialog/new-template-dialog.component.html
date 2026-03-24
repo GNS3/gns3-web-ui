@@ -1,463 +1,308 @@
-<h1 mat-dialog-title>Add new template</h1>
+<h1 mat-dialog-title class="new-template__title">Add new template</h1>
 
-<mat-horizontal-stepper [linear]="false" #stepper>
-  <mat-step>
-    <ng-template matStepLabel>Please select how you want to create new template</ng-template>
+<mat-horizontal-stepper [linear]="false" #stepper class="new-template__stepper">
+  <mat-step class="new-template__step">
+    <ng-template matStepLabel class="new-template__step-label">Select creation method</ng-template>
 
-    <mat-radio-group class="radio-group">
-      <mat-radio-button class="radio-button" value="1" (click)="setAction('install')" checked
-        >Install new appliance from the GNS controller</mat-radio-button
-      ><br />
-      <mat-radio-button class="radio-button" value="2" (click)="setAction('import')"
-        >Import an appliance file</mat-radio-button
-      >
-    </mat-radio-group>
+    <mat-dialog-content class="new-template__content">
+      <mat-radio-group class="new-template__radio-group" [value]="action" (change)="setAction($event.value)">
+        <mat-radio-button value="install" class="new-template__radio-button">
+          Install new appliance from the GNS controller
+        </mat-radio-button>
+        <mat-radio-button value="import" class="new-template__radio-button">
+          Import an appliance file
+        </mat-radio-button>
+      </mat-radio-group>
+    </mat-dialog-content>
 
-    <div>
+    <mat-dialog-actions class="new-template__actions">
       <button mat-button matStepperNext>Next</button>
       <button mat-button (click)="onCloseClick()">Cancel</button>
-    </div>
+    </mat-dialog-actions>
   </mat-step>
 
-  <mat-step>
-    <ng-template matStepLabel>{{ actionTitle }}</ng-template>
+  <mat-step class="new-template__step">
+    <ng-template matStepLabel class="new-template__step-label">{{ actionTitle }}</ng-template>
 
-    <mat-card [hidden]="!(action === 'install')">
-      <div class="tableHeader">
-        <mat-form-field class="filter-field">
-          <input matInput [(ngModel)]="searchText" placeholder="Filter" />
-        </mat-form-field>
+    <mat-dialog-content class="new-template__content">
+      @if (action === 'install') {
+        <div class="new-template__table-header">
+          <mat-form-field appearance="fill" class="new-template__filter-field">
+            <mat-label>Filter</mat-label>
+            <input matInput [(ngModel)]="searchText" (ngModelChange)="filterAppliances($event)" />
+          </mat-form-field>
 
-        <mat-select
-          (selectionChange)="filterAppliances($event)"
-          [ngModelOptions]="{ standalone: true }"
-          placeholder="Category"
-          [(ngModel)]="category"
-        >
-          @for (category of categories; track category) {
-            <mat-option [value]="category">
-              {{ category }}
-            </mat-option>
-          }
-        </mat-select>
-      </div>
+          <mat-form-field appearance="fill" class="new-template__category-field">
+            <mat-label>Category</mat-label>
+            <mat-select [(ngModel)]="category" (selectionChange)="filterAppliances($event)">
+              @for (cat of categories; track cat) {
+                <mat-option [value]="cat">{{ cat }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
 
-      <mat-table
-        class="mat-table"
-        #table
-        matSort
-        multiTemplateDataRows
-        (matSortChange)="sortData($event)"
-        [dataSource]="dataSource | datasourcefilter: searchText"
-      >
-        <ng-container matColumnDef="name">
-          <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{ row.name }} </mat-cell>
-        </ng-container>
+        <div class="new-template__table-container">
+          <mat-table matSort (matSortChange)="sortData($event)" [dataSource]="dataSource" class="new-template__table">
+            <ng-container matColumnDef="name">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+              <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
+            </ng-container>
 
-        <ng-container matColumnDef="emulator">
-          <mat-header-cell *matHeaderCellDef> Emulator </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{ row.emulator }} </mat-cell>
-        </ng-container>
+            <ng-container matColumnDef="emulator">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>Emulator</mat-header-cell>
+              <mat-cell *matCellDef="let row">{{ row.emulator }}</mat-cell>
+            </ng-container>
 
-        <ng-container matColumnDef="vendor">
-          <mat-header-cell *matHeaderCellDef> Vendor </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{ row.vendor_name }} </mat-cell>
-        </ng-container>
+            <ng-container matColumnDef="vendor">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>Vendor</mat-header-cell>
+              <mat-cell *matCellDef="let row">{{ row.vendor_name }}</mat-cell>
+            </ng-container>
 
-        <ng-container matColumnDef="actions">
-          <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
-          <mat-cell *matCellDef="let row" style="text-align: right">
-            <button mat-icon-button matTooltip="Install" matTooltipClass="custom-tooltip" (click)="install(row)">
-              <mat-icon aria-label="Install">archive</mat-icon>
-            </button>
+            <ng-container matColumnDef="actions">
+              <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+              <mat-cell *matCellDef="let row" class="new-template__actions-cell">
+                <button mat-icon-button matTooltip="Install" matTooltipClass="custom-tooltip" (click)="install(row)">
+                  <mat-icon>archive</mat-icon>
+                </button>
+                <button mat-icon-button matTooltip="Show info" matTooltipClass="custom-tooltip" (click)="showInfo(row)">
+                  <mat-icon>info</mat-icon>
+                </button>
+              </mat-cell>
+            </ng-container>
 
-            <button mat-icon-button matTooltip="Show info" matTooltipClass="custom-tooltip" (click)="showInfo(row)">
-              <mat-icon aria-label="Show info">info</mat-icon>
-            </button>
-          </mat-cell>
-        </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+          </mat-table>
+          <mat-paginator [pageSizeOptions]="[5, 10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
+        </div>
+      }
 
-        <!-- <ng-container matColumnDef="expandedDetail">
-                    <mat-cell *matCellDef="let detail">
-                        The symbol for {{detail.element}}
-                    </mat-cell>
-                </ng-container> -->
+      @if (action === 'import') {
+        <div class="new-template__import-area">
+          <input
+            type="file"
+            accept=".gns3appliance, .gns3a"
+            class="new-template__file-input"
+            #file
+            (change)="addAppliance($event)"
+            ng2FileSelect
+            [uploader]="uploader"
+          />
+          <button mat-raised-button color="primary" class="new-template__import-button" (click)="file.click()">
+            Click to import appliance
+          </button>
+        </div>
+      }
+    </mat-dialog-content>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-
-        <!-- <mat-row
-                    *matRowDef="let row; columns: displayedColumns;"
-                    matRipple
-                    class="element-row"
-                    [class.expanded]="expandedElement == row"
-                    (click)="expandedElement = row">
-                </mat-row>
-                <mat-row
-                    *matRowDef="let row; columns: ['expandedDetail']; when: isExpansionDetailRow"
-                    [@detailExpand]="row.element == expandedElement ? 'expanded' : 'collapsed'"
-                    style="overflow: hidden">
-                </mat-row> -->
-      </mat-table>
-
-      <mat-paginator [pageSizeOptions]="[5, 10, 20, 50, 100]" showFirstLastButtons></mat-paginator>
-    </mat-card>
-
-    <mat-card [hidden]="action === 'install'">
-      <input
-        type="file"
-        accept=".gns3appliance, .gns3a"
-        class="non-visible"
-        #file
-        (change)="addAppliance($event)"
-        ng2FileSelect
-        [uploader]="uploader"
-      />
-      <button mat-raised-button color="primary" (click)="file.click()" class="create-button">
-        Click to import appliance
-      </button>
-    </mat-card>
-
-    <div>
+    <mat-dialog-actions class="new-template__actions">
       <button mat-button matStepperPrevious>Back</button>
-      <button mat-button [hidden]="action !== 'install'" (click)="updateAppliances()">
-        Update from online registry
-      </button>
+      @if (action === 'install') {
+        <button mat-button (click)="updateAppliances()">Update from online registry</button>
+      }
       <button mat-button (click)="onCloseClick()">Cancel</button>
-    </div>
+    </mat-dialog-actions>
   </mat-step>
 
-  <mat-step *ngIf="applianceToInstall">
-    <ng-template matStepLabel>{{ secondActionTitle }}</ng-template>
+  @if (applianceToInstall) {
+    <mat-step class="new-template__step">
+      <ng-template matStepLabel class="new-template__step-label">{{ secondActionTitle }}</ng-template>
 
-    <mat-card [hidden]="!(!isLinuxPlatform || applianceToInstall.dynamips)">
-      <div *ngIf="applianceToInstall.qemu">
-        <div>
-          Install the required files
-          <button
-            mat-icon-button
-            matTooltip="Refresh list of images"
-            matTooltipClass="custom-tooltip"
-            (click)="refreshImages()"
-          >
-            <mat-icon aria-label="Refresh list of images">refresh</mat-icon></button
-          ><br />
-          <div>
+      <mat-dialog-content class="new-template__content">
+        @if (applianceToInstall.qemu && (!isLinuxPlatform || applianceToInstall.dynamips)) {
+          <div class="new-template__install-section">
+            <div class="new-template__section-header">
+              <span>Install the required files</span>
+              <button mat-icon-button matTooltip="Refresh list of images" matTooltipClass="custom-tooltip" (click)="refreshImages()">
+                <mat-icon>refresh</mat-icon>
+              </button>
+            </div>
+
             @for (version of applianceToInstall.versions; track version.name) {
-              <div class="list-item">
-                <span>{{ applianceToInstall.name }} version {{ version.name }}</span>
-
-                <div>
-                  <button
-                    class="button"
-                    mat-raised-button
-                    color="primary"
-                    (click)="createQemuTemplateFromVersion(version)"
-                  >
+              <div class="new-template__version-item">
+                <div class="new-template__version-header">
+                  <span class="new-template__version-name">{{ applianceToInstall.name }} version {{ version.name }}</span>
+                  <button mat-raised-button color="primary" (click)="createQemuTemplateFromVersion(version)">
                     Create
                   </button>
                 </div>
-              </div>
 
-              <div class="list-item-inside" *ngIf="version.images.bios_image">
-                <span>
-                  {{ version.images.bios_image }}
-                </span>
+                @if (version.images.bios_image) {
+                  <div class="new-template__image-item">
+                    <span class="new-template__image-name">{{ version.images.bios_image }}</span>
+                    <div class="new-template__image-status">
+                      @if (checkImageFromVersion(version.images.bios_image)) {
+                        <mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
+                      } @else {
+                        <mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
+                      }
+                      <input type="file" class="new-template__file-input" #fileBios (change)="importImage($event, version.images.bios_image)" ng2FileSelect [uploader]="uploaderImage" />
+                      <button mat-raised-button (click)="fileBios.click()">Import</button>
+                      <button mat-raised-button (click)="downloadImageFromVersion(version.images.bios_image)">Download</button>
+                    </div>
+                  </div>
+                }
 
-                <div>
-                  <span *ngIf="checkImageFromVersion(version.images.bios_image)"
-                    ><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon></span
-                  >
-                  <span *ngIf="!checkImageFromVersion(version.images.bios_image)"
-                    ><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon></span
-                  >
+                @if (version.images.hda_disk_image) {
+                  <div class="new-template__image-item">
+                    <span class="new-template__image-name">{{ version.images.hda_disk_image }}</span>
+                    <div class="new-template__image-status">
+                      @if (checkImageFromVersion(version.images.hda_disk_image)) {
+                        <mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
+                      } @else {
+                        <mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
+                      }
+                      <input type="file" class="new-template__file-input" #file2 (change)="importImage($event, version.images.hda_disk_image)" ng2FileSelect [uploader]="uploaderImage" />
+                      <button mat-raised-button (click)="file2.click()">Import</button>
+                      <button mat-raised-button (click)="downloadImageFromVersion(version.images.hda_disk_image)">Download</button>
+                    </div>
+                  </div>
+                }
 
-                  <input
-                    type="file"
-                    class="non-visible"
-                    #fileBios
-                    (change)="importImage($event, version.images.bios_image)"
-                    ng2FileSelect
-                    [uploader]="uploaderImage"
-                  />
-                  <button class="button" mat-raised-button (click)="fileBios.click()">Import</button>
-                  <button
-                    class="button"
-                    mat-raised-button
-                    (click)="downloadImageFromVersion(version.images.bios_image)"
-                  >
-                    Download
-                  </button>
-                </div>
-              </div>
+                @if (version.images.hdb_disk_image) {
+                  <div class="new-template__image-item">
+                    <span class="new-template__image-name">{{ version.images.hdb_disk_image }}</span>
+                    <div class="new-template__image-status">
+                      @if (checkImageFromVersion(version.images.hdb_disk_image)) {
+                        <mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
+                      } @else {
+                        <mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
+                      }
+                      <input type="file" class="new-template__file-input" #file3 (change)="importImage($event, version.images.hdb_disk_image)" ng2FileSelect [uploader]="uploaderImage" />
+                      <button mat-raised-button (click)="file3.click()">Import</button>
+                      <button mat-raised-button (click)="downloadImageFromVersion(version.images.hdb_disk_image)">Download</button>
+                    </div>
+                  </div>
+                }
 
-              <div class="list-item-inside" *ngIf="version.images.hda_disk_image">
-                <span>
-                  {{ version.images.hda_disk_image }}
-                </span>
+                @if (version.images.hdc_disk_image) {
+                  <div class="new-template__image-item">
+                    <span class="new-template__image-name">{{ version.images.hdc_disk_image }}</span>
+                    <div class="new-template__image-status">
+                      @if (checkImageFromVersion(version.images.hdc_disk_image)) {
+                        <mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
+                      } @else {
+                        <mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
+                      }
+                      <input type="file" class="new-template__file-input" #file4 (change)="importImage($event, version.images.hdc_disk_image)" ng2FileSelect [uploader]="uploaderImage" />
+                      <button mat-raised-button (click)="file4.click()">Import</button>
+                      <button mat-raised-button (click)="downloadImageFromVersion(version.images.hdc_disk_image)">Download</button>
+                    </div>
+                  </div>
+                }
 
-                <div>
-                  <span *ngIf="checkImageFromVersion(version.images.hda_disk_image)"
-                    ><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon></span
-                  >
-                  <span *ngIf="!checkImageFromVersion(version.images.hda_disk_image)"
-                    ><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon></span
-                  >
+                @if (version.images.hdd_disk_image) {
+                  <div class="new-template__image-item">
+                    <span class="new-template__image-name">{{ version.images.hdd_disk_image }}</span>
+                    <div class="new-template__image-status">
+                      @if (checkImageFromVersion(version.images.hdd_disk_image)) {
+                        <mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
+                      } @else {
+                        <mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
+                      }
+                      <input type="file" class="new-template__file-input" #file5 (change)="importImage($event, version.images.hdd_disk_image)" ng2FileSelect [uploader]="uploaderImage" />
+                      <button mat-raised-button (click)="file5.click()">Import</button>
+                      <button mat-raised-button (click)="downloadImageFromVersion(version.images.hdd_disk_image)">Download</button>
+                    </div>
+                  </div>
+                }
 
-                  <input
-                    type="file"
-                    class="non-visible"
-                    #file2
-                    (change)="importImage($event, version.images.hda_disk_image)"
-                    ng2FileSelect
-                    [uploader]="uploaderImage"
-                  />
-                  <button class="button" mat-raised-button (click)="file2.click()">Import</button>
-
-                  <button
-                    class="button"
-                    mat-raised-button
-                    (click)="downloadImageFromVersion(version.images.hda_disk_image)"
-                  >
-                    Download
-                  </button>
-                </div>
-              </div>
-
-              <div class="list-item-inside" *ngIf="version.images.hdb_disk_image">
-                <span>
-                  {{ version.images.hdb_disk_image }}
-                </span>
-
-                <div>
-                  <span *ngIf="checkImageFromVersion(version.images.hdb_disk_image)"
-                    ><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon></span
-                  >
-                  <span *ngIf="!checkImageFromVersion(version.images.hdb_disk_image)"
-                    ><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon></span
-                  >
-
-                  <input
-                    type="file"
-                    class="non-visible"
-                    #file3
-                    (change)="importImage($event, version.images.hdb_disk_image)"
-                    ng2FileSelect
-                    [uploader]="uploaderImage"
-                  />
-                  <button class="button" mat-raised-button (click)="file3.click()">Import</button>
-                  <button
-                    class="button"
-                    mat-raised-button
-                    (click)="downloadImageFromVersion(version.images.hdb_disk_image)"
-                  >
-                    Download
-                  </button>
-                </div>
-              </div>
-
-              <div class="list-item-inside" *ngIf="version.images.hdc_disk_image">
-                <span>
-                  {{ version.images.hdb_disk_image }}
-                </span>
-
-                <div>
-                  <span *ngIf="checkImageFromVersion(version.images.hdc_disk_image)"
-                    ><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon></span
-                  >
-                  <span *ngIf="!checkImageFromVersion(version.images.hdc_disk_image)"
-                    ><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon></span
-                  >
-
-                  <input
-                    type="file"
-                    class="non-visible"
-                    #file4
-                    (change)="importImage($event, version.images.hdc_disk_image)"
-                    ng2FileSelect
-                    [uploader]="uploaderImage"
-                  />
-                  <button class="button" mat-raised-button (click)="file4.click()">Import</button>
-                  <button
-                    class="button"
-                    mat-raised-button
-                    (click)="downloadImageFromVersion(version.images.hdc_disk_image)"
-                  >
-                    Download
-                  </button>
-                </div>
-              </div>
-
-              <div class="list-item-inside" *ngIf="version.images.hdd_disk_image">
-                <span>
-                  {{ version.images.hdd_disk_image }}
-                </span>
-
-                <div>
-                  <span *ngIf="checkImageFromVersion(version.images.hdd_disk_image)"
-                    ><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon></span
-                  >
-                  <span *ngIf="!checkImageFromVersion(version.images.hdd_disk_image)"
-                    ><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon></span
-                  >
-
-                  <input
-                    type="file"
-                    class="non-visible"
-                    #file5
-                    (change)="importImage($event, version.images.hdd_disk_image)"
-                    ng2FileSelect
-                    [uploader]="uploaderImage"
-                  />
-                  <button class="button" mat-raised-button (click)="file5.click()">Import</button>
-                  <button
-                    class="button"
-                    mat-raised-button
-                    (click)="downloadImageFromVersion(version.images.hdd_disk_image)"
-                  >
-                    Download
-                  </button>
-                </div>
-              </div>
-
-              <div class="list-item-inside" *ngIf="version.images.cdrom_image">
-                <span>
-                  {{ version.images.cdrom_image}}
-                </span>
-
-                <div>
-                  <span *ngIf="checkImageFromVersion(version.images.cdrom_image)"
-                    ><mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon></span
-                  >
-                  <span *ngIf="!checkImageFromVersion(version.images.cdrom_image)"
-                    ><mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon></span
-                  >
-
-                  <input
-                    type="file"
-                    class="non-visible"
-                    #file6
-                    (change)="importImage($event, version.images.cdrom_image)"
-                    ng2FileSelect
-                    [uploader]="uploaderImage"
-                  />
-                  <button class="button" mat-raised-button (click)="file6.click()">Import</button>
-                  <button
-                    class="button"
-                    mat-raised-button
-                    (click)="downloadImageFromVersion(version.images.cdrom_image)"
-                  >
-                    Download
-                  </button>
-                </div>
+                @if (version.images.cdrom_image) {
+                  <div class="new-template__image-item">
+                    <span class="new-template__image-name">{{ version.images.cdrom_image }}</span>
+                    <div class="new-template__image-status">
+                      @if (checkImageFromVersion(version.images.cdrom_image)) {
+                        <mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
+                      } @else {
+                        <mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
+                      }
+                      <input type="file" class="new-template__file-input" #file6 (change)="importImage($event, version.images.cdrom_image)" ng2FileSelect [uploader]="uploaderImage" />
+                      <button mat-raised-button (click)="file6.click()">Import</button>
+                      <button mat-raised-button (click)="downloadImageFromVersion(version.images.cdrom_image)">Download</button>
+                    </div>
+                  </div>
+                }
               </div>
             }
           </div>
-        </div>
-      </div>
+        }
 
-      <div *ngIf="applianceToInstall.docker">
+        @if (applianceToInstall.docker) {
+          <div class="new-template__install-section">
+            <button mat-raised-button color="primary" class="new-template__create-button" (click)="createDockerTemplate()">
+              Create docker template
+            </button>
+          </div>
+        }
 
-        <button mat-raised-button color="primary" (click)="createDockerTemplate()" class="create-button">
-          Create docker template
-        </button>
-      </div>
+        @if (applianceToInstall.dynamips) {
+          <div class="new-template__install-section">
+            <div class="new-template__section-header">
+              <span>Install the required images</span>
+              <button mat-icon-button matTooltip="Refresh list of images" matTooltipClass="custom-tooltip" (click)="refreshImages()">
+                <mat-icon>refresh</mat-icon>
+              </button>
+            </div>
 
-      <div *ngIf="applianceToInstall.dynamips">
-        <div>
-          Install the required images
-          <button
-            mat-icon-button
-            matTooltip="Refresh list of images"
-            matTooltipClass="custom-tooltip"
-            (click)="refreshImages()"
-          >
-            <mat-icon aria-label="Refresh list of images">refresh</mat-icon></button
-          ><br />
-          <mat-list>
-            @for (image of applianceToInstall.images; track image.filename) {
-              <mat-list-item>
-                <div class="list-item">
-                  <span>
-                    {{ image.filename }}
-                  </span>
-                  <div>
-                    <span *ngIf="checkImageFromVersion(image.filename)">
-                      <mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
-                    </span>
-                    <span *ngIf="!checkImageFromVersion(image.filename)">
-                      <mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
-                    </span>
-                    <input
-                      type="file"
-                      class="non-visible"
-                      #file2
-                      (change)="importImage($event, image.filename)"
-                      ng2FileSelect
-                      [uploader]="uploaderImage"
-                    />
-                    <button class="button" mat-raised-button (click)="file2.click()">Import</button>
-                    <button class="button" mat-raised-button color="primary" (click)="createIosTemplate(image)">
-                      Create
-                    </button>
+            <mat-list class="new-template__image-list">
+              @for (image of applianceToInstall.images; track image.filename) {
+                <mat-list-item class="new-template__list-item">
+                  <div class="new-template__image-item">
+                    <span class="new-template__image-name">{{ image.filename }}</span>
+                    <div class="new-template__image-status">
+                      @if (checkImageFromVersion(image.filename)) {
+                        <mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
+                      } @else {
+                        <mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
+                      }
+                      <input type="file" class="new-template__file-input" #file2 (change)="importImage($event, image.filename)" ng2FileSelect [uploader]="uploaderImage" />
+                      <button mat-raised-button (click)="file2.click()">Import</button>
+                      <button mat-raised-button color="primary" (click)="createIosTemplate(image)">Create</button>
+                    </div>
                   </div>
-                </div>
-              </mat-list-item>
-            }
-          </mat-list>
-        </div>
-      </div>
+                </mat-list-item>
+              }
+            </mat-list>
+          </div>
+        }
 
-      <div *ngIf="applianceToInstall.iou">
-        <div>
-          Install the required images
-          <button
-            mat-icon-button
-            matTooltip="Refresh list of images"
-            matTooltipClass="custom-tooltip"
-            (click)="refreshImages()"
-          >
-            <mat-icon aria-label="Refresh list of images">refresh</mat-icon></button
-          ><br />
-          <mat-list>
-            @for (image of applianceToInstall.images; track image.filename) {
-              <mat-list-item>
-                <div class="list-item">
-                  <span>
-                    {{ image.filename }}
-                  </span>
-                  <span *ngIf="checkImageFromVersion(image.filename)">
-                    <mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
-                  </span>
-                  <span *ngIf="!checkImageFromVersion(image.filename)">
-                    <mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
-                  </span>
-                  <div>
-                    <input
-                      type="file"
-                      class="non-visible"
-                      #file2
-                      (change)="importImage($event, image.filename)"
-                      ng2FileSelect
-                      [uploader]="uploaderImage"
-                    />
-                    <button class="button" mat-raised-button (click)="file2.click()">Import</button>
-                    <button class="button" mat-raised-button color="primary" (click)="createIouTemplate(image)">
-                      Create
-                    </button>
+        @if (applianceToInstall.iou) {
+          <div class="new-template__install-section">
+            <div class="new-template__section-header">
+              <span>Install the required images</span>
+              <button mat-icon-button matTooltip="Refresh list of images" matTooltipClass="custom-tooltip" (click)="refreshImages()">
+                <mat-icon>refresh</mat-icon>
+              </button>
+            </div>
+
+            <mat-list class="new-template__image-list">
+              @for (image of applianceToInstall.images; track image.filename) {
+                <mat-list-item class="new-template__list-item">
+                  <div class="new-template__image-item">
+                    <span class="new-template__image-name">{{ image.filename }}</span>
+                    <div class="new-template__image-status">
+                      @if (checkImageFromVersion(image.filename)) {
+                        <mat-icon matTooltip="Ready to install" matTooltipClass="custom-tooltip">check</mat-icon>
+                      } @else {
+                        <mat-icon matTooltip="Missing" matTooltipClass="custom-tooltip">close</mat-icon>
+                      }
+                      <input type="file" class="new-template__file-input" #fileiou (change)="importImage($event, image.filename)" ng2FileSelect [uploader]="uploaderImage" />
+                      <button mat-raised-button (click)="fileiou.click()">Import</button>
+                      <button mat-raised-button color="primary" (click)="createIouTemplate(image)">Create</button>
+                    </div>
                   </div>
-                </div>
-              </mat-list-item>
-            }
-          </mat-list>
-        </div>
-      </div>
-    </mat-card>
+                </mat-list-item>
+              }
+            </mat-list>
+          </div>
+        }
+      </mat-dialog-content>
 
-    <div>
-      <button mat-button matStepperPrevious>Back</button>
-      <button mat-button (click)="onCloseClick()">Cancel</button>
-    </div>
-  </mat-step>
+      <mat-dialog-actions class="new-template__actions">
+        <button mat-button matStepperPrevious>Back</button>
+        <button mat-button (click)="onCloseClick()">Cancel</button>
+      </mat-dialog-actions>
+    </mat-step>
+  }
 </mat-horizontal-stepper>

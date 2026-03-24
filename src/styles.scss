@@ -88,6 +88,11 @@ mat-menu-panel {
   min-height: 0px;
 }
 
+.template-menu.mat-mdc-menu-panel,
+.mat-mdc-menu-panel.template-menu {
+  max-width: 500px;
+}
+
 /* =============================================
 // Tab Styles
 // ============================================= */

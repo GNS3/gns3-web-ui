@@ -1122,10 +1122,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public addNewTemplate() {
     const dialogRef = this.dialog.open(NewTemplateDialogComponent, {
-      width: '1000px',
-      maxHeight: '700px',
+      width: '800px',
+      maxHeight: '800px',
       autoFocus: false,
       disableClose: true,
+      panelClass: 'new-template-dialog-panel',
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;
