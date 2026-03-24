@@ -1,35 +1,41 @@
-<div class="content">
-  <div class="default-header">
-    <div class="row">
-      <div class="col col-md-1">
-        @if (controller) {
-          <button class="top-button" class="cancel-button col" (click)="goBack()" mat-button>
-            <mat-icon>arrow_back</mat-icon>
-          </button>
-        }
-      </div>
-      <div class="col-md-11">
-        <h1 class="col">New cloud node template</h1>
-      </div>
-    </div>
-  </div>
-  <div class="default-content">
-    <mat-card class="matCard">
-      <mat-radio-group class="radio-group">
-        <mat-radio-button class="radio-button" value="1" (click)="setControllerType('local')" checked
-          >Run the cloud node locally</mat-radio-button
-        >
+<div class="cloud-nodes-add">
+  <header class="cloud-nodes-add__header">
+    @if (controller) {
+      <button
+        class="cloud-nodes-add__back-btn"
+        (click)="goBack()"
+        mat-icon-button>
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+    }
+    <h1 class="cloud-nodes-add__title">New cloud node template</h1>
+  </header>
+
+  <main class="cloud-nodes-add__content">
+    <section class="cloud-nodes-add__form-card">
+      <mat-radio-group class="cloud-nodes-add__radio-group">
+        <mat-radio-button
+          class="cloud-nodes-add__radio"
+          value="1"
+          (click)="setControllerType('local')"
+          [checked]="true">
+          Run the cloud node locally
+        </mat-radio-button>
       </mat-radio-group>
 
-      <form [formGroup]="formGroup">
-        <mat-form-field class="form-field">
+      <form [formGroup]="formGroup" class="cloud-nodes-add__form">
+        <mat-form-field appearance="fill" class="cloud-nodes-add__field">
+          <mat-label>Template name</mat-label>
           <input formControlName="templateName" matInput type="text" placeholder="Template name" />
         </mat-form-field>
       </form>
-    </mat-card>
-    <div class="buttons-bar">
-      <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
-      <button mat-raised-button color="primary" (click)="addTemplate()">Add template</button>
+    </section>
+
+    <div class="cloud-nodes-add__actions">
+      <button mat-button class="cloud-nodes-add__cancel-btn" (click)="goBack()">Cancel</button>
+      <button mat-raised-button color="primary" class="cloud-nodes-add__submit-btn" (click)="addTemplate()">
+        Add template
+      </button>
     </div>
-  </div>
+  </main>
 </div>

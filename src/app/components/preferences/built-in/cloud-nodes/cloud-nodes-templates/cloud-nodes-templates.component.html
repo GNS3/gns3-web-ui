@@ -1,65 +1,56 @@
-<div class="content">
-  <div class="default-header">
-    <div class="row">
-      <div class="col-md-1">
-        @if (controller) {
-          <button
-            class="top-button"
-            class="cancel-button"
-            routerLink="/controller/{{ controller.id }}/preferences/builtin"
-            mat-button
-          >
-            <mat-icon>arrow_back</mat-icon>
-          </button>
-        }
-      </div>
-      <div class="col-md-10">
-        <h1 class="col">Cloud nodes templates</h1>
-      </div>
-      <div class="col-md-1">
-        @if (controller) {
-          <button
-            class="top-button cancel-button"
-            matTooltip=" Add cloud node template"
-            matTooltipClass="custom-tooltip"
-            routerLink="/controller/{{ controller.id }}/preferences/builtin/cloud-nodes/addtemplate"
-            mat-button
-          >
-            <mat-icon>add_circle_outline</mat-icon>
-          </button>
-        }
-      </div>
-    </div>
+<div class="cloud-nodes">
+  <header class="cloud-nodes__header">
+    @if (controller) {
+      <button
+        class="cloud-nodes__back-btn"
+        [routerLink]="'/controller/' + controller.id + '/preferences/builtin'"
+        mat-icon-button>
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+    }
+    <h1 class="cloud-nodes__title">Cloud nodes templates</h1>
+    @if (controller) {
+      <button
+        class="cloud-nodes__add-btn"
+        matTooltip="Add cloud node template"
+        matTooltipClass="custom-tooltip"
+        [routerLink]="'/controller/' + controller.id + '/preferences/builtin/cloud-nodes/addtemplate'"
+        mat-icon-button>
+        <mat-icon>add_circle_outline</mat-icon>
+      </button>
+    }
+  </header>
 
-  </div>
-  @if (!cloudNodesTemplates.length) {
-    <app-empty-templates-list></app-empty-templates-list>
-  }
-  @if (cloudNodesTemplates.length) {
-    <div class="default-content">
-      <div class="listcontainer mat-elevation-z8">
-        <mat-nav-list>
-          @for (template of cloudNodesTemplates; track template.template_id) {
-            <div class="list-item">
-              <mat-list-item class="template-name" routerLink="{{ template.template_id }}">{{
-                template.name
-              }}</mat-list-item>
-              <button mat-button class="menu-button" [matMenuTriggerFor]="menu">
-                <mat-icon>more_vert</mat-icon>
+  <main class="cloud-nodes__content">
+    @if (!cloudNodesTemplates.length) {
+      <app-empty-templates-list></app-empty-templates-list>
+    }
+
+    @if (cloudNodesTemplates.length) {
+      <nav class="cloud-nodes__list">
+        @for (template of cloudNodesTemplates; track template.template_id) {
+          <a
+            class="cloud-nodes__list-item"
+            [routerLink]="template.template_id">
+            <mat-icon class="cloud-nodes__list-icon">cloud</mat-icon>
+            <span class="cloud-nodes__list-name">{{ template.name }}</span>
+            <button mat-icon-button [matMenuTriggerFor]="menu" class="cloud-nodes__menu-btn">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item (click)="deleteTemplate(template)">
+                <mat-icon>delete</mat-icon>
+                <span>Delete</span>
               </button>
-              <mat-menu #menu="matMenu">
-                <button mat-menu-item (click)="deleteTemplate(template)">
-                  <mat-icon>delete</mat-icon><span>Delete</span>
-                </button>
-                <button mat-menu-item routerLink="{{ template.template_id }}">
-                  <mat-icon>edit</mat-icon><span>Edit</span>
-                </button>
-              </mat-menu>
-            </div>
-          }
-        </mat-nav-list>
-      </div>
-    </div>
-  }
+              <button mat-menu-item [routerLink]="template.template_id">
+                <mat-icon>edit</mat-icon>
+                <span>Edit</span>
+              </button>
+            </mat-menu>
+          </a>
+        }
+      </nav>
+    }
+  </main>
 </div>
-<app-delete-template #deleteComponent [controller]="controller" (deleteEvent)="onDeleteEvent()"> </app-delete-template>
+<app-delete-template #deleteComponent [controller]="controller" (deleteEvent)="onDeleteEvent()"></app-delete-template>
