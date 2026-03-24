@@ -1,58 +1,58 @@
-<div class="content">
-  <div class="default-header">
-    <div class="row">
-      <div class="col col-md-1">
-        @if (controller()) {
-          <button
-            class="top-button"
-            class="cancel-button"
-            mat-button
-            (click)="goBack()"
-          >
-            <mat-icon>arrow_back</mat-icon>
-          </button>
-        }
-      </div>
-      <div class="col col-md-11">
-        <h1 class="col">New IOS router template</h1>
-      </div>
-    </div>
-  </div>
+<div class="ios-add">
+  <header class="ios-add__header">
+    @if (controller()) {
+      <button
+        class="ios-add__back-btn"
+        (click)="goBack()"
+        mat-icon-button>
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+    }
+    <h1 class="ios-add__title">New IOS router template</h1>
+  </header>
+
   @if (iosTemplate()) {
-    <div class="default-content">
-      <div class="container mat-elevation-z8">
-        <mat-vertical-stepper [linear]="true">
+    <main class="ios-add__content">
+      <section class="ios-add__stepper-card">
+        <mat-vertical-stepper [linear]="true" class="ios-add__stepper">
           <mat-step label="Controller type" [completed]="isLocalComputerChosen()">
-            <mat-radio-group class="radio-group">
-              <mat-radio-button class="radio-button" value="1" (click)="setControllerType('local')" checked
-                >Run this IOS router locally</mat-radio-button
-              >
-            </mat-radio-group>
+            <div class="ios-add__step-content">
+              <mat-radio-group class="ios-add__radio-group">
+                <mat-radio-button class="ios-add__radio" value="1" (click)="setControllerType('local')" [checked]="true">
+                  Run this IOS router locally
+                </mat-radio-button>
+              </mat-radio-group>
+            </div>
           </mat-step>
 
           <mat-step label="IOS image" [completed]="iosImageForm.get('imageName').value">
-            <input
-              type="file"
-              accept=".bin, .image"
-              class="non-visible"
-              #file
-              (change)="addImage($event)"
-              ng2FileSelect
-              [uploader]="uploader()"
-            />
-            <button mat-raised-button color="primary" (click)="file.click()">Click to add image</button> or create from
-            existing one
-            <form [formGroup]="iosImageForm">
-              <mat-form-field class="form-field">
-                <mat-select placeholder="Image" (selectionChange)="onImageChosen($event)" formControlName="imageName">
-                  @for (image of iosImages(); track image.filename) {
-                    <mat-option [value]="image.filename">
-                      {{ image.filename }}
-                    </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-            </form>
+            <div class="ios-add__step-content">
+              <input
+                type="file"
+                accept=".bin, .image"
+                class="ios-add__file-input"
+                #file
+                (change)="addImage($event)"
+                ng2FileSelect
+                [uploader]="uploader()"
+              />
+              <button mat-raised-button color="primary" class="ios-add__upload-btn" (click)="file.click()">
+                Click to add image
+              </button>
+              <span class="ios-add__or-text">or create from existing one</span>
+              <form [formGroup]="iosImageForm" class="ios-add__form">
+                <mat-form-field appearance="fill" class="ios-add__field">
+                  <mat-label>Image</mat-label>
+                  <mat-select placeholder="Image" (selectionChange)="onImageChosen($event)" formControlName="imageName">
+                    @for (image of iosImages(); track image.filename) {
+                      <mat-option [value]="image.filename">
+                        {{ image.filename }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </form>
+            </div>
           </mat-step>
 
           <mat-step
@@ -63,125 +63,147 @@
               iosNameForm.get('chassis').value
             "
           >
-            <form [formGroup]="iosNameForm">
-              <mat-form-field class="form-field">
-                <input matInput type="text" formControlName="templateName" placeholder="Name" />
-              </mat-form-field>
-              <mat-form-field class="form-field">
-                <mat-select
-                  placeholder="Platform"
-                  (selectionChange)="onPlatformChosen($event)"
-                  formControlName="platform"
-                >
-                  @for (platform of platforms(); track platform) {
-                    <mat-option [value]="platform">
-                      {{ platform }}
-                    </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-              @if (chassis()[iosNameForm.get('platform').value]) {
-                <mat-form-field class="form-field">
-                  <mat-select placeholder="Chassis" (selectionChange)="onChassisChosen($event)" formControlName="chassis">
-                    @for (c of chassis()[iosNameForm.get('platform').value]; track c) {
-                      <mat-option [value]="c">
-                        {{ c }}
+            <div class="ios-add__step-content">
+              <form [formGroup]="iosNameForm" class="ios-add__form">
+                <mat-form-field appearance="fill" class="ios-add__field">
+                  <mat-label>Name</mat-label>
+                  <input matInput type="text" formControlName="templateName" placeholder="Name" />
+                </mat-form-field>
+                <mat-form-field appearance="fill" class="ios-add__field">
+                  <mat-label>Platform</mat-label>
+                  <mat-select
+                    placeholder="Platform"
+                    (selectionChange)="onPlatformChosen($event)"
+                    formControlName="platform"
+                  >
+                    @for (platform of platforms(); track platform) {
+                      <mat-option [value]="platform">
+                        {{ platform }}
                       </mat-option>
                     }
                   </mat-select>
                 </mat-form-field>
-              }
-            </form>
-            @if (platformsWithEtherSwitchRouterOption()[iosTemplate().platform]) {
-              <mat-checkbox [(ngModel)]="isEtherSwitchRouter">
-                This is an EtherSwitch router
-              </mat-checkbox>
-            }
-          </mat-step>
-
-          <mat-step label="Memory" [completed]="iosMemoryForm.get('memory').value">
-            <form [formGroup]="iosMemoryForm">
-              <mat-form-field class="form-field">
-                <input
-                  matInput
-                  type="number"
-                  formControlName="memory"
-                  [value]="defaultRam()[iosNameForm.get('platform').value]"
-                  placeholder="Default RAM"
-                />
-                <span matSuffix>MB</span>
-              </mat-form-field>
-              <mat-label>
-                <a [href]="ciscoUrl">Check for minimum and maximum RAM requirement</a>
-              </mat-label>
-            </form>
-          </mat-step>
-
-          <mat-step label="Network adapters">
-            @if (iosNameForm.get('platform').value) {
-              @for (index of [0, 1, 2, 3, 4, 5, 6]; track index) {
-                @if (adapterMatrix()[iosNameForm.get('platform').value][iosNameForm.get('chassis').value || '']
-                && adapterMatrix()[iosNameForm.get('platform').value][iosNameForm.get('chassis').value || ''][index]) {
-                  <div>
-                    <mat-select
-                      placeholder="Slot {{ index }}"
-                      [(ngModel)]="networkAdaptersForTemplate[index]"
-                      [ngModelOptions]="{ standalone: true }"
-                    >
-                      @if (adapterMatrix()[iosNameForm.get('platform').value][iosNameForm.get('chassis').value|| ''][index].length > 1 &&
-                        !adapterMatrix()[iosNameForm.get('platform').value][iosNameForm.get('chassis').value|| ''][index][0].startsWith('C7200')) {
-                        <mat-option [value]=""></mat-option>
-                      }
-                      @for (option of adapterMatrix()[iosNameForm.get('platform').value][iosNameForm.get('chassis').value || ''][index]; track option) {
-                        <mat-option [value]="option">
-                          {{ option }}
+                @if (chassis()[iosNameForm.get('platform').value]) {
+                  <mat-form-field appearance="fill" class="ios-add__field">
+                    <mat-label>Chassis</mat-label>
+                    <mat-select placeholder="Chassis" (selectionChange)="onChassisChosen($event)" formControlName="chassis">
+                      @for (c of chassis()[iosNameForm.get('platform').value]; track c) {
+                        <mat-option [value]="c">
+                          {{ c }}
                         </mat-option>
                       }
                     </mat-select>
-                  </div>
+                  </mat-form-field>
                 }
+              </form>
+              @if (platformsWithEtherSwitchRouterOption()[iosTemplate().platform]) {
+                <mat-checkbox [(ngModel)]="isEtherSwitchRouter" class="ios-add__checkbox">
+                  This is an EtherSwitch router
+                </mat-checkbox>
               }
-            }
+            </div>
+          </mat-step>
+
+          <mat-step label="Memory" [completed]="iosMemoryForm.get('memory').value">
+            <div class="ios-add__step-content">
+              <form [formGroup]="iosMemoryForm" class="ios-add__form">
+                <mat-form-field appearance="fill" class="ios-add__field">
+                  <mat-label>Default RAM</mat-label>
+                  <input
+                    matInput
+                    type="number"
+                    formControlName="memory"
+                    [value]="defaultRam()[iosNameForm.get('platform').value]"
+                    placeholder="Default RAM"
+                  />
+                  <span matSuffix>MB</span>
+                </mat-form-field>
+                <mat-label class="ios-add__ram-link">
+                  <a [href]="ciscoUrl">Check for minimum and maximum RAM requirement</a>
+                </mat-label>
+              </form>
+            </div>
+          </mat-step>
+
+          <mat-step label="Network adapters">
+            <div class="ios-add__step-content">
+              @if (iosNameForm.get('platform').value) {
+                <div class="ios-add__adapters">
+                  @for (index of [0, 1, 2, 3, 4, 5, 6]; track index) {
+                    @if (adapterMatrix()[iosNameForm.get('platform').value][iosNameForm.get('chassis').value || '']
+                    && adapterMatrix()[iosNameForm.get('platform').value][iosNameForm.get('chassis').value || ''][index]) {
+                      <mat-form-field appearance="fill" class="ios-add__field">
+                        <mat-label>Slot {{ index }}</mat-label>
+                        <mat-select
+                          placeholder="Slot {{ index }}"
+                          [(ngModel)]="networkAdaptersForTemplate[index]"
+                          [ngModelOptions]="{ standalone: true }"
+                        >
+                          @if (adapterMatrix()[iosNameForm.get('platform').value][iosNameForm.get('chassis').value|| ''][index].length > 1 &&
+                            !adapterMatrix()[iosNameForm.get('platform').value][iosNameForm.get('chassis').value|| ''][index][0].startsWith('C7200')) {
+                            <mat-option [value]=""></mat-option>
+                          }
+                          @for (option of adapterMatrix()[iosNameForm.get('platform').value][iosNameForm.get('chassis').value || ''][index]; track option) {
+                            <mat-option [value]="option">
+                              {{ option }}
+                            </mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                    }
+                  }
+                </div>
+              }
+            </div>
           </mat-step>
 
           @if (iosNameForm.get('platform').value && wicMatrix()[iosNameForm.get('platform').value]) {
             <mat-step label="WIC modules">
-              @for (index of [0, 1, 2]; track index) {
-                @if (wicMatrix()[iosNameForm.get('platform').value] && wicMatrix()[iosNameForm.get('platform').value][index]) {
-                  <div>
-                    <mat-select
-                      placeholder="WIC {{ index }}"
-                      [(ngModel)]="wicsForTemplate[index]"
-                      [ngModelOptions]="{ standalone: true }"
-                    >
-                      <mat-option [value]="">
-                        {{ "" }}
-                      </mat-option>
-                      @for (option of wicMatrix()[iosNameForm.get('platform').value][index]; track option) {
-                        <mat-option [value]="option">
-                          {{ option }}
-                        </mat-option>
-                      }
-                    </mat-select>
-                  </div>
-                }
-              }
+              <div class="ios-add__step-content">
+                <div class="ios-add__adapters">
+                  @for (index of [0, 1, 2]; track index) {
+                    @if (wicMatrix()[iosNameForm.get('platform').value] && wicMatrix()[iosNameForm.get('platform').value][index]) {
+                      <mat-form-field appearance="fill" class="ios-add__field">
+                        <mat-label>WIC {{ index }}</mat-label>
+                        <mat-select
+                          placeholder="WIC {{ index }}"
+                          [(ngModel)]="wicsForTemplate[index]"
+                          [ngModelOptions]="{ standalone: true }"
+                        >
+                          <mat-option [value]="">
+                            {{ "" }}
+                          </mat-option>
+                          @for (option of wicMatrix()[iosNameForm.get('platform').value][index]; track option) {
+                            <mat-option [value]="option">
+                              {{ option }}
+                            </mat-option>
+                          }
+                        </mat-select>
+                      </mat-form-field>
+                    }
+                  }
+                </div>
+              </div>
             </mat-step>
           }
 
           <mat-step label="Idle-PC">
-            <form [formGroup]="iosIdlePCForm">
-              <mat-form-field class="form-field">
-                <input matInput type="text" formControlName="idlepc" placeholder="Idle-PC" />
-              </mat-form-field>
-            </form>
+            <div class="ios-add__step-content">
+              <form [formGroup]="iosIdlePCForm" class="ios-add__form">
+                <mat-form-field appearance="fill" class="ios-add__field">
+                  <mat-label>Idle-PC</mat-label>
+                  <input matInput type="text" formControlName="idlepc" placeholder="Idle-PC" />
+                </mat-form-field>
+              </form>
+            </div>
           </mat-step>
         </mat-vertical-stepper>
+      </section>
+
+      <div class="ios-add__actions">
+        <button mat-button class="ios-add__cancel-btn" (click)="goBack()">Cancel</button>
+        <button mat-raised-button color="primary" class="ios-add__submit-btn" (click)="addTemplate()">Add template</button>
       </div>
-      <div class="buttons-bar">
-        <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
-        <button mat-raised-button color="primary" (click)="addTemplate()">Add template</button>
-      </div>
-    </div>
+    </main>
   }
 </div>

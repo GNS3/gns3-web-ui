@@ -1,11 +1,270 @@
-.idlePCFinderButton {
+/**
+ * GNS3 IOS Template Details Component Styles
+ * BEM naming applied, Material theme variables used
+ * Design language unified with management pages
+ */
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--mat-sys-primary-container) 0%,
+    var(--mat-sys-background) 100%
+  );
+  min-height: 100vh;
+}
+
+/* =============================================
+// Header
+// ============================================= */
+.ios-details__header {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 20px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: fadeInSlideIn 0.4s ease-out;
+}
+
+.ios-details__back-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  color: var(--mat-sys-on-surface);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+  }
+}
+
+.ios-details__title {
+  flex: 1;
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin: 0;
+}
+
+/* =============================================
+// Content
+// ============================================= */
+.ios-details__content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px 20px;
+  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+}
+
+.ios-details--hidden {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* =============================================
+// Accordion
+// ============================================= */
+.ios-details__accordion {
+  background: var(--mat-sys-surface);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+              0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+}
+
+.ios-details__panel {
+  background: transparent;
+  box-shadow: none;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+}
+
+.ios-details__panel-header {
+  background: var(--mat-sys-surface-container-low);
+  padding: 16px 24px;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background: var(--mat-sys-surface-container-high);
+  }
+
+  .mat-expansion-panel-header.mat-expanded & {
+    background: var(--mat-sys-primary-container);
+  }
+}
+
+.ios-details__panel-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* =============================================
+// Form
+// ============================================= */
+.ios-details__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 24px 24px;
+}
+
+.ios-details__field {
   width: 100%;
 }
 
-.generateButton {
-  width: 100%;
+.ios-details__field--flex {
+  flex: 1;
 }
 
-.tags-field {
-  width: 100%;
+.ios-details__symbol-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.ios-details__symbol-btn,
+.ios-details__action-btn {
+  margin-top: 4px;
+  height: 48px;
+}
+
+.ios-details__info-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.ios-details__info-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+  min-width: 100px;
+}
+
+.ios-details__info-value {
+  font-size: 14px;
+  color: var(--mat-sys-on-surface);
+}
+
+.ios-details__section-subtitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 8px 0;
+}
+
+.ios-details__adapters {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.ios-details__checkbox {
+  margin-top: 8px;
+}
+
+/* =============================================
+// Actions
+// ============================================= */
+.ios-details__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.ios-details__cancel-btn {
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+.ios-details__save-btn {
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.5px;
+}
+
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 768px) {
+  .ios-details__header {
+    padding: 24px 16px 12px;
+    gap: 12px;
+  }
+
+  .ios-details__back-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .ios-details__title {
+    font-size: 22px;
+  }
+
+  .ios-details__content {
+    padding: 0 16px 16px;
+  }
+
+  .ios-details__panel-header {
+    padding: 14px 16px;
+  }
+
+  .ios-details__form {
+    padding: 0 16px 16px;
+  }
+
+  .ios-details__symbol-row {
+    flex-direction: column;
+  }
+
+  .ios-details__symbol-btn,
+  .ios-details__action-btn {
+    width: 100%;
+  }
+
+  .ios-details__adapters {
+    grid-template-columns: 1fr;
+  }
+
+  .ios-details__actions {
+    flex-direction: column;
+  }
+
+  .ios-details__cancel-btn,
+  .ios-details__save-btn {
+    width: 100%;
+    height: 44px;
+  }
 }

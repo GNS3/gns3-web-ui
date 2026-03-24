@@ -1,3 +1,224 @@
-.non-visible {
+/**
+ * GNS3 IOS Add Template Component Styles
+ * BEM naming applied, Material theme variables used
+ * Design language unified with management pages
+ */
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--mat-sys-primary-container) 0%,
+    var(--mat-sys-background) 100%
+  );
+  min-height: 100vh;
+}
+
+/* =============================================
+// Header
+// ============================================= */
+.ios-add__header {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 20px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: fadeInSlideIn 0.4s ease-out;
+}
+
+.ios-add__back-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  color: var(--mat-sys-on-surface);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+  }
+}
+
+.ios-add__title {
+  flex: 1;
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin: 0;
+}
+
+/* =============================================
+// Content
+// ============================================= */
+.ios-add__content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px 20px;
+  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+}
+
+/* =============================================
+// Stepper Card
+// ============================================= */
+.ios-add__stepper-card {
+  background: var(--mat-sys-surface);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+              0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+}
+
+.ios-add__stepper {
+  background: transparent;
+}
+
+/* =============================================
+// Step Content
+// ============================================= */
+.ios-add__step-content {
+  padding: 16px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ios-add__radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ios-add__radio {
+  font-size: 16px;
+}
+
+.ios-add__file-input {
   display: none;
+}
+
+.ios-add__upload-btn {
+  align-self: flex-start;
+}
+
+.ios-add__or-text {
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.ios-add__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ios-add__field {
+  width: 100%;
+}
+
+.ios-add__checkbox {
+  margin-top: 8px;
+}
+
+.ios-add__ram-link {
+  font-size: 14px;
+  color: var(--mat-sys-primary);
+
+  a {
+    color: var(--mat-sys-primary);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.ios-add__adapters {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+/* =============================================
+// Actions
+// ============================================= */
+.ios-add__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.ios-add__cancel-btn {
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+.ios-add__submit-btn {
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.5px;
+}
+
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 768px) {
+  .ios-add__header {
+    padding: 24px 16px 12px;
+    gap: 12px;
+  }
+
+  .ios-add__back-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .ios-add__title {
+    font-size: 24px;
+  }
+
+  .ios-add__content {
+    padding: 0 16px 16px;
+  }
+
+  .ios-add__step-content {
+    padding: 12px 16px 20px;
+  }
+
+  .ios-add__adapters {
+    grid-template-columns: 1fr;
+  }
+
+  .ios-add__actions {
+    flex-direction: column;
+  }
+
+  .ios-add__cancel-btn,
+  .ios-add__submit-btn {
+    width: 100%;
+    height: 44px;
+  }
 }
