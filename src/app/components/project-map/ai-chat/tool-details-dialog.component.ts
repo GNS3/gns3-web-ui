@@ -189,6 +189,7 @@ export interface ToolDetailsDialogData {
       background: rgba(0, 151, 167, 0.5);
     }
   `
+]
 })
 export class ToolDetailsDialogComponent {
   readonly type = signal<'tool_call' | 'tool_result'>('tool_call');
