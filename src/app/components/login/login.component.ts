@@ -61,6 +61,7 @@ export class LoginComponent implements OnInit {
   public hidePassword = signal(true);
   public isCapsLockOn = signal(false);
   public isRememberMeChecked = signal(false);
+  public readonly currentYear = new Date().getFullYear();
 
   // Computed signals
   public readonly isLightThemeEnabled = computed(() => this.themeService.getActualTheme() === 'light');

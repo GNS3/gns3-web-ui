@@ -57,7 +57,7 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
             <mat-cell *matCellDef="let row">
               @if (getControllerStatus(row) === 'running') {
-                <a [routerLink]="['/controller', row.id, 'login']" class="controllers__link">
+                <a [routerLink]="['/controller', row.id, 'projects']" class="controllers__link">
                   {{ row.name }}
                 </a>
               } @else {

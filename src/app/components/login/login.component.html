@@ -132,5 +132,10 @@
         <mat-icon class="login-card__social-icon" *ngIf="isLightThemeEnabled()" svgIcon="gns3black"></mat-icon>
       </a>
     </div>
+
+    <!-- Version Footer -->
+    <div class="login-card__footer">
+      GNS3 Web-UI ©2018-{{ currentYear }} v{{ version() }}
+    </div>
   </div>
 </div>
