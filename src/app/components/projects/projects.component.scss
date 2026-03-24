@@ -4,16 +4,16 @@
  */
 
 :host {
-  display: block;
+  display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100%;
-  // Unified gradient background with controllers and login pages
+  overflow: hidden;
   background: linear-gradient(
     135deg,
     var(--mat-sys-primary-container) 0%,
     var(--mat-sys-background) 100%
   );
-  min-height: 100vh;
 }
 
 /* =============================================
@@ -27,6 +27,7 @@
   margin: 0 auto;
   padding: 24px 20px 16px;
   animation: fadeInSlideIn 0.4s ease-out;
+  flex-shrink: 0;
 }
 
 .projects__title {
@@ -40,7 +41,16 @@
 /* =============================================
 // Content
 // ============================================= */
+.projects {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
 .projects__content {
+  flex: 1;
+  overflow-y: auto;
   animation: fadeInSlideIn 0.4s ease-out 0.1s both;
 }
 
@@ -83,6 +93,7 @@
   max-width: 1000px;
   padding: 0 20px;
   animation: fadeInSlideIn 0.4s ease-out 0.05s both;
+  flex-shrink: 0;
 }
 
 .projects__search {
@@ -103,6 +114,16 @@
               0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
   transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   animation: fadeInSlideIn 0.4s ease-out 0.15s both;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.projects__table-container mat-table {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
 }
 
 // Material table internal DOM styling
@@ -296,6 +317,7 @@ button[color="warn"] {
   color: var(--mat-sys-on-surface-variant);
   font-size: 14px;
   opacity: 0.7;
+  flex-shrink: 0;
 }
 
 .projects__footer-content {
