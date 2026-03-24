@@ -1,0 +1,159 @@
+/**
+ * GNS3 VMware Templates Component Styles
+ * BEM naming applied, Material theme variables used
+ * Design language unified with management pages
+ */
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--mat-sys-primary-container) 0%,
+    var(--mat-sys-background) 100%
+  );
+  min-height: 100vh;
+}
+
+/* =============================================
+// Header
+// ============================================= */
+.vmware-templates__header {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 20px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: fadeInSlideIn 0.4s ease-out;
+}
+
+.vmware-templates__back-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  color: var(--mat-sys-on-surface);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+  }
+}
+
+.vmware-templates__title {
+  flex: 1;
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin: 0;
+  padding-bottom: 8px;
+}
+
+.vmware-templates__add-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  color: var(--mat-sys-primary);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+  }
+}
+
+/* =============================================
+// Content
+// ============================================= */
+.vmware-templates__content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px 20px;
+  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+}
+
+/* =============================================
+// List
+// ============================================= */
+.vmware-templates__list {
+  background: var(--mat-sys-surface);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+              0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+}
+
+.vmware-templates__list-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  color: var(--mat-sys-on-surface);
+  text-decoration: none;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 5%, transparent);
+  }
+}
+
+.vmware-templates__list-icon {
+  color: var(--mat-sys-primary);
+}
+
+.vmware-templates__list-name {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.vmware-templates__menu-btn {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 768px) {
+  .vmware-templates__header {
+    padding: 24px 16px 12px;
+    gap: 12px;
+  }
+
+  .vmware-templates__back-btn,
+  .vmware-templates__add-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .vmware-templates__title {
+    font-size: 24px;
+  }
+
+  .vmware-templates__content {
+    padding: 0 16px 16px;
+  }
+
+  .vmware-templates__list-item {
+    padding: 14px 16px;
+  }
+}
