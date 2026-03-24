@@ -18,34 +18,37 @@
           <mat-expansion-panel-header class="ios-details__panel-header">
             <mat-panel-title class="ios-details__panel-title">General settings</mat-panel-title>
           </mat-expansion-panel-header>
-          <div class="ios-details__form">
-            <form [formGroup]="generalSettingsForm">
-              <mat-form-field appearance="fill" class="ios-details__field">
-                <mat-label>Template name</mat-label>
-                <input matInput type="text" formControlName="templateName" placeholder="Template name" />
+          <form [formGroup]="generalSettingsForm" class="ios-details__form">
+            <mat-form-field appearance="fill" class="ios-details__field">
+              <mat-label>Template name</mat-label>
+              <input matInput type="text" formControlName="templateName" placeholder="Template name" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="ios-details__field">
+              <mat-label>Default name format</mat-label>
+              <input matInput type="text" formControlName="defaultName" placeholder="Default name format" />
+            </mat-form-field>
+
+            <div class="ios-details__symbol-row">
+              <mat-form-field appearance="fill" class="ios-details__field ios-details__field--flex">
+                <mat-label>Symbol</mat-label>
+                <input matInput type="text" formControlName="symbol" placeholder="Symbol" />
               </mat-form-field>
-              <mat-form-field appearance="fill" class="ios-details__field">
-                <mat-label>Default name format</mat-label>
-                <input matInput type="text" formControlName="defaultName" placeholder="Default name format" />
-              </mat-form-field>
-              <div class="ios-details__symbol-row">
-                <mat-form-field appearance="fill" class="ios-details__field ios-details__field--flex">
-                  <mat-label>Symbol</mat-label>
-                  <input matInput type="text" formControlName="symbol" placeholder="Symbol" />
-                </mat-form-field>
-                <button mat-button class="ios-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
-              </div>
-            </form>
+              <button mat-button class="ios-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
+            </div>
+
             <div class="ios-details__info-row">
               <span class="ios-details__info-label">Platform</span>
               <span class="ios-details__info-value">{{ iosTemplate.platform }}</span>
             </div>
+
             @if (iosTemplate.chassis) {
               <div class="ios-details__info-row">
                 <span class="ios-details__info-label">Chassis</span>
                 <span class="ios-details__info-value">{{ iosTemplate.chassis }}</span>
               </div>
             }
+
             <mat-form-field appearance="fill" class="ios-details__field">
               <mat-label>Category</mat-label>
               <mat-select [ngModelOptions]="{ standalone: true }" placeholder="Category">
@@ -54,6 +57,7 @@
                 }
               </mat-select>
             </mat-form-field>
+
             <mat-form-field appearance="fill" class="ios-details__field">
               <mat-label>Tags</mat-label>
               <mat-chip-grid #chipList>
@@ -69,20 +73,24 @@
                      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                      (matChipInputTokenEnd)="addTag($event)" />
             </mat-form-field>
+
             <mat-form-field appearance="fill" class="ios-details__field">
               <mat-label>IOS image path</mat-label>
               <input matInput type="text" formControlName="path" placeholder="IOS image path" />
             </mat-form-field>
+
             <mat-form-field appearance="fill" class="ios-details__field">
               <mat-label>Initial startup-config</mat-label>
               <input matInput type="text" formControlName="initialConfig" placeholder="Initial startup-config" />
               <mat-hint>Filename only (e.g. ios-startup-config.txt)</mat-hint>
             </mat-form-field>
+
             <mat-form-field appearance="fill" class="ios-details__field">
               <mat-label>Initial private-config</mat-label>
               <input matInput type="text" [ngModelOptions]="{ standalone: true }" placeholder="Initial private-config" />
               <mat-hint>Filename only (e.g. ios-private-config.txt)</mat-hint>
             </mat-form-field>
+
             <mat-form-field appearance="fill" class="ios-details__field">
               <mat-label>Console type</mat-label>
               <mat-select placeholder="Console type">
@@ -91,6 +99,7 @@
                 }
               </mat-select>
             </mat-form-field>
+
             <mat-form-field appearance="fill" class="ios-details__field">
               <mat-label>Auxiliary console type</mat-label>
               <mat-select placeholder="Auxiliary console type">
@@ -99,44 +108,48 @@
                 }
               </mat-select>
             </mat-form-field>
+
             <mat-checkbox class="ios-details__checkbox">Auto start console</mat-checkbox>
-          </div>
+          </form>
         </mat-expansion-panel>
 
         <mat-expansion-panel class="ios-details__panel">
           <mat-expansion-panel-header class="ios-details__panel-header">
             <mat-panel-title class="ios-details__panel-title">Memories and disks</mat-panel-title>
           </mat-expansion-panel-header>
-          <div class="ios-details__form">
-            <form [formGroup]="memoryForm">
+          <form [formGroup]="memoryForm" class="ios-details__form">
+            <mat-form-field appearance="fill" class="ios-details__field">
+              <mat-label>RAM size</mat-label>
+              <input matInput type="number" min="32" step="32" formControlName="ram" placeholder="RAM size" />
+              <span matSuffix>MB</span>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="ios-details__field">
+              <mat-label>NVRAM size</mat-label>
+              <input matInput type="number" min="32" step="32" formControlName="nvram" placeholder="NVRAM size" />
+              <span matSuffix>MB</span>
+            </mat-form-field>
+
+            @if (['c1700', 'c2600', 'c2691', 'c3600', 'c3725', 'c3745'].includes(iosTemplate.platform)) {
               <mat-form-field appearance="fill" class="ios-details__field">
-                <mat-label>RAM size</mat-label>
-                <input matInput type="number" min="32" step="32" formControlName="ram" placeholder="RAM size" />
-                <span matSuffix>MB</span>
+                <mat-label>I/O memory</mat-label>
+                <input matInput type="number" min="0" max="100" step="5" formControlName="iomemory" placeholder="I/O memory" />
+                <mat-hint>Percentage of RAM for I/O memory</mat-hint>
               </mat-form-field>
-              <mat-form-field appearance="fill" class="ios-details__field">
-                <mat-label>NVRAM size</mat-label>
-                <input matInput type="number" min="32" step="32" formControlName="nvram" placeholder="NVRAM size" />
-                <span matSuffix>MB</span>
-              </mat-form-field>
-              @if (['c1700', 'c2600', 'c2691', 'c3600', 'c3725', 'c3745'].includes(iosTemplate.platform)) {
-                <mat-form-field appearance="fill" class="ios-details__field">
-                  <mat-label>I/O memory</mat-label>
-                  <input matInput type="number" min="0" max="100" step="5" formControlName="iomemory" placeholder="I/O memory" />
-                  <mat-hint>Percentage of RAM for I/O memory</mat-hint>
-                </mat-form-field>
-              }
-              <mat-form-field appearance="fill" class="ios-details__field">
-                <mat-label>PCMCIA disk0</mat-label>
-                <input matInput type="number" min="0" step="4" formControlName="disk0" placeholder="PCMCIA disk0" />
-              </mat-form-field>
-              <mat-form-field appearance="fill" class="ios-details__field">
-                <mat-label>PCMCIA disk1</mat-label>
-                <input matInput type="number" min="0" step="4" formControlName="disk1" placeholder="PCMCIA disk1" />
-              </mat-form-field>
-            </form>
+            }
+
+            <mat-form-field appearance="fill" class="ios-details__field">
+              <mat-label>PCMCIA disk0</mat-label>
+              <input matInput type="number" min="0" step="4" formControlName="disk0" placeholder="PCMCIA disk0" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="ios-details__field">
+              <mat-label>PCMCIA disk1</mat-label>
+              <input matInput type="number" min="0" step="4" formControlName="disk1" placeholder="PCMCIA disk1" />
+            </mat-form-field>
+
             <mat-checkbox class="ios-details__checkbox">Automatically delete NVRAM and disk files</mat-checkbox>
-          </div>
+          </form>
         </mat-expansion-panel>
 
         <mat-expansion-panel class="ios-details__panel">
@@ -188,55 +201,57 @@
           <mat-expansion-panel-header class="ios-details__panel-header">
             <mat-panel-title class="ios-details__panel-title">Advanced</mat-panel-title>
           </mat-expansion-panel-header>
-          <div class="ios-details__form">
-            <form [formGroup]="advancedForm">
-              <mat-form-field appearance="fill" class="ios-details__field">
-                <mat-label>System ID</mat-label>
-                <input matInput type="text" formControlName="systemId" placeholder="System ID" />
+          <form [formGroup]="advancedForm" class="ios-details__form">
+            <mat-form-field appearance="fill" class="ios-details__field">
+              <mat-label>System ID</mat-label>
+              <input matInput type="text" formControlName="systemId" placeholder="System ID" />
+            </mat-form-field>
+
+            <div class="ios-details__symbol-row">
+              <mat-form-field appearance="fill" class="ios-details__field ios-details__field--flex">
+                <mat-label>Base MAC (format: xxxx.xxxx.xxxx)</mat-label>
+                <input matInput type="text" formControlName="mac_addr" placeholder="Base MAC" />
+                <mat-hint>Example: aaaa.bbbb.cccc (leave empty to let the server allocate a MAC address).</mat-hint>
               </mat-form-field>
-              <div class="ios-details__symbol-row">
-                <mat-form-field appearance="fill" class="ios-details__field ios-details__field--flex">
-                  <mat-label>Base MAC (format: xxxx.xxxx.xxxx)</mat-label>
-                  <input matInput type="text" formControlName="mac_addr" placeholder="Base MAC" />
-                  <mat-hint>Example: aaaa.bbbb.cccc (leave empty to let the server allocate a MAC address).</mat-hint>
-                </mat-form-field>
-                <button mat-button class="ios-details__action-btn" (click)="generateBaseMAC()">Generate Base MAC</button>
-              </div>
-              <div class="ios-details__symbol-row">
-                <mat-form-field appearance="fill" class="ios-details__field ios-details__field--flex">
-                  <mat-label>Idle-PC</mat-label>
-                  <input matInput type="text" formControlName="idlepc" placeholder="Idle-PC" />
-                </mat-form-field>
-                <button mat-button class="ios-details__action-btn" (click)="findIdlePC()">Idle-PC finder</button>
-              </div>
-              <mat-form-field appearance="fill" class="ios-details__field">
-                <mat-label>Idlemax</mat-label>
-                <input matInput type="number" min="100" step="100" formControlName="idlemax" placeholder="Idlemax" />
+              <button mat-button class="ios-details__action-btn" (click)="generateBaseMAC()">Generate Base MAC</button>
+            </div>
+
+            <div class="ios-details__symbol-row">
+              <mat-form-field appearance="fill" class="ios-details__field ios-details__field--flex">
+                <mat-label>Idle-PC</mat-label>
+                <input matInput type="text" formControlName="idlepc" placeholder="Idle-PC" />
               </mat-form-field>
-              <mat-form-field appearance="fill" class="ios-details__field">
-                <mat-label>Idlesleep</mat-label>
-                <input matInput type="number" min="1" step="10" formControlName="idlesleep" placeholder="Idlesleep" />
-              </mat-form-field>
-              <mat-form-field appearance="fill" class="ios-details__field">
-                <mat-label>Exec area</mat-label>
-                <input matInput type="number" min="0" step="4" formControlName="execarea" placeholder="Exec area" />
-              </mat-form-field>
-            </form>
+              <button mat-button class="ios-details__action-btn" (click)="findIdlePC()">Idle-PC finder</button>
+            </div>
+
+            <mat-form-field appearance="fill" class="ios-details__field">
+              <mat-label>Idlemax</mat-label>
+              <input matInput type="number" min="100" step="100" formControlName="idlemax" placeholder="Idlemax" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="ios-details__field">
+              <mat-label>Idlesleep</mat-label>
+              <input matInput type="number" min="1" step="10" formControlName="idlesleep" placeholder="Idlesleep" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="ios-details__field">
+              <mat-label>Exec area</mat-label>
+              <input matInput type="number" min="0" step="4" formControlName="execarea" placeholder="Exec area" />
+            </mat-form-field>
+
             <mat-checkbox class="ios-details__checkbox">Enable mmap support</mat-checkbox>
             <mat-checkbox class="ios-details__checkbox">Enable sparse memory support</mat-checkbox>
-          </div>
+          </form>
         </mat-expansion-panel>
 
         <mat-expansion-panel class="ios-details__panel">
           <mat-expansion-panel-header class="ios-details__panel-header">
             <mat-panel-title class="ios-details__panel-title">Usage</mat-panel-title>
           </mat-expansion-panel-header>
-          <div class="ios-details__form">
-            <mat-form-field appearance="fill" class="ios-details__field">
-              <mat-label>Usage</mat-label>
-              <textarea matInput type="text"></textarea>
-            </mat-form-field>
-          </div>
+          <mat-form-field appearance="fill" class="ios-details__field ios-details__field--full">
+            <mat-label>Usage</mat-label>
+            <textarea matInput type="text"></textarea>
+          </mat-form-field>
         </mat-expansion-panel>
       </mat-accordion>
 
