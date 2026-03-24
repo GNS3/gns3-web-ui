@@ -1,13 +1,129 @@
-.wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  max-height: 250px;
+/**
+ * GNS3 Status Chart Component Styles
+ * BEM naming applied, Material Design 3
+ */
+
+:host {
+  display: block;
 }
 
-.chips-wrapper {
-  width: 100%;
+/* =============================================
+// Card Container
+// ============================================= */
+.status-chart {
+  background: var(--mat-sys-surface-container-low);
+  border-radius: var(--mat-sys-corner-large);
+  padding: 24px;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
+}
+
+/* =============================================
+// Gauges Container
+// ============================================= */
+.status-chart__gauges {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 24px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* =============================================
+// Empty Gauge (placeholder for layout)
+// ============================================= */
+.gauge--empty {
+  flex: 1;
+  max-width: 200px;
+  visibility: hidden;
+}
+
+/* =============================================
+// Chips Section
+// ============================================= */
+.status-chart__chips {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+}
+
+.status-chart__chip-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
+  gap: 16px;
+  margin-bottom: 12px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* =============================================
+// Individual Chip
+// ============================================= */
+.chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 20px;
+  border-radius: var(--mat-sys-corner-medium);
+  flex: 1;
+  min-width: 0;
+  transition: all 200ms ease;
+
+  &__label {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+  }
+
+  &__value {
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  &--memory {
+    background: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+  }
+
+  &--swap {
+    background: var(--mat-sys-tertiary-container);
+    color: var(--mat-sys-on-tertiary-container);
+  }
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 768px) {
+  .status-chart {
+    padding: 16px;
+    border-radius: var(--mat-sys-corner-medium);
+  }
+
+  .status-chart__gauges {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .gauge--empty {
+    display: none;
+  }
+
+  .status-chart__chip-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .chip {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px 16px;
+  }
 }

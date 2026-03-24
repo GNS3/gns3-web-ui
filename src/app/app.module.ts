@@ -10,7 +10,6 @@ import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { DragAndDropModule } from 'angular-draggable-droppable';
 // import { D3Service } from 'd3-ng2-service';
-import { NgCircleProgressModule } from 'ng-circle-progress';
 import { FileUploadModule } from 'ng2-file-upload';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -642,7 +641,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         DragAndDropModule,
         DragDropModule,
         MATERIAL_IMPORTS,
-        NgCircleProgressModule.forRoot(),
         OverlayModule,
         MatSlideToggleModule,
         MatCheckboxModule,

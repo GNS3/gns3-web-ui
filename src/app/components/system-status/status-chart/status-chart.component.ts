@@ -1,25 +1,20 @@
-import { ChangeDetectionStrategy, Component, OnInit, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { MatChipsModule } from '@angular/material/chips';
-import { NgCircleProgressModule } from 'ng-circle-progress';
 import { ComputeStatistics } from '@models/computeStatistics';
+import { ProgressRingComponent } from './progress-ring/progress-ring.component';
 
 @Component({
   selector: 'app-status-chart',
   templateUrl: './status-chart.component.html',
   styleUrl: './status-chart.component.scss',
-  imports: [CommonModule, MatCardModule, MatChipsModule, NgCircleProgressModule],
+  imports: [CommonModule, MatCardModule, ProgressRingComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StatusChartComponent implements OnInit {
+export class StatusChartComponent {
   readonly computeStatistics = input<ComputeStatistics>(undefined);
 
-  constructor() {}
-
-  ngOnInit() {}
-
-  formatBytes(bytes, decimals = 2) {
+  formatBytes(bytes: number, decimals = 2): string {
     if (bytes === 0) return '0 Bytes';
 
     const k = 1024;

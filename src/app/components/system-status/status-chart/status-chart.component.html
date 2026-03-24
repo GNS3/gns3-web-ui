@@ -1,167 +1,74 @@
-<mat-card>
-  <div class="wrapper">
-    <circle-progress
+<mat-card class="status-chart">
+  <div class="status-chart__gauges">
+    <app-progress-ring
       [percent]="computeStatistics().statistics.cpu_usage_percent"
-      [radius]="100"
-      [outerStrokeWidth]="8"
-      [innerStrokeWidth]="6"
-      [outerStrokeColor]="'#0097a7'"
-      [innerStrokeColor]="'#007380'"
-      [animation]="true"
-      [animationDuration]="300"
-      [unitsColor]="'#C0C0C0'"
-      [unitsFontSize]="20"
-      [titleColor]="'#C0C0C0'"
-      [titleFontSize]="30"
-      [subtitle]="'CPU usage'"
-      [subtitleColor]="'#C0C0C0'"
-      [subtitleFontSize]="15"
-    ></circle-progress>
+      label="CPU usage"
+    ></app-progress-ring>
 
-    <circle-progress
+    <app-progress-ring
       [percent]="computeStatistics().statistics.disk_usage_percent"
-      [radius]="100"
-      [outerStrokeWidth]="8"
-      [innerStrokeWidth]="6"
-      [outerStrokeColor]="'#0097a7'"
-      [innerStrokeColor]="'#007380'"
-      [animation]="true"
-      [animationDuration]="300"
-      [unitsColor]="'#C0C0C0'"
-      [unitsFontSize]="20"
-      [titleColor]="'#C0C0C0'"
-      [titleFontSize]="30"
-      [subtitle]="'Disk usage'"
-      [subtitleColor]="'#C0C0C0'"
-      [subtitleFontSize]="15"
-    ></circle-progress>
+      label="Disk usage"
+    ></app-progress-ring>
 
-    <circle-progress
+    <app-progress-ring
       [percent]="computeStatistics().statistics.memory_usage_percent"
-      [radius]="100"
-      [outerStrokeWidth]="8"
-      [innerStrokeWidth]="6"
-      [outerStrokeColor]="'#0097a7'"
-      [innerStrokeColor]="'#007380'"
-      [animation]="true"
-      [animationDuration]="300"
-      [unitsColor]="'#C0C0C0'"
-      [unitsFontSize]="20"
-      [titleColor]="'#C0C0C0'"
-      [titleFontSize]="30"
-      [subtitle]="'Memory usage'"
-      [subtitleColor]="'#C0C0C0'"
-      [subtitleFontSize]="15"
-    ></circle-progress>
+      label="Memory usage"
+    ></app-progress-ring>
 
-    <circle-progress
+    <app-progress-ring
       [percent]="computeStatistics().statistics.swap_usage_percent"
-      [radius]="100"
-      [outerStrokeWidth]="8"
-      [innerStrokeWidth]="6"
-      [outerStrokeColor]="'#0097a7'"
-      [innerStrokeColor]="'#007380'"
-      [animation]="true"
-      [animationDuration]="300"
-      [unitsColor]="'#C0C0C0'"
-      [unitsFontSize]="20"
-      [titleColor]="'#C0C0C0'"
-      [titleFontSize]="30"
-      [subtitle]="'SWAP usage'"
-      [subtitleColor]="'#C0C0C0'"
-      [subtitleFontSize]="15"
-    ></circle-progress>
+      label="SWAP usage"
+    ></app-progress-ring>
   </div>
 
-  <div class="wrapper">
-    <circle-progress
+  <div class="status-chart__gauges">
+    <app-progress-ring
       [percent]="computeStatistics().statistics.load_average_percent[0]"
-      [radius]="100"
-      [outerStrokeWidth]="8"
-      [innerStrokeWidth]="6"
-      [outerStrokeColor]="'#0097a7'"
-      [innerStrokeColor]="'#007380'"
-      [animation]="true"
-      [animationDuration]="300"
-      [unitsColor]="'#C0C0C0'"
-      [unitsFontSize]="20"
-      [titleColor]="'#C0C0C0'"
-      [titleFontSize]="30"
-      [subtitle]="['Load average', '(last 1 minute)']"
-      [subtitleColor]="'#C0C0C0'"
-      [subtitleFontSize]="15"
-    ></circle-progress>
+      label="Load 1m"
+    ></app-progress-ring>
 
-    <circle-progress
+    <app-progress-ring
       [percent]="computeStatistics().statistics.load_average_percent[1]"
-      [radius]="100"
-      [outerStrokeWidth]="8"
-      [innerStrokeWidth]="6"
-      [outerStrokeColor]="'#0097a7'"
-      [innerStrokeColor]="'#007380'"
-      [animation]="true"
-      [animationDuration]="300"
-      [unitsColor]="'#C0C0C0'"
-      [unitsFontSize]="20"
-      [titleColor]="'#C0C0C0'"
-      [titleFontSize]="30"
-      [subtitle]="['Load average', '(last 5 minutes)']"
-      [subtitleColor]="'#C0C0C0'"
-      [subtitleFontSize]="15"
-    ></circle-progress>
+      label="Load 5m"
+    ></app-progress-ring>
 
-    <circle-progress
+    <app-progress-ring
       [percent]="computeStatistics().statistics.load_average_percent[2]"
-      [radius]="100"
-      [outerStrokeWidth]="8"
-      [innerStrokeWidth]="6"
-      [outerStrokeColor]="'#0097a7'"
-      [innerStrokeColor]="'#007380'"
-      [animation]="true"
-      [animationDuration]="300"
-      [unitsColor]="'#C0C0C0'"
-      [unitsFontSize]="20"
-      [titleColor]="'#C0C0C0'"
-      [titleFontSize]="30"
-      [subtitle]="['Load average', '(last 15 minutes)']"
-      [subtitleColor]="'#C0C0C0'"
-      [subtitleFontSize]="15"
-    ></circle-progress>
+      label="Load 15m"
+    ></app-progress-ring>
+
+    <div class="gauge gauge--empty"></div>
   </div>
 
-  <div class="chips-wrapper">
-    <mat-chip-grid>
-      <mat-chip color="primary" selected
-        >Memory total: {{ formatBytes(computeStatistics().statistics.memory_total) }}</mat-chip
-      >
-    </mat-chip-grid>
-    <mat-chip-grid>
-      <mat-chip color="primary" selected
-        >Memory used: {{ formatBytes(computeStatistics().statistics.memory_used) }}</mat-chip
-      >
-    </mat-chip-grid>
-    <mat-chip-grid>
-      <mat-chip color="primary" selected
-        >Memory free: {{ formatBytes(computeStatistics().statistics.memory_free) }}</mat-chip
-      >
-    </mat-chip-grid>
-  </div>
+  <div class="status-chart__chips">
+    <div class="status-chart__chip-row">
+      <span class="chip chip--memory">
+        <span class="chip__label">Memory total</span>
+        <span class="chip__value">{{ formatBytes(computeStatistics().statistics.memory_total) }}</span>
+      </span>
+      <span class="chip chip--memory">
+        <span class="chip__label">Memory used</span>
+        <span class="chip__value">{{ formatBytes(computeStatistics().statistics.memory_used) }}</span>
+      </span>
+      <span class="chip chip--memory">
+        <span class="chip__label">Memory free</span>
+        <span class="chip__value">{{ formatBytes(computeStatistics().statistics.memory_free) }}</span>
+      </span>
+    </div>
 
-  <div class="chips-wrapper">
-    <mat-chip-grid>
-      <mat-chip color="primary" selected
-        >Swap total: {{ formatBytes(computeStatistics().statistics.swap_total) }}</mat-chip
-      >
-    </mat-chip-grid>
-    <mat-chip-grid>
-      <mat-chip color="primary" selected
-        >Swap used: {{ formatBytes(computeStatistics().statistics.swap_used) }}</mat-chip
-      >
-    </mat-chip-grid>
-    <mat-chip-grid>
-      <mat-chip color="primary" selected
-        >Swap free: {{ formatBytes(computeStatistics().statistics.swap_free) }}</mat-chip
-      >
-    </mat-chip-grid>
+    <div class="status-chart__chip-row">
+      <span class="chip chip--swap">
+        <span class="chip__label">Swap total</span>
+        <span class="chip__value">{{ formatBytes(computeStatistics().statistics.swap_total) }}</span>
+      </span>
+      <span class="chip chip--swap">
+        <span class="chip__label">Swap used</span>
+        <span class="chip__value">{{ formatBytes(computeStatistics().statistics.swap_used) }}</span>
+      </span>
+      <span class="chip chip--swap">
+        <span class="chip__label">Swap free</span>
+        <span class="chip__value">{{ formatBytes(computeStatistics().statistics.swap_free) }}</span>
+      </span>
+    </div>
   </div>
 </mat-card>
