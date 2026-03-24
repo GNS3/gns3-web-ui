@@ -173,6 +173,35 @@ mat-radio-button {
 }
 
 /* =============================================
+// Background Swatch (larger with text preview)
+// ============================================= */
+.settings__theme-swatch--bg {
+  width: 28px;
+  height: 20px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.settings__theme-swatch-text {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/* =============================================
+// Auto Swatch (gradient for "follow theme")
+// ============================================= */
+.settings__theme-swatch--auto {
+  width: 28px;
+  height: 20px;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #6750A4 0%, #E91E63 50%, #424242 100%);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* =============================================
 // Update Section
 // ============================================= */
 .settings__update-section {

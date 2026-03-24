@@ -34,6 +34,7 @@ export class SettingsComponent implements OnInit {
   mapTheme: string;
   currentTheme: PrebuiltTheme;
   availableThemes = this.themeService.availableThemes;
+  availableMapBackgrounds = this.themeService.availableMapBackgrounds;
 
   ngOnInit() {
     this.settings = this.settingsService.getAll();
@@ -60,9 +61,9 @@ export class SettingsComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-    setMapTheme(theme: 'light' | 'dark' | 'auto') {
+    setMapTheme(theme: string) {
     this.mapTheme = theme;
-    this.themeService.setMapTheme(theme);
+    this.themeService.setMapTheme(theme as 'light' | 'dark' | 'auto');
     this.cdr.markForCheck();
   }
 

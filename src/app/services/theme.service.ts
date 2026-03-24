@@ -22,6 +22,11 @@ export type ThemeType = 'light' | 'dark';
 export type MapThemeType = 'light' | 'dark' | 'auto';
 
 /**
+ * Map background preset keys
+ */
+export type MapBackgroundKey = 'auto' | 'white' | 'light-gray' | 'dark-gray' | 'black' | 'blue-sky' | 'green-grass';
+
+/**
  * Token for default theme
  */
 export const DEFAULT_THEME_TOKEN = new InjectionToken<PrebuiltTheme>('DEFAULT_THEME_TOKEN', {
@@ -67,6 +72,17 @@ export class ThemeService {
     { key: 'indigo-pink', label: 'Indigo & Pink', type: 'light', primaryColor: '#3F51B5' },
     { key: 'pink-bluegrey', label: 'Pink & Bluegrey', type: 'dark', primaryColor: '#E91E63' },
     { key: 'purple-green', label: 'Purple & Green', type: 'dark', primaryColor: '#7E57C2' },
+  ];
+
+  // Available map background presets
+  readonly availableMapBackgrounds: { key: MapBackgroundKey; label: string; backgroundColor: string; textColor: string }[] = [
+    { key: 'auto', label: 'Follow global theme', backgroundColor: '', textColor: '' },
+    { key: 'white', label: 'White', backgroundColor: '#FFFFFF', textColor: '#424242' },
+    { key: 'light-gray', label: 'Light Gray', backgroundColor: '#F5F5F5', textColor: '#616161' },
+    { key: 'dark-gray', label: 'Dark Gray', backgroundColor: '#424242', textColor: '#FFFFFF' },
+    { key: 'black', label: 'Black', backgroundColor: '#212121', textColor: '#FFFFFF' },
+    { key: 'blue-sky', label: 'Sky Blue', backgroundColor: '#E3F2FD', textColor: '#1565C0' },
+    { key: 'green-grass', label: 'Grass Green', backgroundColor: '#E8F5E9', textColor: '#2E7D32' },
   ];
 
   constructor(

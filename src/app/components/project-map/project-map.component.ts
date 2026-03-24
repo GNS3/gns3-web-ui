@@ -82,6 +82,7 @@ import { Settings, SettingsService } from '@services/settings.service';
 import { SymbolService } from '@services/symbol.service';
 import { ToasterService } from '@services/toaster.service';
 import { ToolsService } from '@services/tools.service';
+import { ThemeService } from '@services/theme.service';
 import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-dialog/add-blank-project-dialog.component';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { EditProjectDialogComponent } from '../projects/edit-project-dialog/edit-project-dialog.component';
@@ -242,6 +243,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private title = inject(Title);
   private nodeConsoleService = inject(NodeConsoleService);
   private symbolService = inject(SymbolService);
+  private themeService = inject(ThemeService);
   private cd = inject(ChangeDetectorRef);
   private aiChatStore = inject(AiChatStore);
   private viewContainerRef = inject(ViewContainerRef);
@@ -254,6 +256,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.getSettings();
     this.progressService.activate();
+    this.updateMapBackground();
 
     if (this.controllerService.isServiceInitialized) {
       this.getData();
@@ -280,6 +283,20 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.notificationsVisibility = localStorage.getItem('notificationsVisibility') === 'true' ? true : false;
     this.layersVisibility = localStorage.getItem('layersVisibility') === 'true' ? true : false;
     this.gridVisibility = localStorage.getItem('gridVisibility') === 'true' ? true : false;
+  }
+
+  updateMapBackground() {
+    const mapTheme = this.themeService.savedMapTheme;
+    const backgrounds = this.themeService.availableMapBackgrounds;
+    const bgConfig = backgrounds.find(b => b.key === mapTheme);
+
+    if (bgConfig && bgConfig.backgroundColor) {
+      document.documentElement.style.setProperty('--gns3-map-background', bgConfig.backgroundColor);
+    } else {
+      // Auto - follow global theme
+      const isDark = this.themeService.isDarkMode();
+      document.documentElement.style.setProperty('--gns3-map-background', isDark ? '#424242' : '#FAFAFA');
+    }
   }
 
   async lazyLoadTopologySummary() {
@@ -309,6 +326,19 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.drawingsDataSource.changes.subscribe((drawings: Drawing[]) => {
         this.drawings = drawings;
         this.mapChangeDetectorRef.detectChanges();
+      })
+    );
+
+    // Subscribe to theme changes to update map background
+    this.projectMapSubscription.add(
+      this.themeService.themeChanged.subscribe(() => {
+        this.updateMapBackground();
+      })
+    );
+
+    this.projectMapSubscription.add(
+      this.themeService.mapThemeChanged.subscribe(() => {
+        this.updateMapBackground();
       })
     );
 
