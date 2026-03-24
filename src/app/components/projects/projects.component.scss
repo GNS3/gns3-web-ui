@@ -20,7 +20,7 @@
 // Header
 // ============================================= */
 .projects__header {
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 32px 20px 16px;
   animation: fadeInSlideIn 0.4s ease-out;
@@ -63,7 +63,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   padding: 0 20px 20px;
 }
@@ -100,7 +100,7 @@
   justify-content: center;
   margin: 16px auto;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1000px;
   padding: 0 20px;
   animation: fadeInSlideIn 0.4s ease-out 0.05s both;
 }
@@ -116,7 +116,7 @@
   border-radius: 16px;
   overflow: hidden;
   width: 100%;
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   background: var(--mat-sys-surface);
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
@@ -322,7 +322,7 @@ button[color="warn"] {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: 1200px;
+  max-width: 1000px;
   margin: 0 auto;
   gap: 16px;
 }
