@@ -31,8 +31,8 @@ g.node:hover {
     stroke: var(--mat-sys-on-surface);
   }
 
-  path.serial_link[stroke="#800000"] {
-    stroke: #800000;
+  path.serial_link {
+    stroke: var(--mat-sys-tertiary);
   }
 
   g.drawing-line-tool path {
@@ -420,7 +420,7 @@ mat-menu-panel {
 }
 
 g.node.console-highlight {
-  filter: drop-shadow(0 0 5px #ff0000);
+  filter: drop-shadow(0 0 5px var(--mat-sys-error));
 
   .node_body {
     stroke-width: 5px;
@@ -437,7 +437,7 @@ g.node.console-highlight {
 }
 
 g.node.console-highlight-connected {
-  filter: drop-shadow(0 0 3px #0000ff);
+  filter: drop-shadow(0 0 3px var(--mat-sys-primary));
 
   .node_body {
     stroke-width: 3px;
@@ -456,7 +456,7 @@ g.node.console-highlight-connected {
 g.link_body.console-highlight {
   > path.ethernet_link,
   > path.serial_link {
-    stroke: #ff0000;
+    stroke: var(--mat-sys-error);
     stroke-width: 4px;
   }
 

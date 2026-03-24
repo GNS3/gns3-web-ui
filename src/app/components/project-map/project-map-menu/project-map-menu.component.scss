@@ -7,6 +7,11 @@
   display: none;
 }
 
+/* Draw line icon - uses MD3 variables for theme-aware color */
+.draw-line-icon {
+  stroke: var(--mat-sys-on-surface);
+}
+
 .unmarked {
   color: var(--mat-sys-on-surface);
 }
