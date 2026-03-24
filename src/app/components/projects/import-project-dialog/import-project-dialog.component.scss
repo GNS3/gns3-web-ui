@@ -1,8 +1,6 @@
 /**
  * GNS3 Import Project Dialog Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
+ * Material Design 3, unified with other dialogs
  */
 
 .non-visible {
@@ -11,18 +9,36 @@
 
 .file-button {
   width: 100%;
-  margin-top: var(--gns3-spacing-xs);
-  margin-bottom: var(--gns3-spacing-sm);
-  padding: 0;
+  height: 48px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.5px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:hover:not([disabled]) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
+  }
+
+  &:active:not([disabled]) {
+    transform: translateY(0);
+  }
 }
 
 .file-name-form {
-  float: right;
   width: 100%;
 }
 
 .file-name-form-field {
-  width: 90%;
+  width: 100%;
 }
 
 .empty {
@@ -33,18 +49,37 @@
   background: transparent;
   border: none;
   outline: 0;
-  width: 10%;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+  }
 }
 
 .delete-icon {
-  vertical-align: 'middle';
+  vertical-align: middle;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: var(--mat-sys-on-surface-variant);
+
+  &:hover {
+    color: var(--mat-sys-on-surface);
+  }
 }
 
 .result-message-box {
-  margin-top: var(--gns3-spacing-sm);
+  margin-top: 16px;
   text-align: center;
+  color: var(--mat-sys-on-surface);
 }
 
 .progress-bar {
-  background-color: var(--mat-app-primary-color);
+  background-color: var(--mat-sys-primary);
 }
