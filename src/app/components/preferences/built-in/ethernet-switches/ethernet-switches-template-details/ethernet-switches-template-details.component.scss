@@ -74,6 +74,8 @@
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
               0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
   margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
 }
 
 .ethernet-switch-details__form {
