@@ -277,14 +277,14 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.applyMapBackground(this.isLightThemeEnabled);
     });
 
-    this.themeService.themeChanged.subscribe((value: string) => {
-      this.isGlobalLightTheme = value === 'light-theme';
+    this.themeService.themeChanged.subscribe((theme: string) => {
+      this.isGlobalLightTheme = this.themeService.getThemeType() === 'light';
     });
   }
 
   getSettings() {
     this.isLightThemeEnabled = this.themeService.getActualMapTheme() === 'light';
-    this.isGlobalLightTheme = this.themeService.getActualTheme() === 'light';
+    this.isGlobalLightTheme = this.themeService.getThemeType() === 'light';
     this.applyMapBackground(this.isLightThemeEnabled);
     this.cd.detectChanges();
 

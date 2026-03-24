@@ -1,5 +1,5 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { Component, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
@@ -25,8 +25,6 @@ import { GlobalUploadIndicatorComponent } from './components/global-upload-indic
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {
-  public darkThemeEnabled = signal<boolean>(false);
-
   private overlayContainer = inject(OverlayContainer);
   private iconReg = inject(MatIconRegistry);
   private sanitizer = inject(DomSanitizer);
@@ -46,22 +44,15 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.applyTheme(this.themeService.savedTheme + '-theme');
-    this.themeService.themeChanged.subscribe((event: string) => {
-      this.applyTheme(event);
+    this.themeService.themeChanged.subscribe((theme: string) => {
+      this.applyTheme(theme);
     });
   }
 
   applyTheme(theme: string) {
-    if (theme === 'dark-theme') {
-      this.darkThemeEnabled.set(true);
-    } else {
-      this.darkThemeEnabled.set(false);
-    }
     const classList = this.overlayContainer.getContainerElement().classList;
-    classList.remove('dark-theme', 'light-theme', 'dark', 'light');
-    classList.add(theme);
-    classList.add(theme === 'dark-theme' ? 'dark' : 'light');
+    classList.remove('theme-deeppurple-amber', 'theme-indigo-pink', 'theme-pink-bluegrey', 'theme-purple-green');
+    classList.add(`theme-${theme}`);
   }
 
   checkEvent(routerEvent): void {
