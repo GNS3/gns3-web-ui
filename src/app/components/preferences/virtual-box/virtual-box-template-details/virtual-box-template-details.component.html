@@ -1,203 +1,147 @@
-<div class="content" [ngClass]="{ shadowed: isConfiguratorOpened || isSymbolSelectionOpened }">
-  <div class="default-header">
-    <div class="row">
-      <div class="col col-md-1">
-        @if (controller) {
-          <button class="top-button" class="cancel-button" mat-button (click)="goBack()">
-            <mat-icon>arrow_back</mat-icon>
-          </button>
-        }
-      </div>
-      <div class="col col-md-11">
-        <h1 class="col">VirtualBox VM template configuration</h1>
-      </div>
-    </div>
-  </div>
+<div class="virtualbox-details" [ngClass]="{ 'virtualbox-details--hidden': isConfiguratorOpened || isSymbolSelectionOpened }">
+  <header class="virtualbox-details__header">
+    @if (controller) {
+      <button
+        class="virtualbox-details__back-btn"
+        (click)="goBack()"
+        mat-icon-button>
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+    }
+    <h1 class="virtualbox-details__title">VirtualBox VM template configuration</h1>
+  </header>
+
   @if (virtualBoxTemplate) {
-    <div class="default-content">
-    <mat-accordion>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title> General settings </mat-panel-title>
-        </mat-expansion-panel-header>
-        <form [formGroup]="generalSettingsForm">
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              formControlName="templateName"
-              type="text"
-              
-              placeholder="Template name"
-            />
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              formControlName="defaultName"
-              type="text"
-              
-              placeholder="Default name format"
-            />
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              formControlName="symbol"
-              type="text"
-              
-              placeholder="Symbol"
-            />
-          </mat-form-field>
-          <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br /><br />
-          <mat-form-field class="form-field tags-field">
-            <mat-label>Tags</mat-label>
-            <mat-chip-grid #chipList>
-              @for (tag of virtualBoxTemplate?.tags; track tag) {
-                <mat-chip (removed)="removeTag(tag)">
-                  {{ tag }}
-                  <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
-              }
+    <main class="virtualbox-details__content">
+      <mat-accordion class="virtualbox-details__accordion">
+        <mat-expansion-panel class="virtualbox-details__panel">
+          <mat-expansion-panel-header class="virtualbox-details__panel-header">
+            <mat-panel-title class="virtualbox-details__panel-title">General settings</mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="virtualbox-details__form">
+            <form [formGroup]="generalSettingsForm">
+              <mat-form-field appearance="fill" class="virtualbox-details__field">
+                <mat-label>Template name</mat-label>
+                <input matInput formControlName="templateName" type="text" placeholder="Template name" />
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="virtualbox-details__field">
+                <mat-label>Default name format</mat-label>
+                <input matInput formControlName="defaultName" type="text" placeholder="Default name format" />
+              </mat-form-field>
+              <div class="virtualbox-details__symbol-row">
+                <mat-form-field appearance="fill" class="virtualbox-details__field virtualbox-details__field--flex">
+                  <mat-label>Symbol</mat-label>
+                  <input matInput formControlName="symbol" type="text" placeholder="Symbol" />
+                </mat-form-field>
+                <button mat-button class="virtualbox-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
+              </div>
+            </form>
+            <mat-form-field appearance="fill" class="virtualbox-details__field">
+              <mat-label>Tags</mat-label>
+              <mat-chip-grid #chipList>
+                @for (tag of virtualBoxTemplate?.tags; track tag) {
+                  <mat-chip (removed)="removeTag(tag)">
+                    {{ tag }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                }
+              </mat-chip-grid>
               <input matInput placeholder="Add tags"
                      [matChipInputFor]="chipList"
                      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                      (matChipInputTokenEnd)="addTag($event)" />
-            </mat-chip-grid>
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <mat-select
-              [ngModelOptions]="{ standalone: true }"
-              placeholder="Category"
+            </mat-form-field>
+            <mat-form-field appearance="fill" class="virtualbox-details__field">
+              <mat-label>Category</mat-label>
+              <mat-select [ngModelOptions]="{ standalone: true }" placeholder="Category">
+                @for (category of categories; track $index) {
+                  <mat-option [value]="category[1]">{{ category[0] }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field appearance="fill" class="virtualbox-details__field">
+              <mat-label>Console type</mat-label>
+              <mat-select [ngModelOptions]="{ standalone: true }" placeholder="Console type">
+                @for (type of consoleTypes; track type) {
+                  <mat-option [value]="type">{{ type }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-checkbox [ngModelOptions]="{ standalone: true }" class="virtualbox-details__checkbox">Auto start console</mat-checkbox>
+            <mat-form-field appearance="fill" class="virtualbox-details__field">
+              <mat-label>RAM</mat-label>
+              <input matInput formControlName="ram" type="number" placeholder="RAM" />
+              <span matSuffix>MB</span>
+            </mat-form-field>
+            <mat-form-field appearance="fill" class="virtualbox-details__field">
+              <mat-label>On close</mat-label>
+              <mat-select [ngModelOptions]="{ standalone: true }" placeholder="On close">
+                @for (option of onCloseOptions; track option[1]) {
+                  <mat-option [value]="option[1]">{{ option[0] }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-checkbox class="virtualbox-details__checkbox">Start VM in headless mode</mat-checkbox>
+            <mat-checkbox class="virtualbox-details__checkbox">Use as a linked base VM (experimental)</mat-checkbox>
+          </div>
+        </mat-expansion-panel>
 
-            >
-              @for (category of categories; track $index) {
-                <mat-option [value]="category[1]">
-                  {{ category[0] }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field class="select">
-            <mat-select
-              [ngModelOptions]="{ standalone: true }"
-              placeholder="Console type"
+        <mat-expansion-panel class="virtualbox-details__panel">
+          <mat-expansion-panel-header class="virtualbox-details__panel-header">
+            <mat-panel-title class="virtualbox-details__panel-title">Network</mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="virtualbox-details__form">
+            <form [formGroup]="networkForm">
+              <mat-form-field appearance="fill" class="virtualbox-details__field">
+                <mat-label>Adapters</mat-label>
+                <input matInput formControlName="adapters" type="number" placeholder="Adapters" />
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="virtualbox-details__field">
+                <mat-label>First port name</mat-label>
+                <input matInput [ngModelOptions]="{ standalone: true }" type="text" placeholder="First port name" />
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="virtualbox-details__field">
+                <mat-label>Name format</mat-label>
+                <input matInput formControlName="nameFormat" type="text" placeholder="Name format" />
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="virtualbox-details__field">
+                <mat-label>Segment size</mat-label>
+                <input matInput formControlName="size" type="number" placeholder="Segment size" />
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="virtualbox-details__field">
+                <mat-label>Type</mat-label>
+                <mat-select [ngModelOptions]="{ standalone: true }" placeholder="Type">
+                  @for (type of networkTypes; track type) {
+                    <mat-option [value]="type">{{ type }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </form>
+            <button mat-button class="virtualbox-details__action-btn" (click)="setCustomAdaptersConfiguratorState(true)">
+              Configure custom adapters
+            </button>
+            <mat-checkbox class="virtualbox-details__checkbox">Allow GNS3 to use any configured VirtualBox adapter</mat-checkbox>
+          </div>
+        </mat-expansion-panel>
 
-            >
-              @for (type of consoleTypes; track type) {
-                <mat-option [value]="type">
-                  {{ type }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-          <mat-checkbox [ngModelOptions]="{ standalone: true }" >
-            Auto start console
-          </mat-checkbox>
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              formControlName="ram"
-              type="number"
-              
-              placeholder="RAM"
-            />
-            <span matSuffix>MB</span>
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <mat-select
-              [ngModelOptions]="{ standalone: true }"
-              placeholder="On close"
+        <mat-expansion-panel class="virtualbox-details__panel">
+          <mat-expansion-panel-header class="virtualbox-details__panel-header">
+            <mat-panel-title class="virtualbox-details__panel-title">Usage</mat-panel-title>
+          </mat-expansion-panel-header>
+          <div class="virtualbox-details__form">
+            <mat-form-field appearance="fill" class="virtualbox-details__field">
+              <mat-label>Usage</mat-label>
+              <textarea matInput type="text"></textarea>
+            </mat-form-field>
+          </div>
+        </mat-expansion-panel>
+      </mat-accordion>
 
-            >
-              @for (option of onCloseOptions; track option[1]) {
-                <mat-option [value]="option[1]">
-                  {{ option[0] }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </form>
-        <mat-checkbox > Start VM in headless mode </mat-checkbox><br />
-        <mat-checkbox >
-          Use as a linked base VM (experimental)
-        </mat-checkbox>
-      </mat-expansion-panel>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title> Network </mat-panel-title>
-        </mat-expansion-panel-header>
-        <form [formGroup]="networkForm">
-          <mat-form-field class="form-field">
-            <input
-              formControlName="adapters"
-              matInput
-              type="number"
-              
-              placeholder="Adapters"
-            />
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <input
-              [ngModelOptions]="{ standalone: true }"
-              matInput
-              type="text"
-              
-              placeholder="First port name"
-            />
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <input
-              formControlName="nameFormat"
-              matInput
-              type="text"
-              
-              placeholder="Name format"
-            />
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <input
-              formControlName="size"
-              matInput
-              type="number"
-              
-              placeholder="Segment size"
-            />
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <mat-select
-              [ngModelOptions]="{ standalone: true }"
-              placeholder="Type"
-
-            >
-              @for (type of networkTypes; track type) {
-                <mat-option [value]="type">
-                  {{ type }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </form>
-        <button mat-button class="configButton" (click)="setCustomAdaptersConfiguratorState(true)">
-          Configure custom adapters</button
-        ><br />
-        <mat-checkbox >
-          Allow GNS3 to use any configured VirtualBox adapter
-        </mat-checkbox>
-      </mat-expansion-panel>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title> Usage </mat-panel-title>
-        </mat-expansion-panel-header>
-        <mat-form-field class="form-field">
-          <textarea matInput type="text" ></textarea>
-        </mat-form-field>
-      </mat-expansion-panel>
-    </mat-accordion>
-    <div class="buttons-bar">
-      <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
-      <button mat-raised-button color="primary" (click)="onSave()">Save</button>
-    </div>
-  </div>
+      <div class="virtualbox-details__actions">
+        <button class="virtualbox-details__cancel-btn" (click)="goBack()" mat-button>Cancel</button>
+        <button mat-raised-button color="primary" class="virtualbox-details__save-btn" (click)="onSave()">Save</button>
+      </div>
+    </main>
   }
 </div>
 <app-custom-adapters
