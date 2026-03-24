@@ -1,5 +1,6 @@
 /**
  * GNS3 Topology Summary Component Styles
+ * Using MD3 CSS variables
  */
 
 @media screen and (max-width: 600px) {
@@ -13,26 +14,18 @@ mat-tab-group {
 }
 
 .summaryWrapper {
-  box-shadow: var(--gns3-shadow-lg);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent);
   position: fixed;
   top: 60px;
   right: 0;
   height: 400px;
   width: 320px;
-  background: var(--gns3-surface);
-  color: white;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
   overflow: hidden;
-  font-size: var(--gns3-font-size-xs);
-  margin: var(--gns3-spacing-md);
-  border-radius: var(--gns3-radius-sm);
-}
-
-.summaryWrapper.lightTheme,
-.summaryWrapper.theme-light {
-  background-color: rgba(244, 248, 252, 0.95);
-  color: black;
-  margin: var(--gns3-spacing-md);
-  border-radius: var(--gns3-radius-sm);
+  font-size: 12px;
+  margin: 16px;
+  border-radius: 4px;
 }
 
 .summaryHeaderMenu {
@@ -46,48 +39,48 @@ mat-tab-group {
 
 .summaryFilters {
   height: 25px;
-  margin-left: var(--gns3-spacing-xs);
-  margin-right: var(--gns3-spacing-xs);
+  margin-left: 8px;
+  margin-right: 8px;
 }
 
 .summarySorting {
   height: 25px;
-  margin-left: var(--gns3-spacing-xs);
-  margin-right: var(--gns3-spacing-xs);
+  margin-left: 8px;
+  margin-right: 8px;
 }
 
 .tabContent {
-  padding: var(--gns3-spacing-sm);
+  padding: 10px;
 }
 
 .summaryContent {
   overflow: auto;
-  scrollbar-color: darkgrey var(--gns3-surface);
+  scrollbar-color: darkgrey var(--mat-sys-surface);
   scrollbar-width: thin;
 }
 
 .summaryContentComputes {
   max-height: 350px;
   overflow: auto;
-  scrollbar-color: darkgrey var(--gns3-surface);
+  scrollbar-color: darkgrey var(--mat-sys-surface);
   scrollbar-width: thin;
 }
 
 .titleButton {
-  margin-left: var(--gns3-spacing-xs);
+  margin-left: 8px;
   margin-top: 4px;
   outline: none;
   border-radius: 0;
 }
 
 .marked {
-  color: var(--mat-app-primary-color);
-  border-bottom: 2px solid var(--mat-app-primary-color);
+  color: var(--mat-sys-primary);
+  border-bottom: 2px solid var(--mat-sys-primary);
 }
 
 .divider {
-  margin-top: var(--gns3-spacing-xs);
-  margin-bottom: var(--gns3-spacing-xs);
+  margin-top: 8px;
+  margin-bottom: 8px;
   width: 100%;
   height: 2px;
 }
@@ -96,7 +89,7 @@ mat-tab-group {
   width: 100%;
   display: flex;
   justify-content: space-between;
-  padding-right: var(--gns3-spacing-xs);
+  padding-right: 8px;
 
   > div {
     display: flex;
@@ -120,11 +113,11 @@ mat-tab-group {
 
 ::-webkit-scrollbar-thumb {
   background-color: darkgrey;
-  outline: 1px solid var(--gns3-surface);
+  outline: 1px solid var(--mat-sys-surface);
 }
 
 .radio-group-wrapper {
-  margin-top: var(--gns3-spacing-xs);
+  margin-top: 8px;
 }
 
 .radio-group {
@@ -134,9 +127,9 @@ mat-tab-group {
 
 .closeButton {
   cursor: pointer;
-  font-size: var(--gns3-font-size-xl);
+  font-size: 18px;
   margin-top: 8px;
-  margin-right: var(--gns3-spacing-xs);
+  margin-right: 8px;
 }
 
 .filterBox {
