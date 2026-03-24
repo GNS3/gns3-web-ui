@@ -4,6 +4,11 @@
  * Using Angular Material Design 3 theming system
  */
 
+:host {
+  display: block;
+  height: 100%;
+}
+
 mat-menu-panel {
   min-height: 0px;
 }
