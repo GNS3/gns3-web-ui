@@ -6,7 +6,7 @@
 app-default-layout {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100vh;
 }
 
 /* =============================================
@@ -28,7 +28,8 @@ app-default-layout {
 // Main Content
 // ============================================= */
 .main-content {
-  flex: 1 0 auto;
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
