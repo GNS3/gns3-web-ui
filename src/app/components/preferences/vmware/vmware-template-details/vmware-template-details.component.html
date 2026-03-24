@@ -2,16 +2,19 @@
   <div class="default-header">
     <div class="row">
       <div class="col col-md-1">
-        <button class="top-button" *ngIf="controller" class="cancel-button" mat-button (click)="goBack()">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
+        @if (controller) {
+          <button class="top-button" class="cancel-button" mat-button (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+        }
       </div>
       <div class="col col-md-11">
       <h1 class="col">VMware VM template configuration</h1>
       </div>
     </div>
   </div>
-  <div class="default-content" *ngIf="vmwareTemplate">
+  @if (vmwareTemplate) {
+    <div class="default-content">
     <mat-accordion>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
@@ -157,6 +160,7 @@
       <button mat-raised-button color="primary" (click)="onSave()">Save</button>
     </div>
   </div>
+  }
 </div>
 <app-custom-adapters
   [hidden]="!(isConfiguratorOpened && vmwareTemplate)"
@@ -166,9 +170,10 @@
   (closeConfiguratorEmitter)="setCustomAdaptersConfiguratorState($event)"
   (saveConfigurationEmitter)="saveCustomAdapters($event)"
 ></app-custom-adapters>
-<app-symbols-menu
-  *ngIf="isSymbolSelectionOpened && vmwareTemplate"
-  [controller]="controller"
-  [symbol]="vmwareTemplate.symbol"
-  (symbolChangedEmitter)="symbolChanged($event)"
-></app-symbols-menu>
+@if (isSymbolSelectionOpened && vmwareTemplate) {
+  <app-symbols-menu
+    [controller]="controller"
+    [symbol]="vmwareTemplate.symbol"
+    (symbolChangedEmitter)="symbolChanged($event)"
+  ></app-symbols-menu>
+}

@@ -2,16 +2,19 @@
   <div class="default-header">
     <div class="row">
       <div class="col col-md-1">
-        <button *ngIf="controller" class="top-button" class="cancel-button col" (click)="goBack()" mat-button>
-          <mat-icon>arrow_back</mat-icon>
-        </button>
+        @if (controller) {
+          <button class="top-button" class="cancel-button col" (click)="goBack()" mat-button>
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+        }
       </div>
       <div class="col-md-11">
         <h1 class="col">Ethernet switch template configuration</h1>
       </div>
     </div>
   </div>
-  <div class="default-content" *ngIf="ethernetSwitchTemplate">
+  @if (ethernetSwitchTemplate) {
+    <div class="default-content">
     <mat-accordion>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
@@ -98,11 +101,13 @@
       <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
       <button mat-raised-button color="primary" (click)="onSave()">Save</button>
     </div>
-  </div>
+    </div>
+  }
 </div>
-<app-symbols-menu
-  *ngIf="isSymbolSelectionOpened && ethernetSwitchTemplate"
-  [controller]="controller"
-  [symbol]="ethernetSwitchTemplate.symbol"
-  (symbolChangedEmitter)="symbolChanged($event)"
-></app-symbols-menu>
+@if (isSymbolSelectionOpened && ethernetSwitchTemplate) {
+  <app-symbols-menu
+    [controller]="controller"
+    [symbol]="ethernetSwitchTemplate.symbol"
+    (symbolChangedEmitter)="symbolChanged($event)"
+  ></app-symbols-menu>
+}

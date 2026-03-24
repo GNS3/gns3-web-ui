@@ -1,12 +1,13 @@
 <div class="ethernet-hub-add">
   <header class="ethernet-hub-add__header">
-    <button
-      *ngIf="controller"
-      class="ethernet-hub-add__back-btn"
-      (click)="goBack()"
-      mat-icon-button>
-      <mat-icon>arrow_back</mat-icon>
-    </button>
+    @if (controller) {
+      <button
+        class="ethernet-hub-add__back-btn"
+        (click)="goBack()"
+        mat-icon-button>
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+    }
     <h1 class="ethernet-hub-add__title">New Ethernet hub template</h1>
   </header>
 

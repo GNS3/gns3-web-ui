@@ -18,7 +18,7 @@ import { EmptyTemplatesListComponent } from '../../../common/empty-templates-lis
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ethernet-switches-templates',
   templateUrl: './ethernet-switches-templates.component.html',
-  styleUrls: ['./ethernet-switches-templates.component.scss', '../../../preferences.component.scss'],
+  styleUrl: './ethernet-switches-templates.component.scss',
   imports: [
     CommonModule,
     RouterModule,

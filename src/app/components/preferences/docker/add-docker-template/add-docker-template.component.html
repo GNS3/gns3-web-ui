@@ -29,23 +29,26 @@
                 >New image</mat-radio-button
               >
             </mat-radio-group>
-            <mat-select
-              *ngIf="!newImageSelected"
-              placeholder="Image list"
-              [ngModelOptions]="{ standalone: true }"
-              [(ngModel)]="selectedImage"
-            >
-              @for (image of dockerImages; track image.image) {
-                <mat-option [value]="image">
-                  {{ image.image }}
-                </mat-option>
-              }
-            </mat-select>
-            <div *ngIf="newImageSelected">
-              <mat-form-field class="form-field">
-                <input matInput class="filename" type="text" formControlName="filename" placeholder="Image name" />
-              </mat-form-field>
-            </div>
+            @if (!newImageSelected) {
+              <mat-select
+                placeholder="Image list"
+                [ngModelOptions]="{ standalone: true }"
+                [(ngModel)]="selectedImage"
+              >
+                @for (image of dockerImages; track image.image) {
+                  <mat-option [value]="image">
+                    {{ image.image }}
+                  </mat-option>
+                }
+              </mat-select>
+            }
+            @if (newImageSelected) {
+              <div>
+                <mat-form-field class="form-field">
+                  <input matInput class="filename" type="text" formControlName="filename" placeholder="Image name" />
+                </mat-form-field>
+              </div>
+            }
           </form>
         </mat-step>
 

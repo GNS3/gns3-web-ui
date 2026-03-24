@@ -2,354 +2,342 @@
   <div class="default-header">
     <div class="row">
       <div class="col-md-1">
-        <button
-        *ngIf="controller"
-        class="top-button"
-        class="cancel-button"
-        (click)="goBack()"
-        mat-button
-      >
-          <mat-icon>arrow_back</mat-icon>
-        </button>
+        @if (controller) {
+          <button
+            class="top-button"
+            class="cancel-button"
+            (click)="goBack()"
+            mat-button
+          >
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+        }
       </div>
       <div class="col-md-11">
         <h1 class="col">IOS router template configuration</h1>
       </div>
     </div>
   </div>
-  <div class="default-content" *ngIf="iosTemplate">
-    <mat-accordion>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title> General settings </mat-panel-title>
-        </mat-expansion-panel-header>
-        <form [formGroup]="generalSettingsForm">
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              type="text"
-              formControlName="templateName"
-              
-              placeholder="Template name"
-            />
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              type="text"
-              formControlName="defaultName"
-              
-              placeholder="Default name format"
-            />
-          </mat-form-field>
-          <mat-label>Platform - {{ iosTemplate.platform }}</mat-label
-          ><br /><br />
-          <div *ngIf="iosTemplate.chassis">
-          <mat-label>Chassis - {{ iosTemplate.chassis }}</mat-label
-          ><br /><br />
-          </div>
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              type="text"
-              formControlName="symbol"
-              
-              placeholder="Symbol"
-            />
-          </mat-form-field>
-          <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br /><br />
-          <mat-form-field class="form-field">
-            <mat-select
-              [ngModelOptions]="{ standalone: true }"
-              placeholder="Category"
-            >
-              @for (category of categories; track $index) {
-                <mat-option [value]="category[1]">
-                  {{ category[0] }}
+  @if (iosTemplate) {
+    <div class="default-content">
+      <mat-accordion>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title> General settings </mat-panel-title>
+          </mat-expansion-panel-header>
+          <form [formGroup]="generalSettingsForm">
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                type="text"
+                formControlName="templateName"
+                placeholder="Template name"
+              />
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                type="text"
+                formControlName="defaultName"
+                placeholder="Default name format"
+              />
+            </mat-form-field>
+            <mat-label>Platform - {{ iosTemplate.platform }}</mat-label
+            ><br /><br />
+            @if (iosTemplate.chassis) {
+              <mat-label>Chassis - {{ iosTemplate.chassis }}</mat-label
+              ><br /><br />
+            }
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                type="text"
+                formControlName="symbol"
+                placeholder="Symbol"
+              />
+            </mat-form-field>
+            <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br /><br />
+            <mat-form-field class="form-field">
+              <mat-select
+                [ngModelOptions]="{ standalone: true }"
+                placeholder="Category"
+              >
+                @for (category of categories; track $index) {
+                  <mat-option [value]="category[1]">
+                    {{ category[0] }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="form-field tags-field">
+              <mat-label>Tags</mat-label>
+              <mat-chip-grid #chipList>
+                @for (tag of iosTemplate?.tags; track tag) {
+                  <mat-chip (removed)="removeTag(tag)">
+                    {{ tag }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                }
+              </mat-chip-grid>
+              <input matInput placeholder="Add tags"
+                     [matChipInputFor]="chipList"
+                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                     (matChipInputTokenEnd)="addTag($event)" />
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                type="text"
+                formControlName="path"
+                placeholder="IOS image path"
+              />
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                type="text"
+                formControlName="initialConfig"
+                placeholder="Initial startup-config"
+              />
+              <mat-hint>Filename only (e.g. ios-startup-config.txt)</mat-hint>
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <input
+                [ngModelOptions]="{ standalone: true }"
+                matInput
+                type="text"
+                placeholder="Initial private-config"
+              />
+              <mat-hint>Filename only (e.g. ios-private-config.txt)</mat-hint>
+            </mat-form-field>
+          </form>
+          <mat-form-field class="select">
+            <mat-select placeholder="Console type" >
+              @for (type of consoleTypes; track type) {
+                <mat-option [value]="type">
+                  {{ type }}
                 </mat-option>
               }
             </mat-select>
           </mat-form-field>
-          <mat-form-field class="form-field tags-field">
-            <mat-label>Tags</mat-label>
-            <mat-chip-grid #chipList>
-              @for (tag of iosTemplate?.tags; track tag) {
-                <mat-chip (removed)="removeTag(tag)">
-                  {{ tag }}
-                  <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
-              }
-            </mat-chip-grid>
-            <input matInput placeholder="Add tags"
-                   [matChipInputFor]="chipList"
-                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                   (matChipInputTokenEnd)="addTag($event)" />
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              type="text"
-              formControlName="path"
-              
-              placeholder="IOS image path"
-            />
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              type="text"
-              formControlName="initialConfig"
-              
-              placeholder="Initial startup-config"
-            />
-            <mat-hint>Filename only (e.g. ios-startup-config.txt)</mat-hint>
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <input
-              [ngModelOptions]="{ standalone: true }"
-              matInput
-              type="text"
-              
-              placeholder="Initial private-config"
-            />
-            <mat-hint>Filename only (e.g. ios-private-config.txt)</mat-hint>
-          </mat-form-field>
-        </form>
-        <mat-form-field class="select">
-          <mat-select placeholder="Console type" >
-            @for (type of consoleTypes; track type) {
-              <mat-option [value]="type">
-                {{ type }}
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field class="select">
-          <mat-select placeholder="Auxiliary console type" >
-            @for (type of consoleTypes; track type) {
-              <mat-option [value]="type">
-                {{ type }}
-              </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-        <mat-checkbox > Auto start console </mat-checkbox>
-      </mat-expansion-panel>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title> Memories and disks </mat-panel-title>
-        </mat-expansion-panel-header>
-        <form [formGroup]="memoryForm">
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              type="number"
-              min="32"
-              step="32"
-              formControlName="ram"
-              
-              placeholder="RAM size"
-            />
-            <span matSuffix>MB</span>
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              type="number"
-              min="32"
-              step="32"
-              formControlName="nvram"
-              
-              placeholder="NVRAM size"
-            />
-            <span matSuffix>MB</span>
-          </mat-form-field>
-          <mat-form-field class="form-field" *ngIf="['c1700', 'c2600', 'c2691', 'c3600', 'c3725', 'c3745'].includes(iosTemplate.platform)">
-            <input
-              matInput
-              type="number"
-              min="0"
-              max="100"
-              step="5"
-              formControlName="iomemory"
-              
-              placeholder="I/O memory"
-            />
-            <mat-hint>Percentage of RAM for I/O memory</mat-hint>
-          </mat-form-field>
-          <br /><br />
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              type="number"
-              min="0"
-              step="4"
-              formControlName="disk0"
-              
-              placeholder="PCMCIA disk0"
-            />
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              type="number"
-              min="0"
-              step="4"
-              formControlName="disk1"
-              
-              placeholder="PCMCIA disk1"
-            />
-          </mat-form-field>
-        </form>
-        <mat-checkbox >
-          Automatically delete NVRAM and disk files
-        </mat-checkbox>
-      </mat-expansion-panel>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title> Slots </mat-panel-title>
-        </mat-expansion-panel-header>
-        <h6>Adapters</h6>
-        @for (index of [0, 1, 2, 3, 4, 5, 6]; track index) {
-          <div>
-            <ng-container *ngIf="adapterMatrix[iosTemplate.platform] && adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''] && adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index]">
-              <mat-select
-                placeholder="Slot {{ index }}"
-                [(ngModel)]="networkAdaptersForTemplate[index]"
-                [ngModelOptions]="{ standalone: true }"
-              >
-                <mat-option
-                  *ngIf="adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index].length > 1 &&
-                  !adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index][0].startsWith('C7200')"
-                  [value]=""
-                >
-                  {{ "" }}
+          <mat-form-field class="select">
+            <mat-select placeholder="Auxiliary console type" >
+              @for (type of consoleTypes; track type) {
+                <mat-option [value]="type">
+                  {{ type }}
                 </mat-option>
-                @for (option of adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index]; track option) {
-                  <mat-option [value]="option">
-                    {{ option }}
-                  </mat-option>
-                }
-              </mat-select>
-            </ng-container>
-          </div>
-        }
-        <br />
-        <div *ngIf="wicMatrix[iosTemplate.platform]">
-          <h6>WICs</h6>
-          @for (index of [0, 1, 2]; track index) {
-            <div>
-              <ng-container *ngIf="wicMatrix[iosTemplate.platform] && wicMatrix[iosTemplate.platform][index]">
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-checkbox> Auto start console </mat-checkbox>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title> Memories and disks </mat-panel-title>
+          </mat-expansion-panel-header>
+          <form [formGroup]="memoryForm">
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                type="number"
+                min="32"
+                step="32"
+                formControlName="ram"
+                placeholder="RAM size"
+              />
+              <span matSuffix>MB</span>
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                type="number"
+                min="32"
+                step="32"
+                formControlName="nvram"
+                placeholder="NVRAM size"
+              />
+              <span matSuffix>MB</span>
+            </mat-form-field>
+            @if (['c1700', 'c2600', 'c2691', 'c3600', 'c3725', 'c3745'].includes(iosTemplate.platform)) {
+              <mat-form-field class="form-field">
+                <input
+                  matInput
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="5"
+                  formControlName="iomemory"
+                  placeholder="I/O memory"
+                />
+                <mat-hint>Percentage of RAM for I/O memory</mat-hint>
+              </mat-form-field>
+            }
+            <br /><br />
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                type="number"
+                min="0"
+                step="4"
+                formControlName="disk0"
+                placeholder="PCMCIA disk0"
+              />
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                type="number"
+                min="0"
+                step="4"
+                formControlName="disk1"
+                placeholder="PCMCIA disk1"
+              />
+            </mat-form-field>
+          </form>
+          <mat-checkbox>
+            Automatically delete NVRAM and disk files
+          </mat-checkbox>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title> Slots </mat-panel-title>
+          </mat-expansion-panel-header>
+          <h6>Adapters</h6>
+          @for (index of [0, 1, 2, 3, 4, 5, 6]; track index) {
+            @if (adapterMatrix[iosTemplate.platform] && adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''] && adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index]) {
+              <div>
                 <mat-select
-                  placeholder="WIC {{ index }}"
-                  [(ngModel)]="wicsForTemplate[index]"
+                  placeholder="Slot {{ index }}"
+                  [(ngModel)]="networkAdaptersForTemplate[index]"
                   [ngModelOptions]="{ standalone: true }"
                 >
-                  <mat-option [value]="">
-                    {{ "" }}
-                  </mat-option>
-                  @for (option of wicMatrix[iosTemplate.platform][index]; track option) {
+                  @if (adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index].length > 1 &&
+                    !adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index][0].startsWith('C7200')) {
+                    <mat-option [value]="">
+                      {{ "" }}
+                    </mat-option>
+                  }
+                  @for (option of adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index]; track option) {
                     <mat-option [value]="option">
                       {{ option }}
                     </mat-option>
                   }
                 </mat-select>
-              </ng-container>
-            </div>
+              </div>
+            }
           }
-        </div>
-      </mat-expansion-panel>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title> Advanced </mat-panel-title>
-        </mat-expansion-panel-header>
-        <form [formGroup]="advancedForm">
+          <br />
+          @if (wicMatrix[iosTemplate.platform]) {
+            <h6>WICs</h6>
+            @for (index of [0, 1, 2]; track index) {
+              @if (wicMatrix[iosTemplate.platform] && wicMatrix[iosTemplate.platform][index]) {
+                <div>
+                  <mat-select
+                    placeholder="WIC {{ index }}"
+                    [(ngModel)]="wicsForTemplate[index]"
+                    [ngModelOptions]="{ standalone: true }"
+                  >
+                    <mat-option [value]="">
+                      {{ "" }}
+                    </mat-option>
+                    @for (option of wicMatrix[iosTemplate.platform][index]; track option) {
+                      <mat-option [value]="option">
+                        {{ option }}
+                      </mat-option>
+                    }
+                  </mat-select>
+                </div>
+              }
+            }
+          }
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title> Advanced </mat-panel-title>
+          </mat-expansion-panel-header>
+          <form [formGroup]="advancedForm">
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                formControlName="systemId"
+                type="text"
+                placeholder="System ID"
+              />
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                formControlName="mac_addr"
+                type="text"
+                placeholder="Base MAC (format: xxxx.xxxx.xxxx)"
+              />
+              <mat-hint>Example: aaaa.bbbb.cccc (leave empty to let the server allocate a MAC address).</mat-hint>
+            </mat-form-field>
+            <button mat-button class="generateButton" (click)="generateBaseMAC()">Generate Base MAC</button>
+            <br /><br />
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                formControlName="idlepc"
+                type="text"
+                placeholder="Idle-PC"
+              />
+            </mat-form-field>
+            <button mat-button class="idlePCFinderButton" (click)="findIdlePC()">Idle-PC finder</button><br /><br />
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                formControlName="idlemax"
+                type="number"
+                min="100"
+                step="100"
+                placeholder="Idlemax"
+              />
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                formControlName="idlesleep"
+                type="number"
+                min="1"
+                step="10"
+                placeholder="Idlesleep"
+              />
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                formControlName="execarea"
+                type="number"
+                min="0"
+                step="4"
+                placeholder="Exec area"
+              />
+            </mat-form-field>
+          </form>
+          <mat-checkbox> Enable mmap support </mat-checkbox><br /><br />
+          <mat-checkbox> Enable sparse memory supoport </mat-checkbox>
+        </mat-expansion-panel>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title> Usage </mat-panel-title>
+          </mat-expansion-panel-header>
           <mat-form-field class="form-field">
-            <input
-              matInput
-              formControlName="systemId"
-              type="text"
-              
-              placeholder="System ID"
-            />
+            <textarea matInput type="text" ></textarea>
           </mat-form-field>
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              formControlName="mac_addr"
-              type="text"
-              
-              placeholder="Base MAC (format: xxxx.xxxx.xxxx)"
-            />
-            <mat-hint>Example: aaaa.bbbb.cccc (leave empty to let the server allocate a MAC address).</mat-hint>
-          </mat-form-field>
-          <button mat-button class="generateButton" (click)="generateBaseMAC()">Generate Base MAC</button>
-          <br /><br />
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              formControlName="idlepc"
-              type="text"
-              
-              placeholder="Idle-PC"
-            />
-          </mat-form-field>
-          <button mat-button class="idlePCFinderButton" (click)="findIdlePC()">Idle-PC finder</button><br /><br />
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              formControlName="idlemax"
-              type="number"
-              min="100"
-              step="100"
-              
-              placeholder="Idlemax"
-            />
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              formControlName="idlesleep"
-              type="number"
-              min="1"
-              step="10"
-              
-              placeholder="Idlesleep"
-            />
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <input
-              matInput
-              formControlName="execarea"
-              type="number"
-              min="0"
-              step="4"
-              
-              placeholder="Exec area"
-            />
-          </mat-form-field>
-        </form>
-        <mat-checkbox > Enable mmap support </mat-checkbox><br /><br />
-        <mat-checkbox > Enable sparse memory supoport </mat-checkbox>
-      </mat-expansion-panel>
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title> Usage </mat-panel-title>
-        </mat-expansion-panel-header>
-        <mat-form-field class="form-field">
-          <textarea matInput type="text" ></textarea>
-        </mat-form-field>
-      </mat-expansion-panel>
-    </mat-accordion>
-    <div class="buttons-bar">
-      <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
-      <button mat-raised-button color="primary" (click)="onSave()">Save</button>
+        </mat-expansion-panel>
+      </mat-accordion>
+      <div class="buttons-bar">
+        <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
+        <button mat-raised-button color="primary" (click)="onSave()">Save</button>
+      </div>
     </div>
-  </div>
+  }
 </div>
-<app-symbols-menu
-  *ngIf="isSymbolSelectionOpened && iosTemplate"
-  [controller]="controller"
-  [symbol]="iosTemplate.symbol"
-  (symbolChangedEmitter)="symbolChanged($event)"
-></app-symbols-menu>
+@if (isSymbolSelectionOpened && iosTemplate) {
+  <app-symbols-menu
+    [controller]="controller"
+    [symbol]="iosTemplate.symbol"
+    (symbolChangedEmitter)="symbolChanged($event)"
+  ></app-symbols-menu>
+}

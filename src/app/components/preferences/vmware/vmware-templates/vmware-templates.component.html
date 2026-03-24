@@ -3,54 +3,60 @@
 
     <div class="row">
       <div class="col col-md-1">
-        <button
-          class="top-button"
-          *ngIf="controller"
-          class="cancel-button"
-          mat-button
-          routerLink="/controller/{{ controller.id }}/preferences"
+        @if (controller) {
+          <button
+            class="top-button"
+            class="cancel-button"
+            mat-button
+            routerLink="/controller/{{ controller.id }}/preferences"
           >
-          <mat-icon>arrow_back</mat-icon>
-        </button>
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+        }
       </div>
       <div class="col col-md-10">
         <h1 class="col">VMware VM templates</h1>
       </div>
       <div class="col col-md-1">
-        <button
-          *ngIf="controller"
-          class="top-button cancel-button"
-          matTooltip="Add VMware template"
-          matTooltipClass="custom-tooltip"
-          routerLink="/controller/{{ controller.id }}/preferences/vmware/addtemplate"
-          mat-button
-        >
-          <mat-icon>add_circle_outline</mat-icon>
-        </button>
+        @if (controller) {
+          <button
+            class="top-button cancel-button"
+            matTooltip="Add VMware template"
+            matTooltipClass="custom-tooltip"
+            routerLink="/controller/{{ controller.id }}/preferences/vmware/addtemplate"
+            mat-button
+          >
+            <mat-icon>add_circle_outline</mat-icon>
+          </button>
+        }
       </div>
     </div>
   </div>
-  <app-empty-templates-list *ngIf="!vmwareTemplates.length"></app-empty-templates-list>
-  <div class="default-content" *ngIf="vmwareTemplates.length">
-    <div class="listcontainer mat-elevation-z8">
-      <mat-nav-list *ngIf="controller">
-        @for (template of vmwareTemplates; track template.template_id) {
-          <div class="list-item">
-            <mat-list-item class="template-name" routerLink="{{ template.template_id }}">{{
-              template.name
-            }}</mat-list-item>
-            <button mat-button class="menu-button" [matMenuTriggerFor]="menu">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu">
-              <button mat-menu-item (click)="deleteTemplate(template)">
-                <mat-icon>delete</mat-icon><span>Delete</span>
+  @if (!vmwareTemplates.length) {
+    <app-empty-templates-list></app-empty-templates-list>
+  }
+  @if (vmwareTemplates.length) {
+    <div class="default-content">
+      <div class="listcontainer mat-elevation-z8">
+        <mat-nav-list>
+          @for (template of vmwareTemplates; track template.template_id) {
+            <div class="list-item">
+              <mat-list-item class="template-name" routerLink="{{ template.template_id }}">{{
+                template.name
+              }}</mat-list-item>
+              <button mat-button class="menu-button" [matMenuTriggerFor]="menu">
+                <mat-icon>more_vert</mat-icon>
               </button>
-            </mat-menu>
-          </div>
-        }
-      </mat-nav-list>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item (click)="deleteTemplate(template)">
+                  <mat-icon>delete</mat-icon><span>Delete</span>
+                </button>
+              </mat-menu>
+            </div>
+          }
+        </mat-nav-list>
+      </div>
     </div>
-  </div>
+  }
 </div>
 <app-delete-template #deleteComponent [controller]="controller" (deleteEvent)="onDeleteEvent()"> </app-delete-template>

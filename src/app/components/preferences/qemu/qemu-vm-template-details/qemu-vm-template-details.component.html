@@ -2,16 +2,19 @@
   <div class="default-header">
     <div class="row">
       <div class="col col-md-1">
-        <button class="top-button" *ngIf="controller" class="cancel-button" mat-button (click)="goBack()">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
+        @if (controller) {
+          <button class="top-button" class="cancel-button" mat-button (click)="goBack()">
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+        }
       </div>
       <div class="col col-md-11">
         <h1 class="col">QEMU VM template configuration</h1>
       </div>
     </div>
   </div>
-  <div class="default-content" *ngIf="qemuTemplate">
+  @if (qemuTemplate) {
+    <div class="default-content">
     <mat-accordion>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
@@ -298,14 +301,15 @@
           <mat-card-subtitle> Optimization </mat-card-subtitle>
           <mat-card-content>
             <mat-checkbox [(ngModel)]="activateCpuThrottling"> Activate CPU throttling </mat-checkbox>
-            <mat-form-field *ngIf="activateCpuThrottling" class="form-field">
-              <input
-                matInput
-                type="number"
-                
-                placeholder="Perecentage of CPU allowed"
-              />
-            </mat-form-field>
+            @if (activateCpuThrottling) {
+              <mat-form-field class="form-field">
+                <input
+                  matInput
+                  type="number"
+                  placeholder="Perecentage of CPU allowed"
+                />
+              </mat-form-field>
+            }
             <mat-form-field class="form-field">
               <mat-select placeholder="Process priority" >
                 @for (priority of priorities; track priority) {
@@ -347,6 +351,7 @@
       <button mat-raised-button color="primary" (click)="onSave()">Save</button>
     </div>
   </div>
+  }
 </div>
 <app-custom-adapters
   [hidden]="!(isConfiguratorOpened && qemuTemplate)"
@@ -356,9 +361,10 @@
   (closeConfiguratorEmitter)="setCustomAdaptersConfiguratorState($event)"
   (saveConfigurationEmitter)="saveCustomAdapters($event)"
 ></app-custom-adapters>
-<app-symbols-menu
-  *ngIf="isSymbolSelectionOpened && qemuTemplate"
-  [controller]="controller"
-  [symbol]="qemuTemplate.symbol"
-  (symbolChangedEmitter)="symbolChanged($event)"
-></app-symbols-menu>
+@if (isSymbolSelectionOpened && qemuTemplate) {
+  <app-symbols-menu
+    [controller]="controller"
+    [symbol]="qemuTemplate.symbol"
+    (symbolChangedEmitter)="symbolChanged($event)"
+  ></app-symbols-menu>
+}

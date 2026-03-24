@@ -2,15 +2,16 @@
   <div class="default-header">
     <div class="row">
       <div class="col col-md-1">
-        <button
-          class="top-button"
-          *ngIf="controller()"
-          class="cancel-button"
-          mat-button
-          (click)="goBack()"
-        >
-          <mat-icon>arrow_back</mat-icon>
-        </button>
+        @if (controller()) {
+          <button
+            class="top-button"
+            class="cancel-button"
+            mat-button
+            (click)="goBack()"
+          >
+            <mat-icon>arrow_back</mat-icon>
+          </button>
+        }
       </div>
       <div class="col col-md-11">
         <h1 class="col">New IOU device template</h1>
@@ -55,34 +56,38 @@
                 }
               </mat-select>
             </mat-form-field>
-            <mat-form-field class="form-field" *ngIf="!newImageSelected()">
-              <mat-select
-                placeholder="IOU image"
-                [(ngModel)]="iouTemplate().path"
-                [ngModelOptions]="{ standalone: true }"
-              >
-                @for (image of iouImages(); track image.path) {
-                  <mat-option [value]="image.path">
-                    {{ image.path }}
-                  </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-            <div *ngIf="newImageSelected()">
-              <input
-                type="file"
-                accept=".bin, .image, .iol"
-                #file
-                class="nonvisible"
-                (change)="uploadImageFile($event)"
-                ng2FileSelect
-                [uploader]="uploader()"
-              />
-              <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
-              <mat-form-field class="file-name-form-field">
-                <input matInput type="text" formControlName="imageName" placeholder="IOU image" />
+            @if (!newImageSelected()) {
+              <mat-form-field class="form-field">
+                <mat-select
+                  placeholder="IOU image"
+                  [(ngModel)]="iouTemplate().path"
+                  [ngModelOptions]="{ standalone: true }"
+                >
+                  @for (image of iouImages(); track image.path) {
+                    <mat-option [value]="image.path">
+                      {{ image.path }}
+                    </mat-option>
+                  }
+                </mat-select>
               </mat-form-field>
-            </div>
+            }
+            @if (newImageSelected()) {
+              <div>
+                <input
+                  type="file"
+                  accept=".bin, .image, .iol"
+                  #file
+                  class="nonvisible"
+                  (change)="uploadImageFile($event)"
+                  ng2FileSelect
+                  [uploader]="uploader()"
+                />
+                <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
+                <mat-form-field class="file-name-form-field">
+                  <input matInput type="text" formControlName="imageName" placeholder="IOU image" />
+                </mat-form-field>
+              </div>
+            }
           </form>
         </mat-step>
       </mat-vertical-stepper>
