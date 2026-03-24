@@ -1,3 +1,269 @@
-.tags-field {
+/**
+ * GNS3 QEMU VM Template Details Component Styles
+ * BEM naming applied, Material theme variables used
+ * Design language unified with management pages
+ */
+
+:host {
+  display: block;
   width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    135deg,
+    var(--mat-sys-primary-container) 0%,
+    var(--mat-sys-background) 100%
+  );
+  min-height: 100vh;
+}
+
+/* =============================================
+// Header
+// ============================================= */
+.qemu-template-details__header {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 20px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: fadeInSlideIn 0.4s ease-out;
+}
+
+.qemu-template-details__back-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  color: var(--mat-sys-on-surface);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+  }
+}
+
+.qemu-template-details__title {
+  flex: 1;
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin: 0;
+}
+
+/* =============================================
+// Content
+// ============================================= */
+.qemu-template-details__content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px 20px;
+  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+}
+
+.qemu-template-details--hidden {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* =============================================
+// Form Card
+// ============================================= */
+.qemu-template-details__form-card {
+  background: var(--mat-sys-surface);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+              0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  margin-bottom: 16px;
+}
+
+.qemu-template-details__form {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.qemu-template-details__field {
+  width: 100%;
+}
+
+.qemu-template-details__field--flex {
+  flex: 1;
+}
+
+.qemu-template-details__field--full {
+  width: 100%;
+}
+
+.qemu-template-details__section-title {
+  padding: 16px 24px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+  border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
+}
+
+.qemu-template-details__symbol-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.qemu-template-details__symbol-btn {
+  margin-top: 4px;
+  height: 48px;
+}
+
+.qemu-template-details__file-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.qemu-template-details__file-input {
+  display: none;
+}
+
+.qemu-template-details__browse-btn {
+  margin-top: 4px;
+  height: 48px;
+}
+
+.qemu-template-details__config-btn {
+  margin-top: 8px;
+}
+
+/* =============================================
+// Disk Grid
+// ============================================= */
+.qemu-template-details__disk-grid {
+  padding: 24px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.qemu-template-details__disk-item {
+  background: color-mix(in srgb, var(--mat-sys-surface-variant) 50%, transparent);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.qemu-template-details__disk-title {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+/* =============================================
+// Subsections
+// ============================================= */
+.qemu-template-details__subsection {
+  padding-top: 16px;
+  border-top: 1px solid color-mix(in srgb, var(--mat-sys-outline) 20%, transparent);
+
+  &:first-child {
+    padding-top: 0;
+    border-top: none;
+  }
+}
+
+.qemu-template-details__subsection-title {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+/* =============================================
+// Actions
+// ============================================= */
+.qemu-template-details__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.qemu-template-details__cancel-btn {
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+.qemu-template-details__save-btn {
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.5px;
+}
+
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 768px) {
+  .qemu-template-details__header {
+    padding: 24px 16px 12px;
+    gap: 12px;
+  }
+
+  .qemu-template-details__back-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .qemu-template-details__title {
+    font-size: 22px;
+  }
+
+  .qemu-template-details__content {
+    padding: 0 16px 16px;
+  }
+
+  .qemu-template-details__form {
+    padding: 16px;
+  }
+
+  .qemu-template-details__symbol-row {
+    flex-direction: column;
+  }
+
+  .qemu-template-details__file-row {
+    flex-direction: column;
+  }
+
+  .qemu-template-details__disk-grid {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+
+  .qemu-template-details__actions {
+    flex-direction: column;
+  }
+
+  .qemu-template-details__cancel-btn,
+  .qemu-template-details__save-btn {
+    width: 100%;
+    height: 44px;
+  }
 }

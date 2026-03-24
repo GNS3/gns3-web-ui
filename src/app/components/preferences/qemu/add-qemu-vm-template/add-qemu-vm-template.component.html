@@ -1,68 +1,65 @@
-<div class="content">
-  <div class="default-header">
-    <div class="row">
-      <div class="col col-md-1">
-        @if (controller()) {
-          <button class="top-button" class="cancel-button" mat-button (click)="goBack()">
-            <mat-icon>arrow_back</mat-icon>
-          </button>
-        }
-      </div>
-      <div class="col col-md-11">
-        <h1 class="col">New QEMU VM template</h1>
-      </div>
-    </div>
-  </div>
-  <div class="default-content">
-    <div class="container mat-elevation-z8">
-      <mat-vertical-stepper [linear]="true">
+<div class="qemu-add">
+  <header class="qemu-add__header">
+    @if (controller()) {
+      <button
+        class="qemu-add__back-btn"
+        (click)="goBack()"
+        mat-icon-button>
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+    }
+    <h1 class="qemu-add__title">New QEMU VM template</h1>
+  </header>
+
+  <main class="qemu-add__content">
+    <section class="qemu-add__form-card">
+      <mat-vertical-stepper [linear]="true" class="qemu-add__stepper">
         <mat-step label="Controller type" [completed]="isLocalComputerChosen()">
-          <mat-radio-group class="radio-group">
-            <mat-radio-button class="radio-button" value="1" (click)="setControllerType('local')" checked
-              >Run this QEMU VM locally</mat-radio-button
-            >
+          <mat-radio-group class="qemu-add__radio-group">
+            <mat-radio-button
+              class="qemu-add__radio"
+              value="1"
+              (click)="setControllerType('local')"
+              [checked]="true">
+              Run this QEMU VM locally
+            </mat-radio-button>
           </mat-radio-group>
         </mat-step>
 
         <mat-step label="QEMU VM Name" [completed]="nameForm.get('templateName').value">
-          <form [formGroup]="nameForm">
-            <mat-form-field class="form-field">
-              <input
-                matInput
-                type="text"
-                formControlName="templateName"
-                placeholder="Please choose a descriptive name for your new QEMU virtual machine"
-                ngDefaultContro
-              /> </mat-form-field
-            ><br />
+          <form [formGroup]="nameForm" class="qemu-add__form">
+            <mat-form-field appearance="fill" class="qemu-add__field">
+              <mat-label>Template name</mat-label>
+              <input matInput type="text" formControlName="templateName" placeholder="Please choose a descriptive name for your new QEMU virtual machine" />
+            </mat-form-field>
           </form>
         </mat-step>
 
         <mat-step label="Platform and memory" [completed]="memoryForm.get('ramMemory').value && selectedPlatform()">
-          <form [formGroup]="memoryForm">
-            <mat-form-field class="form-field">
+          <form [formGroup]="memoryForm" class="qemu-add__form">
+            <mat-form-field appearance="fill" class="qemu-add__field">
+              <mat-label>Platform</mat-label>
               <mat-select placeholder="Platform" [(ngModel)]="selectedPlatform" [ngModelOptions]="{ standalone: true }">
                 @for (platform of selectPlatform(); track platform) {
                   <mat-option [value]="platform">
                     {{ platform }}
                   </mat-option>
                 }
-              </mat-select> </mat-form-field
-            ><br />
-            <mat-form-field class="form-field">
-              <input matInput type="number" min="1" placeholder="RAM" formControlName="ramMemory" ngDefaultControl />
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="qemu-add__field">
+              <mat-label>RAM</mat-label>
+              <input matInput type="number" min="1" placeholder="RAM" formControlName="ramMemory" />
               <span matSuffix>MB</span>
             </mat-form-field>
           </form>
         </mat-step>
 
         <mat-step label="Console type" [completed]="qemuTemplate().console_type">
-          <mat-form-field class="form-field">
-            <mat-select
-              placeholder="Console type"
-              [(ngModel)]="qemuTemplate().console_type"
-              [ngModelOptions]="{ standalone: true }"
-            >
+          <mat-form-field appearance="fill" class="qemu-add__field">
+            <mat-label>Console type</mat-label>
+            <mat-select placeholder="Console type" [(ngModel)]="qemuTemplate().console_type" [ngModelOptions]="{ standalone: true }">
               @for (type of consoleTypes(); track type) {
                 <mat-option [value]="type">
                   {{ type }}
@@ -73,12 +70,9 @@
         </mat-step>
 
         <mat-step label="Auxiliary console type" [completed]="qemuTemplate().aux_type">
-          <mat-form-field class="form-field">
-            <mat-select
-              placeholder="Auxiliary console type"
-              [(ngModel)]="qemuTemplate().aux_type"
-              [ngModelOptions]="{ standalone: true }"
-            >
+          <mat-form-field appearance="fill" class="qemu-add__field">
+            <mat-label>Auxiliary console type</mat-label>
+            <mat-select placeholder="Auxiliary console type" [(ngModel)]="qemuTemplate().aux_type" [ngModelOptions]="{ standalone: true }">
               @for (type of auxConsoleTypes(); track type) {
                 <mat-option [value]="type">
                   {{ type }}
@@ -89,58 +83,67 @@
         </mat-step>
 
         <mat-step label="Disk image">
-          <form [formGroup]="diskForm">
-            <mat-radio-group class="radio-group">
-              <mat-radio-button class="radio-button" value="1" (click)="setDiskImage('existingImage')" checked
-                >Existing image</mat-radio-button
-              >
-              <mat-radio-button class="radio-button" value="2" (click)="setDiskImage('newImage')"
-                >New image</mat-radio-button
-              > </mat-radio-group
-            ><br /><br />
+          <form [formGroup]="diskForm" class="qemu-add__form">
+            <mat-radio-group class="qemu-add__radio-group">
+              <mat-radio-button
+                class="qemu-add__radio"
+                value="1"
+                (click)="setDiskImage('existingImage')"
+                [checked]="!newImageSelected()">
+                Existing image
+              </mat-radio-button>
+              <mat-radio-button
+                class="qemu-add__radio"
+                value="2"
+                (click)="setDiskImage('newImage')"
+                [checked]="newImageSelected()">
+                New image
+              </mat-radio-button>
+            </mat-radio-group>
+
             @if (!newImageSelected()) {
-              <mat-select
-                placeholder="Disk image (hda)"
-                [ngModelOptions]="{ standalone: true }"
-                [(ngModel)]="selectedImage"
-              >
-                @for (image of qemuImages(); track image.filename) {
-                  <mat-option [value]="image">
-                    {{ image.filename }}
-                  </mat-option>
-                }
-              </mat-select>
+              <mat-form-field appearance="fill" class="qemu-add__field">
+                <mat-label>Disk image (hda)</mat-label>
+                <mat-select placeholder="Disk image (hda)" [ngModelOptions]="{ standalone: true }" [(ngModel)]="selectedImage">
+                  @for (image of qemuImages(); track image.filename) {
+                    <mat-option [value]="image">
+                      {{ image.filename }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
             }
+
             @if (newImageSelected()) {
-              <div>
+              <div class="qemu-add__file-row">
                 <input
                   type="file"
                   accept=".qcow2"
                   #file
-                  class="nonvisible"
+                  class="qemu-add__file-input"
                   (change)="uploadImageFile($event)"
                   ng2FileSelect
                   [uploader]="uploader()"
                 />
-                <button mat-raised-button color="primary" (click)="file.click()" class="file-button">Browse</button>
-                <mat-form-field class="file-name-form-field">
-                  <input
-                    matInput
-                    type="text"
-                    [(ngModel)]="chosenImage"
-                    formControlName="fileName"
-                    placeholder="Please enter name"
-                  />
+                <button mat-raised-button color="primary" (click)="file.click()" class="qemu-add__browse-btn">
+                  Browse
+                </button>
+                <mat-form-field appearance="fill" class="qemu-add__field qemu-add__field--flex">
+                  <mat-label>Image name</mat-label>
+                  <input matInput type="text" [(ngModel)]="chosenImage" formControlName="fileName" placeholder="Please enter name" />
                 </mat-form-field>
               </div>
             }
           </form>
         </mat-step>
       </mat-vertical-stepper>
+    </section>
+
+    <div class="qemu-add__actions">
+      <button mat-button class="qemu-add__cancel-btn" (click)="goBack()">Cancel</button>
+      <button mat-raised-button color="primary" class="qemu-add__submit-btn" (click)="addTemplate()">
+        Add template
+      </button>
     </div>
-    <div class="buttons-bar">
-      <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
-      <button mat-raised-button color="primary" (click)="addTemplate()">Add template</button>
-    </div>
-  </div>
+  </main>
 </div>
