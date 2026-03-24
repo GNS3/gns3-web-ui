@@ -42,6 +42,11 @@ app-default-layout {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  background: linear-gradient(
+    135deg,
+    var(--mat-sys-primary-container) 0%,
+    var(--mat-sys-background) 100%
+  );
 }
 
 /* =============================================
