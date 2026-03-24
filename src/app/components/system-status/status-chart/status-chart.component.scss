@@ -11,10 +11,13 @@
 // Card Container
 // ============================================= */
 .status-chart {
-  background: var(--mat-sys-surface-container-low);
-  border-radius: var(--mat-sys-corner-large);
+  background: var(--mat-sys-surface);
+  border-radius: 16px;
   padding: 24px;
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
+  overflow: hidden;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+              0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* =============================================
