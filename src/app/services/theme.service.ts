@@ -3,11 +3,11 @@ import { DOCUMENT } from '@angular/common';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 /**
- * Available prebuilt themes
- * - deeppurple-amber: Light theme (deeppurple primary, amber accent)
- * - indigo-pink: Light theme (indigo primary, pink accent)
- * - pink-bluegrey: Dark theme (pink primary, bluegrey accent)
- * - purple-green: Dark theme (purple primary, green accent)
+ * Available theme keys (map to CSS classes in :root.theme-xxx)
+ * - deeppurple-amber: Light theme
+ * - indigo-pink: Light theme
+ * - pink-bluegrey: Dark theme
+ * - purple-green: Dark theme
  */
 export type PrebuiltTheme = 'deeppurple-amber' | 'indigo-pink' | 'pink-bluegrey' | 'purple-green';
 
@@ -32,7 +32,11 @@ export const DEFAULT_THEME_TOKEN = new InjectionToken<PrebuiltTheme>('DEFAULT_TH
 /**
  * GNS3 Theme Service
  *
- * Manages application theming using Angular Material prebuilt themes:
+ * Manages application theming using Angular Material 21 MD3 Sass Mixin:
+ * CSS variables are generated via mat.all-component-themes() and injected
+ * into :root.theme-xxx selectors.
+ *
+ * Available themes:
  * - deeppurple-amber: Light theme
  * - indigo-pink: Light theme
  * - pink-bluegrey: Dark theme
@@ -57,9 +61,6 @@ export class ThemeService {
   public savedTheme: string = 'pink-bluegrey';
   public savedMapTheme: string = 'auto';
 
-  // Dynamic theme link element
-  private themeLinkElement: HTMLLinkElement | null = null;
-
   // All available prebuilt themes
   readonly availableThemes: { key: PrebuiltTheme; label: string; type: ThemeType }[] = [
     { key: 'deeppurple-amber', label: 'Deep Purple & Amber', type: 'light' },
@@ -67,14 +68,6 @@ export class ThemeService {
     { key: 'pink-bluegrey', label: 'Pink & Bluegrey', type: 'dark' },
     { key: 'purple-green', label: 'Purple & Green', type: 'dark' },
   ];
-
-  // Prebuilt theme paths
-  private readonly prebuiltThemes: Record<PrebuiltTheme, string> = {
-    'deeppurple-amber': 'assets/material-themes/deeppurple-amber.css',
-    'indigo-pink': 'assets/material-themes/indigo-pink.css',
-    'pink-bluegrey': 'assets/material-themes/pink-bluegrey.css',
-    'purple-green': 'assets/material-themes/purple-green.css',
-  };
 
   constructor(
     @Inject(DOCUMENT) private document: Document,
@@ -207,33 +200,18 @@ export class ThemeService {
   }
 
   /**
-   * Apply theme to DOM by dynamically loading/unloading the prebuilt theme CSS
+   * Apply theme to DOM by adding the theme class to html
+   * CSS variables are generated via Sass Mixin (mat.all-component-themes)
    * @param theme The theme key to apply
    */
   private applyTheme(theme: PrebuiltTheme): void {
-    const head = this.document.head;
-    const existingLinkId = 'angular-material-prebuilt-theme';
-
-    // Remove existing theme link if present
-    const existingLink = this.document.getElementById(existingLinkId);
-    if (existingLink) {
-      existingLink.remove();
-    }
-
-    // Remove all theme-related classes from html
     const htmlElement = this.document.documentElement;
 
+    // Remove all theme-related classes from html
     htmlElement.classList.remove('theme-deeppurple-amber', 'theme-indigo-pink', 'theme-pink-bluegrey', 'theme-purple-green');
 
-    // Add theme class to html
+    // Add theme class to html - this activates the CSS variables in :root.theme-xxx
     htmlElement.classList.add(`theme-${theme}`);
-
-    // Create and append new theme link
-    this.themeLinkElement = this.document.createElement('link');
-    this.themeLinkElement.id = existingLinkId;
-    this.themeLinkElement.rel = 'stylesheet';
-    this.themeLinkElement.href = this.prebuiltThemes[theme];
-    head.appendChild(this.themeLinkElement);
   }
 
   /**
