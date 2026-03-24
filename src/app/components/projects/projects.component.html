@@ -1,93 +1,133 @@
-<div class="content">
-  <div class="default-header">
-    <div class="row">
-      <h1 class="col">Projects</h1>
-      <button class="col add-button" mat-raised-button color="primary" (click)="addBlankProject()">
-        Add blank project
-      </button>
-      <button class="col import-button" mat-raised-button color="primary" (click)="importProject()">
-        Import project
-      </button>
+<div class="projects">
+  <div class="projects__header">
+    <!-- GNS3 Logo and Title -->
+    <div class="projects__header-content">
+      <mat-icon class="projects__logo-icon" *ngIf="!isLightThemeEnabled()" svgIcon="gns3"></mat-icon>
+      <mat-icon class="projects__logo-icon" *ngIf="isLightThemeEnabled()" svgIcon="gns3black"></mat-icon>
+      <h1>Projects</h1>
     </div>
   </div>
 
-  <form>
-    <mat-form-field class="full-width">
-      <input matInput placeholder="Search project by name" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }" />
-    </mat-form-field>
-  </form>
+  <div class="projects__content">
+    <!-- Buttons Bar -->
+    <div class="projects__buttons-bar">
+      <button mat-raised-button class="projects__button" color="primary" (click)="addBlankProject()">
+        <mat-icon>add</mat-icon>
+        Add Blank Project
+      </button>
+      <button mat-raised-button class="projects__button" color="primary" (click)="importProject()">
+        <mat-icon>upload_file</mat-icon>
+        Import Project
+      </button>
+    </div>
 
-  <div class="default-content">
-    <div class="mat-elevation-z8 table-container">
+    <!-- Search -->
+    <form class="projects__search-form">
+      <mat-form-field class="projects__search">
+        <mat-icon matPrefix>search</mat-icon>
+        <input
+          matInput
+          placeholder="Search projects"
+          [(ngModel)]="searchText"
+          [ngModelOptions]="{ standalone: true }"
+        />
+      </mat-form-field>
+    </form>
+
+    <!-- Projects Table -->
+    <div class="projects__table-container">
       <mat-table #table [dataSource]="dataSource | projectsfilter: searchText" matSort>
         <ng-container matColumnDef="select">
           <mat-header-cell *matHeaderCellDef>
-            <mat-checkbox (change)="$event ? selectAllImages() : null" [checked]="selection.hasValue() && isAllSelected()"
+            <mat-checkbox
+              (change)="$event ? selectAllImages() : null"
+              [checked]="selection.hasValue() && isAllSelected()"
               [indeterminate]="selection.hasValue() && !isAllSelected()">
             </mat-checkbox>
           </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+            <mat-checkbox
+              (click)="$event.stopPropagation()"
+              (change)="$event ? selection.toggle(row) : null"
               [checked]="selection.isSelected(row)">
             </mat-checkbox>
           </mat-cell>
-
         </ng-container>
-
 
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <a [routerLink]="['/controller', controller.id, 'project', row.project_id]" class="table-link">{{ row.name }}</a>
+            <a
+              [routerLink]="['/controller', controller.id, 'project', row.project_id]"
+              class="projects__link">
+              {{ row.name }}
+            </a>
           </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="actions">
-          <mat-header-cell *matHeaderCellDef class="action"> Actions </mat-header-cell>
-          <mat-cell  class="action" *matCellDef="let row" style="text-align: right">
-            <button
-              mat-icon-button
-              (click)="open(row)"
-              *ngIf="row.status == 'closed'"
-            >
-              <mat-icon aria-label="Open project">play_arrow</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              (click)="close(row)"
-              *ngIf="row.status == 'opened'"
-            >
-              <mat-icon aria-label="Close project">pause</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              (click)="duplicate(row)"
-              *ngIf="row.status == 'closed'"
-            >
-              <mat-icon aria-label="Save project as">save</mat-icon>
-            </button>
-            <button
-              mat-icon-button
-              (click)="exportSelectProject(row)"
-
-            >
-            <mat-icon aria-label="Export project">arrow_downward</mat-icon>
-
-            </button>
-
+          <mat-header-cell *matHeaderCellDef class="projects__cell--actions"> Actions </mat-header-cell>
+          <mat-cell class="projects__cell--actions" *matCellDef="let row">
+            <div class="projects__actions-cell">
+              @if (row.status == 'closed') {
+                <button
+                  mat-icon-button
+                  (click)="open(row)"
+                  matTooltip="Open project"
+                >
+                  <mat-icon aria-label="Open project">play_arrow</mat-icon>
+                </button>
+              }
+              @if (row.status == 'opened') {
+                <button
+                  mat-icon-button
+                  (click)="close(row)"
+                  matTooltip="Close project"
+                >
+                  <mat-icon aria-label="Close project">pause</mat-icon>
+                </button>
+              }
+              @if (row.status == 'closed') {
+                <button
+                  mat-icon-button
+                  (click)="duplicate(row)"
+                  matTooltip="Duplicate project"
+                >
+                  <mat-icon aria-label="Save project as">content_copy</mat-icon>
+                </button>
+              }
+              <button
+                mat-icon-button
+                (click)="exportSelectProject(row)"
+                matTooltip="Export project"
+              >
+                <mat-icon aria-label="Export project">download</mat-icon>
+              </button>
+            </div>
           </mat-cell>
         </ng-container>
 
-        <ng-container matColumnDef="delete" >
-          <mat-header-cell *matHeaderCellDef  class="action">
-            <button mat-button *ngIf="selection.selected.length > 1" (click)="deleteAllFiles()" aria-label="Example icon button with a delete icon">
-             <mat-icon>delete</mat-icon>
+        <ng-container matColumnDef="delete">
+          <mat-header-cell *matHeaderCellDef class="projects__cell--actions">
+            <button
+              mat-button
+              *ngIf="selection.selected.length > 1"
+              (click)="deleteAllFiles()"
+              color="warn"
+              matTooltip="Delete all selected">
+              <mat-icon>delete</mat-icon>
             </button>
           </mat-header-cell>
-          <mat-cell *matCellDef="let row"   class="action">
-            <button  mat-icon-button (click)="delete(row)" *ngIf="row.status == 'closed' && selection.isSelected(row)" aria-label="Example icon button with a delete icon" >
-            <mat-icon aria-label="Delete project">delete</mat-icon>
-          </button>
+          <mat-cell *matCellDef="let row" class="projects__cell--actions">
+            @if (row.status == 'closed' && selection.isSelected(row)) {
+              <button
+                mat-icon-button
+                (click)="delete(row)"
+                color="warn"
+                matTooltip="Delete project">
+                <mat-icon aria-label="Delete project">delete</mat-icon>
+              </button>
+            }
           </mat-cell>
         </ng-container>
 
@@ -95,5 +135,35 @@
         <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
       </mat-table>
     </div>
+
+    <!-- Footer -->
+    <footer class="projects__footer">
+      <div class="projects__footer-content">
+        <div class="projects__footer-info">
+          GNS3 Web-UI &copy;2018-{{ currentYear }} v{{ version }}
+        </div>
+        <div class="projects__footer-social">
+          <a
+            class="projects__footer-social-link"
+            href="https://github.com/GNS3"
+            target="_blank"
+            rel="noopener noreferrer"
+            matTooltip="GitHub"
+          >
+            <mat-icon class="projects__footer-icon" svgIcon="github"></mat-icon>
+          </a>
+          <a
+            class="projects__footer-social-link"
+            href="https://www.gns3.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            matTooltip="Website"
+          >
+            <mat-icon class="projects__footer-icon" *ngIf="!isLightThemeEnabled()" svgIcon="gns3"></mat-icon>
+            <mat-icon class="projects__footer-icon" *ngIf="isLightThemeEnabled()" svgIcon="gns3black"></mat-icon>
+          </a>
+        </div>
+      </div>
+    </footer>
   </div>
 </div>

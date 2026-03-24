@@ -15,6 +15,7 @@ import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
 import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.service';
 import { Settings, SettingsService } from '@services/settings.service';
+import { ThemeService } from '@services/theme.service';
 import { ToasterService } from '@services/toaster.service';
 import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-blank-project-dialog.component';
 import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
@@ -29,6 +30,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
+import { version } from '../../version';
 
 @Component({
   selector: 'app-projects',
@@ -61,6 +63,8 @@ export class ProjectsComponent implements OnInit {
   searchText: string = '';
   isAllDelete: boolean = false;
   selection = new SelectionModel(true, []);
+  public readonly version = version;
+  public readonly currentYear = new Date().getFullYear();
 
   readonly sort = viewChild(MatSort);
 
@@ -74,6 +78,7 @@ export class ProjectsComponent implements OnInit {
   private toasterService = inject(ToasterService);
   private recentlyOpenedProjectService = inject(RecentlyOpenedProjectService);
   private cdr = inject(ChangeDetectorRef);
+  private themeService = inject(ThemeService);
 
   constructor() {}
 
@@ -266,6 +271,10 @@ export class ProjectsComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe((isAddes: boolean) => {});
+  }
+
+  isLightThemeEnabled() {
+    return this.themeService.getActualTheme() === 'light';
   }
 }
 
