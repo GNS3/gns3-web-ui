@@ -1,27 +1,28 @@
-<div class="content">
-  <div class="default-header">
-    <div class="row">
-      <div class=" col col-md-1">
-        <button class="top-button" class="cancel-button" [routerLink]="'/controller/' + controllerId() + '/preferences'" mat-button>
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-      </div>
-      <div class="col-md-11">
-        <h1 class="col">Built-in templates</h1>
-      </div>
-    </div>
-  </div>
-  <div class="default-content">
-    <div class="listcontainer mat-elevation-z8">
-      <mat-nav-list>
-        <mat-list-item [routerLink]="'/controller/' + controllerId() + '/preferences/builtin/ethernet-hubs'">
-          Ethernet hub templates
-        </mat-list-item>
-        <mat-list-item [routerLink]="'/controller/' + controllerId() + '/preferences/builtin/ethernet-switches'">
-          Ethernet switch templates
-        </mat-list-item>
-        <mat-list-item [routerLink]="'/controller/' + controllerId() + '/preferences/builtin/cloud-nodes'"> Cloud node templates </mat-list-item>
-      </mat-nav-list>
-    </div>
-  </div>
+<div class="builtin-prefs">
+  <header class="builtin-prefs__header">
+    <button
+      class="builtin-prefs__back-btn"
+      [routerLink]="'/controller/' + controllerId() + '/preferences'"
+      mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="builtin-prefs__title">Built-in templates</h1>
+  </header>
+
+  <main class="builtin-prefs__content">
+    <nav class="builtin-prefs__nav-list">
+      <a mat-list-item [routerLink]="'/controller/' + controllerId() + '/preferences/builtin/ethernet-hubs'" class="builtin-prefs__nav-item">
+        <mat-icon class="builtin-prefs__nav-icon">hub</mat-icon>
+        Ethernet hub templates
+      </a>
+      <a mat-list-item [routerLink]="'/controller/' + controllerId() + '/preferences/builtin/ethernet-switches'" class="builtin-prefs__nav-item">
+        <mat-icon class="builtin-prefs__nav-icon">settings_ethernet</mat-icon>
+        Ethernet switch templates
+      </a>
+      <a mat-list-item [routerLink]="'/controller/' + controllerId() + '/preferences/builtin/cloud-nodes'" class="builtin-prefs__nav-item">
+        <mat-icon class="builtin-prefs__nav-icon">cloud</mat-icon>
+        Cloud node templates
+      </a>
+    </nav>
+  </main>
 </div>
