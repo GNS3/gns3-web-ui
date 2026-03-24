@@ -1,84 +1,117 @@
 <button
-  class="addNode"
+  class="template__add-btn"
   matTooltip="Add a node"
   matTooltipClass="custom-tooltip"
   mat-icon-button
-  class="menu-button add-menu-button"
   [matMenuTriggerFor]="mainMenu"
 >
   <mat-icon>add</mat-icon>
 </button>
 
-<mat-menu #mainMenu="matMenu">
-  <button mat-menu-item (click)="openDialog()">
+<mat-menu #mainMenu="matMenu" class="template__menu">
+  <button mat-menu-item (click)="openDialog()" class="template__dialog-btn">
     <mat-icon>add_to_queue</mat-icon>
     <span>Open dialog to configure</span>
   </button>
 
-  <mat-form-field (click)="$event.stopPropagation()" class="form-field" floatPlaceholder="never">
-    <input
-      matInput
-      placeholder="Search template by name"
-      (keyup)="filterTemplates($event)"
-      [(ngModel)]="searchText"
-      [ngModelOptions]="{ standalone: true }"
-    />
-  </mat-form-field>
-  <mat-form-field (click)="$event.stopPropagation()" class="form-field">
-    <mat-select
-      [ngModelOptions]="{ standalone: true }"
-      placeholder="Filter templates by type"
-      (selectionChange)="filterTemplates($event)"
-      [(ngModel)]="selectedType"
-    >
-      @for (type of templateTypes; track type) {
-        <mat-option [value]="type">
-          {{ type }}
-        </mat-option>
-      }
-    </mat-select>
-  </mat-form-field>
+  <div class="template__filters">
+    <mat-form-field (click)="$event.stopPropagation()" class="template__search-field" floatPlaceholder="never">
+      <input
+        matInput
+        placeholder="Search template by name"
+        (keyup)="filterTemplates($event)"
+        [(ngModel)]="searchText"
+        [ngModelOptions]="{ standalone: true }"
+      />
+    </mat-form-field>
+    <mat-form-field (click)="$event.stopPropagation()" class="template__select-field">
+      <mat-select
+        [ngModelOptions]="{ standalone: true }"
+        placeholder="Filter templates by type"
+        (selectionChange)="filterTemplates($event)"
+        [(ngModel)]="selectedType"
+      >
+        @for (type of templateTypes; track type) {
+          <mat-option [value]="type">
+            {{ type }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
 
-  <div class="menu">
-    <div class="templateList">
-      <mat-list-item>
-        <span class="templateRow">
-          @for (template of filteredTemplates; track $index; let i = $index) {
-            @if (i % 4 === 0) {
-              <span class="templateIcon">
-                <div mwlDraggable (dragStart)="dragStart($event)" (dragEnd)="dragEnd($event, filteredTemplates[i])">
-                  <img class="image" draggable="false" [src]="getImageSourceForTemplate(filteredTemplates[i])" />
-                </div>
-                <div [ngClass]="{ templateText: !isLightThemeEnabled, lightTemplateText: isLightThemeEnabled }">{{ filteredTemplates[i].name }}</div>
-              </span>
-              <span class="templateIcon">
-                @if (filteredTemplates[i + 1]) {
-                  <div mwlDraggable (dragStart)="dragStart($event)" (dragEnd)="dragEnd($event, filteredTemplates[i + 1])">
-                    <img class="image" draggable="false" [src]="getImageSourceForTemplate(filteredTemplates[i + 1])" />
-                  </div>
-                  <div [ngClass]="{ templateText: !isLightThemeEnabled, lightTemplateText: isLightThemeEnabled }">{{ filteredTemplates[i + 1].name }}</div>
-                }
-              </span>
-              <span class="templateIcon">
-                @if (filteredTemplates[i + 2]) {
-                  <div mwlDraggable (dragStart)="dragStart($event)" (dragEnd)="dragEnd($event, filteredTemplates[i + 2])">
-                    <img class="image" draggable="false" [src]="getImageSourceForTemplate(filteredTemplates[i + 2])" />
-                  </div>
-                  <div [ngClass]="{ templateText: !isLightThemeEnabled, lightTemplateText: isLightThemeEnabled }">{{ filteredTemplates[i + 2].name }}</div>
-                }
-              </span>
-              <span class="templateIcon">
-                @if (filteredTemplates[i + 3]) {
-                  <div mwlDraggable (dragStart)="dragStart($event)" (dragEnd)="dragEnd($event, filteredTemplates[i + 3])">
-                    <img class="image" draggable="false" [src]="getImageSourceForTemplate(filteredTemplates[i + 3])" />
-                  </div>
-                  <div [ngClass]="{ templateText: !isLightThemeEnabled, lightTemplateText: isLightThemeEnabled }">{{ filteredTemplates[i + 3].name }}</div>
-                }
-              </span>
-            }
+  <div class="template__list">
+    @for (template of filteredTemplates; track $index; let i = $index) {
+      @if (i % 4 === 0) {
+        <div class="template__row">
+          <div class="template__item">
+            <div
+              class="template__icon-wrapper"
+              mwlDraggable
+              (dragStart)="dragStart($event)"
+              (dragEnd)="dragEnd($event, filteredTemplates[i])"
+            >
+              <img
+                class="template__icon"
+                draggable="false"
+                [src]="getImageSourceForTemplate(filteredTemplates[i])"
+              />
+            </div>
+            <span class="template__name">{{ filteredTemplates[i].name }}</span>
+          </div>
+          @if (filteredTemplates[i + 1]) {
+            <div class="template__item">
+              <div
+                class="template__icon-wrapper"
+                mwlDraggable
+                (dragStart)="dragStart($event)"
+                (dragEnd)="dragEnd($event, filteredTemplates[i + 1])"
+              >
+                <img
+                  class="template__icon"
+                  draggable="false"
+                  [src]="getImageSourceForTemplate(filteredTemplates[i + 1])"
+                />
+              </div>
+              <span class="template__name">{{ filteredTemplates[i + 1].name }}</span>
+            </div>
           }
-        </span>
-      </mat-list-item>
-    </div>
+          @if (filteredTemplates[i + 2]) {
+            <div class="template__item">
+              <div
+                class="template__icon-wrapper"
+                mwlDraggable
+                (dragStart)="dragStart($event)"
+                (dragEnd)="dragEnd($event, filteredTemplates[i + 2])"
+              >
+                <img
+                  class="template__icon"
+                  draggable="false"
+                  [src]="getImageSourceForTemplate(filteredTemplates[i + 2])"
+                />
+              </div>
+              <span class="template__name">{{ filteredTemplates[i + 2].name }}</span>
+            </div>
+          }
+          @if (filteredTemplates[i + 3]) {
+            <div class="template__item">
+              <div
+                class="template__icon-wrapper"
+                mwlDraggable
+                (dragStart)="dragStart($event)"
+                (dragEnd)="dragEnd($event, filteredTemplates[i + 3])"
+              >
+                <img
+                  class="template__icon"
+                  draggable="false"
+                  [src]="getImageSourceForTemplate(filteredTemplates[i + 3])"
+                />
+              </div>
+              <span class="template__name">{{ filteredTemplates[i + 3].name }}</span>
+            </div>
+          }
+        </div>
+      }
+    }
   </div>
 </mat-menu>
