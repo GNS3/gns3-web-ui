@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Terminal } from 'xterm';
-import { ThemeService } from '@services/theme.service';
 
 /**
  * Service to manage xterm.js context menu
@@ -10,8 +9,6 @@ import { ThemeService } from '@services/theme.service';
   providedIn: 'root'
 })
 export class XtermContextMenuService {
-  constructor(private themeService: ThemeService) {}
-
   /**
    * Attach context menu to a terminal element
    * @returns Cleanup function to remove event listeners
@@ -32,19 +29,15 @@ export class XtermContextMenuService {
 
   /**
    * Show context menu at mouse position
-   * Note: In zoneless mode, runOutsideAngular is a no-op, so we don't need it
+   * Theme styles are handled automatically via MD3 CSS variables
    */
   private showContextMenu(event: MouseEvent, terminal: Terminal): void {
     const selection = terminal.getSelection();
     const hasSelection = selection && selection.length > 0;
 
-    // Get current theme
-    const currentTheme = this.themeService.getActualTheme();
-    const themeClass = currentTheme === 'light' ? 'light-theme' : 'dark-theme';
-
     // Create context menu
     const contextMenu = document.createElement('div');
-    contextMenu.className = `xterm-context-menu ${themeClass}`;
+    contextMenu.className = 'xterm-context-menu';
 
     // Calculate position to prevent overflow
     const { left, top } = this.calculateMenuPosition(event, 200, 150);

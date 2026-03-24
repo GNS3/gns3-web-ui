@@ -531,37 +531,16 @@
 }
 
 // =============================================
-// Dark Theme Specific Overrides
+// Theme-specific overrides (using MD3 variables)
 // =============================================
-.dark-theme .ai-chat-container,
-.theme-dark .ai-chat-container {
-  background-color: var(--gns3-dark-bg);
+.ai-chat-container {
+  background-color: var(--mat-sys-surface);
 }
 
-.dark-theme .chat-sidebar,
-.theme-dark .chat-sidebar {
-  background-color: color-mix(in srgb, var(--gns3-surface-dark) / 0.7, transparent);
+.chat-sidebar {
+  background-color: color-mix(in srgb, var(--mat-sys-surface-container) / 0.7, transparent);
 }
 
-.dark-theme .chat-main,
-.theme-dark .chat-main {
-  background-color: color-mix(in srgb, var(--gns3-dark-bg) / 0.6, transparent);
-}
-
-// =============================================
-// Light Theme Specific Overrides
-// =============================================
-.light-theme .ai-chat-container,
-.theme-light .ai-chat-container {
-  background-color: var(--gns3-light-bg);
-}
-
-.light-theme .chat-sidebar,
-.theme-light .chat-sidebar {
-  background-color: color-mix(in srgb, var(--gns3-surface-light) / 0.7, transparent);
-}
-
-.light-theme .chat-main,
-.theme-light .chat-main {
-  background-color: color-mix(in srgb, var(--gns3-light-bg) / 0.6, transparent);
+.chat-main {
+  background-color: color-mix(in srgb, var(--mat-sys-surface) / 0.6, transparent);
 }

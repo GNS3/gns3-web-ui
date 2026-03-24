@@ -520,18 +520,10 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
     // Use requestAnimationFrame for more reliable DOM timing
     requestAnimationFrame(() => {
       const overlayElement = this.overlayContainer.getContainerElement();
-      const themeClass = this.currentTheme.endsWith('-theme') ? this.currentTheme : `${this.currentTheme}-theme`;
 
-      // Clean and apply correct theme class to overlay container
-      overlayElement.classList.remove('dark-theme', 'light-theme', 'dark', 'light');
-      overlayElement.classList.add(themeClass);
-
-      // Apply theme class to menu panel
-      const panels = overlayElement.querySelectorAll('.mat-menu-panel');
-      panels.forEach((panel) => {
-        panel.classList.remove('dark-theme', 'light-theme');
-        panel.classList.add(themeClass);
-      });
+      // Apply correct theme class to overlay container
+      overlayElement.classList.remove('theme-deeppurple-amber', 'theme-indigo-pink', 'theme-pink-bluegrey', 'theme-purple-green');
+      overlayElement.classList.add(`theme-${this.currentTheme}`);
     });
   }
 

@@ -94,23 +94,10 @@ export class TemplateComponent implements OnInit, OnDestroy {
       this.templates = listOfTemplates;
     });
     this.symbolService.list(this.controller());
-    if (this.themeService.getActualTheme() === 'light') this.isLightThemeEnabled = true;
-    this.themeSubscription = this.themeService.themeChanged.subscribe((value: string) => {
-      if (value === 'light-theme') this.isLightThemeEnabled = true;
-      this.toggleTheme();
+    this.isLightThemeEnabled = this.themeService.getThemeType() === 'light';
+    this.themeSubscription = this.themeService.themeChanged.subscribe(() => {
+      this.isLightThemeEnabled = this.themeService.getThemeType() === 'light';
     });
-  }
-
-  toggleTheme(): void {
-    if (this.overlay.classList.contains('dark-theme')) {
-      this.overlay.classList.remove('dark-theme');
-      this.overlay.classList.add('light-theme');
-    } else if (this.overlay.classList.contains('light-theme')) {
-      this.overlay.classList.remove('light-theme');
-      this.overlay.classList.add('dark-theme');
-    } else {
-      this.overlay.classList.add('light-theme');
-    }
   }
 
   sortTemplates() {

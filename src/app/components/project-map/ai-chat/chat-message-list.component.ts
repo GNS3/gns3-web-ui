@@ -19,7 +19,6 @@ import { MarkdownModule } from 'ngx-markdown';
 import { ChatMessage, ToolCall, ToolResult } from '@models/ai-chat.interface';
 import { ToolCallDisplayComponent } from './tool-call-display.component';
 import { ToolDetailsDialogComponent, ToolDetailsDialogData } from './tool-details-dialog.component';
-import { ThemeService } from '@services/theme.service';
 
 /**
  * AI Chat Message List Component
@@ -163,7 +162,6 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
   private shouldScrollToBottom = false;
 
   private dialog = inject(MatDialog);
-  private themeService = inject(ThemeService);
 
   constructor() {}
 
@@ -291,17 +289,13 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
       toolCall: tc,
     };
 
-    // Get current theme for dialog styling
-    const theme = this.themeService.getActualTheme();
-    const themeClass = theme === 'light' ? 'light-theme' : 'dark-theme';
-
     this.dialog.open(ToolDetailsDialogComponent, {
       data,
       width: '800px',
       minWidth: '600px',
       maxWidth: '95vw',
       maxHeight: '85vh',
-      panelClass: ['tool-details-dialog', themeClass],
+      panelClass: ['tool-details-dialog'],
     });
   }
 
@@ -316,17 +310,13 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
       toolOutput: result.toolOutput,
     };
 
-    // Get current theme for dialog styling
-    const theme = this.themeService.getActualTheme();
-    const themeClass = theme === 'light' ? 'light-theme' : 'dark-theme';
-
     this.dialog.open(ToolDetailsDialogComponent, {
       data,
       width: '800px',
       minWidth: '600px',
       maxWidth: '95vw',
       maxHeight: '85vh',
-      panelClass: ['tool-details-dialog', themeClass],
+      panelClass: ['tool-details-dialog'],
     });
   }
 

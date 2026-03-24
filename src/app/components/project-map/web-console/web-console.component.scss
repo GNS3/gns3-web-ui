@@ -73,38 +73,22 @@
   }
 }
 
-/* Dark theme - theme class applied directly to menu element */
-.xterm-context-menu.dark-theme,
-.xterm-context-menu.theme-dark {
-  background: var(--gns3-surface);
-  border-color: var(--mat-app-outline-variant-color);
-  box-shadow: var(--gns3-shadow-lg);
+/* Xterm context menu - using MD3 variables */
+.xterm-context-menu {
+  background: var(--mat-sys-surface);
+  border-color: var(--mat-sys-outline-variant);
+  box-shadow: var(--mat-sys-elevation-3);
 
   .xterm-context-menu-item {
-    color: var(--mat-app-on-surface-color);
+    color: var(--mat-sys-on-surface);
 
     &:hover {
-      background: var(--mat-app-hover-state-layer-color);
-      color: var(--mat-app-on-surface-color);
+      background: var(--mat-sys-hover-state-layer);
+      color: var(--mat-sys-on-surface);
     }
 
     &:active {
-      color: var(--mat-app-on-surface-color);
-    }
-  }
-}
-
-/* Light theme - theme class applied directly to menu element */
-.xterm-context-menu.light-theme,
-.xterm-context-menu.theme-light {
-  background: var(--mat-app-surface-container-color);
-  border-color: var(--mat-app-outline-variant-color);
-
-  .xterm-context-menu-item {
-    color: var(--mat-app-on-surface-color);
-
-    &:hover {
-      background: var(--mat-app-hover-state-layer-color);
+      color: var(--mat-sys-on-surface);
     }
   }
 }

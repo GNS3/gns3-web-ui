@@ -518,60 +518,35 @@
 }
 
 /* =============================================
-// Theme-specific overrides
+// Theme-specific overrides (using MD3 variables)
 // ============================================= */
 
-/* Dark theme */
-.dark-theme .message-text,
-.dark-theme .tool-name-text,
-.dark-theme .tool-summary {
-  color: var(--gns3-text-dark-high);
+.message-text,
+.tool-name-text,
+.tool-summary {
+  color: var(--mat-sys-on-surface);
 }
 
-.dark-theme .message-time,
-.dark-theme .expand-icon {
-  color: var(--gns3-text-dark-medium);
+.message-time,
+.expand-icon {
+  color: var(--mat-sys-on-surface-variant);
 }
 
-.dark-theme .assistant-bubble {
-  color: var(--gns3-text-dark-high);
+.assistant-bubble,
+.system-bubble {
+  color: var(--mat-sys-on-surface);
 }
 
-.dark-theme .system-bubble {
-  color: var(--gns3-text-dark-high);
+.message-text code {
+  background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+  color: var(--mat-sys-on-surface);
 }
 
-/* Light theme */
-.light-theme .message-text,
-.light-theme .tool-name-text,
-.light-theme .tool-summary {
-  color: var(--gns3-text-light-high);
+.message-text pre {
+  background-color: color-mix(in srgb, var(--mat-sys-surface-container-high) 50%, transparent);
+  color: var(--mat-sys-on-surface);
 }
 
-.light-theme .message-time,
-.light-theme .expand-icon {
-  color: var(--gns3-text-light-medium);
-}
-
-.light-theme .assistant-bubble {
-  color: var(--gns3-text-light-high);
-}
-
-.light-theme .system-bubble {
-  color: var(--gns3-text-light-high);
-}
-
-/* Light theme code block colors */
-.light-theme .message-text code {
-  background-color: color-mix(in srgb, var(--mat-app-on-surface-color) / 0.08, transparent);
-  color: var(--gns3-text-light-high);
-}
-
-.light-theme .message-text pre {
-  background-color: rgba(255, 255, 255, 0.05);
-  color: var(--gns3-text-light-high);
-}
-
-.light-theme .message-text pre code {
-  color: var(--gns3-text-light-high);
+.message-text pre code {
+  color: var(--mat-sys-on-surface);
 }

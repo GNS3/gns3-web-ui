@@ -31,7 +31,6 @@ import { ControllerService } from '@services/controller.service';
 import { AiProfilesService } from '@services/ai-profiles.service';
 import { LoginService } from '@services/login.service';
 import { AiChatStore } from '../../../stores/ai-chat.store';
-import { ThemeService } from '@services/theme.service';
 import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.service';
 import { getModelDisplayName, shortenModelName } from '@utils/ai-profile.util';
 import { ChatSessionListComponent } from './chat-session-list.component';
@@ -70,7 +69,6 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   sidebarCollapsed = true;
   isStreaming = false;
   isDraggingEnabled = false;
-  isLightThemeEnabled = false;
   isMaximized = false;
   isMinimized = false;
 
@@ -108,7 +106,6 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   private aiChatStore = inject(AiChatStore);
   private snackBar = inject(MatSnackBar);
   private cdr = inject(ChangeDetectorRef);
-  private themeService = inject(ThemeService);
   private boundaryService = inject(WindowBoundaryService);
 
   constructor() {}
@@ -121,11 +118,6 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit() {
-    // Initialize theme
-    this.themeService.getActualTheme() === 'light'
-      ? (this.isLightThemeEnabled = true)
-      : (this.isLightThemeEnabled = false);
-
     // Set top offset to keep AI Chat below toolbar (64px for desktop, 56px for mobile)
     const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
     this.boundaryService.setConfig({ topOffset: toolbarHeight });
