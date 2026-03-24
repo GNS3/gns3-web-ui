@@ -174,6 +174,7 @@ export class ProjectsComponent implements OnInit {
       width: '400px',
       autoFocus: false,
       disableClose: true,
+      panelClass: 'add-controller-dialog-panel',
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;
@@ -185,6 +186,7 @@ export class ProjectsComponent implements OnInit {
       width: '400px',
       autoFocus: false,
       disableClose: true,
+      panelClass: 'add-controller-dialog-panel',
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;
