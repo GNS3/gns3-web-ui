@@ -59,6 +59,13 @@ export class IosTemplateDetailsComponent implements OnInit {
   memoryForm: UntypedFormGroup;
   advancedForm: UntypedFormGroup;
 
+  // Section collapse states
+  generalSettingsExpanded: boolean = true;
+  memoryExpanded: boolean = true;
+  slotsExpanded: boolean = true;
+  advancedExpanded: boolean = true;
+  usageExpanded: boolean = false;
+
   constructor() {
     this.generalSettingsForm = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
@@ -301,6 +308,26 @@ export class IosTemplateDetailsComponent implements OnInit {
 
     if (index >= 0) {
       this.iosTemplate.tags.splice(index, 1);
+    }
+  }
+
+  toggleSection(section: string): void {
+    switch (section) {
+      case 'general':
+        this.generalSettingsExpanded = !this.generalSettingsExpanded;
+        break;
+      case 'memory':
+        this.memoryExpanded = !this.memoryExpanded;
+        break;
+      case 'slots':
+        this.slotsExpanded = !this.slotsExpanded;
+        break;
+      case 'advanced':
+        this.advancedExpanded = !this.advancedExpanded;
+        break;
+      case 'usage':
+        this.usageExpanded = !this.usageExpanded;
+        break;
     }
   }
 }

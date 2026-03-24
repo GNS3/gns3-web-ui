@@ -13,11 +13,12 @@
 
   @if (iosTemplate) {
     <main class="ios-details__content">
-      <mat-accordion class="ios-details__accordion">
-        <mat-expansion-panel class="ios-details__panel">
-          <mat-expansion-panel-header class="ios-details__panel-header">
-            <mat-panel-title class="ios-details__panel-title">General settings</mat-panel-title>
-          </mat-expansion-panel-header>
+      <section class="ios-details__form-card">
+        <div class="ios-details__section-header" (click)="toggleSection('general')">
+          <h3 class="ios-details__section-title">General settings</h3>
+          <mat-icon class="ios-details__expand-icon">{{ generalSettingsExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        @if (generalSettingsExpanded) {
           <form [formGroup]="generalSettingsForm" class="ios-details__form">
             <mat-form-field appearance="fill" class="ios-details__field">
               <mat-label>Template name</mat-label>
@@ -111,12 +112,15 @@
 
             <mat-checkbox class="ios-details__checkbox">Auto start console</mat-checkbox>
           </form>
-        </mat-expansion-panel>
+        }
+      </section>
 
-        <mat-expansion-panel class="ios-details__panel">
-          <mat-expansion-panel-header class="ios-details__panel-header">
-            <mat-panel-title class="ios-details__panel-title">Memories and disks</mat-panel-title>
-          </mat-expansion-panel-header>
+      <section class="ios-details__form-card">
+        <div class="ios-details__section-header" (click)="toggleSection('memory')">
+          <h3 class="ios-details__section-title">Memories and disks</h3>
+          <mat-icon class="ios-details__expand-icon">{{ memoryExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        @if (memoryExpanded) {
           <form [formGroup]="memoryForm" class="ios-details__form">
             <mat-form-field appearance="fill" class="ios-details__field">
               <mat-label>RAM size</mat-label>
@@ -150,12 +154,15 @@
 
             <mat-checkbox class="ios-details__checkbox">Automatically delete NVRAM and disk files</mat-checkbox>
           </form>
-        </mat-expansion-panel>
+        }
+      </section>
 
-        <mat-expansion-panel class="ios-details__panel">
-          <mat-expansion-panel-header class="ios-details__panel-header">
-            <mat-panel-title class="ios-details__panel-title">Slots</mat-panel-title>
-          </mat-expansion-panel-header>
+      <section class="ios-details__form-card">
+        <div class="ios-details__section-header" (click)="toggleSection('slots')">
+          <h3 class="ios-details__section-title">Slots</h3>
+          <mat-icon class="ios-details__expand-icon">{{ slotsExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        @if (slotsExpanded) {
           <div class="ios-details__form">
             <h6 class="ios-details__section-subtitle">Adapters</h6>
             <div class="ios-details__adapters">
@@ -195,12 +202,15 @@
               </div>
             }
           </div>
-        </mat-expansion-panel>
+        }
+      </section>
 
-        <mat-expansion-panel class="ios-details__panel">
-          <mat-expansion-panel-header class="ios-details__panel-header">
-            <mat-panel-title class="ios-details__panel-title">Advanced</mat-panel-title>
-          </mat-expansion-panel-header>
+      <section class="ios-details__form-card">
+        <div class="ios-details__section-header" (click)="toggleSection('advanced')">
+          <h3 class="ios-details__section-title">Advanced</h3>
+          <mat-icon class="ios-details__expand-icon">{{ advancedExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        @if (advancedExpanded) {
           <form [formGroup]="advancedForm" class="ios-details__form">
             <mat-form-field appearance="fill" class="ios-details__field">
               <mat-label>System ID</mat-label>
@@ -242,18 +252,21 @@
             <mat-checkbox class="ios-details__checkbox">Enable mmap support</mat-checkbox>
             <mat-checkbox class="ios-details__checkbox">Enable sparse memory support</mat-checkbox>
           </form>
-        </mat-expansion-panel>
+        }
+      </section>
 
-        <mat-expansion-panel class="ios-details__panel">
-          <mat-expansion-panel-header class="ios-details__panel-header">
-            <mat-panel-title class="ios-details__panel-title">Usage</mat-panel-title>
-          </mat-expansion-panel-header>
+      <section class="ios-details__form-card">
+        <div class="ios-details__section-header" (click)="toggleSection('usage')">
+          <h3 class="ios-details__section-title">Usage</h3>
+          <mat-icon class="ios-details__expand-icon">{{ usageExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        @if (usageExpanded) {
           <mat-form-field appearance="fill" class="ios-details__field ios-details__field--full">
             <mat-label>Usage</mat-label>
             <textarea matInput type="text"></textarea>
           </mat-form-field>
-        </mat-expansion-panel>
-      </mat-accordion>
+        }
+      </section>
 
       <div class="ios-details__actions">
         <button class="ios-details__cancel-btn" (click)="goBack()" mat-button>Cancel</button>
