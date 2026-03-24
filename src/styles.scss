@@ -111,7 +111,7 @@ mat-menu-panel {
 }
 
 .mat-menu-panel .mat-menu-item:hover .menu-item-icon {
-  fill: #4caf50;
+  fill: var(--mat-sys-primary);
 }
 
 /* =============================================
