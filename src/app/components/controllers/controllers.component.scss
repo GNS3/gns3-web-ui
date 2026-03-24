@@ -576,6 +576,17 @@ button[color="warn"] {
 }
 
 /* =============================================
+// Footer
+// ============================================= */
+.controllers__footer {
+  text-align: center;
+  padding: 24px 20px;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+/* =============================================
 // Responsive Design
 // ============================================= */
 @media (max-width: 768px) {
@@ -637,6 +648,11 @@ button[color="warn"] {
   .controllers__empty-state {
     margin: 16px;
     padding: 48px 24px;
+  }
+
+  .controllers__footer {
+    padding: 16px;
+    font-size: 12px;
   }
 }
 

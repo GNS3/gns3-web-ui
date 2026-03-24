@@ -24,6 +24,7 @@ import { ConfirmationBottomSheetComponent } from '../projects/confirmation-botto
 import { AddControllerDialogComponent } from './add-controller-dialog/add-controller-dialog.component';
 import { EditControllerDialogComponent } from './edit-controller-dialog/edit-controller-dialog.component';
 import { ControllerDiscoveryComponent } from './controller-discovery/controller-discovery.component';
+import { version } from '../../version';
 
 @Component({
   selector: 'app-controller-list',
@@ -52,6 +53,8 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
   private startingTimestamps: Map<string, number> = new Map();
   private startingTimeouts: Map<string, ReturnType<typeof setTimeout>> = new Map();
   private statusRefreshSubscription: Subscription;
+  public readonly version = version;
+  public readonly currentYear = new Date().getFullYear();
 
   @ViewChild(MatSort, { static: false }) sort: MatSort;
 
