@@ -77,7 +77,7 @@
 }
 
 .qemu-template-details__form {
-  padding: 24px;
+  padding: 0 24px 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -96,12 +96,29 @@
 }
 
 .qemu-template-details__section-title {
-  padding: 16px 24px;
   margin: 0;
   font-size: 16px;
   font-weight: 500;
   color: var(--mat-sys-on-surface-variant);
+}
+
+.qemu-template-details__section-header {
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
   border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 5%, transparent);
+  }
+}
+
+.qemu-template-details__expand-icon {
+  color: var(--mat-sys-on-surface-variant);
+  transition: transform 0.2s ease;
 }
 
 .qemu-template-details__symbol-row {
@@ -116,6 +133,7 @@
 }
 
 .qemu-template-details__file-row {
+  padding: 0 24px 16px;
   display: flex;
   align-items: flex-start;
   gap: 16px;
@@ -138,7 +156,7 @@
 // Disk Grid
 // ============================================= */
 .qemu-template-details__disk-grid {
-  padding: 24px;
+  padding: 0 24px 24px;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
@@ -227,6 +245,10 @@
     gap: 12px;
   }
 
+  .qemu-template-details__section-header {
+    padding: 12px 16px;
+  }
+
   .qemu-template-details__back-btn {
     width: 44px;
     height: 44px;
@@ -250,11 +272,11 @@
 
   .qemu-template-details__file-row {
     flex-direction: column;
+    padding: 0 16px 16px;
   }
 
   .qemu-template-details__disk-grid {
     grid-template-columns: 1fr;
-    padding: 16px;
   }
 
   .qemu-template-details__actions {

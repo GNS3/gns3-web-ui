@@ -14,354 +14,384 @@
   @if (qemuTemplate) {
     <main class="qemu-template-details__content">
       <section class="qemu-template-details__form-card">
-        <h3 class="qemu-template-details__section-title">General settings</h3>
-        <form [formGroup]="generalSettingsForm" class="qemu-template-details__form">
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
-            <mat-label>Template name</mat-label>
-            <input matInput type="text" formControlName="templateName" placeholder="Template name" />
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
-            <mat-label>Default name format</mat-label>
-            <input matInput type="text" formControlName="defaultName" placeholder="Default name format" />
-          </mat-form-field>
-
-          <div class="qemu-template-details__symbol-row">
-            <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
-              <mat-label>Symbol</mat-label>
-              <input matInput type="text" formControlName="symbol" placeholder="Symbol" />
-            </mat-form-field>
-            <button mat-button class="qemu-template-details__symbol-btn" (click)="chooseSymbol()">
-              Choose symbol
-            </button>
-          </div>
-
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
-            <mat-label>Tags</mat-label>
-            <mat-chip-grid #chipList>
-              @for (tag of qemuTemplate?.tags; track tag) {
-                <mat-chip (removed)="removeTag(tag)">
-                  {{ tag }}
-                  <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
-              }
-            </mat-chip-grid>
-            <input matInput placeholder="Add tags"
-                   [matChipInputFor]="chipList"
-                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                   (matChipInputTokenEnd)="addTag($event)" />
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
-            <mat-label>Category</mat-label>
-            <mat-select>
-              @for (category of categories; track $index) {
-                <mat-option [value]="category[1]">
-                  {{ category[0] }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
-            <mat-label>Platform</mat-label>
-            <mat-select>
-              @for (platform of selectPlatform; track platform) {
-                <mat-option [value]="platform">
-                  {{ platform }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
-            <mat-label>RAM</mat-label>
-            <input matInput type="number" min="1" placeholder="RAM" />
-            <span matSuffix>MB</span>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
-            <mat-label>vCPUs</mat-label>
-            <input matInput type="number" min="1" placeholder="vCPUs" />
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
-            <mat-label>Boot priority</mat-label>
-            <mat-select>
-              @for (priority of bootPriorities; track priority[1]) {
-                <mat-option [value]="priority[1]">
-                  {{ priority[0] }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
-            <mat-label>On close</mat-label>
-            <mat-select>
-              @for (option of onCloseOptions; track option[1]) {
-                <mat-option [value]="option[1]">
-                  {{ option[0] }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
-            <mat-label>Console type</mat-label>
-            <mat-select>
-              @for (type of consoleTypes; track type) {
-                <mat-option [value]="type">
-                  {{ type }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
-            <mat-label>Auxiliary console type</mat-label>
-            <mat-select>
-              @for (type of auxConsoleTypes; track type) {
-                <mat-option [value]="type">
-                  {{ type }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <mat-checkbox>Auto start console</mat-checkbox>
-        </form>
-      </section>
-
-      <section class="qemu-template-details__form-card">
-        <h3 class="qemu-template-details__section-title">HDD</h3>
-        <div class="qemu-template-details__disk-grid">
-          <div class="qemu-template-details__disk-item">
-            <h4 class="qemu-template-details__disk-title">HDA (Primary Master)</h4>
-            <mat-form-field appearance="fill" class="qemu-template-details__field">
-              <mat-label>Disk image</mat-label>
-              <input matInput placeholder="Disk image" />
-            </mat-form-field>
-            <mat-form-field appearance="fill" class="qemu-template-details__field">
-              <mat-label>Disk interface</mat-label>
-              <mat-select>
-                @for (interface of diskInterfaces; track interface) {
-                  <mat-option [value]="interface">
-                    {{ interface }}
-                  </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
-
-          <div class="qemu-template-details__disk-item">
-            <h4 class="qemu-template-details__disk-title">HDB (Primary Slave)</h4>
-            <mat-form-field appearance="fill" class="qemu-template-details__field">
-              <mat-label>Disk image</mat-label>
-              <input matInput placeholder="Disk image" />
-            </mat-form-field>
-            <mat-form-field appearance="fill" class="qemu-template-details__field">
-              <mat-label>Disk interface</mat-label>
-              <mat-select>
-                @for (interface of diskInterfaces; track interface) {
-                  <mat-option [value]="interface">
-                    {{ interface }}
-                  </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
-
-          <div class="qemu-template-details__disk-item">
-            <h4 class="qemu-template-details__disk-title">HDC (Secondary Master)</h4>
-            <mat-form-field appearance="fill" class="qemu-template-details__field">
-              <mat-label>Disk image</mat-label>
-              <input matInput placeholder="Disk image" />
-            </mat-form-field>
-            <mat-form-field appearance="fill" class="qemu-template-details__field">
-              <mat-label>Disk interface</mat-label>
-              <mat-select>
-                @for (interface of diskInterfaces; track interface) {
-                  <mat-option [value]="interface">
-                    {{ interface }}
-                  </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
-
-          <div class="qemu-template-details__disk-item">
-            <h4 class="qemu-template-details__disk-title">HDD (Secondary Slave)</h4>
-            <mat-form-field appearance="fill" class="qemu-template-details__field">
-              <mat-label>Disk image</mat-label>
-              <input matInput placeholder="Disk image" />
-            </mat-form-field>
-            <mat-form-field appearance="fill" class="qemu-template-details__field">
-              <mat-label>Disk interface</mat-label>
-              <mat-select>
-                @for (interface of diskInterfaces; track interface) {
-                  <mat-option [value]="interface">
-                    {{ interface }}
-                  </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </div>
+        <div class="qemu-template-details__section-header" (click)="toggleSection('general')">
+          <h3 class="qemu-template-details__section-title">General settings</h3>
+          <mat-icon class="qemu-template-details__expand-icon">{{ generalSettingsExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
         </div>
-      </section>
+        @if (generalSettingsExpanded) {
+          <form [formGroup]="generalSettingsForm" class="qemu-template-details__form">
+            <mat-form-field appearance="fill" class="qemu-template-details__field">
+              <mat-label>Template name</mat-label>
+              <input matInput type="text" formControlName="templateName" placeholder="Template name" />
+            </mat-form-field>
 
-      <section class="qemu-template-details__form-card">
-        <h3 class="qemu-template-details__section-title">CD/DVD</h3>
-        <div class="qemu-template-details__file-row">
-          <input type="file" #filecdrom class="qemu-template-details__file-input" (change)="uploadCdromImageFile($event)" />
-          <button mat-raised-button color="primary" (click)="filecdrom.click()" class="qemu-template-details__browse-btn">
-            Browse
-          </button>
-          <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
-            <mat-label>Image</mat-label>
-            <input matInput type="text" placeholder="Image" />
-          </mat-form-field>
-        </div>
-      </section>
+            <mat-form-field appearance="fill" class="qemu-template-details__field">
+              <mat-label>Default name format</mat-label>
+              <input matInput type="text" formControlName="defaultName" placeholder="Default name format" />
+            </mat-form-field>
 
-      <section class="qemu-template-details__form-card">
-        <h3 class="qemu-template-details__section-title">Network</h3>
-        <form class="qemu-template-details__form">
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
-            <mat-label>Adapters</mat-label>
-            <input matInput type="number" min="0" placeholder="Adapters" />
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
-            <mat-label>First port name</mat-label>
-            <input matInput type="text" placeholder="First port name" />
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
-            <mat-label>Name format</mat-label>
-            <input matInput type="text" placeholder="Name format" />
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
-            <mat-label>Segment size</mat-label>
-            <input matInput type="number" min="0" placeholder="Segment size" />
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
-            <mat-label>Base MAC</mat-label>
-            <input matInput type="text" placeholder="Base MAC" />
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="qemu-template-details__field">
-            <mat-label>Type</mat-label>
-            <mat-select>
-              @for (type of networkTypes; track type.value) {
-                <mat-option [value]="type.value">{{ type.name }} ({{ type.value }})</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <button mat-button class="qemu-template-details__config-btn" (click)="setCustomAdaptersConfiguratorState(true)">
-            Configure custom adapters
-          </button>
-
-          <mat-checkbox>Replicate network connection state</mat-checkbox>
-        </form>
-      </section>
-
-      <section class="qemu-template-details__form-card">
-        <h3 class="qemu-template-details__section-title">Advanced</h3>
-        <div class="qemu-template-details__form">
-          <div class="qemu-template-details__subsection">
-            <h4 class="qemu-template-details__subsection-title">Linux boot specific settings</h4>
-            <div class="qemu-template-details__file-row">
-              <input type="file" #fileinitrd class="qemu-template-details__file-input" (change)="uploadInitrdFile($event)" />
-              <button mat-raised-button color="primary" (click)="fileinitrd.click()" class="qemu-template-details__browse-btn">
-                Browse
-              </button>
+            <div class="qemu-template-details__symbol-row">
               <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
-                <mat-label>Initial RAM disk (initrd)</mat-label>
-                <input matInput type="text" placeholder="Initial RAM disk (initrd)" />
+                <mat-label>Symbol</mat-label>
+                <input matInput type="text" formControlName="symbol" placeholder="Symbol" />
               </mat-form-field>
-            </div>
-
-            <div class="qemu-template-details__file-row">
-              <input type="file" #filekernelimage class="qemu-template-details__file-input" (change)="uploadKernelImageFile($event)" />
-              <button mat-raised-button color="primary" (click)="filekernelimage.click()" class="qemu-template-details__browse-btn">
-                Browse
+              <button mat-button class="qemu-template-details__symbol-btn" (click)="chooseSymbol()">
+                Choose symbol
               </button>
-              <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
-                <mat-label>Kernel image</mat-label>
-                <input matInput type="text" placeholder="Kernel image" />
-              </mat-form-field>
             </div>
 
             <mat-form-field appearance="fill" class="qemu-template-details__field">
-              <mat-label>Kernel command line</mat-label>
-              <input matInput type="text" placeholder="Kernel command line" />
+              <mat-label>Tags</mat-label>
+              <mat-chip-grid #chipList>
+                @for (tag of qemuTemplate?.tags; track tag) {
+                  <mat-chip (removed)="removeTag(tag)">
+                    {{ tag }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                }
+              </mat-chip-grid>
+              <input matInput placeholder="Add tags"
+                     [matChipInputFor]="chipList"
+                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                     (matChipInputTokenEnd)="addTag($event)" />
             </mat-form-field>
-          </div>
 
-          <div class="qemu-template-details__subsection">
-            <h4 class="qemu-template-details__subsection-title">Bios</h4>
-            <div class="qemu-template-details__file-row">
-              <input type="file" #filebios class="qemu-template-details__file-input" (change)="uploadBiosFile($event)" />
-              <button mat-raised-button color="primary" (click)="filebios.click()" class="qemu-template-details__browse-btn">
-                Browse
-              </button>
-              <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
-                <mat-label>Bios image</mat-label>
-                <input matInput type="text" placeholder="Bios image" />
-              </mat-form-field>
-            </div>
-          </div>
+            <mat-form-field appearance="fill" class="qemu-template-details__field">
+              <mat-label>Category</mat-label>
+              <mat-select>
+                @for (category of categories; track $index) {
+                  <mat-option [value]="category[1]">
+                    {{ category[0] }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
 
-          <div class="qemu-template-details__subsection">
-            <h4 class="qemu-template-details__subsection-title">Optimization</h4>
-            <mat-checkbox [(ngModel)]="activateCpuThrottling">Activate CPU throttling</mat-checkbox>
-            @if (activateCpuThrottling) {
+            <mat-form-field appearance="fill" class="qemu-template-details__field">
+              <mat-label>Platform</mat-label>
+              <mat-select>
+                @for (platform of selectPlatform; track platform) {
+                  <mat-option [value]="platform">
+                    {{ platform }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="qemu-template-details__field">
+              <mat-label>RAM</mat-label>
+              <input matInput type="number" min="1" placeholder="RAM" />
+              <span matSuffix>MB</span>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="qemu-template-details__field">
+              <mat-label>vCPUs</mat-label>
+              <input matInput type="number" min="1" placeholder="vCPUs" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="qemu-template-details__field">
+              <mat-label>Boot priority</mat-label>
+              <mat-select>
+                @for (priority of bootPriorities; track priority[1]) {
+                  <mat-option [value]="priority[1]">
+                    {{ priority[0] }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="qemu-template-details__field">
+              <mat-label>On close</mat-label>
+              <mat-select>
+                @for (option of onCloseOptions; track option[1]) {
+                  <mat-option [value]="option[1]">
+                    {{ option[0] }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="qemu-template-details__field">
+              <mat-label>Console type</mat-label>
+              <mat-select>
+                @for (type of consoleTypes; track type) {
+                  <mat-option [value]="type">
+                    {{ type }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="qemu-template-details__field">
+              <mat-label>Auxiliary console type</mat-label>
+              <mat-select>
+                @for (type of auxConsoleTypes; track type) {
+                  <mat-option [value]="type">
+                    {{ type }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <mat-checkbox>Auto start console</mat-checkbox>
+          </form>
+        }
+      </section>
+
+      <section class="qemu-template-details__form-card">
+        <div class="qemu-template-details__section-header" (click)="toggleSection('hdd')">
+          <h3 class="qemu-template-details__section-title">HDD</h3>
+          <mat-icon class="qemu-template-details__expand-icon">{{ hddExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        @if (hddExpanded) {
+          <div class="qemu-template-details__disk-grid">
+            <div class="qemu-template-details__disk-item">
+              <h4 class="qemu-template-details__disk-title">HDA (Primary Master)</h4>
               <mat-form-field appearance="fill" class="qemu-template-details__field">
-                <mat-label>Perecentage of CPU allowed</mat-label>
-                <input matInput type="number" placeholder="Perecentage of CPU allowed" />
+                <mat-label>Disk image</mat-label>
+                <input matInput placeholder="Disk image" />
               </mat-form-field>
-            }
-            <mat-form-field appearance="fill" class="qemu-template-details__field">
-              <mat-label>Process priority</mat-label>
-              <mat-select>
-                @for (priority of priorities; track priority) {
-                  <mat-option [value]="priority">
-                    {{ priority }}
-                  </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
+              <mat-form-field appearance="fill" class="qemu-template-details__field">
+                <mat-label>Disk interface</mat-label>
+                <mat-select>
+                  @for (interface of diskInterfaces; track interface) {
+                    <mat-option [value]="interface">
+                      {{ interface }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="qemu-template-details__disk-item">
+              <h4 class="qemu-template-details__disk-title">HDB (Primary Slave)</h4>
+              <mat-form-field appearance="fill" class="qemu-template-details__field">
+                <mat-label>Disk image</mat-label>
+                <input matInput placeholder="Disk image" />
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="qemu-template-details__field">
+                <mat-label>Disk interface</mat-label>
+                <mat-select>
+                  @for (interface of diskInterfaces; track interface) {
+                    <mat-option [value]="interface">
+                      {{ interface }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="qemu-template-details__disk-item">
+              <h4 class="qemu-template-details__disk-title">HDC (Secondary Master)</h4>
+              <mat-form-field appearance="fill" class="qemu-template-details__field">
+                <mat-label>Disk image</mat-label>
+                <input matInput placeholder="Disk image" />
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="qemu-template-details__field">
+                <mat-label>Disk interface</mat-label>
+                <mat-select>
+                  @for (interface of diskInterfaces; track interface) {
+                    <mat-option [value]="interface">
+                      {{ interface }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="qemu-template-details__disk-item">
+              <h4 class="qemu-template-details__disk-title">HDD (Secondary Slave)</h4>
+              <mat-form-field appearance="fill" class="qemu-template-details__field">
+                <mat-label>Disk image</mat-label>
+                <input matInput placeholder="Disk image" />
+              </mat-form-field>
+              <mat-form-field appearance="fill" class="qemu-template-details__field">
+                <mat-label>Disk interface</mat-label>
+                <mat-select>
+                  @for (interface of diskInterfaces; track interface) {
+                    <mat-option [value]="interface">
+                      {{ interface }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
           </div>
-
-          <div class="qemu-template-details__subsection">
-            <h4 class="qemu-template-details__subsection-title">Additional settings</h4>
-            <mat-form-field appearance="fill" class="qemu-template-details__field">
-              <mat-label>Custom Qemu binary path</mat-label>
-              <input matInput type="text" placeholder="Custom Qemu binary path" />
-            </mat-form-field>
-
-            <mat-form-field appearance="fill" class="qemu-template-details__field">
-              <mat-label>Options</mat-label>
-              <input matInput type="text" placeholder="Options" />
-            </mat-form-field>
-
-            <mat-checkbox>Use as a linked base VM</mat-checkbox>
-            <mat-checkbox>Enable the Trusted Platform Module (TPM)</mat-checkbox>
-            <mat-checkbox>Enable the UEFI boot mode</mat-checkbox>
-          </div>
-        </div>
+        }
       </section>
 
       <section class="qemu-template-details__form-card">
-        <h3 class="qemu-template-details__section-title">Usage</h3>
-        <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--full">
-          <mat-label>Usage notes</mat-label>
-          <textarea matInput type="text"></textarea>
-        </mat-form-field>
+        <div class="qemu-template-details__section-header" (click)="toggleSection('cddvd')">
+          <h3 class="qemu-template-details__section-title">CD/DVD</h3>
+          <mat-icon class="qemu-template-details__expand-icon">{{ cdDvdExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        @if (cdDvdExpanded) {
+          <div class="qemu-template-details__file-row">
+            <input type="file" #filecdrom class="qemu-template-details__file-input" (change)="uploadCdromImageFile($event)" />
+            <button mat-raised-button color="primary" (click)="filecdrom.click()" class="qemu-template-details__browse-btn">
+              Browse
+            </button>
+            <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
+              <mat-label>Image</mat-label>
+              <input matInput type="text" placeholder="Image" />
+            </mat-form-field>
+          </div>
+        }
+      </section>
+
+      <section class="qemu-template-details__form-card">
+        <div class="qemu-template-details__section-header" (click)="toggleSection('network')">
+          <h3 class="qemu-template-details__section-title">Network</h3>
+          <mat-icon class="qemu-template-details__expand-icon">{{ networkExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        @if (networkExpanded) {
+          <form class="qemu-template-details__form">
+            <mat-form-field appearance="fill" class="qemu-template-details__field">
+              <mat-label>Adapters</mat-label>
+              <input matInput type="number" min="0" placeholder="Adapters" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="qemu-template-details__field">
+              <mat-label>First port name</mat-label>
+              <input matInput type="text" placeholder="First port name" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="qemu-template-details__field">
+              <mat-label>Name format</mat-label>
+              <input matInput type="text" placeholder="Name format" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="qemu-template-details__field">
+              <mat-label>Segment size</mat-label>
+              <input matInput type="number" min="0" placeholder="Segment size" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="qemu-template-details__field">
+              <mat-label>Base MAC</mat-label>
+              <input matInput type="text" placeholder="Base MAC" />
+            </mat-form-field>
+
+            <mat-form-field appearance="fill" class="qemu-template-details__field">
+              <mat-label>Type</mat-label>
+              <mat-select>
+                @for (type of networkTypes; track type.value) {
+                  <mat-option [value]="type.value">{{ type.name }} ({{ type.value }})</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <button mat-button class="qemu-template-details__config-btn" (click)="setCustomAdaptersConfiguratorState(true)">
+              Configure custom adapters
+            </button>
+
+            <mat-checkbox>Replicate network connection state</mat-checkbox>
+          </form>
+        }
+      </section>
+
+      <section class="qemu-template-details__form-card">
+        <div class="qemu-template-details__section-header" (click)="toggleSection('advanced')">
+          <h3 class="qemu-template-details__section-title">Advanced</h3>
+          <mat-icon class="qemu-template-details__expand-icon">{{ advancedExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        @if (advancedExpanded) {
+          <div class="qemu-template-details__form">
+            <div class="qemu-template-details__subsection">
+              <h4 class="qemu-template-details__subsection-title">Linux boot specific settings</h4>
+              <div class="qemu-template-details__file-row">
+                <input type="file" #fileinitrd class="qemu-template-details__file-input" (change)="uploadInitrdFile($event)" />
+                <button mat-raised-button color="primary" (click)="fileinitrd.click()" class="qemu-template-details__browse-btn">
+                  Browse
+                </button>
+                <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
+                  <mat-label>Initial RAM disk (initrd)</mat-label>
+                  <input matInput type="text" placeholder="Initial RAM disk (initrd)" />
+                </mat-form-field>
+              </div>
+
+              <div class="qemu-template-details__file-row">
+                <input type="file" #filekernelimage class="qemu-template-details__file-input" (change)="uploadKernelImageFile($event)" />
+                <button mat-raised-button color="primary" (click)="filekernelimage.click()" class="qemu-template-details__browse-btn">
+                  Browse
+                </button>
+                <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
+                  <mat-label>Kernel image</mat-label>
+                  <input matInput type="text" placeholder="Kernel image" />
+                </mat-form-field>
+              </div>
+
+              <mat-form-field appearance="fill" class="qemu-template-details__field">
+                <mat-label>Kernel command line</mat-label>
+                <input matInput type="text" placeholder="Kernel command line" />
+              </mat-form-field>
+            </div>
+
+            <div class="qemu-template-details__subsection">
+              <h4 class="qemu-template-details__subsection-title">Bios</h4>
+              <div class="qemu-template-details__file-row">
+                <input type="file" #filebios class="qemu-template-details__file-input" (change)="uploadBiosFile($event)" />
+                <button mat-raised-button color="primary" (click)="filebios.click()" class="qemu-template-details__browse-btn">
+                  Browse
+                </button>
+                <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--flex">
+                  <mat-label>Bios image</mat-label>
+                  <input matInput type="text" placeholder="Bios image" />
+                </mat-form-field>
+              </div>
+            </div>
+
+            <div class="qemu-template-details__subsection">
+              <h4 class="qemu-template-details__subsection-title">Optimization</h4>
+              <mat-checkbox [(ngModel)]="activateCpuThrottling">Activate CPU throttling</mat-checkbox>
+              @if (activateCpuThrottling) {
+                <mat-form-field appearance="fill" class="qemu-template-details__field">
+                  <mat-label>Perecentage of CPU allowed</mat-label>
+                  <input matInput type="number" placeholder="Perecentage of CPU allowed" />
+                </mat-form-field>
+              }
+              <mat-form-field appearance="fill" class="qemu-template-details__field">
+                <mat-label>Process priority</mat-label>
+                <mat-select>
+                  @for (priority of priorities; track priority) {
+                    <mat-option [value]="priority">
+                      {{ priority }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="qemu-template-details__subsection">
+              <h4 class="qemu-template-details__subsection-title">Additional settings</h4>
+              <mat-form-field appearance="fill" class="qemu-template-details__field">
+                <mat-label>Custom Qemu binary path</mat-label>
+                <input matInput type="text" placeholder="Custom Qemu binary path" />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="qemu-template-details__field">
+                <mat-label>Options</mat-label>
+                <input matInput type="text" placeholder="Options" />
+              </mat-form-field>
+
+              <mat-checkbox>Use as a linked base VM</mat-checkbox>
+              <mat-checkbox>Enable the Trusted Platform Module (TPM)</mat-checkbox>
+              <mat-checkbox>Enable the UEFI boot mode</mat-checkbox>
+            </div>
+          </div>
+        }
+      </section>
+
+      <section class="qemu-template-details__form-card">
+        <div class="qemu-template-details__section-header" (click)="toggleSection('usage')">
+          <h3 class="qemu-template-details__section-title">Usage</h3>
+          <mat-icon class="qemu-template-details__expand-icon">{{ usageExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        @if (usageExpanded) {
+          <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--full">
+            <mat-label>Usage notes</mat-label>
+            <textarea matInput type="text"></textarea>
+          </mat-form-field>
+        }
       </section>
 
       <div class="qemu-template-details__actions">

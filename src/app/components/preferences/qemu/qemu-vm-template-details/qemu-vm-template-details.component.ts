@@ -83,6 +83,14 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   selectedPlatform: string;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
+  // Section collapse states
+  generalSettingsExpanded: boolean = false;
+  hddExpanded: boolean = false;
+  cdDvdExpanded: boolean = false;
+  networkExpanded: boolean = false;
+  advancedExpanded: boolean = false;
+  usageExpanded: boolean = false;
+
   readonly customAdaptersConfigurator = viewChild<CustomAdaptersComponent>('customAdaptersConfigurator');
 
   constructor() {
@@ -242,6 +250,29 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
     if (index >= 0) {
       this.qemuTemplate.tags.splice(index, 1);
+    }
+  }
+
+  toggleSection(section: string): void {
+    switch (section) {
+      case 'general':
+        this.generalSettingsExpanded = !this.generalSettingsExpanded;
+        break;
+      case 'hdd':
+        this.hddExpanded = !this.hddExpanded;
+        break;
+      case 'cddvd':
+        this.cdDvdExpanded = !this.cdDvdExpanded;
+        break;
+      case 'network':
+        this.networkExpanded = !this.networkExpanded;
+        break;
+      case 'advanced':
+        this.advancedExpanded = !this.advancedExpanded;
+        break;
+      case 'usage':
+        this.usageExpanded = !this.usageExpanded;
+        break;
     }
   }
 }
