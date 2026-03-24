@@ -220,21 +220,13 @@ export class ThemeService {
       existingLink.remove();
     }
 
-    // Remove all theme-related classes from html and body
+    // Remove all theme-related classes from html
     const htmlElement = this.document.documentElement;
-    const bodyElement = this.document.body;
 
-    htmlElement.classList.remove('theme-deeppurple-amber', 'theme-indigo-pink', 'theme-pink-bluegrey', 'theme-purple-green', 'theme-dark', 'theme-light', 'dark-theme', 'light-theme', 'darkTheme', 'lightTheme');
-    bodyElement.classList.remove('darkTheme', 'lightTheme');
-
-    // Determine theme type
-    const isDark = this.isDarkTheme(theme);
+    htmlElement.classList.remove('theme-deeppurple-amber', 'theme-indigo-pink', 'theme-pink-bluegrey', 'theme-purple-green');
 
     // Add theme class to html
     htmlElement.classList.add(`theme-${theme}`);
-    htmlElement.classList.add(`theme-${isDark ? 'dark' : 'light'}`);
-    htmlElement.classList.add(isDark ? 'dark-theme' : 'light-theme');
-    bodyElement.classList.add(isDark ? 'darkTheme' : 'lightTheme');
 
     // Create and append new theme link
     this.themeLinkElement = this.document.createElement('link');
