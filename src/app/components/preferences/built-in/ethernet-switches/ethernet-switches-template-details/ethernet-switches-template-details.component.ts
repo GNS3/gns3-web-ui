@@ -70,6 +70,12 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
           if (!this.ethernetSwitchTemplate.tags) {
             this.ethernetSwitchTemplate.tags = [];
           }
+          // Fill form with template data
+          this.inputForm.patchValue({
+            templateName: this.ethernetSwitchTemplate.name || '',
+            defaultName: this.ethernetSwitchTemplate.default_name_format || '',
+            symbol: this.ethernetSwitchTemplate.symbol || '',
+          });
           this.cd.markForCheck();
         });
     });
