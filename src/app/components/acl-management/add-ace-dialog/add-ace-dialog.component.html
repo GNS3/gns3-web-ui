@@ -1,109 +1,107 @@
 <h1 mat-dialog-title>Create new ACE</h1>
-<div mat-dialog-content>
-  <form [formGroup]="addAceForm" class="ace-form">
-    <div class="ace-form__tree-panel">
-      <cdk-tree [dataSource]="treeDataSource" [treeControl]="treeControl">
-        <cdk-nested-tree-node *cdkTreeNodeDef="let node" class="ace-form__tree-node">
-          <div [class.selected]="selectedEndpoint && node.endpoint === selectedEndpoint.endpoint">
-            <button mat-icon-button disabled></button>
-            {{node.name}}
-            <button mat-icon-button (click)="endpointSelection(node)">
-              <div *ngIf="!selectedEndpoint || node.endpoint !== selectedEndpoint.endpoint">
-                <mat-icon class="align-middle" style="color: #696969">panorama_fish_eye</mat-icon>
-              </div>
-              <div *ngIf="selectedEndpoint && node.endpoint === selectedEndpoint.endpoint" >
-                <mat-icon class="align-middle">check_circle</mat-icon>
-              </div>
-            </button>
-          </div>
-        </cdk-nested-tree-node>
-
-        <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasChild" class="ace-form__tree-node" >
-          <div [class.selected]="selectedEndpoint && node.endpoint === selectedEndpoint.endpoint">
-            <button mat-icon-button [attr.aria-label]="'Toggle ' + node.name" cdkTreeNodeToggle>
-              <mat-icon class="mat-icon-rtl-mirror">
-                {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-              </mat-icon>
-            </button>
-            {{node.name}}
-            <button mat-icon-button (click)="endpointSelection(node)">
-              <div *ngIf="!selectedEndpoint || node.endpoint !== selectedEndpoint.endpoint">
-                <mat-icon class="align-middle" style="color: #696969">panorama_fish_eye</mat-icon>
-              </div>
-              <div *ngIf="selectedEndpoint && node.endpoint === selectedEndpoint.endpoint">
-                <mat-icon class="align-middle">check_circle</mat-icon>
-              </div>
-            </button>
-          </div>
-
-          <div [class.example-tree-invisible]="!treeControl.isExpanded(node)">
-            <ng-container cdkTreeNodeOutlet></ng-container>
-          </div>
-        </cdk-nested-tree-node>
-      </cdk-tree>
-    </div>
-    <mat-divider [vertical]="true"  style="height: auto;"></mat-divider>
-
-    <div class="ace-form__selection-panel">
-      <div class="typeSelect">
-        <mat-select placeholder="User/Group" formControlName="type">
-          @for (t of types; track t) {
-            <mat-option [value]="t">{{t.charAt(0).toUpperCase() + t.slice(1)}}</mat-option>
-          }
-        </mat-select>
-      </div>
-
-      @if (form.type.value === 'user') {
-        <app-autocomplete *ngIf="form.type.value === 'user'"
-                          [data]="users"
-                          [eltType]="'Users'"
-                          [displayFn]="displayFnUser"
-                          [filterFn]="_filterUser"
-                          (onSelection)="userSelection($event)">
-        </app-autocomplete>
-      }
-
-      @if (form.type.value === 'group') {
-        <app-autocomplete *ngIf="form.type.value === 'group'"
-                          [data]="groups"
-                          [eltType]="'Groups'"
-                          [displayFn]="displayFn"
-                          [filterFn]="_filter"
-                          (onSelection)="groupSelection($event)">
-        </app-autocomplete>
-      }
-
-      <app-autocomplete
-        [data]="roles"
-        [eltType]="'Roles'"
-        [displayFn]="displayFn"
-        [filterFn]="_filter"
-        (onSelection)="roleSelection($event)">
-      </app-autocomplete>
-
-      <div class="ace-form__checkbox-row">
-        <div class="ace-form__checkbox-left">
-          <mat-checkbox formControlName="propagate">Propagate</mat-checkbox>
-        </div>
-        <mat-divider [vertical]="true" class="ace-form__divider-vertical"></mat-divider>
-        <div class="ace-form__checkbox-right">
-          <button class="ace-form__action-btn"
-                  [class.ace-form__action-btn--allow]="allowed"
-                  [class.ace-form__action-btn--deny]="!allowed"
-                  mat-button
-                  (click)="changeAllowed()">
-            {{allowed ? 'ALLOWED' : 'DENY'}}
+<form [formGroup]="addAceForm" class="ace-form">
+  <div class="ace-form__tree-panel">
+    <cdk-tree [dataSource]="treeDataSource" [treeControl]="treeControl">
+      <cdk-nested-tree-node *cdkTreeNodeDef="let node" class="ace-form__tree-node">
+        <div [class.selected]="selectedEndpoint && node.endpoint === selectedEndpoint.endpoint">
+          <button mat-icon-button disabled></button>
+          {{node.name}}
+          <button mat-icon-button (click)="endpointSelection(node)">
+            <div *ngIf="!selectedEndpoint || node.endpoint !== selectedEndpoint.endpoint">
+              <mat-icon class="align-middle" style="color: #696969">panorama_fish_eye</mat-icon>
+            </div>
+            <div *ngIf="selectedEndpoint && node.endpoint === selectedEndpoint.endpoint" >
+              <mat-icon class="align-middle">check_circle</mat-icon>
+            </div>
           </button>
         </div>
+      </cdk-nested-tree-node>
+
+      <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasChild" class="ace-form__tree-node" >
+        <div [class.selected]="selectedEndpoint && node.endpoint === selectedEndpoint.endpoint">
+          <button mat-icon-button [attr.aria-label]="'Toggle ' + node.name" cdkTreeNodeToggle>
+            <mat-icon class="mat-icon-rtl-mirror">
+              {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+            </mat-icon>
+          </button>
+          {{node.name}}
+          <button mat-icon-button (click)="endpointSelection(node)">
+            <div *ngIf="!selectedEndpoint || node.endpoint !== selectedEndpoint.endpoint">
+              <mat-icon class="align-middle" style="color: #696969">panorama_fish_eye</mat-icon>
+            </div>
+            <div *ngIf="selectedEndpoint && node.endpoint === selectedEndpoint.endpoint">
+              <mat-icon class="align-middle">check_circle</mat-icon>
+            </div>
+          </button>
+        </div>
+
+        <div [class.example-tree-invisible]="!treeControl.isExpanded(node)">
+          <ng-container cdkTreeNodeOutlet></ng-container>
+        </div>
+      </cdk-nested-tree-node>
+    </cdk-tree>
+  </div>
+  <mat-divider [vertical]="true" class="ace-form__divider"></mat-divider>
+
+  <div class="ace-form__selection-panel">
+    <div class="typeSelect">
+      <mat-select placeholder="User/Group" formControlName="type">
+        @for (t of types; track t) {
+          <mat-option [value]="t">{{t.charAt(0).toUpperCase() + t.slice(1)}}</mat-option>
+        }
+      </mat-select>
+    </div>
+
+    @if (form.type.value === 'user') {
+      <app-autocomplete *ngIf="form.type.value === 'user'"
+                        [data]="users"
+                        [eltType]="'Users'"
+                        [displayFn]="displayFnUser"
+                        [filterFn]="_filterUser"
+                        (onSelection)="userSelection($event)">
+      </app-autocomplete>
+    }
+
+    @if (form.type.value === 'group') {
+      <app-autocomplete *ngIf="form.type.value === 'group'"
+                        [data]="groups"
+                        [eltType]="'Groups'"
+                        [displayFn]="displayFn"
+                        [filterFn]="_filter"
+                        (onSelection)="groupSelection($event)">
+      </app-autocomplete>
+    }
+
+    <app-autocomplete
+      [data]="roles"
+      [eltType]="'Roles'"
+      [displayFn]="displayFn"
+      [filterFn]="_filter"
+      (onSelection)="roleSelection($event)">
+    </app-autocomplete>
+
+    <div class="ace-form__checkbox-row">
+      <div class="ace-form__checkbox-left">
+        <mat-checkbox formControlName="propagate">Propagate</mat-checkbox>
+      </div>
+      <mat-divider [vertical]="true" class="ace-form__divider-vertical"></mat-divider>
+      <div class="ace-form__checkbox-right">
+        <button class="ace-form__action-btn"
+                [class.ace-form__action-btn--allow]="allowed"
+                [class.ace-form__action-btn--deny]="!allowed"
+                mat-button
+                (click)="changeAllowed()">
+          {{allowed ? 'ALLOWED' : 'DENY'}}
+        </button>
       </div>
     </div>
-  </form>
-</div>
 
-<div mat-dialog-actions align="end" class="button-div">
-  <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary"
-          [disabled]="!addAceForm.valid">
-    Add ACE
-  </button>
-</div>
+    <div mat-dialog-actions class="ace-form__actions">
+      <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
+      <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary"
+              [disabled]="!addAceForm.valid">
+        Add ACE
+      </button>
+    </div>
+  </div>
+</form>

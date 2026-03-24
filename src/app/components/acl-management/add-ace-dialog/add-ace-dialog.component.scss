@@ -1,18 +1,31 @@
 .ace-form {
   display: flex;
   width: 100%;
+  height: 400px;
+  overflow-x: hidden;
 }
 
-.button-div {
-  padding: 16px 0 0;
+.ace-form__tree-panel {
+  flex: 1;
+  overflow-y: auto;
+  min-width: 0;
+  max-height: 400px;
+  color: var(--mat-sys-on-surface);
 }
 
-.allow {
-  background-color: green;
+.ace-form__divider {
+  flex-shrink: 0;
+  margin: 0 16px;
+  height: auto;
+  align-self: stretch;
 }
 
-.deny {
-  background-color: darkred;
+.ace-form__selection-panel {
+  flex: 0 0 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-x: hidden;
 }
 
 .typeSelect {
@@ -25,29 +38,12 @@
   display: none;
 }
 
-.example-tree ul,
-.example-tree li {
-  margin-top: 0;
-  margin-bottom: 0;
-  list-style-type: none;
-}
-
-.example-tree-node {
+.ace-form__tree-node {
   display: block;
 }
 
-.example-tree-node .example-tree-node {
+.ace-form__tree-node .ace-form__tree-node {
   padding-left: 40px;
-}
-
-.ace-form__tree-panel {
-  flex: 0 0 75%;
-  overflow-y: auto;
-}
-
-.ace-form__selection-panel {
-  flex: 0 0 calc(25% - 20px);
-  margin-left: 20px;
 }
 
 .ace-form__checkbox-row {
@@ -83,4 +79,12 @@
     background-color: darkred;
     color: white;
   }
+}
+
+.ace-form__actions {
+  margin-top: auto;
+  padding-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
 }
