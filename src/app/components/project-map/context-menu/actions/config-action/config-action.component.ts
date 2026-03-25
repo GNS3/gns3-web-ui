@@ -67,8 +67,12 @@ export class ConfigActionComponent {
       this.dialogRef = this.dialog.open(ConfiguratorDialogAtmSwitchComponent, this.conf);
     }
 
-    let instance = this.dialogRef.componentInstance;
-    instance.controller = this.controller();
-    instance.node = node;
+    // Wait for dialog to fully open before setting properties
+    // This ensures ngOnInit() has completed and properties are available
+    this.dialogRef.afterOpened().subscribe(() => {
+      const instance = this.dialogRef.componentInstance;
+      instance.controller = this.controller();
+      instance.node = node;
+    });
   }
 }
