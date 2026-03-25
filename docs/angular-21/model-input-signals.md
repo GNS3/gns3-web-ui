@@ -277,17 +277,17 @@ usageExpanded = false;
 
 ### Completed
 - [x] Docker Template Details (`docker-template-details`)
+- [x] Cloud Nodes Template Details (`cloud-nodes-template-details`)
+- [x] Ethernet Hubs Template Details (`ethernet-hubs-template-details`)
+- [x] Ethernet Switches Template Details (`ethernet-switches-template-details`)
+- [x] IOU Template Details (`iou-template-details`)
+- [x] QEMU VM Template Details (`qemu-vm-template-details`)
 
 ### Pending Migration (preferences)
 
 The following components in `src/app/components/preferences/` still use `ngModel` and need to be migrated:
 
 #### Template Details (view/edit)
-- `cloud-nodes-template-details`
-- `ethernet-hubs-template-details`
-- `ethernet-switches-template-details`
-- `iou-template-details`
-- `qemu-vm-template-details`
 - `virtual-box-template-details`
 - `vmware-template-details`
 - `vpcs-template-details`

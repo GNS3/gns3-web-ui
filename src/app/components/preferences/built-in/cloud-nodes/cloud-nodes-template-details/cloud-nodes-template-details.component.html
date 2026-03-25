@@ -13,31 +13,32 @@
 
   @if (cloudNodeTemplate) {
     <main class="cloud-nodes-details__content">
-      <mat-accordion class="cloud-nodes-details__accordion">
-        <mat-expansion-panel class="cloud-nodes-details__panel">
-          <mat-expansion-panel-header class="cloud-nodes-details__panel-header">
-            <mat-panel-title class="cloud-nodes-details__panel-title">General</mat-panel-title>
-          </mat-expansion-panel-header>
-          <div class="cloud-nodes-details__form">
+      <section class="cloud-nodes-details__form-card">
+        <div class="cloud-nodes-details__section-header" (click)="toggleSection('general')">
+          <h3 class="cloud-nodes-details__section-title">General</h3>
+          <mat-icon class="cloud-nodes-details__expand-icon">{{ generalExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        @if (generalExpanded) {
+          <form class="cloud-nodes-details__form">
             <mat-form-field appearance="fill" class="cloud-nodes-details__field">
               <mat-label>Template name</mat-label>
-              <input matInput type="text" [(ngModel)]="cloudNodeTemplate.name" placeholder="Template name" />
+              <input matInput [value]="name()" (input)="name.set($event.target.value)" type="text" placeholder="Template name" />
             </mat-form-field>
             <mat-form-field appearance="fill" class="cloud-nodes-details__field">
               <mat-label>Default name format</mat-label>
-              <input matInput type="text" [(ngModel)]="cloudNodeTemplate.default_name_format" placeholder="Default name format" />
+              <input matInput [value]="defaultNameFormat()" (input)="defaultNameFormat.set($event.target.value)" type="text" placeholder="Default name format" />
             </mat-form-field>
             <div class="cloud-nodes-details__symbol-row">
               <mat-form-field appearance="fill" class="cloud-nodes-details__field cloud-nodes-details__field--flex">
                 <mat-label>Symbol</mat-label>
-                <input matInput type="text" [(ngModel)]="cloudNodeTemplate.symbol" placeholder="Symbol" />
+                <input matInput [value]="symbol()" (input)="symbol.set($event.target.value)" type="text" placeholder="Symbol" />
               </mat-form-field>
               <button mat-button class="cloud-nodes-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
             </div>
             <mat-form-field appearance="fill" class="cloud-nodes-details__field">
               <mat-label>Tags</mat-label>
               <mat-chip-grid #chipList>
-                @for (tag of cloudNodeTemplate?.tags; track tag) {
+                @for (tag of tags(); track tag) {
                   <mat-chip (removed)="removeTag(tag)">
                     {{ tag }}
                     <mat-icon matChipRemove>cancel</mat-icon>
@@ -51,15 +52,15 @@
             </mat-form-field>
             <mat-form-field appearance="fill" class="cloud-nodes-details__field">
               <mat-label>Category</mat-label>
-              <mat-select [(ngModel)]="cloudNodeTemplate.category">
-                @for (category of categories; track $index) {
-                  <mat-option [value]="category[1]">{{ category[0] }}</mat-option>
+              <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
+                @for (cat of categories; track $index) {
+                  <mat-option [value]="cat[1]">{{ cat[0] }}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
             <mat-form-field appearance="fill" class="cloud-nodes-details__field">
               <mat-label>Console type</mat-label>
-              <mat-select [(ngModel)]="cloudNodeTemplate.console_type">
+              <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
                 @for (type of consoleTypes; track type) {
                   <mat-option [value]="type">{{ type }}</mat-option>
                 }
@@ -67,23 +68,26 @@
             </mat-form-field>
             <mat-form-field appearance="fill" class="cloud-nodes-details__field">
               <mat-label>Console host</mat-label>
-              <input matInput type="text" [(ngModel)]="cloudNodeTemplate.remote_console_host" placeholder="Console host" />
+              <input matInput [value]="consoleHost()" (input)="consoleHost.set($event.target.value)" type="text" placeholder="Console host" />
             </mat-form-field>
             <mat-form-field appearance="fill" class="cloud-nodes-details__field">
               <mat-label>Console port</mat-label>
-              <input matInput type="text" [(ngModel)]="cloudNodeTemplate.remote_console_port" placeholder="Console port" />
+              <input matInput [value]="consolePort()" (input)="consolePort.set(+$event.target.value)" type="number" placeholder="Console port" />
             </mat-form-field>
             <mat-form-field appearance="fill" class="cloud-nodes-details__field">
               <mat-label>Console HTTP path</mat-label>
-              <input matInput type="text" [(ngModel)]="cloudNodeTemplate.remote_console_http_path" placeholder="Console HTTP path" />
+              <input matInput [value]="consoleHttpPath()" (input)="consoleHttpPath.set($event.target.value)" type="text" placeholder="Console HTTP path" />
             </mat-form-field>
-          </div>
-        </mat-expansion-panel>
+          </form>
+        }
+      </section>
 
-        <mat-expansion-panel class="cloud-nodes-details__panel">
-          <mat-expansion-panel-header class="cloud-nodes-details__panel-header">
-            <mat-panel-title class="cloud-nodes-details__panel-title">Ethernet interfaces</mat-panel-title>
-          </mat-expansion-panel-header>
+      <section class="cloud-nodes-details__form-card">
+        <div class="cloud-nodes-details__section-header" (click)="toggleSection('ethernet')">
+          <h3 class="cloud-nodes-details__section-title">Ethernet interfaces</h3>
+          <mat-icon class="cloud-nodes-details__expand-icon">{{ ethernetExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        @if (ethernetExpanded) {
           <div class="cloud-nodes-details__form">
             @for (port of portsMappingEthernet; track port) {
               <div class="cloud-nodes-details__port-item">{{ port.name }}</div>
@@ -91,7 +95,7 @@
             <div class="cloud-nodes-details__add-row">
               <mat-form-field appearance="fill" class="cloud-nodes-details__field cloud-nodes-details__field--flex">
                 <mat-label>Ethernet interface</mat-label>
-                <mat-select [ngModelOptions]="{ standalone: true }" [(ngModel)]="ethernetInterface">
+                <mat-select [value]="ethernetInterface()" (selectionChange)="ethernetInterface.set($event.value)">
                   @for (type of ethernetInterfaces; track type) {
                     <mat-option [value]="type">{{ type }}</mat-option>
                   }
@@ -100,12 +104,15 @@
               <button mat-button class="cloud-nodes-details__add-btn" (click)="onAddEthernetInterface()">Add</button>
             </div>
           </div>
-        </mat-expansion-panel>
+        }
+      </section>
 
-        <mat-expansion-panel class="cloud-nodes-details__panel">
-          <mat-expansion-panel-header class="cloud-nodes-details__panel-header">
-            <mat-panel-title class="cloud-nodes-details__panel-title">TAP interfaces</mat-panel-title>
-          </mat-expansion-panel-header>
+      <section class="cloud-nodes-details__form-card">
+        <div class="cloud-nodes-details__section-header" (click)="toggleSection('tap')">
+          <h3 class="cloud-nodes-details__section-title">TAP interfaces</h3>
+          <mat-icon class="cloud-nodes-details__expand-icon">{{ tapExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        @if (tapExpanded) {
           <div class="cloud-nodes-details__form">
             @for (port of portsMappingTap; track port) {
               <div class="cloud-nodes-details__port-item">{{ port.name }}</div>
@@ -113,17 +120,20 @@
             <div class="cloud-nodes-details__add-row">
               <mat-form-field appearance="fill" class="cloud-nodes-details__field cloud-nodes-details__field--flex">
                 <mat-label>TAP interface</mat-label>
-                <input matInput type="text" [(ngModel)]="tapInterface" placeholder="TAP interface" />
+                <input matInput [value]="tapInterface()" (input)="tapInterface.set($event.target.value)" type="text" placeholder="TAP interface" />
               </mat-form-field>
               <button mat-button class="cloud-nodes-details__add-btn" (click)="onAddTapInterface()">Add</button>
             </div>
           </div>
-        </mat-expansion-panel>
+        }
+      </section>
 
-        <mat-expansion-panel class="cloud-nodes-details__panel">
-          <mat-expansion-panel-header class="cloud-nodes-details__panel-header">
-            <mat-panel-title class="cloud-nodes-details__panel-title">UDP tunnels</mat-panel-title>
-          </mat-expansion-panel-header>
+      <section class="cloud-nodes-details__form-card">
+        <div class="cloud-nodes-details__section-header" (click)="toggleSection('udp')">
+          <h3 class="cloud-nodes-details__section-title">UDP tunnels</h3>
+          <mat-icon class="cloud-nodes-details__expand-icon">{{ udpExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        @if (udpExpanded) {
           <div class="cloud-nodes-details__form">
             @if (dataSourceUdp.length) {
               <table mat-table [dataSource]="dataSourceUdp" class="cloud-nodes-details__table">
@@ -136,7 +146,7 @@
                   <td mat-cell matCellDef="let element">{{ element.lport }}</td>
                 </ng-container>
                 <ng-container matColumnDef="rhost">
-                  <th mat-header-cell matHeaderCellDef>Type</th>
+                  <th mat-header-cell matHeaderCellDef>Remote host</th>
                   <td mat-cell matCellDef="let element">{{ element.rhost }}</td>
                 </ng-container>
                 <ng-container matColumnDef="rport">
@@ -149,36 +159,39 @@
             }
             <mat-form-field appearance="fill" class="cloud-nodes-details__field">
               <mat-label>Name</mat-label>
-              <input matInput type="text" [(ngModel)]="newPort.name" placeholder="Name" />
+              <input matInput [value]="newPortName()" (input)="newPortName.set($event.target.value)" type="text" placeholder="Name" />
             </mat-form-field>
             <mat-form-field appearance="fill" class="cloud-nodes-details__field">
               <mat-label>Local port</mat-label>
-              <input matInput type="number" min="1" max="65535" [(ngModel)]="newPort.lport" placeholder="Local port" />
+              <input matInput [value]="newPortLport()" (input)="newPortLport.set(+$event.target.value)" type="number" min="1" max="65535" placeholder="Local port" />
             </mat-form-field>
             <mat-form-field appearance="fill" class="cloud-nodes-details__field">
               <mat-label>Remote host</mat-label>
-              <input matInput type="text" [(ngModel)]="newPort.rhost" placeholder="Remote host" />
+              <input matInput [value]="newPortRhost()" (input)="newPortRhost.set($event.target.value)" type="text" placeholder="Remote host" />
             </mat-form-field>
             <mat-form-field appearance="fill" class="cloud-nodes-details__field">
               <mat-label>Remote port</mat-label>
-              <input matInput type="number" min="1" max="65535" [(ngModel)]="newPort.rport" placeholder="Remote port" />
+              <input matInput [value]="newPortRport()" (input)="newPortRport.set(+$event.target.value)" type="number" min="1" max="65535" placeholder="Remote port" />
             </mat-form-field>
             <button mat-button class="cloud-nodes-details__add-btn" (click)="onAddUdpInterface()">Add</button>
           </div>
-        </mat-expansion-panel>
+        }
+      </section>
 
-        <mat-expansion-panel class="cloud-nodes-details__panel">
-          <mat-expansion-panel-header class="cloud-nodes-details__panel-header">
-            <mat-panel-title class="cloud-nodes-details__panel-title">Usage</mat-panel-title>
-          </mat-expansion-panel-header>
+      <section class="cloud-nodes-details__form-card">
+        <div class="cloud-nodes-details__section-header" (click)="toggleSection('usage')">
+          <h3 class="cloud-nodes-details__section-title">Usage</h3>
+          <mat-icon class="cloud-nodes-details__expand-icon">{{ usageExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+        </div>
+        @if (usageExpanded) {
           <div class="cloud-nodes-details__form">
-            <mat-form-field appearance="fill" class="cloud-nodes-details__field">
+            <mat-form-field appearance="fill" class="cloud-nodes-details__field cloud-nodes-details__field--full">
               <mat-label>Usage</mat-label>
-              <textarea matInput type="text" [(ngModel)]="cloudNodeTemplate.usage"></textarea>
+              <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
             </mat-form-field>
           </div>
-        </mat-expansion-panel>
-      </mat-accordion>
+        }
+      </section>
 
       <div class="cloud-nodes-details__actions">
         <button class="cloud-nodes-details__cancel-btn" (click)="goBack()" mat-button>Cancel</button>
@@ -190,7 +203,7 @@
 @if (isSymbolSelectionOpened && cloudNodeTemplate) {
   <app-symbols-menu
     [controller]="controller"
-    [symbol]="cloudNodeTemplate.symbol"
+    [symbol]="symbol()"
     (symbolChangedEmitter)="symbolChanged($event)"
   ></app-symbols-menu>
 }

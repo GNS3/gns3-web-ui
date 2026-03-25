@@ -1,15 +1,7 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject, viewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,9 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatCardModule } from '@angular/material/card';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { QemuBinary } from '@models/qemu/qemu-binary';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 import { Controller } from '@models/controller';
 import { QemuTemplate } from '@models/templates/qemu-template';
@@ -39,9 +29,7 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     RouterModule,
-    MatExpansionModule,
     MatIconModule,
     MatButtonModule,
     MatFormFieldModule,
@@ -49,7 +37,6 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
     MatSelectModule,
     MatChipsModule,
     MatCheckboxModule,
-    MatCardModule,
     CustomAdaptersComponent,
     SymbolsMenuComponent,
   ],
@@ -60,46 +47,89 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   private qemuService = inject(QemuService);
   private toasterService = inject(ToasterService);
   private configurationService = inject(QemuConfigurationService);
-  private formBuilder = inject(UntypedFormBuilder);
   private router = inject(Router);
   private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
   qemuTemplate: QemuTemplate;
-  isSymbolSelectionOpened: boolean = false;
+  isSymbolSelectionOpened = false;
   consoleTypes: string[] = [];
   auxConsoleTypes: string[] = [];
   diskInterfaces: string[] = [];
-  networkTypes = [];
-  bootPriorities = [];
-  onCloseOptions = [];
-  categories = [];
+  networkTypes: any[] = [];
+  bootPriorities: any[] = [];
+  onCloseOptions: any[] = [];
+  categories: any[] = [];
   priorities: string[] = [];
-  activateCpuThrottling: boolean = true;
-  isConfiguratorOpened: boolean = false;
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
-  generalSettingsForm: UntypedFormGroup;
   selectPlatform: string[] = [];
-  selectedPlatform: string;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
   // Section collapse states
-  generalSettingsExpanded: boolean = false;
-  hddExpanded: boolean = false;
-  cdDvdExpanded: boolean = false;
-  networkExpanded: boolean = false;
-  advancedExpanded: boolean = false;
-  usageExpanded: boolean = false;
+  generalSettingsExpanded = false;
+  hddExpanded = false;
+  cdDvdExpanded = false;
+  networkExpanded = false;
+  advancedExpanded = false;
+  usageExpanded = false;
+
+  isConfiguratorOpened = false;
 
   readonly customAdaptersConfigurator = viewChild<CustomAdaptersComponent>('customAdaptersConfigurator');
 
-  constructor() {
-    this.generalSettingsForm = this.formBuilder.group({
-      templateName: new UntypedFormControl('', Validators.required),
-      defaultName: new UntypedFormControl('', Validators.required),
-      symbol: new UntypedFormControl('', Validators.required),
-    });
-  }
+  // Model signals for form fields
+  templateName = model('');
+  defaultName = model('');
+  symbol = model('');
+  category = model('');
+  platform = model('');
+  ram = model(256);
+  cpus = model(1);
+  bootPriority = model('');
+  onClose = model('');
+  consoleType = model('');
+  auxConsoleType = model('');
+  consoleAutoStart = model(false);
+
+  // HDD fields
+  hdaDiskImage = model('');
+  hdaDiskInterface = model('');
+  hdbDiskImage = model('');
+  hdbDiskInterface = model('');
+  hdcDiskImage = model('');
+  hdcDiskInterface = model('');
+  hddDiskImage = model('');
+  hddDiskInterface = model('');
+
+  // CD/DVD
+  cdromImage = model('');
+
+  // Network
+  adapters = model(0);
+  firstPortName = model('');
+  portNameFormat = model('');
+  portSegmentSize = model(0);
+  macAddress = model('');
+  networkType = model('');
+  replicateNetworkConnectionState = model(false);
+
+  // Advanced
+  initrd = model('');
+  kernelImage = model('');
+  kernelCommandLine = model('');
+  biosImage = model('');
+  activateCpuThrottling = model(false);
+  cpuThrottling = model(0);
+  processPriority = model('');
+  qemuPath = model('');
+  options = model('');
+  linkedClone = model(false);
+  tpm = model(false);
+  uefi = model(false);
+
+  // Usage & Tags
+  usage = model('');
+  tags = model<string[]>([]);
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
@@ -115,11 +145,62 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
           this.qemuTemplate.tags = [];
         }
         this.fillCustomAdapters();
+        this.initFormFromTemplate();
         this.cd.markForCheck();
       });
     });
 
     this.selectPlatform = this.configurationService.getPlatform();
+  }
+
+  initFormFromTemplate() {
+    this.templateName.set(this.qemuTemplate.name || '');
+    this.defaultName.set(this.qemuTemplate.default_name_format || '');
+    this.symbol.set(this.qemuTemplate.symbol || '');
+    this.category.set(this.qemuTemplate.category || '');
+    this.platform.set(this.qemuTemplate.platform || '');
+    this.ram.set(this.qemuTemplate.ram || 256);
+    this.cpus.set(this.qemuTemplate.cpus || 1);
+    this.bootPriority.set(this.qemuTemplate.boot_priority || '');
+    this.onClose.set(this.qemuTemplate.on_close || '');
+    this.consoleType.set(this.qemuTemplate.console_type || '');
+    this.auxConsoleType.set(this.qemuTemplate.aux_type || '');
+    this.consoleAutoStart.set(this.qemuTemplate.console_auto_start || false);
+
+    this.hdaDiskImage.set(this.qemuTemplate.hda_disk_image || '');
+    this.hdaDiskInterface.set(this.qemuTemplate.hda_disk_interface || '');
+    this.hdbDiskImage.set(this.qemuTemplate.hdb_disk_image || '');
+    this.hdbDiskInterface.set(this.qemuTemplate.hdb_disk_interface || '');
+    this.hdcDiskImage.set(this.qemuTemplate.hdc_disk_image || '');
+    this.hdcDiskInterface.set(this.qemuTemplate.hdc_disk_interface || '');
+    this.hddDiskImage.set(this.qemuTemplate.hdd_disk_image || '');
+    this.hddDiskInterface.set(this.qemuTemplate.hdd_disk_interface || '');
+
+    this.cdromImage.set(this.qemuTemplate.cdrom_image || '');
+
+    this.adapters.set(this.qemuTemplate.adapters || 0);
+    this.firstPortName.set(this.qemuTemplate.first_port_name || '');
+    this.portNameFormat.set(this.qemuTemplate.port_name_format || '');
+    this.portSegmentSize.set(this.qemuTemplate.port_segment_size || 0);
+    this.macAddress.set(this.qemuTemplate.mac_address || '');
+    this.networkType.set(this.qemuTemplate.adapter_type || '');
+    this.replicateNetworkConnectionState.set(this.qemuTemplate.replicate_network_connection_state || false);
+
+    this.initrd.set(this.qemuTemplate.initrd || '');
+    this.kernelImage.set(this.qemuTemplate.kernel_image || '');
+    this.kernelCommandLine.set(this.qemuTemplate.kernel_command_line || '');
+    this.biosImage.set(this.qemuTemplate.bios_image || '');
+    this.activateCpuThrottling.set(this.qemuTemplate.cpu_throttling !== undefined && this.qemuTemplate.cpu_throttling > 0);
+    this.cpuThrottling.set(this.qemuTemplate.cpu_throttling || 0);
+    this.processPriority.set(this.qemuTemplate.process_priority || '');
+    this.qemuPath.set(this.qemuTemplate.qemu_path || '');
+    this.options.set(this.qemuTemplate.options || '');
+    this.linkedClone.set(this.qemuTemplate.linked_clone || false);
+    this.tpm.set(this.qemuTemplate.tpm || false);
+    this.uefi.set(this.qemuTemplate.uefi || false);
+
+    this.usage.set(this.qemuTemplate.usage || '');
+    this.tags.set(this.qemuTemplate.tags || []);
   }
 
   getConfiguration() {
@@ -133,20 +214,32 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     this.priorities = this.configurationService.getPriorities();
   }
 
-  uploadCdromImageFile(event) {
-    this.qemuTemplate.cdrom_image = event.target.files[0].name;
+  uploadCdromImageFile(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.cdromImage.set(input.files[0].name);
+    }
   }
 
-  uploadInitrdFile(event) {
-    this.qemuTemplate.initrd = event.target.files[0].name;
+  uploadInitrdFile(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.initrd.set(input.files[0].name);
+    }
   }
 
-  uploadKernelImageFile(event) {
-    this.qemuTemplate.kernel_image = event.target.files[0].name;
+  uploadKernelImageFile(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.kernelImage.set(input.files[0].name);
+    }
   }
 
-  uploadBiosFile(event) {
-    this.qemuTemplate.bios_image = event.target.files[0].name;
+  uploadBiosFile(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.biosImage.set(input.files[0].name);
+    }
   }
 
   setCustomAdaptersConfiguratorState(state: boolean) {
@@ -154,7 +247,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
     if (state) {
       this.fillCustomAdapters();
-      this.customAdaptersConfigurator().numberOfAdapters = this.qemuTemplate.adapters;
+      this.customAdaptersConfigurator().numberOfAdapters = this.adapters();
       this.customAdaptersConfigurator().adapters = [];
       this.qemuTemplate.custom_adapters.forEach((adapter: CustomAdapter) => {
         this.customAdaptersConfigurator().adapters.push({
@@ -174,7 +267,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     let copyOfAdapters = this.qemuTemplate.custom_adapters ? this.qemuTemplate.custom_adapters : [];
     this.qemuTemplate.custom_adapters = [];
 
-    for (let i = 0; i < this.qemuTemplate.adapters; i++) {
+    for (let i = 0; i < this.adapters(); i++) {
       if (copyOfAdapters[i]) {
         this.qemuTemplate.custom_adapters.push(copyOfAdapters[i]);
       } else {
@@ -191,30 +284,68 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   }
 
   onSave() {
-    if (this.generalSettingsForm.invalid) {
+    if (!this.templateName() || !this.defaultName() || !this.symbol()) {
       const missingFields: string[] = [];
-
-      if (this.generalSettingsForm.get('templateName').invalid) {
-        missingFields.push('Template name');
-      }
-      if (this.generalSettingsForm.get('defaultName').invalid) {
-        missingFields.push('Default name format');
-      }
-      if (this.generalSettingsForm.get('symbol').invalid) {
-        missingFields.push('Symbol');
-      }
-
+      if (!this.templateName()) missingFields.push('Template name');
+      if (!this.defaultName()) missingFields.push('Default name format');
+      if (!this.symbol()) missingFields.push('Symbol');
       this.toasterService.error(`Missing required fields: ${missingFields.join(', ')}`);
-    } else {
-      if (!this.activateCpuThrottling) {
-        this.qemuTemplate.cpu_throttling = 0;
-      }
-      this.fillCustomAdapters();
-
-      this.qemuService.saveTemplate(this.controller, this.qemuTemplate).subscribe((savedTemplate: QemuTemplate) => {
-        this.toasterService.success('Changes saved');
-      });
+      return;
     }
+
+    // Update qemuTemplate from model signals
+    this.qemuTemplate.name = this.templateName();
+    this.qemuTemplate.default_name_format = this.defaultName();
+    this.qemuTemplate.symbol = this.symbol();
+    this.qemuTemplate.category = this.category();
+    this.qemuTemplate.platform = this.platform();
+    this.qemuTemplate.ram = this.ram();
+    this.qemuTemplate.cpus = this.cpus();
+    this.qemuTemplate.boot_priority = this.bootPriority();
+    this.qemuTemplate.on_close = this.onClose();
+    this.qemuTemplate.console_type = this.consoleType();
+    this.qemuTemplate.aux_type = this.auxConsoleType();
+    this.qemuTemplate.console_auto_start = this.consoleAutoStart();
+
+    this.qemuTemplate.hda_disk_image = this.hdaDiskImage();
+    this.qemuTemplate.hda_disk_interface = this.hdaDiskInterface();
+    this.qemuTemplate.hdb_disk_image = this.hdbDiskImage();
+    this.qemuTemplate.hdb_disk_interface = this.hdbDiskInterface();
+    this.qemuTemplate.hdc_disk_image = this.hdcDiskImage();
+    this.qemuTemplate.hdc_disk_interface = this.hdcDiskInterface();
+    this.qemuTemplate.hdd_disk_image = this.hddDiskImage();
+    this.qemuTemplate.hdd_disk_interface = this.hddDiskInterface();
+
+    this.qemuTemplate.cdrom_image = this.cdromImage();
+
+    this.qemuTemplate.adapters = this.adapters();
+    this.qemuTemplate.first_port_name = this.firstPortName();
+    this.qemuTemplate.port_name_format = this.portNameFormat();
+    this.qemuTemplate.port_segment_size = this.portSegmentSize();
+    this.qemuTemplate.mac_address = this.macAddress();
+    this.qemuTemplate.adapter_type = this.networkType();
+    this.qemuTemplate.replicate_network_connection_state = this.replicateNetworkConnectionState();
+
+    this.qemuTemplate.initrd = this.initrd();
+    this.qemuTemplate.kernel_image = this.kernelImage();
+    this.qemuTemplate.kernel_command_line = this.kernelCommandLine();
+    this.qemuTemplate.bios_image = this.biosImage();
+    this.qemuTemplate.cpu_throttling = this.activateCpuThrottling() ? this.cpuThrottling() : 0;
+    this.qemuTemplate.process_priority = this.processPriority();
+    this.qemuTemplate.qemu_path = this.qemuPath();
+    this.qemuTemplate.options = this.options();
+    this.qemuTemplate.linked_clone = this.linkedClone();
+    this.qemuTemplate.tpm = this.tpm();
+    this.qemuTemplate.uefi = this.uefi();
+
+    this.qemuTemplate.usage = this.usage();
+    this.qemuTemplate.tags = this.tags();
+
+    this.fillCustomAdapters();
+
+    this.qemuService.saveTemplate(this.controller, this.qemuTemplate).subscribe((savedTemplate: QemuTemplate) => {
+      this.toasterService.success('Changes saved');
+    });
   }
 
   chooseSymbol() {
@@ -223,33 +354,30 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
   symbolChanged(chosenSymbol: string) {
     this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
-    this.qemuTemplate.symbol = chosenSymbol;
+    this.symbol.set(chosenSymbol);
   }
 
   addTag(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
+    const currentTags = this.tags();
 
-    if (value && this.qemuTemplate) {
-      if (!this.qemuTemplate.tags) {
-        this.qemuTemplate.tags = [];
-      }
-      this.qemuTemplate.tags.push(value);
+    if (value) {
+      this.tags.set([...currentTags, value]);
     }
 
-    // Clear the input value
     if (event.chipInput) {
       event.chipInput.clear();
     }
   }
 
   removeTag(tag: string): void {
-    if (!this.qemuTemplate.tags) {
-      return;
-    }
-    const index = this.qemuTemplate.tags.indexOf(tag);
+    const currentTags = this.tags();
+    const index = currentTags.indexOf(tag);
 
     if (index >= 0) {
-      this.qemuTemplate.tags.splice(index, 1);
+      const newTags = [...currentTags];
+      newTags.splice(index, 1);
+      this.tags.set(newTags);
     }
   }
 

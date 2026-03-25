@@ -15,21 +15,21 @@
     <main class="iou-template-details__content">
       <section class="iou-template-details__form-card">
         <h3 class="iou-template-details__section-title">General settings</h3>
-        <form [formGroup]="generalSettingsForm" class="iou-template-details__form">
+        <form class="iou-template-details__form">
           <mat-form-field appearance="fill" class="iou-template-details__field">
             <mat-label>Template name</mat-label>
-            <input matInput formControlName="templateName" type="text" placeholder="Template name" />
+            <input matInput [value]="templateName()" (input)="templateName.set($event.target.value)" type="text" placeholder="Template name" />
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="iou-template-details__field">
             <mat-label>Default name format</mat-label>
-            <input matInput formControlName="defaultName" type="text" placeholder="Default name format" />
+            <input matInput [value]="defaultName()" (input)="defaultName.set($event.target.value)" type="text" placeholder="Default name format" />
           </mat-form-field>
 
           <div class="iou-template-details__symbol-row">
             <mat-form-field appearance="fill" class="iou-template-details__field iou-template-details__field--flex">
               <mat-label>Symbol</mat-label>
-              <input matInput formControlName="symbol" type="text" placeholder="Symbol" />
+              <input matInput [value]="symbol()" (input)="symbol.set($event.target.value)" type="text" placeholder="Symbol" />
             </mat-form-field>
             <button mat-button class="iou-template-details__symbol-btn" (click)="chooseSymbol()">
               Choose symbol
@@ -39,7 +39,7 @@
           <mat-form-field appearance="fill" class="iou-template-details__field">
             <mat-label>Tags</mat-label>
             <mat-chip-grid #chipList>
-              @for (tag of iouTemplate?.tags; track tag) {
+              @for (tag of tags(); track tag) {
                 <mat-chip (removed)="removeTag(tag)">
                   {{ tag }}
                   <mat-icon matChipRemove>cancel</mat-icon>
@@ -54,10 +54,10 @@
 
           <mat-form-field appearance="fill" class="iou-template-details__field">
             <mat-label>Category</mat-label>
-            <mat-select [ngModelOptions]="{ standalone: true }">
-              @for (category of categories; track $index) {
-                <mat-option [value]="category[1]">
-                  {{ category[0] }}
+            <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
+              @for (cat of categories; track $index) {
+                <mat-option [value]="cat[1]">
+                  {{ cat[0] }}
                 </mat-option>
               }
             </mat-select>
@@ -70,30 +70,29 @@
               #file
               class="iou-template-details__file-input"
               (change)="uploadImageFile($event)"
-              ngDefaultControl
             />
             <button mat-raised-button color="primary" (click)="file.click()" class="iou-template-details__browse-btn">
               Browse
             </button>
             <mat-form-field appearance="fill" class="iou-template-details__field iou-template-details__field--flex">
               <mat-label>IOU image path</mat-label>
-              <input matInput formControlName="path" type="text" placeholder="IOU image path" />
+              <input matInput [value]="path()" (input)="path.set($event.target.value)" type="text" placeholder="IOU image path" />
             </mat-form-field>
           </div>
 
           <mat-form-field appearance="fill" class="iou-template-details__field">
             <mat-label>Startup config</mat-label>
-            <input matInput formControlName="initialConfig" type="text" placeholder="Startup config" />
+            <input matInput [value]="initialConfig()" (input)="initialConfig.set($event.target.value)" type="text" placeholder="Startup config" />
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="iou-template-details__field">
             <mat-label>Private config</mat-label>
-            <input matInput type="text" [ngModelOptions]="{ standalone: true }" placeholder="Private config" />
+            <input matInput [value]="privateConfig()" (input)="privateConfig.set($event.target.value)" type="text" placeholder="Private config" />
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="iou-template-details__field">
             <mat-label>Console type</mat-label>
-            <mat-select>
+            <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
               @for (type of consoleTypes; track type) {
                 <mat-option [value]="type">
                   {{ type }}
@@ -102,22 +101,22 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-checkbox> Auto start console </mat-checkbox>
-          <mat-checkbox> Enable layer 1 keepalive messages (non-functional) </mat-checkbox>
-          <mat-checkbox> Use default IOU values for memories </mat-checkbox>
+          <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)"> Auto start console </mat-checkbox>
+          <mat-checkbox [checked]="l1Keepalives()" (change)="l1Keepalives.set($event.checked)"> Enable layer 1 keepalive messages (non-functional) </mat-checkbox>
+          <mat-checkbox [checked]="useDefaultIouValues()" (change)="useDefaultIouValues.set($event.checked)"> Use default IOU values for memories </mat-checkbox>
 
-          @if (!iouTemplate.use_default_iou_values) {
+          @if (!useDefaultIouValues()) {
             <mat-form-field appearance="fill" class="iou-template-details__field">
               <mat-label>RAM size</mat-label>
-              <input matInput type="number" min="1" placeholder="RAM size" />
+              <input matInput [value]="ram()" (input)="ram.set(+$event.target.value)" type="number" min="1" placeholder="RAM size" />
               <span matSuffix>MB</span>
             </mat-form-field>
           }
 
-          @if (!iouTemplate.use_default_iou_values) {
+          @if (!useDefaultIouValues()) {
             <mat-form-field appearance="fill" class="iou-template-details__field">
               <mat-label>NVRAM size</mat-label>
-              <input matInput type="number" min="1" placeholder="NVRAM size" />
+              <input matInput [value]="nvram()" (input)="nvram.set(+$event.target.value)" type="number" min="1" placeholder="NVRAM size" />
               <span matSuffix>KB</span>
             </mat-form-field>
           }
@@ -126,15 +125,15 @@
 
       <section class="iou-template-details__form-card">
         <h3 class="iou-template-details__section-title">Network</h3>
-        <form [formGroup]="networkForm" class="iou-template-details__form">
+        <form class="iou-template-details__form">
           <mat-form-field appearance="fill" class="iou-template-details__field">
             <mat-label>Ethernet adapters</mat-label>
-            <input matInput formControlName="ethernetAdapters" type="number" placeholder="Ethernet adapters" />
+            <input matInput [value]="ethernetAdapters()" (input)="ethernetAdapters.set(+$event.target.value)" type="number" placeholder="Ethernet adapters" />
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="iou-template-details__field">
             <mat-label>Serial adapters</mat-label>
-            <input matInput formControlName="serialAdapters" type="number" placeholder="Serial adapters" />
+            <input matInput [value]="serialAdapters()" (input)="serialAdapters.set(+$event.target.value)" type="number" placeholder="Serial adapters" />
           </mat-form-field>
         </form>
       </section>
@@ -143,7 +142,7 @@
         <h3 class="iou-template-details__section-title">Usage</h3>
         <mat-form-field appearance="fill" class="iou-template-details__field iou-template-details__field--full">
           <mat-label>Usage notes</mat-label>
-          <textarea matInput type="text"></textarea>
+          <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
         </mat-form-field>
       </section>
 
@@ -161,7 +160,7 @@
 @if (isSymbolSelectionOpened && iouTemplate) {
   <app-symbols-menu
     [controller]="controller"
-    [symbol]="iouTemplate.symbol"
+    [symbol]="symbol()"
     (symbolChangedEmitter)="symbolChanged($event)"
   ></app-symbols-menu>
 }

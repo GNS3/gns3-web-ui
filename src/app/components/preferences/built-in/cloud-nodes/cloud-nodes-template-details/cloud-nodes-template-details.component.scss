@@ -1,7 +1,7 @@
 /**
  * GNS3 Cloud Nodes Template Details Component Styles
  * BEM naming applied, Material theme variables used
- * Design language unified with management pages
+ * Design language unified with docker template details
  */
 
 :host {
@@ -65,45 +65,41 @@
 }
 
 /* =============================================
-// Accordion
+// Form Card (replaces accordion)
 // ============================================= */
-.cloud-nodes-details__accordion {
+.cloud-nodes-details__form-card {
   background: var(--mat-sys-surface);
   border-radius: 16px;
   overflow: hidden;
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
               0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  margin-bottom: 16px;
 }
 
-.cloud-nodes-details__panel {
-  background: transparent;
-  box-shadow: none;
-
-  &:not(:last-child) {
-    border-bottom: 1px solid var(--mat-sys-outline-variant);
-  }
-}
-
-.cloud-nodes-details__panel-header {
-  background: var(--mat-sys-surface-container-low);
+.cloud-nodes-details__section-header {
   padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
   transition: background-color 0.2s ease;
+  border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
 
   &:hover {
-    background: var(--mat-sys-surface-container-high);
-  }
-
-  .mat-expansion-panel-header.mat-expanded & {
-    background: var(--mat-sys-primary-container);
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 5%, transparent);
   }
 }
 
-.cloud-nodes-details__panel-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--mat-sys-on-surface);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.cloud-nodes-details__section-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.cloud-nodes-details__expand-icon {
+  color: var(--mat-sys-on-surface-variant);
+  transition: transform 0.2s ease;
 }
 
 /* =============================================
@@ -122,6 +118,11 @@
 
 .cloud-nodes-details__field--flex {
   flex: 1;
+}
+
+.cloud-nodes-details__field--full {
+  width: 100%;
+  padding: 0;
 }
 
 .cloud-nodes-details__symbol-row {
@@ -234,8 +235,8 @@
     padding: 0 16px 16px;
   }
 
-  .cloud-nodes-details__panel-header {
-    padding: 14px 16px;
+  .cloud-nodes-details__section-header {
+    padding: 12px 16px;
   }
 
   .cloud-nodes-details__form {

@@ -1,10 +1,9 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -24,39 +23,36 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
   selector: 'app-ethernet-hubs-template-details',
   templateUrl: './ethernet-hubs-template-details.component.html',
   styleUrl: './ethernet-hubs-template-details.component.scss',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, SymbolsMenuComponent]
+  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, SymbolsMenuComponent]
 })
 export class EthernetHubsTemplateDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private builtInTemplatesService = inject(BuiltInTemplatesService);
   private toasterService = inject(ToasterService);
-  private formBuilder = inject(UntypedFormBuilder);
   private builtInTemplatesConfigurationService = inject(BuiltInTemplatesConfigurationService);
   private router = inject(Router);
   private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
   ethernetHubTemplate: EthernetHubTemplate;
-  numberOfPorts: number;
-  inputForm: UntypedFormGroup;
-  isSymbolSelectionOpened: boolean = false;
+  isSymbolSelectionOpened = false;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
-  categories = [];
+  categories: any[] = [];
 
-  constructor() {
-    this.inputForm = this.formBuilder.group({
-      templateName: new UntypedFormControl('', Validators.required),
-      defaultName: new UntypedFormControl('', Validators.required),
-      symbol: new UntypedFormControl('', Validators.required),
-    });
-  }
+  // Model signals for form fields
+  templateName = model('');
+  defaultName = model('');
+  symbol = model('');
+  category = model('');
+  numberOfPorts = model(0);
+  tags = model<string[]>([]);
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
       this.controller = controller;
       this.cd.markForCheck();
 
@@ -68,16 +64,18 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
           if (!this.ethernetHubTemplate.ports_mapping) {
             this.ethernetHubTemplate.ports_mapping = [];
           }
-          this.numberOfPorts = this.ethernetHubTemplate.ports_mapping.length;
           if (!this.ethernetHubTemplate.tags) {
             this.ethernetHubTemplate.tags = [];
           }
-          // Fill form with template data
-          this.inputForm.patchValue({
-            templateName: this.ethernetHubTemplate.name || '',
-            defaultName: this.ethernetHubTemplate.default_name_format || '',
-            symbol: this.ethernetHubTemplate.symbol || '',
-          });
+
+          // Initialize model signals
+          this.templateName.set(ethernetHubTemplate.name || '');
+          this.defaultName.set(ethernetHubTemplate.default_name_format || '');
+          this.symbol.set(ethernetHubTemplate.symbol || '');
+          this.category.set(ethernetHubTemplate.category || '');
+          this.numberOfPorts.set(ethernetHubTemplate.ports_mapping.length || 0);
+          this.tags.set(ethernetHubTemplate.tags || []);
+
           this.cd.markForCheck();
         });
     });
@@ -88,23 +86,27 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
   }
 
   onSave() {
-    if (this.inputForm.invalid || !this.numberOfPorts) {
-      this.toasterService.error(`Fill all required fields`);
-    } else {
-      this.ethernetHubTemplate.ports_mapping = [];
-      for (let i = 0; i < this.numberOfPorts; i++) {
-        this.ethernetHubTemplate.ports_mapping.push({
-          name: `Ethernet${i}`,
-          port_number: i,
-        });
-      }
+    // Update ethernetHubTemplate from model signals
+    this.ethernetHubTemplate.name = this.templateName();
+    this.ethernetHubTemplate.default_name_format = this.defaultName();
+    this.ethernetHubTemplate.symbol = this.symbol();
+    this.ethernetHubTemplate.category = this.category();
+    this.ethernetHubTemplate.tags = this.tags();
 
-      this.builtInTemplatesService
-        .saveTemplate(this.controller, this.ethernetHubTemplate)
-        .subscribe((ethernetHubTemplate: EthernetHubTemplate) => {
-          this.toasterService.success('Changes saved');
-        });
+    const numPorts = this.numberOfPorts();
+    this.ethernetHubTemplate.ports_mapping = [];
+    for (let i = 0; i < numPorts; i++) {
+      this.ethernetHubTemplate.ports_mapping.push({
+        name: `Ethernet${i}`,
+        port_number: i,
+      });
     }
+
+    this.builtInTemplatesService
+      .saveTemplate(this.controller, this.ethernetHubTemplate)
+      .subscribe((ethernetHubTemplate: EthernetHubTemplate) => {
+        this.toasterService.success('Changes saved');
+      });
   }
 
   chooseSymbol() {
@@ -113,33 +115,30 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
 
   symbolChanged(chosenSymbol: string) {
     this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
-    this.ethernetHubTemplate.symbol = chosenSymbol;
+    this.symbol.set(chosenSymbol);
   }
 
   addTag(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
+    const currentTags = this.tags();
 
-    if (value && this.ethernetHubTemplate) {
-      if (!this.ethernetHubTemplate.tags) {
-        this.ethernetHubTemplate.tags = [];
-      }
-      this.ethernetHubTemplate.tags.push(value);
+    if (value) {
+      this.tags.set([...currentTags, value]);
     }
 
-    // Clear the input value
     if (event.chipInput) {
       event.chipInput.clear();
     }
   }
 
   removeTag(tag: string): void {
-    if (!this.ethernetHubTemplate.tags) {
-      return;
-    }
-    const index = this.ethernetHubTemplate.tags.indexOf(tag);
+    const currentTags = this.tags();
+    const index = currentTags.indexOf(tag);
 
     if (index >= 0) {
-      this.ethernetHubTemplate.tags.splice(index, 1);
+      const newTags = [...currentTags];
+      newTags.splice(index, 1);
+      this.tags.set(newTags);
     }
   }
 }

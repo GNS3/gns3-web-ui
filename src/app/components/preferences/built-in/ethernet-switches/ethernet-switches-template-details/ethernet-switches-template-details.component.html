@@ -14,36 +14,21 @@
   @if (ethernetSwitchTemplate) {
     <main class="ethernet-switch-details__content">
       <section class="ethernet-switch-details__form-card">
-        <form [formGroup]="inputForm" class="ethernet-switch-details__form">
+        <form class="ethernet-switch-details__form">
           <mat-form-field appearance="fill" class="ethernet-switch-details__field">
             <mat-label>Template name</mat-label>
-            <input
-              matInput
-              type="text"
-              formControlName="templateName"
-              placeholder="Template name"
-            />
+            <input matInput [value]="templateName()" (input)="templateName.set($event.target.value)" type="text" placeholder="Template name" />
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="ethernet-switch-details__field">
             <mat-label>Default name format</mat-label>
-            <input
-              matInput
-              type="text"
-              formControlName="defaultName"
-              placeholder="Default name format"
-            />
+            <input matInput [value]="defaultName()" (input)="defaultName.set($event.target.value)" type="text" placeholder="Default name format" />
           </mat-form-field>
 
           <div class="ethernet-switch-details__symbol-row">
             <mat-form-field appearance="fill" class="ethernet-switch-details__field ethernet-switch-details__field--flex">
               <mat-label>Symbol</mat-label>
-              <input
-                matInput
-                type="text"
-                formControlName="symbol"
-                placeholder="Symbol"
-              />
+              <input matInput [value]="symbol()" (input)="symbol.set($event.target.value)" type="text" placeholder="Symbol" />
             </mat-form-field>
             <button mat-button class="ethernet-switch-details__symbol-btn" (click)="chooseSymbol()">
               Choose symbol
@@ -53,7 +38,7 @@
           <mat-form-field appearance="fill" class="ethernet-switch-details__field">
             <mat-label>Tags</mat-label>
             <mat-chip-grid #chipList>
-              @for (tag of ethernetSwitchTemplate?.tags; track tag) {
+              @for (tag of tags(); track tag) {
                 <mat-chip (removed)="removeTag(tag)">
                   {{ tag }}
                   <mat-icon matChipRemove>cancel</mat-icon>
@@ -68,12 +53,10 @@
 
           <mat-form-field appearance="fill" class="ethernet-switch-details__field">
             <mat-label>Category</mat-label>
-            <mat-select
-              [ngModelOptions]="{ standalone: true }"
-            >
-              @for (category of categories; track $index) {
-                <mat-option [value]="category[1]">
-                  {{ category[0] }}
+            <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
+              @for (cat of categories; track $index) {
+                <mat-option [value]="cat[1]">
+                  {{ cat[0] }}
                 </mat-option>
               }
             </mat-select>
@@ -81,9 +64,7 @@
 
           <mat-form-field appearance="fill" class="ethernet-switch-details__field">
             <mat-label>Console type</mat-label>
-            <mat-select
-              [ngModelOptions]="{ standalone: true }"
-            >
+            <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
               @for (type of consoleTypes; track type) {
                 <mat-option [value]="type">
                   {{ type }}
@@ -113,7 +94,7 @@
 @if (isSymbolSelectionOpened && ethernetSwitchTemplate) {
   <app-symbols-menu
     [controller]="controller"
-    [symbol]="ethernetSwitchTemplate.symbol"
+    [symbol]="symbol()"
     (symbolChangedEmitter)="symbolChanged($event)"
   ></app-symbols-menu>
 }
