@@ -100,6 +100,77 @@ mat-form-field {
 
 ---
 
+## 5b. No `ViewEncapsulation.None`
+
+**Rule**: `ViewEncapsulation.None` is strictly prohibited. It disables Angular's style isolation, causing styles to leak globally and making debugging difficult.
+
+```typescript
+// ❌ Wrong: Using ViewEncapsulation.None
+@Component({
+  encapsulation: ViewEncapsulation.None, // ❌ STRICTLY PROHIBITED
+  // ...
+})
+```
+
+### Why is ViewEncapsulation.None Problematic?
+
+1. **Global Style Pollution**: Styles defined without careful scoping affect the entire application
+2. **Debugging Difficulty**: Hard to trace which component a style belongs to
+3. **Unpredictable Behavior**: Can conflict with third-party libraries or other components
+4. **Deprecated Pattern**: Angular team recommends avoiding it
+
+### Alternatives to ViewEncapsulation.None
+
+If you need to style dynamically created DOM (e.g., D3.js, third-party libraries):
+
+1. **Use CSS filter functions instead of SVG filters**:
+   ```scss
+   // ✅ Correct: Browser-native CSS filter
+   .selected {
+     filter: grayscale(100%);
+   }
+   ```
+
+2. **Use specific CSS selectors** in global stylesheet:
+   ```scss
+   // ✅ Correct: Scoped in global styles with specific selector
+   svg#map g.selected {
+     filter: grayscale(100%);
+   }
+   ```
+
+3. **Use `:host` with specific selectors**:
+   ```scss
+   // ✅ Correct: Target specific component's SVG
+   :host(app-d3-map) {
+     g.selected {
+       filter: grayscale(100%);
+     }
+   }
+   ```
+
+4. **Move styles to global stylesheet** with clear comments:
+   ```scss
+   // src/styles/_map.scss
+   // =============================================
+   // D3 Map Selection Styles
+   // These styles target dynamically created DOM
+   // that Angular's view encapsulation cannot scope.
+   // =============================================
+   svg#map g.selected {
+     filter: grayscale(100%);
+   }
+   ```
+
+### Exception
+
+If absolutely necessary, you may use `ViewEncapsulation.None` only when:
+- It's a leaf component with no risk of style collision
+- All styles are prefixed with the component's unique class
+- Documented with clear comments explaining why
+
+---
+
 ## 6. Clean Up Redundant Styles
 
 **Rule**: Regularly clean up unused and duplicate style code. Keep style files lean.
@@ -379,7 +450,7 @@ Before committing code, ensure:
 
 - [ ] No `!important` usage
 - [ ] No `::ng-deep` usage
-- [ ] No `ViewEncapsulation.None` usage
+- [ ] No `ViewEncapsulation.None` usage (except with documented exception)
 - [ ] No hardcoded color values
 - [ ] Material theme variables used
 - [ ] Dialog styles use `panelClass`
@@ -394,8 +465,9 @@ Before committing code, ensure:
 |---------|------|---------|
 | 1.0 | 2026-03-20 | Initial release |
 | 1.1 | 2026-03-23 | Added Material 3 color variable reference |
-| 1.2 | 2026-03-24 | Added ViewEncapsulation.None prohibition |
+| 1.2 | 2026-03-24 | Added ViewEncapsulation.None prohibition for dialogs |
 | 1.3 | 2026-03-24 | Updated dialog section with centralized approach |
 | 2.0 | 2026-03-24 | Complete rewrite for Angular Material 21 MD3 Sass Mixin system |
+| 2.1 | 2026-03-25 | Extended ViewEncapsulation.None prohibition to all components |
 
-**Last Updated**: 2026-03-24
+**Last Updated**: 2026-03-25

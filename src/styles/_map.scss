@@ -1,0 +1,13 @@
+/* =============================================
+// D3 Map Selection Styles
+// =============================================
+// These styles target dynamically created DOM elements
+// (via D3.js) that Angular's view encapsulation cannot
+// scope. The styles are applied globally but use specific
+// selectors to avoid affecting other components.
+// ============================================= */
+
+svg#map g.selected {
+  filter: grayscale(100%);
+  -webkit-filter: grayscale(100%);
+}
