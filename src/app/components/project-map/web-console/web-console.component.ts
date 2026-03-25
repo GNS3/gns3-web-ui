@@ -26,7 +26,7 @@ import { XtermService } from '@services/xterm.service';
 @Component({
   selector: 'app-web-console',
   templateUrl: './web-console.component.html',
-  styleUrls: ['../../../../../node_modules/xterm/css/xterm.css', './web-console.component.scss'],
+  styleUrls: ['./web-console.component.scss'],
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

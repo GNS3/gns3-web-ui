@@ -18,7 +18,7 @@ import { XtermService } from '@services/xterm.service';
 @Component({
   selector: 'app-web-console-full-window',
   templateUrl: './web-console-full-window.component.html',
-  styleUrls: ['../../../../node_modules/xterm/css/xterm.css', './web-console-full-window.component.scss'],
+  styleUrls: ['./web-console-full-window.component.scss'],
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

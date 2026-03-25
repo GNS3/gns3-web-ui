@@ -3,10 +3,23 @@
  * Using MD3 CSS variables
  */
 
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 :host(.lightTheme) {
   background: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
 }
+
+/* Terminal container styling - minimal styling to avoid interfering with xterm.js */
+#terminal {
+  width: 100%;
+  height: 100%;
+}
+
 
 @keyframes contextMenuFadeIn {
   from {
@@ -33,6 +46,7 @@
   animation: contextMenuFadeIn 100ms ease-out;
   cursor: default;
   user-select: none;
+  z-index: 1000;
 
   .xterm-context-menu-item {
     padding: 10px 16px;
