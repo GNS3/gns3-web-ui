@@ -19,11 +19,14 @@ table {
   width: 100%;
 }
 
+.modal-form-container {
+  padding: 16px;
+  overflow-y: auto;
+  max-height: 500px;
+}
+
 .default-content {
-  max-height: 400px;
-  overflow-y: scroll;
-  scrollbar-color: var(--mat-sys-on-surface) var(--mat-sys-surface);
-  scrollbar-width: thin;
+  overflow: visible;
 }
 
 .file-button {
