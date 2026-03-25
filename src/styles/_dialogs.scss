@@ -157,3 +157,17 @@
     max-height: 600px;
   }
 }
+
+/* =============================================
+// Configurator Dialog
+// ============================================= */
+.configurator-dialog-panel {
+  .mat-mdc-dialog-container {
+    max-height: 80vh;
+  }
+
+  .mat-mdc-dialog-content {
+    overflow-y: auto;
+    max-height: calc(80vh - 140px);
+  }
+}

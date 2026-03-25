@@ -31,6 +31,7 @@ export class ConfigActionComponent {
   readonly controller = input<Controller>(undefined);
   readonly node = input<Node>(undefined);
   private conf = {
+    panelClass: 'configurator-dialog-panel',
     autoFocus: false,
     width: '950px',
     disableClose: false,
