@@ -282,15 +282,13 @@ usageExpanded = false;
 - [x] Ethernet Switches Template Details (`ethernet-switches-template-details`)
 - [x] IOU Template Details (`iou-template-details`)
 - [x] QEMU VM Template Details (`qemu-vm-template-details`)
+- [x] VirtualBox Template Details (`virtual-box-template-details`)
+- [x] VMware Template Details (`vmware-template-details`)
+- [x] VPCS Template Details (`vpcs-template-details`)
 
 ### Pending Migration (preferences)
 
 The following components in `src/app/components/preferences/` still use `ngModel` and need to be migrated:
-
-#### Template Details (view/edit)
-- `virtual-box-template-details`
-- `vmware-template-details`
-- `vpcs-template-details`
 
 #### Add Template Dialogs
 - `add-docker-template`

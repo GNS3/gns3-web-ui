@@ -15,26 +15,26 @@
     <main class="vpcs-template-details__content">
       <section class="vpcs-template-details__form-card">
         <h3 class="vpcs-template-details__section-title">General settings</h3>
-        <form [formGroup]="inputForm" class="vpcs-template-details__form">
+        <form class="vpcs-template-details__form">
           <mat-form-field appearance="fill" class="vpcs-template-details__field">
             <mat-label>Template name</mat-label>
-            <input matInput type="text" formControlName="templateName" placeholder="Template name" />
+            <input matInput [value]="templateName()" (input)="templateName.set($event.target.value)" type="text" placeholder="Template name" />
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="vpcs-template-details__field">
             <mat-label>Default name format</mat-label>
-            <input matInput type="text" formControlName="defaultName" placeholder="Default name format" />
+            <input matInput [value]="defaultName()" (input)="defaultName.set($event.target.value)" type="text" placeholder="Default name format" />
           </mat-form-field>
 
           <mat-form-field appearance="fill" class="vpcs-template-details__field">
             <mat-label>Base script file</mat-label>
-            <input matInput type="text" formControlName="scriptFile" placeholder="Base script file" />
+            <input matInput [value]="scriptFile()" (input)="scriptFile.set($event.target.value)" type="text" placeholder="Base script file" />
           </mat-form-field>
 
           <div class="vpcs-template-details__symbol-row">
             <mat-form-field appearance="fill" class="vpcs-template-details__field vpcs-template-details__field--flex">
               <mat-label>Symbol</mat-label>
-              <input matInput type="text" formControlName="symbol" placeholder="Symbol" />
+              <input matInput [value]="symbol()" (input)="symbol.set($event.target.value)" type="text" placeholder="Symbol" />
             </mat-form-field>
             <button mat-button class="vpcs-template-details__symbol-btn" (click)="chooseSymbol()">
               Choose symbol
@@ -44,7 +44,7 @@
           <mat-form-field appearance="fill" class="vpcs-template-details__field">
             <mat-label>Tags</mat-label>
             <mat-chip-grid #chipList>
-              @for (tag of vpcsTemplate?.tags; track tag) {
+              @for (tag of tags(); track tag) {
                 <mat-chip (removed)="removeTag(tag)">
                   {{ tag }}
                   <mat-icon matChipRemove>cancel</mat-icon>
@@ -59,10 +59,10 @@
 
           <mat-form-field appearance="fill" class="vpcs-template-details__field">
             <mat-label>Category</mat-label>
-            <mat-select [ngModelOptions]="{ standalone: true }" [(ngModel)]="vpcsTemplate.category">
-              @for (category of categories; track $index) {
-                <mat-option [value]="category[1]">
-                  {{ category[0] }}
+            <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
+              @for (cat of categories; track $index) {
+                <mat-option [value]="cat[1]">
+                  {{ cat[0] }}
                 </mat-option>
               }
             </mat-select>
@@ -70,7 +70,7 @@
 
           <mat-form-field appearance="fill" class="vpcs-template-details__field">
             <mat-label>Console type</mat-label>
-            <mat-select [ngModelOptions]="{ standalone: true }" [(ngModel)]="vpcsTemplate.console_type">
+            <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
               @for (type of consoleTypes; track type) {
                 <mat-option [value]="type">
                   {{ type }}
@@ -79,7 +79,7 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-checkbox formControlName="console_auto_start">Auto start console</mat-checkbox>
+          <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)">Auto start console</mat-checkbox>
         </form>
       </section>
 
@@ -97,7 +97,7 @@
 @if (isSymbolSelectionOpened && vpcsTemplate) {
   <app-symbols-menu
     [controller]="controller"
-    [symbol]="vpcsTemplate.symbol"
+    [symbol]="symbol()"
     (symbolChangedEmitter)="symbolChanged($event)"
   ></app-symbols-menu>
 }

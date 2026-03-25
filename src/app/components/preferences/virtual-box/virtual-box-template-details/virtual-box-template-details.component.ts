@@ -1,18 +1,9 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject, viewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -38,12 +29,9 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     RouterModule,
-    MatExpansionModule,
     MatIconModule,
     MatButtonModule,
-    MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
@@ -58,40 +46,46 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   private controllerService = inject(ControllerService);
   private virtualBoxService = inject(VirtualBoxService);
   private toasterService = inject(ToasterService);
-  private formBuilder = inject(UntypedFormBuilder);
   private virtualBoxConfigurationService = inject(VirtualBoxConfigurationService);
   private router = inject(Router);
   private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
   virtualBoxTemplate: VirtualBoxTemplate;
-  isSymbolSelectionOpened: boolean = false;
+  isSymbolSelectionOpened = false;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
-  onCloseOptions = [];
-  categories = [];
-  networkTypes = [];
+  onCloseOptions: any[] = [];
+  categories: any[] = [];
+  networkTypes: any[] = [];
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
-  isConfiguratorOpened: boolean = false;
-  generalSettingsForm: UntypedFormGroup;
-  networkForm: UntypedFormGroup;
+  isConfiguratorOpened = false;
 
   readonly customAdaptersConfigurator = viewChild<CustomAdaptersComponent>('customAdaptersConfigurator');
 
-  constructor() {
-    this.generalSettingsForm = this.formBuilder.group({
-      templateName: new UntypedFormControl('', Validators.required),
-      defaultName: new UntypedFormControl('', Validators.required),
-      symbol: new UntypedFormControl('', Validators.required),
-      ram: new UntypedFormControl('', Validators.required),
-    });
+  // Model signals for form fields
+  templateName = model('');
+  defaultName = model('');
+  symbol = model('');
+  category = model('');
+  consoleType = model('');
+  consoleAutoStart = model(false);
+  ram = model(256);
+  onClose = model('');
+  headless = model(false);
+  linkedClone = model(false);
 
-    this.networkForm = this.formBuilder.group({
-      adapters: new UntypedFormControl('', Validators.required),
-      nameFormat: new UntypedFormControl('', Validators.required),
-      size: new UntypedFormControl('', Validators.required),
-    });
-  }
+  // Network
+  adapters = model(0);
+  firstPortName = model('');
+  nameFormat = model('');
+  segmentSize = model(0);
+  networkType = model('');
+  useAnyAdapter = model(false);
+
+  // Usage & Tags
+  usage = model('');
+  tags = model<string[]>([]);
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
@@ -109,9 +103,33 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
             this.virtualBoxTemplate.tags = [];
           }
           this.fillCustomAdapters();
+          this.initFormFromTemplate();
           this.cd.markForCheck();
         });
     });
+  }
+
+  initFormFromTemplate() {
+    this.templateName.set(this.virtualBoxTemplate.name || '');
+    this.defaultName.set(this.virtualBoxTemplate.default_name_format || '');
+    this.symbol.set(this.virtualBoxTemplate.symbol || '');
+    this.category.set(this.virtualBoxTemplate.category || '');
+    this.consoleType.set(this.virtualBoxTemplate.console_type || '');
+    this.consoleAutoStart.set(this.virtualBoxTemplate.console_auto_start || false);
+    this.ram.set(this.virtualBoxTemplate.ram || 256);
+    this.onClose.set(this.virtualBoxTemplate.on_close || '');
+    this.headless.set(this.virtualBoxTemplate.headless || false);
+    this.linkedClone.set(this.virtualBoxTemplate.linked_clone || false);
+
+    this.adapters.set(this.virtualBoxTemplate.adapters || 0);
+    this.firstPortName.set(this.virtualBoxTemplate.first_port_name || '');
+    this.nameFormat.set(this.virtualBoxTemplate.port_name_format || '');
+    this.segmentSize.set(this.virtualBoxTemplate.port_segment_size || 0);
+    this.networkType.set(this.virtualBoxTemplate.adapter_type || '');
+    this.useAnyAdapter.set(this.virtualBoxTemplate.use_any_adapter || false);
+
+    this.usage.set(this.virtualBoxTemplate.usage || '');
+    this.tags.set(this.virtualBoxTemplate.tags || []);
   }
 
   getConfiguration() {
@@ -126,7 +144,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
 
     if (state) {
       this.fillCustomAdapters();
-      this.customAdaptersConfigurator().numberOfAdapters = this.virtualBoxTemplate.adapters;
+      this.customAdaptersConfigurator().numberOfAdapters = this.adapters();
       this.customAdaptersConfigurator().adapters = [];
       this.virtualBoxTemplate.custom_adapters.forEach((adapter: CustomAdapter) => {
         this.customAdaptersConfigurator().adapters.push({
@@ -146,7 +164,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     let copyOfAdapters = this.virtualBoxTemplate.custom_adapters ? this.virtualBoxTemplate.custom_adapters : [];
     this.virtualBoxTemplate.custom_adapters = [];
 
-    for (let i = 0; i < this.virtualBoxTemplate.adapters; i++) {
+    for (let i = 0; i < this.adapters(); i++) {
       if (copyOfAdapters[i]) {
         this.virtualBoxTemplate.custom_adapters.push(copyOfAdapters[i]);
       } else {
@@ -163,17 +181,44 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   }
 
   onSave() {
-    if (this.generalSettingsForm.invalid || this.networkForm.invalid) {
-      this.toasterService.error(`Fill all required fields`);
-    } else {
-      this.fillCustomAdapters();
-
-      this.virtualBoxService
-        .saveTemplate(this.controller, this.virtualBoxTemplate)
-        .subscribe((virtualBoxTemplate: VirtualBoxTemplate) => {
-          this.toasterService.success('Changes saved');
-        });
+    if (!this.templateName() || !this.defaultName() || !this.symbol()) {
+      const missingFields: string[] = [];
+      if (!this.templateName()) missingFields.push('Template name');
+      if (!this.defaultName()) missingFields.push('Default name format');
+      if (!this.symbol()) missingFields.push('Symbol');
+      this.toasterService.error(`Missing required fields: ${missingFields.join(', ')}`);
+      return;
     }
+
+    // Update virtualBoxTemplate from model signals
+    this.virtualBoxTemplate.name = this.templateName();
+    this.virtualBoxTemplate.default_name_format = this.defaultName();
+    this.virtualBoxTemplate.symbol = this.symbol();
+    this.virtualBoxTemplate.category = this.category();
+    this.virtualBoxTemplate.console_type = this.consoleType();
+    this.virtualBoxTemplate.console_auto_start = this.consoleAutoStart();
+    this.virtualBoxTemplate.ram = this.ram();
+    this.virtualBoxTemplate.on_close = this.onClose();
+    this.virtualBoxTemplate.headless = this.headless();
+    this.virtualBoxTemplate.linked_clone = this.linkedClone();
+
+    this.virtualBoxTemplate.adapters = this.adapters();
+    this.virtualBoxTemplate.first_port_name = this.firstPortName();
+    this.virtualBoxTemplate.port_name_format = this.nameFormat();
+    this.virtualBoxTemplate.port_segment_size = this.segmentSize();
+    this.virtualBoxTemplate.adapter_type = this.networkType();
+    this.virtualBoxTemplate.use_any_adapter = this.useAnyAdapter();
+
+    this.virtualBoxTemplate.usage = this.usage();
+    this.virtualBoxTemplate.tags = this.tags();
+
+    this.fillCustomAdapters();
+
+    this.virtualBoxService
+      .saveTemplate(this.controller, this.virtualBoxTemplate)
+      .subscribe((virtualBoxTemplate: VirtualBoxTemplate) => {
+        this.toasterService.success('Changes saved');
+      });
   }
 
   chooseSymbol() {
@@ -182,33 +227,30 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
 
   symbolChanged(chosenSymbol: string) {
     this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
-    this.virtualBoxTemplate.symbol = chosenSymbol;
+    this.symbol.set(chosenSymbol);
   }
 
   addTag(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
+    const currentTags = this.tags();
 
-    if (value && this.virtualBoxTemplate) {
-      if (!this.virtualBoxTemplate.tags) {
-        this.virtualBoxTemplate.tags = [];
-      }
-      this.virtualBoxTemplate.tags.push(value);
+    if (value) {
+      this.tags.set([...currentTags, value]);
     }
 
-    // Clear the input value
     if (event.chipInput) {
       event.chipInput.clear();
     }
   }
 
   removeTag(tag: string): void {
-    if (!this.virtualBoxTemplate.tags) {
-      return;
-    }
-    const index = this.virtualBoxTemplate.tags.indexOf(tag);
+    const currentTags = this.tags();
+    const index = currentTags.indexOf(tag);
 
     if (index >= 0) {
-      this.virtualBoxTemplate.tags.splice(index, 1);
+      const newTags = [...currentTags];
+      newTags.splice(index, 1);
+      this.tags.set(newTags);
     }
   }
 }
