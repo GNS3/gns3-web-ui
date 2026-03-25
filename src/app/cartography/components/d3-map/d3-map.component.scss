@@ -1,3 +1,7 @@
 svg {
   display: block;
 }
+
+g.selected {
+  filter: url('#grayscale');
+}

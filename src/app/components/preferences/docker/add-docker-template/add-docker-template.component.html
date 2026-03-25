@@ -16,11 +16,11 @@
           </div>
         </mat-step>
 
-        <mat-step label="Docker Virtual Machine" [completed]="selectedImage || virtualMachineForm.get('filename').value">
+        <mat-step label="Docker Virtual Machine" [completed]="selectedImage || filename()">
           <div class="docker-add__step-content">
-            <form [formGroup]="virtualMachineForm" class="docker-add__form">
+            <div class="docker-add__form">
               <mat-radio-group class="docker-add__radio-group">
-                <mat-radio-button class="docker-add__radio" value="1" (click)="setDiskImage('existingImage')" [checked]="true">
+                <mat-radio-button class="docker-add__radio" value="1" (click)="setDiskImage('existingImage')" [checked]="!newImageSelected">
                   Existing image
                 </mat-radio-button>
                 <mat-radio-button class="docker-add__radio" value="2" (click)="setDiskImage('newImage')">
@@ -30,7 +30,7 @@
               @if (!newImageSelected) {
                 <mat-form-field appearance="fill" class="docker-add__field">
                   <mat-label>Image list</mat-label>
-                  <mat-select placeholder="Image list" [ngModelOptions]="{ standalone: true }" [(ngModel)]="selectedImage">
+                  <mat-select placeholder="Image list" [value]="selectedImage" (selectionChange)="selectedImage = $event.value">
                     @for (image of dockerImages; track image.image) {
                       <mat-option [value]="image">{{ image.image }}</mat-option>
                     }
@@ -40,49 +40,49 @@
               @if (newImageSelected) {
                 <mat-form-field appearance="fill" class="docker-add__field">
                   <mat-label>Image name</mat-label>
-                  <input matInput class="filename" type="text" formControlName="filename" placeholder="Image name" />
+                  <input matInput class="filename" type="text" [value]="filename()" (input)="filename.set($event.target.value)" placeholder="Image name" />
                 </mat-form-field>
               }
-            </form>
+            </div>
           </div>
         </mat-step>
 
-        <mat-step label="Container name" [completed]="containerNameForm.get('templateName').value">
+        <mat-step label="Container name" [completed]="templateName()">
           <div class="docker-add__step-content">
-            <form [formGroup]="containerNameForm" class="docker-add__form">
+            <div class="docker-add__form">
               <mat-form-field appearance="fill" class="docker-add__field">
                 <mat-label>Container name</mat-label>
-                <input matInput class="templatename" type="text" formControlName="templateName" placeholder="Container name" />
+                <input matInput class="templatename" type="text" [value]="templateName()" (input)="templateName.set($event.target.value)" placeholder="Container name" />
               </mat-form-field>
-            </form>
+            </div>
           </div>
         </mat-step>
 
-        <mat-step label="Network adapters" [completed]="networkAdaptersForm.get('adapters').value">
+        <mat-step label="Network adapters" [completed]="adapters()">
           <div class="docker-add__step-content">
-            <form [formGroup]="networkAdaptersForm" class="docker-add__form">
+            <div class="docker-add__form">
               <mat-form-field appearance="fill" class="docker-add__field">
                 <mat-label>Adapters</mat-label>
-                <input matInput class="networkadapter" type="number" formControlName="adapters" placeholder="Adapters" />
+                <input matInput class="networkadapter" type="number" [value]="adapters()" (input)="adapters.set(+$event.target.value)" placeholder="Adapters" />
               </mat-form-field>
-            </form>
+            </div>
           </div>
         </mat-step>
 
-        <mat-step label="Start command" [completed]="dockerTemplate.start_command">
+        <mat-step label="Start command" [completed]="startCommand()">
           <div class="docker-add__step-content">
             <mat-form-field appearance="fill" class="docker-add__field">
               <mat-label>Start command</mat-label>
-              <input matInput type="text" [(ngModel)]="dockerTemplate.start_command" placeholder="Start command" />
+              <input matInput type="text" [value]="startCommand()" (input)="startCommand.set($event.target.value)" placeholder="Start command" />
             </mat-form-field>
           </div>
         </mat-step>
 
-        <mat-step label="Console type" [completed]="dockerTemplate.console_type">
+        <mat-step label="Console type" [completed]="consoleType()">
           <div class="docker-add__step-content">
             <mat-form-field appearance="fill" class="docker-add__field">
               <mat-label>Console type</mat-label>
-              <mat-select placeholder="Console type" [ngModelOptions]="{ standalone: true }" [(ngModel)]="dockerTemplate.console_type">
+              <mat-select placeholder="Console type" [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
                 @for (type of consoleTypes; track type) {
                   <mat-option [value]="type">{{ type }}</mat-option>
                 }
@@ -91,11 +91,11 @@
           </div>
         </mat-step>
 
-        <mat-step label="Auxiliary console type" [completed]="dockerTemplate.aux_type">
+        <mat-step label="Auxiliary console type" [completed]="auxConsoleType()">
           <div class="docker-add__step-content">
             <mat-form-field appearance="fill" class="docker-add__field">
               <mat-label>Auxiliary console type</mat-label>
-              <mat-select placeholder="Auxiliary console type" [ngModelOptions]="{ standalone: true }" [(ngModel)]="dockerTemplate.aux_type">
+              <mat-select placeholder="Auxiliary console type" [value]="auxConsoleType()" (selectionChange)="auxConsoleType.set($event.value)">
                 @for (type of auxConsoleTypes; track type) {
                   <mat-option [value]="type">{{ type }}</mat-option>
                 }
@@ -108,7 +108,7 @@
           <div class="docker-add__step-content">
             <mat-form-field appearance="fill" class="docker-add__field">
               <mat-label>Environment</mat-label>
-              <textarea matInput type="text" [(ngModel)]="dockerTemplate.environment"></textarea>
+              <textarea matInput type="text" [value]="environment()" (input)="environment.set($event.target.value)"></textarea>
             </mat-form-field>
           </div>
         </mat-step>

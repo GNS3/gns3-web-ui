@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, model, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -32,7 +32,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-add-qemu-virtual-machine-template',
   templateUrl: './add-qemu-vm-template.component.html',
   styleUrls: ['./add-qemu-vm-template.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, FileUploadModule],
+  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, FileUploadModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
@@ -41,7 +41,6 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
   private qemuService = inject(QemuService);
   private toasterService = inject(ToasterService);
   private router = inject(Router);
-  private formBuilder = inject(UntypedFormBuilder);
   private templateMocksService = inject(TemplateMocksService);
   private configurationService = inject(QemuConfigurationService);
   private computeService = inject(ComputeService);
@@ -51,7 +50,6 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
 
   readonly controller = signal<Controller | undefined>(undefined);
   readonly selectPlatform = signal<string[]>([]);
-  readonly selectedPlatform = signal<string>('');
   readonly consoleTypes = signal<string[]>([]);
   readonly auxConsoleTypes = signal<string[]>([]);
   readonly newImageSelected = signal<boolean>(false);
@@ -62,23 +60,19 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
   readonly uploader = signal<FileUploader | undefined>(undefined);
   readonly isLocalComputerChosen = signal<boolean>(true);
 
-  nameForm: UntypedFormGroup;
-  memoryForm: UntypedFormGroup;
-  diskForm: UntypedFormGroup;
+  // Form field signals
+  templateName = model('');
+  ramMemory = model(256);
+  fileName = model('');
+  selectedPlatform = model('');
+  consoleType = model('');
+  auxConsoleType = model('');
 
-  constructor() {
-    this.nameForm = this.formBuilder.group({
-      templateName: new UntypedFormControl(null, Validators.required),
-    });
-
-    this.memoryForm = this.formBuilder.group({
-      ramMemory: new UntypedFormControl('256', Validators.required),
-    });
-
-    this.diskForm = this.formBuilder.group({
-      fileName: new UntypedFormControl('', Validators.required),
-    });
-  }
+  // Step completion computed signals
+  nameStepCompleted = computed(() => !!this.templateName());
+  platformStepCompleted = computed(() => !!this.ramMemory() && !!this.selectedPlatform());
+  consoleStepCompleted = computed(() => !!this.consoleType());
+  auxConsoleStepCompleted = computed(() => !!this.auxConsoleType());
 
   ngOnInit() {
     this.uploader.set(new FileUploader({url: ''}));
@@ -145,7 +139,8 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
 
   uploadImageFile(event) {
     let name = event.target.files[0].name;
-    this.diskForm.controls['fileName'].setValue(name);
+    this.fileName.set(name);
+    this.chosenImage.set(name);
 
     const url = this.qemuService.getImagePath(this.controller(), name);
     this.uploader().queue.forEach((elem) => (elem.url = url));
@@ -170,18 +165,20 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
   }
 
   addTemplate() {
-    if (!this.nameForm.invalid && !this.memoryForm.invalid && (this.selectedImage() || this.chosenImage())) {
+    if (this.templateName() && this.ramMemory() && (this.selectedImage() || this.chosenImage())) {
       const template = this.qemuTemplate();
-      template.ram = +this.memoryForm.get('ramMemory').value;
+      template.ram = this.ramMemory();
       template.platform = this.selectedPlatform();
       if (this.newImageSelected()) {
-        template.hda_disk_image = this.diskForm.get('fileName').value;
+        template.hda_disk_image = this.fileName();
       } else {
         template.hda_disk_image = this.selectedImage().path;
       }
       template.template_id = uuid();
-      template.name = this.nameForm.get('templateName').value;
+      template.name = this.templateName();
       template.compute_id = 'local';
+      template.console_type = this.consoleType();
+      template.aux_type = this.auxConsoleType();
 
       this.qemuService.addTemplate(this.controller(), template).subscribe((qemuTemplate: QemuTemplate) => {
         this.goBack();

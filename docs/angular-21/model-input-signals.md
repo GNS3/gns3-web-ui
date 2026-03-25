@@ -291,12 +291,12 @@ usageExpanded = false;
 The following components in `src/app/components/preferences/` still use `ngModel` and need to be migrated:
 
 #### Add Template Dialogs
-- `add-docker-template`
-- `add-ios-template`
-- `add-iou-template`
-- `add-qemu-vm-template`
-- `add-virtual-box-template`
-- `add-vmware-template`
+- [x] `add-docker-template`
+- [x] `add-ios-template`
+- [x] `add-iou-template`
+- [x] `add-qemu-vm-template`
+- [x] `add-virtual-box-template`
+- [x] `add-vmware-template`
 
 #### Preferences Pages
 - `dynamips-preferences`

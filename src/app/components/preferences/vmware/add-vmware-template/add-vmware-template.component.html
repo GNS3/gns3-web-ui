@@ -1,6 +1,6 @@
 <div class="vmware-add">
   <header class="vmware-add__header">
-    @if (controller) {
+    @if (controller()) {
       <button
         class="vmware-add__back-btn"
         (click)="goBack()"
@@ -11,14 +11,14 @@
     <h1 class="vmware-add__title">New VMware VM template</h1>
   </header>
 
-  @if (vmwareTemplate) {
+  @if (vmwareTemplate()) {
     <main class="vmware-add__content">
       <section class="vmware-add__form-card">
-        <form [formGroup]="templateNameForm" class="vmware-add__form">
+        <div class="vmware-add__form">
           <mat-form-field appearance="fill" class="vmware-add__field">
             <mat-label>VM list</mat-label>
-            <mat-select placeholder="VM list" formControlName="templateName">
-              @for (vm of virtualMachines; track vm) {
+            <mat-select placeholder="VM list" [value]="templateName()" (selectionChange)="templateName.set($event.value); selectedVM.set($event.value)">
+              @for (vm of virtualMachines(); track vm) {
                 <mat-option [value]="vm">
                   {{ vm.vmname }}
                 </mat-option>
@@ -26,10 +26,10 @@
             </mat-select>
           </mat-form-field>
 
-          <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="vmwareTemplate.linked_clone">
+          <mat-checkbox [checked]="linkedClone()" (change)="linkedClone.set($event.checked)">
             Use as a linked base VM (experimental)
           </mat-checkbox>
-        </form>
+        </div>
       </section>
 
       <div class="vmware-add__actions">

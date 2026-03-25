@@ -1,6 +1,6 @@
 <div class="virtualbox-add">
   <header class="virtualbox-add__header">
-    @if (controller) {
+    @if (controller()) {
       <button
         class="virtualbox-add__back-btn"
         (click)="goBack()"
@@ -11,22 +11,22 @@
     <h1 class="virtualbox-add__title">New VirtualBox VM template</h1>
   </header>
 
-  @if (virtualBoxTemplate) {
+  @if (virtualBoxTemplate()) {
     <main class="virtualbox-add__content">
       <section class="virtualbox-add__form-card">
-        <form [formGroup]="vmForm" class="virtualbox-add__form">
+        <div class="virtualbox-add__form">
           <mat-form-field appearance="fill" class="virtualbox-add__field">
             <mat-label>VM list</mat-label>
-            <mat-select placeholder="VM list" formControlName="vm">
-              @for (vm of virtualMachines; track vm) {
-                <mat-option [value]="vm">
-                  {{ vm.vmname }}
+            <mat-select placeholder="VM list" [value]="vm()" (selectionChange)="vm.set($event.value); selectedVM.set($event.value)">
+              @for (v of virtualMachines(); track v) {
+                <mat-option [value]="v">
+                  {{ v.vmname }}
                 </mat-option>
               }
             </mat-select>
           </mat-form-field>
-        </form>
-        <mat-checkbox [(ngModel)]="virtualBoxTemplate.linked_clone" class="virtualbox-add__checkbox">
+        </div>
+        <mat-checkbox [checked]="linkedClone()" (change)="linkedClone.set($event.checked)" class="virtualbox-add__checkbox">
           Use as a linked base VM (experimental)
         </mat-checkbox>
       </section>

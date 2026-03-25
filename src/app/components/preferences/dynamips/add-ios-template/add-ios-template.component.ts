@@ -1,7 +1,7 @@
 import { Location } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, model, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,7 +32,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-add-ios-template',
   templateUrl: './add-ios-template.component.html',
   styleUrls: ['./add-ios-template.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, FileUploadModule],
+  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, FileUploadModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddIosTemplateComponent implements OnInit, OnDestroy {
@@ -40,7 +40,6 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   private controllerService = inject(ControllerService);
   private iosService = inject(IosService);
   private toasterService = inject(ToasterService);
-  private formBuilder = inject(UntypedFormBuilder);
   private router = inject(Router);
   private templateMocksService = inject(TemplateMocksService);
   private iosConfigurationService = inject(IosConfigurationService);
@@ -52,15 +51,18 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   readonly iosTemplate = signal<IosTemplate>(new IosTemplate());
   readonly isEtherSwitchRouter = signal<boolean>(false);
 
-  readonly iosImageForm: UntypedFormGroup;
-  readonly iosNameForm: UntypedFormGroup;
-  readonly iosMemoryForm: UntypedFormGroup;
-  readonly iosIdlePCForm: UntypedFormGroup;
-  readonly selectedPlatform = signal<string>('');
+  // Form field signals
+  imageName = model('');
+  templateName = model('');
+  platform = model('');
+  chassis = model('');
+  memory = model('');
+  idlepc = model('');
+
   readonly iosImages = signal<IosImage[]>([]);
   readonly platforms = signal<string[]>([]);
   readonly platformsWithEtherSwitchRouterOption = signal<any>({});
-  readonly chassis = signal<any>({});
+  readonly chassisOptions = signal<any>({});
   readonly defaultRam = signal<any>({});
   readonly networkAdaptersForTemplate = signal<string[]>([]);
   readonly wicsForTemplate = signal<string[]>([]);
@@ -72,25 +74,10 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   readonly isLocalComputerChosen = signal<boolean>(true);
   subscription: Subscription;
 
-  constructor() {
-    this.iosImageForm = this.formBuilder.group({
-      imageName: new UntypedFormControl(null, [Validators.required]),
-    });
-
-    this.iosNameForm = this.formBuilder.group({
-      templateName: new UntypedFormControl(null, [Validators.required]),
-      platform: new UntypedFormControl(null, [Validators.required]),
-      chassis: new UntypedFormControl(null, [Validators.required]),
-    });
-
-    this.iosMemoryForm = this.formBuilder.group({
-      memory: new UntypedFormControl(null, [Validators.required]),
-    });
-
-    this.iosIdlePCForm = this.formBuilder.group({
-      idlepc: new UntypedFormControl(null, [Validators.pattern(this.iosConfigurationService.getIdlepcRegex())]),
-    });
-  }
+  // Step completion computed signals
+  imageStepCompleted = computed(() => !!this.imageName());
+  namePlatformStepCompleted = computed(() => !!this.templateName() && !!this.platform());
+  memoryStepCompleted = computed(() => !!this.memory());
 
   ngOnInit() {
     this.uploader.set(new FileUploader({url: ''}));
@@ -129,7 +116,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
         this.iosTemplate.set(iosTemplate);
         this.platforms.set(this.iosConfigurationService.getAvailablePlatforms());
         this.platformsWithEtherSwitchRouterOption.set(this.iosConfigurationService.getPlatformsWithEtherSwitchRouterOption());
-        this.chassis.set(this.iosConfigurationService.getChassis());
+        this.chassisOptions.set(this.iosConfigurationService.getChassis());
         this.defaultRam.set(this.iosConfigurationService.getDefaultRamSettings());
         this.adapterMatrix.set(this.iosConfigurationService.getAdapterMatrix());
         this.wicMatrix.set(this.iosConfigurationService.getWicMatrix());
@@ -138,10 +125,10 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   }
 
   fillDefaultSlots() {
-    if (this.iosNameForm.get('platform').value) {
+    if (this.platform()) {
       const matrix = this.adapterMatrix();
       for (let i = 0; i <= 6; i++) {
-        let adapters = matrix[this.iosNameForm.get('platform').value][this.iosNameForm.get('chassis').value || ''][i];
+        let adapters = matrix[this.platform()][this.chassis() || ''][i];
         if (adapters && (adapters.length === 1 || adapters[0].startsWith('C7200'))) {
           const currentAdapters = [...this.networkAdaptersForTemplate()];
           currentAdapters[i] = adapters[0];
@@ -165,7 +152,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
 
   addImage(event): void {
     let name = event.target.files[0].name.split('-')[0];
-    this.iosNameForm.controls['templateName'].setValue(name);
+    this.templateName.set(name);
     let fileName = event.target.files[0].name;
 
     const url = this.iosService.getImagePath(this.controller(), fileName);
@@ -182,21 +169,20 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
 
   addTemplate() {
     if (
-      !this.iosImageForm.invalid &&
-      !this.iosMemoryForm.invalid &&
-      !this.iosIdlePCForm.invalid &&
-      this.iosNameForm.get('templateName').value &&
-      this.iosNameForm.get('platform').value
+      this.imageName() &&
+      this.templateName() &&
+      this.platform() &&
+      this.memory()
     ) {
       const template = this.iosTemplate();
       template.template_id = uuid();
-      template.image = this.iosImageForm.get('imageName').value;
-      template.name = this.iosNameForm.get('templateName').value;
-      template.platform = this.iosNameForm.get('platform').value;
+      template.image = this.imageName();
+      template.name = this.templateName();
+      template.platform = this.platform();
 
-      if (this.chassis()[this.iosNameForm.get('platform').value])
-        template.chassis = this.iosNameForm.get('chassis').value;
-      template.ram = this.iosMemoryForm.get('memory').value;
+      if (this.chassisOptions()[this.platform()])
+        template.chassis = this.chassis();
+      template.ram = +this.memory();
 
       if (this.isEtherSwitchRouter()) {
         template.symbol = 'multilayer_switch';
@@ -244,27 +230,25 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   }
 
   onImageChosen() {
-    let name: string = this.iosImageForm.get('imageName').value.split('-')[0];
-    this.iosNameForm.controls['templateName'].setValue(name);
+    let name: string = this.imageName().split('-')[0];
+    this.templateName.set(name);
 
     if (name === 'c3620' || name === 'c3640' || name === 'c3660') {
-      this.iosNameForm.controls['platform'].setValue('c3600');
-      this.selectedPlatform.set('c3600');
+      this.platform.set('c3600');
     } else {
-      this.iosNameForm.controls['platform'].setValue(name);
-      this.selectedPlatform.set(name);
+      this.platform.set(name);
     }
 
     if (name === 'c3620' || name === 'c3640' || name === 'c3660')
-      this.iosNameForm.controls['chassis'].setValue(name.substring(1));
+      this.chassis.set(name.substring(1));
     else if (name === 'c1700') {
-      this.iosNameForm.controls['chassis'].setValue('1760');
+      this.chassis.set('1760');
     } else if (name === 'c2600') {
-      this.iosNameForm.controls['chassis'].setValue('2651XM');
+      this.chassis.set('2651XM');
     } else {
-      this.iosNameForm.controls['chassis'].setValue('');
+      this.chassis.set('');
     }
-    this.iosMemoryForm.controls['memory'].setValue(this.defaultRam()[this.selectedPlatform()]);
+    this.memory.set(String(this.defaultRam()[this.platform()]));
     this.fillDefaultSlots();
   }
 
@@ -274,13 +258,13 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     this.iosTemplate.set({...template});
     this.networkAdaptersForTemplate.set([]);
     this.wicsForTemplate.set([]);
-    if (!this.chassis()[this.iosNameForm.get('platform').value])
+    if (!this.chassisOptions()[this.platform()])
       this.fillDefaultSlots();
   }
 
   onChassisChosen() {
     this.networkAdaptersForTemplate.set([]);
-    if (this.chassis()[this.iosNameForm.get('platform').value])
+    if (this.chassisOptions()[this.platform()])
       this.fillDefaultSlots();
   }
 
@@ -289,6 +273,23 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     this.uploadServiceService.processBarCount(null)
     this.toasterService.warning('File upload cancelled');
   }
+
+  onAdapterChange(index: number, value: string): void {
+    this.networkAdaptersForTemplate.update(adapters => {
+      const newAdapters = [...adapters];
+      newAdapters[index] = value;
+      return newAdapters;
+    });
+  }
+
+  onWicChange(index: number, value: string): void {
+    this.wicsForTemplate.update(wics => {
+      const newWics = [...wics];
+      newWics[index] = value;
+      return newWics;
+    });
+  }
+
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }

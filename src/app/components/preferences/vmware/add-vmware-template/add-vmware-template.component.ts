@@ -1,6 +1,6 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,7 +23,7 @@ import { VmwareService } from '@services/vmware.service';
   selector: 'app-add-vmware-template',
   templateUrl: './add-vmware-template.component.html',
   styleUrls: ['./add-vmware-template.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatSelectModule, MatCheckboxModule, MatFormFieldModule]
+  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatSelectModule, MatCheckboxModule, MatFormFieldModule]
 })
 export class AddVmwareTemplateComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -32,34 +32,30 @@ export class AddVmwareTemplateComponent implements OnInit {
   private toasterService = inject(ToasterService);
   private templateMocksService = inject(TemplateMocksService);
   private router = inject(Router);
-  private formBuilder = inject(UntypedFormBuilder);
   private cd = inject(ChangeDetectorRef);
 
-  controller: Controller;
-  virtualMachines: VmwareVm[];
-  selectedVM: VmwareVm;
-  vmwareTemplate: VmwareTemplate;
-  templateNameForm: UntypedFormGroup;
+  readonly controller = signal<Controller | undefined>(undefined);
+  readonly virtualMachines = signal<VmwareVm[]>([]);
+  readonly selectedVM = signal<VmwareVm | undefined>(undefined);
+  readonly vmwareTemplate = signal<VmwareTemplate>(<VmwareTemplate>{});
 
-  constructor() {
-    this.templateNameForm = this.formBuilder.group({
-      templateName: new UntypedFormControl(null, [Validators.required]),
-    });
-  }
+  // Form field signals
+  templateName = model('');
+  linkedClone = model(false);
 
   ngOnInit() {
     this.toasterService.error(`VMware VM support is deprecated and will be removed in a future version, please use Qemu VMs instead`);
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
-      this.controller = controller;
+      this.controller.set(controller);
       this.cd.markForCheck();
 
-      this.vmwareService.getVirtualMachines(this.controller).subscribe((virtualMachines: VmwareVm[]) => {
-        this.virtualMachines = virtualMachines;
+      this.vmwareService.getVirtualMachines(this.controller()).subscribe((virtualMachines: VmwareVm[]) => {
+        this.virtualMachines.set(virtualMachines);
         this.cd.markForCheck();
 
         this.templateMocksService.getVmwareTemplate().subscribe((template: VmwareTemplate) => {
-          this.vmwareTemplate = template;
+          this.vmwareTemplate.set(template);
           this.cd.markForCheck();
         });
       });
@@ -67,16 +63,18 @@ export class AddVmwareTemplateComponent implements OnInit {
   }
 
   goBack() {
-    this.router.navigate(['/controller', this.controller.id, 'preferences', 'vmware', 'templates']);
+    this.router.navigate(['/controller', this.controller().id, 'preferences', 'vmware', 'templates']);
   }
 
   addTemplate() {
-    if (!this.templateNameForm.invalid) {
-      this.vmwareTemplate.name = this.selectedVM.vmname;
-      this.vmwareTemplate.vmx_path = this.selectedVM.vmx_path;
-      this.vmwareTemplate.template_id = uuid();
+    if (this.templateName() && this.selectedVM()) {
+      const template = this.vmwareTemplate();
+      template.name = this.selectedVM().vmname;
+      template.vmx_path = this.selectedVM().vmx_path;
+      template.linked_clone = this.linkedClone();
+      template.template_id = uuid();
 
-      this.vmwareService.addTemplate(this.controller, this.vmwareTemplate).subscribe(() => {
+      this.vmwareService.addTemplate(this.controller(), template).subscribe(() => {
         this.goBack();
       });
     } else {

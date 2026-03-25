@@ -26,20 +26,20 @@
           </mat-radio-group>
         </mat-step>
 
-        <mat-step label="QEMU VM Name" [completed]="nameForm.get('templateName').value">
-          <form [formGroup]="nameForm" class="qemu-add__form">
+        <mat-step label="QEMU VM Name" [completed]="nameStepCompleted()">
+          <div class="qemu-add__form">
             <mat-form-field appearance="fill" class="qemu-add__field">
               <mat-label>Template name</mat-label>
-              <input matInput type="text" formControlName="templateName" placeholder="Please choose a descriptive name for your new QEMU virtual machine" />
+              <input matInput type="text" [value]="templateName()" (input)="templateName.set($event.target.value)" placeholder="Please choose a descriptive name for your new QEMU virtual machine" />
             </mat-form-field>
-          </form>
+          </div>
         </mat-step>
 
-        <mat-step label="Platform and memory" [completed]="memoryForm.get('ramMemory').value && selectedPlatform()">
-          <form [formGroup]="memoryForm" class="qemu-add__form">
+        <mat-step label="Platform and memory" [completed]="platformStepCompleted()">
+          <div class="qemu-add__form">
             <mat-form-field appearance="fill" class="qemu-add__field">
               <mat-label>Platform</mat-label>
-              <mat-select placeholder="Platform" [(ngModel)]="selectedPlatform" [ngModelOptions]="{ standalone: true }">
+              <mat-select placeholder="Platform" [value]="selectedPlatform()" (selectionChange)="selectedPlatform.set($event.value)">
                 @for (platform of selectPlatform(); track platform) {
                   <mat-option [value]="platform">
                     {{ platform }}
@@ -50,16 +50,16 @@
 
             <mat-form-field appearance="fill" class="qemu-add__field">
               <mat-label>RAM</mat-label>
-              <input matInput type="number" min="1" placeholder="RAM" formControlName="ramMemory" />
+              <input matInput type="number" min="1" placeholder="RAM" [value]="ramMemory()" (input)="ramMemory.set(+$event.target.value)" />
               <span matSuffix>MB</span>
             </mat-form-field>
-          </form>
+          </div>
         </mat-step>
 
-        <mat-step label="Console type" [completed]="qemuTemplate().console_type">
+        <mat-step label="Console type" [completed]="consoleStepCompleted()">
           <mat-form-field appearance="fill" class="qemu-add__field">
             <mat-label>Console type</mat-label>
-            <mat-select placeholder="Console type" [(ngModel)]="qemuTemplate().console_type" [ngModelOptions]="{ standalone: true }">
+            <mat-select placeholder="Console type" [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
               @for (type of consoleTypes(); track type) {
                 <mat-option [value]="type">
                   {{ type }}
@@ -69,10 +69,10 @@
           </mat-form-field>
         </mat-step>
 
-        <mat-step label="Auxiliary console type" [completed]="qemuTemplate().aux_type">
+        <mat-step label="Auxiliary console type" [completed]="auxConsoleStepCompleted()">
           <mat-form-field appearance="fill" class="qemu-add__field">
             <mat-label>Auxiliary console type</mat-label>
-            <mat-select placeholder="Auxiliary console type" [(ngModel)]="qemuTemplate().aux_type" [ngModelOptions]="{ standalone: true }">
+            <mat-select placeholder="Auxiliary console type" [value]="auxConsoleType()" (selectionChange)="auxConsoleType.set($event.value)">
               @for (type of auxConsoleTypes(); track type) {
                 <mat-option [value]="type">
                   {{ type }}
@@ -83,7 +83,7 @@
         </mat-step>
 
         <mat-step label="Disk image">
-          <form [formGroup]="diskForm" class="qemu-add__form">
+          <div class="qemu-add__form">
             <mat-radio-group class="qemu-add__radio-group">
               <mat-radio-button
                 class="qemu-add__radio"
@@ -104,7 +104,7 @@
             @if (!newImageSelected()) {
               <mat-form-field appearance="fill" class="qemu-add__field">
                 <mat-label>Disk image (hda)</mat-label>
-                <mat-select placeholder="Disk image (hda)" [ngModelOptions]="{ standalone: true }" [(ngModel)]="selectedImage">
+                <mat-select placeholder="Disk image (hda)" [value]="selectedImage()" (selectionChange)="selectedImage.set($event.value)">
                   @for (image of qemuImages(); track image.filename) {
                     <mat-option [value]="image">
                       {{ image.filename }}
@@ -130,11 +130,11 @@
                 </button>
                 <mat-form-field appearance="fill" class="qemu-add__field qemu-add__field--flex">
                   <mat-label>Image name</mat-label>
-                  <input matInput type="text" [(ngModel)]="chosenImage" formControlName="fileName" placeholder="Please enter name" />
+                  <input matInput type="text" [value]="fileName()" (input)="fileName.set($event.target.value)" placeholder="Please enter name" />
                 </mat-form-field>
               </div>
             }
-          </form>
+          </div>
         </mat-step>
       </mat-vertical-stepper>
     </section>

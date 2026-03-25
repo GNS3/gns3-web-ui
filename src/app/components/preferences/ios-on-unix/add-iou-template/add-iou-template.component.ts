@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, model, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -30,7 +30,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-add-iou-template',
   templateUrl: './add-iou-template.component.html',
   styleUrls: ['./add-iou-template.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, FileUploadModule],
+  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, FileUploadModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddIouTemplateComponent implements OnInit, OnDestroy {
@@ -39,33 +39,27 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   private iouService = inject(IouService);
   private toasterService = inject(ToasterService);
   private router = inject(Router);
-  private formBuilder = inject(UntypedFormBuilder);
   private templateMocksService = inject(TemplateMocksService);
   private computeService = inject(ComputeService);
   private uploadServiceService = inject(UploadServiceService);
   private snackBar = inject(MatSnackBar);
+
   readonly controller = signal<Controller | undefined>(undefined);
   readonly iouTemplate = signal<IouTemplate>(new IouTemplate());
   readonly newImageSelected = signal<boolean>(false);
   readonly types = signal<string[]>(['L2 image', 'L3 image']);
-  readonly selectedType = signal<string>('');
   readonly iouImages = signal<IouImage[]>([]);
   readonly uploader = signal<FileUploader | undefined>(undefined);
-
-  readonly templateNameForm: UntypedFormGroup;
-  readonly imageForm: UntypedFormGroup;
   readonly isLocalComputerChosen = signal<boolean>(true);
   subscription: Subscription;
 
-  constructor() {
-    this.templateNameForm = this.formBuilder.group({
-      templateName: new UntypedFormControl(null, Validators.required),
-    });
+  // Form field signals
+  templateName = model('');
+  imageName = model('');
+  selectedType = model('');
 
-    this.imageForm = this.formBuilder.group({
-      imageName: new UntypedFormControl('', Validators.required),
-    });
-  }
+  // Step completion computed signals
+  nameStepCompleted = computed(() => !!this.templateName());
 
   ngOnInit() {
     this.uploader.set(new FileUploader({url: ''}));
@@ -124,7 +118,7 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
 
   uploadImageFile(event): void {
     let name = event.target.files[0].name;
-    this.imageForm.controls['imageName'].setValue(name);
+    this.imageName.set(name);
 
     const url = this.iouService.getImagePath(this.controller(), name);
     this.uploader().queue.forEach((elem) => (elem.url = url));
@@ -151,13 +145,13 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
 
   addTemplate() {
     if (
-      !this.templateNameForm.invalid &&
-      ((this.newImageSelected() && !this.imageForm.invalid) || (!this.newImageSelected() && this.iouTemplate().path))
+      this.templateName() &&
+      ((this.newImageSelected() && this.imageName()) || (!this.newImageSelected() && this.iouTemplate().path))
     ) {
       const template = this.iouTemplate();
       template.template_id = uuid();
-      template.name = this.templateNameForm.get('templateName').value;
-      if (this.newImageSelected()) template.path = this.imageForm.get('imageName').value;
+      template.name = this.templateName();
+      if (this.newImageSelected()) template.path = this.imageName();
       template.compute_id = 'local';
 
       if (this.selectedType() === 'L2 image') {

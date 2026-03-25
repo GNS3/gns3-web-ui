@@ -26,17 +26,17 @@
           </mat-radio-group>
         </mat-step>
 
-        <mat-step label="Name" [completed]="templateNameForm.get('templateName').value">
-          <form [formGroup]="templateNameForm" class="iou-add__form">
+        <mat-step label="Name" [completed]="nameStepCompleted()">
+          <div class="iou-add__form">
             <mat-form-field appearance="fill" class="iou-add__field">
               <mat-label>Template name</mat-label>
-              <input matInput placeholder="Name" type="text" formControlName="templateName" />
+              <input matInput placeholder="Name" type="text" [value]="templateName()" (input)="templateName.set($event.target.value)" />
             </mat-form-field>
-          </form>
+          </div>
         </mat-step>
 
         <mat-step label="Image">
-          <form [formGroup]="imageForm" class="iou-add__form">
+          <div class="iou-add__form">
             <mat-radio-group class="iou-add__radio-group">
               <mat-radio-button
                 class="iou-add__radio"
@@ -56,7 +56,7 @@
 
             <mat-form-field appearance="fill" class="iou-add__field">
               <mat-label>Type</mat-label>
-              <mat-select placeholder="Type" [(ngModel)]="selectedType" [ngModelOptions]="{ standalone: true }">
+              <mat-select placeholder="Type" [value]="selectedType()" (selectionChange)="selectedType.set($event.value)">
                 @for (type of types(); track type) {
                   <mat-option [value]="type">
                     {{ type }}
@@ -68,7 +68,7 @@
             @if (!newImageSelected()) {
               <mat-form-field appearance="fill" class="iou-add__field">
                 <mat-label>IOU image</mat-label>
-                <mat-select placeholder="IOU image" [(ngModel)]="iouTemplate().path" [ngModelOptions]="{ standalone: true }">
+                <mat-select placeholder="IOU image" [value]="iouTemplate().path" (selectionChange)="iouTemplate.update(t => ({ ...t, path: $event.value }))">
                   @for (image of iouImages(); track image.path) {
                     <mat-option [value]="image.path">
                       {{ image.path }}
@@ -94,11 +94,11 @@
                 </button>
                 <mat-form-field appearance="fill" class="iou-add__field iou-add__field--flex">
                   <mat-label>IOU image</mat-label>
-                  <input matInput type="text" formControlName="imageName" placeholder="IOU image" />
+                  <input matInput type="text" [value]="imageName()" (input)="imageName.set($event.target.value)" placeholder="IOU image" />
                 </mat-form-field>
               </div>
             }
-          </form>
+          </div>
         </mat-step>
       </mat-vertical-stepper>
     </section>
