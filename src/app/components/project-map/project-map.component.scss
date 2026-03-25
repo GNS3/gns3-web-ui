@@ -173,7 +173,7 @@ g.node:hover {
   z-index: 2;
   transition: background-color 200ms ease;
 
-  // 确保 toolbar 本身是 flex 容器
+  // Ensure toolbar itself is a flex container
   display: flex;
   flex-direction: column;
   align-items: center;

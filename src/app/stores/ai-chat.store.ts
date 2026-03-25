@@ -3,36 +3,36 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { ChatSession, ChatMessage, ToolCall, ChatPanelState, SessionUIState, ToolCallUIState } from '@models/ai-chat.interface';
 
 /**
- * AI Chat 状态管理服务
- * 使用 RxJS BehaviorSubject 管理聊天状态
+ * AI Chat State Management Service
+ * Uses RxJS BehaviorSubject to manage chat state
  */
 @Injectable({
   providedIn: 'root'
 })
 export class AiChatStore {
-  // 当前项目 ID
+  // Current project ID
   private currentProjectId$ = new BehaviorSubject<string | null>(null);
 
-  // 当前会话 ID
+  // Current session ID
   private currentSessionId$ = new BehaviorSubject<string | null>(null);
 
-  // 会话列表
+  // Session list
   private sessions$ = new BehaviorSubject<ChatSession[]>([]);
 
-  // 消息历史 (Map: sessionId -> messages)
+  // Message history (Map: sessionId -> messages)
   private messagesMap = new Map<string, ChatMessage[]>();
   private messages$ = new BehaviorSubject<Map<string, ChatMessage[]>>(new Map());
 
-  // 流式状态
+  // Streaming state
   private isStreaming$ = new BehaviorSubject<boolean>(false);
 
-  // 当前工具调用状态 (Map: toolCallId -> toolCall)
+  // Current tool call state (Map: toolCallId -> toolCall)
   private currentToolCalls$ = new BehaviorSubject<Map<string, ToolCall>>(new Map());
 
-  // 错误状态
+  // Error state
   private error$ = new BehaviorSubject<string | null>(null);
 
-  // 面板状态
+  // Panel state
   private panelState$ = new BehaviorSubject<ChatPanelState>({
     isOpen: false,
     width: 800,
@@ -45,25 +45,25 @@ export class AiChatStore {
     }
   });
 
-  // 会话 UI 状态 (Map: sessionId -> uiState)
+  // Session UI state (Map: sessionId -> uiState)
   private sessionUIStateMap = new Map<string, SessionUIState>();
   private sessionUIStates$ = new BehaviorSubject<Map<string, SessionUIState>>(new Map());
 
   constructor() {
-    // 从 localStorage 恢复面板状态
+    // Restore panel state from localStorage
     this.loadPanelState();
   }
 
   /* ==================== Project & Session State ==================== */
 
   /**
-   * 设置当前项目 ID
-   * @param projectId 项目 ID
+   * Set current project ID
+   * @param projectId Project ID
    */
   setCurrentProjectId(projectId: string | null): void {
     this.currentProjectId$.next(projectId);
     if (projectId) {
-      // 切换项目时，清空消息和会话
+      // Clear messages and sessions when switching projects
       this.messagesMap.clear();
       this.messages$.next(new Map());
       this.sessions$.next([]);
@@ -71,40 +71,40 @@ export class AiChatStore {
   }
 
   /**
-   * 获取当前项目 ID
-   * @returns 项目 ID Observable
+   * Get current project ID
+   * @returns Project ID Observable
    */
   getCurrentProjectId(): Observable<string | null> {
     return this.currentProjectId$.asObservable();
   }
 
   /**
-   * 获取当前项目 ID 的当前值
-   * @returns 项目 ID
+   * Get current project ID value
+   * @returns Project ID
    */
   getCurrentProjectIdValue(): string | null {
     return this.currentProjectId$.value;
   }
 
   /**
-   * 设置当前会话 ID
-   * @param sessionId 会话 ID
+   * Set current session ID
+   * @param sessionId Session ID
    */
   setCurrentSessionId(sessionId: string | null): void {
     this.currentSessionId$.next(sessionId);
   }
 
   /**
-   * 获取当前会话 ID
-   * @returns 会话 ID Observable
+   * Get current session ID
+   * @returns Session ID Observable
    */
   getCurrentSessionId(): Observable<string | null> {
     return this.currentSessionId$.asObservable();
   }
 
   /**
-   * 获取当前会话 ID 的当前值
-   * @returns 会话 ID
+   * Get current session ID value
+   * @returns Session ID
    */
   getCurrentSessionIdValue(): string | null {
     return this.currentSessionId$.value;
@@ -113,32 +113,32 @@ export class AiChatStore {
   /* ==================== Sessions State ==================== */
 
   /**
-   * 设置会话列表
-   * @param sessions 会话列表
+   * Set session list
+   * @param sessions Session list
    */
   setSessions(sessions: ChatSession[]): void {
     this.sessions$.next(sessions);
   }
 
   /**
-   * 获取会话列表
-   * @returns 会话列表 Observable
+   * Get session list
+   * @returns Session list Observable
    */
   getSessions(): Observable<ChatSession[]> {
     return this.sessions$.asObservable();
   }
 
   /**
-   * 获取会话列表的当前值
-   * @returns 会话列表
+   * Get session list value
+   * @returns Session list
    */
   getSessionsValue(): ChatSession[] {
     return this.sessions$.value;
   }
 
   /**
-   * 添加新会话
-   * @param session 会话
+   * Add new session
+   * @param session Session
    */
   addSession(session: ChatSession): void {
     const currentSessions = this.sessions$.value;
@@ -146,8 +146,8 @@ export class AiChatStore {
   }
 
   /**
-   * 更新会话
-   * @param session 会话
+   * Update session
+   * @param session Session
    */
   updateSession(session: ChatSession): void {
     const currentSessions = this.sessions$.value;
@@ -160,18 +160,18 @@ export class AiChatStore {
   }
 
   /**
-   * 删除会话
-   * @param sessionId 会话 ID
+   * Delete session
+   * @param sessionId Session ID
    */
   deleteSession(sessionId: string): void {
     const currentSessions = this.sessions$.value;
     this.sessions$.next(currentSessions.filter(s => s.thread_id !== sessionId));
 
-    // 删除消息
+    // Delete messages
     this.messagesMap.delete(sessionId);
     this.messages$.next(new Map(this.messagesMap));
 
-    // 如果删除的是当前会话，重置当前会话
+    // If deleting the current session, reset current session
     if (this.currentSessionId$.value === sessionId) {
       this.currentSessionId$.next(null);
     }
@@ -180,9 +180,9 @@ export class AiChatStore {
   /* ==================== Messages State ==================== */
 
   /**
-   * 获取指定会话的消息
-   * @param sessionId 会话 ID（可选，默认当前会话）
-   * @returns 消息列表 Observable
+   * Get messages for specified session
+   * @param sessionId Session ID (optional, defaults to current session)
+   * @returns Messages list Observable
    */
   getMessages(sessionId?: string): Observable<ChatMessage[]> {
     return new Observable<ChatMessage[]>(subscriber => {
@@ -193,16 +193,16 @@ export class AiChatStore {
         return;
       }
 
-      // 返回该会话的消息
+      // Return messages for this session
       const messages = this.messagesMap.get(targetSessionId) || [];
       subscriber.next(messages);
     });
   }
 
   /**
-   * 获取指定会话的消息当前值
-   * @param sessionId 会话 ID（可选，默认当前会话）
-   * @returns 消息列表
+   * Get messages value for specified session
+   * @param sessionId Session ID (optional, defaults to current session)
+   * @returns Messages list
    */
   getMessagesValue(sessionId?: string): ChatMessage[] {
     const targetSessionId = sessionId || this.currentSessionId$.value;
@@ -213,9 +213,9 @@ export class AiChatStore {
   }
 
   /**
-   * 设置会话的消息
-   * @param sessionId 会话 ID
-   * @param messages 消息列表
+   * Set session messages
+   * @param sessionId Session ID
+   * @param messages Messages list
    */
   setMessages(sessionId: string, messages: ChatMessage[]): void {
     this.messagesMap.set(sessionId, messages);
@@ -223,9 +223,9 @@ export class AiChatStore {
   }
 
   /**
-   * 添加消息到会话
-   * @param sessionId 会话 ID
-   * @param message 消息
+   * Add message to session
+   * @param sessionId Session ID
+   * @param message Message
    */
   addMessage(sessionId: string, message: ChatMessage): void {
     const currentMessages = this.messagesMap.get(sessionId) || [];
@@ -234,9 +234,9 @@ export class AiChatStore {
   }
 
   /**
-   * 更新会话的最后一条消息
-   * @param sessionId 会话 ID
-   * @param content 新内容
+   * Update last message in session
+   * @param sessionId Session ID
+   * @param content New content
    */
   updateLastMessage(sessionId: string, content: string): void {
     const currentMessages = this.messagesMap.get(sessionId);
@@ -253,8 +253,8 @@ export class AiChatStore {
   }
 
   /**
-   * 清空会话消息
-   * @param sessionId 会话 ID
+   * Clear session messages
+   * @param sessionId Session ID
    */
   clearMessages(sessionId: string): void {
     this.messagesMap.delete(sessionId);
@@ -264,24 +264,24 @@ export class AiChatStore {
   /* ==================== Streaming State ==================== */
 
   /**
-   * 设置流式状态
-   * @param streaming 是否正在流式传输
+   * Set streaming state
+   * @param streaming Whether streaming
    */
   setStreamingState(streaming: boolean): void {
     this.isStreaming$.next(streaming);
   }
 
   /**
-   * 获取流式状态
-   * @returns 流式状态 Observable
+   * Get streaming state
+   * @returns Streaming state Observable
    */
   getStreamingState(): Observable<boolean> {
     return this.isStreaming$.asObservable();
   }
 
   /**
-   * 获取流式状态的当前值
-   * @returns 是否正在流式传输
+   * Get streaming state value
+   * @returns Whether streaming
    */
   getStreamingStateValue(): boolean {
     return this.isStreaming$.value;
@@ -290,16 +290,16 @@ export class AiChatStore {
   /* ==================== Tool Calls State ==================== */
 
   /**
-   * 设置当前工具调用
-   * @param toolCalls 工具调用 Map
+   * Set current tool calls
+   * @param toolCalls Tool call Map
    */
   setCurrentToolCalls(toolCalls: Map<string, ToolCall>): void {
     this.currentToolCalls$.next(new Map(toolCalls));
   }
 
   /**
-   * 添加或更新工具调用
-   * @param toolCall 工具调用
+   * Add or update tool call
+   * @param toolCall Tool call
    */
   addOrUpdateToolCall(toolCall: ToolCall): void {
     const currentToolCalls = new Map(this.currentToolCalls$.value);
@@ -308,8 +308,8 @@ export class AiChatStore {
   }
 
   /**
-   * 删除工具调用
-   * @param toolCallId 工具调用 ID
+   * Remove tool call
+   * @param toolCallId Tool call ID
    */
   removeToolCall(toolCallId: string): void {
     const currentToolCalls = new Map(this.currentToolCalls$.value);
@@ -318,23 +318,23 @@ export class AiChatStore {
   }
 
   /**
-   * 清空所有工具调用
+   * Clear all tool calls
    */
   clearToolCalls(): void {
     this.currentToolCalls$.next(new Map());
   }
 
   /**
-   * 获取工具调用状态
-   * @returns 工具调用 Map Observable
+   * Get tool call state
+   * @returns Tool call Map Observable
    */
   getCurrentToolCalls(): Observable<Map<string, ToolCall>> {
     return this.currentToolCalls$.asObservable();
   }
 
   /**
-   * 获取工具调用状态的当前值
-   * @returns 工具调用 Map
+   * Get tool call state value
+   * @returns Tool call Map
    */
   getCurrentToolCallsValue(): Map<string, ToolCall> {
     return this.currentToolCalls$.value;
@@ -343,23 +343,23 @@ export class AiChatStore {
   /* ==================== Error State ==================== */
 
   /**
-   * 设置错误信息
-   * @param error 错误信息
+   * Set error message
+   * @param error Error message
    */
   setError(error: string | null): void {
     this.error$.next(error);
   }
 
   /**
-   * 获取错误信息
-   * @returns 错误信息 Observable
+   * Get error message
+   * @returns Error message Observable
    */
   getError(): Observable<string | null> {
     return this.error$.asObservable();
   }
 
   /**
-   * 清除错误信息
+   * Clear error message
    */
   clearError(): void {
     this.error$.next(null);
@@ -368,8 +368,8 @@ export class AiChatStore {
   /* ==================== Panel State ==================== */
 
   /**
-   * 设置面板状态
-   * @param state 面板状态
+   * Set panel state
+   * @param state Panel state
    */
   setPanelState(state: Partial<ChatPanelState>): void {
     const currentState = this.panelState$.value;
@@ -379,23 +379,23 @@ export class AiChatStore {
   }
 
   /**
-   * 获取面板状态
-   * @returns 面板状态 Observable
+   * Get panel state
+   * @returns Panel state Observable
    */
   getPanelState(): Observable<ChatPanelState> {
     return this.panelState$.asObservable();
   }
 
   /**
-   * 获取面板状态的当前值
-   * @returns 面板状态
+   * Get panel state value
+   * @returns Panel state
    */
   getPanelStateValue(): ChatPanelState {
     return this.panelState$.value;
   }
 
   /**
-   * 打开面板
+   * Open panel
    */
   openPanel(): void {
     const currentState = this.panelState$.value;
@@ -404,7 +404,7 @@ export class AiChatStore {
   }
 
   /**
-   * 关闭面板
+   * Close panel
    */
   closePanel(): void {
     const currentState = this.panelState$.value;
@@ -413,7 +413,7 @@ export class AiChatStore {
   }
 
   /**
-   * 最大化面板
+   * Maximize panel
    */
   maximizePanel(): void {
     const currentState = this.panelState$.value;
@@ -426,7 +426,7 @@ export class AiChatStore {
   }
 
   /**
-   * 最小化面板
+   * Minimize panel
    */
   minimizePanel(): void {
     const currentState = this.panelState$.value;
@@ -439,7 +439,7 @@ export class AiChatStore {
   }
 
   /**
-   * 恢复面板（从最大化或最小化）
+   * Restore panel (from maximized or minimized)
    */
   restorePanel(): void {
     const currentState = this.panelState$.value;
@@ -452,8 +452,8 @@ export class AiChatStore {
   }
 
   /**
-   * 更新面板位置
-   * @param position 位置信息
+   * Update panel position
+   * @param position Position info
    */
   updatePanelPosition(position: { top?: number; right?: number; left?: number }): void {
     const currentState = this.panelState$.value;
@@ -466,9 +466,9 @@ export class AiChatStore {
   }
 
   /**
-   * 更新面板大小
-   * @param width 宽度
-   * @param height 高度
+   * Update panel size
+   * @param width Width
+   * @param height Height
    */
   updatePanelSize(width: number, height: number): void {
     const currentState = this.panelState$.value;
@@ -481,8 +481,8 @@ export class AiChatStore {
   }
 
   /**
-   * 保存面板状态到 localStorage
-   * @param state 面板状态
+   * Save panel state to localStorage
+   * @param state Panel state
    */
   private savePanelState(state: ChatPanelState): void {
     try {
@@ -493,7 +493,7 @@ export class AiChatStore {
   }
 
   /**
-   * 从 localStorage 加载面板状态
+   * Load panel state from localStorage
    */
   private loadPanelState(): void {
     try {
@@ -514,9 +514,9 @@ export class AiChatStore {
   /* ==================== Session UI State ==================== */
 
   /**
-   * 设置会话 UI 状态
-   * @param sessionId 会话 ID
-   * @param uiState UI 状态
+   * Set session UI state
+   * @param sessionId Session ID
+   * @param uiState UI state
    */
   setSessionUIState(sessionId: string, uiState: Partial<SessionUIState>): void {
     const currentStates = new Map(this.sessionUIStateMap);
@@ -531,9 +531,9 @@ export class AiChatStore {
   }
 
   /**
-   * 获取会话 UI 状态
-   * @param sessionId 会话 ID
-   * @returns UI 状态 Observable
+   * Get session UI state
+   * @param sessionId Session ID
+   * @returns UI state Observable
    */
   getSessionUIState(sessionId: string): Observable<SessionUIState | undefined> {
     return new Observable<SessionUIState | undefined>(subscriber => {
@@ -542,9 +542,9 @@ export class AiChatStore {
   }
 
   /**
-   * 获取会话 UI 状态的当前值
-   * @param sessionId 会话 ID
-   * @returns UI 状态
+   * Get session UI state value
+   * @param sessionId Session ID
+   * @returns UI state
    */
   getSessionUIStateValue(sessionId: string): SessionUIState | undefined {
     return this.sessionUIStateMap.get(sessionId);
@@ -553,7 +553,7 @@ export class AiChatStore {
   /* ==================== Reset & Clear ==================== */
 
   /**
-   * 重置所有状态
+   * Reset all state
    */
   resetAll(): void {
     this.currentProjectId$.next(null);
@@ -569,7 +569,7 @@ export class AiChatStore {
   }
 
   /**
-   * 重置会话相关状态（保留面板状态）
+   * Reset session-related state (keeping panel state)
    */
   resetSessionState(): void {
     this.currentSessionId$.next(null);

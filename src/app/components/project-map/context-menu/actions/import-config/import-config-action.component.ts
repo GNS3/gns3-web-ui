@@ -28,7 +28,7 @@ export class ImportConfigActionComponent {
   configType: string;
 
   triggerClick() {
-    // 重置 fileInput，确保 change 事件可以再次触发
+    // Reset fileInput to ensure the change event can be triggered again
     this.fileInput().nativeElement.value = '';
     if (this.node().node_type !== 'vpcs') {
       const dialogRef = this.dialog.open(ConfigDialogComponent, {

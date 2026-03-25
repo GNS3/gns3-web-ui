@@ -1,28 +1,28 @@
 # Standalone Components
 
-这个目录用于存放新创建的 **Standalone Components**（独立组件）。
+This directory stores newly created **Standalone Components**.
 
-## 目录结构
+## Directory Structure
 
 ```
 standalone/
 ├── components/
-│   ├── buttons/    # 按钮组件
-│   ├── forms/      # 表单组件
-│   ├── indicators/ # 指示器组件（加载条、徽章等）
-│   └── layout/     # 布局组件
+│   ├── buttons/    # Button components
+│   ├── forms/      # Form components
+│   ├── indicators/ # Indicator components (loading bars, badges, etc.)
+│   └── layout/     # Layout components
 └── README.md
 ```
 
-## 使用说明
+## Usage
 
-### 创建新的 Standalone 组件
+### Creating a New Standalone Component
 
 ```bash
 ng g component standalone/components/buttons/my-button --standalone
 ```
 
-### 示例组件结构
+### Example Component Structure
 
 ```typescript
 import { Component, input, output } from '@angular/core';
@@ -52,29 +52,29 @@ export class MyButtonComponent {
 }
 ```
 
-## 迁移指南
+## Migration Guide
 
-### 从 NgModule 组件迁移
+### Migrating from NgModule Components
 
-1. 添加 `standalone: true`
-2. 添加 `imports: []` 声明依赖
-3. 使用 `input()` 替代 `@Input()`
-4. 使用 `output()` 替代 `@Output()`
-5. 移除 NgModule 中的 declarations
+1. Add `standalone: true`
+2. Add `imports: []` to declare dependencies
+3. Use `input()` instead of `@Input()`
+4. Use `output()` instead of `@Output()`
+5. Remove from NgModule's declarations
 
-### 最佳实践
+### Best Practices
 
-- ✅ 使用 `input()` / `output()` 函数
-- ✅ 使用 `inject()` 进行依赖注入
-- ✅ 使用 `computed()` 进行计算属性
-- ✅ 使用 `@if` / `@for` 控制流
-- ✅ 使用 OnPush 变更检测策略
+- ✅ Use `input()` / `output()` functions
+- ✅ Use `inject()` for dependency injection
+- ✅ Use `computed()` for computed properties
+- ✅ Use `@if` / `@for` control flow
+- ✅ Use OnPush change detection strategy
 
-## 关联文档
+## Related Documents
 
-- [迁移计划文档](../../MIGRATION_PLAN.md)
-- [任务清单](../../MIGRATION_TASKS.md)
+- [Migration Plan Document](../../MIGRATION_PLAN.md)
+- [Task List](../../MIGRATION_TASKS.md)
 
 ---
 
-**最后更新**: 2026-03-21
+**Last Updated**: 2026-03-21

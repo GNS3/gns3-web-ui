@@ -1,21 +1,21 @@
 /**
  * Material 3 Theme Generator
  *
- * 基于 Angular Material 21 MD3 Sass Mixin 系统，
- * 自动生成可动态切换的全局变量类。
+ * Based on Angular Material 21 MD3 Sass Mixin system,
+ * automatically generates dynamically switchable global variable classes.
  *
- * 使用方式：
- * 1. 在 styles.scss 中引入此文件
- * 2. 调用 generate-all-themes() mixin
- * 3. 在 HTML 中通过切换 <html class="theme-rose-red"> 来换肤
+ * Usage:
+ * 1. Import this file in styles.scss
+ * 2. Call generate-all-themes() mixin
+ * 3. In HTML, switch themes by toggling <html class="theme-rose-red">
  */
 
 @use 'sass:map';
 @use '@angular/material' as mat;
 
 // ============================================
-// 主题配置映射表
-// Angular Material 21 MD3 palette 列表：
+// Theme configuration map
+// Angular Material 21 MD3 palette list:
 // $red-palette, $green-palette, $blue-palette, $yellow-palette,
 // $cyan-palette, $magenta-palette, $orange-palette,
 // $chartreuse-palette, $spring-green-palette, $azure-palette,
@@ -23,7 +23,7 @@
 // ============================================
 
 $theme-configs: (
-  // 亮色主题 - 与 ThemeService 的 availableThemes 保持一致
+  // Light themes - must be consistent with ThemeService's availableThemes
   'deeppurple-amber': (
     theme-type: light,
     primary: mat.$violet-palette,
@@ -34,7 +34,7 @@ $theme-configs: (
     primary: mat.$azure-palette,
     tertiary: mat.$rose-palette,
   ),
-  // 暗色主题
+  // Dark themes
   'pink-bluegrey': (
     theme-type: dark,
     primary: mat.$rose-palette,
@@ -48,10 +48,10 @@ $theme-configs: (
 );
 
 // ============================================
-// 核心 mixin：定义主题并注入到 :root
+// Core mixin: define theme and inject into :root
 // ============================================
 
-/// 为指定主题生成完整的 CSS 变量
+/// Generate complete CSS variables for a specified theme
 @mixin generate-theme($config, $class-name) {
   $theme: mat.define-theme((
     color: (
@@ -78,7 +78,7 @@ $theme-configs: (
   }
 }
 
-/// 为所有已配置的主题生成切换类
+/// Generate switch classes for all configured themes
 @mixin generate-all-themes() {
   @each $name, $config in $theme-configs {
     @include generate-theme($config, 'theme-#{$name}');

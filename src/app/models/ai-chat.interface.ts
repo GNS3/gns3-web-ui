@@ -1,68 +1,68 @@
 /**
- * AI Chat 相关的数据模型和接口定义
- * 基于 GNS3 Copilot Chat API 设计文档
+ * AI Chat data models and interface definitions
+ * Based on GNS3 Copilot Chat API design document
  */
 
 /**
- * SSE 事件类型
+ * SSE event types
  */
 export type ChatEventType =
-  | 'content'       // AI 文本内容（流式）
-  | 'tool_call'     // LLM 决定调用工具（流式，参数逐步累积）
-  | 'tool_start'    // 工具开始执行
-  | 'tool_end'      // 工具执行完成
-  | 'error'         // 错误消息
-  | 'done'          // 流结束
-  | 'heartbeat';    // 心跳保活
+  | 'content'       // AI text content (streaming)
+  | 'tool_call'    // LLM decides to call tool (streaming, parameters accumulate gradually)
+  | 'tool_start'   // Tool starts executing
+  | 'tool_end'     // Tool execution completed
+  | 'error'        // Error message
+  | 'done'         // Stream ended
+  | 'heartbeat';   // Heartbeat keep-alive
 
 /**
- * 工具调用信息
+ * Tool call information
  */
 export interface ToolCall {
-  id: string;       // 工具调用 ID
+  id: string;       // Tool call ID
   type: 'function';
   function: {
-    name: string;       // 工具名称
-    arguments: string | Record<string, any>;  // 参数 JSON 字符串或对象
-    complete?: boolean; // 参数是否完整
+    name: string;       // Tool name
+    arguments: string | Record<string, any>;  // Arguments JSON string or object
+    complete?: boolean; // Whether arguments are complete
   };
 }
 
 /**
- * SSE 聊天事件
+ * SSE chat event
  */
 export interface ChatEvent {
   type: ChatEventType;
-  content?: string;           // AI 文本内容
-  tool_call?: ToolCall;       // 工具调用信息
-  tool_name?: string;         // 工具名称
-  tool_output?: string;       // 工具执行结果
-  tool_call_id?: string;      // 工具调用 ID
-  error?: string;             // 错误信息
-  session_id?: string;        // 会话 ID
-  message_id?: string;        // 消息 ID
+  content?: string;           // AI text content
+  tool_call?: ToolCall;       // Tool call information
+  tool_name?: string;         // Tool name
+  tool_output?: string;       // Tool execution result
+  tool_call_id?: string;      // Tool call ID
+  error?: string;             // Error message
+  session_id?: string;        // Session ID
+  message_id?: string;        // Message ID
 }
 
 /**
- * 聊天会话
+ * Chat session
  */
 export interface ChatSession {
-  id: number;                 // 数据库自增 ID
-  thread_id: string;          // LangGraph thread_id（会话唯一标识）
-  user_id: string;            // 用户 ID
-  project_id: string;         // GNS3 项目 ID
-  title: string;              // 会话标题
-  message_count: number;      // 消息数量
-  llm_calls_count: number;    // LLM 调用次数
-  input_tokens: number;       // 输入 token 数
-  output_tokens: number;      // 输出 token 数
-  total_tokens: number;       // 总 token 数
-  last_message_at: string;    // 最后消息时间
-  created_at: string;         // 创建时间
-  updated_at: string;         // 更新时间
-  metadata?: string;          // 元数据 JSON 字符串
-  stats?: string;             // 额外统计信息 JSON 字符串
-  pinned: boolean;            // 是否置顶
+  id: number;                 // Database auto-increment ID
+  thread_id: string;          // LangGraph thread_id (session unique identifier)
+  user_id: string;            // User ID
+  project_id: string;         // GNS3 project ID
+  title: string;              // Session title
+  message_count: number;      // Message count
+  llm_calls_count: number;   // LLM call count
+  input_tokens: number;      // Input token count
+  output_tokens: number;      // Output token count
+  total_tokens: number;       // Total token count
+  last_message_at: string;    // Last message time
+  created_at: string;         // Creation time
+  updated_at: string;         // Update time
+  metadata?: string;          // Metadata JSON string
+  stats?: string;             // Additional statistics JSON string
+  pinned: boolean;            // Whether pinned
 }
 
 /**
@@ -108,68 +108,68 @@ export interface ChatMessage {
 }
 
 /**
- * 会话历史
+ * Conversation history
  */
 export interface ConversationHistory {
-  thread_id: string;          // 会话 ID
-  title: string;              // 会话标题
-  messages: ChatMessage[];    // 消息列表
-  created_at?: string;        // 创建时间
-  updated_at?: string;        // 更新时间
-  llm_calls: number;          // LLM 调用次数
+  thread_id: string;          // Session ID
+  title: string;              // Session title
+  messages: ChatMessage[];    // Message list
+  created_at?: string;        // Creation time
+  updated_at?: string;        // Update time
+  llm_calls: number;          // LLM call count
 }
 
 /**
- * 聊天请求参数
+ * Chat request parameters
  */
 export interface ChatRequest {
-  message: string;            // 用户消息内容
-  session_id?: string;        // 会话 ID（可选，不提供则创建新会话）
-  stream?: boolean;           // 是否启用流式响应（默认 true）
-  temperature?: number;       // LLM temperature 参数（预留，暂未使用）
-  mode?: 'text';              // 交互模式（目前仅支持 "text"）
+  message: string;            // User message content
+  session_id?: string;        // Session ID (optional, creates new session if not provided)
+  stream?: boolean;           // Whether to enable streaming response (default true)
+  temperature?: number;       // LLM temperature parameter (reserved, not yet used)
+  mode?: 'text';              // Interaction mode (currently only supports "text")
 }
 
 /**
- * 会话列表响应
+ * Session list response
  */
 export interface SessionsListResponse {
-  sessions: ChatSession[];    // 会话列表
-  total: number;              // 总数
+  sessions: ChatSession[];    // Session list
+  total: number;              // Total count
 }
 
 /**
- * 重命名会话请求
+ * Rename session request
  */
 export interface RenameSessionRequest {
-  title: string;              // 新标题（1-255 字符）
+  title: string;              // New title (1-255 characters)
 }
 
 /**
- * 统计信息
+ * Statistics information
  */
 export interface ChatStatistics {
-  message_count: number;      // 消息数量
-  llm_calls_count: number;    // LLM 调用次数
-  input_tokens: number;       // 输入 token 数
-  output_tokens: number;      // 输出 token 数
-  total_tokens: number;       // 总 token 数
+  message_count: number;      // Message count
+  llm_calls_count: number;    // LLM call count
+  input_tokens: number;       // Input token count
+  output_tokens: number;      // Output token count
+  total_tokens: number;        // Total token count
 }
 
 /**
- * UI 状态相关接口
+ * UI state related interfaces
  */
 
 /**
- * 聊天面板状态
+ * Chat panel state
  */
 export interface ChatPanelState {
-  isOpen: boolean;            // 面板是否打开
-  width: number;              // 面板宽度
-  height: number;             // 面板高度
-  isMaximized?: boolean;      // 是否最大化
-  isMinimized?: boolean;      // 是否最小化
-  position?: {                // 面板位置
+  isOpen: boolean;            // Whether panel is open
+  width: number;              // Panel width
+  height: number;             // Panel height
+  isMaximized?: boolean;      // Whether maximized
+  isMinimized?: boolean;      // Whether minimized
+  position?: {                // Panel position
     top?: number;
     right?: number;
     left?: number;
@@ -177,45 +177,45 @@ export interface ChatPanelState {
 }
 
 /**
- * 会话 UI 状态
+ * Session UI state
  */
 export interface SessionUIState {
-  isEditing: boolean;         // 是否正在编辑标题
-  isExpanded: boolean;        // 是否展开
+  isEditing: boolean;         // Whether editing title
+  isExpanded: boolean;         // Whether expanded
 }
 
 /**
- * 工具调用 UI 状态
+ * Tool call UI state
  */
 export interface ToolCallUIState extends ToolCall {
-  isExecuting?: boolean;      // 是否正在执行
-  isExpanded?: boolean;       // 是否展开详情
-  error?: string;             // 错误信息
+  isExecuting?: boolean;      // Whether executing
+  isExpanded?: boolean;       // Whether expanded for details
+  error?: string;             // Error message
 }
 
 /**
- * 消息 UI 状态
+ * Message UI state
  */
 export interface MessageUIState extends ChatMessage {
-  isStreaming?: boolean;      // 是否正在流式输出
-  isComplete?: boolean;       // 是否已完成
-  displayContent?: string;    // 显示内容（用于流式累积）
+  isStreaming?: boolean;      // Whether streaming output
+  isComplete?: boolean;       // Whether completed
+  displayContent?: string;     // Display content (for streaming accumulation)
 }
 
 /**
- * 聊天错误类型
+ * Chat error types
  */
 export enum ChatErrorType {
-  NETWORK_ERROR = 'NETWORK_ERROR',           // 网络错误
-  PROJECT_NOT_OPENED = 'PROJECT_NOT_OPENED', // 项目未打开
-  LLM_NOT_CONFIGURED = 'LLM_NOT_CONFIGURED', // LLM 未配置
-  SESSION_NOT_FOUND = 'SESSION_NOT_FOUND',   // 会话不存在
-  UNAUTHORIZED = 'UNAUTHORIZED',             // 未授权
-  UNKNOWN_ERROR = 'UNKNOWN_ERROR'            // 未知错误
+  NETWORK_ERROR = 'NETWORK_ERROR',           // Network error
+  PROJECT_NOT_OPENED = 'PROJECT_NOT_OPENED', // Project not opened
+  LLM_NOT_CONFIGURED = 'LLM_NOT_CONFIGURED', // LLM not configured
+  SESSION_NOT_FOUND = 'SESSION_NOT_FOUND',   // Session not found
+  UNAUTHORIZED = 'UNAUTHORIZED',             // Unauthorized
+  UNKNOWN_ERROR = 'UNKNOWN_ERROR'            // Unknown error
 }
 
 /**
- * 聊天错误信息
+ * Chat error information
  */
 export interface ChatError {
   type: ChatErrorType;

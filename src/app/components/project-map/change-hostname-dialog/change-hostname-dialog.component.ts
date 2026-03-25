@@ -38,7 +38,7 @@ export class ChangeHostnameDialogComponent implements OnInit {
   name: string;
 
   constructor() {
-    // 初始化时直接使用传入的 node 的 name
+    // Directly use the name from the passed node on initialization
     this.name = '';
     this.inputForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
@@ -46,8 +46,8 @@ export class ChangeHostnameDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    // 直接使用传入的 node，不需要再次 API 获取
-    // 因为传入的 node 已经包含最新信息
+    // Directly use the passed node, no need to fetch from API again
+    // since the passed node already contains the latest information
     if (this.node) {
       this.name = this.node.name;
       this.inputForm.get('name')?.setValue(this.node.name);
@@ -57,7 +57,7 @@ export class ChangeHostnameDialogComponent implements OnInit {
 
   onSaveClick() {
     if (this.inputForm.valid) {
-      // 从表单获取用户输入的新名称
+      // Get the new name from user input in the form
       const newName = this.inputForm.get('name')?.value;
       this.node.name = newName;
       this.nodeService.updateNode(this.controller, this.node).subscribe({

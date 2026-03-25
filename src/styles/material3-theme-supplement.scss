@@ -1,13 +1,13 @@
 /**
  * Material Design 3 Theme Variables Supplement
  *
- * 基于 Angular Material 21 MD3 Sass Mixin 系统，
- * 自动为所有主题生成可动态切换的 CSS 变量。
+ * Based on Angular Material 21 MD3 Sass Mixin system,
+ * automatically generates dynamically switchable CSS variable classes for all themes.
  *
- * 使用方式：
- * 在 styles.scss 中引入此文件，它会自动生成主题切换类
+ * Usage:
+ * Import this file in styles.scss, it will automatically generate theme switch classes
  */
 
-// 生成所有 MD3 主题切换类
+// Generate all MD3 theme switch classes
 @use 'theme-generator' as *;
 @include generate-all-themes();
