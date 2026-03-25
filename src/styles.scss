@@ -134,6 +134,7 @@ body .cdk-overlay-container .mat-mdc-menu-content.mat-mdc-menu-content {
 
 .ethernet_link:hover,
 .serial_link:hover {
+  stroke: #dc3545;
   stroke-width: 4px;
   cursor: pointer;
 }
