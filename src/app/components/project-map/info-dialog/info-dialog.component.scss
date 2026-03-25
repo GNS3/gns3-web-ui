@@ -3,6 +3,28 @@
  * Using MD3 CSS variables
  */
 
+[mat-dialog-title] {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.close-btn {
+  margin-left: auto;
+}
+
+.modal-form-container {
+  padding: 16px;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+
+  mat-tab-group {
+    flex: 1;
+    overflow: auto;
+  }
+}
+
 .textBox {
   margin-top: 8px;
 }

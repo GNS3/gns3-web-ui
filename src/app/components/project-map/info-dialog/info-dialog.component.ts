@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
 import { Node } from '../../../cartography/models/node';
@@ -13,7 +14,7 @@ import { InfoService } from '@services/info.service';
   templateUrl: './info-dialog.component.html',
   styleUrls: ['./info-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatDialogModule, MatButtonModule, MatProgressSpinnerModule, MatTabsModule],
+  imports: [MatDialogModule, MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatTabsModule],
 })
 export class InfoDialogComponent implements OnInit {
   public dialogRef = inject(MatDialogRef<InfoDialogComponent>);
