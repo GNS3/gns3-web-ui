@@ -36,6 +36,14 @@ export class SettingsComponent implements OnInit {
   availableThemes = this.themeService.availableThemes;
   availableMapBackgrounds = this.themeService.availableMapBackgrounds;
 
+  get lightThemes() {
+    return this.themeService.availableThemes.filter(t => t.type === 'light');
+  }
+
+  get darkThemes() {
+    return this.themeService.availableThemes.filter(t => t.type === 'dark');
+  }
+
   ngOnInit() {
     this.settings = this.settingsService.getAll();
     this.integrateLinksLabelsToLinks = this.mapSettingsService.integrateLinkLabelsToLinks;

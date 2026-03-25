@@ -30,14 +30,28 @@
           <div class="settings__theme-section">
             <label class="settings__label">Global theme</label>
             <mat-radio-group [value]="currentTheme" (change)="setTheme($event.value)" class="settings__radio-group">
-              @for (theme of availableThemes; track theme.key) {
-                <mat-radio-button [value]="theme.key">
-                  <span class="settings__theme-option">
-                    <span class="settings__theme-swatch" [style.background]="theme.primaryColor"></span>
-                    <span class="settings__theme-name">{{ theme.label }}</span>
-                  </span>
-                </mat-radio-button>
-              }
+              <div class="settings__theme-group">
+                <span class="settings__theme-group-label">Light</span>
+                @for (theme of lightThemes; track theme.key) {
+                  <mat-radio-button [value]="theme.key">
+                    <span class="settings__theme-option">
+                      <span class="settings__theme-swatch" [style.background]="theme.primaryColor"></span>
+                      <span class="settings__theme-name">{{ theme.label }}</span>
+                    </span>
+                  </mat-radio-button>
+                }
+              </div>
+              <div class="settings__theme-group">
+                <span class="settings__theme-group-label">Dark</span>
+                @for (theme of darkThemes; track theme.key) {
+                  <mat-radio-button [value]="theme.key">
+                    <span class="settings__theme-option">
+                      <span class="settings__theme-swatch" [style.background]="theme.primaryColor"></span>
+                      <span class="settings__theme-name">{{ theme.label }}</span>
+                    </span>
+                  </mat-radio-button>
+                }
+              </div>
             </mat-radio-group>
           </div>
 

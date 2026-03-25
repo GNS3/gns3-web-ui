@@ -513,7 +513,10 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
       const overlayElement = this.overlayContainer.getContainerElement();
 
       // Apply correct theme class to overlay container
-      overlayElement.classList.remove('theme-deeppurple-amber', 'theme-indigo-pink', 'theme-pink-bluegrey', 'theme-purple-green');
+      overlayElement.classList.remove(
+      'theme-deeppurple-amber', 'theme-indigo-pink', 'theme-magenta-violet', 'theme-rose-red',
+      'theme-pink-bluegrey', 'theme-purple-green', 'theme-azure-blue', 'theme-cyan-orange'
+    );
       overlayElement.classList.add(`theme-${this.currentTheme}`);
     });
   }

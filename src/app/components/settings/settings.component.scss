@@ -144,6 +144,24 @@
   gap: 16px;
 }
 
+.settings__theme-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.settings__theme-group-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
 /* =============================================
 // Theme Option with Color Swatch
 // ============================================= */

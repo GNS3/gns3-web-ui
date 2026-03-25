@@ -51,7 +51,10 @@ export class AppComponent implements OnInit {
 
   applyTheme(theme: string) {
     const classList = this.overlayContainer.getContainerElement().classList;
-    classList.remove('theme-deeppurple-amber', 'theme-indigo-pink', 'theme-pink-bluegrey', 'theme-purple-green');
+    classList.remove(
+      'theme-deeppurple-amber', 'theme-indigo-pink', 'theme-magenta-violet', 'theme-rose-red',
+      'theme-pink-bluegrey', 'theme-purple-green', 'theme-azure-blue', 'theme-cyan-orange'
+    );
     classList.add(`theme-${theme}`);
   }
 

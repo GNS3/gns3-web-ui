@@ -4,12 +4,10 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 /**
  * Available theme keys (map to CSS classes in :root.theme-xxx)
- * - deeppurple-amber: Light theme
- * - indigo-pink: Light theme
- * - pink-bluegrey: Dark theme
- * - purple-green: Dark theme
+ * Light themes: deeppurple-amber, indigo-pink, magenta-violet, rose-red
+ * Dark themes: pink-bluegrey, purple-green, azure-blue, cyan-orange
  */
-export type PrebuiltTheme = 'deeppurple-amber' | 'indigo-pink' | 'pink-bluegrey' | 'purple-green';
+export type PrebuiltTheme = 'deeppurple-amber' | 'indigo-pink' | 'magenta-violet' | 'rose-red' | 'pink-bluegrey' | 'purple-green' | 'azure-blue' | 'cyan-orange';
 
 /**
  * Theme type for internal use (maps to light/dark)
@@ -31,7 +29,7 @@ export type MapBackgroundKey = 'auto' | 'white' | 'light-gray' | 'dark-gray' | '
  */
 export const DEFAULT_THEME_TOKEN = new InjectionToken<PrebuiltTheme>('DEFAULT_THEME_TOKEN', {
   providedIn: 'root',
-  factory: () => 'pink-bluegrey' as PrebuiltTheme
+  factory: () => 'deeppurple-amber' as PrebuiltTheme
 });
 
 /**
@@ -42,10 +40,8 @@ export const DEFAULT_THEME_TOKEN = new InjectionToken<PrebuiltTheme>('DEFAULT_TH
  * into :root.theme-xxx selectors.
  *
  * Available themes:
- * - deeppurple-amber: Light theme
- * - indigo-pink: Light theme
- * - pink-bluegrey: Dark theme
- * - purple-green: Dark theme
+ * Light: deeppurple-amber, indigo-pink, magenta-violet, rose-red
+ * Dark: pink-bluegrey, purple-green, azure-blue, cyan-orange
  *
  * Supports persistent theme preferences via localStorage
  */
@@ -59,19 +55,25 @@ export class ThemeService {
   public mapThemeChanged = new EventEmitter<string>();
 
   // Current theme state
-  private currentTheme: PrebuiltTheme = 'pink-bluegrey';
+  private currentTheme: PrebuiltTheme = 'deeppurple-amber';
   private currentMapTheme: MapThemeType = 'auto';
 
   // Public properties for backward compatibility
-  public savedTheme: string = 'pink-bluegrey';
+  public savedTheme: string = 'deeppurple-amber';
   public savedMapTheme: string = 'auto';
 
   // All available prebuilt themes with MD3 palette colors
   readonly availableThemes: { key: PrebuiltTheme; label: string; type: ThemeType; primaryColor: string }[] = [
+    // Light themes
     { key: 'deeppurple-amber', label: 'Deep Purple & Amber', type: 'light', primaryColor: '#6750A4' },
     { key: 'indigo-pink', label: 'Indigo & Pink', type: 'light', primaryColor: '#3F51B5' },
+    { key: 'magenta-violet', label: 'Magenta & Violet', type: 'light', primaryColor: '#D81B60' },
+    { key: 'rose-red', label: 'Rose & Red', type: 'light', primaryColor: '#E91E63' },
+    // Dark themes
     { key: 'pink-bluegrey', label: 'Pink & Bluegrey', type: 'dark', primaryColor: '#E91E63' },
     { key: 'purple-green', label: 'Purple & Green', type: 'dark', primaryColor: '#7E57C2' },
+    { key: 'azure-blue', label: 'Azure & Blue', type: 'dark', primaryColor: '#0078D4' },
+    { key: 'cyan-orange', label: 'Cyan & Orange', type: 'dark', primaryColor: '#00B7C3' },
   ];
 
   // Available map background presets
@@ -139,7 +141,7 @@ export class ThemeService {
    * Check if a theme is a dark theme
    */
   private isDarkTheme(theme: PrebuiltTheme): boolean {
-    return theme === 'pink-bluegrey' || theme === 'purple-green';
+    return theme === 'pink-bluegrey' || theme === 'purple-green' || theme === 'azure-blue' || theme === 'cyan-orange';
   }
 
   /**
@@ -175,10 +177,10 @@ export class ThemeService {
 
     if (currentType === 'dark') {
       // Switch to light theme
-      newTheme = this.availableThemes.find(t => t.type === 'light' && t.key.startsWith('deeppurple'))?.key || 'deeppurple-amber';
+      newTheme = this.availableThemes.find(t => t.type === 'light')?.key || 'deeppurple-amber';
     } else {
       // Switch to dark theme
-      newTheme = this.availableThemes.find(t => t.type === 'dark' && t.key.startsWith('pink'))?.key || 'pink-bluegrey';
+      newTheme = this.availableThemes.find(t => t.type === 'dark')?.key || 'pink-bluegrey';
     }
 
     this.setTheme(newTheme);
@@ -224,7 +226,10 @@ export class ThemeService {
     const htmlElement = this.document.documentElement;
 
     // Remove all theme-related classes from html
-    htmlElement.classList.remove('theme-deeppurple-amber', 'theme-indigo-pink', 'theme-pink-bluegrey', 'theme-purple-green');
+    htmlElement.classList.remove(
+      'theme-deeppurple-amber', 'theme-indigo-pink', 'theme-magenta-violet', 'theme-rose-red',
+      'theme-pink-bluegrey', 'theme-purple-green', 'theme-azure-blue', 'theme-cyan-orange'
+    );
 
     // Add theme class to html - this activates the CSS variables in :root.theme-xxx
     htmlElement.classList.add(`theme-${theme}`);

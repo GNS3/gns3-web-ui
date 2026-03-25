@@ -23,7 +23,7 @@
 // ============================================
 
 $theme-configs: (
-  // Light themes - must be consistent with ThemeService's availableThemes
+  // Light themes
   'deeppurple-amber': (
     theme-type: light,
     primary: mat.$violet-palette,
@@ -33,6 +33,16 @@ $theme-configs: (
     theme-type: light,
     primary: mat.$azure-palette,
     tertiary: mat.$rose-palette,
+  ),
+  'magenta-violet': (
+    theme-type: light,
+    primary: mat.$magenta-palette,
+    tertiary: mat.$violet-palette,
+  ),
+  'rose-red': (
+    theme-type: light,
+    primary: mat.$rose-palette,
+    tertiary: mat.$red-palette,
   ),
   // Dark themes
   'pink-bluegrey': (
@@ -44,6 +54,16 @@ $theme-configs: (
     theme-type: dark,
     primary: mat.$violet-palette,
     tertiary: mat.$green-palette,
+  ),
+  'azure-blue': (
+    theme-type: dark,
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
+  ),
+  'cyan-orange': (
+    theme-type: dark,
+    primary: mat.$cyan-palette,
+    tertiary: mat.$orange-palette,
   ),
 );
 
