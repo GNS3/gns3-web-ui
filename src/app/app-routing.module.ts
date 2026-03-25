@@ -78,7 +78,6 @@ import { UserAcesResolver } from "@resolvers/user-aces.resolver";
 
 const routes: Routes = [
   // Routes without DefaultLayout (clean pages)
-  { path: 'controllers', component: ControllersComponent },
   { path: 'controller/:controller_id/login', component: LoginComponent },
 
   // Routes with DefaultLayout
@@ -86,6 +85,7 @@ const routes: Routes = [
     path: '',
     component: DefaultLayoutComponent,
     children: [
+      { path: 'controllers', component: ControllersComponent },
       { path: '', redirectTo: 'controllers', pathMatch: 'full' },
       { path: 'bundled', component: BundledControllerFinderComponent },
       { path: 'controller/:controller_id/loggeduser', component: LoggedUserComponent },

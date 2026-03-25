@@ -6774,13 +6774,6 @@ neo-async@^2.6.2:
   resolved "https://registry.npmjs.org/neo-async/-/neo-async-2.6.2.tgz"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
-ng-circle-progress@^1.6.0:
-  version "1.7.1"
-  resolved "https://registry.npmjs.org/ng-circle-progress/-/ng-circle-progress-1.7.1.tgz"
-  integrity sha512-XAsd/FRWC4lqO7pUakwniO1c+ew3zr+Un/pZ58aqdE1aq3iS7kquxDmzOOCZ2XoUhU/6vC31e/DSYHvlHhITkA==
-  dependencies:
-    tslib "^2.0.0"
-
 ng2-file-upload@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/ng2-file-upload/-/ng2-file-upload-3.0.0.tgz"
