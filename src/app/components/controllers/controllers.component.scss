@@ -515,7 +515,8 @@ button[color="warn"] {
   justify-content: center;
   padding: 64px 32px;
   text-align: center;
-  margin: 20px;
+  margin: 20px auto;
+  max-width: 1000px;
   border-radius: 16px;
   background: var(--mat-sys-surface);
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
