@@ -340,9 +340,22 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       })
     );
 
+    // Track previous symbol for each node to detect symbol changes
+    const nodeSymbolCache = new Map<string, string>();
+
     this.projectMapSubscription.add(
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
         if (!this.controller) return;
+
+        // Check if symbol changed for any node and invalidate symbol_url if so
+        for (const node of nodes) {
+          const cachedSymbol = nodeSymbolCache.get(node.node_id);
+          if (cachedSymbol !== undefined && cachedSymbol !== node.symbol) {
+            // Symbol changed, clear symbol_url so it will be recalculated
+            node.symbol_url = null;
+          }
+          nodeSymbolCache.set(node.node_id, node.symbol);
+        }
 
         const nodesToLoad = nodes.filter((node: Node) => !node.symbol_url);
 

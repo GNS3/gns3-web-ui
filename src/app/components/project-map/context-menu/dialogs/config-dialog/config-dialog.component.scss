@@ -1,12 +1,12 @@
 /**
  * GNS3 Config Dialog Component Styles
  *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
+ * Unified design language following Material Design patterns
  */
 
-.container {
-  width: 100%;
+.config-options {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 0;
 }

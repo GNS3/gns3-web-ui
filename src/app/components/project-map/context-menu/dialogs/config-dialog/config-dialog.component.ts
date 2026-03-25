@@ -15,4 +15,8 @@ export class ConfigDialogComponent {
   close(fileType: string) {
     this.dialogRef.close(fileType);
   }
+
+  onClose() {
+    this.dialogRef.close();
+  }
 }

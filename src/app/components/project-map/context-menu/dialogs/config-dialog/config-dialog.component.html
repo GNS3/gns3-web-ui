@@ -1,12 +1,10 @@
 <h1 mat-dialog-title>Choose configuration file</h1>
-
-<div class="modal-form-container">
-  <div class="container">
-    <div>
-      <button mat-raised-button color="primary" (click)="close('startup-config')">startup configuration</button>
-    </div>
-    <div>
-      <button mat-raised-button color="primary" (click)="close('private-config')">private configuration</button>
-    </div>
+<div mat-dialog-content>
+  <div class="config-options">
+    <button mat-raised-button color="primary" (click)="close('startup-config')">Startup configuration</button>
+    <button mat-raised-button color="primary" (click)="close('private-config')">Private configuration</button>
   </div>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="onClose()" color="accent">Cancel</button>
 </div>
