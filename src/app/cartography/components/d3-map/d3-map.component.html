@@ -1,6 +1,6 @@
 <svg id="map" #svg class="map" preserveAspectRatio="none" movingCanvas zoomingCanvas>
-  <filter id="grayscale"><feColorMatrix id="feGrayscale" type="saturate" values="0" /></filter>
   <defs>
+    <filter id="grayscale"><feColorMatrix id="feGrayscale" type="saturate" values="0" /></filter>
     <pattern
       attr.x="{{ drawingGridX }}"
       attr.y="{{ drawingGridY }}"
@@ -16,9 +16,6 @@
         attr.stroke-width="{{ gridVisibility() }}"
       />
     </pattern>
-  </defs>
-
-  <defs>
     <pattern
       attr.x="{{ nodeGridX }}"
       attr.y="{{ nodeGridY }}"

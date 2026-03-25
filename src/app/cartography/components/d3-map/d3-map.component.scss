@@ -3,5 +3,6 @@ svg {
 }
 
 g.selected {
-  filter: url('#grayscale');
+  filter: grayscale(100%);
+  -webkit-filter: grayscale(100%);
 }

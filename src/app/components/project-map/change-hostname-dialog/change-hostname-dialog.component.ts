@@ -60,9 +60,15 @@ export class ChangeHostnameDialogComponent implements OnInit {
       // 从表单获取用户输入的新名称
       const newName = this.inputForm.get('name')?.value;
       this.node.name = newName;
-      this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
-        this.toasterService.success(`Node ${this.node.name} updated.`);
-        this.onCancelClick();
+      this.nodeService.updateNode(this.controller, this.node).subscribe({
+        next: () => {
+          this.toasterService.success(`Node ${this.node.name} updated.`);
+          this.onCancelClick();
+        },
+        error: (error) => {
+          const message = error.error?.message || 'Failed to update node.';
+          this.toasterService.error(message);
+        }
       });
     } else {
       this.toasterService.error(`Fill all required fields.`);

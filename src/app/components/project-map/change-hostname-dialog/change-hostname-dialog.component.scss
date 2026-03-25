@@ -1,14 +1,25 @@
 /**
  * GNS3 Change Hostname Dialog Component Styles
- *
- * Migrated to Angular Material 14+ theming system
- * Using CSS custom properties and design tokens
  */
 
-.modal-form-container {
+.change-hostname {
   padding: 16px;
-}
 
-.form-field {
-  width: 100%;
+  &__title {
+    margin-bottom: 16px;
+  }
+
+  &__form {
+    margin-bottom: 24px;
+  }
+
+  &__field {
+    width: 100%;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
 }
