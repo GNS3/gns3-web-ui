@@ -45,48 +45,50 @@
 >
   <mat-icon [ngClass]="getCssClassForIcon('ellipse')">panorama_fish_eye</mat-icon>
 </button>
-<button
-  *ngIf="!isLightThemeEnabled"
-  matTooltip="Draw a line"
-  matTooltipClass="custom-tooltip"
-  matTooltipPosition="left"
-  mat-icon-button
-  class="menu-button"
-  (click)="addDrawing('line')"
->
-  <svg height="20" width="20">
-    <line
-      [ngClass]="{ selected: drawTools.isLineChosen }"
-      class="draw-line-icon"
-      x1="15"
-      y1="5"
-      x2="5"
-      y2="15"
-      style="stroke-width: 2"
-    />
-  </svg>
-</button>
-<button
-  *ngIf="isLightThemeEnabled"
-  matTooltip="Draw a line"
-  matTooltipClass="custom-tooltip"
-  matTooltipPosition="left"
-  mat-icon-button
-  class="menu-button"
-  (click)="addDrawing('line')"
->
-  <svg height="20" width="20">
-    <line
-      [ngClass]="{ selected: drawTools.isLineChosen }"
-      class="draw-line-icon"
-      x1="15"
-      y1="5"
-      x2="5"
-      y2="15"
-      style="stroke-width: 2"
-    />
-  </svg>
-</button>
+@if (!isLightThemeEnabled) {
+  <button
+    matTooltip="Draw a line"
+    matTooltipClass="custom-tooltip"
+    matTooltipPosition="left"
+    mat-icon-button
+    class="menu-button"
+    (click)="addDrawing('line')"
+  >
+    <svg height="20" width="20">
+      <line
+        [ngClass]="{ selected: drawTools.isLineChosen }"
+        class="draw-line-icon"
+        x1="15"
+        y1="5"
+        x2="5"
+        y2="15"
+        style="stroke-width: 2"
+      />
+    </svg>
+  </button>
+}
+@if (isLightThemeEnabled) {
+  <button
+    matTooltip="Draw a line"
+    matTooltipClass="custom-tooltip"
+    matTooltipPosition="left"
+    mat-icon-button
+    class="menu-button"
+    (click)="addDrawing('line')"
+  >
+    <svg height="20" width="20">
+      <line
+        [ngClass]="{ selected: drawTools.isLineChosen }"
+        class="draw-line-icon"
+        x1="15"
+        y1="5"
+        x2="5"
+        y2="15"
+        style="stroke-width: 2"
+      />
+    </svg>
+  </button>
+}
 <button
   matTooltip="Lock or unlock all items"
   matTooltipClass="custom-tooltip"
@@ -118,7 +120,9 @@
   (click)="openAIChat()"
 >
   <span class="ai-icon">AI</span>
-  <span *ngIf="isAIChatOpen && isAIMinimized" class="ai-minimize-indicator"></span>
+  @if (isAIChatOpen && isAIMinimized) {
+    <span class="ai-minimize-indicator"></span>
+  }
 </button>
 <app-drawing-added
   [controller]="controller()"

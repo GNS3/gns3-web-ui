@@ -12,7 +12,11 @@
   <div class="userList">
     <div>{{user.username}}</div>
     <div>{{user.email}}</div>
-    <mat-icon (click)="addUser(user)" *ngIf="!loading">add</mat-icon>
-    <mat-spinner *ngIf="loading"></mat-spinner>
+    @if (!loading) {
+      <mat-icon (click)="addUser(user)">add</mat-icon>
+    }
+    @if (loading) {
+      <mat-spinner></mat-spinner>
+    }
   </div>
 }

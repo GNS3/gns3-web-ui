@@ -4,8 +4,8 @@
     </mat-tab>
 
     <mat-tab label="Preview">
-        <span *ngIf="markdown">
+        @if (markdown) {
             <div class="textWrapper markdown-body" [innerHTML]="markdownHtml"></div>
-        </span>
+        }
     </mat-tab>
 </mat-tab-group>

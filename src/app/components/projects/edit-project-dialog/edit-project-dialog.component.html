@@ -42,9 +42,11 @@
             </mat-checkbox>
         </mat-tab>
 
-        <mat-tab label="Readme" *ngIf="controller && project">
-            <app-readme-editor #editor [controller]="controller" [project]="project"></app-readme-editor>
-        </mat-tab>
+        @if (controller && project) {
+          <mat-tab label="Readme">
+              <app-readme-editor #editor [controller]="controller" [project]="project"></app-readme-editor>
+          </mat-tab>
+        }
 
         <mat-tab label="Global variables">
             <form [formGroup]="variableFormGroup">

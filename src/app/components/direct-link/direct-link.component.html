@@ -9,7 +9,9 @@
             <form [formGroup]="controllerForm">
                 <mat-form-field>
                     <input matInput tabindex="1" formControlName="name" placeholder="Name" />
-                    <mat-error *ngIf="controllerForm.get('name').hasError('required')">You must enter a value</mat-error>
+                    @if (controllerForm.get('name').hasError('required')) {
+                      <mat-error>You must enter a value</mat-error>
+                    }
                 </mat-form-field>
 
                 <mat-form-field>

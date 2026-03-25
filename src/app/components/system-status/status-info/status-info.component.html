@@ -1,4 +1,6 @@
-<div *ngIf="!computeStatistics().length">Statistics not loaded</div>
+@if (!computeStatistics().length) {
+  <div>Statistics not loaded</div>
+}
 @for (statistics of computeStatistics(); track statistics.compute_name) {
   <div>
     {{ statistics.compute_name }}

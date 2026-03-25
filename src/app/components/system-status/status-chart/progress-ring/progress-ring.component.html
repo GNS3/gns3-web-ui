@@ -23,6 +23,8 @@
   </svg>
   <div class="progress-ring__content">
     <span class="progress-ring__percent">{{ percent() || 0 }}%</span>
-    <span class="progress-ring__label" *ngIf="label()">{{ label() }}</span>
+    @if (label()) {
+      <span class="progress-ring__label">{{ label() }}</span>
+    }
   </div>
 </div>

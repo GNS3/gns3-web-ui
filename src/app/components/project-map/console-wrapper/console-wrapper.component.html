@@ -1,8 +1,9 @@
-<div
-  *ngIf="isDraggingEnabled"
-  (document:mousemove)="dragWidget($event)"
-  (document:mouseup)="toggleDragging(false)"
-></div>
+@if (isDraggingEnabled) {
+  <div
+    (document:mousemove)="dragWidget($event)"
+    (document:mouseup)="toggleDragging(false)"
+  ></div>
+}
 <!-- Option with resizing -->
 <div
   class="consoleWrapper"
@@ -61,48 +62,52 @@
           </mat-tab>
         </mat-tab-group>
 
-        <button
-          *ngIf="!isMinimized && !isMaximized"
-          [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-          style="color: white"
-          mat-icon-button
-          (mousedown)="$event.stopPropagation()"
-          (click)="toggleMaximize()"
-          title="Maximize height"
-        >
-          <mat-icon>fullscreen</mat-icon>
-        </button>
-        <button
-          *ngIf="isMaximized"
-          [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-          style="color: white"
-          mat-icon-button
-          (mousedown)="$event.stopPropagation()"
-          (click)="toggleMaximize()"
-          title="Restore"
-        >
-          <mat-icon>fullscreen_exit</mat-icon>
-        </button>
-        <button
-          *ngIf="!isMinimized"
-          [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-          style="color: white"
-          mat-icon-button
-          (mousedown)="$event.stopPropagation()"
-          (click)="minimize(true)"
-        >
-          <mat-icon>remove</mat-icon>
-        </button>
-        <button
-          *ngIf="isMinimized"
-          [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-          style="color: white"
-          mat-icon-button
-          (mousedown)="$event.stopPropagation()"
-          (click)="minimize(false)"
-        >
-          <mat-icon>web_asset</mat-icon>
-        </button>
+        @if (!isMinimized && !isMaximized) {
+          <button
+            [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
+            style="color: white"
+            mat-icon-button
+            (mousedown)="$event.stopPropagation()"
+            (click)="toggleMaximize()"
+            title="Maximize height"
+          >
+            <mat-icon>fullscreen</mat-icon>
+          </button>
+        }
+        @if (isMaximized) {
+          <button
+            [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
+            style="color: white"
+            mat-icon-button
+            (mousedown)="$event.stopPropagation()"
+            (click)="toggleMaximize()"
+            title="Restore"
+          >
+            <mat-icon>fullscreen_exit</mat-icon>
+          </button>
+        }
+        @if (!isMinimized) {
+          <button
+            [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
+            style="color: white"
+            mat-icon-button
+            (mousedown)="$event.stopPropagation()"
+            (click)="minimize(true)"
+          >
+            <mat-icon>remove</mat-icon>
+          </button>
+        }
+        @if (isMinimized) {
+          <button
+            [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
+            style="color: white"
+            mat-icon-button
+            (mousedown)="$event.stopPropagation()"
+            (click)="minimize(false)"
+          >
+            <mat-icon>web_asset</mat-icon>
+          </button>
+        }
         <button
           [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
           style="color: white"

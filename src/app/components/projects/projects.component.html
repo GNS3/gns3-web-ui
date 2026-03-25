@@ -103,14 +103,15 @@
 
         <ng-container matColumnDef="delete">
           <mat-header-cell *matHeaderCellDef class="projects__cell--actions">
-            <button
-              mat-button
-              *ngIf="selection.selected.length > 1"
-              (click)="deleteAllFiles()"
-              color="warn"
-              matTooltip="Delete all selected">
-              <mat-icon>delete</mat-icon>
-            </button>
+            @if (selection.selected.length > 1) {
+              <button
+                mat-button
+                (click)="deleteAllFiles()"
+                color="warn"
+                matTooltip="Delete all selected">
+                <mat-icon>delete</mat-icon>
+              </button>
+            }
           </mat-header-cell>
           <mat-cell *matCellDef="let row" class="projects__cell--actions">
             @if (row.status == 'closed' && selection.isSelected(row)) {
@@ -153,8 +154,12 @@
             rel="noopener noreferrer"
             matTooltip="Website"
           >
-            <mat-icon class="projects__footer-icon" *ngIf="!isLightThemeEnabled()" svgIcon="gns3"></mat-icon>
-            <mat-icon class="projects__footer-icon" *ngIf="isLightThemeEnabled()" svgIcon="gns3black"></mat-icon>
+            @if (!isLightThemeEnabled()) {
+              <mat-icon class="projects__footer-icon" svgIcon="gns3"></mat-icon>
+            }
+            @if (isLightThemeEnabled()) {
+              <mat-icon class="projects__footer-icon" svgIcon="gns3black"></mat-icon>
+            }
           </a>
         </div>
       </div>

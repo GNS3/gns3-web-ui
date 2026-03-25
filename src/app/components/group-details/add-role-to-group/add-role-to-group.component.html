@@ -11,7 +11,11 @@
 @for (role of displayedRoles | async; track role.name) {
   <div class="userList">
     <div>{{role.name}}</div>
-    <mat-icon (click)="addRole(role)" *ngIf="!loading">add</mat-icon>
-    <mat-spinner *ngIf="loading"></mat-spinner>
+    @if (!loading) {
+      <mat-icon (click)="addRole(role)">add</mat-icon>
+    }
+    @if (loading) {
+      <mat-spinner></mat-spinner>
+    }
   </div>
 }

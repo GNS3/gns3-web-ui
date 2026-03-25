@@ -18,30 +18,30 @@
         <form [formGroup]="editUserForm" class="input-field">
           <mat-form-field class="input-field">
             <input matInput type="text" formControlName="username" placeholder="Username"/>
-            <mat-error *ngIf="form.username?.touched && form.username?.errors && form.username?.errors.required"
-            >Username is required
-            </mat-error>
-            <mat-error *ngIf="form.username?.errors && form.username?.errors.pattern"
-            >Username is incorrect
-            </mat-error>
-            <mat-error *ngIf="form.username?.errors && form.username?.errors.userExists"
-            >User with this username exists
-            </mat-error>
+            @if (form.username?.touched && form.username?.errors && form.username?.errors.required) {
+              <mat-error>Username is required</mat-error>
+            }
+            @if (form.username?.errors && form.username?.errors.pattern) {
+              <mat-error>Username is incorrect</mat-error>
+            }
+            @if (form.username?.errors && form.username?.errors.userExists) {
+              <mat-error>User with this username exists</mat-error>
+            }
           </mat-form-field>
           <mat-form-field class="input-field">
             <input matInput type="text" formControlName="full_name" placeholder="Full name"/>
           </mat-form-field>
           <mat-form-field class="input-field">
             <input matInput type="text" formControlName="email" placeholder="Email"/>
-            <mat-error *ngIf="form.email?.touched && form.email?.errors && form.email?.errors.required"
-            >Email is required
-            </mat-error>
-            <mat-error *ngIf="form.email?.errors && form.email?.errors.email"
-            >Email is invalid
-            </mat-error>
-            <mat-error *ngIf="form.email?.errors && form.email?.errors.emailExists"
-            >User with this email exists
-            </mat-error>
+            @if (form.email?.touched && form.email?.errors && form.email?.errors.required) {
+              <mat-error>Email is required</mat-error>
+            }
+            @if (form.email?.errors && form.email?.errors.email) {
+              <mat-error>Email is invalid</mat-error>
+            }
+            @if (form.email?.errors && form.email?.errors.emailExists) {
+              <mat-error>User with this email exists</mat-error>
+            }
           </mat-form-field>
 
           <mat-checkbox formControlName="is_active">Is active</mat-checkbox>
@@ -124,5 +124,3 @@
 
   </div>
 </div>
-
-

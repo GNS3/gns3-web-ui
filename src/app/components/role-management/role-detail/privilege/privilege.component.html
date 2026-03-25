@@ -2,13 +2,21 @@
 <div class="privileges">
   <div class="header">
     <div class="title">Privileges</div>
-    <div *ngIf="!disable()">
-      <button mat-button *ngIf="!editMode">
-        <mat-icon (click)="editMode = true">edit</mat-icon>
-      </button>
-      <button *ngIf="editMode" mat-raised-button color="warn" (click)="editMode = false">Cancel</button>
-      <button *ngIf="editMode" mat-raised-button color="primary" (click)="close()">Update</button>
-    </div>
+    @if (!disable()) {
+      <div>
+        @if (!editMode) {
+          <button mat-button>
+            <mat-icon (click)="editMode = true">edit</mat-icon>
+          </button>
+        }
+        @if (editMode) {
+          <button mat-raised-button color="warn" (click)="editMode = false">Cancel</button>
+        }
+        @if (editMode) {
+          <button mat-raised-button color="primary" (click)="close()">Update</button>
+        }
+      </div>
+    }
   </div>
   @for (privilegeName of privileges() | groupPrivileges; track privilegeName.key) {
     @if (editMode) {

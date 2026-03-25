@@ -1,8 +1,12 @@
 <div class="login-wrapper">
   <!-- Back to Controllers Button -->
   <a class="login-back-btn" routerLink="/controllers">
-    <mat-icon class="login-back-btn__icon" *ngIf="!isLightThemeEnabled()" svgIcon="gns3"></mat-icon>
-    <mat-icon class="login-back-btn__icon" *ngIf="isLightThemeEnabled()" svgIcon="gns3black"></mat-icon>
+    @if (!isLightThemeEnabled()) {
+      <mat-icon class="login-back-btn__icon" svgIcon="gns3"></mat-icon>
+    }
+    @if (isLightThemeEnabled()) {
+      <mat-icon class="login-back-btn__icon" svgIcon="gns3black"></mat-icon>
+    }
   </a>
 
   <div class="login-card">
@@ -10,8 +14,12 @@
       <!-- Header with Logo and Version -->
       <div class="login-card__header">
         <div class="login-card__logo">
-          <mat-icon class="login-card__icon" *ngIf="!isLightThemeEnabled()" svgIcon="gns3"></mat-icon>
-          <mat-icon class="login-card__icon" *ngIf="isLightThemeEnabled()" svgIcon="gns3black"></mat-icon>
+          @if (!isLightThemeEnabled()) {
+            <mat-icon class="login-card__icon" svgIcon="gns3"></mat-icon>
+          }
+          @if (isLightThemeEnabled()) {
+            <mat-icon class="login-card__icon" svgIcon="gns3black"></mat-icon>
+          }
           <div class="login-card__title">
             <h1>GNS3</h1>
             <h6>v{{ version() }}</h6>
@@ -41,9 +49,11 @@
             placeholder="Username"
             [autofocus]="!isRememberMeChecked()"
           />
-          <mat-error *ngIf="loginForm.controls.username.hasError('required')">
-            Username is required
-          </mat-error>
+          @if (loginForm.controls.username.hasError('required')) {
+            <mat-error>
+              Username is required
+            </mat-error>
+          }
         </mat-form-field>
 
         <!-- Password Field -->
@@ -63,9 +73,11 @@
           >
             {{ hidePassword() ? 'visibility_off' : 'visibility' }}
           </mat-icon>
-          <mat-error *ngIf="loginForm.controls.password.hasError('required')">
-            Password is required
-          </mat-error>
+          @if (loginForm.controls.password.hasError('required')) {
+            <mat-error>
+              Password is required
+            </mat-error>
+          }
         </mat-form-field>
 
         <!-- Caps Lock Warning -->
@@ -128,8 +140,12 @@
         rel="noopener noreferrer"
         matTooltip="Website"
       >
-        <mat-icon class="login-card__social-icon" *ngIf="!isLightThemeEnabled()" svgIcon="gns3"></mat-icon>
-        <mat-icon class="login-card__social-icon" *ngIf="isLightThemeEnabled()" svgIcon="gns3black"></mat-icon>
+        @if (!isLightThemeEnabled()) {
+          <mat-icon class="login-card__social-icon" svgIcon="gns3"></mat-icon>
+        }
+        @if (isLightThemeEnabled()) {
+          <mat-icon class="login-card__social-icon" svgIcon="gns3black"></mat-icon>
+        }
       </a>
     </div>
 

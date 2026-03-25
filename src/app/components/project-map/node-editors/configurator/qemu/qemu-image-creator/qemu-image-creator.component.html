@@ -23,86 +23,92 @@
             }
           </mat-select>
         </mat-form-field>
-        <div *ngIf="qemuImg.format === 'qcow2'">
-          Size options
-          <mat-form-field class="form-field">
-            <mat-select placeholder="Image format" [(ngModel)]="qemuImg.preallocation">
-              @for (preallocation of preallocationsOptions; track preallocation) {
-                <mat-option [value]="preallocation">
-                  {{ preallocation }}
+        @if (qemuImg.format === 'qcow2') {
+          <div>
+            Size options
+            <mat-form-field class="form-field">
+              <mat-select placeholder="Image format" [(ngModel)]="qemuImg.preallocation">
+                @for (preallocation of preallocationsOptions; track preallocation) {
+                  <mat-option [value]="preallocation">
+                    {{ preallocation }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <mat-select placeholder="Cluster size" [(ngModel)]="qemuImg.cluster_size">
+                @for (clusterSize of clusterSizeOptions; track clusterSize.value) {
+                  <mat-option [value]="clusterSize.value">
+                    {{ clusterSize.name }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            Refcounts
+            <mat-form-field class="form-field">
+              <mat-select placeholder="Lazy refcounts" [(ngModel)]="qemuImg.lazy_refcounts">
+                @for (lazyRefcount of lazyRefcountsOptions; track lazyRefcount) {
+                  <mat-option [value]="lazyRefcount">
+                    {{ lazyRefcount }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <mat-select placeholder="Refcount entry size" [(ngModel)]="qemuImg.refcount_bits">
+                @for (clusterSize of clusterSizeOptions; track clusterSize.value) {
+                  <mat-option [value]="clusterSize.value">
+                    {{ clusterSize.name }}
+                  </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </div>
+        }
+        @if (qemuImg.format === 'vhd' || qemuImg.format === 'vdi') {
+          <div>
+            <mat-radio-group aria-label="Image file sizing mode" class="radio-selection">
+              <mat-radio-button value="1" (click)="setSubformat('dynamic')" checked>Dynamic</mat-radio-button>
+              <mat-radio-button value="2" (click)="setSubformat('fixed')">Fixed</mat-radio-button>
+            </mat-radio-group>
+          </div>
+        }
+        @if (qemuImg.format === 'vmdk') {
+          <div>
+            Adapter type<br />
+            <mat-radio-group aria-label="Adapter type" class="radio-selection">
+              <mat-radio-button value="1" (click)="setAdapterType('ide')" checked>IDE</mat-radio-button>
+              <mat-radio-button value="2" (click)="setAdapterType('lsilogic')">LSI Logic</mat-radio-button>
+              <mat-radio-button value="3" (click)="setAdapterType('buslogic')">BusLogic</mat-radio-button>
+              <mat-radio-button value="4" (click)="setAdapterType('legacyESX')"
+                >Legacy (ESX)</mat-radio-button
+              > </mat-radio-group
+            ><br /><br />
+            Image file sizing mode<br />
+            <mat-radio-group aria-label="Image file sizing mode" class="radio-selection">
+              <mat-radio-button value="1" (click)="setSubformat('streamOptimized')" checked
+                >Stream optimized</mat-radio-button
+              >
+              <mat-radio-button value="2" (click)="setSubformat('twoGbMaxExtentSparse')"
+                >Split every 2GB (sparse)</mat-radio-button
+              >
+              <mat-radio-button value="3" (click)="setSubformat('twoGbMaxExtentFlat')"
+                >Split every 2GB (flat)</mat-radio-button
+              >
+              <mat-radio-button value="4" (click)="setSubformat('monolithicSparse')">Monolithic sparse</mat-radio-button>
+              <mat-radio-button value="5" (click)="setSubformat('monolithicFlat')"
+                >Monolithic flat</mat-radio-button
+              > </mat-radio-group
+            ><br /><br />
+            <mat-select placeholder="Zeroed grain" [(ngModel)]="qemuImg.zeroed_grain">
+              @for (option of zeroedGrainOptions; track option) {
+                <mat-option [value]="option">
+                  {{ option }}
                 </mat-option>
               }
             </mat-select>
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <mat-select placeholder="Cluster size" [(ngModel)]="qemuImg.cluster_size">
-              @for (clusterSize of clusterSizeOptions; track clusterSize.value) {
-                <mat-option [value]="clusterSize.value">
-                  {{ clusterSize.name }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-          Refcounts
-          <mat-form-field class="form-field">
-            <mat-select placeholder="Lazy refcounts" [(ngModel)]="qemuImg.lazy_refcounts">
-              @for (lazyRefcount of lazyRefcountsOptions; track lazyRefcount) {
-                <mat-option [value]="lazyRefcount">
-                  {{ lazyRefcount }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <mat-select placeholder="Refcount entry size" [(ngModel)]="qemuImg.refcount_bits">
-              @for (clusterSize of clusterSizeOptions; track clusterSize.value) {
-                <mat-option [value]="clusterSize.value">
-                  {{ clusterSize.name }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <div *ngIf="qemuImg.format === 'vhd' || qemuImg.format === 'vdi'">
-          <mat-radio-group aria-label="Image file sizing mode" class="radio-selection">
-            <mat-radio-button value="1" (click)="setSubformat('dynamic')" checked>Dynamic</mat-radio-button>
-            <mat-radio-button value="2" (click)="setSubformat('fixed')">Fixed</mat-radio-button>
-          </mat-radio-group>
-        </div>
-        <div *ngIf="qemuImg.format === 'vmdk'">
-          Adapter type<br />
-          <mat-radio-group aria-label="Adapter type" class="radio-selection">
-            <mat-radio-button value="1" (click)="setAdapterType('ide')" checked>IDE</mat-radio-button>
-            <mat-radio-button value="2" (click)="setAdapterType('lsilogic')">LSI Logic</mat-radio-button>
-            <mat-radio-button value="3" (click)="setAdapterType('buslogic')">BusLogic</mat-radio-button>
-            <mat-radio-button value="4" (click)="setAdapterType('legacyESX')"
-              >Legacy (ESX)</mat-radio-button
-            > </mat-radio-group
-          ><br /><br />
-          Image file sizing mode<br />
-          <mat-radio-group aria-label="Image file sizing mode" class="radio-selection">
-            <mat-radio-button value="1" (click)="setSubformat('streamOptimized')" checked
-              >Stream optimized</mat-radio-button
-            >
-            <mat-radio-button value="2" (click)="setSubformat('twoGbMaxExtentSparse')"
-              >Split every 2GB (sparse)</mat-radio-button
-            >
-            <mat-radio-button value="3" (click)="setSubformat('twoGbMaxExtentFlat')"
-              >Split every 2GB (flat)</mat-radio-button
-            >
-            <mat-radio-button value="4" (click)="setSubformat('monolithicSparse')">Monolithic sparse</mat-radio-button>
-            <mat-radio-button value="5" (click)="setSubformat('monolithicFlat')"
-              >Monolithic flat</mat-radio-button
-            > </mat-radio-group
-          ><br /><br />
-          <mat-select placeholder="Zeroed grain" [(ngModel)]="qemuImg.zeroed_grain">
-            @for (option of zeroedGrainOptions; track option) {
-              <mat-option [value]="option">
-                {{ option }}
-              </mat-option>
-            }
-          </mat-select>
-        </div>
+          </div>
+        }
         <form [formGroup]="inputForm">
           <mat-form-field class="form-field">
             <input matInput type="text" formControlName="path" placeholder="File location" />

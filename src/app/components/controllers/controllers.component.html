@@ -2,8 +2,12 @@
   <div class="controllers__header">
     <!-- GNS3 Logo and Title -->
     <div class="controllers__header-content">
-      <mat-icon class="controllers__logo-icon" *ngIf="!isLightThemeEnabled()" svgIcon="gns3"></mat-icon>
-      <mat-icon class="controllers__logo-icon" *ngIf="isLightThemeEnabled()" svgIcon="gns3black"></mat-icon>
+      @if (!isLightThemeEnabled()) {
+        <mat-icon class="controllers__logo-icon" svgIcon="gns3"></mat-icon>
+      }
+      @if (isLightThemeEnabled()) {
+        <mat-icon class="controllers__logo-icon" svgIcon="gns3black"></mat-icon>
+      }
       <h1>Controllers</h1>
     </div>
   </div>
@@ -220,8 +224,12 @@
             rel="noopener noreferrer"
             matTooltip="Website"
           >
-            <mat-icon class="controllers__footer-icon" *ngIf="!isLightThemeEnabled()" svgIcon="gns3"></mat-icon>
-            <mat-icon class="controllers__footer-icon" *ngIf="isLightThemeEnabled()" svgIcon="gns3black"></mat-icon>
+            @if (!isLightThemeEnabled()) {
+              <mat-icon class="controllers__footer-icon" svgIcon="gns3"></mat-icon>
+            }
+            @if (isLightThemeEnabled()) {
+              <mat-icon class="controllers__footer-icon" svgIcon="gns3black"></mat-icon>
+            }
           </a>
         </div>
       </div>

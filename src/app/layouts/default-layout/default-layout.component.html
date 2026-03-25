@@ -4,17 +4,20 @@
       <mat-icon svgIcon="gns3"></mat-icon>
     </button>
 
-    <button *ngIf="!recentlyOpenedProjectId && controllerIdProjectList" mat-button (click)="listProjects()">
-      Projects
-    </button>
+    @if (!recentlyOpenedProjectId && controllerIdProjectList) {
+      <button mat-button (click)="listProjects()">
+        Projects
+      </button>
+    }
 
-    <button
-      *ngIf="recentlyOpenedProjectId && recentlyOpenedcontrollerId"
-      mat-button
-      (click)="backToProject()"
-    >
-      Back to project
-    </button>
+    @if (recentlyOpenedProjectId && recentlyOpenedcontrollerId) {
+      <button
+        mat-button
+        (click)="backToProject()"
+      >
+        Back to project
+      </button>
+    }
 
     <span class="spacer"></span>
 

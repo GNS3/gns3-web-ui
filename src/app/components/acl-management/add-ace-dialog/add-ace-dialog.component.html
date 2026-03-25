@@ -7,12 +7,12 @@
           <button mat-icon-button disabled></button>
           {{node.name}}
           <button mat-icon-button (click)="endpointSelection(node)">
-            <div *ngIf="!selectedEndpoint || node.endpoint !== selectedEndpoint.endpoint">
+            @if (!selectedEndpoint || node.endpoint !== selectedEndpoint.endpoint) {
               <mat-icon class="align-middle" style="color: #696969">panorama_fish_eye</mat-icon>
-            </div>
-            <div *ngIf="selectedEndpoint && node.endpoint === selectedEndpoint.endpoint" >
+            }
+            @if (selectedEndpoint && node.endpoint === selectedEndpoint.endpoint) {
               <mat-icon class="align-middle">check_circle</mat-icon>
-            </div>
+            }
           </button>
         </div>
       </cdk-nested-tree-node>
@@ -26,12 +26,12 @@
           </button>
           {{node.name}}
           <button mat-icon-button (click)="endpointSelection(node)">
-            <div *ngIf="!selectedEndpoint || node.endpoint !== selectedEndpoint.endpoint">
+            @if (!selectedEndpoint || node.endpoint !== selectedEndpoint.endpoint) {
               <mat-icon class="align-middle" style="color: #696969">panorama_fish_eye</mat-icon>
-            </div>
-            <div *ngIf="selectedEndpoint && node.endpoint === selectedEndpoint.endpoint">
+            }
+            @if (selectedEndpoint && node.endpoint === selectedEndpoint.endpoint) {
               <mat-icon class="align-middle">check_circle</mat-icon>
-            </div>
+            }
           </button>
         </div>
 
@@ -53,7 +53,7 @@
     </div>
 
     @if (form.type.value === 'user') {
-      <app-autocomplete *ngIf="form.type.value === 'user'"
+      <app-autocomplete @if (form.type.value === 'user') {
                         [data]="users"
                         [eltType]="'Users'"
                         [displayFn]="displayFnUser"
@@ -63,7 +63,7 @@
     }
 
     @if (form.type.value === 'group') {
-      <app-autocomplete *ngIf="form.type.value === 'group'"
+      <app-autocomplete @if (form.type.value === 'group') {
                         [data]="groups"
                         [eltType]="'Groups'"
                         [displayFn]="displayFn"
