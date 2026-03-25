@@ -12,49 +12,6 @@
   scrollbar-color: var(--mat-sys-primary) transparent;
 }
 
-.chat-message-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.chat-message-list::-webkit-scrollbar-track {
-  background: transparent;
-  border-radius: 9999px;
-}
-
-.chat-message-list::-webkit-scrollbar-thumb {
-  background: linear-gradient(
-    180deg,
-    var(--mat-sys-primary),
-    var(--mat-sys-primary-container)
-  );
-  border-radius: 9999px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-  transition: all 200ms ease;
-  opacity: 0.6;
-}
-
-.chat-message-list::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(
-    180deg,
-    var(--mat-sys-primary),
-    var(--mat-sys-primary-container)
-  );
-  background-clip: padding-box;
-  border: 2px solid transparent;
-  opacity: 0.8;
-}
-
-.chat-message-list::-webkit-scrollbar-thumb:active {
-  background: linear-gradient(
-    180deg,
-    var(--mat-sys-primary),
-    var(--mat-sys-primary-container)
-  );
-  background-clip: padding-box;
-  opacity: 1;
-}
-
 .messages-container {
   display: flex;
   flex-direction: column;

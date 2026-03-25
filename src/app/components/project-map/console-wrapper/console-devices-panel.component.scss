@@ -78,24 +78,6 @@
   flex: 1;
   overflow-y: auto;
   padding: 4px;
-
-  &::-webkit-scrollbar {
-    width: 4px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: var(--mat-sys-surface-container);
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--mat-sys-primary);
-    border-radius: 2px;
-    opacity: 0.6;
-
-    &:hover {
-      opacity: 0.8;
-    }
-  }
 }
 
 .device-item {

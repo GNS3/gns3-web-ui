@@ -200,24 +200,6 @@ import { OverlayContainer } from '@angular/cdk/overlay';
         opacity: 0.6;
       }
 
-      /* Custom scrollbar for textarea */
-      .chat-textarea::-webkit-scrollbar {
-        width: 4px;
-      }
-
-      .chat-textarea::-webkit-scrollbar-track {
-        background: transparent;
-      }
-
-      .chat-textarea::-webkit-scrollbar-thumb {
-        background: var(--mat-app-outline-variant);
-        border-radius: 2px;
-      }
-
-      .chat-textarea::-webkit-scrollbar-thumb:hover {
-        background: var(--mat-app-outline);
-      }
-
       .model-selector-chip {
         flex-shrink: 0;
         height: 36px;

@@ -55,48 +55,41 @@ import {
             >
               <!-- Pin indicator -->
               @if (session.pinned) {
-                <div class="session-pin">
-                  <svg
-                    class="pin-icon pin-animation"
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="16"
-                    width="16"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M16 12V4H17V2H7V4H8V12L6 14V16H11V22H13V16H18V14L16 12Z" />
-                  </svg>
-                </div>
+                <svg
+                  class="session-pin-icon pin-animation"
+                  xmlns="http://www.w3.org/2000/svg"
+                  height="16"
+                  width="16"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M16 12V4H17V2H7V4H8V12L6 14V16H11V22H13V16H18V14L16 12Z" />
+                </svg>
               }
 
-              <!-- Session content -->
-              <div class="session-content">
-                <!-- Session title -->
-                @if (!session.editing) {
-                  <div class="session-header">
-                    <div class="session-info">
-                      <div class="session-title">{{ session.title || 'New chat' }}</div>
-                      <div class="session-preview">
-                        <span class="session-stats">{{ session.message_count }} messages</span>
-                        <span class="session-time">{{ formatTime(session.updated_at) }}</span>
-                      </div>
-                    </div>
-                  </div>
-                }
+              <!-- Session title -->
+              @if (!session.editing) {
+                <span class="session-title">{{ session.title || 'New chat' }}</span>
+              }
 
-                <!-- Edit title -->
-                @if (session.editing) {
-                  <mat-form-field class="session-edit-field" (click)="$event.stopPropagation()">
-                    <input
-                      matInput
-                      [value]="session.title"
-                      (keydown.enter)="finishRename(session, titleInput.value)"
-                      (keydown.escape)="cancelRename(session)"
-                      (blur)="finishRename(session, titleInput.value)"
-                      #titleInput
-                    />
-                  </mat-form-field>
-                }
-              </div>
+              <!-- Edit title -->
+              @if (session.editing) {
+                <mat-form-field class="session-edit-field" (click)="$event.stopPropagation()">
+                  <input
+                    matInput
+                    [value]="session.title"
+                    (keydown.enter)="finishRename(session, titleInput.value)"
+                    (keydown.escape)="cancelRename(session)"
+                    (blur)="finishRename(session, titleInput.value)"
+                    #titleInput
+                  />
+                </mat-form-field>
+              }
+
+              <!-- Session preview -->
+              <span class="session-preview">
+                <span class="session-stats">{{ session.message_count }} messages</span>
+                <span class="session-time">{{ formatTime(session.updated_at) }}</span>
+              </span>
 
               <!-- Session menu button -->
               <button

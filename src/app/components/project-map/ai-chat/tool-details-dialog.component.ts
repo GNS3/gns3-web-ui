@@ -165,29 +165,6 @@ export interface ToolDetailsDialogData {
       font-size: 13px;
       font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
     }
-
-    /* Scrollbar styles */
-    .dialog-content::-webkit-scrollbar,
-    .json-container::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-
-    .dialog-content::-webkit-scrollbar-track,
-    .json-container::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .dialog-content::-webkit-scrollbar-thumb,
-    .json-container::-webkit-scrollbar-thumb {
-      background: rgba(0, 151, 167, 0.3);
-      border-radius: 10px;
-    }
-
-    .dialog-content::-webkit-scrollbar-thumb:hover,
-    .json-container::-webkit-scrollbar-thumb:hover {
-      background: rgba(0, 151, 167, 0.5);
-    }
   `
 ]
 })
