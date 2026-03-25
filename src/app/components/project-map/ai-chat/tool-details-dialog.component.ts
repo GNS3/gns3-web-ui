@@ -201,7 +201,7 @@ export class ToolDetailsDialogComponent {
   readonly parsedOutput = signal<any>(null);
 
   constructor(
-    public dialogRef: MatDialogRef<ToolDetailsDialogComponent>,
+    private dialogRef: MatDialogRef<ToolDetailsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ToolDetailsDialogData
   ) {
     this.type.set(data.type);

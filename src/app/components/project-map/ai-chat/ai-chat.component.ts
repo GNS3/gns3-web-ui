@@ -38,11 +38,19 @@ import { ChatMessageListComponent } from './chat-message-list.component';
 import { ChatInputAreaComponent } from './chat-input-area.component';
 
 /**
+ * HTTP Error response shape (simplified for type safety)
+ */
+interface HttpErrorLike {
+  error?: { message?: string };
+  message?: string;
+  statusText?: string;
+}
+
+/**
  * AI Chat Main Component
  * Integrates all sub-components and handles main business logic
  */
 @Component({
-  standalone: true,
   selector: 'app-ai-chat',
   templateUrl: './ai-chat.component.html',
   styleUrls: ['./ai-chat.component.scss'],
@@ -60,6 +68,13 @@ import { ChatInputAreaComponent } from './chat-input-area.component';
   ],
 })
 export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
+  // Layout constants
+  private static readonly TOOLBAR_HEIGHT_DESKTOP = 64;
+  private static readonly TOOLBAR_HEIGHT_MOBILE = 56;
+  private static readonly MOBILE_BREAKPOINT = 768;
+  private static readonly MIN_PANEL_WIDTH = 500;
+  private static readonly MIN_PANEL_HEIGHT = 400;
+
   readonly project = input.required<Project>();
   @Input() controller!: Controller;
 
@@ -118,8 +133,11 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit() {
-    // Set top offset to keep AI Chat below toolbar (64px for desktop, 56px for mobile)
-    const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
+    // Set top offset to keep AI Chat below toolbar
+    const toolbarHeight =
+      window.innerWidth <= AiChatComponent.MOBILE_BREAKPOINT
+        ? AiChatComponent.TOOLBAR_HEIGHT_MOBILE
+        : AiChatComponent.TOOLBAR_HEIGHT_DESKTOP;
     this.boundaryService.setConfig({ topOffset: toolbarHeight });
 
     this.initializeChat();
@@ -153,10 +171,6 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.style = this.boundaryService.constrainWindowPosition(this.style as WindowStyle);
     this.cdr.markForCheck();
   }
-
-  /**
-   * Initialize chat
-   */
 
   /**
    * Initialize chat
@@ -894,10 +908,12 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    * Show error using Material Snackbar
    * @param error Error message or error object
    */
-  private showError(error: string | any): void {
+  private showError(error: string | HttpErrorLike): void {
     // Extract error message if it's an object
-    let errorMessage = error;
-    if (typeof error !== 'string') {
+    let errorMessage: string;
+    if (typeof error === 'string') {
+      errorMessage = error;
+    } else {
       // It's an object (HttpErrorResponse), extract the message
       // Prioritize server response body message
       if (error.error?.message) {
@@ -914,7 +930,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     // Truncate error message if too long (max 300 characters)
     const maxLength = 300;
     let displayMessage = errorMessage;
-    if (typeof displayMessage === 'string' && displayMessage.length > maxLength) {
+    if (displayMessage.length > maxLength) {
       displayMessage = displayMessage.substring(0, maxLength) + '...';
     }
 
@@ -1150,7 +1166,8 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     if (
       event.rectangle.width &&
       event.rectangle.height &&
-      (event.rectangle.width < 500 || event.rectangle.height < 400)
+      (event.rectangle.width < AiChatComponent.MIN_PANEL_WIDTH ||
+        event.rectangle.height < AiChatComponent.MIN_PANEL_HEIGHT)
     ) {
       return false;
     }

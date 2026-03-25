@@ -184,7 +184,7 @@ export class AiChatService {
 
   /**
    * Get sessions list
-   * GET /v3/projects/{project_id}/chat/sessions
+   * GET /projects/{project_id}/chat/sessions
    * @param controller Controller
    * @param projectId Project ID
    * @returns Sessions list
@@ -204,7 +204,7 @@ export class AiChatService {
 
   /**
    * Get session history
-   * GET /v3/projects/{project_id}/chat/sessions/{session_id}/history
+   * GET /projects/{project_id}/chat/sessions/{session_id}/history
    * @param controller Controller
    * @param projectId Project ID
    * @param sessionId Session ID
@@ -232,7 +232,7 @@ export class AiChatService {
 
   /**
    * Rename session
-   * PATCH /v3/projects/{project_id}/chat/sessions/{session_id}
+   * PATCH /projects/{project_id}/chat/sessions/{session_id}
    * @param controller Controller
    * @param projectId Project ID
    * @param sessionId Session ID
@@ -261,7 +261,7 @@ export class AiChatService {
 
   /**
    * Delete session
-   * DELETE /v3/projects/{project_id}/chat/sessions/{session_id}
+   * DELETE /projects/{project_id}/chat/sessions/{session_id}
    * @param controller Controller
    * @param projectId Project ID
    * @param sessionId Session ID
@@ -285,7 +285,7 @@ export class AiChatService {
 
   /**
    * Pin session
-   * PUT /v3/projects/{project_id}/chat/sessions/{session_id}/pin
+   * PUT /projects/{project_id}/chat/sessions/{session_id}/pin
    * @param controller Controller
    * @param projectId Project ID
    * @param sessionId Session ID
@@ -310,7 +310,7 @@ export class AiChatService {
 
   /**
    * Unpin session
-   * DELETE /v3/projects/{project_id}/chat/sessions/{session_id}/pin
+   * DELETE /projects/{project_id}/chat/sessions/{session_id}/pin
    * @param controller Controller
    * @param projectId Project ID
    * @param sessionId Session ID

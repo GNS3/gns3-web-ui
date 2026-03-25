@@ -26,7 +26,6 @@ import { ToolDetailsDialogComponent, ToolDetailsDialogData } from './tool-detail
  * Supports: user, assistant, system, tool_call, tool_result messages
  */
 @Component({
-  standalone: true,
   selector: 'app-chat-message-list',
   imports: [CommonModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MarkdownModule],
   styleUrls: ['./chat-message-list.component.scss'],
@@ -34,117 +33,134 @@ import { ToolDetailsDialogComponent, ToolDetailsDialogData } from './tool-detail
   template: `
     <div class="chat-message-list" #messageContainer [class.auto-scroll]="autoScroll()">
       <div class="messages-container">
-        <ng-container *ngFor="let message of messages(); trackBy: trackByMessageId">
+        @for (message of messages(); track message.id) {
           <!-- User message -->
-          <div class="message user-message" *ngIf="message.role === 'user'">
-            <div class="message-avatar user-avatar">
-              <span class="avatar-text">Y</span>
-            </div>
-            <div class="message-content user-content">
-              <div class="message-bubble user-bubble">
-                <markdown
-                  class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all"
-                  [data]="message.content"
-                ></markdown>
+          @if (message.role === 'user') {
+            <div class="message user-message">
+              <div class="message-avatar user-avatar">
+                <span class="avatar-text">Y</span>
               </div>
-              <div class="message-time">{{ formatTime(message.created_at) }}</div>
+              <div class="message-content user-content">
+                <div class="message-bubble user-bubble">
+                  <markdown
+                    class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all"
+                    [data]="message.content"
+                  ></markdown>
+                </div>
+                <div class="message-time">{{ formatTime(message.created_at) }}</div>
+              </div>
             </div>
-          </div>
+          }
 
           <!-- AI assistant message -->
-          <div class="message assistant-message" *ngIf="message.role === 'assistant'">
-            <div class="message-avatar assistant-avatar">
-              <img src="assets/gns3_icon.svg" alt="GNS3" class="avatar-logo" />
+          @if (message.role === 'assistant') {
+            <div class="message assistant-message">
+              <div class="message-avatar assistant-avatar">
+                <img src="assets/gns3_icon.svg" alt="GNS3" class="avatar-logo" />
+              </div>
+              <div class="message-content assistant-content">
+                <div
+                  class="message-bubble assistant-bubble"
+                  [class.streaming]="isStreaming() && message === lastAssistantMessage"
+                >
+                  <markdown
+                    class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all"
+                    [data]="message.content"
+                  ></markdown>
+                  @if (isStreaming() && message === lastAssistantMessage) {
+                    <mat-spinner
+                      diameter="16"
+                      class="streaming-indicator"
+                    ></mat-spinner>
+                  }
+                </div>
+
+                <!-- Tool calls list -->
+                @if (message.tool_calls && message.tool_calls.length > 0) {
+                  <div class="tool-calls-container">
+                    @for (toolCall of message.tool_calls; track toolCall.id) {
+                      <div
+                        class="inline-tool-call"
+                        (click)="openToolCallDialog(toolCall)"
+                      >
+                        <mat-icon class="tool-icon">build</mat-icon>
+                        <span class="tool-name-text">{{ toolCall.function.name }}</span>
+                        <mat-icon class="expand-icon">open_in_new</mat-icon>
+                      </div>
+                    }
+                  </div>
+                }
+
+                <!-- Tool results list -->
+                @if (message.tool_result && message.tool_result.length > 0) {
+                  <div class="tool-results-container">
+                    @for (result of message.tool_result; track $index) {
+                      <div
+                        class="inline-tool-result"
+                        (click)="openAssistantToolResultDialog(result)"
+                      >
+                        <mat-icon class="tool-icon">check_circle</mat-icon>
+                        <span class="tool-name-text">{{ result.toolName }}</span>
+                        <mat-icon class="expand-icon">open_in_new</mat-icon>
+                      </div>
+                    }
+                  </div>
+                }
+
+                <div class="message-time">{{ formatTime(message.created_at) }}</div>
+              </div>
             </div>
-            <div class="message-content assistant-content">
-              <div
-                class="message-bubble assistant-bubble"
-                [class.streaming]="isStreaming() && message === lastAssistantMessage"
-              >
+          }
+
+          <!-- System message -->
+          @if (message.role === 'system') {
+            <div class="message system-message">
+              <div class="message-bubble system-bubble">
                 <markdown
                   class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all"
                   [data]="message.content"
                 ></markdown>
-                <mat-spinner
-                  *ngIf="isStreaming() && message === lastAssistantMessage"
-                  diameter="16"
-                  class="streaming-indicator"
-                ></mat-spinner>
               </div>
-
-              <!-- Tool calls list -->
-              <div class="tool-calls-container" *ngIf="message.tool_calls && message.tool_calls.length > 0">
-                <div
-                  class="inline-tool-call"
-                  *ngFor="let toolCall of message.tool_calls"
-                  (click)="openToolCallDialog(toolCall)"
-                >
-                  <mat-icon class="tool-icon">build</mat-icon>
-                  <span class="tool-name-text">{{ toolCall.function.name }}</span>
-                  <mat-icon class="expand-icon">open_in_new</mat-icon>
-                </div>
-              </div>
-
-              <!-- Tool results list -->
-              <div class="tool-results-container" *ngIf="message.tool_result && message.tool_result.length > 0">
-                <div
-                  class="inline-tool-result"
-                  *ngFor="let result of message.tool_result"
-                  (click)="openAssistantToolResultDialog(result)"
-                >
-                  <mat-icon class="tool-icon">check_circle</mat-icon>
-                  <span class="tool-name-text">{{ result.toolName }}</span>
-                  <mat-icon class="expand-icon">open_in_new</mat-icon>
-                </div>
-              </div>
-
-              <div class="message-time">{{ formatTime(message.created_at) }}</div>
             </div>
-          </div>
-
-          <!-- System message -->
-          <div class="message system-message" *ngIf="message.role === 'system'">
-            <div class="message-bubble system-bubble">
-              <markdown
-                class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all"
-                [data]="message.content"
-              ></markdown>
-            </div>
-          </div>
+          }
 
           <!-- Error message -->
-          <div class="message error-message" *ngIf="message.metadata?.error">
-            <div class="message-bubble error-bubble">
-              <mat-icon class="error-icon">error</mat-icon>
-              <div class="message-text">{{ message.metadata.error }}</div>
+          @if (message.metadata?.error) {
+            <div class="message error-message">
+              <div class="message-bubble error-bubble">
+                <mat-icon class="error-icon">error</mat-icon>
+                <div class="message-text">{{ message.metadata.error }}</div>
+              </div>
             </div>
-          </div>
-        </ng-container>
+          }
+        }
 
         <!-- Empty state -->
-        <div class="empty-state" *ngIf="messages().length === 0">
-          <div class="empty-content">
-            <div class="empty-icon-wrapper">
-              <mat-icon class="empty-icon">smart_toy</mat-icon>
-            </div>
-            <h3 class="empty-title">Welcome to GNS3 AI Assistant</h3>
-            <p class="empty-description">Ask me anything about network automation and GNS3</p>
-            <div class="empty-suggestions">
-              <div class="suggestion-chip" (click)="sendSuggestion('Help me understand this network topology')">
-                <mat-icon>help_outline</mat-icon>
-                <span>Explain network topology</span>
+        @if (messages().length === 0) {
+          <div class="empty-state">
+            <div class="empty-content">
+              <div class="empty-icon-wrapper">
+                <mat-icon class="empty-icon">smart_toy</mat-icon>
               </div>
-              <div class="suggestion-chip" (click)="sendSuggestion('Analyze the network configuration')">
-                <mat-icon>analytics</mat-icon>
-                <span>Analyze configuration</span>
-              </div>
-              <div class="suggestion-chip" (click)="sendSuggestion('Find potential network issues')">
-                <mat-icon>search</mat-icon>
-                <span>Find network issues</span>
+              <h3 class="empty-title">Welcome to GNS3 AI Assistant</h3>
+              <p class="empty-description">Ask me anything about network automation and GNS3</p>
+              <div class="empty-suggestions">
+                <div class="suggestion-chip" (click)="sendSuggestion('Help me understand this network topology')">
+                  <mat-icon>help_outline</mat-icon>
+                  <span>Explain network topology</span>
+                </div>
+                <div class="suggestion-chip" (click)="sendSuggestion('Analyze the network configuration')">
+                  <mat-icon>analytics</mat-icon>
+                  <span>Analyze configuration</span>
+                </div>
+                <div class="suggestion-chip" (click)="sendSuggestion('Find potential network issues')">
+                  <mat-icon>search</mat-icon>
+                  <span>Find network issues</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        }
       </div>
     </div>
   `,

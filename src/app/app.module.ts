@@ -648,9 +648,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
         MatButtonToggleModule,
         CdkAccordionModule,
         CdkTreeModule,
-        MarkdownModule.forRoot({
-            sanitize: SecurityContext.NONE
-        }),
+        MarkdownModule.forRoot(),
     ],
     providers: [
         SettingsService,

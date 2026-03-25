@@ -72,66 +72,75 @@ import { OverlayContainer } from '@angular/cdk/overlay';
         </button>
       </div>
 
-      <div class="input-footer" *ngIf="showCharCount()">
-        <span class="char-count" [class.warning]="isNearLimit">{{ message.length }}</span>
-        <span class="char-separator"> / </span>
-        <span class="char-max">{{ maxLength() }}</span>
-      </div>
+      @if (showCharCount()) {
+        <div class="input-footer">
+          <span class="char-count" [class.warning]="isNearLimit">{{ message.length }}</span>
+          <span class="char-separator"> / </span>
+          <span class="char-max">{{ maxLength() }}</span>
+        </div>
+      }
     </div>
 
     <!-- Model Selection Menu -->
     <mat-menu #modelMenu="matMenu" xPosition="before">
       <div class="model-menu-header">Select AI Model</div>
       <mat-divider></mat-divider>
-      <button
-        mat-menu-item
-        *ngFor="let config of modelConfigs()"
-        (click)="selectModel(config)"
-        [class.selected]="config.config_id === currentModelId()"
-      >
-        <mat-icon>{{ config.config_id === currentModelId() ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
-        <span class="model-name">{{ getModelDisplayName(config) }}</span>
-        <span class="model-source" *ngIf="config.source === 'group'">Group</span>
-      </button>
-      <mat-divider *ngIf="!modelConfigs() || modelConfigs().length === 0"></mat-divider>
-      <button mat-menu-item *ngIf="!modelConfigs() || modelConfigs().length === 0" disabled>
-        <mat-icon>error_outline</mat-icon>
-        <span>No models configured</span>
-      </button>
+      @for (config of modelConfigs(); track config.config_id) {
+        <button
+          mat-menu-item
+          (click)="selectModel(config)"
+          [class.selected]="config.config_id === currentModelId()"
+        >
+          <mat-icon>{{ config.config_id === currentModelId() ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+          <span class="model-name">{{ getModelDisplayName(config) }}</span>
+          @if (config.source === 'group') {
+            <span class="model-source">Group</span>
+          }
+        </button>
+      }
+      @if (!modelConfigs() || modelConfigs().length === 0) {
+        <mat-divider></mat-divider>
+        <button mat-menu-item disabled>
+          <mat-icon>error_outline</mat-icon>
+          <span>No models configured</span>
+        </button>
+      }
 
       <!-- Copilot Mode Section -->
-      <mat-divider *ngIf="modelConfigs() && modelConfigs().length > 0"></mat-divider>
-      <div class="copilot-mode-section" *ngIf="modelConfigs() && modelConfigs().length > 0">
-        <div class="copilot-mode-header">Copilot Mode</div>
-        <button
-          mat-menu-item
-          class="copilot-mode-item"
-          (click)="selectCopilotMode('teaching_assistant')"
-          [class.selected]="currentCopilotMode() === 'teaching_assistant'"
-        >
-          <mat-icon>{{
-            currentCopilotMode() === 'teaching_assistant' ? 'check_circle' : 'radio_button_unchecked'
-          }}</mat-icon>
-          <div class="mode-info">
-            <span class="mode-name">Teaching Assistant</span>
-            <span class="mode-description">Diagnostics only</span>
-          </div>
-        </button>
-        <button
-          mat-menu-item
-          class="copilot-mode-item"
-          (click)="selectCopilotMode('lab_automation_assistant')"
-          [class.selected]="currentCopilotMode() === 'lab_automation_assistant'"
-        >
-          <mat-icon>{{
-            currentCopilotMode() === 'lab_automation_assistant' ? 'check_circle' : 'radio_button_unchecked'
-          }}</mat-icon>
-          <div class="mode-info">
-            <span class="mode-name">Lab Automation</span>
-            <span class="mode-description">Full configuration access</span>
-          </div>
-        </button>
-      </div>
+      @if (modelConfigs() && modelConfigs().length > 0) {
+        <mat-divider></mat-divider>
+        <div class="copilot-mode-section">
+          <div class="copilot-mode-header">Copilot Mode</div>
+          <button
+            mat-menu-item
+            class="copilot-mode-item"
+            (click)="selectCopilotMode('teaching_assistant')"
+            [class.selected]="currentCopilotMode() === 'teaching_assistant'"
+          >
+            <mat-icon>{{
+              currentCopilotMode() === 'teaching_assistant' ? 'check_circle' : 'radio_button_unchecked'
+            }}</mat-icon>
+            <div class="mode-info">
+              <span class="mode-name">Teaching Assistant</span>
+              <span class="mode-description">Diagnostics only</span>
+            </div>
+          </button>
+          <button
+            mat-menu-item
+            class="copilot-mode-item"
+            (click)="selectCopilotMode('lab_automation_assistant')"
+            [class.selected]="currentCopilotMode() === 'lab_automation_assistant'"
+          >
+            <mat-icon>{{
+              currentCopilotMode() === 'lab_automation_assistant' ? 'check_circle' : 'radio_button_unchecked'
+            }}</mat-icon>
+            <div class="mode-info">
+              <span class="mode-name">Lab Automation</span>
+              <span class="mode-description">Full configuration access</span>
+            </div>
+          </button>
+        </div>
+      }
     </mat-menu>
   `,
   styles: [
