@@ -81,7 +81,28 @@ export class ConfiguratorDialogIosComponent implements OnInit {
       }
       this.getConfiguration();
       this.fillSlotsData();
+      this.populateForms();
       this.cd.markForCheck();
+    });
+  }
+
+  private populateForms() {
+    // Populate General Settings form
+    this.generalSettingsForm.patchValue({
+      name: this.node.name,
+      path: this.node.properties.image,
+    });
+
+    // Populate Memory form
+    this.memoryForm.patchValue({
+      ram: this.node.properties.ram,
+      nvram: this.node.properties.nvram,
+    });
+
+    // Populate Advanced Settings form
+    this.advancedSettingsForm.patchValue({
+      mac_addr: this.node.properties.mac_addr,
+      idlepc: this.node.properties.idlepc,
     });
   }
 
