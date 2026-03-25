@@ -334,7 +334,8 @@
   }
 }
 
-.tool-calls-container {
+.tool-calls-container,
+.tool-results-container {
   display: flex;
   flex-direction: column;
   gap: 8px;
