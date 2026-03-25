@@ -7,6 +7,7 @@ import {
   Output,
   inject,
   input,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -14,12 +15,17 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatExpansionModule } from '@angular/material/expansion';
 import { environment } from 'environments/environment';
 import { Controller } from '@models/controller';
 import { Symbol } from '@models/symbol';
 import { SymbolService } from '@services/symbol.service';
 import { SearchFilter } from '@filters/searchFilter.pipe';
+
+interface SymbolGroup {
+  theme: string;
+  symbols: Symbol[];
+}
 
 @Component({
   standalone: true,
@@ -34,7 +40,7 @@ import { SearchFilter } from '@filters/searchFilter.pipe';
     MatIconModule,
     MatInputModule,
     MatRadioModule,
-    MatTabsModule,
+    MatExpansionModule,
     SearchFilter,
   ],
 })
@@ -48,12 +54,27 @@ export class SymbolsComponent implements OnInit {
 
   symbols: Symbol[] = [];
   filteredSymbols: Symbol[] = [];
+  symbolGroups: SymbolGroup[] = [];
   isSelected: string = '';
   searchText: string = '';
+  expandedThemes = signal<string[]>([]);
 
   ngOnInit() {
     this.isSelected = this.symbol();
     this.loadSymbols();
+  }
+
+  toggleTheme(theme: string) {
+    const current = this.expandedThemes();
+    if (current.includes(theme)) {
+      this.expandedThemes.set(current.filter((t) => t !== theme));
+    } else {
+      this.expandedThemes.set([...current, theme]);
+    }
+  }
+
+  isThemeExpanded(theme: string): boolean {
+    return this.expandedThemes().includes(theme);
   }
 
   setFilter(filter: string) {
@@ -64,6 +85,7 @@ export class SymbolsComponent implements OnInit {
     } else {
       this.filteredSymbols = this.symbols.filter((elem) => !elem.builtin);
     }
+    this.updateSymbolGroups();
   }
 
   setSelected(symbol_id: string) {
@@ -75,8 +97,23 @@ export class SymbolsComponent implements OnInit {
     this.symbolService.list(this.controller()).subscribe((symbols: Symbol[]) => {
       this.symbols = symbols;
       this.filteredSymbols = symbols;
+      this.updateSymbolGroups();
       this.cd.markForCheck();
     });
+  }
+
+  private updateSymbolGroups() {
+    const groupMap = new Map<string, Symbol[]>();
+    for (const sym of this.filteredSymbols) {
+      const theme = sym.theme || 'Other';
+      if (!groupMap.has(theme)) {
+        groupMap.set(theme, []);
+      }
+      groupMap.get(theme)!.push(sym);
+    }
+    this.symbolGroups = Array.from(groupMap.entries())
+      .map(([theme, symbols]) => ({ theme, symbols }))
+      .sort((a, b) => a.theme.localeCompare(b.theme));
   }
 
   public uploadSymbolFile(event) {

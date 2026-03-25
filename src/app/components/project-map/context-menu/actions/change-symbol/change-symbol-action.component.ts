@@ -23,10 +23,10 @@ export class ChangeSymbolActionComponent implements OnInit {
 
   changeSymbol() {
     const dialogRef = this.dialog.open(ChangeSymbolDialogComponent, {
-      width: '1000px',
-      height: '500px',
+      width: '800px',
       autoFocus: false,
       disableClose: true,
+      panelClass: 'change-symbol-dialog-panel',
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller();

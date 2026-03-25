@@ -142,3 +142,18 @@
     --ngx-json-value: var(--mat-sys-on-surface);
   }
 }
+
+/* =============================================
+// Change Symbol Dialog
+// ============================================= */
+.change-symbol-dialog-panel {
+  --mat-dialog-container-max-width: 800px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 800px;
+    max-width: 800px;
+    height: 600px;
+    max-height: 600px;
+  }
+}

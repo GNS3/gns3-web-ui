@@ -1,9 +1,7 @@
 <h1 mat-dialog-title>Change symbol for node: {{ node.name }}</h1>
 
 <div class="modal-form-container">
-  <div class="symbolsWrapper">
-    <app-symbols [controller]="controller" [symbol]="symbol" (symbolChanged)="symbolChanged($event)"></app-symbols>
-  </div>
+  <app-symbols [controller]="controller" [symbol]="symbol" (symbolChanged)="symbolChanged($event)"></app-symbols>
 </div>
 
 <div mat-dialog-actions>

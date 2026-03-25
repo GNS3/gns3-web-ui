@@ -6,9 +6,45 @@
  */
 
 .symbolsWrapper {
-  height: 350px;
-  overflow-y: scroll;
-  scrollbar-width: thin;
+  overflow: visible;
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+  gap: 4px;
+}
+
+.buttonWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  outline: none;
+}
+
+.button {
+  background: border-box;
+  border-width: 0;
+  outline: none;
+  padding: 4px;
+  width: 100%;
+  height: 100%;
+}
+
+.buttonSelected {
+  background-color: var(--mat-sys-secondary-container);
+}
+
+.image {
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+}
+
+.imageSelected {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: 1px;
 }
 
 ::-webkit-scrollbar {
@@ -21,4 +57,25 @@
 
 ::-webkit-scrollbar-thumb {
   background-color: darkgrey;
+}
+
+.menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.radio-selection {
+  display: flex;
+  gap: 8px;
+}
+
+.example-full-width {
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.non-visible {
+  display: none;
 }

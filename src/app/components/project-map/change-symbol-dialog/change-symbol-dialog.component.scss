@@ -3,42 +3,15 @@
  * Using MD3 CSS variables
  */
 
-.buttonWrapper {
-  width: 85px;
-  height: 85px;
-  display: flex;
-  align-items: center;
-  margin-left: auto;
-  margin-right: auto;
-  outline: none;
+.modal-form-container {
+  padding: 16px;
+  overflow-y: auto;
+  max-height: 500px;
 }
 
 .menu {
   display: flex;
   justify-content: space-between;
-}
-
-.button {
-  background: border-box;
-  border-width: 0;
-  outline: none;
-}
-
-.image {
-  width: 65px;
-  height: 65px;
-}
-
-.imageSelected {
-  margin-left: 0;
-}
-
-.wrapper {
-  display: grid;
-  grid-template-rows: auto;
-  grid-template-columns: repeat(7, 1fr);
-  grid-row-gap: 24px;
-  grid-column-gap: 8px;
 }
 
 .radio-selection {
