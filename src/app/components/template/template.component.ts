@@ -11,6 +11,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatListModule } from '@angular/material/list';
+import { DragAndDropModule } from 'angular-draggable-droppable';
 import { ThemeService } from '@services/theme.service';
 import { Subscription } from 'rxjs';
 import { Project } from '@models/project';
@@ -38,6 +39,7 @@ import { Context } from '../../cartography/models/context';
     MatSelectModule,
     MatOptionModule,
     MatListModule,
+    DragAndDropModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
