@@ -7,7 +7,17 @@
 // selectors to avoid affecting other components.
 // ============================================= */
 
+/* Node/Link selection grayscale effect */
 svg#map g.selected {
   filter: grayscale(100%);
   -webkit-filter: grayscale(100%);
+}
+
+/* Drag selection rectangle */
+svg#map g.selection-line-tool path.selection {
+  fill: var(--mat-sys-primary);
+  stroke: var(--mat-sys-primary);
+  fill-opacity: 0.3;
+  stroke-opacity: 0.7;
+  stroke-width: 1;
 }

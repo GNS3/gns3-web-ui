@@ -51,15 +51,6 @@
   stroke: var(--mat-sys-primary);
 }
 
-.selection-svg-fill {
-  fill: var(--mat-sys-primary);
-  stroke: var(--mat-sys-primary);
-  fill-opacity: 0.3;
-  stroke-opacity: 0.7;
-  stroke-width: 1;
-  stroke-dasharray: 5, 5;
-}
-
 .selection-error {
   stroke: var(--mat-sys-error);
 }
@@ -380,10 +371,6 @@ path.ethernet_link:hover {
 .selected > .interface_label_border {
   stroke: var(--mat-sys-on-surface);
   fill: none;
-}
-
-.selection-line-tool .selection {
-  @extend .selection-svg-fill;
 }
 
 g.node text,
