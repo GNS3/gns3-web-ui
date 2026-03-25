@@ -110,22 +110,6 @@
 // Tool Details Dialog
 // ============================================= */
 .tool-details-dialog {
-  /* Dialog container styling */
-  .mat-mdc-dialog-container {
-    border-radius: 16px;
-    border: 1px solid var(--mat-sys-outline-variant);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 30%, transparent),
-                0 2px 8px color-mix(in srgb, var(--mat-sys-primary) 15%, transparent);
-    background-color: var(--mat-sys-surface);
-  }
-
-  .mat-mdc-dialog-surface {
-    background-color: transparent;
-  }
-
-  /* JSON viewer colors - using MD3 color scheme */
   .json-container {
     --ngx-json-string: var(--mat-sys-primary);
     --ngx-json-number: var(--mat-sys-secondary);
@@ -135,8 +119,6 @@
     --ngx-json-object: var(--mat-sys-inverse-surface);
     --ngx-json-function: var(--mat-sys-on-surface);
     --ngx-json-null: var(--mat-sys-outline);
-    --ngx-json-null-bg: color-mix(in srgb, var(--mat-sys-outline) 10%, transparent);
-    --ngx-json-undefined: var(--mat-sys-error);
     --ngx-json-key: var(--mat-sys-on-surface);
     --ngx-json-separator: var(--mat-sys-outline);
     --ngx-json-value: var(--mat-sys-on-surface);

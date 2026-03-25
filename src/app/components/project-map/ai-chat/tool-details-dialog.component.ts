@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatIconModule } from '@angular/material/icon';
 import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 import { ToolCall } from '@models/ai-chat.interface';
 import { NgxJsonViewerModule } from 'ngx-json-viewer';
 
@@ -15,31 +15,21 @@ export interface ToolDetailsDialogData {
 /**
  * Tool Details Dialog Component
  * Displays tool call or tool result details in a Material Dialog
- * Uses JsonViewerComponent for formatted JSON display
  */
 @Component({
   selector: 'app-tool-details-dialog',
   imports: [
     CommonModule,
-    MatIconModule,
     MatDialogModule,
+    MatButtonModule,
     NgxJsonViewerModule
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="dialog-header">
-      <h2 mat-dialog-title class="dialog-title">
-        <mat-icon class="title-icon">{{ type() === 'tool_call' ? 'build' : 'check_circle' }}</mat-icon>
-        <span>{{ title }}</span>
-      </h2>
-      <button mat-icon-button class="close-button" (click)="closeDialog()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
+    <h1 mat-dialog-title>{{ title }}</h1>
 
-    <div mat-dialog-content class="dialog-content">
-      <!-- Tool Call Content -->
-      <ng-container *ngIf="type() === 'tool_call' && toolCall()">
+    <div mat-dialog-content>
+      @if (type() === 'tool_call' && toolCall()) {
         <div class="info-section">
           <div class="info-label">Function:</div>
           <div class="info-value">{{ toolCall().function.name }}</div>
@@ -51,10 +41,9 @@ export interface ToolDetailsDialogData {
             <ngx-json-viewer [json]="parsedArguments()" [expanded]="true"></ngx-json-viewer>
           </div>
         </div>
-      </ng-container>
+      }
 
-      <!-- Tool Result Content -->
-      <ng-container *ngIf="type() === 'tool_result'">
+      @if (type() === 'tool_result') {
         <div class="info-section">
           <div class="info-label">Tool:</div>
           <div class="info-value">{{ toolName() }}</div>
@@ -66,67 +55,14 @@ export interface ToolDetailsDialogData {
             <ngx-json-viewer [json]="parsedOutput()" [expanded]="false"></ngx-json-viewer>
           </div>
         </div>
-      </ng-container>
+      }
+    </div>
+
+    <div mat-dialog-actions align="end">
+      <button mat-button (click)="closeDialog()">Close</button>
     </div>
   `,
   styles: [`
-    .dialog-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px;
-      border-bottom: 1px solid var(--mat-sys-outline-variant);
-      margin: -24px -24px 0 -24px;
-      background: linear-gradient(to bottom, var(--mat-sys-surface), var(--mat-sys-surface-container-low));
-    }
-
-    .dialog-title {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 0;
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--mat-sys-on-surface);
-    }
-
-    .title-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-      color: var(--mat-sys-primary);
-    }
-
-    .close-button {
-      width: 40px;
-      height: 40px;
-      min-width: 40px;
-      min-height: 40px;
-      padding: 0;
-      color: var(--mat-sys-on-surface);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    .close-button:hover {
-      background-color: rgba(244, 67, 54, 0.1);
-      border-radius: 50%;
-    }
-
-    .close-button mat-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-    }
-
-    .dialog-content {
-      padding: 16px;
-      max-width: 800px;
-      min-width: 500px;
-      max-height: 70vh;
-      overflow-y: auto;
-      background-color: var(--mat-sys-background);
-    }
-
     .info-section {
       margin-bottom: 16px;
     }
@@ -197,35 +133,26 @@ export class ToolDetailsDialogComponent {
     const tc = this.toolCall();
     const output = this.toolOutput();
 
-    // Parse tool call arguments
     if (tc?.function?.arguments) {
       try {
         const args = tc.function.arguments;
-
-        // Handle both string and object formats
         if (typeof args === 'string') {
-          // String format - parse it
           this.parsedArguments.set(JSON.parse(args));
         } else if (args.tool_input && typeof args.tool_input === 'string') {
-          // Object format with tool_input wrapper - parse the inner string
           this.parsedArguments.set(JSON.parse(args.tool_input));
         } else {
-          // Object format without wrapper - use as-is
           this.parsedArguments.set(args);
         }
       } catch (e) {
-        // If all parsing fails, keep the original value
         this.parsedArguments.set(tc.function.arguments);
       }
     }
 
-    // Parse tool output
     if (output) {
       if (typeof output === 'string') {
         try {
           this.parsedOutput.set(JSON.parse(output));
         } catch (e) {
-          // Not valid JSON, keep as string
           this.parsedOutput.set(output);
         }
       } else {
