@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { ConfiguratorDialogAtmSwitchComponent } from '../../../node-editors/configurator/atm_switch/configurator-atm-switch.component';
@@ -19,6 +19,11 @@ import { ConfiguratorDialogVirtualBoxComponent } from '../../../node-editors/con
 import { ConfiguratorDialogVmwareComponent } from '../../../node-editors/configurator/vmware/configurator-vmware.component';
 import { ConfiguratorDialogVpcsComponent } from '../../../node-editors/configurator/vpcs/configurator-vpcs.component';
 
+export interface ConfigDialogData {
+  controller: Controller;
+  node: Node;
+}
+
 @Component({
   selector: 'app-config-node-action',
   templateUrl: './config-action.component.html',
@@ -30,49 +35,46 @@ export class ConfigActionComponent {
 
   readonly controller = input<Controller>(undefined);
   readonly node = input<Node>(undefined);
-  private conf = {
-    autoFocus: false,
-    width: '950px',
-    disableClose: false,
-  };
-  dialogRef;
 
   configureNode() {
     const node = this.node();
-    if (node.node_type === 'vpcs') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogVpcsComponent, this.conf);
-    } else if (node.node_type === 'ethernet_hub') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogEthernetHubComponent, this.conf);
-    } else if (node.node_type === 'ethernet_switch') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogEthernetSwitchComponent, this.conf);
-    } else if (node.node_type === 'cloud') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogCloudComponent, this.conf);
-    } else if (node.node_type === 'dynamips') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogIosComponent, this.conf);
-    } else if (node.node_type === 'iou') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogIouComponent, this.conf);
-    } else if (node.node_type === 'qemu') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogQemuComponent, this.conf);
-    } else if (node.node_type === 'virtualbox') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogVirtualBoxComponent, this.conf);
-    } else if (node.node_type === 'vmware') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogVmwareComponent, this.conf);
-    } else if (node.node_type === 'docker') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogDockerComponent, this.conf);
-    } else if (node.node_type === 'nat') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogNatComponent, this.conf);
-    } else if (node.node_type === 'frame_relay_switch') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogSwitchComponent, this.conf);
-    } else if (node.node_type === 'atm_switch') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogAtmSwitchComponent, this.conf);
-    }
+    const dialogData: ConfigDialogData = {
+      controller: this.controller(),
+      node: node,
+    };
+    const dialogConfig = {
+      autoFocus: false,
+      width: '950px',
+      disableClose: false,
+      data: dialogData,
+    };
 
-    // Wait for dialog to fully open before setting properties
-    // This ensures ngOnInit() has completed and properties are available
-    this.dialogRef.afterOpened().subscribe(() => {
-      const instance = this.dialogRef.componentInstance;
-      instance.controller = this.controller();
-      instance.node = node;
-    });
+    if (node.node_type === 'vpcs') {
+      this.dialog.open(ConfiguratorDialogVpcsComponent, dialogConfig);
+    } else if (node.node_type === 'ethernet_hub') {
+      this.dialog.open(ConfiguratorDialogEthernetHubComponent, dialogConfig);
+    } else if (node.node_type === 'ethernet_switch') {
+      this.dialog.open(ConfiguratorDialogEthernetSwitchComponent, dialogConfig);
+    } else if (node.node_type === 'cloud') {
+      this.dialog.open(ConfiguratorDialogCloudComponent, dialogConfig);
+    } else if (node.node_type === 'dynamips') {
+      this.dialog.open(ConfiguratorDialogIosComponent, dialogConfig);
+    } else if (node.node_type === 'iou') {
+      this.dialog.open(ConfiguratorDialogIouComponent, dialogConfig);
+    } else if (node.node_type === 'qemu') {
+      this.dialog.open(ConfiguratorDialogQemuComponent, dialogConfig);
+    } else if (node.node_type === 'virtualbox') {
+      this.dialog.open(ConfiguratorDialogVirtualBoxComponent, dialogConfig);
+    } else if (node.node_type === 'vmware') {
+      this.dialog.open(ConfiguratorDialogVmwareComponent, dialogConfig);
+    } else if (node.node_type === 'docker') {
+      this.dialog.open(ConfiguratorDialogDockerComponent, dialogConfig);
+    } else if (node.node_type === 'nat') {
+      this.dialog.open(ConfiguratorDialogNatComponent, dialogConfig);
+    } else if (node.node_type === 'frame_relay_switch') {
+      this.dialog.open(ConfiguratorDialogSwitchComponent, dialogConfig);
+    } else if (node.node_type === 'atm_switch') {
+      this.dialog.open(ConfiguratorDialogAtmSwitchComponent, dialogConfig);
+    }
   }
 }
