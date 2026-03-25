@@ -1,7 +1,7 @@
 @if (node) {
   <div class="context-menu" [style.left]="leftPosition" [style.top]="topPosition">
     <span [matMenuTriggerFor]="selectInterfaceMenu"></span>
-    <mat-menu [style.min-height]="0" #selectInterfaceMenu="matMenu" class="context-menu-items">
+    <mat-menu [style.min-height]="0" #selectInterfaceMenu="matMenu" panelClass="interface-menu-panel">
       @for (port of ports; track port.name) {
         <button mat-menu-item (click)="chooseInterface(port)" [disabled]="!port.available">
           <span class="interface-item">

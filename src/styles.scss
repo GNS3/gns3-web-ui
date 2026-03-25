@@ -104,6 +104,19 @@ body .cdk-overlay-container .mat-mdc-menu-content.mat-mdc-menu-content {
 }
 
 /* =============================================
+// Interface Menu Panel
+// ============================================= */
+body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.interface-menu-panel {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.mat-mdc-menu-panel {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+/* =============================================
 // Tab Styles
 // ============================================= */
 .mat-tab-body-content {
