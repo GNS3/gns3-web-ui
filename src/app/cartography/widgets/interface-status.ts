@@ -91,7 +91,7 @@ export class InterfaceStatusWidget implements Widget {
           .merge(status_labels_enter)
           .attr('transform', (ls: LinkStatus) => `translate(${ls.x}, ${ls.y})`);
 
-        const status_rects = status_labels_merge.selectAll('rect').data((ls: LinkStatus) => [ls]);
+        const status_rects = status_labels_merge.selectAll<SVGRectElement, LinkStatus>('rect').data((ls: LinkStatus) => [ls]);
         status_rects
           .enter()
           .append('rect')
@@ -109,7 +109,7 @@ export class InterfaceStatusWidget implements Widget {
           .attr('stroke-width', InterfaceStatusWidget.LABEL_STROKE_WIDTH);
         status_rects.exit().remove();
 
-        const status_texts = status_labels_merge.selectAll('text').data((ls: LinkStatus) => [ls]);
+        const status_texts = status_labels_merge.selectAll<SVGTextElement, LinkStatus>('text').data((ls: LinkStatus) => [ls]);
         status_texts
           .enter()
           .append('text')

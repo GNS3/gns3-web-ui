@@ -41,8 +41,7 @@ Add xterm.css to the global styles array in `angular.json`:
           "node_modules/material-design-icons/iconfont/material-icons.css",
           "node_modules/xterm/css/xterm.css",
           "src/styles/material3-theme-supplement.scss",
-          "src/styles.scss",
-          "src/tailwind-markdown.scss"
+          "src/styles.scss"
         ]
       }
     }

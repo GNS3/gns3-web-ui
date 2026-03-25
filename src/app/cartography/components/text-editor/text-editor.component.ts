@@ -121,38 +121,39 @@ export class TextEditorComponent implements OnInit, OnDestroy {
   }
 
   activateTextEditingForNodeLabels() {
+    const self = this;
     const rootElement = select(this.svg());
 
     rootElement
       .selectAll<SVGGElement, MapLinkNode>('g.interface_label_container')
       .select<SVGTextElement>('text.interface_label')
-      .on('dblclick', (elem, index, textElements) => {
-        this.selectionManager.setSelected([]);
+      .on('dblclick', function(this: SVGTextElement, event: MouseEvent, elem: MapLinkNode) {
+        self.selectionManager.setSelected([]);
 
-        const temporaryTextElement = this.temporaryTextElement();
-        this.renderer.setStyle(temporaryTextElement.nativeElement, 'display', 'initial');
-        this.renderer.setStyle(
+        const temporaryTextElement = self.temporaryTextElement();
+        self.renderer.setStyle(temporaryTextElement.nativeElement, 'display', 'initial');
+        self.renderer.setStyle(
           temporaryTextElement.nativeElement,
           'transform',
-          `scale(${this.mapScaleService.getScale()})`
+          `scale(${self.mapScaleService.getScale()})`
         );
-        this.editedLink = elem;
+        self.editedLink = elem;
 
-        select(textElements[index]).attr('visibility', 'hidden');
-        select(textElements[index]).classed('editingMode', true);
+        select(event.currentTarget as SVGTextElement).attr('visibility', 'hidden');
+        select(event.currentTarget as SVGTextElement).classed('editingMode', true);
 
-        this.editedNode = this.nodesDataSource.get(elem.nodeId);
-        this.editedLink = elem;
+        self.editedNode = self.nodesDataSource.get(elem.nodeId);
+        self.editedLink = elem;
         let x =
-          (elem.label.originalX + this.editedNode.x - 1) * this.context.transformation.k +
-          this.context.getZeroZeroTransformationPoint().x +
-          this.context.transformation.x;
+          (elem.label.originalX + self.editedNode.x - 1) * self.context.transformation.k +
+          self.context.getZeroZeroTransformationPoint().x +
+          self.context.transformation.x;
         let y =
-          (elem.label.originalY + this.editedNode.y + 4) * this.context.transformation.k +
-          this.context.getZeroZeroTransformationPoint().y +
-          this.context.transformation.y;
-        this.leftPosition.set(x.toString() + 'px');
-        this.topPosition.set(y.toString() + 'px');
+          (elem.label.originalY + self.editedNode.y + 4) * self.context.transformation.k +
+          self.context.getZeroZeroTransformationPoint().y +
+          self.context.transformation.y;
+        self.leftPosition.set(x.toString() + 'px');
+        self.topPosition.set(y.toString() + 'px');
         temporaryTextElement.nativeElement.innerText = elem.label.text;
 
         let styleProperties: StyleProperty[] = [];
@@ -173,84 +174,86 @@ export class TextEditorComponent implements OnInit, OnDestroy {
             ? styleProperties.find((p) => p.property === 'font-weight').value
             : 'normal',
         };
-        font = this.fontFixer.fix(font);
-        this.renderer.setStyle(
+        font = self.fontFixer.fix(font);
+        self.renderer.setStyle(
           temporaryTextElement.nativeElement,
           'color',
           styleProperties.find((p) => p.property === 'fill')
             ? styleProperties.find((p) => p.property === 'fill').value
             : '#000000'
         );
-        this.renderer.setStyle(temporaryTextElement.nativeElement, 'font-family', font.font_family);
-        this.renderer.setStyle(temporaryTextElement.nativeElement, 'font-size', `${font.font_size}pt`);
-        this.renderer.setStyle(temporaryTextElement.nativeElement, 'font-weight', font.font_weight);
+        self.renderer.setStyle(temporaryTextElement.nativeElement, 'font-family', font.font_family);
+        self.renderer.setStyle(temporaryTextElement.nativeElement, 'font-size', `${font.font_size}pt`);
+        self.renderer.setStyle(temporaryTextElement.nativeElement, 'font-weight', font.font_weight);
 
         let listener = () => {
-          let innerText = this.temporaryTextElement().nativeElement.innerText;
-          let link: Link = this.linksDataSource.get(this.editedLink.linkId);
-          link.nodes.find((n) => n.node_id === this.editedNode.node_id).label.text = innerText;
+          let innerText = self.temporaryTextElement().nativeElement.innerText;
+          let link: Link = self.linksDataSource.get(self.editedLink.linkId);
+          link.nodes.find((n) => n.node_id === self.editedNode.node_id).label.text = innerText;
 
-          this.linkService.updateLink(this.controller(), link).subscribe((link: Link) => {
+          self.linkService.updateLink(self.controller(), link).subscribe((link: Link) => {
             rootElement
               .selectAll<SVGTextElement, TextElement>('text.editingMode')
               .attr('visibility', 'visible')
               .classed('editingMode', false);
 
-            this.innerText.set('');
+            self.innerText.set('');
             temporaryTextElement.nativeElement.innerText = '';
-            temporaryTextElement.nativeElement.removeEventListener('focusout', this.textListener);
+            temporaryTextElement.nativeElement.removeEventListener('focusout', self.textListener);
 
-            this.clearStyle();
-            this.renderer.setStyle(temporaryTextElement.nativeElement, 'display', 'none');
+            self.clearStyle();
+            self.renderer.setStyle(temporaryTextElement.nativeElement, 'display', 'none');
           });
         };
-        this.textListener = listener;
-        temporaryTextElement.nativeElement.addEventListener('focusout', this.textListener);
+        self.textListener = listener;
+        temporaryTextElement.nativeElement.addEventListener('focusout', self.textListener);
         temporaryTextElement.nativeElement.focus();
       });
   }
 
   activateTextEditingForDrawings() {
+    const self = this;
     const rootElement = select(this.svg());
 
     rootElement
       .selectAll<SVGTextElement, TextElement>('text.text_element')
-      .on('dblclick', (elem, index, textElements) => {
-        const temporaryTextElement = this.temporaryTextElement();
-        this.renderer.setStyle(temporaryTextElement.nativeElement, 'display', 'initial');
-        this.renderer.setStyle(
+      .on('dblclick', function(this: SVGTextElement, event: MouseEvent, elem: TextElement) {
+        const temporaryTextElement = self.temporaryTextElement();
+        self.renderer.setStyle(temporaryTextElement.nativeElement, 'display', 'initial');
+        self.renderer.setStyle(
           temporaryTextElement.nativeElement,
           'transform',
-          `scale(${this.mapScaleService.getScale()})`
+          `scale(${self.mapScaleService.getScale()})`
         );
-        this.editedElement = elem;
+        self.editedElement = elem;
 
-        select(textElements[index]).attr('visibility', 'hidden');
-        select(textElements[index]).classed('editingMode', true);
+        const target = event.currentTarget as SVGTextElement;
+        select(target).attr('visibility', 'hidden');
+        select(target).classed('editingMode', true);
 
-        this.editingDrawingId = textElements[index].parentElement.parentElement.getAttribute('drawing_id');
-        var transformData = textElements[index].parentElement.getAttribute('transform').split(/\(|\)/);
+        self.editingDrawingId = target.parentElement.parentElement.getAttribute('drawing_id');
+        var transformData = target.parentElement.getAttribute('transform').split(/\(|\)/);
         var x =
-          Number(transformData[1].split(/,/)[0]) * this.context.transformation.k +
-          this.context.getZeroZeroTransformationPoint().x +
-          this.context.transformation.x;
+          Number(transformData[1].split(/,/)[0]) * self.context.transformation.k +
+          self.context.getZeroZeroTransformationPoint().x +
+          self.context.transformation.x;
         var y =
-          Number(transformData[1].split(/,/)[1]) * this.context.transformation.k +
-          this.context.getZeroZeroTransformationPoint().y +
-          this.context.transformation.y;
-        this.leftPosition.set(x.toString() + 'px');
-        this.topPosition.set(y.toString() + 'px');
+          Number(transformData[1].split(/,/)[1]) * self.context.transformation.k +
+          self.context.getZeroZeroTransformationPoint().y +
+          self.context.transformation.y;
+        self.leftPosition.set(x.toString() + 'px');
+        self.topPosition.set(y.toString() + 'px');
         temporaryTextElement.nativeElement.innerText = elem.text;
 
-        this.renderer.setStyle(temporaryTextElement.nativeElement, 'color', elem.fill);
-        this.renderer.setStyle(temporaryTextElement.nativeElement, 'font-family', elem.font_family);
-        this.renderer.setStyle(temporaryTextElement.nativeElement, 'font-size', `${elem.font_size}pt`);
-        this.renderer.setStyle(temporaryTextElement.nativeElement, 'font-weight', elem.font_weight);
+        self.renderer.setStyle(temporaryTextElement.nativeElement, 'color', elem.fill);
+        self.renderer.setStyle(temporaryTextElement.nativeElement, 'font-family', elem.font_family);
+        self.renderer.setStyle(temporaryTextElement.nativeElement, 'font-size', `${elem.font_size}pt`);
+        self.renderer.setStyle(temporaryTextElement.nativeElement, 'font-weight', elem.font_weight);
 
         let listener = () => {
-          let innerText = this.temporaryTextElement().nativeElement.innerText;
-          this.drawingsEventSource.textEdited.emit(
-            new TextEditedDataEvent(this.editingDrawingId, innerText.replace(/\n$/, ''), this.editedElement)
+          let innerText = self.temporaryTextElement().nativeElement.innerText;
+          self.drawingsEventSource.textEdited.emit(
+            new TextEditedDataEvent(self.editingDrawingId, innerText.replace(/\n$/, ''), self.editedElement)
           );
 
           rootElement
@@ -258,15 +261,15 @@ export class TextEditorComponent implements OnInit, OnDestroy {
             .attr('visibility', 'visible')
             .classed('editingMode', false);
 
-          this.innerText.set('');
+          self.innerText.set('');
           temporaryTextElement.nativeElement.innerText = '';
-          temporaryTextElement.nativeElement.removeEventListener('focusout', this.textListener);
+          temporaryTextElement.nativeElement.removeEventListener('focusout', self.textListener);
 
-          this.clearStyle();
-          this.renderer.setStyle(temporaryTextElement.nativeElement, 'display', 'none');
+          self.clearStyle();
+          self.renderer.setStyle(temporaryTextElement.nativeElement, 'display', 'none');
         };
-        this.textListener = listener;
-        temporaryTextElement.nativeElement.addEventListener('focusout', this.textListener);
+        self.textListener = listener;
+        temporaryTextElement.nativeElement.addEventListener('focusout', self.textListener);
         temporaryTextElement.nativeElement.focus();
       });
   }

@@ -43,7 +43,7 @@ import { ToolDetailsDialogComponent, ToolDetailsDialogData } from './tool-detail
               <div class="message-content user-content">
                 <div class="message-bubble user-bubble">
                   <markdown
-                    class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all"
+                    class="message-text"
                     [data]="message.content"
                   ></markdown>
                 </div>
@@ -64,7 +64,7 @@ import { ToolDetailsDialogComponent, ToolDetailsDialogData } from './tool-detail
                   [class.streaming]="isStreaming() && message === lastAssistantMessage"
                 >
                   <markdown
-                    class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all"
+                    class="message-text"
                     [data]="message.content"
                   ></markdown>
                   @if (isStreaming() && message === lastAssistantMessage) {
@@ -117,7 +117,7 @@ import { ToolDetailsDialogComponent, ToolDetailsDialogData } from './tool-detail
             <div class="message system-message">
               <div class="message-bubble system-bubble">
                 <markdown
-                  class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all"
+                  class="message-text"
                   [data]="message.content"
                 ></markdown>
               </div>

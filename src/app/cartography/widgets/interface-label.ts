@@ -71,7 +71,7 @@ export class InterfaceLabelWidget {
       .attr('class', 'interface_label noselect')
       .attr('interface_label_id', (i: MapLinkNode) => `${i.id}`);
 
-    const merge = labels.merge(enter).on('contextmenu', (n: MapLinkNode, i: number) => {
+    const merge = labels.merge(enter).on('contextmenu', function(this: SVGGElement, event: MouseEvent, n: MapLinkNode) {
       event.preventDefault();
       self.onContextMenu.emit(new InterfaceLabelContextMenu(event, n));
     });
