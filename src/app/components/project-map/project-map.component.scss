@@ -364,6 +364,7 @@ line.selected {
 }
 
 svg.map image:hover,
+svg.map image.over,
 svg.map image.chosen,
 g.selected {
   filter: url('#grayscale');
