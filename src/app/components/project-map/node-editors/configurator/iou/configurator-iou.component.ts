@@ -57,6 +57,11 @@ export class ConfiguratorDialogIouComponent implements OnInit {
     this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = node.name;
+      this.generalSettingsForm.patchValue({ name: node.name });
+      this.networkForm.patchValue({
+        ethernetAdapters: node.properties.ethernet_adapters,
+        serialAdapters: node.properties.serial_adapters,
+      });
       this.getConfiguration();
       if (!this.node.tags) {
         this.node.tags = [];
@@ -71,6 +76,9 @@ export class ConfiguratorDialogIouComponent implements OnInit {
 
   onSaveClick() {
     if (this.generalSettingsForm.valid && this.networkForm.valid) {
+      // Sync form values back to node.properties
+      this.node.properties.ethernet_adapters = this.networkForm.value.ethernetAdapters;
+      this.node.properties.serial_adapters = this.networkForm.value.serialAdapters;
       this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();

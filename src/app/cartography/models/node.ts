@@ -11,6 +11,8 @@ export class PortsMapping {
 export class Properties {
   adapter_type: string;
   adapters: number;
+  ethernet_adapters: number;
+  serial_adapters: number;
   headless: boolean;
   linked_clone: boolean;
   on_close: string;
