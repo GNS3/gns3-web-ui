@@ -28,7 +28,7 @@ export class EditLinkStyleActionComponent implements OnChanges {
     const dialogRef = this.dialog.open(LinkStyleEditorDialogComponent, {
       width: '800px',
       autoFocus: false,
-      disableClose: true,
+      disableClose: false,
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller();

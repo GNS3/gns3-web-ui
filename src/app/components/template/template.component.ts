@@ -212,7 +212,6 @@ export class TemplateComponent implements OnInit, OnDestroy {
         project: this.project(),
       },
       autoFocus: false,
-      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((nodeAddedEvent: NodeAddedEvent) => {

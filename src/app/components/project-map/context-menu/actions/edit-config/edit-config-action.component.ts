@@ -26,7 +26,7 @@ export class EditConfigActionComponent {
       width: '600px',
       height: '500px',
       autoFocus: false,
-      disableClose: true,
+      disableClose: false,
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller();

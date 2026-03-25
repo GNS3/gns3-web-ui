@@ -24,7 +24,7 @@ export class ShowNodeActionComponent {
       width: '600px',
       maxHeight: '600px',
       autoFocus: false,
-      disableClose: true,
+      disableClose: false,
     });
     let instance = dialogRef.componentInstance;
     instance.node = this.node();

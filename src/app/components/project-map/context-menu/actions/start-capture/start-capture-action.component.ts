@@ -25,7 +25,7 @@ export class StartCaptureActionComponent {
     const dialogRef = this.dialog.open(StartCaptureDialogComponent, {
       width: '400px',
       autoFocus: false,
-      disableClose: true,
+      disableClose: false,
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller();

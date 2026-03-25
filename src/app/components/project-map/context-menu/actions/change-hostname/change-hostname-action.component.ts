@@ -24,7 +24,7 @@ export class ChangeHostnameActionComponent implements OnInit {
   changeHostname() {
     const dialogRef = this.dialog.open(ChangeHostnameDialogComponent, {
       autoFocus: false,
-      disableClose: true,
+      disableClose: false,
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller();

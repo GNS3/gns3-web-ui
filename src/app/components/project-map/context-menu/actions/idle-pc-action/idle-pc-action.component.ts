@@ -25,7 +25,7 @@ export class IdlePcActionComponent {
     const dialogRef = this.dialog.open(IdlePCDialogComponent, {
       width: '500px',
       autoFocus: false,
-      disableClose: true,
+      disableClose: false,
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller();

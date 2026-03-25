@@ -26,7 +26,7 @@ export class PacketFiltersActionComponent {
       width: '900px',
       height: '400px',
       autoFocus: false,
-      disableClose: true,
+      disableClose: false,
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller();

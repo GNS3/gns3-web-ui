@@ -33,7 +33,7 @@ export class ConfigActionComponent {
   private conf = {
     autoFocus: false,
     width: '950px',
-    disableClose: true,
+    disableClose: false,
   };
   dialogRef;
 
