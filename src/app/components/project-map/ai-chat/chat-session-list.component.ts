@@ -199,6 +199,13 @@ import {
         gap: 8px;
       }
 
+      .session-list-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
       /* Session list header icon (New Chat + icon) */
       .session-list-icon {
         fill: var(--mat-app-on-surface);
@@ -407,23 +414,21 @@ import {
         color: var(--mat-app-error);
       }
 
-      /* Scrollbar styles */
-      ::-webkit-scrollbar {
-        width: 6px;
+      /* Menu item icons should align with text */
+      .menu-item-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 12px;
+        flex-shrink: 0;
       }
 
-      ::-webkit-scrollbar-track {
-        background: transparent;
+      /* Ensure menu items have proper alignment */
+      ::ng-deep .session-action-menu .mat-mdc-menu-item {
+        display: flex;
+        align-items: center;
       }
 
-      ::-webkit-scrollbar-thumb {
-        background: var(--mat-app-outline-variant);
-        border-radius: 3px;
-      }
-
-      ::-webkit-scrollbar-thumb:hover {
-        background: var(--mat-app-outline);
-      }
     `,
   ],
 })

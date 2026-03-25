@@ -69,19 +69,6 @@
   overflow-y: auto;
   scrollbar-color: var(--mat-sys-on-surface-variant) transparent;
   scrollbar-width: thin;
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: var(--mat-sys-on-surface-variant);
-    border-radius: 3px;
-  }
 }
 
 /* =============================================

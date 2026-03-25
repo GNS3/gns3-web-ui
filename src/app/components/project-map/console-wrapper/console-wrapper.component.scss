@@ -213,18 +213,6 @@ input:focus {
   outline: none;
 }
 
-::-webkit-scrollbar {
-  width: 0.5em;
-}
-
-::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px var(--mat-sys-shadow);
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: var(--mat-sys-on-surface-variant);
-}
-
 .closeButton {
   cursor: pointer;
 }

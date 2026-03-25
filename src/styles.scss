@@ -9,6 +9,27 @@
 @use 'styles/map' as *;
 
 /* =============================================
+// Global Scrollbar Styles
+// ============================================= */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--mat-sys-outline);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--mat-sys-on-surface-variant);
+}
+
+/* =============================================
 // GNS3 Custom Properties - Opacity Levels
 // Unified opacity values for consistent theming
 // ============================================= */
