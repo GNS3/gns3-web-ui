@@ -1,5 +1,5 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { ChangeDetectionStrategy, Component, EventEmitter, OnDestroy, OnInit, Output, inject, input, Inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, OnDestroy, OnInit, Output, inject, input, Inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -83,8 +83,17 @@ export class TemplateComponent implements OnInit, OnDestroy {
   ];
   selectedType: string;
 
-  private startX: number;
-  private startY: number;
+  // Track mouse position during drag using signals (zoneless compatible)
+  private lastPageX = signal<number>(0);
+  private lastPageY = signal<number>(0);
+  private isDragging = signal<boolean>(false);
+
+  // Track mouse offset from the icon's top-left corner for natural placement
+  private mouseOffsetX: number = 0;
+  private mouseOffsetY: number = 0;
+
+  // Store the element being dragged to calculate offset
+  private dragElement: HTMLElement | null = null;
 
   private subscription: Subscription;
   private themeSubscription: Subscription;
@@ -124,37 +133,75 @@ export class TemplateComponent implements OnInit, OnDestroy {
     this.sortTemplates();
   }
 
-  dragStart(ev) {
-    // mwlDraggable fires a synthetic event; capture the raw clientX/Y from the
-    // native event so we can reconstruct the absolute drop position later.
-    this.startX = (event as MouseEvent).clientX;
-    this.startY = (event as MouseEvent).clientY;
+  dragStart(ev: any, template: Template) {
+    // mwlDraggable's DragStartEvent doesn't contain mouse position data
+    // Use window.event (the browser's global event) to access mouse position
+    const mouseEvent = window.event as MouseEvent | undefined;
+    const clientX = mouseEvent?.clientX || 0;
+    const clientY = mouseEvent?.clientY || 0;
+
+    // Get the element being dragged
+    const sourceEl = mouseEvent?.target as HTMLElement | undefined;
+    if (sourceEl) {
+      const elemRect = sourceEl.getBoundingClientRect();
+      // Calculate the offset of the mouse from the icon's top-left corner
+      // This ensures the node maintains the same relative position when dropped
+      this.mouseOffsetX = clientX - elemRect.left;
+      this.mouseOffsetY = clientY - elemRect.top;
+      this.dragElement = sourceEl;
+    }
+
+    // Start tracking mouse position to get the final drop position
+    this.isDragging.set(true);
+    this.lastPageX.set(clientX);
+    this.lastPageY.set(clientY);
+
+    // Add document-level mouse move listener to track position during drag
+    const trackMouseMove = (e: MouseEvent) => {
+      if (this.isDragging()) {
+        this.lastPageX.set(e.clientX);
+        this.lastPageY.set(e.clientY);
+      }
+    };
+
+    // Add one-time mouseup listener to stop tracking
+    const stopTracking = () => {
+      this.isDragging.set(false);
+      document.removeEventListener('mousemove', trackMouseMove);
+      document.removeEventListener('mouseup', stopTracking);
+    };
+
+    document.addEventListener('mousemove', trackMouseMove);
+    document.addEventListener('mouseup', stopTracking, { once: true });
   }
 
-  dragEnd(ev, template: Template) {
-    this.symbolService.raw(this.controller(), template.symbol.substring(1)).subscribe((symbolSvg: string) => {
-      let width = +symbolSvg.split('width="')[1].split('"')[0] ? +symbolSvg.split('width="')[1].split('"')[0] : 0;
+  dragEnd(ev: any, template: Template) {
+    // Calculate coordinates directly without unnecessary HTTP request
+    const pageX = this.lastPageX();
+    const pageY = this.lastPageY();
 
-      // mwlDraggable's DragEndEvent.x/y are displacement deltas, not absolute
-      // coordinates. Add to the captured start position to get the final
-      // screen position, then convert to canvas coordinates.
-      const dropClientX = this.startX + ev.x;
-      const dropClientY = this.startY + ev.y;
+    // Use scene dimensions as fallback for context size
+    const centerX = this.context.size.width > 0 ? this.context.size.width / 2 : this.project().scene_width / 2;
+    const centerY = this.context.size.height > 0 ? this.context.size.height / 2 : this.project().scene_height / 2;
 
-      const svgElement = document.getElementById('map');
-      const svgRect = svgElement ? svgElement.getBoundingClientRect() : { left: 0, top: 0 };
-      const k = this.context.transformation.k;
+    // Convert screen coordinates to world coordinates using D3 transformation
+    const worldX = (pageX - (centerX + this.context.transformation.x)) / this.context.transformation.k;
+    const worldY = (pageY - (centerY + this.context.transformation.y)) / this.context.transformation.k;
 
-      const origin = this.context.getZeroZeroTransformationPoint();
-      let nodeAddedEvent: NodeAddedEvent = {
-        template: template,
-        controller: 'local',
-        numberOfNodes: 1,
-        x: (dropClientX - svgRect.left - origin.x - this.context.transformation.x) / k - width / 2,
-        y: (dropClientY - svgRect.top - origin.y - this.context.transformation.y) / k,
-      };
-      this.onNodeCreation.emit(nodeAddedEvent);
-    });
+    // Subtract the mouse offset to position the node correctly
+    // The offset represents where the mouse was relative to the icon's top-left when dragging started
+    const finalX = Math.round(worldX - this.mouseOffsetX);
+    const finalY = Math.round(worldY - this.mouseOffsetY);
+
+    const nodeAddedEvent: NodeAddedEvent = {
+      template: template,
+      controller: 'local',
+      numberOfNodes: 1,
+      x: finalX,
+      y: finalY,
+    };
+
+    this.onNodeCreation.emit(nodeAddedEvent);
   }
 
   openDialog() {
