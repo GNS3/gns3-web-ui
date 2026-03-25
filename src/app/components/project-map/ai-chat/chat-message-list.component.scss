@@ -156,7 +156,7 @@
     background: linear-gradient(
       90deg,
       transparent,
-      rgba(0, 151, 167, 0.5),
+      color-mix(in srgb, var(--mat-sys-primary) 50%, transparent),
       transparent
     );
     opacity: 0;
@@ -195,8 +195,8 @@
 .system-bubble {
   background: linear-gradient(
     135deg,
-    rgba(255, 152, 0, 0.1),
-    rgba(255, 152, 0, 0.1)
+    color-mix(in srgb, var(--mat-sys-primary) 10%, transparent),
+    color-mix(in srgb, var(--mat-sys-primary) 10%, transparent)
   );
   color: var(--mat-sys-on-surface-variant);
   text-align: center;
@@ -204,7 +204,7 @@
   padding: 8px 16px;
   border-radius: 20px;
   margin: 0 auto;
-  border: 1px solid rgba(255, 152, 0, 0.3);
+  border: 1px solid color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
 }
 
 .error-bubble {
@@ -230,7 +230,7 @@
 }
 
 .message-text code {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: color-mix(in srgb, var(--mat-sys-on-surface) 10%, var(--mat-sys-surface-container-high));
   padding: 2px 6px;
   border-radius: 4px;
   font-family: monospace;
@@ -238,7 +238,7 @@
 }
 
 .message-text pre {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: color-mix(in srgb, var(--mat-sys-on-surface) 5%, var(--mat-sys-surface-container-high));
   padding: 8px;
   border-radius: 4px;
   overflow-x: auto;
@@ -316,14 +316,14 @@
 }
 
 .inline-tool-result {
-  border-left: 3px solid #4caf50;
+  border-left: 3px solid var(--mat-sys-tertiary);
 }
 
 .inline-tool-result:hover {
-  background: #e8f5e9;
-  border-color: #4caf50;
+  background: var(--mat-sys-tertiary-container);
+  border-color: var(--mat-sys-tertiary);
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px #4caf50;
+  box-shadow: 0 3px 10px var(--mat-sys-tertiary);
 }
 
 .inline-tool-call .tool-icon {
@@ -337,7 +337,7 @@
   width: 16px;
   height: 16px;
   font-size: 16px;
-  color: #4caf50;
+  color: var(--mat-sys-tertiary);
 }
 
 .tool-name-text {
@@ -377,8 +377,8 @@
   margin: 0 auto 24px;
   background: linear-gradient(
     135deg,
-    rgba(99, 102, 241, 0.1),
-    rgba(63, 81, 181, 0.1)
+    color-mix(in srgb, var(--mat-sys-tertiary) 10%, transparent),
+    color-mix(in srgb, var(--mat-sys-tertiary) 10%, transparent)
   );
   border-radius: 50%;
   animation: pulse 2s ease-in-out infinite;

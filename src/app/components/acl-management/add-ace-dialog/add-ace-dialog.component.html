@@ -8,7 +8,7 @@
           {{node.name}}
           <button mat-icon-button (click)="endpointSelection(node)">
             @if (!selectedEndpoint || node.endpoint !== selectedEndpoint.endpoint) {
-              <mat-icon class="align-middle" style="color: #696969">panorama_fish_eye</mat-icon>
+              <mat-icon class="align-middle" style="color: var(--mat-sys-outline)">panorama_fish_eye</mat-icon>
             }
             @if (selectedEndpoint && node.endpoint === selectedEndpoint.endpoint) {
               <mat-icon class="align-middle">check_circle</mat-icon>
@@ -27,7 +27,7 @@
           {{node.name}}
           <button mat-icon-button (click)="endpointSelection(node)">
             @if (!selectedEndpoint || node.endpoint !== selectedEndpoint.endpoint) {
-              <mat-icon class="align-middle" style="color: #696969">panorama_fish_eye</mat-icon>
+              <mat-icon class="align-middle" style="color: var(--mat-sys-outline)">panorama_fish_eye</mat-icon>
             }
             @if (selectedEndpoint && node.endpoint === selectedEndpoint.endpoint) {
               <mat-icon class="align-middle">check_circle</mat-icon>

@@ -215,7 +215,7 @@
     background: linear-gradient(
       45deg,
       transparent 30%,
-      rgba(255, 255, 255, 0.1) 50%,
+      color-mix(in srgb, var(--mat-sys-surface) 10%, transparent) 50%,
       transparent 70%
     );
     transform: translateX(-100%);

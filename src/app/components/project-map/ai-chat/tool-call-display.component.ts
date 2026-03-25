@@ -30,8 +30,8 @@ import { ToolCall } from '@models/ai-chat.interface';
         gap: 8px;
         padding: 8px 14px;
         margin: 8px 0;
-        background: var(--mat-app-surface-container-low);
-        border: 1px solid var(--mat-app-outline-variant);
+        background: var(--mat-sys-surface-container-low);
+        border: 1px solid var(--mat-sys-outline-variant);
         border-left: 3px solid #0ea5e9;
         border-radius: 8px;
         cursor: pointer;
@@ -58,7 +58,7 @@ import { ToolCall } from '@models/ai-chat.interface';
         font-family: 'Monaco', 'Menlo', monospace;
         font-size: 12px;
         font-weight: 500;
-        color: var(--mat-app-on-surface);
+        color: var(--mat-sys-on-surface);
       }
 
       .tool-status {
@@ -66,7 +66,7 @@ import { ToolCall } from '@models/ai-chat.interface';
         align-items: center;
         gap: 4px;
         font-size: 11px;
-        color: var(--mat-app-on-surface-variant);
+        color: var(--mat-sys-on-surface-variant);
       }
 
       .tool-status.status-receiving {
@@ -85,7 +85,7 @@ import { ToolCall } from '@models/ai-chat.interface';
         width: 14px;
         height: 14px;
         font-size: 14px;
-        color: var(--mat-app-on-surface-variant);
+        color: var(--mat-sys-on-surface-variant);
         opacity: 0.5;
       }
 

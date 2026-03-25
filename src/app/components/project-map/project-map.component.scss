@@ -79,12 +79,12 @@ g.node:hover {
     fill: var(--mat-sys-on-surface);
   }
 
-  path.ethernet_link[stroke="#000000"] {
+  path.ethernet_link {
     stroke: var(--mat-sys-on-surface);
   }
 
   path.serial_link {
-    stroke: var(--mat-sys-tertiary);
+    stroke: var(--mat-sys-error);
   }
 
   g.drawing-line-tool path {

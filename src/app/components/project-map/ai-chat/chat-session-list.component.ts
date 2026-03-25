@@ -66,30 +66,33 @@ import {
                 </svg>
               }
 
-              <!-- Session title -->
-              @if (!session.editing) {
-                <span class="session-title">{{ session.title || 'New chat' }}</span>
-              }
+              <!-- Session text content -->
+              <div class="session-text">
+                <!-- Session title -->
+                @if (!session.editing) {
+                  <span class="session-title">{{ session.title || 'New chat' }}</span>
+                }
 
-              <!-- Edit title -->
-              @if (session.editing) {
-                <mat-form-field class="session-edit-field" (click)="$event.stopPropagation()">
-                  <input
-                    matInput
-                    [value]="session.title"
-                    (keydown.enter)="finishRename(session, titleInput.value)"
-                    (keydown.escape)="cancelRename(session)"
-                    (blur)="finishRename(session, titleInput.value)"
-                    #titleInput
-                  />
-                </mat-form-field>
-              }
+                <!-- Edit title -->
+                @if (session.editing) {
+                  <mat-form-field class="session-edit-field" (click)="$event.stopPropagation()">
+                    <input
+                      matInput
+                      [value]="session.title"
+                      (keydown.enter)="finishRename(session, titleInput.value)"
+                      (keydown.escape)="cancelRename(session)"
+                      (blur)="finishRename(session, titleInput.value)"
+                      #titleInput
+                    />
+                  </mat-form-field>
+                }
 
-              <!-- Session preview -->
-              <span class="session-preview">
-                <span class="session-stats">{{ session.message_count }} messages</span>
-                <span class="session-time">{{ formatTime(session.updated_at) }}</span>
-              </span>
+                <!-- Session preview -->
+                <span class="session-preview">
+                  <span class="session-stats">{{ session.message_count }} messages</span>
+                  <span class="session-time">{{ formatTime(session.updated_at) }}</span>
+                </span>
+              </div>
 
               <!-- Session menu button -->
               <button
@@ -175,13 +178,13 @@ import {
         display: flex;
         flex-direction: column;
         height: 100%;
-        background-color: var(--mat-app-surface-container);
-        border-right: 1px solid var(--mat-app-outline-variant);
+        background-color: var(--mat-sys-surface-container);
+        border-right: 1px solid var(--mat-sys-outline-variant);
       }
 
       .session-list-header {
         padding: 12px;
-        border-bottom: 1px solid var(--mat-app-outline-variant);
+        border-bottom: 1px solid var(--mat-sys-outline-variant);
       }
 
       .new-session-button {
@@ -201,12 +204,12 @@ import {
 
       /* Session list header icon (New Chat + icon) */
       .session-list-icon {
-        fill: var(--mat-app-on-surface);
+        fill: var(--mat-sys-on-surface);
         transition: fill 0.2s ease;
       }
 
       .new-session-button:hover .session-list-icon {
-        fill: var(--mat-app-primary);
+        fill: var(--mat-sys-primary);
       }
 
       .sessions-container {
@@ -227,29 +230,29 @@ import {
       }
 
       .session-item:hover {
-        background-color: var(--mat-app-surface-container-high);
+        background-color: var(--mat-sys-surface-container-high);
       }
 
       .session-item.active {
-        background-color: var(--mat-app-primary-container);
-        border-left: 4px solid var(--mat-app-primary);
+        background-color: var(--mat-sys-primary-container);
+        border-left: 4px solid var(--mat-sys-primary);
         box-shadow: 0 4px 12px rgba(0, 151, 167, 0.3), inset 0 0 0 1px rgba(0, 151, 167, 0.1);
         transform: translateX(2px);
       }
 
       .session-item.active .session-title {
-        color: var(--mat-app-on-primary-container);
+        color: var(--mat-sys-on-primary-container);
         font-weight: 700;
       }
 
       .session-item.active .session-stats,
       .session-item.active .session-time {
-        color: var(--mat-app-on-primary-container);
+        color: var(--mat-sys-on-primary-container);
         opacity: 0.9;
       }
 
       .session-item.active .menu-icon {
-        fill: var(--mat-app-on-primary-container);
+        fill: var(--mat-sys-on-primary-container);
       }
 
       .session-pin {
@@ -260,7 +263,7 @@ import {
 
       /* Pin icon */
       .pin-icon {
-        fill: var(--mat-app-primary);
+        fill: var(--mat-sys-primary);
         filter: drop-shadow(0 2px 4px rgba(0, 151, 167, 0.4));
       }
 
@@ -296,17 +299,17 @@ import {
 
       /* Session icon (chat bubble) */
       .session-icon {
-        fill: var(--mat-app-on-surface-variant);
+        fill: var(--mat-sys-on-surface-variant);
         flex-shrink: 0;
         transition: fill 0.2s ease;
       }
 
       .session-item:hover .session-icon {
-        fill: var(--mat-app-on-surface);
+        fill: var(--mat-sys-on-surface);
       }
 
       .session-item.active .session-icon {
-        fill: var(--mat-app-on-primary-container);
+        fill: var(--mat-sys-on-primary-container);
       }
 
       .session-info {
@@ -317,7 +320,7 @@ import {
       .session-title {
         font-size: 14px;
         font-weight: 500;
-        color: var(--mat-app-on-surface);
+        color: var(--mat-sys-on-surface);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -327,17 +330,24 @@ import {
         display: flex;
         align-items: center;
         gap: 8px;
-        margin-top: 4px;
+      }
+
+      .session-text {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
       }
 
       .session-stats {
         font-size: 11px;
-        color: var(--mat-app-on-surface-variant);
+        color: var(--mat-sys-on-surface-variant);
       }
 
       .session-time {
         font-size: 11px;
-        color: var(--mat-app-on-surface-variant);
+        color: var(--mat-sys-on-surface-variant);
         opacity: 0.7;
       }
 
@@ -368,12 +378,12 @@ import {
 
       /* Menu icon (three dots) */
       .menu-icon {
-        fill: var(--mat-app-on-surface-variant);
+        fill: var(--mat-sys-on-surface-variant);
         transition: fill 0.2s ease;
       }
 
       .session-menu-button:hover .menu-icon {
-        fill: var(--mat-app-on-surface);
+        fill: var(--mat-sys-on-surface);
       }
 
       .no-sessions {
@@ -386,25 +396,25 @@ import {
       }
 
       .no-sessions-icon {
-        fill: var(--mat-app-outline-variant);
+        fill: var(--mat-sys-outline-variant);
         margin-bottom: 12px;
       }
 
       .no-sessions-text {
         font-size: 14px;
         font-weight: 500;
-        color: var(--mat-app-on-surface);
+        color: var(--mat-sys-on-surface);
         margin: 0 0 4px 0;
       }
 
       .no-sessions-hint {
         font-size: 12px;
-        color: var(--mat-app-on-surface-variant);
+        color: var(--mat-sys-on-surface-variant);
         margin: 0;
       }
 
       .delete-action {
-        color: var(--mat-app-error);
+        color: var(--mat-sys-error);
       }
 
       /* Menu item icons should align with text */

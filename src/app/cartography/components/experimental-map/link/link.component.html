@@ -9,7 +9,7 @@
     <svg:path
       #path
       class="ethernet_link"
-      stroke="#000"
+      [style.stroke]="'var(--mat-sys-on-surface)'"
       stroke-width="2"
       [attr.d]="d"
     />
@@ -19,7 +19,7 @@
     <svg:path
       #path
       class="serial_link"
-      stroke="#B22222"
+      [style.stroke]="'var(--mat-sys-error)'"
       fill="none"
       stroke-width="2"
       [attr.d]="d"

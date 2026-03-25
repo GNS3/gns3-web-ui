@@ -204,7 +204,7 @@ mat-footer-cell {
   }
   20%,
   80% {
-    background-color: rgba(0, 0, 0, 0.04);
+    background-color: color-mix(in srgb, var(--mat-sys-shadow) 4%, transparent);
   }
   100% {
     background-color: transparent;

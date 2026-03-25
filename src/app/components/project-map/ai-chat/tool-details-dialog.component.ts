@@ -75,9 +75,9 @@ export interface ToolDetailsDialogData {
       align-items: center;
       justify-content: space-between;
       padding: 12px 16px;
-      border-bottom: 1px solid var(--mat-app-outline-variant);
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
       margin: -24px -24px 0 -24px;
-      background: linear-gradient(to bottom, var(--mat-app-surface), var(--mat-app-surface-container-low));
+      background: linear-gradient(to bottom, var(--mat-sys-surface), var(--mat-sys-surface-container-low));
     }
 
     .dialog-title {
@@ -87,14 +87,14 @@ export interface ToolDetailsDialogData {
       margin: 0;
       font-size: 16px;
       font-weight: 500;
-      color: var(--mat-app-on-surface);
+      color: var(--mat-sys-on-surface);
     }
 
     .title-icon {
       font-size: 20px;
       width: 20px;
       height: 20px;
-      color: var(--mat-app-primary);
+      color: var(--mat-sys-primary);
     }
 
     .close-button {
@@ -103,7 +103,7 @@ export interface ToolDetailsDialogData {
       min-width: 40px;
       min-height: 40px;
       padding: 0;
-      color: var(--mat-app-on-surface);
+      color: var(--mat-sys-on-surface);
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
@@ -124,7 +124,7 @@ export interface ToolDetailsDialogData {
       min-width: 500px;
       max-height: 70vh;
       overflow-y: auto;
-      background-color: var(--mat-app-background);
+      background-color: var(--mat-sys-background);
     }
 
     .info-section {
@@ -138,7 +138,7 @@ export interface ToolDetailsDialogData {
     .info-label {
       font-size: 11px;
       font-weight: 500;
-      color: var(--mat-app-on-surface-variant);
+      color: var(--mat-sys-on-surface-variant);
       margin-bottom: 6px;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -147,20 +147,20 @@ export interface ToolDetailsDialogData {
     .info-value {
       font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
       font-size: 13px;
-      color: var(--mat-app-on-surface);
-      background: var(--mat-app-surface-container-low);
+      color: var(--mat-sys-on-surface);
+      background: var(--mat-sys-surface-container-low);
       padding: 8px 12px;
       border-radius: 6px;
       word-break: break-all;
     }
 
     .json-container {
-      background: var(--mat-app-surface-container-low);
+      background: var(--mat-sys-surface-container-low);
       border-radius: 6px;
       padding: 12px;
       max-height: 500px;
       overflow-y: auto;
-      border: 1px solid var(--mat-app-outline-variant);
+      border: 1px solid var(--mat-sys-outline-variant);
       white-space: pre-wrap;
       font-size: 13px;
       font-family: 'Monaco', 'Menlo', 'Consolas', monospace;

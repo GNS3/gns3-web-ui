@@ -149,8 +149,8 @@ import { OverlayContainer } from '@angular/cdk/overlay';
         display: flex;
         flex-direction: column;
         padding: 16px;
-        background: linear-gradient(to bottom, var(--mat-app-background), var(--mat-app-surface-container-low));
-        border-top: 1px solid var(--mat-app-outline-variant);
+        background: linear-gradient(to bottom, var(--mat-sys-background), var(--mat-sys-surface-container-low));
+        border-top: 1px solid var(--mat-sys-outline-variant);
       }
 
       .input-wrapper {
@@ -166,10 +166,10 @@ import { OverlayContainer } from '@angular/cdk/overlay';
         min-height: 48px;
         max-height: 200px;
         padding: 12px 16px;
-        border: 2px solid var(--mat-app-outline-variant);
+        border: 2px solid var(--mat-sys-outline-variant);
         border-radius: 24px;
-        background: linear-gradient(to bottom, var(--mat-app-surface), var(--mat-app-surface-container-low));
-        color: var(--mat-app-on-surface);
+        background: linear-gradient(to bottom, var(--mat-sys-surface), var(--mat-sys-surface-container-low));
+        color: var(--mat-sys-on-surface);
         font-family: inherit;
         font-size: 14px;
         line-height: 1.5;
@@ -181,21 +181,21 @@ import { OverlayContainer } from '@angular/cdk/overlay';
       }
 
       .chat-textarea:focus {
-        border-color: var(--mat-app-primary);
-        box-shadow: 0 0 0 4px rgba(var(--mat-app-primary-rgb), 0.1);
+        border-color: var(--mat-sys-primary);
+        box-shadow: 0 0 0 4px rgba(var(--mat-sys-primary-rgb), 0.1);
       }
 
       .chat-textarea:hover {
-        border-color: var(--mat-app-outline);
+        border-color: var(--mat-sys-outline);
       }
 
       .chat-textarea::placeholder {
-        color: var(--mat-app-on-surface-variant);
+        color: var(--mat-sys-on-surface-variant);
         opacity: 0.6;
       }
 
       .chat-textarea:disabled {
-        background-color: var(--mat-app-surface-container-high);
+        background-color: var(--mat-sys-surface-container-high);
         cursor: not-allowed;
         opacity: 0.6;
       }
@@ -288,8 +288,8 @@ import { OverlayContainer } from '@angular/cdk/overlay';
         height: 48px;
         border: none;
         border-radius: 50%;
-        background: linear-gradient(135deg, var(--mat-app-primary), #7c4dff);
-        color: var(--mat-app-on-primary);
+        background: linear-gradient(135deg, var(--mat-sys-primary), #7c4dff);
+        color: var(--mat-sys-on-primary);
         display: flex;
         align-items: center;
         justify-content: center;
@@ -338,7 +338,7 @@ import { OverlayContainer } from '@angular/cdk/overlay';
         width: 20px;
         height: 20px;
         font-size: 20px;
-        color: var(--mat-app-on-primary);
+        color: var(--mat-sys-on-primary);
       }
 
       .loading-spinner {
@@ -365,18 +365,18 @@ import { OverlayContainer } from '@angular/cdk/overlay';
       .char-count {
         font-size: 11px;
         font-weight: 500;
-        color: var(--mat-app-on-surface-variant);
+        color: var(--mat-sys-on-surface-variant);
         transition: color 0.2s ease;
       }
 
       .char-count.warning {
-        color: var(--mat-app-error);
+        color: var(--mat-sys-error);
       }
 
       .char-separator,
       .char-max {
         font-size: 11px;
-        color: var(--mat-app-on-surface-variant);
+        color: var(--mat-sys-on-surface-variant);
         opacity: 0.7;
         margin: 0 2px;
       }
@@ -386,7 +386,7 @@ import { OverlayContainer } from '@angular/cdk/overlay';
         padding: 12px 16px;
         font-size: 14px;
         font-weight: 500;
-        color: var(--mat-app-on-surface-variant);
+        color: var(--mat-sys-on-surface-variant);
       }
 
       .model-name {
@@ -396,15 +396,15 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 
       .model-source {
         font-size: 11px;
-        color: var(--mat-app-primary);
-        background: rgba(var(--mat-app-primary-rgb), 0.1);
+        color: var(--mat-sys-primary);
+        background: rgba(var(--mat-sys-primary-rgb), 0.1);
         padding: 2px 8px;
         border-radius: 12px;
         margin-left: 8px;
       }
 
       button.mat-menu-item.selected {
-        background: rgba(var(--mat-app-primary-rgb), 0.1);
+        background: rgba(var(--mat-sys-primary-rgb), 0.1);
       }
 
       /* Copilot Mode Section Styles */
@@ -416,7 +416,7 @@ import { OverlayContainer } from '@angular/cdk/overlay';
         padding: 12px 16px 8px 16px;
         font-size: 12px;
         font-weight: 500;
-        color: var(--mat-app-on-surface-variant);
+        color: var(--mat-sys-on-surface-variant);
         letter-spacing: 0.5px;
       }
 
@@ -438,13 +438,13 @@ import { OverlayContainer } from '@angular/cdk/overlay';
       .copilot-mode-item .mode-name {
         font-size: 14px;
         font-weight: 500;
-        color: var(--mat-app-on-surface);
+        color: var(--mat-sys-on-surface);
         line-height: 1.2;
       }
 
       .copilot-mode-item .mode-description {
         font-size: 11px;
-        color: var(--mat-app-on-surface-variant);
+        color: var(--mat-sys-on-surface-variant);
         opacity: 0.8;
         line-height: 1.2;
         margin-top: 1px;

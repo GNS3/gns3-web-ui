@@ -169,7 +169,7 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.mat-mdc-menu-p
 
 .ethernet_link:hover,
 .serial_link:hover {
-  stroke: #dc3545;
+  stroke: var(--mat-sys-error);
   stroke-width: 4px;
   cursor: pointer;
 }
