@@ -459,6 +459,99 @@ Before committing code, ensure:
 
 ---
 
+## Audit Results (2026-03-25)
+
+The following violations of this standard were found in the codebase:
+
+### Violations Found
+
+| Rule | File | Line(s) | Severity | Status |
+|------|------|---------|----------|--------|
+| No `::ng-deep` | `src/app/components/settings/settings.component.scss` | 60, 274 | High | Pending |
+| No `!important` | `src/app/components/settings/settings.component.scss` | (same as above) | High | Pending |
+| No Custom Colors | `src/app/components/settings/settings.component.scss` | 200 | Medium | Pending |
+| No Custom Colors | `src/app/components/project-map/ai-chat/chat-message-list.component.scss` | 362, 366, 367, 369, 383 | Medium | Pending |
+| No Custom Colors | `src/styles.scss` | 138 | Medium | Pending |
+| Selector Issue | `src/app/components/project-map/project-map.component.scss` | 82 | Low | Acceptable |
+
+### Details
+
+#### 1. settings.component.scss (Lines 60, 274)
+
+```scss
+// ❌ VIOLATION: Using ::ng-deep
+::ng-deep .settings__card {
+  .mat-expansion-panel {
+    box-shadow: none;
+    // ...
+  }
+}
+```
+
+**Issue**: Using `::ng-deep` to style Angular Material expansion panels inside a settings card.
+
+**Recommended Fix**: Use `panelClass` on the dialog/mat-expansion-panel and define styles in centralized dialog styles file.
+
+#### 2. settings.component.scss (Line 200)
+
+```scss
+// ❌ VIOLATION: Hardcoded colors in gradient
+background: linear-gradient(135deg, #6750A4 0%, #E91E63 50%, #424242 100%);
+```
+
+**Issue**: Hardcoded color values instead of Material theme variables.
+
+**Recommended Fix**: Define theme swatch colors using CSS custom properties or Material theme tokens.
+
+#### 3. chat-message-list.component.scss (Lines 362, 366, 367, 369, 383)
+
+```scss
+// ❌ VIOLATION: Hardcoded colors
+.inline-tool-result {
+  border-left: 3px solid #4caf50;
+}
+.inline-tool-result:hover {
+  background: #e8f5e9;
+  border-color: #4caf50;
+  box-shadow: 0 3px 10px #4caf50;
+}
+.inline-tool-result .tool-icon {
+  color: #4caf50;
+}
+```
+
+**Issue**: Using hardcoded green color (`#4caf50`) instead of Material theme variables.
+
+**Recommended Fix**: Use Material theme tokens like `--mat-sys-primary`, `--mat-sys-secondary`, or CSS custom properties.
+
+#### 4. styles.scss (Line 138)
+
+```scss
+// ❌ VIOLATION: Hardcoded color on hover
+.ethernet_link:hover,
+.serial_link:hover {
+  stroke: #dc3545;  // Hardcoded red
+  stroke-width: 4px;
+}
+```
+
+**Issue**: Hardcoded color value in global stylesheet.
+
+**Recommended Fix**: Use a Material theme color token or CSS custom property.
+
+#### 5. project-map.component.scss (Line 82)
+
+```scss
+// ⚠️ ACCEPTABLE: Selector used to identify link type, not a style value
+path.ethernet_link[stroke="#000000"] {
+  stroke: var(--mat-sys-on-surface);
+}
+```
+
+**Note**: This uses a hardcoded color as an attribute selector to identify the link type. While not ideal, it is not applying a hardcoded color as a style value.
+
+---
+
 ## Version History
 
 | Version | Date | Changes |
@@ -469,5 +562,6 @@ Before committing code, ensure:
 | 1.3 | 2026-03-24 | Updated dialog section with centralized approach |
 | 2.0 | 2026-03-24 | Complete rewrite for Angular Material 21 MD3 Sass Mixin system |
 | 2.1 | 2026-03-25 | Extended ViewEncapsulation.None prohibition to all components |
+| 2.2 | 2026-03-25 | Added audit results section documenting found violations |
 
 **Last Updated**: 2026-03-25
