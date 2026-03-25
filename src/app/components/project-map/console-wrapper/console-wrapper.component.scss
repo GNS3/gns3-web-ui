@@ -94,6 +94,12 @@
   position: relative;
   z-index: 10;
   flex-shrink: 0;
+
+  .mat-icon-button {
+    mat-icon {
+      color: var(--mat-sys-on-surface);
+    }
+  }
 }
 
 .consoleHeader:active {
