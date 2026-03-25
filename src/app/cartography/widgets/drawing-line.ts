@@ -29,6 +29,7 @@ export class DrawingLineWidget {
       self.draw(null, null);
     };
 
+    // In zoneless mode, mousemove events run without Angular CD
     this.selection.on('mousemove', over);
     this.draw(null, null);
   }

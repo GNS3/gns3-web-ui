@@ -47,6 +47,7 @@ export class SelectionTool {
       // clear selection
       selection.selectAll(SelectionTool.SELECTABLE_CLASS).classed('selected', false);
 
+      // In zoneless mode, mousemove events don't trigger Angular CD automatically
       subject
         .on('mousemove.selection', function (event: any) {
           const end = self.transformation(pointer(event, svgNode));

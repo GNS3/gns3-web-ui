@@ -26,12 +26,17 @@ export class DraggableEnd<T> extends DraggableEvent {
   }
 }
 
+// Zoneless-compatible d3-drag wrapper
+// In zoneless mode, d3 events don't trigger Angular change detection automatically.
+// Subscribers should use markForCheck() when they need to trigger CD.
 export class Draggable<GElement extends DraggedElementBaseType, Datum> {
   public start = new EventEmitter<DraggableStart<Datum>>();
   public drag = new EventEmitter<DraggableStart<Datum>>();
   public end = new EventEmitter<DraggableStart<Datum>>();
 
   public call(selection) {
+    // In zoneless mode, d3 runs without Angular's change detection
+    // Events are emitted and subscribers handle change detection via markForCheck()
     selection.call(this.behaviour());
   }
 
@@ -48,9 +53,6 @@ export class Draggable<GElement extends DraggedElementBaseType, Datum> {
       })
       .on('drag', (event: any) => {
         const evt = new DraggableDrag<Datum>(event.subject);
-        // Use D3's event.dx/dy which are in local (canvas) coordinate space,
-        // already accounting for zoom scale. Using raw clientX/Y deltas caused
-        // nodes to move at the wrong speed when zoomed and jump on drag end.
         evt.dx = event.dx;
         evt.dy = event.dy;
         this.drag.emit(evt);
