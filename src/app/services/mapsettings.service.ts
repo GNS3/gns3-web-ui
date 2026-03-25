@@ -25,10 +25,7 @@ export class MapSettingsService {
       this.integrateLinkLabelsToLinks = localStorage.getItem('integrateLinkLabelsToLinks') === 'true' ? true : false;
     if (localStorage.getItem('openConsolesInWidget'))
       this.openConsolesInWidget = localStorage.getItem('openConsolesInWidget') === 'true' ? true : false;
-    let isSymbolScalingEnabled = true;
-    if (localStorage.getItem('symbolScaling')) {
-      isSymbolScalingEnabled = localStorage.getItem('symbolScaling') === 'true' ? true : false;
-    } else {
+    if (!localStorage.getItem('symbolScaling')) {
       localStorage.setItem('symbolScaling', 'true');
     }
 
