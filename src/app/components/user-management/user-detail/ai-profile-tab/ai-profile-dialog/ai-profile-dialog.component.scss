@@ -46,24 +46,24 @@
       display: block;
       margin-top: 8px;
       margin-left: 28px;
-      font-size: 13px;
+      font-size: 14px;
       color: var(--mat-app-on-surface-variant-color);
     }
   }
 
   .option-hint {
     color: var(--mat-app-on-surface-variant-color);
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .existing-key-hint {
     color: var(--mat-app-primary-color);
-    font-size: 13px;
+    font-size: 14px;
   }
 
   .warning-hint {
     color: var(--mat-app-on-surface-variant-color);
-    font-size: 13px;
+    font-size: 14px;
   }
 
   .custom-fields-section {
@@ -133,7 +133,7 @@
 
       .reserved-field-hint {
         margin: 0;
-        font-size: 13px;
+        font-size: 14px;
         color: var(--mat-app-on-surface-variant-color);
         font-style: italic;
       }
@@ -290,7 +290,7 @@
       }
 
       .model-desc {
-        font-size: 12px;
+        font-size: 14px;
         color: var(--mat-app-on-surface-variant-color);
         margin-top: 2px;
       }
@@ -316,7 +316,7 @@
 
       p {
         margin: 0;
-        font-size: 13px;
+        font-size: 14px;
         color: var(--mat-app-on-surface-variant-color);
         line-height: 1.5;
 

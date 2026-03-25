@@ -31,7 +31,7 @@
   }
 
   .mat-mdc-dialog-title {
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 500;
     color: var(--mat-sys-on-surface);
     margin-bottom: 24px;
@@ -57,7 +57,7 @@
   }
 
   .mat-mdc-dialog-title {
-    font-size: 24px;
+    font-size: 18px;
     font-weight: 500;
     color: var(--mat-sys-on-surface);
     margin-bottom: 24px;
@@ -152,4 +152,13 @@
     overflow-y: auto;
     max-height: calc(80vh - 140px);
   }
+}
+
+/* =============================================
+// Generic Dialog Title Styles
+// ============================================= */
+h1[mat-dialog-title],
+h2[mat-dialog-title] {
+  font-size: 18px;
+  font-weight: 500;
 }
