@@ -175,6 +175,13 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
         width: this.resizedWidth,
         height: newHeight - 53,
       });
+      // Also notify after a delay to ensure DOM has been updated
+      setTimeout(() => {
+        this.consoleService.consoleResized.next({
+          width: this.resizedWidth,
+          height: newHeight - 53,
+        });
+      }, 50);
     } else {
       // Restore to normal size
       const currentLeft = (this.style as WindowStyle).left || '80px';
@@ -189,6 +196,13 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
         width: this.resizedWidth,
         height: this.resizedHeight - 53,
       });
+      // Also notify after a delay to ensure DOM has been updated
+      setTimeout(() => {
+        this.consoleService.consoleResized.next({
+          width: this.resizedWidth,
+          height: this.resizedHeight - 53,
+        });
+      }, 50);
     }
     this.cdr.markForCheck();
     // Save window state to localStorage

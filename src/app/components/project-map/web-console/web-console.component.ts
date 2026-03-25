@@ -73,15 +73,18 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     });
 
     this.consoleService.consoleResized.subscribe((ev) => {
-      // Use FitAddon to calculate proper dimensions instead of hardcoded pixels
-      this.fitAddon.fit();
-      const cols = this.term.cols;
-      const rows = this.term.rows;
+      // Delay to ensure DOM has been updated with new dimensions
+      setTimeout(() => {
+        // Use FitAddon to calculate proper dimensions
+        this.fitAddon.fit();
+        const cols = this.term.cols;
+        const rows = this.term.rows;
 
-      this.consoleService.setNumberOfColumns(cols);
-      this.consoleService.setNumberOfRows(rows);
+        this.consoleService.setNumberOfColumns(cols);
+        this.consoleService.setNumberOfRows(rows);
 
-      this.term.resize(cols, rows);
+        this.term.resize(cols, rows);
+      }, 50);
     });
 
     if (this.consoleService.getNumberOfColumns() && this.consoleService.getNumberOfRows()) {
@@ -157,23 +160,28 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         // Skip if width or height is 0 (element is hidden)
         if (width === 0 || height === 0) continue;
 
-        // Use requestAnimationFrame to ensure DOM is fully rendered
+        // Use requestAnimationFrame × 2 + Promise to ensure DOM is fully rendered
+        // and Angular change detection has completed before fitting
         requestAnimationFrame(() => {
-          try {
-            // Fit terminal to container
-            this.fitAddon.fit();
+          requestAnimationFrame(() => {
+            Promise.resolve().then(() => {
+              try {
+                // Fit terminal to container
+                this.fitAddon.fit();
 
-            // Also update columns/rows for service
-            const cols = this.term.cols;
-            const rows = this.term.rows;
-            this.consoleService.setNumberOfColumns(cols);
-            this.consoleService.setNumberOfRows(rows);
-          } catch (e) {
-            // Ignore fit errors when element is not visible, but log for debugging
-            console.debug('[WebConsole] FitAddon.fit() failed:', e);
-          }
+                // Also update columns/rows for service
+                const cols = this.term.cols;
+                const rows = this.term.rows;
+                this.consoleService.setNumberOfColumns(cols);
+                this.consoleService.setNumberOfRows(rows);
 
-          this.cdr.markForCheck();
+                // Explicitly call resize to ensure terminal updates
+                this.term.resize(cols, rows);
+              } catch (e) {
+                // Ignore fit errors when element is not visible
+              }
+            });
+          });
         });
       }
     });

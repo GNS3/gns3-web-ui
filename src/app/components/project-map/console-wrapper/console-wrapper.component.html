@@ -121,10 +121,8 @@
       </app-log-console>
 
       @for (node of nodes; track $index; let index = $index) {
-        <div class="xterm-console" [hidden]="isMinimized">
-          <app-web-console [hidden]="!(selected.value === index)" [controller]="controller()" [node]="nodes[index]">
-          </app-web-console>
-        </div>
+        <app-web-console [hidden]="isMinimized || !(selected.value === index)" [controller]="controller()" [node]="nodes[index]">
+        </app-web-console>
       }
     </div>
   </div>
