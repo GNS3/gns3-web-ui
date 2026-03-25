@@ -48,6 +48,7 @@
             <div
               class="template__icon-wrapper"
               mwlDraggable
+              [ghostElementAppendTo]="bodyElement"
               (dragStart)="dragStart($event)"
               (dragEnd)="dragEnd($event, filteredTemplates[i])"
             >
@@ -64,6 +65,7 @@
               <div
                 class="template__icon-wrapper"
                 mwlDraggable
+                [ghostElementAppendTo]="bodyElement"
                 (dragStart)="dragStart($event)"
                 (dragEnd)="dragEnd($event, filteredTemplates[i + 1])"
               >
@@ -81,6 +83,7 @@
               <div
                 class="template__icon-wrapper"
                 mwlDraggable
+                [ghostElementAppendTo]="bodyElement"
                 (dragStart)="dragStart($event)"
                 (dragEnd)="dragEnd($event, filteredTemplates[i + 2])"
               >
@@ -98,6 +101,7 @@
               <div
                 class="template__icon-wrapper"
                 mwlDraggable
+                [ghostElementAppendTo]="bodyElement"
                 (dragStart)="dragStart($event)"
                 (dragEnd)="dragEnd($event, filteredTemplates[i + 3])"
               >

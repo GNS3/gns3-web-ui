@@ -93,6 +93,15 @@ mat-menu-panel {
   max-width: 500px;
 }
 
+/* Allow drag ghost to escape menu panels by increasing selector specificity */
+body .cdk-overlay-container .mat-mdc-menu-panel.mat-mdc-menu-panel {
+  overflow: visible;
+}
+
+body .cdk-overlay-container .mat-mdc-menu-content.mat-mdc-menu-content {
+  overflow: visible;
+}
+
 /* =============================================
 // Tab Styles
 // ============================================= */

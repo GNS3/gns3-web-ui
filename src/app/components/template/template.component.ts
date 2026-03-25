@@ -1,5 +1,5 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { ChangeDetectionStrategy, Component, EventEmitter, OnDestroy, OnInit, Output, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, OnDestroy, OnInit, Output, inject, input, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -22,6 +22,7 @@ import { TemplateService } from '@services/template.service';
 import { NodeAddedEvent, TemplateListDialogComponent } from './template-list-dialog/template-list-dialog.component';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Context } from '../../cartography/models/context';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-template',
@@ -58,6 +59,14 @@ export class TemplateComponent implements OnInit, OnDestroy {
   overlay;
   templates: Template[] = [];
   filteredTemplates: Template[] = [];
+
+  // Expose body element for drag ghost element
+  readonly bodyElement: HTMLElement;
+
+  constructor(@Inject(DOCUMENT) private document: Document) {
+    this.overlay = this.overlayContainer.getContainerElement();
+    this.bodyElement = this.document.body;
+  }
   searchText: string = '';
   templateTypes: string[] = [
     'all',
@@ -80,10 +89,6 @@ export class TemplateComponent implements OnInit, OnDestroy {
   private subscription: Subscription;
   private themeSubscription: Subscription;
   private isLightThemeEnabled: boolean = false;
-
-  constructor() {
-    this.overlay = this.overlayContainer.getContainerElement();
-  }
 
   ngOnInit() {
     this.subscription = this.templateService.newTemplateCreated.subscribe((template: Template) => {
