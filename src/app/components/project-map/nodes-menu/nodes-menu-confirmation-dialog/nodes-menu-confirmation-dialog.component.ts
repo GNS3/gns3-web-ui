@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, Inject, OnInit, inject } from '@angular/core';
-import { TitleCasePipe } from '@angular/common';
 import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
@@ -8,7 +7,7 @@ import { MatDividerModule } from '@angular/material/divider';
   selector: 'app-nodes-menu-confirmation-dialog',
   templateUrl: './nodes-menu-confirmation-dialog.component.html',
   styleUrl: './nodes-menu-confirmation-dialog.component.scss',
-  imports: [MatDialogModule, MatButtonModule, MatDividerModule, TitleCasePipe],
+  imports: [MatDialogModule, MatButtonModule, MatDividerModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodesMenuConfirmationDialogComponent implements OnInit {

@@ -19,7 +19,7 @@
   <!-- Device List -->
   @if (!collapsed()) {
     <div class="device-list">
-      @for (node of nodes(); track node.node_id) {
+      @for (node of nodes(); track node.id) {
         <div
           class="device-item"
           [class.started]="isDeviceStarted(node)"

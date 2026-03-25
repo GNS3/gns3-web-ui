@@ -75,32 +75,24 @@ export class NodesMenuComponent {
 
   public confirmControlsActions(type) {
     const dialogRef = this.dialog.open(NodesMenuConfirmationDialogComponent, {
-      panelClass: 'confirmation-dialog-panel',
-      width: '360px',
+      width: '500px',
+      maxHeight: '200px',
       autoFocus: false,
       disableClose: true,
       data: type,
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result && result.isAction) {
-        switch (result.actionType) {
-          case 'start':
-            this.startNodes();
-            break;
-          case 'stop':
-            this.stopNodes();
-            break;
-          case 'reload':
-            this.reloadNodes();
-            break;
-          case 'suspend':
-            this.suspendNodes();
-            break;
-          case 'reset':
-            this.resetNodes();
-            break;
-        }
+    dialogRef.afterClosed().subscribe((confirmAction_result) => {
+      if (confirmAction_result.isAction && confirmAction_result.actionType == 'start') {
+        this.startNodes();
+      } else if (confirmAction_result.isAction && confirmAction_result.actionType == 'stop') {
+        this.stopNodes();
+      } else if (confirmAction_result.isAction && confirmAction_result.actionType == 'reload') {
+        this.reloadNodes();
+      } else if (confirmAction_result.isAction && confirmAction_result.actionType == 'suspend') {
+        this.suspendNodes();
+      } else {
+        this.resetNodes();
       }
     });
   }

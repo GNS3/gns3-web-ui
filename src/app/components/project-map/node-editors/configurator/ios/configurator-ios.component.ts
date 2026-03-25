@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -17,7 +17,6 @@ import { Controller } from '@models/controller';
 import { IosConfigurationService } from '@services/ios-configuration.service';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
-import { ConfigDialogData } from '../../../context-menu/actions/config-action/config-action.component';
 
 @Component({
   standalone: true,
@@ -34,7 +33,6 @@ export class ConfiguratorDialogIosComponent implements OnInit {
   private formBuilder = inject(UntypedFormBuilder);
   private configurationService = inject(IosConfigurationService);
   private cd = inject(ChangeDetectorRef);
-  private dialogData = inject<ConfigDialogData>(MAT_DIALOG_DATA);
 
   controller: Controller;
   node: Node;
@@ -69,10 +67,6 @@ export class ConfiguratorDialogIosComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Use data from dialog injection instead of undefined properties
-    this.controller = this.dialogData.controller;
-    this.node = this.dialogData.node;
-
     this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = node.name;
@@ -81,28 +75,7 @@ export class ConfiguratorDialogIosComponent implements OnInit {
       }
       this.getConfiguration();
       this.fillSlotsData();
-      this.populateForms();
       this.cd.markForCheck();
-    });
-  }
-
-  private populateForms() {
-    // Populate General Settings form
-    this.generalSettingsForm.patchValue({
-      name: this.node.name,
-      path: this.node.properties.image,
-    });
-
-    // Populate Memory form
-    this.memoryForm.patchValue({
-      ram: this.node.properties.ram,
-      nvram: this.node.properties.nvram,
-    });
-
-    // Populate Advanced Settings form
-    this.advancedSettingsForm.patchValue({
-      mac_addr: this.node.properties.mac_addr,
-      idlepc: this.node.properties.idlepc,
     });
   }
 

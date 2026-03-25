@@ -1,9 +1,27 @@
 /**
  * GNS3 Nodes Menu Confirmation Dialog Component Styles
  * Using MD3 CSS variables
- * Note: Most styles are now centralized in src/styles/_dialogs.scss
  */
 
+.close-btn {
+  height: 30px;
+  width: 30px;
+  margin-left: 8px;
+  margin-bottom: 8px;
+}
+
+.close-icon {
+  font-size: 12px;
+}
+
 .text-padding {
-  margin: 0;
+  padding: 16px 0 0 0;
+}
+
+.mat-dialog-actions {
+  min-height: 31px;
+}
+
+.heading-txt {
+  text-transform: capitalize;
 }
