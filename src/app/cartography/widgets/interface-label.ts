@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, Injectable, inject } from '@angular/core';
 import { select } from 'd3-selection';
 import { Draggable } from '../events/draggable';
 import { InterfaceLabelContextMenu } from '../events/event-source';
@@ -10,9 +10,11 @@ import { MapLink } from '../models/map/map-link';
 import { MapLinkNode } from '../models/map/map-link-node';
 import { MapNode } from '../models/map/map-node';
 import { SVGSelection } from '../models/types';
+import { ThemeService } from '@services/theme.service';
 
 @Injectable()
 export class InterfaceLabelWidget {
+  private themeService = inject(ThemeService);
   public onContextMenu = new EventEmitter<InterfaceLabelContextMenu>();
   public draggable = new Draggable<SVGGElement, MapLinkNode>();
 
@@ -25,6 +27,14 @@ export class InterfaceLabelWidget {
     private selectionManager: SelectionManager,
     private mapSettings: MapSettingsManager
   ) {}
+
+  /**
+   * Replace fill color in style string with theme-aware color
+   */
+  private applyThemeLabelColor(style: string): string {
+    const labelColor = this.themeService.getCanvasLabelColor();
+    return style.replace(/fill:\s*[^;]+;?/gi, `fill: ${labelColor};`);
+  }
 
   public setEnabled(enabled) {
     this.enabled = enabled;
@@ -83,6 +93,7 @@ export class InterfaceLabelWidget {
       .attr('style', (l: MapLinkNode) => {
         let styles = this.cssFixer.fix(l.label.style);
         styles = this.fontFixer.fixStyles(styles);
+        styles = this.applyThemeLabelColor(styles);
         return styles;
       })
       .attr('x', (l: MapLinkNode) => l.label.x)

@@ -144,6 +144,24 @@
   gap: 16px;
 }
 
+.settings__map-background-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings__map-background-auto {
+  width: 100%;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.settings__map-background-row {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+}
+
 .settings__theme-group {
   display: flex;
   flex-direction: column;

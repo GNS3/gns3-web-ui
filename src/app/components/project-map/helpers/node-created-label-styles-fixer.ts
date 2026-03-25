@@ -1,15 +1,18 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { FontBBoxCalculator } from '../../../cartography/helpers/font-bbox-calculator';
 import { Node } from '../../../cartography/models/node';
+import { ThemeService } from '../../../services/theme.service';
 
 @Injectable()
 export class NodeCreatedLabelStylesFixer {
+  private themeService = inject(ThemeService);
   MARGIN_BETWEEN_NODE_AND_LABEL = 8;
 
   constructor(private fontBBCalculator: FontBBoxCalculator) {}
 
   fix(node: Node): Node {
-    node.label.style = 'font-family: TypeWriter;font-size: 10.0;font-weight: bold;fill: #000000;fill-opacity: 1.0;';
+    const labelColor = this.themeService.getCanvasLabelColor();
+    node.label.style = `font-family: TypeWriter;font-size: 10.0;font-weight: bold;fill: ${labelColor};fill-opacity: 1.0;`;
     const bb = this.fontBBCalculator.calculate(node.label.text, node.label.style);
 
     // center label

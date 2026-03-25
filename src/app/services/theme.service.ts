@@ -21,8 +21,9 @@ export type MapThemeType = 'light' | 'dark' | 'auto';
 
 /**
  * Map background preset keys
+ * Using M3 surface container colors grouped by light/dark type
  */
-export type MapBackgroundKey = 'auto' | 'white' | 'light-gray' | 'dark-gray' | 'black' | 'blue-sky' | 'green-grass';
+export type MapBackgroundKey = 'auto' | 'light-1' | 'light-2' | 'light-3' | 'light-4' | 'dark-1' | 'dark-2' | 'dark-3' | 'dark-4';
 
 /**
  * Token for default theme
@@ -76,15 +77,21 @@ export class ThemeService {
     { key: 'cyan-orange', label: 'Cyan & Orange', type: 'dark', primaryColor: '#00B7C3' },
   ];
 
-  // Available map background presets
-  readonly availableMapBackgrounds: { key: MapBackgroundKey; label: string; backgroundColor: string; textColor: string }[] = [
-    { key: 'auto', label: 'Follow global theme', backgroundColor: '', textColor: '' },
-    { key: 'white', label: 'White', backgroundColor: '#FFFFFF', textColor: '#424242' },
-    { key: 'light-gray', label: 'Light Gray', backgroundColor: '#F5F5F5', textColor: '#616161' },
-    { key: 'dark-gray', label: 'Dark Gray', backgroundColor: '#424242', textColor: '#FFFFFF' },
-    { key: 'black', label: 'Black', backgroundColor: '#212121', textColor: '#FFFFFF' },
-    { key: 'blue-sky', label: 'Sky Blue', backgroundColor: '#E3F2FD', textColor: '#1565C0' },
-    { key: 'green-grass', label: 'Grass Green', backgroundColor: '#E8F5E9', textColor: '#2E7D32' },
+  // Available map background presets using gradient colors
+  // Light: radial gradient (soft, luminous feel)
+  // Dark: linear gradient (deep, rich feel)
+  readonly availableMapBackgrounds: { key: MapBackgroundKey; label: string; background: string; textColor: string; type: 'light' | 'dark' }[] = [
+    { key: 'auto', label: 'Follow global theme', background: '', textColor: '', type: 'light' },
+    // Light backgrounds (radial gradients - soft luminous)
+    { key: 'light-1', label: 'Cyan Sky', background: 'radial-gradient(ellipse at 20% 20%, #B2EBF2 0%, #E0F7FA 70%)', textColor: '#006064', type: 'light' },
+    { key: 'light-2', label: 'Blue Sky', background: 'radial-gradient(ellipse at 20% 20%, #BBDEFB 0%, #E3F2FD 70%)', textColor: '#1565C0', type: 'light' },
+    { key: 'light-3', label: 'Cloud Gray', background: 'radial-gradient(ellipse at 20% 20%, #F5F5F5 0%, #FAFAFA 70%)', textColor: '#424242', type: 'light' },
+    { key: 'light-4', label: 'Lavender', background: 'radial-gradient(ellipse at 20% 20%, #E1BEE7 0%, #F3E5F5 70%)', textColor: '#4A148C', type: 'light' },
+    // Dark backgrounds (linear gradients - deep rich)
+    { key: 'dark-1', label: 'Deep Cyan', background: 'linear-gradient(135deg, #006064 0%, #00838F 50%, #006064 100%)', textColor: '#FFFFFF', type: 'dark' },
+    { key: 'dark-2', label: 'Deep Blue', background: 'linear-gradient(135deg, #1565C0 0%, #1976D2 50%, #1565C0 100%)', textColor: '#FFFFFF', type: 'dark' },
+    { key: 'dark-3', label: 'Charcoal', background: 'linear-gradient(135deg, #424242 0%, #616161 50%, #424242 100%)', textColor: '#FFFFFF', type: 'dark' },
+    { key: 'dark-4', label: 'Deep Purple', background: 'linear-gradient(135deg, #4A148C 0%, #6A1B9A 50%, #4A148C 100%)', textColor: '#FFFFFF', type: 'dark' },
   ];
 
   constructor(
@@ -254,5 +261,14 @@ export class ThemeService {
    */
   isLightMode(): boolean {
     return !this.isDarkTheme(this.currentTheme);
+  }
+
+  /**
+   * Get the appropriate label color for canvas node labels
+   * Returns a color that contrasts with the current map background
+   */
+  getCanvasLabelColor(): string {
+    const actualMapTheme = this.getActualMapTheme();
+    return actualMapTheme === 'dark' ? '#FFFFFF' : '#000000';
   }
 }

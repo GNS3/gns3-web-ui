@@ -44,6 +44,18 @@ export class SettingsComponent implements OnInit {
     return this.themeService.availableThemes.filter(t => t.type === 'dark');
   }
 
+  get lightMapBackgrounds() {
+    return this.themeService.availableMapBackgrounds.filter(bg => bg.type === 'light' && bg.key !== 'auto');
+  }
+
+  get darkMapBackgrounds() {
+    return this.themeService.availableMapBackgrounds.filter(bg => bg.type === 'dark');
+  }
+
+  get autoMapBackground() {
+    return this.themeService.availableMapBackgrounds.find(bg => bg.key === 'auto');
+  }
+
   ngOnInit() {
     this.settings = this.settingsService.getAll();
     this.integrateLinksLabelsToLinks = this.mapSettingsService.integrateLinkLabelsToLinks;

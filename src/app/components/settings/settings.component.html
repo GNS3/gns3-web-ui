@@ -57,23 +57,49 @@
 
           <div class="settings__theme-section settings__theme-section--map">
             <label class="settings__label">Project map background</label>
-            <mat-radio-group [value]="mapTheme" (change)="setMapTheme($event.value)" class="settings__radio-group settings__radio-group--background">
-              @for (bg of availableMapBackgrounds; track bg.key) {
-                <mat-radio-button [value]="bg.key">
-                  <span class="settings__theme-option">
-                    @if (bg.backgroundColor) {
-                      <span class="settings__theme-swatch settings__theme-swatch--bg"
-                            [style.background]="bg.backgroundColor"
-                            [style.color]="bg.textColor">
-                        <span class="settings__theme-swatch-text">A</span>
-                      </span>
-                    } @else {
+            <mat-radio-group [value]="mapTheme" (change)="setMapTheme($event.value)" class="settings__map-background-group">
+              @if (autoMapBackground) {
+                <div class="settings__map-background-auto">
+                  <mat-radio-button [value]="autoMapBackground.key">
+                    <span class="settings__theme-option">
                       <span class="settings__theme-swatch settings__theme-swatch--auto"></span>
-                    }
-                    <span class="settings__theme-name">{{ bg.label }}</span>
-                  </span>
-                </mat-radio-button>
+                      <span class="settings__theme-name">{{ autoMapBackground.label }}</span>
+                    </span>
+                  </mat-radio-button>
+                </div>
               }
+              <div class="settings__map-background-row">
+                <div class="settings__theme-group">
+                  <span class="settings__theme-group-label">Light</span>
+                  @for (bg of lightMapBackgrounds; track bg.key) {
+                    <mat-radio-button [value]="bg.key">
+                      <span class="settings__theme-option">
+                        <span class="settings__theme-swatch settings__theme-swatch--bg"
+                              [style.background]="bg.background"
+                              [style.color]="bg.textColor">
+                          <span class="settings__theme-swatch-text">A</span>
+                        </span>
+                        <span class="settings__theme-name">{{ bg.label }}</span>
+                      </span>
+                    </mat-radio-button>
+                  }
+                </div>
+                <div class="settings__theme-group">
+                  <span class="settings__theme-group-label">Dark</span>
+                  @for (bg of darkMapBackgrounds; track bg.key) {
+                    <mat-radio-button [value]="bg.key">
+                      <span class="settings__theme-option">
+                        <span class="settings__theme-swatch settings__theme-swatch--bg"
+                              [style.background]="bg.background"
+                              [style.color]="bg.textColor">
+                          <span class="settings__theme-swatch-text">A</span>
+                        </span>
+                        <span class="settings__theme-name">{{ bg.label }}</span>
+                      </span>
+                    </mat-radio-button>
+                  }
+                </div>
+              </div>
             </mat-radio-group>
           </div>
         </mat-expansion-panel>

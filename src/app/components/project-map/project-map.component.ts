@@ -288,8 +288,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     const backgrounds = this.themeService.availableMapBackgrounds;
     const bgConfig = backgrounds.find(b => b.key === mapTheme);
 
-    if (bgConfig && bgConfig.backgroundColor) {
-      document.documentElement.style.setProperty('--gns3-map-background', bgConfig.backgroundColor);
+    if (bgConfig && bgConfig.background) {
+      document.documentElement.style.setProperty('--gns3-map-background', bgConfig.background);
     } else {
       // Auto - follow global theme
       const isDark = this.themeService.isDarkMode();
