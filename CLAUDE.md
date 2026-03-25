@@ -215,21 +215,24 @@ export class MyService {
 
 ### Material Theme Variables
 
-**Primary Colors**:
-| Token | Purpose |
-|-------|---------|
-| `--mat-sys-primary` | Main theme color for FABs, buttons, links |
-| `--mat-sys-on-primary` | Text/icons on primary color |
-| `--mat-sys-primary-container` | Light/dark variant for containers |
-| `--mat-sys-on-primary-container` | Text on primary container |
+**Core Rule**: All colors must use `--mat-sys-*` variables. Hardcoded color values are prohibited.
 
-**Surface Colors**:
-| Token | Purpose |
-|-------|---------|
-| `--mat-sys-background` | Page background |
-| `--mat-sys-surface` | Cards, sheets, dialogs |
-| `--mat-sys-surface-container-*` | Elevation levels (lowest, low, medium, high, highest) |
-| `--mat-sys-outline` | Borders, dividers |
+**Color Variables Quick Reference**:
+| Category | Variable Prefix | Purpose |
+|----------|----------------|---------|
+| Primary | `--mat-sys-primary` | Main color for FABs, buttons, links |
+| Surface | `--mat-sys-surface` | Cards, sheets, dialogs |
+| Background | `--mat-sys-background` | Page background |
+| Error | `--mat-sys-error` | Error states |
+| Outline | `--mat-sys-outline` | Borders, dividers |
+| Container | `--mat-sys-surface-container-*` | Container elevation levels |
+
+**Complete Variable Reference**: See `docs/angular21-CSS/02-material3-css-variables.md`, which includes:
+- Primary/Secondary/Tertiary/Error full color palettes
+- Surface Container levels (lowest/low/default/high/highest)
+- Typography font variables
+- Corner radius variables
+- State Layer opacity variables
 
 ### Correct Examples
 
