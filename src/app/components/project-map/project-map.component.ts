@@ -735,7 +735,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.progressService.activate();
     this.nodeService
       .createFromTemplate(
         this.controller,
@@ -767,14 +766,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
               nodeAddedEvent.y =
                 nodeAddedEvent.y + 50 < this.project.scene_height / 2 ? nodeAddedEvent.y + 50 : nodeAddedEvent.y;
               this.onNodeCreation(nodeAddedEvent);
-            } else {
-              this.progressService.deactivate();
             }
           });
         },
         (error) => {
           this.toasterService.error(error.error.message);
-          this.progressService.deactivate();
         }
       );
   }
