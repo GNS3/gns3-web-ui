@@ -18,7 +18,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ResizeEvent, ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
 import { Node } from '../../../cartography/models/node';
@@ -54,6 +54,7 @@ import { LogConsoleComponent } from '../log-console/log-console.component';
 })
 export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
+  private themeSubscription: Subscription | null = null;
   readonly controller = input<Controller>(undefined);
   readonly project = input<Project>(undefined);
   @Output() closeConsole = new EventEmitter<boolean>();
@@ -91,6 +92,12 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     this.themeService.getActualTheme() === 'light'
       ? (this.isLightThemeEnabled = true)
       : (this.isLightThemeEnabled = false);
+
+    // Subscribe to theme changes
+    this.themeSubscription = this.themeService.themeChanged.subscribe(() => {
+      this.isLightThemeEnabled = this.themeService.getActualTheme() === 'light';
+      this.cdr.markForCheck();
+    });
 
     // Load saved window state from localStorage
     this.loadWindowState();
@@ -402,14 +409,24 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
 
     // Auto-focus xterm when switching to device console tab (not GNS3 console)
     if (index < this.nodes.length && this.webConsoleComponents()) {
-      // Use setTimeout to ensure DOM has updated before focusing
-      setTimeout(() => {
-        const webConsoleArray = this.webConsoleComponents;
-        if (webConsoleArray[index]) {
+      // Use requestAnimationFrame to ensure DOM has updated before focusing
+      this.focusTerminalAfterRender(index);
+    }
+  }
+
+  /**
+   * Focus terminal after DOM has been updated
+   * Uses requestAnimationFrame to wait for Angular's rendering cycle
+   */
+  private focusTerminalAfterRender(index: number): void {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const webConsoleArray = this.webConsoleComponents();
+        if (webConsoleArray && webConsoleArray[index]) {
           webConsoleArray[index].focusTerminal();
         }
-      }, 100);
-    }
+      });
+    });
   }
 
   enableScroll(e) {
@@ -463,6 +480,12 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   ngOnDestroy(): void {
+    // Cleanup theme subscription
+    if (this.themeSubscription) {
+      this.themeSubscription.unsubscribe();
+      this.themeSubscription = null;
+    }
+
     this.destroy$.next();
     this.destroy$.complete();
   }

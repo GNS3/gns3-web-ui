@@ -14,12 +14,14 @@ import { CommonModule } from '@angular/common';
 import { Terminal } from 'xterm';
 import { AttachAddon } from 'xterm-addon-attach';
 import { FitAddon } from 'xterm-addon-fit';
+import { Subscription } from 'rxjs';
 import { Node as GNS3Node } from '../../../cartography/models/node';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { ThemeService } from '@services/theme.service';
 import { XtermContextMenuService } from '@services/xterm-context-menu.service';
+import { XtermService } from '@services/xterm.service';
 
 @Component({
   selector: 'app-web-console',
@@ -37,14 +39,18 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     cols: 100,
     rows: 32,
     cursorBlink: true,
+    cursorStyle: 'block',
+    fontSize: 15,
+    fontFamily: 'courier-new, courier, monospace',
     rightClickSelectsWord: true, // Enable right-click to select word
     altClickMovesCursor: true, // Enable Alt+Click to move cursor
+    scrollback: 1000,
   });
   public fitAddon: FitAddon = new FitAddon();
   public isLightThemeEnabled: boolean = false;
-  private copiedText: string = '';
   private resizeObserver: ResizeObserver | null = null;
   private contextMenuCleanup: (() => void) | null = null;
+  private themeSubscription: Subscription | null = null;
 
   readonly terminal = viewChild<ElementRef>('terminal');
 
@@ -52,23 +58,30 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   private themeService = inject(ThemeService);
   private cdr = inject(ChangeDetectorRef);
   private contextMenuService = inject(XtermContextMenuService);
+  private xtermService = inject(XtermService);
 
   constructor() {}
 
   ngOnInit() {
-    this.themeService.getActualTheme() === 'light'
-      ? (this.isLightThemeEnabled = true)
-      : (this.isLightThemeEnabled = false);
+    this.isLightThemeEnabled = this.themeService.getActualTheme() === 'light';
     this.cdr.markForCheck();
 
+    // Subscribe to theme changes
+    this.themeSubscription = this.themeService.themeChanged.subscribe(() => {
+      this.xtermService.updateTerminalTheme(this.term, this.cdr);
+      this.isLightThemeEnabled = this.themeService.getActualTheme() === 'light';
+    });
+
     this.consoleService.consoleResized.subscribe((ev) => {
-      let numberOfColumns = Math.floor(ev.width / 9);
-      let numberOfRows = Math.floor(ev.height / 17);
+      // Use FitAddon to calculate proper dimensions instead of hardcoded pixels
+      this.fitAddon.fit();
+      const cols = this.term.cols;
+      const rows = this.term.rows;
 
-      this.consoleService.setNumberOfColumns(numberOfColumns);
-      this.consoleService.setNumberOfRows(numberOfRows);
+      this.consoleService.setNumberOfColumns(cols);
+      this.consoleService.setNumberOfRows(rows);
 
-      this.term.resize(numberOfColumns, numberOfRows);
+      this.term.resize(cols, rows);
     });
 
     if (this.consoleService.getNumberOfColumns() && this.consoleService.getNumberOfRows()) {
@@ -79,23 +92,27 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit() {
     const terminal = this.terminal();
     this.term.open(terminal.nativeElement);
-    if (this.isLightThemeEnabled)
-      this.term.setOption('theme', { background: 'white', foreground: 'black', cursor: 'black' });
+
+    // Set theme based on current Material Design 3 theme
+    this.xtermService.updateTerminalTheme(this.term, this.cdr);
 
     const socket = new WebSocket(this.consoleService.getUrl(this.controller(), this.node()));
 
     socket.onerror = (event) => {
-      this.term.write('Connection lost');
+      console.error('[WebConsole] Socket connection error');
+      this.term.write('\r\n\x1b[31mConnection lost. Please check if the node is still running.\x1b[0m\r\n');
     };
     socket.onclose = (event) => {
+      console.log('[WebConsole] Socket closed:', event.code, event.reason);
+      this.term.write('\r\n\x1b[33mConnection closed.\x1b[0m\r\n');
       this.consoleService.closeConsoleForNode(this.node());
     };
 
     const attachAddon = new AttachAddon(socket);
     this.term.loadAddon(attachAddon);
-    this.term.setOption('cursorBlink', true);
-    this.term.loadAddon(this.fitAddon);
-    this.fitAddon.activate(this.term);
+    this.term.options.cursorBlink = true;
+    this.xtermService.initTerminal(this.term, this.fitAddon);
+    this.fitAddon.fit();
     this.term.focus();
 
     this.term.attachCustomKeyEventHandler((key: KeyboardEvent) => {
@@ -152,7 +169,8 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
             this.consoleService.setNumberOfColumns(cols);
             this.consoleService.setNumberOfRows(rows);
           } catch (e) {
-            // Ignore fit errors when element is not visible
+            // Ignore fit errors when element is not visible, but log for debugging
+            console.debug('[WebConsole] FitAddon.fit() failed:', e);
           }
 
           this.cdr.markForCheck();
@@ -177,6 +195,12 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
    * Cleanup on component destroy
    */
   ngOnDestroy(): void {
+    // Cleanup theme subscription
+    if (this.themeSubscription) {
+      this.themeSubscription.unsubscribe();
+      this.themeSubscription = null;
+    }
+
     // Cleanup ResizeObserver to prevent memory leaks
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();

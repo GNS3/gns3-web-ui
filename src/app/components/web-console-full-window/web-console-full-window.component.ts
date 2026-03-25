@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, OnInit, OnDestroy, inject, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit, OnDestroy, inject, viewChild, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
@@ -13,6 +13,7 @@ import { NodeConsoleService } from '@services/nodeConsole.service';
 import { ControllerService } from '@services/controller.service';
 import { ThemeService } from '@services/theme.service';
 import { XtermContextMenuService } from '@services/xterm-context-menu.service';
+import { XtermService } from '@services/xterm.service';
 
 @Component({
   selector: 'app-web-console-full-window',
@@ -29,10 +30,16 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
   private controller: Controller;
   private node: GNS3Node;
   private contextMenuCleanup: (() => void) | null = null;
+  private themeSubscription: Subscription | null = null;
 
   public term: Terminal = new Terminal({
+    cursorBlink: true,
+    cursorStyle: 'block',
+    fontSize: 15,
+    fontFamily: 'courier-new, courier, monospace',
     rightClickSelectsWord: true, // Enable right-click to select word
     altClickMovesCursor: true, // Enable Alt+Click to move cursor
+    scrollback: 1000,
   });
   public fitAddon: FitAddon = new FitAddon();
 
@@ -45,10 +52,17 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
   private nodeService = inject(NodeService);
   private themeService = inject(ThemeService);
   private contextMenuService = inject(XtermContextMenuService);
+  private cdr = inject(ChangeDetectorRef);
+  private xtermService = inject(XtermService);
 
   constructor() {}
 
   ngOnInit() {
+    // Subscribe to theme changes
+    this.themeSubscription = this.themeService.themeChanged.subscribe(() => {
+      this.xtermService.updateTerminalTheme(this.term, this.cdr);
+    });
+
     if (this.controllerService.isServiceInitialized) {
       this.getData();
     } else {
@@ -83,20 +97,24 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       const terminal = this.terminal();
       this.term.open(terminal.nativeElement);
+
+      // Set theme based on current Material Design 3 theme
+      this.xtermService.updateTerminalTheme(this.term, this.cdr);
+
       const socket = new WebSocket(this.consoleService.getUrl(this.controller, this.node));
 
       socket.onerror = (event) => {
-        this.term.write('Connection lost' + '\r\n');
+        console.error('[WebConsoleFullWindow] Socket connection error');
+        this.term.write('\r\n\x1b[31mConnection lost. Please check if the node is still running.\x1b[0m\r\n');
       };
       socket.onclose = (event) => {
-        this.term.write('Connection closed' + '\r\n');
+        console.log('[WebConsoleFullWindow] Socket closed:', event.code, event.reason);
+        this.term.write('\r\n\x1b[33mConnection closed.\x1b[0m\r\n');
       };
 
       const attachAddon = new AttachAddon(socket);
       this.term.loadAddon(attachAddon);
-      this.term.setOption('cursorBlink', true);
-      this.term.loadAddon(this.fitAddon);
-      this.fitAddon.activate(this.term);
+      this.xtermService.initTerminal(this.term, this.fitAddon);
       this.fitAddon.fit();
       this.term.focus();
 
@@ -111,10 +129,6 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
 
       // Setup context menu for copy/paste
       this.contextMenuCleanup = this.contextMenuService.attachContextMenu(this.term, terminal.nativeElement);
-
-      let numberOfColumns = Math.round(window.innerWidth / this.consoleService.getLineWidth());
-      let numberOfRows = Math.round(window.innerHeight / this.consoleService.getLineHeight());
-      this.term.resize(numberOfColumns, numberOfRows);
     }, 0);
   }
 
@@ -122,6 +136,12 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
    * Cleanup on component destroy
    */
   ngOnDestroy(): void {
+    // Cleanup theme subscription
+    if (this.themeSubscription) {
+      this.themeSubscription.unsubscribe();
+      this.themeSubscription = null;
+    }
+
     // Cleanup subscriptions
     if (this.subscriptions) {
       this.subscriptions.unsubscribe();
