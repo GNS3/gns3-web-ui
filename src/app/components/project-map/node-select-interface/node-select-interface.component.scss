@@ -11,10 +11,16 @@
   min-height: 0;
 }
 
-.status {
-  margin-right: 8px;
+.interface-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.status-icon {
+  flex-shrink: 0;
 }
 
 .port {
-  margin-left: 8px;
+  white-space: nowrap;
 }
