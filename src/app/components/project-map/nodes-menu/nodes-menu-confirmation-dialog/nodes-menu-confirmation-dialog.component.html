@@ -1,11 +1,7 @@
-<div class="row">
-  <div class="col-md-12">
-    <h5 class="heading-txt">Confirm {{ confirmActionData.actionType }} All</h5>
-  </div>
-</div>
+<h2 mat-dialog-title class="nodes-menu-confirmation-dialog__title">Confirm {{ confirmActionData.actionType }} All</h2>
 <mat-divider></mat-divider>
-<mat-dialog-content>
-  <p class="text-padding">Are you sure you want to {{ confirmActionData.actionType }} all devices?</p>
+<mat-dialog-content class="nodes-menu-confirmation-dialog__content">
+  Are you sure you want to {{ confirmActionData.actionType }} all devices?
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>No</button>

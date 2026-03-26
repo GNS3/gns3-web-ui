@@ -75,8 +75,7 @@ export class NodesMenuComponent {
 
   public confirmControlsActions(type) {
     const dialogRef = this.dialog.open(NodesMenuConfirmationDialogComponent, {
-      width: '500px',
-      maxHeight: '200px',
+      panelClass: 'nodes-menu-confirmation-dialog-panel',
       autoFocus: false,
       disableClose: true,
       data: type,

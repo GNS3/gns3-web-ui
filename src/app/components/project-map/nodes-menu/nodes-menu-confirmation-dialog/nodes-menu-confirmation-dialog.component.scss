@@ -1,27 +1,9 @@
 /**
  * GNS3 Nodes Menu Confirmation Dialog Component Styles
- * Using MD3 CSS variables
+ *
+ * All dialog styles are centralized in src/styles/_dialogs.scss
+ * using the .nodes-menu-confirmation-dialog-panel panelClass.
+ *
+ * This file is kept for Angular component structure but contains
+ * no component-specific styles.
  */
-
-.close-btn {
-  height: 30px;
-  width: 30px;
-  margin-left: 8px;
-  margin-bottom: 8px;
-}
-
-.close-icon {
-  font-size: 14px;
-}
-
-.text-padding {
-  padding: 16px 0 0 0;
-}
-
-.mat-dialog-actions {
-  min-height: 31px;
-}
-
-.heading-txt {
-  text-transform: capitalize;
-}

@@ -173,6 +173,31 @@
 }
 
 /* =============================================
+// Nodes Menu Confirmation Dialog
+// ============================================= */
+.nodes-menu-confirmation-dialog-panel {
+  --mat-dialog-container-max-width: 500px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 500px;
+    max-width: 500px;
+  }
+
+  .mat-mdc-dialog-content {
+    max-height: 200px;
+  }
+
+  .nodes-menu-confirmation-dialog__title {
+    text-transform: capitalize;
+  }
+
+  .mat-dialog-actions {
+    min-height: 31px;
+  }
+}
+
+/* =============================================
 // Generic Dialog Title Styles
 // ============================================= */
 h1[mat-dialog-title],
