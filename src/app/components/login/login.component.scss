@@ -47,6 +47,11 @@
   width: 28px;
   height: 28px;
   color: var(--mat-sys-on-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  overflow: visible;
 }
 
 /* =============================================
@@ -107,6 +112,11 @@
   height: 72px;
   width: 72px;
   font-size: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  overflow: visible;
 }
 
 .login-card__title {
@@ -396,6 +406,11 @@
   font-size: 20px;
   width: 20px;
   height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  overflow: visible;
 }
 
 /* =============================================
