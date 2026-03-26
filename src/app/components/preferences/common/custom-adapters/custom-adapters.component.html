@@ -41,10 +41,17 @@
     </div>
     }
   </div>
-  <button class="add-btn" mat-button (click)="onAdd()">
-    <mat-icon>add</mat-icon>
-    Add adapter
-  </button>
+  <div class="add-adapter-row">
+    <button class="add-btn" mat-button (click)="onAdd()">
+      <mat-icon>add</mat-icon>
+      Add adapter
+    </button>
+    <table class="info-note-table">
+      <tr>
+        <td>Deleting a custom adapter only removes its custom configuration. To reduce the total number of adapters, modify "Number of adapters" in the main configuration page.</td>
+      </tr>
+    </table>
+  </div>
 </div>
 <div mat-dialog-actions align="end">
   <button mat-button (click)="cancelConfigureCustomAdapters()">Cancel</button>

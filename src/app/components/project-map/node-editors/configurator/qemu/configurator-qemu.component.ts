@@ -371,7 +371,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
       this.node.properties.kernel_image = formValues.kernel_image;
       this.node.properties.kernel_command_line = formValues.kernel_command_line;
       this.node.properties.bios_image = formValues.bios_image;
-      this.node.properties.cpu_throttling = formValues.cpu_throttling;
+      this.node.properties.cpu_throttling = formValues.cpu_throttling || null;
       this.node.properties.process_priority = formValues.process_priority;
       this.node.properties.qemu_path = formValues.qemu_path;
       this.node.properties.options = formValues.options;
@@ -385,9 +385,15 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
       this.node.properties.adapter_type = networkFormValues.adapter_type;
       this.node.properties.replicate_network_connection_state = networkFormValues.replicate_network_connection_state;
 
-      this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe(() => {
-        this.toasterService.success(`Node ${this.node.name} updated.`);
-        this.onCancelClick();
+      this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe({
+        next: () => {
+          this.toasterService.success(`Node ${this.node.name} updated.`);
+          this.onCancelClick();
+        },
+        error: (error) => {
+          const errorMessage = error.error?.message || error.message || 'Failed to update node';
+          this.toasterService.error(errorMessage);
+        },
       });
     } else {
       this.toasterService.error(`Fill all required fields.`);
