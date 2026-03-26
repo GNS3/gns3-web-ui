@@ -127,6 +127,7 @@ export class IosTemplateDetailsComponent implements OnInit {
           this.iosTemplate.tags = [];
         }
         this.fillSlotsData();
+        this.populateForms();
         this.cd.markForCheck();
       });
     });
@@ -196,6 +197,32 @@ export class IosTemplateDetailsComponent implements OnInit {
         this.wicsForTemplate[i] = this.iosTemplate[`wic${i}`];
       }
     }
+  }
+
+  populateForms() {
+    this.generalSettingsForm.patchValue({
+      templateName: this.iosTemplate.name,
+      defaultName: this.iosTemplate.default_name_format,
+      symbol: this.iosTemplate.symbol,
+      path: this.iosTemplate.image,
+      initialConfig: this.iosTemplate.startup_config,
+    });
+
+    this.memoryForm.patchValue({
+      ram: this.iosTemplate.ram,
+      nvram: this.iosTemplate.nvram,
+      disk0: this.iosTemplate.disk0,
+      disk1: this.iosTemplate.disk1,
+    });
+
+    this.advancedForm.patchValue({
+      systemId: this.iosTemplate.system_id,
+      idlemax: this.iosTemplate.idlemax,
+      idlesleep: this.iosTemplate.idlesleep,
+      execarea: this.iosTemplate.exec_area,
+      idlepc: this.iosTemplate.idlepc,
+      mac_addr: this.iosTemplate.mac_addr,
+    });
   }
 
   saveSlotsData() {
@@ -279,6 +306,23 @@ export class IosTemplateDetailsComponent implements OnInit {
       this.toasterService.error(`Missing required fields: ${missingFields.join(', ')}`);
     } else {
       this.saveSlotsData();
+
+      // Update iosTemplate from form values
+      this.iosTemplate.name = this.generalSettingsForm.get('templateName').value;
+      this.iosTemplate.default_name_format = this.generalSettingsForm.get('defaultName').value;
+      this.iosTemplate.symbol = this.generalSettingsForm.get('symbol').value;
+      this.iosTemplate.image = this.generalSettingsForm.get('path').value;
+      this.iosTemplate.startup_config = this.generalSettingsForm.get('initialConfig').value;
+      this.iosTemplate.ram = this.memoryForm.get('ram').value;
+      this.iosTemplate.nvram = this.memoryForm.get('nvram').value;
+      this.iosTemplate.disk0 = this.memoryForm.get('disk0').value;
+      this.iosTemplate.disk1 = this.memoryForm.get('disk1').value;
+      this.iosTemplate.system_id = this.advancedForm.get('systemId').value;
+      this.iosTemplate.idlemax = this.advancedForm.get('idlemax').value;
+      this.iosTemplate.idlesleep = this.advancedForm.get('idlesleep').value;
+      this.iosTemplate.exec_area = this.advancedForm.get('execarea').value;
+      this.iosTemplate.idlepc = this.advancedForm.get('idlepc').value;
+      this.iosTemplate.mac_addr = this.advancedForm.get('mac_addr').value;
 
       this.iosService.saveTemplate(this.controller, this.iosTemplate).subscribe((iosTemplate: IosTemplate) => {
         this.toasterService.success('Changes saved');

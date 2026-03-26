@@ -137,26 +137,28 @@
           <div class="ios-add__step-content">
             @if (platform()) {
             <div class="ios-add__adapters">
-              @for (index of [0, 1, 2, 3, 4, 5, 6]; track index) { @if (adapterMatrix()[platform()][chassis() || ''] &&
-              adapterMatrix()[platform()][chassis() || ''][index]) {
-              <mat-form-field appearance="fill" class="ios-add__field">
-                <mat-label>Slot {{ index }}</mat-label>
-                <mat-select
-                  placeholder="Slot {{ index }}"
-                  [value]="networkAdaptersForTemplate()[index] || ''"
-                  (selectionChange)="onAdapterChange(index, $event.value)"
-                >
-                  @if (adapterMatrix()[platform()][chassis()|| ''][index].length > 1 &&
-                  !adapterMatrix()[platform()][chassis()|| ''][index][0].startsWith('C7200')) {
-                  <mat-option [value]=""></mat-option>
-                  } @for (option of adapterMatrix()[platform()][chassis() || ''][index]; track option) {
-                  <mat-option [value]="option">
-                    {{ option }}
-                  </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-              } }
+              @for (index of [0, 1, 2, 3, 4, 5, 6]; track index) {
+                @if (adapterMatrix()[platform()][chassis() || ''] && adapterMatrix()[platform()][chassis() || ''][index]) {
+                  <mat-form-field appearance="fill" class="ios-add__field">
+                    <mat-label>Slot {{ index }}</mat-label>
+                    <mat-select
+                      placeholder="Slot {{ index }}"
+                      [value]="networkAdaptersForTemplate()[index] || ''"
+                      (selectionChange)="onAdapterChange(index, $event.value)"
+                    >
+                      @if (adapterMatrix()[platform()][chassis()|| ''][index].length > 1 &&
+                      !adapterMatrix()[platform()][chassis()|| ''][index][0].startsWith('C7200')) {
+                        <mat-option [value]=""></mat-option>
+                      }
+                      @for (option of adapterMatrix()[platform()][chassis() || ''][index]; track option) {
+                        <mat-option [value]="option">
+                          {{ option }}
+                        </mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                }
+              }
             </div>
             }
           </div>
@@ -166,25 +168,27 @@
         <mat-step label="WIC modules">
           <div class="ios-add__step-content">
             <div class="ios-add__adapters">
-              @for (index of [0, 1, 2]; track index) { @if (wicMatrix()[platform()] && wicMatrix()[platform()][index]) {
-              <mat-form-field appearance="fill" class="ios-add__field">
-                <mat-label>WIC {{ index }}</mat-label>
-                <mat-select
-                  placeholder="WIC {{ index }}"
-                  [value]="wicsForTemplate()[index] || ''"
-                  (selectionChange)="onWicChange(index, $event.value)"
-                >
-                  <mat-option [value]="">
-                    {{ '' }}
-                  </mat-option>
-                  @for (option of wicMatrix()[platform()][index]; track option) {
-                  <mat-option [value]="option">
-                    {{ option }}
-                  </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-              } }
+              @for (index of [0, 1, 2]; track index) {
+                @if (wicMatrix()[platform()] && wicMatrix()[platform()][index]) {
+                  <mat-form-field appearance="fill" class="ios-add__field">
+                    <mat-label>WIC {{ index }}</mat-label>
+                    <mat-select
+                      placeholder="WIC {{ index }}"
+                      [value]="wicsForTemplate()[index] || ''"
+                      (selectionChange)="onWicChange(index, $event.value)"
+                    >
+                      <mat-option [value]="">
+                        {{ '' }}
+                      </mat-option>
+                      @for (option of wicMatrix()[platform()][index]; track option) {
+                        <mat-option [value]="option">
+                          {{ option }}
+                        </mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                }
+              }
             </div>
           </div>
         </mat-step>
