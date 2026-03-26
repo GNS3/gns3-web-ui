@@ -208,6 +208,10 @@
               <mat-option [value]="type.value"> {{ type.name }} ({{ type.value }}) </mat-option>
               }
             </mat-select>
+            <br /><br />
+            <button mat-raised-button color="primary" (click)="openCustomAdaptersDialog()">
+              Custom Adapters
+            </button>
             <br /><br /><mat-checkbox [(ngModel)]="node.properties.replicate_network_connection_state">
               Replicate network connection state
             </mat-checkbox>

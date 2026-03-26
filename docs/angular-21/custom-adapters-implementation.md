@@ -6,6 +6,13 @@
 
 This document describes the implementation of the Custom Adapters feature in GNS3 Web UI, which aligns with the Desktop GUI behavior using an **incremental save** approach.
 
+Custom adapters are supported in two contexts:
+
+1. **Template Configuration** - Configure default adapter settings for templates (QEMU, VMware, VirtualBox)
+2. **Node Configuration** - Modify adapter settings for individual running nodes
+
+Both contexts use the same `CustomAdaptersComponent` dialog and implement incremental save logic to only store non-default configurations.
+
 ## Architecture
 
 ### Components
@@ -16,6 +23,9 @@ This document describes the implementation of the Custom Adapters feature in GNS
 | **QEMU Template Details** | `src/app/components/preferences/qemu/qemu-vm-template-details/` | QEMU template management |
 | **VMware Template Details** | `src/app/components/preferences/vmware/vmware-template-details/` | VMware template management |
 | **VirtualBox Template Details** | `src/app/components/preferences/virtual-box/virtual-box-template-details/` | VirtualBox template management |
+| **QEMU Node Configurator** | `src/app/components/project-map/node-editors/configurator/qemu/` | QEMU node configuration |
+| **VMware Node Configurator** | `src/app/components/project-map/node-editors/configurator/vmware/` | VMware node configuration |
+| **VirtualBox Node Configurator** | `src/app/components/project-map/node-editors/configurator/virtualbox/` | VirtualBox node configuration |
 
 ### Data Model
 
@@ -279,6 +289,78 @@ configureCustomAdapters() {
 - `openCustomAdaptersDialog()` - Generates complete adapter list for display
 - `onSave()` - Saves template without pre-filling custom_adapters
 
+### Node Configurator Components
+
+**Files:**
+- `src/app/components/project-map/node-editors/configurator/qemu/configurator-qemu.component.ts`
+- `src/app/components/project-map/node-editors/configurator/vmware/configurator-vmware.component.ts`
+- `src/app/components/project-map/node-editors/configurator/virtualbox/configurator-virtualbox.component.ts`
+
+**Key Methods:**
+- `ngOnInit()` - Loads node data from server
+- `openCustomAdaptersDialog()` - Generates complete adapter list for display
+- `onSaveClick()` - Calls `updateNodeWithCustomAdapters()` to save changes
+
+**Implementation Details:**
+
+Node configuration uses the same `CustomAdaptersComponent` and incremental save logic as template configuration:
+
+```typescript
+openCustomAdaptersDialog() {
+  // Get server's custom adapters (may be sparse)
+  const serverCustomAdapters = this.node.custom_adapters || [];
+
+  // Build complete adapter list for display
+  const adaptersForDialog: CustomAdapter[] = [];
+
+  for (let i = 0; i < this.node.properties.adapters; i++) {
+    const customAdapter = serverCustomAdapters.find(a => a.adapter_number === i);
+
+    if (customAdapter) {
+      // Use server's custom configuration
+      adaptersForDialog.push(customAdapter);
+    } else {
+      // Use default configuration
+      adaptersForDialog.push({
+        adapter_number: i,
+        adapter_type: defaultAdapterType,
+        port_name: generateDefaultPortName(i),
+        mac_address: '',
+      });
+    }
+  }
+
+  // Open dialog with complete list
+  const dialogRef = this.dialog.open(CustomAdaptersComponent, {
+    data: { adapters: adaptersForDialog, ... }
+  });
+
+  dialogRef.afterClosed().subscribe((result) => {
+    if (result) {
+      // Incremental save: only non-default adapters
+      this.node.custom_adapters = result.adapters;
+      this.node.properties.adapters = result.requiredAdapters;
+    }
+  });
+}
+```
+
+**Key Differences from Template Configuration:**
+
+| Aspect | Template Configuration | Node Configuration |
+|--------|----------------------|-------------------|
+| **Data Source** | `template.custom_adapters` | `node.custom_adapters` |
+| **Adapter Count** | `template.adapters` | `node.properties.adapters` |
+| **Save Method** | `saveTemplate()` | `updateNodeWithCustomAdapters()` |
+| **Impact** | Affects new nodes from template | Affects running node immediately |
+| **Incremental Save** | ✅ Yes | ✅ Yes |
+
+**Similarities:**
+- Both use the same `CustomAdaptersComponent` dialog
+- Both implement incremental save strategy
+- Both generate complete adapter list for display
+- Both preserve server data on load
+
 ## Migration Notes
 
 ### Changes from Previous Implementation
@@ -327,6 +409,31 @@ configureCustomAdapters() {
    - Increase to 8 adapters
    - Save and reopen
    - **Expected:** Adapters 0-7 displayed, 0-5 as configured, 6-7 as defaults
+
+### Node Configuration Test Cases
+
+1. **Edit Running Node**
+   - Right-click on running node → Configure
+   - Open Custom Adapters dialog
+   - Change adapter 3 type from `e1000` to `virtio`
+   - Apply changes
+   - **Expected:** Node configuration updated immediately, ports reflect new type
+
+2. **Node with No Custom Adapters**
+   - Create node from template with default adapters
+   - Right-click → Configure → Custom Adapters
+   - **Expected:** All adapters displayed with default values, empty `custom_adapters` array
+
+3. **Partial Custom Configuration**
+   - Node has custom adapter 5 only
+   - Open Custom Adapters dialog
+   - **Expected:** Adapter 5 shows custom value, adapters 0-4 show defaults
+
+4. **Delete Custom Adapter from Node**
+   - Node has custom adapter 3
+   - Open Custom Adapters dialog, delete adapter 3
+   - Apply changes
+   - **Expected:** `node.custom_adapters` becomes empty or adapter 3 removed
 
 ## Related Documentation
 

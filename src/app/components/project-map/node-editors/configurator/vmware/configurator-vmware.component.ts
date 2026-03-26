@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormsModule,
@@ -8,7 +8,7 @@ import {
   UntypedFormGroup,
   Validators,
 } from '@angular/forms';
-import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -20,11 +20,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
-import { CustomAdaptersTableComponent } from '@components/preferences/common/custom-adapters-table/custom-adapters-table.component';
+import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 import { VmwareConfigurationService } from '@services/vmware-configuration.service';
+import { CustomAdaptersComponent, CustomAdaptersDialogData, CustomAdaptersDialogResult } from '@components/preferences/common/custom-adapters/custom-adapters.component';
 
 @Component({
   standalone: true,
@@ -46,11 +47,11 @@ import { VmwareConfigurationService } from '@services/vmware-configuration.servi
     MatChipsModule,
     MatIconModule,
     MatCheckboxModule,
-    CustomAdaptersTableComponent,
   ],
 })
 export class ConfiguratorDialogVmwareComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogVmwareComponent>);
+  private dialog = inject(MatDialog);
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
   private formBuilder = inject(UntypedFormBuilder);
@@ -65,10 +66,7 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
   consoleTypes: string[] = [];
   onCloseOptions = [];
 
-  displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
   networkTypes = [];
-
-  readonly customAdapters = viewChild<CustomAdaptersTableComponent>('customAdapters');
 
   constructor() {
     this.generalSettingsForm = this.formBuilder.group({
@@ -94,18 +92,69 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
     this.networkTypes = this.vmwareConfigurationService.getNetworkTypes();
   }
 
+  openCustomAdaptersDialog() {
+    const portNameFormat = this.node.port_name_format || 'Ethernet{0}';
+    const segmentSize = this.node.port_segment_size || 0;
+    const defaultAdapterType = this.node.properties.adapter_type || 'e1000';
+    const adapterCount = this.node.properties.adapters || 0;
+
+    const serverCustomAdapters = this.node.custom_adapters || [];
+    const adaptersForDialog: CustomAdapter[] = [];
+
+    for (let i = 0; i < adapterCount; i++) {
+      const customAdapter = serverCustomAdapters.find((adapter) => adapter.adapter_number === i);
+
+      if (customAdapter) {
+        adaptersForDialog.push({
+          adapter_number: customAdapter.adapter_number,
+          adapter_type: customAdapter.adapter_type,
+          port_name: customAdapter.port_name,
+          mac_address: customAdapter.mac_address || '',
+        });
+      } else {
+        let portName: string;
+        if (segmentSize > 0) {
+          const segment = Math.floor(i / segmentSize);
+          const portInSegment = i % segmentSize;
+          portName = portNameFormat.replace('{0}', String(segment * segmentSize + portInSegment));
+        } else {
+          portName = portNameFormat.replace('{0}', String(i));
+        }
+
+        adaptersForDialog.push({
+          adapter_number: i,
+          adapter_type: defaultAdapterType,
+          port_name: portName,
+          mac_address: '',
+        });
+      }
+    }
+
+    const dialogRef = this.dialog.open(CustomAdaptersComponent, {
+      panelClass: 'custom-adapters-dialog-panel',
+      data: {
+        adapters: adaptersForDialog,
+        networkTypes: this.networkTypes,
+        portNameFormat: portNameFormat,
+        portSegmentSize: segmentSize,
+        defaultAdapterType: defaultAdapterType,
+        currentAdapters: adapterCount,
+      } as CustomAdaptersDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((result: CustomAdaptersDialogResult) => {
+      if (result) {
+        this.node.custom_adapters = result.adapters;
+        if (result.requiredAdapters !== undefined) {
+          this.node.properties.adapters = result.requiredAdapters;
+        }
+        this.cd.markForCheck();
+      }
+    });
+  }
+
   onSaveClick() {
     if (this.generalSettingsForm.valid) {
-      this.node.custom_adapters = [];
-      this.customAdapters().adapters.forEach((n) => {
-        this.node.custom_adapters.push({
-          adapter_number: n.adapter_number,
-          adapter_type: n.adapter_type,
-        });
-      });
-
-      this.node.properties.adapters = this.node.custom_adapters.length;
-
       this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();

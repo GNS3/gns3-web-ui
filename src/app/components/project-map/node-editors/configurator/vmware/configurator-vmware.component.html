@@ -69,12 +69,10 @@
             <br /><mat-checkbox [(ngModel)]="node.properties.use_any_adapter">
               Allow GNS3 to override non custom VMware adapter
             </mat-checkbox>
-            <app-custom-adapters-table
-              #customAdapters
-              [networkTypes]="networkTypes"
-              [displayedColumns]="displayedColumns"
-              [adapters]="node.ports"
-            ></app-custom-adapters-table>
+            <br /><br />
+            <button mat-raised-button color="primary" (click)="openCustomAdaptersDialog()">
+              Custom Adapters
+            </button>
           </mat-tab>
           <mat-tab label="Usage">
             <mat-form-field class="form-field">

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormsModule,
@@ -20,7 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
-import { CustomAdaptersTableComponent } from '@components/preferences/common/custom-adapters-table/custom-adapters-table.component';
+import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 import { QemuBinary } from '@models/qemu/qemu-binary';
 import { QemuImage } from '@models/qemu/qemu-image';
 import { Controller } from '@models/controller';
@@ -28,6 +28,7 @@ import { NodeService } from '@services/node.service';
 import { QemuConfigurationService } from '@services/qemu-configuration.service';
 import { QemuService } from '@services/qemu.service';
 import { ToasterService } from '@services/toaster.service';
+import { CustomAdaptersComponent, CustomAdaptersDialogData, CustomAdaptersDialogResult } from '@components/preferences/common/custom-adapters/custom-adapters.component';
 import { QemuImageCreatorComponent } from './qemu-image-creator/qemu-image-creator.component';
 
 @Component({
@@ -84,8 +85,6 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     disableClose: true,
   };
   dialogRefQemuImageCreator;
-
-  readonly customAdapters = viewChild<CustomAdaptersTableComponent>('customAdapters');
 
   constructor() {
     this.generalSettingsForm = this.formBuilder.group({
@@ -146,6 +145,72 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     });
     this.bootPriorities = this.qemuConfigurationService.getBootPriorities();
     this.diskInterfaces = this.qemuConfigurationService.getDiskInterfaces();
+  }
+
+  openCustomAdaptersDialog() {
+    // Generate complete adapter list for display
+    const portNameFormat = this.node.port_name_format || 'Ethernet{0}';
+    const segmentSize = this.node.port_segment_size || 0;
+    const defaultAdapterType = this.node.properties.adapter_type || 'e1000';
+    const adapterCount = this.node.properties.adapters || 0;
+
+    // Get custom adapters from server
+    const serverCustomAdapters = this.node.custom_adapters || [];
+
+    // Build complete adapter list for display
+    const adaptersForDialog: CustomAdapter[] = [];
+
+    for (let i = 0; i < adapterCount; i++) {
+      const customAdapter = serverCustomAdapters.find((adapter) => adapter.adapter_number === i);
+
+      if (customAdapter) {
+        adaptersForDialog.push({
+          adapter_number: customAdapter.adapter_number,
+          adapter_type: customAdapter.adapter_type,
+          port_name: customAdapter.port_name,
+          mac_address: customAdapter.mac_address || '',
+        });
+      } else {
+        // Generate default port name
+        let portName: string;
+        if (segmentSize > 0) {
+          const segment = Math.floor(i / segmentSize);
+          const portInSegment = i % segmentSize;
+          portName = portNameFormat.replace('{0}', String(segment * segmentSize + portInSegment));
+        } else {
+          portName = portNameFormat.replace('{0}', String(i));
+        }
+
+        adaptersForDialog.push({
+          adapter_number: i,
+          adapter_type: defaultAdapterType,
+          port_name: portName,
+          mac_address: '',
+        });
+      }
+    }
+
+    const dialogRef = this.dialog.open(CustomAdaptersComponent, {
+      panelClass: 'custom-adapters-dialog-panel',
+      data: {
+        adapters: adaptersForDialog,
+        networkTypes: this.networkTypes,
+        portNameFormat: portNameFormat,
+        portSegmentSize: segmentSize,
+        defaultAdapterType: defaultAdapterType,
+        currentAdapters: adapterCount,
+      } as CustomAdaptersDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((result: CustomAdaptersDialogResult) => {
+      if (result) {
+        this.node.custom_adapters = result.adapters;
+        if (result.requiredAdapters !== undefined) {
+          this.node.properties.adapters = result.requiredAdapters;
+        }
+        this.cd.markForCheck();
+      }
+    });
   }
 
   onSaveClick() {
