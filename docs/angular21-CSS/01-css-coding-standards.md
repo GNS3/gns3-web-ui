@@ -459,7 +459,7 @@ Before committing code, ensure:
 
 ---
 
-## Audit Results (2026-03-25)
+## Audit Results (2026-03-26)
 
 The following violations of this standard were found in the codebase:
 
@@ -467,19 +467,19 @@ The following violations of this standard were found in the codebase:
 
 | Rule | File | Line(s) | Severity | Status |
 |------|------|---------|----------|--------|
-| No `::ng-deep` | `src/app/components/settings/settings.component.scss` | 60, 274 | High | Pending |
-| No `!important` | `src/app/components/settings/settings.component.scss` | (same as above) | High | Pending |
-| No Custom Colors | `src/app/components/settings/settings.component.scss` | 200 | Medium | Pending |
-| No Custom Colors | `src/app/components/project-map/ai-chat/chat-message-list.component.scss` | 362, 366, 367, 369, 383 | Medium | Pending |
-| No Custom Colors | `src/styles.scss` | 138 | Medium | Pending |
+| No Custom Colors | `src/app/components/project-map/ai-chat/chat-message-list.component.scss` | 362, 366, 367, 369, 383 | Medium | ~~Pending~~ Fixed |
+| No Custom Colors | `src/styles.scss` | 138 | Medium | ~~Pending~~ Fixed |
+| No Custom Colors | `src/app/components/settings/settings.component.scss` | 200 | Medium | ~~Pending~~ Fixed |
+| No `::ng-deep` | `src/app/components/settings/settings.component.scss` | 60, 315 | High | ~~Pending~~ Fixed |
+| No `!important` | `src/app/components/settings/settings.component.scss` | (same as above) | High | ~~Pending~~ Fixed |
 | Selector Issue | `src/app/components/project-map/project-map.component.scss` | 82 | Low | Acceptable |
 
 ### Details
 
-#### 1. settings.component.scss (Lines 60, 274)
+#### 1. settings.component.scss ::ng-deep (Fixed 2026-03-26)
 
 ```scss
-// ❌ VIOLATION: Using ::ng-deep
+// ❌ PREVIOUS VIOLATION: Using ::ng-deep
 ::ng-deep .settings__card {
   .mat-expansion-panel {
     box-shadow: none;
@@ -488,58 +488,41 @@ The following violations of this standard were found in the codebase:
 }
 ```
 
-**Issue**: Using `::ng-deep` to style Angular Material expansion panels inside a settings card.
+**Fix Applied**: Removed `::ng-deep` blocks from `settings.component.scss` and migrated the styles to `src/styles.scss` as global styles. Angular Material's internal DOM (`.mat-expansion-panel`) cannot be styled via component-scoped styles without `::ng-deep`, so these styles must live in the global stylesheet.
 
-**Recommended Fix**: Use `panelClass` on the dialog/mat-expansion-panel and define styles in centralized dialog styles file.
-
-#### 2. settings.component.scss (Line 200)
+#### 2. settings.component.scss hardcoded gradient (Fixed)
 
 ```scss
-// ❌ VIOLATION: Hardcoded colors in gradient
+// ❌ PREVIOUS VIOLATION: Hardcoded colors in gradient
 background: linear-gradient(135deg, #6750A4 0%, #E91E63 50%, #424242 100%);
 ```
 
-**Issue**: Hardcoded color values instead of Material theme variables.
+**Fix Applied**: Now uses `var(--mat-sys-primary)`, `var(--mat-sys-secondary)`, and `var(--mat-sys-surface-variant)`.
 
-**Recommended Fix**: Define theme swatch colors using CSS custom properties or Material theme tokens.
-
-#### 3. chat-message-list.component.scss (Lines 362, 366, 367, 369, 383)
+#### 3. chat-message-list.component.scss hardcoded green (Fixed)
 
 ```scss
-// ❌ VIOLATION: Hardcoded colors
+// ❌ PREVIOUS VIOLATION: Hardcoded colors
 .inline-tool-result {
   border-left: 3px solid #4caf50;
 }
-.inline-tool-result:hover {
-  background: #e8f5e9;
-  border-color: #4caf50;
-  box-shadow: 0 3px 10px #4caf50;
-}
-.inline-tool-result .tool-icon {
-  color: #4caf50;
-}
 ```
 
-**Issue**: Using hardcoded green color (`#4caf50`) instead of Material theme variables.
+**Fix Applied**: Now uses `var(--mat-sys-tertiary)` and related Material theme tokens.
 
-**Recommended Fix**: Use Material theme tokens like `--mat-sys-primary`, `--mat-sys-secondary`, or CSS custom properties.
-
-#### 4. styles.scss (Line 138)
+#### 4. styles.scss hardcoded hover color (Fixed)
 
 ```scss
-// ❌ VIOLATION: Hardcoded color on hover
+// ❌ PREVIOUS VIOLATION: Hardcoded color on hover
 .ethernet_link:hover,
 .serial_link:hover {
-  stroke: #dc3545;  // Hardcoded red
-  stroke-width: 4px;
+  stroke: #dc3545;
 }
 ```
 
-**Issue**: Hardcoded color value in global stylesheet.
+**Fix Applied**: Now uses `var(--mat-sys-error)`.
 
-**Recommended Fix**: Use a Material theme color token or CSS custom property.
-
-#### 5. project-map.component.scss (Line 82)
+#### 5. project-map.component.scss (Acceptable)
 
 ```scss
 // ⚠️ ACCEPTABLE: Selector used to identify link type, not a style value
@@ -563,5 +546,6 @@ path.ethernet_link[stroke="#000000"] {
 | 2.0 | 2026-03-24 | Complete rewrite for Angular Material 21 MD3 Sass Mixin system |
 | 2.1 | 2026-03-25 | Extended ViewEncapsulation.None prohibition to all components |
 | 2.2 | 2026-03-25 | Added audit results section documenting found violations |
+| 2.3 | 2026-03-26 | Updated audit results — all high/medium violations fixed |
 
-**Last Updated**: 2026-03-25
+**Last Updated**: 2026-03-26

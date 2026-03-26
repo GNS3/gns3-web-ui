@@ -163,8 +163,7 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.mat-mdc-menu-p
 // ============================================= */
 .ethernet_link,
 .serial_link {
-  transition: stroke-width 150ms cubic-bezier(0.4, 0, 0.2, 1),
-              stroke 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: stroke-width 150ms cubic-bezier(0.4, 0, 0.2, 1), stroke 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .ethernet_link:hover,
@@ -269,4 +268,66 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.mat-mdc-menu-p
 
 .proccessBar-col {
   margin: auto;
+}
+
+/* =============================================
+// Settings Component Expansion Panel Styles
+// These styles target mat-expansion-panel inside .settings__card
+// Required here because Angular Material internals cannot be styled
+// via component-scoped styles without ::ng-deep
+// ============================================= */
+.settings__card {
+  .mat-expansion-panel {
+    box-shadow: none;
+    border-radius: 0;
+
+    &:first-child {
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+    }
+
+    &:last-child {
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+    }
+
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
+    }
+
+    &.mat-expanded {
+      background: color-mix(in srgb, var(--mat-sys-primary-container) 30%, transparent);
+    }
+  }
+
+  .mat-expansion-panel-header {
+    padding: 16px 24px;
+    height: auto;
+    min-height: 64px;
+
+    &:hover {
+      background: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
+    }
+  }
+
+  .mat-expansion-panel-header-description {
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .mat-expansion-panel-content {
+    padding: 8px 24px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .settings__card {
+    .mat-expansion-panel-header {
+      padding: 12px 16px;
+      min-height: 56px;
+    }
+
+    .mat-expansion-panel-content {
+      padding: 8px 16px 16px;
+    }
+  }
 }
