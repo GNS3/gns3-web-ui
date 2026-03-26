@@ -12,7 +12,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatRadioModule } from '@angular/material/radio';
-import { DeviceDetectorService } from 'ngx-device-detector';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
@@ -35,7 +34,6 @@ export class ScreenshotDialogComponent implements OnInit {
   public dialogRef = inject(MatDialogRef<ScreenshotDialogComponent>);
   private toasterService = inject(ToasterService);
   private formBuilder = inject(UntypedFormBuilder);
-  private deviceService = inject(DeviceDetectorService);
   private cd = inject(ChangeDetectorRef);
 
   nameForm: UntypedFormGroup;
@@ -46,7 +44,7 @@ export class ScreenshotDialogComponent implements OnInit {
     this.nameForm = this.formBuilder.group({
       screenshotName: new UntypedFormControl(`screenshot-${Date.now()}`, [Validators.required]),
     });
-    this.isPngAvailable = this.deviceService.getDeviceInfo().os === 'Windows';
+    this.isPngAvailable = true;
   }
 
   ngOnInit() {

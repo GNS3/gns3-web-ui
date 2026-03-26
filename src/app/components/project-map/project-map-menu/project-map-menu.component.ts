@@ -32,6 +32,7 @@ import { ProjectService } from '@services/project.service';
 import { SymbolService } from '@services/symbol.service';
 import { ThemeService } from '@services/theme.service';
 import { ToolsService } from '@services/tools.service';
+import { ToasterService } from '@services/toaster.service';
 import { Screenshot, ScreenshotDialogComponent } from '../screenshot-dialog/screenshot-dialog.component';
 import { ProjectMapLockConfirmationDialogComponent } from './project-map-lock-confirmation-dialog/project-map-lock-confirmation-dialog.component';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
@@ -67,6 +68,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   private drawingsDataSource = inject(DrawingsDataSource);
   private aiChatStore = inject(AiChatStore);
   private cdr = inject(ChangeDetectorRef);
+  private toaster = inject(ToasterService);
   readonly project = input<Project>(undefined);
   readonly controller = input<Controller>(undefined);
   @Output() aiChatOpened = new EventEmitter<void>();
@@ -139,26 +141,60 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
 
   private async saveImage(screenshotProperties: Screenshot) {
     if (screenshotProperties.filetype === 'png') {
-      let splittedSvg = document.getElementsByTagName('svg')[0].outerHTML.split('image');
-      let i = 1;
+      try {
+        // Get the SVG element and clone it to avoid modifying the original
+        const originalSvg = document.getElementsByTagName('svg')[0];
+        const svgClone = originalSvg.cloneNode(true) as SVGElement;
 
-      while (i < splittedSvg.length) {
-        let splittedImage = splittedSvg[i].split('"');
-        let splittedUrl = splittedImage[1].split('/');
+        // Process any embedded images
+        const images = Array.from(svgClone.getElementsByTagName('image'));
 
-        let elem = await this.symbolService.raw(this.controller(), splittedUrl[7]).toPromise();
-        let splittedElement = elem.split('-->');
-        splittedSvg[i] = splittedElement[1].substring(2);
-        i += 2;
+        for (let i = 0; i < images.length; i++) {
+          const image = images[i];
+          const href = image.getAttribute('href') || image.getAttribute('xlink:href');
+          if (!href) continue;
+
+          try {
+            let svgContent: string;
+
+            // Check if it's a blob URL (cached custom symbols)
+            if (href.startsWith('blob:')) {
+              // Fetch the blob content directly
+              const response = await fetch(href);
+              const blob = await response.blob();
+              svgContent = await blob.text();
+            } else {
+              // Server-hosted symbol URL
+              const urlParts = href.split('/symbols/');
+              if (urlParts.length > 1) {
+                const symbolId = urlParts[urlParts.length - 1].replace('/raw', '');
+                const rawSvg = await this.symbolService.raw(this.controller(), symbolId).toPromise();
+                if (rawSvg) {
+                  svgContent = rawSvg.includes('-->') ? rawSvg.split('-->')[1].trim() : rawSvg.trim();
+                }
+              }
+            }
+
+            if (svgContent) {
+              // Parse the SVG content and import it
+              const parser = new DOMParser();
+              const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
+              const importedSvg = svgDoc.documentElement;
+              const importedNode = svgClone.ownerDocument.importNode(importedSvg, true);
+              image.parentNode.replaceChild(importedNode, image);
+            }
+          } catch (err) {
+            console.warn(`Failed to process embedded image: ${href}`, err);
+          }
+        }
+
+        // Save as PNG
+        svg.saveSvgAsPng(svgClone, `${screenshotProperties.name}.png`);
+      } catch (err) {
+        console.error('Failed to save PNG:', err);
+        this.toaster.error('Failed to save screenshot as PNG');
+        throw err;
       }
-      let svgString = splittedSvg.join();
-
-      // Use DOMParser instead of innerHTML to avoid XSS warnings
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(svgString, 'image/svg+xml');
-      const element = doc.documentElement;
-
-      svg.saveSvgAsPng(element, `${screenshotProperties.name}.png`);
     } else {
       var svg_el = select('svg').attr('version', 1.1).attr('xmlns', 'http://www.w3.org/2000/svg').node();
       downloadSvg(select('svg').node(), `${screenshotProperties.name}`);
