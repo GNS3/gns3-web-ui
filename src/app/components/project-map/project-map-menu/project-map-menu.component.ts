@@ -128,7 +128,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
 
   public takeScreenshot() {
     const dialogRef = this.dialog.open(ScreenshotDialogComponent, {
-      width: '400px',
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
       autoFocus: false,
       disableClose: true,
     });
