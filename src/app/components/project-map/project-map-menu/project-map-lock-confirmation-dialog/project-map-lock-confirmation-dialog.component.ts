@@ -1,13 +1,12 @@
 import { ChangeDetectionStrategy, Component, Inject, OnInit, inject } from '@angular/core';
 import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-project-map-lock-confirmation-dialog',
   templateUrl: './project-map-lock-confirmation-dialog.component.html',
   styleUrl: './project-map-lock-confirmation-dialog.component.scss',
-  imports: [MatDialogModule, MatButtonModule, MatDividerModule],
+  imports: [MatDialogModule, MatButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectMapLockConfirmationDialogComponent implements OnInit {
