@@ -82,15 +82,19 @@ export class NodesMenuComponent {
     });
 
     dialogRef.afterClosed().subscribe((confirmAction_result) => {
-      if (confirmAction_result.isAction && confirmAction_result.actionType == 'start') {
+      if (!confirmAction_result || !confirmAction_result.isAction) {
+        return;
+      }
+
+      if (confirmAction_result.actionType == 'start') {
         this.startNodes();
-      } else if (confirmAction_result.isAction && confirmAction_result.actionType == 'stop') {
+      } else if (confirmAction_result.actionType == 'stop') {
         this.stopNodes();
-      } else if (confirmAction_result.isAction && confirmAction_result.actionType == 'reload') {
+      } else if (confirmAction_result.actionType == 'reload') {
         this.reloadNodes();
-      } else if (confirmAction_result.isAction && confirmAction_result.actionType == 'suspend') {
+      } else if (confirmAction_result.actionType == 'suspend') {
         this.suspendNodes();
-      } else {
+      } else if (confirmAction_result.actionType == 'reset') {
         this.resetNodes();
       }
     });
