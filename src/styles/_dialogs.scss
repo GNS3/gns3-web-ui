@@ -3,7 +3,175 @@
  *
  * All Material dialog styles are centralized here.
  * Use panelClass to target specific dialogs.
+ *
+ * Architecture:
+ * 1. Base styles (.base-dialog-panel) - Common dialog styles
+ * 2. Specific styles (.configurator-dialog-panel, etc.) - Component-specific overrides
+ * 3. Usage: panelClass: ['base-dialog-panel', 'specific-dialog-panel']
  */
+
+/* =============================================
+// Base Dialog Styles
+// ============================================= */
+.base-dialog-panel {
+  /* Dialog container - width and max height */
+  --mat-dialog-container-max-width: 800px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 800px;
+    max-width: 800px;
+    max-height: 80vh;
+
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+      box-shadow: 0 12px 40px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
+        0 4px 12px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
+    }
+  }
+
+  /* Dialog title - common typography */
+  h1[mat-dialog-title],
+  h2[mat-dialog-title] {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    margin-bottom: 24px;
+    padding: 24px 24px 0 24px;
+  }
+
+  /* Dialog content - common spacing */
+  .mat-mdc-dialog-content {
+    padding: 16px 24px 0 24px;
+    max-height: calc(80vh - 140px);
+    overflow-y: auto;
+  }
+
+  /* Dialog actions - common button layout */
+  .mat-mdc-dialog-actions {
+    padding: 16px 24px;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  /* Form fields - common width */
+  .form-field {
+    width: 100%;
+    margin-bottom: 4px;
+  }
+
+  /* Two-column form layout */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 24px; /* row-gap column-gap */
+  }
+
+  .form-grid__full {
+    grid-column: 1 / -1; /* Span full width */
+  }
+
+  /* Checkboxes - common spacing */
+  mat-checkbox {
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  /* Cards - common spacing */
+  mat-card {
+    margin-bottom: 16px;
+  }
+
+  mat-card-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+  }
+
+  mat-card-subtitle {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  /* Tab content - add spacing below tab labels */
+  mat-tab-group {
+    .mat-mdc-tab-body-wrapper {
+      .mat-mdc-tab-body {
+        .mat-mdc-tab-body-content {
+          padding-top: 16px;
+        }
+      }
+    }
+  }
+
+  /* HDD create button section */
+  .hdd-create-section {
+    margin-bottom: 16px;
+  }
+
+  /* Custom adapters button section - centered */
+  .custom-adapters-section {
+    display: flex;
+    justify-content: center;
+    margin: 16px 0;
+  }
+
+  /* Disk cards grid layout - two columns */
+  .disk-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  /* Card stack - single column layout */
+  .card-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .disk-card {
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 12px;
+    padding: 16px;
+    background: var(--mat-sys-surface-container-low);
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: var(--mat-sys-surface-container);
+    }
+  }
+
+  .disk-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .disk-card__title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    margin: 0;
+  }
+
+  .disk-card__badge {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+    font-weight: 500;
+  }
+
+  .disk-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
 
 /* =============================================
 // Confirmation Dialog
@@ -238,15 +406,49 @@
 
 /* =============================================
 // Configurator Dialog
+// Inherits base styles and adds specific overrides
 // ============================================= */
 .configurator-dialog-panel {
-  .mat-mdc-dialog-container {
-    max-height: 80vh;
+  /* Max height inherited from .base-dialog-panel (80vh) */
+
+  /* Modal form container padding */
+  .modal-form-container {
+    padding: 16px 24px;
   }
 
-  .mat-mdc-dialog-content {
-    overflow-y: auto;
-    max-height: calc(80vh - 140px);
+  /* Select dropdown styling */
+  .select {
+    width: 100%;
+  }
+
+  /* Tags field */
+  .tags-field {
+    width: 100%;
+  }
+
+  /* File upload button */
+  .file-button {
+    width: 18%;
+  }
+
+  .file-name-form-field {
+    padding-left: 2%;
+    width: 80%;
+  }
+
+  /* Create button */
+  .create-button {
+    width: 100%;
+  }
+
+  /* Hidden file input */
+  .nonvisible {
+    display: none;
+  }
+
+  /* Radio button spacing */
+  mat-radio-button {
+    margin-right: 8px;
   }
 }
 

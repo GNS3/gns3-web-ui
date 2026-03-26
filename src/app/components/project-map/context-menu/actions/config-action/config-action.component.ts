@@ -53,7 +53,11 @@ export class ConfigActionComponent {
     } else if (node.node_type === 'iou') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogIouComponent, this.conf);
     } else if (node.node_type === 'qemu') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogQemuComponent, this.conf);
+      // QEMU uses base styles + specific overrides
+      this.dialogRef = this.dialog.open(ConfiguratorDialogQemuComponent, {
+        ...this.conf,
+        panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+      });
     } else if (node.node_type === 'virtualbox') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogVirtualBoxComponent, this.conf);
     } else if (node.node_type === 'vmware') {

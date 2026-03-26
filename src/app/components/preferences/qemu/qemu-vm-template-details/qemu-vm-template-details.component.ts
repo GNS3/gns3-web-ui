@@ -18,7 +18,11 @@ import { QemuConfigurationService } from '@services/qemu-configuration.service';
 import { QemuService } from '@services/qemu.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
-import { CustomAdaptersComponent, CustomAdaptersDialogData, CustomAdaptersDialogResult } from '../../common/custom-adapters/custom-adapters.component';
+import {
+  CustomAdaptersComponent,
+  CustomAdaptersDialogData,
+  CustomAdaptersDialogResult,
+} from '../../common/custom-adapters/custom-adapters.component';
 import { SymbolsMenuComponent } from '@components/preferences/common/symbols-menu/symbols-menu.component';
 
 @Component({
@@ -258,7 +262,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
 
     for (let i = 0; i < adapterCount; i++) {
       // Check if server has custom config for this adapter_number
-      const customAdapter = serverCustomAdapters.find(adapter => adapter.adapter_number === i);
+      const customAdapter = serverCustomAdapters.find((adapter) => adapter.adapter_number === i);
 
       if (customAdapter) {
         // Use server's custom configuration
@@ -386,7 +390,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
       },
       error: (error) => {
         this.toasterService.error('Failed to save template: ' + (error.message || 'Unknown error'));
-      }
+      },
     });
   }
 

@@ -28,14 +28,18 @@ import { NodeService } from '@services/node.service';
 import { QemuConfigurationService } from '@services/qemu-configuration.service';
 import { QemuService } from '@services/qemu.service';
 import { ToasterService } from '@services/toaster.service';
-import { CustomAdaptersComponent, CustomAdaptersDialogData, CustomAdaptersDialogResult } from '@components/preferences/common/custom-adapters/custom-adapters.component';
+import {
+  CustomAdaptersComponent,
+  CustomAdaptersDialogData,
+  CustomAdaptersDialogResult,
+} from '@components/preferences/common/custom-adapters/custom-adapters.component';
 import { QemuImageCreatorComponent } from './qemu-image-creator/qemu-image-creator.component';
 
 @Component({
   standalone: true,
   selector: 'app-configurator-qemu',
   templateUrl: './configurator-qemu.component.html',
-  styleUrls: ['../configurator.component.scss'],
+  // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -90,10 +94,45 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     this.generalSettingsForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
       ram: new UntypedFormControl('', Validators.required),
+      platform: new UntypedFormControl(''),
+      cpus: new UntypedFormControl(''),
+      boot_priority: new UntypedFormControl(''),
+      on_close: new UntypedFormControl(''),
+      console_type: new UntypedFormControl(''),
+      aux_type: new UntypedFormControl(''),
+      console_auto_start: new UntypedFormControl(false),
+      // HDD fields
+      hda_disk_image: new UntypedFormControl(''),
+      hda_disk_interface: new UntypedFormControl(''),
+      hdb_disk_image: new UntypedFormControl(''),
+      hdb_disk_interface: new UntypedFormControl(''),
+      hdc_disk_image: new UntypedFormControl(''),
+      hdc_disk_interface: new UntypedFormControl(''),
+      hdd_disk_image: new UntypedFormControl(''),
+      hdd_disk_interface: new UntypedFormControl(''),
+      // CD/DVD
+      cdrom_image: new UntypedFormControl(''),
+      // Advanced
+      initrd: new UntypedFormControl(''),
+      kernel_image: new UntypedFormControl(''),
+      kernel_command_line: new UntypedFormControl(''),
+      bios_image: new UntypedFormControl(''),
+      activateCpuThrottling: new UntypedFormControl(false),
+      cpu_throttling: new UntypedFormControl(''),
+      process_priority: new UntypedFormControl(''),
+      qemu_path: new UntypedFormControl(''),
+      options: new UntypedFormControl(''),
+      tpm: new UntypedFormControl(false),
+      uefi: new UntypedFormControl(false),
+      // Usage
+      usage: new UntypedFormControl(''),
     });
 
     this.networkSettingsForm = this.formBuilder.group({
+      adapters: new UntypedFormControl(''),
       mac_address: new UntypedFormControl('', Validators.pattern(this.qemuConfigurationService.getMacAddrRegex())),
+      adapter_type: new UntypedFormControl(''),
+      replicate_network_connection_state: new UntypedFormControl(false),
     });
   }
 
@@ -105,7 +144,47 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
       // Update form values
       this.generalSettingsForm.patchValue({
         name: node.name,
-        ram: node.properties.ram,
+        ram: node.properties.ram || '',
+        platform: node.properties.platform || '',
+        cpus: node.properties.cpus || '',
+        boot_priority: node.properties.boot_priority || '',
+        on_close: node.properties.on_close || '',
+        console_type: node.console_type || '',
+        aux_type: node.properties.aux_type || '',
+        console_auto_start: node.console_auto_start || false,
+        // HDD fields
+        hda_disk_image: node.properties.hda_disk_image || '',
+        hda_disk_interface: node.properties.hda_disk_interface || '',
+        hdb_disk_image: node.properties.hdb_disk_image || '',
+        hdb_disk_interface: node.properties.hdb_disk_interface || '',
+        hdc_disk_image: node.properties.hdc_disk_image || '',
+        hdc_disk_interface: node.properties.hdc_disk_interface || '',
+        hdd_disk_image: node.properties.hdd_disk_image || '',
+        hdd_disk_interface: node.properties.hdd_disk_interface || '',
+        // CD/DVD
+        cdrom_image: node.properties.cdrom_image || '',
+        // Advanced
+        initrd: node.properties.initrd || '',
+        kernel_image: node.properties.kernel_image || '',
+        kernel_command_line: node.properties.kernel_command_line || '',
+        bios_image: node.properties.bios_image || '',
+        activateCpuThrottling: false,
+        cpu_throttling: node.properties.cpu_throttling || '',
+        process_priority: node.properties.process_priority || '',
+        qemu_path: node.properties.qemu_path || '',
+        options: node.properties.options || '',
+        tpm: node.properties.tpm || false,
+        uefi: node.properties.uefi || false,
+        // Usage
+        usage: node.properties.usage || '',
+      });
+
+      // Update network settings form
+      this.networkSettingsForm.patchValue({
+        adapters: node.properties.adapters || '',
+        mac_address: node.properties.mac_address || '',
+        adapter_type: node.properties.adapter_type || '',
+        replicate_network_connection_state: node.properties.replicate_network_connection_state || false,
       });
 
       if (!this.node.tags) {
@@ -222,15 +301,52 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
 
   onSaveClick() {
     if (this.generalSettingsForm.valid && this.networkSettingsForm.valid) {
-      // this.node.custom_adapters = [];
-      // this.customAdapters.adapters.forEach((n) => {
-      //   this.node.custom_adapters.push({
-      //     adapter_number: n.adapter_number,
-      //     adapter_type: n.adapter_type,
-      //   });
-      // });
-      //
-      // this.node.properties.adapters = this.node.custom_adapters.length;
+      // Merge form values back into node
+      const formValues = { ...this.generalSettingsForm.value };
+      const networkFormValues = { ...this.networkSettingsForm.value };
+
+      // Update general settings
+      this.node.name = formValues.name;
+      this.node.properties.ram = formValues.ram;
+      this.node.properties.platform = formValues.platform;
+      this.node.properties.cpus = formValues.cpus;
+      this.node.properties.boot_priority = formValues.boot_priority;
+      this.node.properties.on_close = formValues.on_close;
+      this.node.console_type = formValues.console_type;
+      this.node.properties.aux_type = formValues.aux_type;
+      this.node.console_auto_start = formValues.console_auto_start;
+
+      // Update HDD settings
+      this.node.properties.hda_disk_image = formValues.hda_disk_image;
+      this.node.properties.hda_disk_interface = formValues.hda_disk_interface;
+      this.node.properties.hdb_disk_image = formValues.hdb_disk_image;
+      this.node.properties.hdb_disk_interface = formValues.hdb_disk_interface;
+      this.node.properties.hdc_disk_image = formValues.hdc_disk_image;
+      this.node.properties.hdc_disk_interface = formValues.hdc_disk_interface;
+      this.node.properties.hdd_disk_image = formValues.hdd_disk_image;
+      this.node.properties.hdd_disk_interface = formValues.hdd_disk_interface;
+
+      // Update CD/DVD
+      this.node.properties.cdrom_image = formValues.cdrom_image;
+
+      // Update Advanced settings
+      this.node.properties.initrd = formValues.initrd;
+      this.node.properties.kernel_image = formValues.kernel_image;
+      this.node.properties.kernel_command_line = formValues.kernel_command_line;
+      this.node.properties.bios_image = formValues.bios_image;
+      this.node.properties.cpu_throttling = formValues.cpu_throttling;
+      this.node.properties.process_priority = formValues.process_priority;
+      this.node.properties.qemu_path = formValues.qemu_path;
+      this.node.properties.options = formValues.options;
+      this.node.properties.tpm = formValues.tpm;
+      this.node.properties.uefi = formValues.uefi;
+      this.node.properties.usage = formValues.usage;
+
+      // Update network settings
+      this.node.properties.adapters = networkFormValues.adapters;
+      this.node.properties.mac_address = networkFormValues.mac_address;
+      this.node.properties.adapter_type = networkFormValues.adapter_type;
+      this.node.properties.replicate_network_connection_state = networkFormValues.replicate_network_connection_state;
 
       this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);

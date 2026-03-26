@@ -1,6 +1,16 @@
 /**
  * GNS3 Configurator Component Styles
  * Using MD3 CSS variables
+ *
+ * MIGRATION NOTICE: These styles have been migrated to src/styles/_dialogs.scss
+ * under the .configurator-dialog-panel class for centralized dialog styling.
+ *
+ * Components should:
+ * 1. Remove styleUrls: ['../configurator.component.scss']
+ * 2. Add comment: // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
+ * 3. Ensure panelClass: 'configurator-dialog-panel' is used when opening dialog
+ *
+ * This file is kept for backward compatibility during migration.
  */
 
 table {
