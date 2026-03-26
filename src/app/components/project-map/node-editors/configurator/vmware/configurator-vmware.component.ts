@@ -78,10 +78,16 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
     this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = node.name;
-      this.getConfiguration();
+
+      // Update form values
+      this.generalSettingsForm.patchValue({
+        name: node.name,
+      });
+
       if (!this.node.tags) {
         this.node.tags = [];
       }
+      this.getConfiguration();
       this.cd.markForCheck();
     });
   }

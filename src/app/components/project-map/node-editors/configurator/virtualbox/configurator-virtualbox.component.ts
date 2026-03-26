@@ -79,10 +79,17 @@ export class ConfiguratorDialogVirtualBoxComponent implements OnInit {
     this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = node.name;
-      this.getConfiguration();
+
+      // Update form values
+      this.generalSettingsForm.patchValue({
+        name: node.name,
+        ram: node.properties.ram,
+      });
+
       if (!this.node.tags) {
         this.node.tags = [];
       }
+      this.getConfiguration();
       this.cd.markForCheck();
     });
   }
