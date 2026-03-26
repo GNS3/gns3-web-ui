@@ -70,6 +70,12 @@ export class SymbolService {
     return this.httpController.post(controller, `/symbols/${symbolName}/raw`, symbol);
   }
 
+  delete(controller: Controller, symbolId: string) {
+    this.cache = null;
+    const encoded_uri = encodeURI(symbolId);
+    return this.httpController.delete(controller, `/symbols/${encoded_uri}`);
+  }
+
   load(controller: Controller): Observable<Symbol[]> {
     return this.httpController.get<Symbol[]>(controller, '/symbols');
   }

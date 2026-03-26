@@ -6,7 +6,7 @@
   </mat-radio-group>
   <input
     type="file"
-    accept=".svg, .bmp, .jpeg, .jpg, .gif, .png"
+    accept=".svg"
     class="non-visible"
     #file
     (change)="uploadSymbolFile($event)"
@@ -21,7 +21,17 @@
     <input matInput placeholder="Search by filename" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }" />
   </mat-form-field>
 </form>
-<div class="symbolsWrapper">
+<div class="zoom-controls">
+  <button mat-icon-button (click)="zoomOut()" [disabled]="zoomLevel() <= 0.5" matTooltip="Zoom out">
+    <mat-icon>remove</mat-icon>
+  </button>
+  <span class="zoom-level">{{ Math.round(zoomLevel() * 100) }}%</span>
+  <button mat-icon-button (click)="zoomIn()" [disabled]="zoomLevel() >= 2.0" matTooltip="Zoom in">
+    <mat-icon>add</mat-icon>
+  </button>
+  <button mat-button (click)="resetZoom()" [disabled]="zoomLevel() === 1.0">Reset</button>
+</div>
+<div class="symbolsWrapper" [style.--zoom-level]="zoomLevel()">
   <mat-accordion multi>
     @for (group of symbolGroups; track group.theme) {
     <mat-expansion-panel [expanded]="isThemeExpanded(group.theme)">
@@ -34,18 +44,29 @@
       <div class="wrapper">
         @for (symbol of group.symbols | filenamefilter: searchText; track symbol.symbol_id) {
         <div class="buttonWrapper">
-          <button
-            [ngClass]="{ buttonSelected: isSelected === symbol.symbol_id }"
-            class="button"
-            (click)="setSelected(symbol.symbol_id)"
-          >
-            <img
-              lazyimg
-              [ngClass]="{ imageSelected: isSelected === symbol.symbol_id }"
-              class="image"
-              [src]="getImageSourceForTemplate(symbol.symbol_id)"
-            />
-          </button>
+          <div class="symbol-item">
+            <button
+              [ngClass]="{ buttonSelected: isSelected === symbol.symbol_id }"
+              class="button"
+              (click)="setSelected(symbol.symbol_id)"
+            >
+              <img
+                lazyimg
+                [ngClass]="{ imageSelected: isSelected === symbol.symbol_id }"
+                class="image"
+                [src]="getImageSourceForTemplate(symbol.symbol_id)"
+              />
+            </button>
+            @if (canDeleteSymbol(symbol)) {
+            <button
+              mat-icon-button
+              class="delete-button"
+              (click)="deleteSymbol(symbol, $event)"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+            }
+          </div>
         </div>
         }
       </div>

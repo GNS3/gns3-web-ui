@@ -16,11 +16,16 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatDialog } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { environment } from 'environments/environment';
 import { Controller } from '@models/controller';
 import { Symbol } from '@models/symbol';
 import { SymbolService } from '@services/symbol.service';
 import { SearchFilter } from '@filters/searchFilter.pipe';
+import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
+import type { ConfirmationDialogData } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 
 interface SymbolGroup {
   theme: string;
@@ -41,12 +46,15 @@ interface SymbolGroup {
     MatInputModule,
     MatRadioModule,
     MatExpansionModule,
+    MatDialogModule,
+    MatTooltipModule,
     SearchFilter,
   ],
 })
 export class SymbolsComponent implements OnInit {
   private symbolService = inject(SymbolService);
   private cd = inject(ChangeDetectorRef);
+  private dialog = inject(MatDialog);
 
   readonly controller = input<Controller>(undefined);
   readonly symbol = input<string>(undefined);
@@ -58,6 +66,9 @@ export class SymbolsComponent implements OnInit {
   isSelected: string = '';
   searchText: string = '';
   expandedThemes = signal<string[]>([]);
+  zoomLevel = signal(1.0);
+
+  readonly Math = Math;
 
   ngOnInit() {
     this.isSelected = this.symbol();
@@ -117,37 +128,73 @@ export class SymbolsComponent implements OnInit {
   }
 
   public uploadSymbolFile(event) {
-    this.readSymbolFile(event.target);
+    this.readSvgFile(event.target);
   }
 
-  private readSymbolFile(symbolInput) {
-    let file: File = symbolInput.files[0];
-    let fileName = symbolInput.files[0].name;
-    let fileReader: FileReader = new FileReader();
-    let imageToUpload = new Image();
+  private readSvgFile(symbolInput: HTMLInputElement) {
+    const file: File = symbolInput.files![0];
+    const fileName = file.name;
+    const fileReader: FileReader = new FileReader();
 
     fileReader.onloadend = () => {
-      let image = fileReader.result;
-      let svg = this.createSvgFileForImage(image, imageToUpload);
-      this.symbolService.add(this.controller(), fileName, svg).subscribe(() => {
+      const svgContent = fileReader.result as string;
+      this.symbolService.add(this.controller(), fileName, svgContent).subscribe(() => {
         this.loadSymbols();
       });
     };
 
-    imageToUpload.onload = () => {
-      fileReader.readAsDataURL(file);
-    };
-    imageToUpload.src = window.URL.createObjectURL(file);
-  }
-
-  private createSvgFileForImage(image: string | ArrayBuffer, imageToUpload: HTMLImageElement) {
-    return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" height="${imageToUpload.height}"
-                width="${imageToUpload.width}">\n<image height="${imageToUpload.height}" width="${imageToUpload.width}" xlink:href="${image}"/>\n</svg>`;
+    fileReader.readAsText(file);
   }
 
   getImageSourceForTemplate(symbol: string) {
     return `${this.controller().protocol}//${this.controller().host}:${this.controller().port}/${
       environment.current_version
     }/symbols/${symbol}/raw`;
+  }
+
+  canDeleteSymbol(symbol: Symbol): boolean {
+    return !symbol.builtin;
+  }
+
+  deleteSymbol(symbol: Symbol, event: Event) {
+    event.stopPropagation();
+
+    const dialogData: ConfirmationDialogData = {
+      title: 'Delete Symbol',
+      message: `Are you sure you want to delete the symbol "${symbol.symbol_id}"?`,
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+    };
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      data: dialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.symbolService.delete(this.controller(), symbol.symbol_id).subscribe(() => {
+          this.loadSymbols();
+        });
+      }
+    });
+  }
+
+  zoomIn() {
+    const current = this.zoomLevel();
+    if (current < 2.0) {
+      this.zoomLevel.set(Math.min(2.0, current + 0.1));
+    }
+  }
+
+  zoomOut() {
+    const current = this.zoomLevel();
+    if (current > 0.5) {
+      this.zoomLevel.set(Math.max(0.5, current - 0.1));
+    }
+  }
+
+  resetZoom() {
+    this.zoomLevel.set(1.0);
   }
 }

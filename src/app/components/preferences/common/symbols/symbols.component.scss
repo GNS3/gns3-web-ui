@@ -7,29 +7,54 @@
 
 .symbolsWrapper {
   overflow: visible;
+  --zoom-level: 1;
+}
+
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 8px;
+  background-color: var(--mat-sys-surface-container);
+  border-radius: 8px;
+
+  .zoom-level {
+    min-width: 50px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+  }
 }
 
 .wrapper {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
-  gap: 4px;
+  grid-template-columns: repeat(auto-fill, minmax(calc(60px * var(--zoom-level)), 1fr));
+  gap: calc(4px * var(--zoom-level));
+  transition: gap 0.2s ease;
 }
 
 .buttonWrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 1;
   outline: none;
+  padding: calc(4px * var(--zoom-level));
+}
+
+.symbol-item {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 .button {
   background: border-box;
   border-width: 0;
   outline: none;
-  padding: 4px;
   width: 100%;
   height: 100%;
+  padding: calc(4px * var(--zoom-level));
 }
 
 .buttonSelected {
@@ -37,14 +62,39 @@
 }
 
 .image {
-  width: 45px;
-  height: 45px;
+  width: calc(45px * var(--zoom-level));
+  height: calc(45px * var(--zoom-level));
   object-fit: contain;
 }
 
 .imageSelected {
   outline: 2px solid var(--mat-sys-primary);
   outline-offset: 1px;
+}
+
+.delete-button {
+  position: absolute;
+  top: calc(-4px * var(--zoom-level));
+  right: calc(-4px * var(--zoom-level));
+  width: calc(20px * var(--zoom-level));
+  height: calc(20px * var(--zoom-level));
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  transition: transform 0.2s ease;
+
+  mat-icon {
+    font-size: calc(16px * var(--zoom-level));
+    width: auto;
+    height: auto;
+  }
+
+  &:hover {
+    transform: scale(1.2);
+    background-color: transparent;
+  }
 }
 
 .menu {
