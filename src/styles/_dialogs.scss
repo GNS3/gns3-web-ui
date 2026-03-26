@@ -76,25 +76,20 @@
 
   /* Add adapter row with note */
   .add-adapter-row {
-    display: flex;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: auto 1fr;
     gap: 16px;
+    align-items: start;
     margin-top: 16px;
   }
 
-  /* Transparent info note table for wrapping note text */
-  .info-note-table {
+  /* Info note text for compact inline display */
+  .info-note-text {
     flex: 1;
-    border-collapse: collapse;
-
-    td {
-      border: 1px solid transparent;
-      background: var(--mat-sys-surface-container-high);
-      padding: 8px 12px;
-      border-radius: 8px;
-      font-size: 12px;
-      color: var(--mat-sys-on-surface-variant);
-    }
+    font-size: 12px;
+    color: var(--mat-sys-on-surface-variant);
+    line-height: 1.4;
+    padding-top: 6px;
   }
 
   mat-card-title {
@@ -401,6 +396,24 @@
   .mat-mdc-dialog-content {
     max-height: 600px;
     overflow-y: auto;
+  }
+
+  /* Add adapter row with note */
+  .add-adapter-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    align-items: start;
+    margin-top: 16px;
+  }
+
+  /* Info note text for compact inline display */
+  .info-note-text {
+    flex: 1;
+    font-size: 12px;
+    color: var(--mat-sys-on-surface-variant);
+    line-height: 1.4;
+    padding-top: 6px;
   }
 }
 

@@ -91,6 +91,8 @@
 }
 
 .add-btn {
+  flex-shrink: 0;
+  width: auto;
   margin-top: 12px;
   height: 48px;
   border-radius: 12px;
