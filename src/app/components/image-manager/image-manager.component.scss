@@ -16,7 +16,7 @@
 // Header
 // ============================================= */
 .image-manager__header {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 32px 20px 16px;
   display: flex;
@@ -63,7 +63,7 @@
 // Content
 // ============================================= */
 .image-manager__content {
-  max-width: 800px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px 20px;
   animation: fadeInSlideIn 0.4s ease-out 0.1s both;
@@ -123,6 +123,11 @@
 
 .image-manager__row-highlight {
   animation: row-flash 1.8s ease;
+}
+
+mat-row:hover {
+  background-color: color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent);
+  cursor: pointer;
 }
 
 /* =============================================

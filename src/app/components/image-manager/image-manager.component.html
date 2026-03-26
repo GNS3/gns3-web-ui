@@ -125,6 +125,7 @@
         <mat-row
           *matRowDef="let row; columns: displayedColumns()"
           [class.image-manager__row-highlight]="isHighlighted(row)"
+          (click)="onRowCheckboxClick($event, row)"
         ></mat-row>
       </mat-table>
       <mat-paginator [pageSizeOptions]="pageSizeOptions" showFirstLastButtons> </mat-paginator>
