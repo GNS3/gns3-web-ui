@@ -185,12 +185,12 @@ export class CustomAdaptersComponent {
       }
     }
 
-    // Calculate required adapters based on the highest adapter_number
-    const maxAdapterNumber = this.adapters.length > 0 ? Math.max(...this.adapters.map((a) => a.adapter_number)) : -1;
+    // Calculate required adapters based on the current adapter count
+    const requiredAdapters = this.adapters.length;
 
     const result: CustomAdaptersDialogResult = {
       adapters: customAdapters, // Only non-default adapters
-      requiredAdapters: maxAdapterNumber + 1, // Need at least maxAdapterNumber + 1 adapters
+      requiredAdapters: requiredAdapters,
     };
 
     this.dialogRef.close(result);
