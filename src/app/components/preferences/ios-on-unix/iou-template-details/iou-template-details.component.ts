@@ -75,6 +75,11 @@ export class IouTemplateDetailsComponent implements OnInit {
   usage = model('');
   tags = model<string[]>([]);
 
+  // Section collapse states
+  generalSettingsExpanded = model(true);
+  networkExpanded = model(true);
+  usageExpanded = model(true);
+
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
@@ -184,6 +189,20 @@ export class IouTemplateDetailsComponent implements OnInit {
       const newTags = [...currentTags];
       newTags.splice(index, 1);
       this.tags.set(newTags);
+    }
+  }
+
+  toggleSection(section: string): void {
+    switch (section) {
+      case 'general':
+        this.generalSettingsExpanded.set(!this.generalSettingsExpanded());
+        break;
+      case 'network':
+        this.networkExpanded.set(!this.networkExpanded());
+        break;
+      case 'usage':
+        this.usageExpanded.set(!this.usageExpanded());
+        break;
     }
   }
 }
