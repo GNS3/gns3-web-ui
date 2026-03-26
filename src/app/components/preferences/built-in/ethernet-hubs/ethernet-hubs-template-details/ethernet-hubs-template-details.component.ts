@@ -22,7 +22,7 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ethernet-hubs-template-details',
   templateUrl: './ethernet-hubs-template-details.component.html',
-  styleUrl: './ethernet-hubs-template-details.component.scss',
+  styleUrls: ['./ethernet-hubs-template-details.component.scss', '../../../preferences.component.scss'],
   imports: [
     CommonModule,
     FormsModule,
@@ -60,6 +60,10 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
   numberOfPorts = model(0);
   tags = model<string[]>([]);
   usage = model('');
+
+  // Section collapse states
+  generalSettingsExpanded = model(false);
+  usageExpanded = model(false);
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
@@ -153,6 +157,17 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
       const newTags = [...currentTags];
       newTags.splice(index, 1);
       this.tags.set(newTags);
+    }
+  }
+
+  toggleSection(section: string): void {
+    switch (section) {
+      case 'general':
+        this.generalSettingsExpanded.set(!this.generalSettingsExpanded());
+        break;
+      case 'usage':
+        this.usageExpanded.set(!this.usageExpanded());
+        break;
     }
   }
 }

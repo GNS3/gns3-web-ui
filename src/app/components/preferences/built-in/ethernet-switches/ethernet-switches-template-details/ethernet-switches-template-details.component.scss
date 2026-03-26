@@ -1,7 +1,7 @@
 /**
  * GNS3 Ethernet Switch Template Details Component Styles
  * BEM naming applied, Material theme variables used
- * Design language unified with management pages
+ * Design language unified with cloud-nodes template details
  */
 
 :host {
@@ -74,11 +74,37 @@
   flex-direction: column;
 }
 
+.ethernet-switch-details__section-header {
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 5%, transparent);
+  }
+}
+
+.ethernet-switch-details__section-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.ethernet-switch-details__expand-icon {
+  color: var(--mat-sys-on-surface-variant);
+  transition: transform 0.2s ease;
+}
+
 .ethernet-switch-details__form {
-  padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 0 24px 24px;
 }
 
 .ethernet-switch-details__field {
@@ -98,15 +124,6 @@
 .ethernet-switch-details__symbol-btn {
   margin-top: 4px;
   height: 48px;
-}
-
-.ethernet-switch-details__section-title {
-  padding: 16px 24px;
-  margin: 0;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--mat-sys-on-surface-variant);
-  border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
 }
 
 /* =============================================
@@ -172,8 +189,12 @@
     padding: 0 16px 16px;
   }
 
+  .ethernet-switch-details__section-header {
+    padding: 12px 16px;
+  }
+
   .ethernet-switch-details__form {
-    padding: 16px;
+    padding: 0 16px 16px;
   }
 
   .ethernet-switch-details__symbol-row {

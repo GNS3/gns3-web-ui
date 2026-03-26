@@ -1,7 +1,7 @@
 /**
  * GNS3 Ethernet Hub Template Details Component Styles
  * BEM naming applied, Material theme variables used
- * Design language unified with management pages
+ * Design language unified with cloud-nodes template details
  */
 
 :host {
@@ -69,13 +69,40 @@
   overflow: hidden;
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
     0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  margin-bottom: 16px;
+}
+
+.ethernet-hub-details__section-header {
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 5%, transparent);
+  }
+}
+
+.ethernet-hub-details__section-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.ethernet-hub-details__expand-icon {
+  color: var(--mat-sys-on-surface-variant);
+  transition: transform 0.2s ease;
 }
 
 .ethernet-hub-details__form {
-  padding: 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 0 24px 24px;
 }
 
 .ethernet-hub-details__field {
@@ -84,15 +111,6 @@
 
 .ethernet-hub-details__field--flex {
   flex: 1;
-}
-
-.ethernet-hub-details__section-title {
-  padding: 16px 24px;
-  margin: 0;
-  font-size: 16px;
-  font-weight: 500;
-  color: var(--mat-sys-on-surface-variant);
-  border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
 }
 
 .ethernet-hub-details__symbol-row {
@@ -169,8 +187,12 @@
     padding: 0 16px 16px;
   }
 
+  .ethernet-hub-details__section-header {
+    padding: 12px 16px;
+  }
+
   .ethernet-hub-details__form {
-    padding: 16px;
+    padding: 0 16px 16px;
   }
 
   .ethernet-hub-details__symbol-row {

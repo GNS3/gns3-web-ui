@@ -11,6 +11,13 @@
   @if (ethernetSwitchTemplate) {
   <main class="ethernet-switch-details__content">
     <section class="ethernet-switch-details__form-card">
+      <div class="ethernet-switch-details__section-header" (click)="toggleSection('general')">
+        <h3 class="ethernet-switch-details__section-title">General settings</h3>
+        <mat-icon class="ethernet-switch-details__expand-icon">{{
+          generalSettingsExpanded() ? 'expand_less' : 'expand_more'
+        }}</mat-icon>
+      </div>
+      @if (generalSettingsExpanded()) {
       <form class="ethernet-switch-details__form">
         <mat-form-field appearance="fill" class="ethernet-switch-details__field">
           <mat-label>Template name</mat-label>
@@ -89,6 +96,7 @@
           </mat-select>
         </mat-form-field>
       </form>
+      }
     </section>
 
     <section class="ethernet-switch-details__form-card">
@@ -97,13 +105,20 @@
     </section>
 
     <section class="ethernet-switch-details__form-card">
-      <h3 class="ethernet-switch-details__section-title">Usage</h3>
+      <div class="ethernet-switch-details__section-header" (click)="toggleSection('usage')">
+        <h3 class="ethernet-switch-details__section-title">Usage</h3>
+        <mat-icon class="ethernet-switch-details__expand-icon">{{
+          usageExpanded() ? 'expand_less' : 'expand_more'
+        }}</mat-icon>
+      </div>
+      @if (usageExpanded()) {
       <div class="preferences__usage-form">
         <mat-form-field appearance="fill" class="preferences__usage-field--full">
           <mat-label>Usage notes</mat-label>
           <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
         </mat-form-field>
       </div>
+      }
     </section>
 
     <div class="ethernet-switch-details__actions">
