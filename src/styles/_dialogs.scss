@@ -143,10 +143,21 @@
     padding: 16px 24px;
   }
 
+  /* Form styling */
+  form {
+    margin-top: 16px;
+  }
+
   /* Form fields */
   .form-field {
     width: 100%;
     margin-bottom: 16px;
+  }
+
+  /* Checkboxes spacing */
+  mat-checkbox {
+    display: block;
+    margin-bottom: 12px;
   }
 
   /* Table styles for variables tab */
