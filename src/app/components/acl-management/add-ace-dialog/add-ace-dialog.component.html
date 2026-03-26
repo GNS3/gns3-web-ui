@@ -53,7 +53,7 @@
     </div>
 
     @if (form.type.value === 'user') {
-      <app-autocomplete @if (form.type.value === 'user') {
+      <app-autocomplete
                         [data]="users"
                         [eltType]="'Users'"
                         [displayFn]="displayFnUser"
@@ -63,7 +63,7 @@
     }
 
     @if (form.type.value === 'group') {
-      <app-autocomplete @if (form.type.value === 'group') {
+      <app-autocomplete
                         [data]="groups"
                         [eltType]="'Groups'"
                         [displayFn]="displayFn"
