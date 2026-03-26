@@ -67,6 +67,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
 
   // Usage & Tags
   tags = model<string[]>([]);
+  usage = model('');
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
@@ -96,6 +97,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
     this.consoleType.set(this.vpcsTemplate.console_type || '');
     this.consoleAutoStart.set(this.vpcsTemplate.console_auto_start || false);
     this.tags.set(this.vpcsTemplate.tags || []);
+    this.usage.set(this.vpcsTemplate.usage || '');
   }
 
   getConfiguration() {
@@ -127,6 +129,7 @@ export class VpcsTemplateDetailsComponent implements OnInit {
     this.vpcsTemplate.console_type = this.consoleType();
     this.vpcsTemplate.console_auto_start = this.consoleAutoStart();
     this.vpcsTemplate.tags = this.tags();
+    this.vpcsTemplate.usage = this.usage();
 
     this.vpcsService.saveTemplate(this.controller, this.vpcsTemplate).subscribe((vpcsTemplate: VpcsTemplate) => {
       this.toasterService.success('Changes saved');
