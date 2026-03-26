@@ -18,11 +18,7 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { VmwareConfigurationService } from '@services/vmware-configuration.service';
 import { VmwareService } from '@services/vmware.service';
-import {
-  CustomAdaptersComponent,
-  CustomAdaptersDialogData,
-  CustomAdaptersDialogResult,
-} from '../../common/custom-adapters/custom-adapters.component';
+import { CustomAdaptersComponent, CustomAdaptersDialogData, CustomAdaptersDialogResult } from '../../common/custom-adapters/custom-adapters.component';
 import { SymbolsMenuComponent } from '@components/preferences/common/symbols-menu/symbols-menu.component';
 
 @Component({
@@ -180,23 +176,24 @@ export class VmwareTemplateDetailsComponent implements OnInit {
     // Don't call fillCustomAdapters() here as it will override user's custom adapters
     // User configures custom adapters through the dialog
 
-    this.vmwareService.saveTemplate(this.controller, this.vmwareTemplate).subscribe({
-      next: (vmwareTemplate: VmwareTemplate) => {
-        this.toasterService.success('Changes saved');
-        // Update local template with server response to reflect changes immediately
-        this.vmwareTemplate = vmwareTemplate;
-        this.initFormFromTemplate();
-        this.cd.markForCheck();
-      },
-      error: (error) => {
-        this.toasterService.error('Failed to save template: ' + (error.message || 'Unknown error'));
-      },
-    });
+    this.vmwareService
+      .saveTemplate(this.controller, this.vmwareTemplate)
+      .subscribe({
+        next: (vmwareTemplate: VmwareTemplate) => {
+          this.toasterService.success('Changes saved');
+          // Update local template with server response to reflect changes immediately
+          this.vmwareTemplate = vmwareTemplate;
+          this.initFormFromTemplate();
+          this.cd.markForCheck();
+        },
+        error: (error) => {
+          this.toasterService.error('Failed to save template: ' + (error.message || 'Unknown error'));
+        }
+      });
   }
 
   openCustomAdaptersDialog() {
-    // Don't call fillCustomAdapters() here as it will override server data
-    // Use custom_adapters directly from server response
+    this.fillCustomAdapters();
     const adapters = this.vmwareTemplate.custom_adapters ? [...this.vmwareTemplate.custom_adapters] : [];
 
     const dialogRef = this.dialog.open(CustomAdaptersComponent, {
@@ -230,10 +227,14 @@ export class VmwareTemplateDetailsComponent implements OnInit {
     const segmentSize = this.segmentSize() || 0;
 
     for (let i = 0; i < this.adapters(); i++) {
-      if (copyOfAdapters[i]) {
-        this.vmwareTemplate.custom_adapters.push(copyOfAdapters[i]);
+      // Find adapter by adapter_number, not array index
+      const existingAdapter = copyOfAdapters.find(adapter => adapter.adapter_number === i);
+
+      if (existingAdapter) {
+        // Use server data - preserve all fields including adapter_type
+        this.vmwareTemplate.custom_adapters.push(existingAdapter);
       } else {
-        // Calculate port name based on format
+        // Only create default adapter if no server data exists
         let portName: string;
         if (segmentSize > 0) {
           const segment = Math.floor(i / segmentSize);
