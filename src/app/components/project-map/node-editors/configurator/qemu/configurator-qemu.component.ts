@@ -330,6 +330,8 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
         this.node.custom_adapters = result.adapters;
         if (result.requiredAdapters !== undefined) {
           this.node.properties.adapters = result.requiredAdapters;
+          // Sync form control with updated value
+          this.networkSettingsForm.controls.adapters.setValue(result.requiredAdapters);
         }
         this.cd.markForCheck();
       }
