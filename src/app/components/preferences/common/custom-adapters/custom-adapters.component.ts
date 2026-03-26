@@ -20,6 +20,7 @@ export interface CustomAdaptersDialogData {
   networkTypes: NetworkType[];
   portNameFormat?: string;
   portSegmentSize?: number;
+  defaultAdapterType?: string; // 默认适配器类型（用于增量保存）
   currentAdapters?: number; // 当前 adapters 数量
 }
 
@@ -48,12 +49,12 @@ export class CustomAdaptersComponent {
   readonly dialogRef = inject(MatDialogRef<CustomAdaptersComponent>);
   private toasterService = inject(ToasterService);
 
+  public adapters: CustomAdapter[] = [];
+  public numberOfAdapters: number;
+
   constructor(@Inject(MAT_DIALOG_DATA) public data: CustomAdaptersDialogData) {
     this.adapters = data.adapters ? [...data.adapters] : [];
   }
-
-  public adapters: CustomAdapter[] = [];
-  public numberOfAdapters: number;
 
   get networkTypes(): any[] {
     return this.data.networkTypes || [];
@@ -150,18 +151,45 @@ export class CustomAdaptersComponent {
       return;
     }
 
-    // Clean up empty mac_address to avoid backend validation error
-    const cleanedAdapters = this.adapters.map((adapter) => ({
-      ...adapter,
-      mac_address: adapter.mac_address || null, // Convert empty string to null
-    }));
+    const portNameFormat = this.data.portNameFormat || 'Ethernet{0}';
+    const segmentSize = this.data.portSegmentSize || 0;
+    const defaultAdapterType = this.data.defaultAdapterType || 'e1000';
 
-    // Calculate required adapters based on the highest adapter_number in custom adapters
-    // This handles both adding and deleting adapters
+    // Incremental save: only keep adapters with non-default values (like Desktop GUI)
+    const customAdapters: CustomAdapter[] = [];
+
+    for (const adapter of this.adapters) {
+      // Calculate default port name for this adapter_number
+      let defaultPortName: string;
+      if (segmentSize > 0) {
+        const segment = Math.floor(adapter.adapter_number / segmentSize);
+        const portInSegment = adapter.adapter_number % segmentSize;
+        defaultPortName = portNameFormat.replace('{0}', String(segment * segmentSize + portInSegment));
+      } else {
+        defaultPortName = portNameFormat.replace('{0}', String(adapter.adapter_number));
+      }
+
+      // Check if this adapter has any custom (non-default) values
+      const hasCustomPortName = adapter.port_name !== defaultPortName;
+      const hasCustomType = adapter.adapter_type !== defaultAdapterType;
+      const hasCustomMac = adapter.mac_address && adapter.mac_address.length > 0;
+
+      // Only save if at least one field is custom
+      if (hasCustomPortName || hasCustomType || hasCustomMac) {
+        customAdapters.push({
+          adapter_number: adapter.adapter_number,
+          port_name: hasCustomPortName ? adapter.port_name : defaultPortName,
+          adapter_type: adapter.adapter_type,
+          mac_address: adapter.mac_address || null,
+        });
+      }
+    }
+
+    // Calculate required adapters based on the highest adapter_number
     const maxAdapterNumber = this.adapters.length > 0 ? Math.max(...this.adapters.map((a) => a.adapter_number)) : -1;
 
     const result: CustomAdaptersDialogResult = {
-      adapters: cleanedAdapters,
+      adapters: customAdapters, // Only non-default adapters
       requiredAdapters: maxAdapterNumber + 1, // Need at least maxAdapterNumber + 1 adapters
     };
 

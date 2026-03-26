@@ -141,7 +141,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
         if (!this.qemuTemplate.tags) {
           this.qemuTemplate.tags = [];
         }
-        this.fillCustomAdapters();
+
+        // Custom adapters will be managed through the dialog (incremental save)
         this.initFormFromTemplate();
         this.cd.markForCheck();
       });
@@ -242,48 +243,33 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   }
 
   openCustomAdaptersDialog() {
-    this.fillCustomAdapters();
-    const adapters = this.qemuTemplate.custom_adapters ? [...this.qemuTemplate.custom_adapters] : [];
-
-    const dialogRef = this.dialog.open(CustomAdaptersComponent, {
-      panelClass: 'custom-adapters-dialog-panel',
-      data: {
-        adapters: adapters,
-        networkTypes: this.networkTypes,
-        portNameFormat: this.portNameFormat() || 'Ethernet{0}',
-        portSegmentSize: this.portSegmentSize() || 0,
-        currentAdapters: this.adapters(),  // 传递当前 adapters 数量
-      } as CustomAdaptersDialogData,
-    });
-
-    dialogRef.afterClosed().subscribe((result: CustomAdaptersDialogResult) => {
-      if (result) {
-        this.qemuTemplate.custom_adapters = result.adapters;
-        // Auto-update adapters count based on custom adapters configuration
-        if (result.requiredAdapters !== undefined) {
-          this.adapters.set(result.requiredAdapters);
-        }
-        this.cd.markForCheck();
-      }
-    });
-  }
-
-  fillCustomAdapters() {
-    let copyOfAdapters = this.qemuTemplate.custom_adapters ? this.qemuTemplate.custom_adapters : [];
-    this.qemuTemplate.custom_adapters = [];
-
+    // Generate complete adapter list for display
+    // Use server custom_adapters if available, otherwise use defaults
     const portNameFormat = this.portNameFormat() || 'Ethernet{0}';
     const segmentSize = this.portSegmentSize() || 0;
+    const defaultAdapterType = this.networkType() || 'e1000';
+    const adapterCount = this.adapters();
 
-    for (let i = 0; i < this.adapters(); i++) {
-      // Find adapter by adapter_number, not array index
-      const existingAdapter = copyOfAdapters.find(adapter => adapter.adapter_number === i);
+    // Get custom adapters from server
+    const serverCustomAdapters = this.qemuTemplate.custom_adapters || [];
 
-      if (existingAdapter) {
-        // Use server data - preserve all fields including adapter_type
-        this.qemuTemplate.custom_adapters.push(existingAdapter);
+    // Build complete adapter list for display
+    const adaptersForDialog: CustomAdapter[] = [];
+
+    for (let i = 0; i < adapterCount; i++) {
+      // Check if server has custom config for this adapter_number
+      const customAdapter = serverCustomAdapters.find(adapter => adapter.adapter_number === i);
+
+      if (customAdapter) {
+        // Use server's custom configuration
+        adaptersForDialog.push({
+          adapter_number: customAdapter.adapter_number,
+          adapter_type: customAdapter.adapter_type,
+          port_name: customAdapter.port_name,
+          mac_address: customAdapter.mac_address || '',
+        });
       } else {
-        // Only create default adapter if no server data exists
+        // Use default configuration
         let portName: string;
         if (segmentSize > 0) {
           const segment = Math.floor(i / segmentSize);
@@ -293,13 +279,37 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
           portName = portNameFormat.replace('{0}', String(i));
         }
 
-        this.qemuTemplate.custom_adapters.push({
+        adaptersForDialog.push({
           adapter_number: i,
-          adapter_type: 'e1000',
+          adapter_type: defaultAdapterType,
           port_name: portName,
+          mac_address: '',
         });
       }
     }
+
+    const dialogRef = this.dialog.open(CustomAdaptersComponent, {
+      panelClass: 'custom-adapters-dialog-panel',
+      data: {
+        adapters: adaptersForDialog,
+        networkTypes: this.networkTypes,
+        portNameFormat: portNameFormat,
+        portSegmentSize: segmentSize,
+        defaultAdapterType: defaultAdapterType,
+        currentAdapters: adapterCount,
+      } as CustomAdaptersDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((result: CustomAdaptersDialogResult) => {
+      if (result) {
+        // Save only non-default custom adapters (incremental save like Desktop GUI)
+        this.qemuTemplate.custom_adapters = result.adapters;
+        if (result.requiredAdapters !== undefined) {
+          this.adapters.set(result.requiredAdapters);
+        }
+        this.cd.markForCheck();
+      }
+    });
   }
 
   goBack() {
@@ -364,8 +374,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     this.qemuTemplate.usage = this.usage();
     this.qemuTemplate.tags = this.tags();
 
-    // Don't call fillCustomAdapters() here as it will override user's custom adapters
-    // User configures custom adapters through the dialog
+    // Custom adapters are already managed through the dialog (incremental save)
 
     this.qemuService.saveTemplate(this.controller, this.qemuTemplate).subscribe({
       next: (savedTemplate: QemuTemplate) => {

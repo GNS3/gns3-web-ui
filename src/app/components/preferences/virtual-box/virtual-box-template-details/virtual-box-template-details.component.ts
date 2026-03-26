@@ -100,7 +100,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
           if (!this.virtualBoxTemplate.tags) {
             this.virtualBoxTemplate.tags = [];
           }
-          this.fillCustomAdapters();
+          // Custom adapters will be managed through the dialog (incremental save)
           this.initFormFromTemplate();
           this.cd.markForCheck();
         });
@@ -138,48 +138,29 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   }
 
   openCustomAdaptersDialog() {
-    this.fillCustomAdapters();
-    const adapters = this.virtualBoxTemplate.custom_adapters ? [...this.virtualBoxTemplate.custom_adapters] : [];
-
-    const dialogRef = this.dialog.open(CustomAdaptersComponent, {
-      panelClass: 'custom-adapters-dialog-panel',
-      data: {
-        adapters: adapters,
-        networkTypes: this.networkTypes,
-        portNameFormat: this.nameFormat() || 'Ethernet{0}',
-        portSegmentSize: this.segmentSize() || 0,
-        currentAdapters: this.adapters(),
-      } as CustomAdaptersDialogData,
-    });
-
-    dialogRef.afterClosed().subscribe((result: CustomAdaptersDialogResult) => {
-      if (result) {
-        this.virtualBoxTemplate.custom_adapters = result.adapters;
-        // Auto-update adapters count based on custom adapters configuration
-        if (result.requiredAdapters !== undefined) {
-          this.adapters.set(result.requiredAdapters);
-        }
-        this.cd.markForCheck();
-      }
-    });
-  }
-
-  fillCustomAdapters() {
-    let copyOfAdapters = this.virtualBoxTemplate.custom_adapters ? this.virtualBoxTemplate.custom_adapters : [];
-    this.virtualBoxTemplate.custom_adapters = [];
-
+    // Generate complete adapter list for display
     const portNameFormat = this.nameFormat() || 'Ethernet{0}';
     const segmentSize = this.segmentSize() || 0;
+    const defaultAdapterType = this.networkType() || 'e1000';
+    const adapterCount = this.adapters();
 
-    for (let i = 0; i < this.adapters(); i++) {
-      // Find adapter by adapter_number, not array index
-      const existingAdapter = copyOfAdapters.find(adapter => adapter.adapter_number === i);
+    // Get custom adapters from server
+    const serverCustomAdapters = this.virtualBoxTemplate.custom_adapters || [];
 
-      if (existingAdapter) {
-        // Use server data - preserve all fields including adapter_type
-        this.virtualBoxTemplate.custom_adapters.push(existingAdapter);
+    // Build complete adapter list for display
+    const adaptersForDialog: CustomAdapter[] = [];
+
+    for (let i = 0; i < adapterCount; i++) {
+      const customAdapter = serverCustomAdapters.find(adapter => adapter.adapter_number === i);
+
+      if (customAdapter) {
+        adaptersForDialog.push({
+          adapter_number: customAdapter.adapter_number,
+          adapter_type: customAdapter.adapter_type,
+          port_name: customAdapter.port_name,
+          mac_address: customAdapter.mac_address || '',
+        });
       } else {
-        // Only create default adapter if no server data exists
         let portName: string;
         if (segmentSize > 0) {
           const segment = Math.floor(i / segmentSize);
@@ -189,13 +170,36 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
           portName = portNameFormat.replace('{0}', String(i));
         }
 
-        this.virtualBoxTemplate.custom_adapters.push({
+        adaptersForDialog.push({
           adapter_number: i,
-          adapter_type: 'e1000',
+          adapter_type: defaultAdapterType,
           port_name: portName,
+          mac_address: '',
         });
       }
     }
+
+    const dialogRef = this.dialog.open(CustomAdaptersComponent, {
+      panelClass: 'custom-adapters-dialog-panel',
+      data: {
+        adapters: adaptersForDialog,
+        networkTypes: this.networkTypes,
+        portNameFormat: portNameFormat,
+        portSegmentSize: segmentSize,
+        defaultAdapterType: defaultAdapterType,
+        currentAdapters: adapterCount,
+      } as CustomAdaptersDialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((result: CustomAdaptersDialogResult) => {
+      if (result) {
+        this.virtualBoxTemplate.custom_adapters = result.adapters;
+        if (result.requiredAdapters !== undefined) {
+          this.adapters.set(result.requiredAdapters);
+        }
+        this.cd.markForCheck();
+      }
+    });
   }
 
   goBack() {
@@ -234,8 +238,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     this.virtualBoxTemplate.usage = this.usage();
     this.virtualBoxTemplate.tags = this.tags();
 
-    // Don't call fillCustomAdapters() here as it will override user's custom adapters
-    // User configures custom adapters through the dialog
+    // Custom adapters are already managed through the dialog (incremental save)
 
     this.virtualBoxService
       .saveTemplate(this.controller, this.virtualBoxTemplate)
