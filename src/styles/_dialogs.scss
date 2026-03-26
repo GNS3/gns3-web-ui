@@ -127,7 +127,7 @@
   }
 
   .mat-mdc-dialog-content {
-    padding: 0 24px;
+    padding: 0;
     max-height: 600px;
     overflow-y: auto;
   }
@@ -136,6 +136,11 @@
     padding: 16px 24px;
     justify-content: flex-end;
     gap: 8px;
+  }
+
+  /* Modal form container */
+  .modal-form-container {
+    padding: 16px 24px;
   }
 
   /* Form fields */
