@@ -100,8 +100,15 @@
     </section>
 
     <section class="ethernet-switch-details__form-card">
-      <h3 class="ethernet-switch-details__section-title">Port settings</h3>
+      <div class="ethernet-switch-details__section-header" (click)="toggleSection('ports')">
+        <h3 class="ethernet-switch-details__section-title">Port settings</h3>
+        <mat-icon class="ethernet-switch-details__expand-icon">{{
+          portsExpanded() ? 'expand_less' : 'expand_more'
+        }}</mat-icon>
+      </div>
+      @if (portsExpanded()) {
       <app-ports #ports [ethernetPorts]="ethernetSwitchTemplate.ports_mapping"></app-ports>
+      }
     </section>
 
     <section class="ethernet-switch-details__form-card">

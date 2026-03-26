@@ -66,6 +66,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
 
   // Section collapse states
   generalSettingsExpanded = model(false);
+  portsExpanded = model(false);
   usageExpanded = model(false);
 
   ngOnInit() {
@@ -162,6 +163,9 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
     switch (section) {
       case 'general':
         this.generalSettingsExpanded.set(!this.generalSettingsExpanded());
+        break;
+      case 'ports':
+        this.portsExpanded.set(!this.portsExpanded());
         break;
       case 'usage':
         this.usageExpanded.set(!this.usageExpanded());
