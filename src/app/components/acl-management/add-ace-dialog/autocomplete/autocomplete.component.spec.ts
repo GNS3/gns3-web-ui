@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 
 import { AutocompleteComponent } from './autocomplete.component';
-import { MatAutocompleteModule } from "@angular/material/autocomplete";
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -16,17 +16,16 @@ describe('AutocompleteComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
-      declarations: [ AutocompleteComponent ],
+      declarations: [AutocompleteComponent],
       imports: [
         CommonModule,
         ReactiveFormsModule,
         BrowserAnimationsModule,
         MatAutocompleteModule,
         MatFormFieldModule,
-        MatInputModule
-      ]
-    })
-    .compileComponents();
+        MatInputModule,
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(AutocompleteComponent);
     component = fixture.componentInstance;

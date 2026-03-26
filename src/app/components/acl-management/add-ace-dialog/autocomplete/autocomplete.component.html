@@ -7,9 +7,9 @@
     (optionSelected)="onSelection.emit($event.option.value)"
   >
     @for (elt of filteredData | async; track elt) {
-      <mat-option [value]="elt">
-        {{ displayFn()(elt) }}
-      </mat-option>
+    <mat-option [value]="elt">
+      {{ displayFn()(elt) }}
+    </mat-option>
     }
   </mat-autocomplete>
 </mat-form-field>

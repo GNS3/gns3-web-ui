@@ -5,32 +5,30 @@
       <cdk-nested-tree-node *cdkTreeNodeDef="let node" class="ace-form__tree-node">
         <div [class.selected]="selectedEndpoint && node.endpoint === selectedEndpoint.endpoint">
           <button mat-icon-button disabled></button>
-          {{node.name}}
+          {{ node.name }}
           <button mat-icon-button (click)="endpointSelection(node)">
             @if (!selectedEndpoint || node.endpoint !== selectedEndpoint.endpoint) {
-              <mat-icon class="align-middle" style="color: var(--mat-sys-outline)">panorama_fish_eye</mat-icon>
-            }
-            @if (selectedEndpoint && node.endpoint === selectedEndpoint.endpoint) {
-              <mat-icon class="align-middle">check_circle</mat-icon>
+            <mat-icon class="align-middle" style="color: var(--mat-sys-outline)">panorama_fish_eye</mat-icon>
+            } @if (selectedEndpoint && node.endpoint === selectedEndpoint.endpoint) {
+            <mat-icon class="align-middle">check_circle</mat-icon>
             }
           </button>
         </div>
       </cdk-nested-tree-node>
 
-      <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasChild" class="ace-form__tree-node" >
+      <cdk-nested-tree-node *cdkTreeNodeDef="let node; when: hasChild" class="ace-form__tree-node">
         <div [class.selected]="selectedEndpoint && node.endpoint === selectedEndpoint.endpoint">
           <button mat-icon-button [attr.aria-label]="'Toggle ' + node.name" cdkTreeNodeToggle>
             <mat-icon class="mat-icon-rtl-mirror">
-              {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+              {{ treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right' }}
             </mat-icon>
           </button>
-          {{node.name}}
+          {{ node.name }}
           <button mat-icon-button (click)="endpointSelection(node)">
             @if (!selectedEndpoint || node.endpoint !== selectedEndpoint.endpoint) {
-              <mat-icon class="align-middle" style="color: var(--mat-sys-outline)">panorama_fish_eye</mat-icon>
-            }
-            @if (selectedEndpoint && node.endpoint === selectedEndpoint.endpoint) {
-              <mat-icon class="align-middle">check_circle</mat-icon>
+            <mat-icon class="align-middle" style="color: var(--mat-sys-outline)">panorama_fish_eye</mat-icon>
+            } @if (selectedEndpoint && node.endpoint === selectedEndpoint.endpoint) {
+            <mat-icon class="align-middle">check_circle</mat-icon>
             }
           </button>
         </div>
@@ -47,29 +45,29 @@
     <div class="typeSelect">
       <mat-select placeholder="User/Group" formControlName="type">
         @for (t of types; track t) {
-          <mat-option [value]="t">{{t.charAt(0).toUpperCase() + t.slice(1)}}</mat-option>
+        <mat-option [value]="t">{{ t.charAt(0).toUpperCase() + t.slice(1) }}</mat-option>
         }
       </mat-select>
     </div>
 
     @if (form.type.value === 'user') {
-      <app-autocomplete
-                        [data]="users"
-                        [eltType]="'Users'"
-                        [displayFn]="displayFnUser"
-                        [filterFn]="_filterUser"
-                        (onSelection)="userSelection($event)">
-      </app-autocomplete>
-    }
-
-    @if (form.type.value === 'group') {
-      <app-autocomplete
-                        [data]="groups"
-                        [eltType]="'Groups'"
-                        [displayFn]="displayFn"
-                        [filterFn]="_filter"
-                        (onSelection)="groupSelection($event)">
-      </app-autocomplete>
+    <app-autocomplete
+      [data]="users"
+      [eltType]="'Users'"
+      [displayFn]="displayFnUser"
+      [filterFn]="_filterUser"
+      (onSelection)="userSelection($event)"
+    >
+    </app-autocomplete>
+    } @if (form.type.value === 'group') {
+    <app-autocomplete
+      [data]="groups"
+      [eltType]="'Groups'"
+      [displayFn]="displayFn"
+      [filterFn]="_filter"
+      (onSelection)="groupSelection($event)"
+    >
+    </app-autocomplete>
     }
 
     <app-autocomplete
@@ -77,7 +75,8 @@
       [eltType]="'Roles'"
       [displayFn]="displayFn"
       [filterFn]="_filter"
-      (onSelection)="roleSelection($event)">
+      (onSelection)="roleSelection($event)"
+    >
     </app-autocomplete>
 
     <div class="ace-form__checkbox-row">
@@ -86,20 +85,28 @@
       </div>
       <mat-divider [vertical]="true" class="ace-form__divider-vertical"></mat-divider>
       <div class="ace-form__checkbox-right">
-        <button class="ace-form__action-btn"
-                [class.ace-form__action-btn--allow]="allowed"
-                [class.ace-form__action-btn--deny]="!allowed"
-                mat-button
-                (click)="changeAllowed()">
-          {{allowed ? 'ALLOWED' : 'DENY'}}
+        <button
+          class="ace-form__action-btn"
+          [class.ace-form__action-btn--allow]="allowed"
+          [class.ace-form__action-btn--deny]="!allowed"
+          mat-button
+          (click)="changeAllowed()"
+        >
+          {{ allowed ? 'ALLOWED' : 'DENY' }}
         </button>
       </div>
     </div>
 
     <div mat-dialog-actions class="ace-form__actions">
       <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-      <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary"
-              [disabled]="!addAceForm.valid">
+      <button
+        mat-button
+        (click)="onAddClick()"
+        tabindex="2"
+        mat-raised-button
+        color="primary"
+        [disabled]="!addAceForm.valid"
+      >
         Add ACE
       </button>
     </div>

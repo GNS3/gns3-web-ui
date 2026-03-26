@@ -53,7 +53,7 @@
           <mat-label>Category</mat-label>
           <mat-select [ngModelOptions]="{ standalone: true }" placeholder="Category">
             @for (category of categories; track category) {
-              <mat-option [value]="category[1]">{{ category[0] }}</mat-option>
+            <mat-option [value]="category[1]">{{ category[0] }}</mat-option>
             }
           </mat-select>
         </mat-form-field>
@@ -98,7 +98,7 @@
           <mat-label>Console type</mat-label>
           <mat-select placeholder="Console type">
             @for (type of consoleTypes; track type) {
-              <mat-option [value]="type">{{ type }}</mat-option>
+            <mat-option [value]="type">{{ type }}</mat-option>
             }
           </mat-select>
         </mat-form-field>
@@ -139,19 +139,19 @@
           </mat-form-field>
 
           @if (['c1700', 'c2600', 'c2691', 'c3600', 'c3725', 'c3745'].includes(iosTemplate.platform)) {
-            <mat-form-field appearance="fill" class="ios-details__field">
-              <mat-label>I/O memory</mat-label>
-              <input
-                matInput
-                type="number"
-                min="0"
-                max="100"
-                step="5"
-                formControlName="iomemory"
-                placeholder="I/O memory"
-              />
-              <mat-hint>Percentage of RAM for I/O memory</mat-hint>
-            </mat-form-field>
+          <mat-form-field appearance="fill" class="ios-details__field">
+            <mat-label>I/O memory</mat-label>
+            <input
+              matInput
+              type="number"
+              min="0"
+              max="100"
+              step="5"
+              formControlName="iomemory"
+              placeholder="I/O memory"
+            />
+            <mat-hint>Percentage of RAM for I/O memory</mat-hint>
+          </mat-form-field>
           }
         </div>
 
@@ -182,49 +182,45 @@
       <div class="ios-details__form">
         <h6 class="ios-details__section-subtitle">Adapters</h6>
         <div class="ios-details__adapters">
-          @for (index of [0, 1, 2, 3, 4, 5, 6]; track index) {
-            @if (adapterMatrix[iosTemplate.platform] &&
-            adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''] &&
-            adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index]) {
-              <mat-form-field appearance="fill" class="ios-details__field">
-                <mat-label>Slot {{ index }}</mat-label>
-                <mat-select
-                  placeholder="Slot {{ index }}"
-                  [(ngModel)]="networkAdaptersForTemplate[index]"
-                  [ngModelOptions]="{ standalone: true }"
-                >
-                  @if (adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index].length > 1 &&
-                  !adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index][0].startsWith('C7200')) {
-                    <mat-option [value]="">{{ '' }}</mat-option>
-                  }
-                  @for (option of adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index]; track option) {
-                    <mat-option [value]="option">{{ option }}</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-            }
-          }
+          @for (index of [0, 1, 2, 3, 4, 5, 6]; track index) { @if (adapterMatrix[iosTemplate.platform] &&
+          adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''] &&
+          adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index]) {
+          <mat-form-field appearance="fill" class="ios-details__field">
+            <mat-label>Slot {{ index }}</mat-label>
+            <mat-select
+              placeholder="Slot {{ index }}"
+              [(ngModel)]="networkAdaptersForTemplate[index]"
+              [ngModelOptions]="{ standalone: true }"
+            >
+              @if (adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index].length > 1 &&
+              !adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index][0].startsWith('C7200')) {
+              <mat-option [value]="">{{ '' }}</mat-option>
+              } @for (option of adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index]; track option) {
+              <mat-option [value]="option">{{ option }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          } }
         </div>
         @if (wicMatrix[iosTemplate.platform]) {
         <h6 class="ios-details__section-subtitle">WICs</h6>
         <div class="ios-details__adapters">
-          @for (index of [0, 1, 2]; track index) {
-            @if (wicMatrix[iosTemplate.platform] && wicMatrix[iosTemplate.platform][index]) {
-              <mat-form-field appearance="fill" class="ios-details__field">
-                <mat-label>WIC {{ index }}</mat-label>
-                <mat-select
-                  placeholder="WIC {{ index }}"
-                  [(ngModel)]="wicsForTemplate[index]"
-                  [ngModelOptions]="{ standalone: true }"
-                >
-                  <mat-option [value]="">{{ '' }}</mat-option>
-                  @for (option of wicMatrix[iosTemplate.platform][index]; track option) {
-                    <mat-option [value]="option">{{ option }}</mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-            }
-          }
+          @for (index of [0, 1, 2]; track index) { @if (wicMatrix[iosTemplate.platform] &&
+          wicMatrix[iosTemplate.platform][index]) {
+          <mat-form-field appearance="fill" class="ios-details__field">
+            <mat-label>WIC {{ index }}</mat-label>
+            <mat-select
+              placeholder="WIC {{ index }}"
+              [(ngModel)]="wicsForTemplate[index]"
+              [ngModelOptions]="{ standalone: true }"
+            >
+              <mat-option [value]="">{{ '' }}</mat-option>
+              @for (option of wicMatrix[iosTemplate.platform][index]; track option) {
+              <mat-option [value]="option">{{ option }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          } }
         </div>
         }
       </div>
