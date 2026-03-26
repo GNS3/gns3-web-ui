@@ -47,7 +47,6 @@ import { ProjectsComponent } from '@components/projects/projects.component';
 import { ControllersComponent } from '@components/controllers/controllers.component';
 import { ConsoleComponent } from '@components/settings/console/console.component';
 import { SettingsComponent } from '@components/settings/settings.component';
-import { ListOfSnapshotsComponent } from '@components/snapshots/list-of-snapshots/list-of-snapshots.component';
 import { SystemStatusComponent } from '@components/system-status/system-status.component';
 import { WebConsoleFullWindowComponent } from '@components/web-console-full-window/web-console-full-window.component';
 import { ConsoleGuard } from './guards/console-guard';
@@ -126,12 +125,6 @@ const routes: Routes = [
         path: 'controller/:controller_ip/:controller_port/project/:project_id',
         component: DirectLinkComponent,
         canActivate: [LoginGuard],
-      },
-      {
-        path: 'controller/:controller_id/project/:project_id/snapshots',
-        component: ListOfSnapshotsComponent,
-        canActivate: [LoginGuard],
-        resolve: { controller: ControllerResolve },
       },
       { path: 'controller/:controller_id/preferences', component: PreferencesComponent, canActivate: [LoginGuard] },
       // { path: 'controller/:controller_id/preferences/general', component: GeneralPreferencesComponent },

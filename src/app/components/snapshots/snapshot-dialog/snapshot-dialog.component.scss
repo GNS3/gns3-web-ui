@@ -1,0 +1,61 @@
+.snapshot-dialog {
+  &__toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  &__search {
+    flex: 1;
+    max-width: 300px;
+
+    .mat-mdc-form-icon {
+      color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  &__table-container {
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 12px;
+    background: var(--mat-sys-surface-container-low);
+  }
+
+  &__table {
+    width: 100%;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+  }
+
+  &__empty {
+    padding: 32px;
+    text-align: center;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+/* Table columns */
+mat-header-cell.snapshot-dialog__column-name,
+mat-cell.snapshot-dialog__column-name {
+  flex: 2;
+  min-width: 200px;
+}
+
+mat-header-cell.snapshot-dialog__column-date,
+mat-cell.snapshot-dialog__column-date {
+  flex: 1;
+  min-width: 140px;
+}
+
+mat-header-cell.snapshot-dialog__column-actions,
+mat-cell.snapshot-dialog__column-actions {
+  flex: 0 0 100px;
+  min-width: 100px;
+  justify-content: flex-end;
+}

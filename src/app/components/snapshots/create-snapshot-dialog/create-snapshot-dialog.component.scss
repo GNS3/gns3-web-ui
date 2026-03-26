@@ -2,24 +2,6 @@
  * GNS3 Create Snapshot Dialog Component Styles
  */
 
-.title-container {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-
 .name-input {
   width: 100%;
-}
-
-.top-button {
-  outline: none;
-  box-shadow: none;
-  background: transparent;
-}
-
-button:focus {
-  outline: 0;
-  border: 0;
-  box-shadow: none;
 }

@@ -201,7 +201,6 @@ import { ControllersComponent } from '@components/controllers/controllers.compon
 import { ConsoleComponent } from '@components/settings/console/console.component';
 import { SettingsComponent } from '@components/settings/settings.component';
 import { CreateSnapshotDialogComponent } from '@components/snapshots/create-snapshot-dialog/create-snapshot-dialog.component';
-import { ListOfSnapshotsComponent } from '@components/snapshots/list-of-snapshots/list-of-snapshots.component';
 import { SnapshotMenuItemComponent } from '@components/snapshots/snapshot-menu-item/snapshot-menu-item.component';
 import { StatusChartComponent } from '@components/system-status/status-chart/status-chart.component';
 import { StatusInfoComponent } from '@components/system-status/status-info/status-info.component';
@@ -572,7 +571,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     CopyDockerTemplateComponent,
     DataSourceFilter,
     AuthImageFilter,
-    ListOfSnapshotsComponent,
     NodesMenuComponent,
     ProjectMapMenuComponent,
     AddGroupDialogComponent,

@@ -1,17 +1,12 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { ProgressDialogComponent } from '../../../common/progress-dialog/progress-dialog.component';
-import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
-import { Snapshot } from '@models/snapshot';
-import { SnapshotService } from '@services/snapshot.service';
-import { ToasterService } from '@services/toaster.service';
-import { CreateSnapshotDialogComponent } from '../create-snapshot-dialog/create-snapshot-dialog.component';
+import { SnapshotDialogComponent } from '../snapshot-dialog/snapshot-dialog.component';
 
 @Component({
   selector: 'app-snapshot-menu-item',
@@ -20,48 +15,24 @@ import { CreateSnapshotDialogComponent } from '../create-snapshot-dialog/create-
   imports: [CommonModule, MatDialogModule, MatTooltipModule, MatIconModule, MatButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SnapshotMenuItemComponent implements OnInit {
+export class SnapshotMenuItemComponent {
   readonly project = input<Project>(undefined);
   readonly controller = input<Controller>(undefined);
 
   private dialog = inject(MatDialog);
-  private snapshotService = inject(SnapshotService);
-  private progressDialogService = inject(ProgressDialogService);
-  private toaster = inject(ToasterService);
 
-  constructor() {}
+  openSnapshotDialog() {
+    const project = this.project();
+    const controller = this.controller();
+    if (!project || !controller) return;
 
-  ngOnInit() {}
-
-  public createSnapshotModal() {
-    const dialogRef = this.dialog.open(CreateSnapshotDialogComponent, {
-      width: '450px',
+    this.dialog.open(SnapshotDialogComponent, {
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
       data: {
-        controller: this.controller(),
-        project: this.project(),
+        controller,
+        project,
       },
       autoFocus: false,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((snapshot) => {
-      const project = this.project();
-      if (snapshot && project.project_id) {
-        const creation = this.snapshotService.create(this.controller(), project.project_id, snapshot);
-
-        const progress = this.progressDialogService.open();
-
-        const subscription = creation.subscribe((created_snapshot: Snapshot) => {
-          this.toaster.success(`Snapshot '${snapshot.name}' has been created.`);
-          progress.close();
-        });
-
-        progress.afterClosed().subscribe((result) => {
-          if (result === ProgressDialogComponent.CANCELLED) {
-            subscription.unsubscribe();
-          }
-        });
-      }
     });
   }
 }
