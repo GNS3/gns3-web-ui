@@ -64,6 +64,16 @@
     margin-bottom: 16px;
   }
 
+  /* Info note text */
+  .info-note {
+    font-size: 13px;
+    color: var(--mat-sys-on-surface-variant);
+    background: var(--mat-sys-surface-container-high);
+    padding: 12px;
+    border-radius: 8px;
+    margin: 0 0 16px 0;
+  }
+
   mat-card-title {
     font-size: 16px;
     font-weight: 500;
