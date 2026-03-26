@@ -86,6 +86,15 @@
   flex: 1;
 }
 
+.ethernet-hub-details__section-title {
+  padding: 16px 24px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+  border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
+}
+
 .ethernet-hub-details__symbol-row {
   display: flex;
   align-items: flex-start;

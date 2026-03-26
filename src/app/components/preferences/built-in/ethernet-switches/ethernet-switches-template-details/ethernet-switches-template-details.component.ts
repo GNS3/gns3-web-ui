@@ -62,6 +62,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
   category = model('');
   consoleType = model('');
   tags = model<string[]>([]);
+  usage = model('');
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
@@ -86,6 +87,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
           this.category.set(ethernetSwitchTemplate.category || '');
           this.consoleType.set(ethernetSwitchTemplate.console_type || '');
           this.tags.set(ethernetSwitchTemplate.tags || []);
+          this.usage.set(ethernetSwitchTemplate.usage || '');
 
           this.cd.markForCheck();
         });
@@ -109,6 +111,7 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
     this.ethernetSwitchTemplate.category = this.category();
     this.ethernetSwitchTemplate.console_type = this.consoleType();
     this.ethernetSwitchTemplate.tags = this.tags();
+    this.ethernetSwitchTemplate.usage = this.usage();
 
     this.ethernetSwitchTemplate.ports_mapping = this.portsComponent.ethernetPorts;
     this.builtInTemplatesService

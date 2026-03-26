@@ -91,6 +91,16 @@
       </form>
     </section>
 
+    <section class="ethernet-hub-details__form-card">
+      <h3 class="ethernet-hub-details__section-title">Usage</h3>
+      <div class="preferences__usage-form">
+        <mat-form-field appearance="fill" class="preferences__usage-field--full">
+          <mat-label>Usage notes</mat-label>
+          <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
+        </mat-form-field>
+      </div>
+    </section>
+
     <div class="ethernet-hub-details__actions">
       <button class="ethernet-hub-details__cancel-btn" (click)="goBack()" mat-button>Cancel</button>
       <button mat-raised-button color="primary" class="ethernet-hub-details__save-btn" (click)="onSave()">Save</button>

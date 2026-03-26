@@ -59,6 +59,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
   category = model('');
   numberOfPorts = model(0);
   tags = model<string[]>([]);
+  usage = model('');
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
@@ -86,6 +87,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
           this.category.set(ethernetHubTemplate.category || '');
           this.numberOfPorts.set(ethernetHubTemplate.ports_mapping.length || 0);
           this.tags.set(ethernetHubTemplate.tags || []);
+          this.usage.set(ethernetHubTemplate.usage || '');
 
           this.cd.markForCheck();
         });
@@ -103,6 +105,7 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
     this.ethernetHubTemplate.symbol = this.symbol();
     this.ethernetHubTemplate.category = this.category();
     this.ethernetHubTemplate.tags = this.tags();
+    this.ethernetHubTemplate.usage = this.usage();
 
     const numPorts = this.numberOfPorts();
     this.ethernetHubTemplate.ports_mapping = [];
