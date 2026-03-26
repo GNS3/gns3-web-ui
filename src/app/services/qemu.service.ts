@@ -28,8 +28,16 @@ export class QemuService {
     return this.httpController.get<QemuImage[]>(controller, '/images?image_type=qemu') as Observable<QemuImage[]>;
   }
 
-  addImage(controller: Controller, qemuImg: QemuImg): Observable<QemuImg> {
-    return this.httpController.post<QemuImg>(controller, '/images/upload', qemuImg) as Observable<QemuImg>;
+  /**
+   * Create a QEMU disk image for a node
+   * API: POST /projects/{project_id}/nodes/{node_id}/qemu/disk_image/{disk_name}
+   */
+  createDiskImage(controller: Controller, projectId: string, nodeId: string, diskName: string, options: QemuDiskImageOptions): Observable<any> {
+    return this.httpController.post<any>(
+      controller,
+      `/projects/${projectId}/nodes/${nodeId}/qemu/disk_image/${diskName}`,
+      options
+    ) as Observable<any>;
   }
 
   addTemplate(controller: Controller, qemuTemplate: QemuTemplate): Observable<QemuTemplate> {
@@ -43,4 +51,17 @@ export class QemuService {
       qemuTemplate
     ) as Observable<QemuTemplate>;
   }
+}
+
+export interface QemuDiskImageOptions {
+  format: string;
+  size: number;  // Size in MB
+  preallocation?: string;
+  cluster_size?: number;
+  refcount_bits?: number;
+  lazy_refcounts?: string;
+  subformat?: string;
+  static?: string;
+  zeroed_grain?: string;
+  adapter_type?: string;
 }

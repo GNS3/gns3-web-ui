@@ -5,24 +5,18 @@
  * Use panelClass to target specific dialogs.
  *
  * Architecture:
- * 1. Base styles (.base-dialog-panel) - Common dialog styles
- * 2. Specific styles (.configurator-dialog-panel, etc.) - Component-specific overrides
- * 3. Usage: panelClass: ['base-dialog-panel', 'specific-dialog-panel']
+ * 1. Base styles (.base-dialog-panel) - Common dialog styles (no sizing)
+ * 2. Configurator styles (.configurator-dialog-panel) - Main config dialogs (800px, tabs, cards)
+ * 3. Simple styles (.simple-dialog-panel) - Sub dialogs like Image Creator (500px)
+ * 4. Usage: panelClass: ['base-dialog-panel', 'specific-dialog-panel']
  */
 
 /* =============================================
-// Base Dialog Styles
+// Base Dialog Styles - All dialogs inherit this
 // ============================================= */
 .base-dialog-panel {
-  /* Dialog container - width and max height */
-  --mat-dialog-container-max-width: 800px;
-
   mat-dialog-container,
   .mat-mdc-dialog-container {
-    width: 800px;
-    max-width: 800px;
-    max-height: 80vh;
-
     .mat-mdc-dialog-surface {
       border-radius: 16px;
       box-shadow: 0 12px 40px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
@@ -43,7 +37,6 @@
   /* Dialog content - common spacing */
   .mat-mdc-dialog-content {
     padding: 16px 24px 0 24px;
-    max-height: calc(80vh - 140px);
     overflow-y: auto;
   }
 
@@ -60,21 +53,10 @@
     margin-bottom: 4px;
   }
 
-  /* Two-column form layout */
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px 24px; /* row-gap column-gap */
-  }
-
-  .form-grid__full {
-    grid-column: 1 / -1; /* Span full width */
-  }
-
   /* Checkboxes - common spacing */
   mat-checkbox {
     display: block;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
   }
 
   /* Cards - common spacing */
@@ -94,6 +76,34 @@
     color: var(--mat-sys-on-surface-variant);
   }
 
+  /* Radio button spacing */
+  mat-radio-button {
+    margin-right: 8px;
+  }
+}
+
+/* =============================================
+// Configurator Dialog Styles - Main config pages
+// ============================================= */
+.configurator-dialog-panel {
+  --mat-dialog-container-max-width: 800px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 800px;
+    max-width: 800px;
+    max-height: 80vh;
+
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+    }
+  }
+
+  /* Dialog content - with max-height for scroll */
+  .mat-mdc-dialog-content {
+    max-height: calc(80vh - 140px);
+  }
+
   /* Tab content - add spacing below tab labels */
   mat-tab-group {
     .mat-mdc-tab-body-wrapper {
@@ -103,6 +113,47 @@
         }
       }
     }
+  }
+
+  /* Modal form container padding */
+  .modal-form-container {
+    padding: 16px 24px;
+  }
+
+  /* Two-column form layout */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 24px;
+  }
+
+  .form-grid__full {
+    grid-column: 1 / -1;
+  }
+
+  /* Tags field */
+  .tags-field {
+    width: 100%;
+  }
+
+  /* File upload button */
+  .file-button {
+    width: 18%;
+  }
+
+  .file-name-form-field {
+    padding-left: 2%;
+    width: 80%;
+  }
+
+  /* Create button */
+  .create-button {
+    width: 100%;
+  }
+
+  /* Hidden file input */
+  .nonvisible {
+    display: none;
   }
 
   /* HDD create button section */
@@ -115,6 +166,15 @@
     display: flex;
     justify-content: center;
     margin: 16px 0;
+  }
+
+  /* File upload section */
+  .file-upload-section {
+    .file-upload-hint {
+      font-size: 12px;
+      color: var(--mat-sys-on-surface-variant);
+      margin: 4px 0 0 0;
+    }
   }
 
   /* Disk cards grid layout - two columns */
@@ -174,10 +234,55 @@
 }
 
 /* =============================================
+// Simple Dialog Styles - Sub dialogs like Image Creator
+// ============================================= */
+.simple-dialog-panel {
+  --mat-dialog-container-max-width: 500px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 500px;
+    max-width: 500px;
+    max-height: 80vh;
+
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+    }
+  }
+
+  /* Dialog content - with max-height for scroll */
+  .mat-mdc-dialog-content {
+    max-height: calc(80vh - 140px);
+  }
+
+  /* Format options styling */
+  .format-options {
+    margin: 16px 0;
+  }
+
+  .option-group {
+    margin-bottom: 16px;
+  }
+
+  .option-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .radio-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* =============================================
 // Confirmation Dialog
 // ============================================= */
 .confirmation-dialog-panel {
-  /* Material Dialog Container - transparent */
   mat-dialog-container,
   .mat-dialog-container {
     background: transparent;
@@ -306,29 +411,24 @@
     gap: 8px;
   }
 
-  /* Modal form container */
   .modal-form-container {
     padding: 16px 24px;
   }
 
-  /* Form styling */
   form {
     margin-top: 16px;
   }
 
-  /* Form fields */
   .form-field {
     width: 100%;
     margin-bottom: 16px;
   }
 
-  /* Checkboxes spacing */
   mat-checkbox {
     display: block;
     margin-bottom: 12px;
   }
 
-  /* Table styles for variables tab */
   table {
     width: 100%;
     margin-top: 16px;
@@ -401,54 +501,6 @@
     max-width: 800px;
     height: 600px;
     max-height: 600px;
-  }
-}
-
-/* =============================================
-// Configurator Dialog
-// Inherits base styles and adds specific overrides
-// ============================================= */
-.configurator-dialog-panel {
-  /* Max height inherited from .base-dialog-panel (80vh) */
-
-  /* Modal form container padding */
-  .modal-form-container {
-    padding: 16px 24px;
-  }
-
-  /* Select dropdown styling */
-  .select {
-    width: 100%;
-  }
-
-  /* Tags field */
-  .tags-field {
-    width: 100%;
-  }
-
-  /* File upload button */
-  .file-button {
-    width: 18%;
-  }
-
-  .file-name-form-field {
-    padding-left: 2%;
-    width: 80%;
-  }
-
-  /* Create button */
-  .create-button {
-    width: 100%;
-  }
-
-  /* Hidden file input */
-  .nonvisible {
-    display: none;
-  }
-
-  /* Radio button spacing */
-  mat-radio-button {
-    margin-right: 8px;
   }
 }
 

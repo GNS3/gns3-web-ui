@@ -1,4 +1,4 @@
-<h1 mat-dialog-title>Qemu image configurator</h1>
+<h1 mat-dialog-title>Create QEMU Disk Image</h1>
 
 <div class="modal-form-container">
   <div class="content">
@@ -6,108 +6,48 @@
       <mat-card class="matCard">
         <form [formGroup]="inputForm">
           <mat-form-field class="form-field">
-            <input matInput type="text" formControlName="qemu_img" placeholder="Qemu image path" />
+            <mat-label>Disk name *</mat-label>
+            <input matInput formControlName="disk_name" [matAutocomplete]="auto" placeholder="Type to search or enter" />
+            <mat-autocomplete #auto="matAutocomplete">
+              @for (disk of filteredDisks$ | async; track disk) {
+              <mat-option [value]="disk">{{ disk }}</mat-option>
+              }
+            </mat-autocomplete>
           </mat-form-field>
-        </form>
-        <mat-form-field class="form-field">
-          <mat-select placeholder="Image format" [(ngModel)]="qemuImg.format">
-            @for (format of formatOptions; track format) {
-            <mat-option [value]="format">
-              {{ format }}
-            </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-        @if (qemuImg.format === 'qcow2') {
-        <div>
-          Size options
+
           <mat-form-field class="form-field">
-            <mat-select placeholder="Image format" [(ngModel)]="qemuImg.preallocation">
-              @for (preallocation of preallocationsOptions; track preallocation) {
-              <mat-option [value]="preallocation">
-                {{ preallocation }}
+            <mat-label>Format *</mat-label>
+            <mat-select formControlName="format">
+              @for (format of formatOptions; track format) {
+              <mat-option [value]="format">
+                {{ format }}
               </mat-option>
               }
             </mat-select>
           </mat-form-field>
+
           <mat-form-field class="form-field">
-            <mat-select placeholder="Cluster size" [(ngModel)]="qemuImg.cluster_size">
-              @for (clusterSize of clusterSizeOptions; track clusterSize.value) {
-              <mat-option [value]="clusterSize.value">
-                {{ clusterSize.name }}
+            <mat-label>Size (MB) *</mat-label>
+            <input matInput type="number" min="1" formControlName="size" />
+          </mat-form-field>
+
+          <mat-form-field class="form-field">
+            <mat-label>Preallocation</mat-label>
+            <mat-select formControlName="preallocation">
+              @for (prealloc of preallocationsOptions; track prealloc) {
+              <mat-option [value]="prealloc">
+                {{ prealloc }}
               </mat-option>
               }
             </mat-select>
           </mat-form-field>
-          Refcounts
+
           <mat-form-field class="form-field">
-            <mat-select placeholder="Lazy refcounts" [(ngModel)]="qemuImg.lazy_refcounts">
-              @for (lazyRefcount of lazyRefcountsOptions; track lazyRefcount) {
-              <mat-option [value]="lazyRefcount">
-                {{ lazyRefcount }}
-              </mat-option>
-              }
+            <mat-label>Lazy refcounts</mat-label>
+            <mat-select formControlName="lazy_refcounts">
+              <mat-option value="on">on</mat-option>
+              <mat-option value="off">off</mat-option>
             </mat-select>
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <mat-select placeholder="Refcount entry size" [(ngModel)]="qemuImg.refcount_bits">
-              @for (clusterSize of clusterSizeOptions; track clusterSize.value) {
-              <mat-option [value]="clusterSize.value">
-                {{ clusterSize.name }}
-              </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
-        } @if (qemuImg.format === 'vhd' || qemuImg.format === 'vdi') {
-        <div>
-          <mat-radio-group aria-label="Image file sizing mode" class="radio-selection">
-            <mat-radio-button value="1" (click)="setSubformat('dynamic')" checked>Dynamic</mat-radio-button>
-            <mat-radio-button value="2" (click)="setSubformat('fixed')">Fixed</mat-radio-button>
-          </mat-radio-group>
-        </div>
-        } @if (qemuImg.format === 'vmdk') {
-        <div>
-          Adapter type<br />
-          <mat-radio-group aria-label="Adapter type" class="radio-selection">
-            <mat-radio-button value="1" (click)="setAdapterType('ide')" checked>IDE</mat-radio-button>
-            <mat-radio-button value="2" (click)="setAdapterType('lsilogic')">LSI Logic</mat-radio-button>
-            <mat-radio-button value="3" (click)="setAdapterType('buslogic')">BusLogic</mat-radio-button>
-            <mat-radio-button value="4" (click)="setAdapterType('legacyESX')"
-              >Legacy (ESX)</mat-radio-button
-            > </mat-radio-group
-          ><br /><br />
-          Image file sizing mode<br />
-          <mat-radio-group aria-label="Image file sizing mode" class="radio-selection">
-            <mat-radio-button value="1" (click)="setSubformat('streamOptimized')" checked
-              >Stream optimized</mat-radio-button
-            >
-            <mat-radio-button value="2" (click)="setSubformat('twoGbMaxExtentSparse')"
-              >Split every 2GB (sparse)</mat-radio-button
-            >
-            <mat-radio-button value="3" (click)="setSubformat('twoGbMaxExtentFlat')"
-              >Split every 2GB (flat)</mat-radio-button
-            >
-            <mat-radio-button value="4" (click)="setSubformat('monolithicSparse')">Monolithic sparse</mat-radio-button>
-            <mat-radio-button value="5" (click)="setSubformat('monolithicFlat')"
-              >Monolithic flat</mat-radio-button
-            > </mat-radio-group
-          ><br /><br />
-          <mat-select placeholder="Zeroed grain" [(ngModel)]="qemuImg.zeroed_grain">
-            @for (option of zeroedGrainOptions; track option) {
-            <mat-option [value]="option">
-              {{ option }}
-            </mat-option>
-            }
-          </mat-select>
-        </div>
-        }
-        <form [formGroup]="inputForm">
-          <mat-form-field class="form-field">
-            <input matInput type="text" formControlName="path" placeholder="File location" />
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <input matInput type="number" min="1" formControlName="size" placeholder="Disk size" />
           </mat-form-field>
         </form>
       </mat-card>

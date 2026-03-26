@@ -124,13 +124,14 @@
                 <div class="disk-card__content">
                   <mat-form-field class="form-field">
                     <mat-label>Disk image</mat-label>
-                    <mat-select formControlName="hda_disk_image">
-                      @for (image of qemuImages; track image.filename) {
+                    <input matInput type="text" formControlName="hda_disk_image" [matAutocomplete]="hdaAuto" (input)="onHdaImageInput($event)" (focus)="filteredImages = qemuImages" />
+                    <mat-autocomplete #hdaAuto="matAutocomplete">
+                      @for (image of filteredImages; track image.filename) {
                       <mat-option [value]="image.filename">
                         {{ image.filename }}
                       </mat-option>
                       }
-                    </mat-select>
+                    </mat-autocomplete>
                   </mat-form-field>
                   <mat-form-field class="form-field">
                     <mat-label>Disk interface</mat-label>
@@ -154,13 +155,14 @@
                 <div class="disk-card__content">
                   <mat-form-field class="form-field">
                     <mat-label>Disk image</mat-label>
-                    <mat-select formControlName="hdb_disk_image">
-                      @for (image of qemuImages; track image.filename) {
+                    <input matInput type="text" formControlName="hdb_disk_image" [matAutocomplete]="hdbAuto" (input)="onHdbImageInput($event)" (focus)="filteredImages = qemuImages" />
+                    <mat-autocomplete #hdbAuto="matAutocomplete">
+                      @for (image of filteredImages; track image.filename) {
                       <mat-option [value]="image.filename">
                         {{ image.filename }}
                       </mat-option>
                       }
-                    </mat-select>
+                    </mat-autocomplete>
                   </mat-form-field>
                   <mat-form-field class="form-field">
                     <mat-label>Disk interface</mat-label>
@@ -184,13 +186,14 @@
                 <div class="disk-card__content">
                   <mat-form-field class="form-field">
                     <mat-label>Disk image</mat-label>
-                    <mat-select formControlName="hdc_disk_image">
-                      @for (image of qemuImages; track image.filename) {
+                    <input matInput type="text" formControlName="hdc_disk_image" [matAutocomplete]="hdcAuto" (input)="onHdcImageInput($event)" (focus)="filteredImages = qemuImages" />
+                    <mat-autocomplete #hdcAuto="matAutocomplete">
+                      @for (image of filteredImages; track image.filename) {
                       <mat-option [value]="image.filename">
                         {{ image.filename }}
                       </mat-option>
                       }
-                    </mat-select>
+                    </mat-autocomplete>
                   </mat-form-field>
                   <mat-form-field class="form-field">
                     <mat-label>Disk interface</mat-label>
@@ -214,13 +217,14 @@
                 <div class="disk-card__content">
                   <mat-form-field class="form-field">
                     <mat-label>Disk image</mat-label>
-                    <mat-select formControlName="hdd_disk_image">
-                      @for (image of qemuImages; track image.filename) {
+                    <input matInput type="text" formControlName="hdd_disk_image" [matAutocomplete]="hddAuto" (input)="onHddImageInput($event)" (focus)="filteredImages = qemuImages" />
+                    <mat-autocomplete #hddAuto="matAutocomplete">
+                      @for (image of filteredImages; track image.filename) {
                       <mat-option [value]="image.filename">
                         {{ image.filename }}
                       </mat-option>
                       }
-                    </mat-select>
+                    </mat-autocomplete>
                   </mat-form-field>
                   <mat-form-field class="form-field">
                     <mat-label>Disk interface</mat-label>
@@ -237,17 +241,17 @@
             </div>
           </mat-tab>
           <mat-tab label="CD/DVD">
-            <div>
+            <div class="file-upload-section">
               <button mat-raised-button color="primary" (click)="filecdrom.click()" class="file-button">Browse</button>
               <input type="file" #filecdrom class="nonvisible" (change)="uploadCdromImageFile($event)" />
               <mat-form-field class="file-name-form-field">
                 <mat-label>Image</mat-label>
                 <input matInput type="text" formControlName="cdrom_image" />
               </mat-form-field>
+              <p class="file-upload-hint">Note: File upload is not implemented in Web UI. Please ensure the ISO file exists on the GNS3 server.</p>
             </div>
           </mat-tab>
           <mat-tab label="Network">
-            <br />
             <form [formGroup]="networkSettingsForm">
               <mat-form-field class="form-field">
                 <mat-label>Adapters</mat-label>
@@ -281,7 +285,7 @@
                   <h3 class="disk-card__title">Linux boot specific settings</h3>
                 </div>
                 <div class="disk-card__content">
-                  <div>
+                  <div class="file-upload-section">
                     <button mat-raised-button color="primary" (click)="fileinitrd.click()" class="file-button">
                       Browse
                     </button>
@@ -290,9 +294,10 @@
                       <mat-label>Initial RAM disk (initrd)</mat-label>
                       <input matInput type="text" formControlName="initrd" />
                     </mat-form-field>
+                    <p class="file-upload-hint">Note: File upload is not implemented in Web UI. Please ensure the file exists on the GNS3 server.</p>
                   </div>
-                  <div>
-                    <button mat-raised-button color="primary" (click)="filekerenelimage.click()" class="file-button">
+                  <div class="file-upload-section">
+                    <button mat-raised-button color="primary" (click)="filekernelimage.click()" class="file-button">
                       Browse
                     </button>
                     <input type="file" #filekernelimage class="nonvisible" (change)="uploadKernelImageFile($event)" />
@@ -300,6 +305,7 @@
                       <mat-label>Kernel image</mat-label>
                       <input matInput type="text" formControlName="kernel_image" />
                     </mat-form-field>
+                    <p class="file-upload-hint">Note: File upload is not implemented in Web UI. Please ensure the file exists on the GNS3 server.</p>
                   </div>
                   <mat-form-field class="form-field">
                     <mat-label>Kernel command line</mat-label>
@@ -314,7 +320,7 @@
                   <h3 class="disk-card__title">Bios</h3>
                 </div>
                 <div class="disk-card__content">
-                  <div>
+                  <div class="file-upload-section">
                     <button mat-raised-button color="primary" (click)="filebios.click()" class="file-button">
                       Browse
                     </button>
@@ -323,6 +329,7 @@
                       <mat-label>Bios image</mat-label>
                       <input matInput type="text" formControlName="bios_image" />
                     </mat-form-field>
+                    <p class="file-upload-hint">Note: File upload is not implemented in Web UI. Please ensure the file exists on the GNS3 server.</p>
                   </div>
                 </div>
               </div>
@@ -367,9 +374,7 @@
                     <mat-label>Options</mat-label>
                     <input matInput type="text" formControlName="options" />
                   </mat-form-field>
-                  <br />
                   <mat-checkbox formControlName="tpm"> Enable the Trusted Platform Module (TPM) </mat-checkbox>
-                  <br />
                   <mat-checkbox formControlName="uefi"> Enable the UEFI boot mode </mat-checkbox>
                 </div>
               </div>

@@ -33,7 +33,6 @@ export class ConfigActionComponent {
   private conf = {
     panelClass: 'configurator-dialog-panel',
     autoFocus: false,
-    width: '950px',
     disableClose: false,
   };
   dialogRef;

@@ -18,7 +18,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { Observable, map, startWith } from 'rxjs';
 import { Node } from '../../../../../cartography/models/node';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 import { QemuBinary } from '@models/qemu/qemu-binary';
@@ -55,6 +57,7 @@ import { QemuImageCreatorComponent } from './qemu-image-creator/qemu-image-creat
     MatChipsModule,
     MatIconModule,
     MatCheckboxModule,
+    MatAutocompleteModule,
   ],
 })
 export class ConfiguratorDialogQemuComponent implements OnInit {
@@ -80,13 +83,15 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
   networkTypes = [];
   qemuImages: QemuImage[] = [];
+  filteredImages: QemuImage[] = [];
   selectPlatform: string[] = [];
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
   private conf = {
     autoFocus: false,
-    width: '800px',
+    width: '500px',
     disableClose: true,
+    panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
   };
   dialogRefQemuImageCreator;
 
@@ -196,6 +201,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
 
     this.qemuService.getImages(this.controller).subscribe((qemuImages: QemuImage[]) => {
       this.qemuImages = qemuImages;
+      this.filteredImages = qemuImages;
       this.cd.markForCheck();
     });
     this.selectPlatform = this.qemuConfigurationService.getPlatform();
@@ -205,22 +211,32 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     this.dialogRefQemuImageCreator = this.dialog.open(QemuImageCreatorComponent, this.conf);
     let instance = this.dialogRefQemuImageCreator.componentInstance;
     instance.controller = this.controller;
+    instance.nodeId = this.node.node_id;
+    instance.projectId = this.node.project_id;
   }
 
   uploadCdromImageFile(event) {
-    this.node.properties.cdrom_image = event.target.files[0].name;
+    const filename = event.target.files[0].name;
+    this.node.properties.cdrom_image = filename;
+    this.generalSettingsForm.patchValue({ cdrom_image: filename });
   }
 
   uploadInitrdFile(event) {
-    this.node.properties.initrd = event.target.files[0].name;
+    const filename = event.target.files[0].name;
+    this.node.properties.initrd = filename;
+    this.generalSettingsForm.patchValue({ initrd: filename });
   }
 
   uploadKernelImageFile(event) {
-    this.node.properties.kernel_image = event.target.files[0].name;
+    const filename = event.target.files[0].name;
+    this.node.properties.kernel_image = filename;
+    this.generalSettingsForm.patchValue({ kernel_image: filename });
   }
 
   uploadBiosFile(event) {
-    this.node.properties.bios_image = event.target.files[0].name;
+    const filename = event.target.files[0].name;
+    this.node.properties.bios_image = filename;
+    this.generalSettingsForm.patchValue({ bios_image: filename });
   }
 
   getConfiguration() {
@@ -231,6 +247,27 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     });
     this.bootPriorities = this.qemuConfigurationService.getBootPriorities();
     this.diskInterfaces = this.qemuConfigurationService.getDiskInterfaces();
+  }
+
+  filterImages(event: Event): QemuImage[] {
+    const filterValue = (event.target as HTMLInputElement).value.toLowerCase();
+    return this.qemuImages.filter(image => image.filename.toLowerCase().includes(filterValue));
+  }
+
+  onHdaImageInput(event: Event) {
+    this.filteredImages = this.filterImages(event);
+  }
+
+  onHdbImageInput(event: Event) {
+    this.filteredImages = this.filterImages(event);
+  }
+
+  onHdcImageInput(event: Event) {
+    this.filteredImages = this.filterImages(event);
+  }
+
+  onHddImageInput(event: Event) {
+    this.filteredImages = this.filterImages(event);
   }
 
   openCustomAdaptersDialog() {
