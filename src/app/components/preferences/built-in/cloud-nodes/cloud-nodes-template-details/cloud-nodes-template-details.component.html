@@ -260,8 +260,8 @@
         }}</mat-icon>
       </div>
       @if (usageExpanded) {
-      <div class="cloud-nodes-details__form">
-        <mat-form-field appearance="fill" class="cloud-nodes-details__field cloud-nodes-details__field--full">
+      <div class="preferences__usage-form">
+        <mat-form-field appearance="fill" class="preferences__usage-field--full">
           <mat-label>Usage</mat-label>
           <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
         </mat-form-field>

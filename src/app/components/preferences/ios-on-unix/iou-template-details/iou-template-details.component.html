@@ -204,10 +204,12 @@
 
     <section class="iou-template-details__form-card">
       <h3 class="iou-template-details__section-title">Usage</h3>
-      <mat-form-field appearance="fill" class="iou-template-details__field iou-template-details__field--full">
-        <mat-label>Usage notes</mat-label>
-        <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
-      </mat-form-field>
+      <div class="preferences__usage-form">
+        <mat-form-field appearance="fill" class="preferences__usage-field--full">
+          <mat-label>Usage notes</mat-label>
+          <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
+        </mat-form-field>
+      </div>
     </section>
 
     <div class="iou-template-details__actions">

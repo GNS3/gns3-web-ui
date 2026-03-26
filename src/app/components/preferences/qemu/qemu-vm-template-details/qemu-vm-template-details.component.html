@@ -574,10 +574,12 @@
         }}</mat-icon>
       </div>
       @if (usageExpanded) {
-      <mat-form-field appearance="fill" class="qemu-template-details__field qemu-template-details__field--full">
-        <mat-label>Usage notes</mat-label>
-        <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
-      </mat-form-field>
+      <div class="preferences__usage-form">
+        <mat-form-field appearance="fill" class="preferences__usage-field--full">
+          <mat-label>Usage notes</mat-label>
+          <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
+        </mat-form-field>
+      </div>
       }
     </section>
 

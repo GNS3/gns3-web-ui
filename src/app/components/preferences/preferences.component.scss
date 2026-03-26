@@ -98,6 +98,17 @@
 }
 
 /* =============================================
+// Usage Section (shared across all template details)
+// ============================================= */
+.preferences__usage-form {
+  padding: 16px 24px 24px;
+}
+
+.preferences__usage-field--full {
+  width: 100%;
+}
+
+/* =============================================
 // Animations
 // ============================================= */
 @keyframes fadeInSlideIn {
@@ -136,5 +147,9 @@
   .preferences__nav-item {
     padding: 14px 16px;
     font-size: 15px;
+  }
+
+  .preferences__usage-form {
+    padding: 16px;
   }
 }

@@ -287,10 +287,12 @@
         <mat-icon class="ios-details__expand-icon">{{ usageExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
       </div>
       @if (usageExpanded) {
-      <mat-form-field appearance="fill" class="ios-details__field ios-details__field--full">
-        <mat-label>Usage</mat-label>
-        <textarea matInput type="text"></textarea>
-      </mat-form-field>
+      <div class="preferences__usage-form">
+        <mat-form-field appearance="fill" class="preferences__usage-field--full">
+          <mat-label>Usage</mat-label>
+          <textarea matInput type="text"></textarea>
+        </mat-form-field>
+      </div>
       }
     </section>
 

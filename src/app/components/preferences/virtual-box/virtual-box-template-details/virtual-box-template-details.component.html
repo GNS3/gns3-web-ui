@@ -199,10 +199,12 @@
 
     <section class="virtualbox-details__form-card">
       <h3 class="virtualbox-details__section-title">Usage</h3>
-      <mat-form-field appearance="fill" class="virtualbox-details__field">
-        <mat-label>Usage</mat-label>
-        <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
-      </mat-form-field>
+      <div class="preferences__usage-form">
+        <mat-form-field appearance="fill" class="preferences__usage-field--full">
+          <mat-label>Usage</mat-label>
+          <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
+        </mat-form-field>
+      </div>
     </section>
 
     <div class="virtualbox-details__actions">

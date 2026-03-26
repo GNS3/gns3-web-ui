@@ -211,8 +211,8 @@
         <mat-icon class="docker-details__expand-icon">{{ usageExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
       </div>
       @if (usageExpanded) {
-      <div class="docker-details__form">
-        <mat-form-field appearance="fill" class="docker-details__field docker-details__field--full">
+      <div class="preferences__usage-form">
+        <mat-form-field appearance="fill" class="preferences__usage-field--full">
           <mat-label>Usage</mat-label>
           <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
         </mat-form-field>

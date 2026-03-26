@@ -57,3 +57,24 @@ When saving template changes:
 1. Extract values from reactive forms using `get('fieldName').value`
 2. Update the `iosTemplate` object properties
 3. Call `iosService.saveTemplate()` to persist changes
+
+## Unified Usage Section
+
+All template details pages share the same Usage section styling through `preferences.component.scss`:
+
+| CSS Class | Description |
+|-----------|-------------|
+| `.preferences__usage-form` | Wrapper div with 16px padding |
+| `.preferences__usage-field--full` | Full-width form field |
+
+### Components Using Unified Usage
+
+- IOS template details (`ios-template-details`)
+- IOU template details (`iou-template-details`)
+- QEMU VM template details (`qemu-vm-template-details`)
+- VMware template details (`vmware-template-details`)
+- Docker template details (`docker-template-details`)
+- VirtualBox template details (`virtual-box-template-details`)
+- Cloud-Nodes template details (`cloud-nodes-template-details`)
+
+These components import `preferences.component.scss` to share the unified Usage section styling.
