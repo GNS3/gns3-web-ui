@@ -18,7 +18,11 @@ import { QemuConfigurationService } from '@services/qemu-configuration.service';
 import { QemuService } from '@services/qemu.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
-import { CustomAdaptersComponent, CustomAdaptersDialogData, CustomAdaptersDialogResult } from '../../common/custom-adapters/custom-adapters.component';
+import {
+  CustomAdaptersComponent,
+  CustomAdaptersDialogData,
+  CustomAdaptersDialogResult,
+} from '../../common/custom-adapters/custom-adapters.component';
 import { SymbolsMenuComponent } from '@components/preferences/common/symbols-menu/symbols-menu.component';
 
 @Component({
@@ -242,7 +246,8 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   }
 
   openCustomAdaptersDialog() {
-    this.fillCustomAdapters();
+    // Don't call fillCustomAdapters() here as it will override server data
+    // Use custom_adapters directly from server response
     const adapters = this.qemuTemplate.custom_adapters ? [...this.qemuTemplate.custom_adapters] : [];
 
     const dialogRef = this.dialog.open(CustomAdaptersComponent, {
@@ -252,7 +257,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
         networkTypes: this.networkTypes,
         portNameFormat: this.portNameFormat() || 'Ethernet{0}',
         portSegmentSize: this.portSegmentSize() || 0,
-        currentAdapters: this.adapters(),  // 传递当前 adapters 数量
+        currentAdapters: this.adapters(), // 传递当前 adapters 数量
       } as CustomAdaptersDialogData,
     });
 
@@ -374,7 +379,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
       },
       error: (error) => {
         this.toasterService.error('Failed to save template: ' + (error.message || 'Unknown error'));
-      }
+      },
     });
   }
 
