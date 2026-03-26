@@ -5,13 +5,11 @@
       <mat-label>Username</mat-label>
       <input matInput type="text" formControlName="username" placeholder="Username" />
       @if (form.username?.touched && form.username?.errors && form.username?.errors.required) {
-        <mat-error>Username is required</mat-error>
-      }
-      @if (form.username?.errors && form.username?.errors.pattern) {
-        <mat-error>Username is incorrect</mat-error>
-      }
-      @if (form.username?.errors && form.username?.errors.userExists) {
-        <mat-error>User with this username exists</mat-error>
+      <mat-error>Username is required</mat-error>
+      } @if (form.username?.errors && form.username?.errors.pattern) {
+      <mat-error>Username is incorrect</mat-error>
+      } @if (form.username?.errors && form.username?.errors.userExists) {
+      <mat-error>User with this username exists</mat-error>
       }
     </mat-form-field>
 
@@ -24,10 +22,9 @@
       <mat-label>Email</mat-label>
       <input matInput type="text" formControlName="email" placeholder="Email" />
       @if (form.email?.touched && form.email?.errors && form.email?.errors.required) {
-        <mat-error>Email is required</mat-error>
-      }
-      @if (form.email?.errors && form.email?.errors.email) {
-        <mat-error>Email is invalid</mat-error>
+      <mat-error>Email is required</mat-error>
+      } @if (form.email?.errors && form.email?.errors.email) {
+      <mat-error>Email is invalid</mat-error>
       }
     </mat-form-field>
 
@@ -35,7 +32,7 @@
       <mat-label>Password</mat-label>
       <input matInput type="password" formControlName="password" placeholder="Password" />
       @if (form.password?.touched && form.password?.errors) {
-        <mat-error>A password between 6 and 100 characters is required.</mat-error>
+      <mat-error>A password between 6 and 100 characters is required.</mat-error>
       }
     </mat-form-field>
 
@@ -43,7 +40,7 @@
       <mat-label>Confirm Password</mat-label>
       <input matInput type="password" formControlName="confirmPassword" placeholder="Confirm Password" />
       @if (form.confirmPassword?.touched && form.confirmPassword?.errors) {
-        <mat-error>Password and Confirm password must be the same.</mat-error>
+      <mat-error>Password and Confirm password must be the same.</mat-error>
       }
     </mat-form-field>
 
@@ -53,35 +50,42 @@
 
     <mat-form-field appearance="fill" class="full-width-field">
       <mat-label>Groups</mat-label>
-      <input type="text"
-             matInput
-             [matAutocomplete]="auto"
-             [formControl]="autocompleteControl" />
-      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="selectedGroup($event.option.value)">
+      <input type="text" matInput [matAutocomplete]="auto" [formControl]="autocompleteControl" />
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        [displayWith]="displayFn"
+        (optionSelected)="selectedGroup($event.option.value)"
+      >
         @for (group of filteredGroups | async; track group) {
-          <mat-option [value]="group">
-            {{group.name}}
-          </mat-option>
+        <mat-option [value]="group">
+          {{ group.name }}
+        </mat-option>
         }
       </mat-autocomplete>
     </mat-form-field>
 
     <div class="groups">
       @for (group of groupsToAdd; track group.name) {
-        <div>
-          <div class="groupList">
-            <div>{{group.name}}</div>
-            <mat-icon (click)="deleteGroup(group)">delete</mat-icon>
-          </div>
+      <div>
+        <div class="groupList">
+          <div>{{ group.name }}</div>
+          <mat-icon (click)="deleteGroup(group)">delete</mat-icon>
         </div>
+      </div>
       }
     </div>
   </div>
 
   <div mat-dialog-actions align="end">
     <button mat-button (click)="onCancelClick()" color="accent">Cancel</button>
-    <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary"
-            [disabled]="!addUserForm.valid">
+    <button
+      mat-button
+      (click)="onAddClick()"
+      tabindex="2"
+      mat-raised-button
+      color="primary"
+      [disabled]="!addUserForm.valid"
+    >
       Add user
     </button>
   </div>

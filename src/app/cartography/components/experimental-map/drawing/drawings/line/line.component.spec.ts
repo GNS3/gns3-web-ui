@@ -1,4 +1,4 @@
-import {ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { QtDasharrayFixer } from 'app/cartography/helpers/qt-dasharray-fixer';
 import { LineComponent } from './line.component';
 
@@ -9,7 +9,7 @@ describe('LineComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [LineComponent],
-      providers:[provideZonelessChangeDetection(), QtDasharrayFixer]
+      providers: [provideZonelessChangeDetection(), QtDasharrayFixer],
     }).compileComponents();
   });
 

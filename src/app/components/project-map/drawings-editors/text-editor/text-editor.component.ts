@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, ElementRef, OnInit, Renderer2, inject, viewChild, ChangeDetectorRef } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  OnInit,
+  Renderer2,
+  inject,
+  viewChild,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormsModule,

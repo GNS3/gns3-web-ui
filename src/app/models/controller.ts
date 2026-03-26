@@ -11,9 +11,9 @@ export class Controller {
   port: number;
   path: string;
   ubridge_path: string;
-  status: ControllerStatus = 'stopped';  // Initialize with default value
+  status: ControllerStatus = 'stopped'; // Initialize with default value
   protocol: ControllerProtocol;
   username: string;
   password: string;
-  tokenExpired: boolean = false;  // Initialize with default value
+  tokenExpired: boolean = false; // Initialize with default value
 }

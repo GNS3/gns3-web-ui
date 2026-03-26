@@ -16,9 +16,7 @@ import { ToasterService } from 'app/services/toaster.service';
 import { MockedToasterService } from 'app/services/toaster.service.spec';
 import { NonNegativeValidator } from 'app/validators/non-negative-validator';
 import { TemplateListDialogComponent } from './template-list-dialog.component';
-import {TemplateFilter} from "@filters/templateFilter.pipe";
-
-
+import { TemplateFilter } from '@filters/templateFilter.pipe';
 
 describe('TemplateListDialogComponent', () => {
   let component: TemplateListDialogComponent;
@@ -27,7 +25,15 @@ describe('TemplateListDialogComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [TemplateListDialogComponent, TemplateFilter],
-      imports: [ReactiveFormsModule, FormsModule, RouterTestingModule, MatFormFieldModule, MatInputModule, MatSelectModule, NoopAnimationsModule],
+      imports: [
+        ReactiveFormsModule,
+        FormsModule,
+        RouterTestingModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatSelectModule,
+        NoopAnimationsModule,
+      ],
       providers: [
         provideZonelessChangeDetection(),
         { provide: TemplateService, useClass: TemplateMocksService },
@@ -36,8 +42,8 @@ describe('TemplateListDialogComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: NonNegativeValidator, useValue: {} },
         HttpController,
-        HttpClient
-      ]
+        HttpClient,
+      ],
     }).compileComponents();
   });
 

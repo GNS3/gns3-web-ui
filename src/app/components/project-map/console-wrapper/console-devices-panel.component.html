@@ -11,37 +11,33 @@
     <div class="header-title">
       <mat-icon class="panel-icon">devices</mat-icon>
       @if (!collapsed()) {
-        <span class="header-text">Devices</span>
+      <span class="header-text">Devices</span>
       }
     </div>
   </div>
 
   <!-- Device List -->
   @if (!collapsed()) {
-    <div class="device-list">
-      @for (node of nodes(); track node.id) {
-        <div
-          class="device-item"
-          [class.started]="isDeviceStarted(node)"
-          (click)="onDeviceClick(node)"
-        >
-          <div class="device-info">
-            <div class="device-status-indicator" [style.backgroundColor]="getStatusColor(node.status)"></div>
-            <div class="device-details">
-              <div class="device-name">{{ node.name }}</div>
-            </div>
-          </div>
-          <mat-icon class="device-icon" [class.disabled]="!isDeviceStarted(node)"> terminal </mat-icon>
+  <div class="device-list">
+    @for (node of nodes(); track node.id) {
+    <div class="device-item" [class.started]="isDeviceStarted(node)" (click)="onDeviceClick(node)">
+      <div class="device-info">
+        <div class="device-status-indicator" [style.backgroundColor]="getStatusColor(node.status)"></div>
+        <div class="device-details">
+          <div class="device-name">{{ node.name }}</div>
         </div>
-      }
-
-      <!-- Empty State -->
-      @if (nodes().length === 0) {
-        <div class="empty-state">
-          <mat-icon class="empty-icon">devices</mat-icon>
-          <div class="empty-text">No console devices available</div>
-        </div>
-      }
+      </div>
+      <mat-icon class="device-icon" [class.disabled]="!isDeviceStarted(node)"> terminal </mat-icon>
     </div>
+    }
+
+    <!-- Empty State -->
+    @if (nodes().length === 0) {
+    <div class="empty-state">
+      <mat-icon class="empty-icon">devices</mat-icon>
+      <div class="empty-text">No console devices available</div>
+    </div>
+    }
+  </div>
   }
 </div>

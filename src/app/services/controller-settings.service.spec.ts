@@ -8,7 +8,7 @@ import { HttpController } from './http-controller.service';
 import { ControllerSettingsService } from './controller-settings.service';
 
 export class MockedControllerSettingsService {
-  getSettingsForQemu(controller: Controller ) {
+  getSettingsForQemu(controller: Controller) {
     return of([]);
   }
 

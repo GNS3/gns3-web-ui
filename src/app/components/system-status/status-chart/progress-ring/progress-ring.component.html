@@ -1,5 +1,8 @@
 <div class="progress-ring">
-  <svg class="progress-ring__svg" [attr.viewBox]="'0 0 ' + (radius() * 2 + strokeWidth()) + ' ' + (radius() * 2 + strokeWidth())">
+  <svg
+    class="progress-ring__svg"
+    [attr.viewBox]="'0 0 ' + (radius() * 2 + strokeWidth()) + ' ' + (radius() * 2 + strokeWidth())"
+  >
     <!-- Track (background circle) -->
     <circle
       class="progress-ring__track"
@@ -24,7 +27,7 @@
   <div class="progress-ring__content">
     <span class="progress-ring__percent">{{ percent() || 0 }}%</span>
     @if (label()) {
-      <span class="progress-ring__label">{{ label() }}</span>
+    <span class="progress-ring__label">{{ label() }}</span>
     }
   </div>
 </div>

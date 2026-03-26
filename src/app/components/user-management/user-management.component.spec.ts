@@ -9,7 +9,7 @@ describe('UserManagementComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [UserManagementComponent],
-      providers: [provideZonelessChangeDetection()]
+      providers: [provideZonelessChangeDetection()],
     }).compileComponents();
   });
 

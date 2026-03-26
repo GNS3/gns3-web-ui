@@ -1,4 +1,15 @@
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, Output, EventEmitter, ChangeDetectorRef, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  OnDestroy,
+  Output,
+  EventEmitter,
+  ChangeDetectorRef,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { Subject } from 'rxjs';

@@ -127,7 +127,7 @@ export class TextEditorComponent implements OnInit, OnDestroy {
     rootElement
       .selectAll<SVGGElement, MapLinkNode>('g.interface_label_container')
       .select<SVGTextElement>('text.interface_label')
-      .on('dblclick', function(this: SVGTextElement, event: MouseEvent, elem: MapLinkNode) {
+      .on('dblclick', function (this: SVGTextElement, event: MouseEvent, elem: MapLinkNode) {
         self.selectionManager.setSelected([]);
 
         const temporaryTextElement = self.temporaryTextElement();
@@ -217,7 +217,7 @@ export class TextEditorComponent implements OnInit, OnDestroy {
 
     rootElement
       .selectAll<SVGTextElement, TextElement>('text.text_element')
-      .on('dblclick', function(this: SVGTextElement, event: MouseEvent, elem: TextElement) {
+      .on('dblclick', function (this: SVGTextElement, event: MouseEvent, elem: TextElement) {
         const temporaryTextElement = self.temporaryTextElement();
         self.renderer.setStyle(temporaryTextElement.nativeElement, 'display', 'initial');
         self.renderer.setStyle(

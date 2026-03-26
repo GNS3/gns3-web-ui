@@ -4,10 +4,11 @@ import { CssFixer } from 'app/cartography/helpers/css-fixer';
 import { InterfaceLabelComponent } from './interface-label.component';
 
 export class MockElementRef extends ElementRef {
-  constructor() { super(null || undefined); }
-  nativeElement={}
+  constructor() {
+    super(null || undefined);
+  }
+  nativeElement = {};
 }
-
 
 xdescribe('InterfaceLabelComponent', () => {
   let component: InterfaceLabelComponent;
@@ -21,7 +22,7 @@ xdescribe('InterfaceLabelComponent', () => {
         CssFixer,
         ChangeDetectorRef,
         { provide: ElementRef, useValue: new MockElementRef() },
-      ]
+      ],
     }).compileComponents();
   });
 
@@ -32,6 +33,6 @@ xdescribe('InterfaceLabelComponent', () => {
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy()
+    expect(component).toBeTruthy();
   });
 });

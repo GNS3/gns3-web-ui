@@ -1,4 +1,4 @@
-import {ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { DrawingsEventSource } from 'app/cartography/events/drawings-event-source';
 import { SvgToDrawingConverter } from 'app/cartography/helpers/svg-to-drawing-converter';
 import { DrawingComponent } from './drawing.component';
@@ -23,10 +23,10 @@ describe('DrawingComponent', () => {
         ImageComponent,
         LineComponent,
         RectComponent,
-        TextComponent
+        TextComponent,
       ],
       imports: [CommonModule],
-      providers:[provideZonelessChangeDetection(), SvgToDrawingConverter,DrawingsEventSource]
+      providers: [provideZonelessChangeDetection(), SvgToDrawingConverter, DrawingsEventSource],
     }).compileComponents();
   });
 

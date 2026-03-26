@@ -103,9 +103,9 @@ export class MapSettingsService {
     this.openReadme = value;
     localStorage.removeItem('openReadme');
     if (value) {
-        localStorage.setItem('openReadme', 'true');
+      localStorage.setItem('openReadme', 'true');
     } else {
-        localStorage.setItem('openReadme', 'false');
+      localStorage.setItem('openReadme', 'false');
     }
   }
 

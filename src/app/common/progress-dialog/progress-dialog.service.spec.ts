@@ -4,14 +4,14 @@ import { MockedProgressService } from 'app/components/project-map/project-map.co
 import { ProgressDialogService } from './progress-dialog.service';
 
 describe('ProgressDialogService', () => {
-  let  mockedProgressService : MockedProgressService
+  let mockedProgressService: MockedProgressService;
   beforeEach(() => {
     TestBed.configureTestingModule({
       // imports:[ProgressDialogService],
       providers: [
         provideZonelessChangeDetection(),
         { provide: MatDialog, useValue: {} },
-        { provide: ProgressDialogService, useClass:MockedProgressService },
+        { provide: ProgressDialogService, useClass: MockedProgressService },
       ],
     });
   });

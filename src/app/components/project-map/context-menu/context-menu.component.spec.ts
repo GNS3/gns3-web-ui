@@ -38,7 +38,6 @@ describe('ContextMenuComponent', () => {
     expect(component).toBeTruthy();
   });
 
-
   it('should reset capabilities while opening menu for drawing', () => {
     component.contextMenu = { openMenu() {} } as MatMenuTrigger;
     let drawing = {} as Drawing;

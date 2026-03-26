@@ -14,7 +14,7 @@ import { ToasterService } from '@services/toaster.service';
   templateUrl: './add-image-dialog.component.html',
   styleUrls: ['./add-image-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatRadioModule]
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, MatRadioModule],
 })
 export class AddImageDialogComponent implements OnInit {
   private backgroundUploadService = inject(BackgroundUploadService);
@@ -25,10 +25,7 @@ export class AddImageDialogComponent implements OnInit {
   isInstallAppliance: boolean = false;
   install_appliance: boolean = false;
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    public dialogRef: MatDialogRef<AddImageDialogComponent>
-  ) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any, public dialogRef: MatDialogRef<AddImageDialogComponent>) {}
 
   ngOnInit() {
     this.controller = this.data;

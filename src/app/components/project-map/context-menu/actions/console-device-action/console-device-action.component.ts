@@ -12,7 +12,7 @@ import { ToasterService } from '@services/toaster.service';
 @Component({
   selector: 'app-console-device-action',
   templateUrl: './console-device-action.component.html',
-  imports: [ MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConsoleDeviceActionComponent implements OnInit {

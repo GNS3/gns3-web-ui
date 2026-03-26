@@ -1,13 +1,20 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { ChatSession, ChatMessage, ToolCall, ChatPanelState, SessionUIState, ToolCallUIState } from '@models/ai-chat.interface';
+import {
+  ChatSession,
+  ChatMessage,
+  ToolCall,
+  ChatPanelState,
+  SessionUIState,
+  ToolCallUIState,
+} from '@models/ai-chat.interface';
 
 /**
  * AI Chat State Management Service
  * Uses RxJS BehaviorSubject to manage chat state
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AiChatStore {
   // Current project ID
@@ -41,8 +48,8 @@ export class AiChatStore {
     isMinimized: false,
     position: {
       top: 80,
-      right: 20
-    }
+      right: 20,
+    },
   });
 
   // Session UI state (Map: sessionId -> uiState)
@@ -151,7 +158,7 @@ export class AiChatStore {
    */
   updateSession(session: ChatSession): void {
     const currentSessions = this.sessions$.value;
-    const index = currentSessions.findIndex(s => s.thread_id === session.thread_id);
+    const index = currentSessions.findIndex((s) => s.thread_id === session.thread_id);
     if (index !== -1) {
       const updatedSessions = [...currentSessions];
       updatedSessions[index] = session;
@@ -165,7 +172,7 @@ export class AiChatStore {
    */
   deleteSession(sessionId: string): void {
     const currentSessions = this.sessions$.value;
-    this.sessions$.next(currentSessions.filter(s => s.thread_id !== sessionId));
+    this.sessions$.next(currentSessions.filter((s) => s.thread_id !== sessionId));
 
     // Delete messages
     this.messagesMap.delete(sessionId);
@@ -185,7 +192,7 @@ export class AiChatStore {
    * @returns Messages list Observable
    */
   getMessages(sessionId?: string): Observable<ChatMessage[]> {
-    return new Observable<ChatMessage[]>(subscriber => {
+    return new Observable<ChatMessage[]>((subscriber) => {
       const targetSessionId = sessionId || this.currentSessionId$.value;
 
       if (!targetSessionId) {
@@ -245,7 +252,7 @@ export class AiChatStore {
       const updatedMessages = [...currentMessages];
       updatedMessages[updatedMessages.length - 1] = {
         ...lastMessage,
-        content: lastMessage.content + content
+        content: lastMessage.content + content,
       };
       this.messagesMap.set(sessionId, updatedMessages);
       this.messages$.next(new Map(this.messagesMap));
@@ -420,7 +427,7 @@ export class AiChatStore {
     this.panelState$.next({
       ...currentState,
       isMaximized: true,
-      isMinimized: false
+      isMinimized: false,
     });
     this.savePanelState(this.panelState$.value);
   }
@@ -433,7 +440,7 @@ export class AiChatStore {
     this.panelState$.next({
       ...currentState,
       isMaximized: false,
-      isMinimized: true
+      isMinimized: true,
     });
     this.savePanelState(this.panelState$.value);
   }
@@ -446,7 +453,7 @@ export class AiChatStore {
     this.panelState$.next({
       ...currentState,
       isMaximized: false,
-      isMinimized: false
+      isMinimized: false,
     });
     this.savePanelState(this.panelState$.value);
   }
@@ -460,7 +467,7 @@ export class AiChatStore {
     const newPosition = { ...currentState.position, ...position };
     this.panelState$.next({
       ...currentState,
-      position: newPosition
+      position: newPosition,
     });
     this.savePanelState(this.panelState$.value);
   }
@@ -475,7 +482,7 @@ export class AiChatStore {
     this.panelState$.next({
       ...currentState,
       width,
-      height
+      height,
     });
     this.savePanelState(this.panelState$.value);
   }
@@ -522,7 +529,7 @@ export class AiChatStore {
     const currentStates = new Map(this.sessionUIStateMap);
     const currentState = currentStates.get(sessionId) || {
       isEditing: false,
-      isExpanded: true
+      isExpanded: true,
     };
     const newState = { ...currentState, ...uiState };
     currentStates.set(sessionId, newState);
@@ -536,7 +543,7 @@ export class AiChatStore {
    * @returns UI state Observable
    */
   getSessionUIState(sessionId: string): Observable<SessionUIState | undefined> {
-    return new Observable<SessionUIState | undefined>(subscriber => {
+    return new Observable<SessionUIState | undefined>((subscriber) => {
       subscriber.next(this.sessionUIStateMap.get(sessionId));
     });
   }

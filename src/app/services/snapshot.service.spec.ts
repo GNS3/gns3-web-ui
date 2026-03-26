@@ -19,7 +19,7 @@ describe('SnapshotService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [provideZonelessChangeDetection(), HttpController, HttpClient,SnapshotService],
+      providers: [provideZonelessChangeDetection(), HttpController, HttpClient, SnapshotService],
     });
 
     httpClient = TestBed.get(HttpClient);
@@ -41,7 +41,9 @@ describe('SnapshotService', () => {
     const snapshot = new Snapshot();
     service.create(controller, 'myproject', snapshot).subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/snapshots`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/snapshots`
+    );
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual(snapshot);
   }));
@@ -49,7 +51,9 @@ describe('SnapshotService', () => {
   it('should list snapshots', inject([SnapshotService], (service: SnapshotService) => {
     service.list(controller, 'myproject').subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/snapshots`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/snapshots`
+    );
     expect(req.request.method).toEqual('GET');
   }));
 });

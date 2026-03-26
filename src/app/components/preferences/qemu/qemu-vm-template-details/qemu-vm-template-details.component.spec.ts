@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
-import {  ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AbstractControlDirective, UntypedFormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
@@ -31,8 +31,7 @@ export class MockedQemuService {
     return of(qemuTemplate);
   }
 
-
-  public getImages(controller: Controller ) {
+  public getImages(controller: Controller) {
     return of([]);
   }
 }

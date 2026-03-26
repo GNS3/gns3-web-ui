@@ -15,7 +15,7 @@ describe('Custom adapters component', () => {
   let fixture: ComponentFixture<CustomAdaptersComponent>;
 
   beforeEach(() => {
-  TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [
         MatTableModule,
         MatIconModule,

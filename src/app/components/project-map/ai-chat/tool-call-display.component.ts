@@ -12,7 +12,12 @@ import { ToolCall } from '@models/ai-chat.interface';
   imports: [MatIconModule, MatProgressSpinnerModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="inline-tool-call" (click)="onViewDetails()" [title]="getStatusText()" *ngIf="toolCall()?.function?.name">
+    <div
+      class="inline-tool-call"
+      (click)="onViewDetails()"
+      [title]="getStatusText()"
+      *ngIf="toolCall()?.function?.name"
+    >
       <mat-icon class="tool-icon">build</mat-icon>
       <span class="tool-name">{{ toolCall()?.function?.name }}</span>
       <span class="tool-status" [class.status-receiving]="isReceiving" [class.status-executing]="isExecuting()">

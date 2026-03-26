@@ -1,8 +1,5 @@
 @if (export_project_form) {
-<form
-  [formGroup]="export_project_form"
-  (ngSubmit)="export_project_form.valid && exportPortableProject()"
->
+<form [formGroup]="export_project_form" (ngSubmit)="export_project_form.valid && exportPortableProject()">
   <div class="row">
     <div class="col-md-10">
       <h1 mat-dialog-title>Export Project</h1>
@@ -22,9 +19,7 @@
         <mat-form-field class="input-full-width">
           <mat-select formControlName="compression" (selectionChange)="selectCompression($event)" required>
             @for (compressionValue of compression_methods; track compressionValue?.name) {
-              <mat-option [value]="compressionValue">{{
-                compressionValue?.name
-              }}</mat-option>
+            <mat-option [value]="compressionValue">{{ compressionValue?.name }}</mat-option>
             }
           </mat-select>
         </mat-form-field>
@@ -36,9 +31,7 @@
         <mat-form-field class="input-full-width">
           <mat-select formControlName="compression_level">
             @for (compressionLevel of compression_filter_value; track compressionLevel) {
-              <mat-option [value]="compressionLevel">{{
-                compressionLevel
-              }}</mat-option>
+            <mat-option [value]="compressionLevel">{{ compressionLevel }}</mat-option>
             }
           </mat-select>
         </mat-form-field>
@@ -46,14 +39,16 @@
     </div>
     <div class="row">
       <div class="col-md-12 checkbox-row">
-        <section  class="checkBox-section">
-          <mat-checkbox formControlName="include_base_image" class="checkBox-margin"> Include base images </mat-checkbox>
+        <section class="checkBox-section">
+          <mat-checkbox formControlName="include_base_image" class="checkBox-margin">
+            Include base images
+          </mat-checkbox>
         </section>
       </div>
     </div>
     <div class="row">
       <div class="col-md-12 checkbox-row">
-        <section class="checkBox-section" >
+        <section class="checkBox-section">
           <mat-checkbox class="checkBox-margin" formControlName="include_snapshots"> Include snapshots </mat-checkbox>
         </section>
       </div>
@@ -61,7 +56,7 @@
     <div class="row">
       <div class="col-md-12 checkbox-row">
         <section class="checkBox-section">
-          <mat-checkbox  formControlName="reset_mac_address" class="checkBox-margin"> Reset MAC addresses</mat-checkbox>
+          <mat-checkbox formControlName="reset_mac_address" class="checkBox-margin"> Reset MAC addresses</mat-checkbox>
         </section>
       </div>
     </div>

@@ -9,7 +9,7 @@ describe('RoleDetailComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [RoleDetailComponent],
-      providers: [provideZonelessChangeDetection()]
+      providers: [provideZonelessChangeDetection()],
     }).compileComponents();
   });
 

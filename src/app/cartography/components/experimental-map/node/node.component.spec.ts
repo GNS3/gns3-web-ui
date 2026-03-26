@@ -10,14 +10,9 @@ describe('NodeComponent', () => {
   let fixture: ComponentFixture<NodeComponent>;
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       declarations: [NodeComponent, DraggableComponent],
-      providers:[
-        provideZonelessChangeDetection(),
-        CssFixer,
-        FontFixer,
-        NodesEventSource,
-      ]
+      providers: [provideZonelessChangeDetection(), CssFixer, FontFixer, NodesEventSource],
     }).compileComponents();
   });
 

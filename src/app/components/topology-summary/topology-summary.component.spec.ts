@@ -20,7 +20,7 @@ import { MockedLinksDataSource, MockedNodesDataSource } from '../project-map/pro
 import { TopologySummaryComponent } from './topology-summary.component';
 
 export class MockedComputeService {
-  getComputes(controller: Controller ) {
+  getComputes(controller: Controller) {
     return of([]);
   }
 }
@@ -34,7 +34,7 @@ describe('TopologySummaryComponent', () => {
   let mockedLinksDataSource: MockedLinksDataSource = new MockedLinksDataSource();
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [
         MatTableModule,
         MatTooltipModule,
@@ -59,7 +59,7 @@ describe('TopologySummaryComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(TopologySummaryComponent);
     component = fixture.componentInstance;
-    component.project = ({ project_id: 1 } as unknown) as Project;
+    component.project = { project_id: 1 } as unknown as Project;
     fixture.detectChanges();
   });
 

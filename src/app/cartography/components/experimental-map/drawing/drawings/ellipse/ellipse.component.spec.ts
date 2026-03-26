@@ -7,9 +7,9 @@ describe('EllipseComponent', () => {
   let fixture: ComponentFixture<EllipseComponent>;
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       declarations: [EllipseComponent],
-      providers:[provideZonelessChangeDetection(), QtDasharrayFixer]
+      providers: [provideZonelessChangeDetection(), QtDasharrayFixer],
     }).compileComponents();
   });
 

@@ -31,17 +31,17 @@ describe('AppComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create the app', async() => {
+  it('should create the app', async () => {
     const app = fixture.debugElement.componentInstance;
     await expect(app).toBeTruthy();
   });
 
-  it('should have footer', async() => {
+  it('should have footer', async () => {
     const compiled = fixture.debugElement.nativeElement;
     await expect(compiled.querySelector('router-outlet').textContent).toEqual('');
   });
 
-  it('should receive changed settings', async() => {
+  it('should receive changed settings', async () => {
     settingsService.setReportsSettings(true);
     component.ngOnInit();
     settingsService.setReportsSettings(false);

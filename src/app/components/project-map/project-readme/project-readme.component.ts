@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, AfterViewInit, inject, viewChild, ChangeDetectorRef, ElementRef } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  AfterViewInit,
+  inject,
+  viewChild,
+  ChangeDetectorRef,
+  ElementRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';

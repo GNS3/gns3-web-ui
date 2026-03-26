@@ -20,7 +20,7 @@ export class ControllerManagementService implements OnDestroy {
     return 'local-controller-status-events';
   }
 
-  async start(controller: Controller ) {
+  async start(controller: Controller) {
     // Web application - controller management is handled by the server
     var startingEvent: ControllerStateEvent = {
       controllerName: controller.name,
@@ -31,7 +31,7 @@ export class ControllerManagementService implements OnDestroy {
     return Promise.resolve();
   }
 
-  async stop(controller: Controller ) {
+  async stop(controller: Controller) {
     // Web application - controller management is handled by the server
     return Promise.resolve();
   }

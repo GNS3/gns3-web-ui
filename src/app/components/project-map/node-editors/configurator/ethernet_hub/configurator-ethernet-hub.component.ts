@@ -1,6 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,7 +28,18 @@ import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
   templateUrl: './configurator-ethernet-hub.component.html',
   styleUrls: ['../configurator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatChipsModule, MatIconModule]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatChipsModule,
+    MatIconModule,
+  ],
 })
 export class ConfiguratorDialogEthernetHubComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogEthernetHubComponent>);

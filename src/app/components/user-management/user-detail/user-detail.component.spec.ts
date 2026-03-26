@@ -9,7 +9,7 @@ describe('UserDetailComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [UserDetailComponent],
-      providers: [provideZonelessChangeDetection()]
+      providers: [provideZonelessChangeDetection()],
     }).compileComponents();
   });
 

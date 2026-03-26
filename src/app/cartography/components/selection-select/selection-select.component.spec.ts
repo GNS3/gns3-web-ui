@@ -10,7 +10,7 @@ describe('SelectionSelectComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [SelectionSelectComponent],
-      providers: [provideZonelessChangeDetection(), MapChangeDetectorRef,SelectionManager]
+      providers: [provideZonelessChangeDetection(), MapChangeDetectorRef, SelectionManager],
     }).compileComponents();
   });
 

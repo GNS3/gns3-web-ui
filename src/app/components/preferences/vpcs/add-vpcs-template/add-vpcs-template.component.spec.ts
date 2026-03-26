@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
-import {  ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
@@ -23,7 +23,7 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { AddVpcsTemplateComponent } from './add-vpcs-template.component';
 
 export class MockedComputeService {
-  getComputes(controller: Controller ) {
+  getComputes(controller: Controller) {
     return of([]);
   }
 }

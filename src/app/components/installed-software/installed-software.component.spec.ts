@@ -15,19 +15,14 @@ describe('InstalledSoftwareComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [InstalledSoftwareComponent],
-      imports: [
-        CommonModule,
-        MatTableModule,
-        AppTestingModule
-      ],
+      imports: [CommonModule, MatTableModule, AppTestingModule],
       providers: [
         provideZonelessChangeDetection(),
         InstalledSoftwareService,
         ExternalSoftwareDefinitionService,
-        PlatformService
+        PlatformService,
       ],
       schemas: [CUSTOM_ELEMENTS_SCHEMA],
-
     }).compileComponents();
   });
 

@@ -1,6 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -26,7 +33,17 @@ import { RotationValidator } from '../../../../validators/rotation-validator';
   selector: 'app-style-editor',
   templateUrl: './style-editor.component.html',
   styleUrl: './style-editor.component.scss',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatButtonModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StyleEditorDialogComponent implements OnInit {
@@ -70,19 +87,25 @@ export class StyleEditorDialogComponent implements OnInit {
       this.element.width = this.drawing.element.width;
       this.element.height = this.drawing.element.height;
       this.element.stroke = this.drawing.element.stroke;
-      console.log(this.drawing.element.stroke_dasharray, this.drawing.element.stroke_width)
-      this.element.stroke_dasharray = (this.drawing.element.stroke_dasharray == undefined && this.drawing.element.stroke_width == undefined ) ? '': this.drawing.element.stroke_dasharray ?? 'none' ;
+      console.log(this.drawing.element.stroke_dasharray, this.drawing.element.stroke_width);
+      this.element.stroke_dasharray =
+        this.drawing.element.stroke_dasharray == undefined && this.drawing.element.stroke_width == undefined
+          ? ''
+          : this.drawing.element.stroke_dasharray ?? 'none';
       this.element.stroke_width = this.drawing.element.stroke_width;
     } else if (this.drawing.element instanceof LineElement) {
       this.element.stroke = this.drawing.element.stroke;
-      this.element.stroke_dasharray = (this.drawing.element.stroke_dasharray == undefined && this.drawing.element.stroke_width == undefined ) ? '': this.drawing.element.stroke_dasharray ?? 'none' ;
+      this.element.stroke_dasharray =
+        this.drawing.element.stroke_dasharray == undefined && this.drawing.element.stroke_width == undefined
+          ? ''
+          : this.drawing.element.stroke_dasharray ?? 'none';
       this.element.stroke_width = this.drawing.element.stroke_width;
     }
 
     if (this.drawing.element instanceof RectElement) {
-        this.element.rx = this.drawing.element.rx;
-        this.element.ry = this.drawing.element.ry;
-      }
+      this.element.rx = this.drawing.element.rx;
+      this.element.ry = this.drawing.element.ry;
+    }
 
     if (this.element.stroke_width === undefined) this.element.stroke_width = 0;
     this.formGroup.controls['borderWidth'].setValue(this.element.stroke_width);
@@ -107,13 +130,14 @@ export class StyleEditorDialogComponent implements OnInit {
         this.drawing.element.fill = this.element.fill;
         this.drawing.element.width = this.element.width;
         this.drawing.element.height = this.element.height;
-        this.drawing.element.stroke = this.element.stroke ?? "#000000";
+        this.drawing.element.stroke = this.element.stroke ?? '#000000';
         this.drawing.element.stroke_dasharray = this.element.stroke_dasharray;
         this.drawing.element.stroke_width = this.element.stroke_width;
       } else if (this.drawing.element instanceof LineElement) {
         if (this.element.stroke_dasharray != '') {
-          this.drawing.element.stroke = this.element.stroke ?? "#000000";
-          this.drawing.element.stroke_dasharray =  this.element.stroke_dasharray === '' ? 'none' : this.element.stroke_dasharray;
+          this.drawing.element.stroke = this.element.stroke ?? '#000000';
+          this.drawing.element.stroke_dasharray =
+            this.element.stroke_dasharray === '' ? 'none' : this.element.stroke_dasharray;
           this.drawing.element.stroke_width = this.element.stroke_width === 0 ? 2 : this.element.stroke_width;
         } else {
           this.toasterService.warning(`No border style line element not supported`);
@@ -125,7 +149,7 @@ export class StyleEditorDialogComponent implements OnInit {
 
       if (this.drawing.element instanceof RectElement) {
         this.drawing.element.rx = this.element.rx;
-        this.drawing.element.ry = this.element.rx;  // set ry with rx because we don't have ry in the form
+        this.drawing.element.ry = this.element.rx; // set ry with rx because we don't have ry in the form
       } else if (this.drawing.element instanceof EllipseElement) {
         this.drawing.element.rx = this.element.width / 2;
         this.drawing.element.ry = this.element.height / 2;

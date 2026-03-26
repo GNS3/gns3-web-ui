@@ -2,35 +2,25 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 
 import { AclManagementComponent } from './acl-management.component';
-import {ActivatedRoute} from "@angular/router";
-import {ToasterService} from "@services/toaster.service";
-import {MatDialog} from "@angular/material/dialog";
-import {AclService} from "@services/acl.service";
-import {of} from "rxjs";
-import {ControllerService} from "@services/controller.service";
-import {FatalLinkerError} from "@angular/compiler-cli/linker";
+import { ActivatedRoute } from '@angular/router';
+import { ToasterService } from '@services/toaster.service';
+import { MatDialog } from '@angular/material/dialog';
+import { AclService } from '@services/acl.service';
+import { of } from 'rxjs';
+import { ControllerService } from '@services/controller.service';
+import { FatalLinkerError } from '@angular/compiler-cli/linker';
 
-class FakeToastService {
-
-}
+class FakeToastService {}
 
 class FakeActivatedRoute {
-  data = of({controller: {}, pool: {}});
+  data = of({ controller: {}, pool: {} });
 }
 
-class FakeMatDialog {
+class FakeMatDialog {}
 
-}
+class FakeAclService {}
 
-class FakeAclService {
-
-}
-
-class FakeControllerService {
-
-}
-
-
+class FakeControllerService {}
 
 describe('AclManagementComponent', () => {
   let component: AclManagementComponent;
@@ -38,17 +28,16 @@ describe('AclManagementComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ AclManagementComponent ],
+      declarations: [AclManagementComponent],
       providers: [
         provideZonelessChangeDetection(),
-        {provide: ToasterService, useClass: FakeToastService},
-        {provide: ActivatedRoute, useClass: FakeActivatedRoute},
-        {provide: MatDialog, useClass: FakeMatDialog},
-        {provide: AclService, useClass: FakeAclService},
-        {provide: ControllerService, useClass: FakeControllerService}
+        { provide: ToasterService, useClass: FakeToastService },
+        { provide: ActivatedRoute, useClass: FakeActivatedRoute },
+        { provide: MatDialog, useClass: FakeMatDialog },
+        { provide: AclService, useClass: FakeAclService },
+        { provide: ControllerService, useClass: FakeControllerService },
       ],
-    })
-    .compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(AclManagementComponent);
     component = fixture.componentInstance;

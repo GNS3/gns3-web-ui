@@ -27,7 +27,11 @@ describe('ExternalSoftwareDefinitionService', () => {
 
   beforeEach(() =>
     TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection(), ExternalSoftwareDefinitionService, { provide: PlatformService, useValue: platformServiceMock }],
+      providers: [
+        provideZonelessChangeDetection(),
+        ExternalSoftwareDefinitionService,
+        { provide: PlatformService, useValue: platformServiceMock },
+      ],
     })
   );
 

@@ -2,215 +2,139 @@
   <span [matMenuTriggerFor]="contextMenu"></span>
   <mat-menu #contextMenu="matMenu" class="context-menu-items">
     @if (nodes.length === 1) {
-      <app-show-node-action [controller]="controller" [node]="nodes[0]"></app-show-node-action>
-    }
-    @if (nodes.length === 1) {
-      <app-config-node-action [controller]="controller" [node]="nodes[0]"></app-config-node-action>
-    }
-    @if (nodes.length) {
-      <app-start-node-action [controller]="controller" [nodes]="nodes"></app-start-node-action>
-    }
-    @if (nodes.length) {
-      <app-suspend-node-action [controller]="controller" [nodes]="nodes"></app-suspend-node-action>
-    }
-    @if (nodes.length) {
-      <app-stop-node-action [controller]="controller" [nodes]="nodes"></app-stop-node-action>
-    }
-    @if (nodes.length) {
-      <app-reload-node-action [controller]="controller" [nodes]="nodes"></app-reload-node-action>
-    }
-    @if (!projectService.isReadOnly(project) && nodes.length > 0) {
-      <app-http-console-action
-        [controller]="controller"
-        [nodes]="nodes"
-      ></app-http-console-action>
-    }
-    @if (!projectService.isReadOnly(project) && nodes.length > 0) {
-      <app-http-console-new-tab-action
-        [controller]="controller"
-        [nodes]="nodes"
-      ></app-http-console-new-tab-action>
-    }
-    @if (!projectService.isReadOnly(project) && nodes.length === 1) {
-      <app-console-device-action-browser
-        [controller]="controller"
-        [node]="nodes[0]"
-      ></app-console-device-action-browser>
-    }
-    @if (nodes.length === 1) {
-      <app-isolate-node-action [controller]="controller" [node]="nodes[0]"></app-isolate-node-action>
-    }
-    @if (nodes.length === 1) {
-      <app-unisolate-node-action [controller]="controller" [node]="nodes[0]"></app-unisolate-node-action>
-    }
-    @if (!projectService.isReadOnly(project) && nodes.length === 1) {
-      <app-change-hostname-action
-        [controller]="controller"
-        [node]="nodes[0]"
-      ></app-change-hostname-action>
-    }
-    @if (!projectService.isReadOnly(project) && nodes.length === 1) {
-      <app-change-symbol-action
-        [controller]="controller"
-        [node]="nodes[0]"
-      ></app-change-symbol-action>
-    }
-    @if (drawings.length > 0 || nodes.length > 0) {
-      <app-duplicate-action
-        [controller]="controller"
-        [project]="project"
-        [nodes]="nodes"
-        [drawings]="drawings"
-      ></app-duplicate-action>
-    }
-    @if (!projectService.isReadOnly(project) && drawings.length === 1 && !hasTextCapabilities) {
-      <app-edit-style-action
-        [controller]="controller"
-        [project]="project"
-        [drawing]="drawings[0]"
-      ></app-edit-style-action>
-    }
-    @if (!projectService.isReadOnly(project) && ((drawings.length === 1 && hasTextCapabilities && labels.length === 0 && linkNodes.length === 0) || (labels.length === 1 && linkNodes.length === 0 && drawings.length === 0) || (linkNodes.length === 1 && labels.length === 0 && drawings.length === 0))) {
-      <app-edit-text-action
-        [controller]="controller"
-        [project]="project"
-        [drawing]="drawings[0]"
-        [node]="nodes[0]"
-        [label]="labels[0]"
-        [link]="links[0]"
-        [linkNode]="linkNodes[0]"
-      ></app-edit-text-action>
-    }
-    @if (nodes.length === 1 && nodes[0].node_type === 'vpcs') {
-      <app-edit-config-action
-        [controller]="controller"
-        [project]="project"
-        [node]="nodes[0]"
-      ></app-edit-config-action>
-    }
-    @if (nodes.length === 1 && (nodes[0].node_type === 'vpcs' || nodes[0].node_type === 'iou' || nodes[0].node_type === 'dynamips')) {
-      <app-export-config-action
-        [controller]="controller"
-        [node]="nodes[0]"
-      ></app-export-config-action>
-    }
-    @if (nodes.length === 1 && (nodes[0].node_type === 'vpcs' || nodes[0].node_type === 'iou' || nodes[0].node_type === 'dynamips')) {
-      <app-import-config-action
-        [controller]="controller"
-        [node]="nodes[0]"
-      ></app-import-config-action>
-    }
-    @if (nodes.length === 1 && nodes[0].node_type === 'dynamips') {
-      <app-idle-pc-action
-        [controller]="controller"
-        [node]="nodes[0]"
-      ></app-idle-pc-action>
-    }
-    @if (nodes.length === 1 && nodes[0].node_type === 'dynamips') {
-      <app-auto-idle-pc-action
-        [controller]="controller"
-        [node]="nodes[0]"
-      ></app-auto-idle-pc-action>
-    }
-    @if (!projectService.isReadOnly(project) && (drawings.length || nodes.length)) {
-      <app-move-layer-up-action
-        [controller]="controller"
-        [nodes]="nodes"
-        [drawings]="drawings"
-      ></app-move-layer-up-action>
-    }
-    @if (!projectService.isReadOnly(project) && (drawings.length || nodes.length)) {
-      <app-move-layer-down-action
-        [controller]="controller"
-        [nodes]="nodes"
-        [drawings]="drawings"
-      ></app-move-layer-down-action>
-    }
-    @if (!projectService.isReadOnly(project) && (drawings.length || nodes.length)) {
-      <app-bring-to-front-action
-        [controller]="controller"
-        [nodes]="nodes"
-        [drawings]="drawings"
-      ></app-bring-to-front-action>
-    }
-    @if (!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1) {
-      <app-start-capture-action
-        [controller]="controller"
-        [project]="project"
-        [link]="links[0]"
-      ></app-start-capture-action>
-    }
-    @if (!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1 && linkNodes.length === 0) {
-      <app-stop-capture-action
-        [controller]="controller"
-        [link]="links[0]"
-      ></app-stop-capture-action>
-    }
-    @if (!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1 && linkNodes.length === 0) {
-      <app-start-capture-on-started-link-action
-        [controller]="controller"
-        [project]="project"
-        [link]="links[0]"
-      ></app-start-capture-on-started-link-action>
-    }
-    @if (!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1 && linkNodes.length === 0) {
-      <app-packet-filters-action
-        [controller]="controller"
-        [project]="project"
-        [link]="links[0]"
-      ></app-packet-filters-action>
-    }
-    @if (!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1 && linkNodes.length === 0) {
-      <app-resume-link-action
-        [controller]="controller"
-        [link]="links[0]"
-      ></app-resume-link-action>
-    }
-    @if (!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1 && linkNodes.length === 0) {
-      <app-suspend-link-action
-        [controller]="controller"
-        [link]="links[0]"
-      ></app-suspend-link-action>
-    }
-    @if (!projectService.isReadOnly(project) && drawings.length===0 && nodes.length===0 && links.length===1 && linkNodes.length === 0) {
-      <app-reset-link-action
-        [controller]="controller"
-        [link]="links[0]"
-      ></app-reset-link-action>
-    }
-    @if (!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1 && linkNodes.length === 0) {
-      <app-edit-link-style-action
-        [controller]="controller"
-        [project]="project"
-        [link]="links[0]"
-      ></app-edit-link-style-action>
-    }
-    @if (!projectService.isReadOnly(project) && (drawings.length > 0 || nodes.length > 0)) {
-      <app-lock-action
-        [controller]="controller"
-        [nodes]="nodes"
-        [drawings]="drawings"
-      ></app-lock-action>
-    }
-    @if (!projectService.isReadOnly(project) && (drawings.length > 0 || nodes.length > 0 || links.length > 0) && linkNodes.length === 0) {
-      <app-delete-action
-        [controller]="controller"
-        [nodes]="nodes"
-        [drawings]="drawings"
-        [links]="links"
-      ></app-delete-action>
-    }
-    @if (!projectService.isReadOnly(project) && nodes.length > 1) {
-      <app-align-horizontally-action
-        [controller]="controller"
-        [nodes]="nodes"
-      ></app-align-horizontally-action>
-    }
-    @if (!projectService.isReadOnly(project) && nodes.length > 1) {
-      <app-align-vertically-action
-        [controller]="controller"
-        [nodes]="nodes"
-      ></app-align-vertically-action>
+    <app-show-node-action [controller]="controller" [node]="nodes[0]"></app-show-node-action>
+    } @if (nodes.length === 1) {
+    <app-config-node-action [controller]="controller" [node]="nodes[0]"></app-config-node-action>
+    } @if (nodes.length) {
+    <app-start-node-action [controller]="controller" [nodes]="nodes"></app-start-node-action>
+    } @if (nodes.length) {
+    <app-suspend-node-action [controller]="controller" [nodes]="nodes"></app-suspend-node-action>
+    } @if (nodes.length) {
+    <app-stop-node-action [controller]="controller" [nodes]="nodes"></app-stop-node-action>
+    } @if (nodes.length) {
+    <app-reload-node-action [controller]="controller" [nodes]="nodes"></app-reload-node-action>
+    } @if (!projectService.isReadOnly(project) && nodes.length > 0) {
+    <app-http-console-action [controller]="controller" [nodes]="nodes"></app-http-console-action>
+    } @if (!projectService.isReadOnly(project) && nodes.length > 0) {
+    <app-http-console-new-tab-action [controller]="controller" [nodes]="nodes"></app-http-console-new-tab-action>
+    } @if (!projectService.isReadOnly(project) && nodes.length === 1) {
+    <app-console-device-action-browser [controller]="controller" [node]="nodes[0]"></app-console-device-action-browser>
+    } @if (nodes.length === 1) {
+    <app-isolate-node-action [controller]="controller" [node]="nodes[0]"></app-isolate-node-action>
+    } @if (nodes.length === 1) {
+    <app-unisolate-node-action [controller]="controller" [node]="nodes[0]"></app-unisolate-node-action>
+    } @if (!projectService.isReadOnly(project) && nodes.length === 1) {
+    <app-change-hostname-action [controller]="controller" [node]="nodes[0]"></app-change-hostname-action>
+    } @if (!projectService.isReadOnly(project) && nodes.length === 1) {
+    <app-change-symbol-action [controller]="controller" [node]="nodes[0]"></app-change-symbol-action>
+    } @if (drawings.length > 0 || nodes.length > 0) {
+    <app-duplicate-action
+      [controller]="controller"
+      [project]="project"
+      [nodes]="nodes"
+      [drawings]="drawings"
+    ></app-duplicate-action>
+    } @if (!projectService.isReadOnly(project) && drawings.length === 1 && !hasTextCapabilities) {
+    <app-edit-style-action
+      [controller]="controller"
+      [project]="project"
+      [drawing]="drawings[0]"
+    ></app-edit-style-action>
+    } @if (!projectService.isReadOnly(project) && ((drawings.length === 1 && hasTextCapabilities && labels.length === 0
+    && linkNodes.length === 0) || (labels.length === 1 && linkNodes.length === 0 && drawings.length === 0) ||
+    (linkNodes.length === 1 && labels.length === 0 && drawings.length === 0))) {
+    <app-edit-text-action
+      [controller]="controller"
+      [project]="project"
+      [drawing]="drawings[0]"
+      [node]="nodes[0]"
+      [label]="labels[0]"
+      [link]="links[0]"
+      [linkNode]="linkNodes[0]"
+    ></app-edit-text-action>
+    } @if (nodes.length === 1 && nodes[0].node_type === 'vpcs') {
+    <app-edit-config-action [controller]="controller" [project]="project" [node]="nodes[0]"></app-edit-config-action>
+    } @if (nodes.length === 1 && (nodes[0].node_type === 'vpcs' || nodes[0].node_type === 'iou' || nodes[0].node_type
+    === 'dynamips')) {
+    <app-export-config-action [controller]="controller" [node]="nodes[0]"></app-export-config-action>
+    } @if (nodes.length === 1 && (nodes[0].node_type === 'vpcs' || nodes[0].node_type === 'iou' || nodes[0].node_type
+    === 'dynamips')) {
+    <app-import-config-action [controller]="controller" [node]="nodes[0]"></app-import-config-action>
+    } @if (nodes.length === 1 && nodes[0].node_type === 'dynamips') {
+    <app-idle-pc-action [controller]="controller" [node]="nodes[0]"></app-idle-pc-action>
+    } @if (nodes.length === 1 && nodes[0].node_type === 'dynamips') {
+    <app-auto-idle-pc-action [controller]="controller" [node]="nodes[0]"></app-auto-idle-pc-action>
+    } @if (!projectService.isReadOnly(project) && (drawings.length || nodes.length)) {
+    <app-move-layer-up-action
+      [controller]="controller"
+      [nodes]="nodes"
+      [drawings]="drawings"
+    ></app-move-layer-up-action>
+    } @if (!projectService.isReadOnly(project) && (drawings.length || nodes.length)) {
+    <app-move-layer-down-action
+      [controller]="controller"
+      [nodes]="nodes"
+      [drawings]="drawings"
+    ></app-move-layer-down-action>
+    } @if (!projectService.isReadOnly(project) && (drawings.length || nodes.length)) {
+    <app-bring-to-front-action
+      [controller]="controller"
+      [nodes]="nodes"
+      [drawings]="drawings"
+    ></app-bring-to-front-action>
+    } @if (!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1) {
+    <app-start-capture-action
+      [controller]="controller"
+      [project]="project"
+      [link]="links[0]"
+    ></app-start-capture-action>
+    } @if (!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1 &&
+    linkNodes.length === 0) {
+    <app-stop-capture-action [controller]="controller" [link]="links[0]"></app-stop-capture-action>
+    } @if (!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1 &&
+    linkNodes.length === 0) {
+    <app-start-capture-on-started-link-action
+      [controller]="controller"
+      [project]="project"
+      [link]="links[0]"
+    ></app-start-capture-on-started-link-action>
+    } @if (!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1 &&
+    linkNodes.length === 0) {
+    <app-packet-filters-action
+      [controller]="controller"
+      [project]="project"
+      [link]="links[0]"
+    ></app-packet-filters-action>
+    } @if (!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1 &&
+    linkNodes.length === 0) {
+    <app-resume-link-action [controller]="controller" [link]="links[0]"></app-resume-link-action>
+    } @if (!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1 &&
+    linkNodes.length === 0) {
+    <app-suspend-link-action [controller]="controller" [link]="links[0]"></app-suspend-link-action>
+    } @if (!projectService.isReadOnly(project) && drawings.length===0 && nodes.length===0 && links.length===1 &&
+    linkNodes.length === 0) {
+    <app-reset-link-action [controller]="controller" [link]="links[0]"></app-reset-link-action>
+    } @if (!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1 &&
+    linkNodes.length === 0) {
+    <app-edit-link-style-action
+      [controller]="controller"
+      [project]="project"
+      [link]="links[0]"
+    ></app-edit-link-style-action>
+    } @if (!projectService.isReadOnly(project) && (drawings.length > 0 || nodes.length > 0)) {
+    <app-lock-action [controller]="controller" [nodes]="nodes" [drawings]="drawings"></app-lock-action>
+    } @if (!projectService.isReadOnly(project) && (drawings.length > 0 || nodes.length > 0 || links.length > 0) &&
+    linkNodes.length === 0) {
+    <app-delete-action
+      [controller]="controller"
+      [nodes]="nodes"
+      [drawings]="drawings"
+      [links]="links"
+    ></app-delete-action>
+    } @if (!projectService.isReadOnly(project) && nodes.length > 1) {
+    <app-align-horizontally-action [controller]="controller" [nodes]="nodes"></app-align-horizontally-action>
+    } @if (!projectService.isReadOnly(project) && nodes.length > 1) {
+    <app-align-vertically-action [controller]="controller" [nodes]="nodes"></app-align-vertically-action>
     }
   </mat-menu>
 </div>

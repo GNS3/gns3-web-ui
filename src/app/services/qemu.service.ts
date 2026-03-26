@@ -12,7 +12,7 @@ import { environment } from 'environments/environment';
 export class QemuService {
   constructor(private httpController: HttpController) {}
 
-  getTemplates(controller: Controller ): Observable<QemuTemplate[]> {
+  getTemplates(controller: Controller): Observable<QemuTemplate[]> {
     return this.httpController.get<QemuTemplate[]>(controller, '/templates') as Observable<QemuTemplate[]>;
   }
 
@@ -24,8 +24,7 @@ export class QemuService {
     return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${filename}`;
   }
 
-
-  getImages(controller: Controller ): Observable<any> {
+  getImages(controller: Controller): Observable<any> {
     return this.httpController.get<QemuImage[]>(controller, '/images?image_type=qemu') as Observable<QemuImage[]>;
   }
 

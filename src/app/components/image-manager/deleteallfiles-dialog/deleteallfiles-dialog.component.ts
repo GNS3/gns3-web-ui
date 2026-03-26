@@ -15,7 +15,7 @@ import { ImageData } from '@models/images';
   templateUrl: './deleteallfiles-dialog.component.html',
   styleUrls: ['./deleteallfiles-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatDialogModule, MatButtonModule, MatProgressSpinnerModule]
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatProgressSpinnerModule],
 })
 export class DeleteAllImageFilesDialogComponent implements OnInit {
   private imageService = inject(ImageManagerService);
@@ -24,36 +24,36 @@ export class DeleteAllImageFilesDialogComponent implements OnInit {
 
   isDelete: boolean = false;
   isUsedFiles: boolean = false;
-  deleteFliesDetails: ImageData = []
-  fileNotDeleted: ImageData = []
+  deleteFliesDetails: ImageData = [];
+  fileNotDeleted: ImageData = [];
 
   constructor(
     @Inject(MAT_DIALOG_DATA) public deleteData: any,
     public dialogRef: MatDialogRef<DeleteAllImageFilesDialogComponent>
-  ) { }
+  ) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   async deleteAll() {
-    this.isDelete = true
-    await this.deleteFile()
+    this.isDelete = true;
+    await this.deleteFile();
   }
 
   deleteFile() {
     const calls = [];
-    this.deleteData.deleteFilesPaths.forEach(pathElement => {
-      calls.push(this.imageService.deleteFile(this.deleteData.controller, pathElement.filename).pipe(catchError(error => of(error))))
+    this.deleteData.deleteFilesPaths.forEach((pathElement) => {
+      calls.push(
+        this.imageService
+          .deleteFile(this.deleteData.controller, pathElement.filename)
+          .pipe(catchError((error) => of(error)))
+      );
     });
-    forkJoin(calls).subscribe(responses => {
-      this.deleteFliesDetails = responses.filter(x => x !== null)
-      this.fileNotDeleted = responses.filter(x => x === null)
+    forkJoin(calls).subscribe((responses) => {
+      this.deleteFliesDetails = responses.filter((x) => x !== null);
+      this.fileNotDeleted = responses.filter((x) => x === null);
       this.isUsedFiles = true;
-      this.isDelete = true
+      this.isDelete = true;
       this.cd.markForCheck();
     });
-
   }
-
-
 }

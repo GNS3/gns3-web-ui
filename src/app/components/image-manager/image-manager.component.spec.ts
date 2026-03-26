@@ -26,14 +26,13 @@ import { ImageUploadSessionService } from '@services/image-upload-session.servic
 import { Subject } from 'rxjs';
 
 export class MockedImageManagerService {
-  public getImages(controller: Controller ) {
+  public getImages(controller: Controller) {
     return of();
   }
 
   public deleteFile(controller: Controller, image_path) {
     return of();
   }
-
 }
 
 describe('ImageManagerComponent', () => {
@@ -41,13 +40,12 @@ describe('ImageManagerComponent', () => {
   let fixture: ComponentFixture<ImageManagerComponent>;
 
   let mockedControllerService = new MockedControllerService();
-  let mockedImageManagerService = new MockedImageManagerService()
-  let mockedProgressService = new MockedProgressService()
-  let mockedVersionService = new MockedVersionService()
-  let mockedToasterService = new MockedToasterService()
+  let mockedImageManagerService = new MockedImageManagerService();
+  let mockedProgressService = new MockedProgressService();
+  let mockedVersionService = new MockedVersionService();
+  let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
   let mockedImageUploadSessionService = { events$: new Subject() };
-
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -57,7 +55,7 @@ describe('ImageManagerComponent', () => {
         MatToolbarModule,
         MatMenuModule,
         MatCheckboxModule,
-        MatDialogModule
+        MatDialogModule,
       ],
       providers: [
         provideZonelessChangeDetection(),
@@ -74,8 +72,7 @@ describe('ImageManagerComponent', () => {
       ],
       declarations: [ImageManagerComponent],
       schemas: [NO_ERRORS_SCHEMA],
-    })
-      .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -88,10 +85,9 @@ describe('ImageManagerComponent', () => {
     expect(component).toBeTruthy();
   });
 
-
   it('should call save images', () => {
     spyOn(mockedImageManagerService, 'getImages').and.returnValue(of([] as Image[]));
-    component.getImages()
+    component.getImages();
     expect(mockedImageManagerService.getImages).toHaveBeenCalled();
   });
 
@@ -102,7 +98,7 @@ describe('ImageManagerComponent', () => {
     spyOn(mockedImageManagerService, 'getImages').and.returnValue(of([] as Image[]));
     spyOn(mockedImageManagerService, 'deleteFile').and.returnValue(of({} as Image));
     component.controller = { authToken: 'test' } as any;
-    component.deleteFile('image_path')
+    component.deleteFile('image_path');
     expect(mockedImageManagerService.deleteFile).toHaveBeenCalled();
   });
 });

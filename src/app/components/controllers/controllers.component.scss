@@ -14,11 +14,7 @@
   width: 100%;
   height: 100%;
   // Unified gradient background with login page
-  background: linear-gradient(
-    135deg,
-    var(--mat-sys-primary-container) 0%,
-    var(--mat-sys-background) 100%
-  );
+  background: linear-gradient(135deg, var(--mat-sys-primary-container) 0%, var(--mat-sys-background) 100%);
   min-height: 100vh;
 }
 
@@ -133,7 +129,7 @@
   background: var(--mat-sys-surface);
   // Unified card shadows
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
-              0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
   transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   animation: fadeInSlideIn 0.4s ease-out 0.15s both;
 }
@@ -224,7 +220,7 @@ mat-cell {
 }
 
 // Name column - left align
-mat-cell[mat-column="name"] {
+mat-cell[mat-column='name'] {
   justify-content: flex-start;
   font-weight: 500;
 }
@@ -240,18 +236,18 @@ mat-cell[mat-column="name"] {
 }
 
 // Status column - center align
-mat-cell[mat-column="status"] {
+mat-cell[mat-column='status'] {
   justify-content: center;
 }
 
 // Actions column - right align
-mat-cell[mat-column="actions"],
-mat-header-cell[mat-column="actions"] {
+mat-cell[mat-column='actions'],
+mat-header-cell[mat-column='actions'] {
   justify-content: flex-end;
   padding: 0 16px;
 }
 
-mat-cell[mat-column="actions"] {
+mat-cell[mat-column='actions'] {
   overflow: visible;
 }
 
@@ -266,10 +262,8 @@ mat-cell[mat-column="actions"] {
   border-radius: 20px;
   font-size: 13px;
   font-weight: 500;
-  transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
-              color 200ms cubic-bezier(0.4, 0, 0.2, 1),
-              transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
-              box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 200ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
   animation: status-fade-in 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
   // Default: Gray/Neutral (Stopped state)
@@ -339,7 +333,8 @@ mat-cell[mat-column="actions"] {
 }
 
 @keyframes pulse-green {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -350,7 +345,8 @@ mat-cell[mat-column="actions"] {
 }
 
 @keyframes pulse-orange {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
@@ -466,7 +462,7 @@ button[mat-icon-button] {
 }
 
 // Start controller button - uses success/green
-button[mat-icon-button]:has(.mat-icon[aria-label*="Start"]) {
+button[mat-icon-button]:has(.mat-icon[aria-label*='Start']) {
   &::before {
     background-color: var(--mat-sys-tertiary);
   }
@@ -481,7 +477,7 @@ button[mat-icon-button]:has(.mat-icon[aria-label*="Start"]) {
 }
 
 // Stop controller button - uses warning/orange
-button[mat-icon-button]:has(.mat-icon[aria-label*="Stop"]) {
+button[mat-icon-button]:has(.mat-icon[aria-label*='Stop']) {
   &::before {
     background-color: var(--mat-sys-error);
   }
@@ -496,7 +492,7 @@ button[mat-icon-button]:has(.mat-icon[aria-label*="Stop"]) {
 }
 
 // Delete button - uses error/warn theme color
-button[color="warn"] {
+button[color='warn'] {
   &::before {
     background-color: var(--mat-sys-error);
   }
@@ -525,7 +521,7 @@ button[color="warn"] {
   border-radius: 16px;
   background: var(--mat-sys-surface);
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
-              0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
   animation: fadeInSlideIn 0.4s ease-out 0.2s both;
 }
 

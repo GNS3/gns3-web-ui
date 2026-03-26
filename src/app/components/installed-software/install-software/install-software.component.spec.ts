@@ -8,7 +8,7 @@ describe('InstallSoftwareComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [InstallSoftwareComponent],
-      providers: [provideZonelessChangeDetection()]
+      providers: [provideZonelessChangeDetection()],
     }).compileComponents();
   });
 

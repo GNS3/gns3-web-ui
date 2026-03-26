@@ -26,7 +26,7 @@ export class MockedVirtualBoxService {
     return of(virtualBoxTemplate);
   }
 
-  public getVirtualMachines(controller: Controller ) {
+  public getVirtualMachines(controller: Controller) {
     return of([]);
   }
 }

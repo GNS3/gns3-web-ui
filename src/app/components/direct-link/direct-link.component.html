@@ -1,38 +1,38 @@
 <div [hidden]="!controllerOptionsVisibility()" class="content">
-    <div class="default-header">
-        <div class="row">
-            <h1 class="col">Add new controller</h1>
-        </div>
+  <div class="default-header">
+    <div class="row">
+      <h1 class="col">Add new controller</h1>
     </div>
-    <div class="default-content">
-        <mat-card class="matCard">
-            <form [formGroup]="controllerForm">
-                <mat-form-field>
-                    <input matInput tabindex="1" formControlName="name" placeholder="Name" />
-                    @if (controllerForm.get('name').hasError('required')) {
-                      <mat-error>You must enter a value</mat-error>
-                    }
-                </mat-form-field>
+  </div>
+  <div class="default-content">
+    <mat-card class="matCard">
+      <form [formGroup]="controllerForm">
+        <mat-form-field>
+          <input matInput tabindex="1" formControlName="name" placeholder="Name" />
+          @if (controllerForm.get('name').hasError('required')) {
+          <mat-error>You must enter a value</mat-error>
+          }
+        </mat-form-field>
 
-                <mat-form-field>
-                    <mat-select placeholder="Location" formControlName="location">
-                      @for (location of locations; track location.key) {
-                        <mat-option [value]="location.key"> {{ location.name }} </mat-option>
-                      }
-                    </mat-select>
-                </mat-form-field>
+        <mat-form-field>
+          <mat-select placeholder="Location" formControlName="location">
+            @for (location of locations; track location.key) {
+            <mat-option [value]="location.key"> {{ location.name }} </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
 
-                <mat-form-field>
-                    <mat-select placeholder="Protocol" formControlName="protocol">
-                        @for (protocol of protocols; track protocol.key) {
-                          <mat-option [value]="protocol.key"> {{ protocol.name }} </mat-option>
-                        }
-                    </mat-select>
-                </mat-form-field>
-            </form>
-        </mat-card>
-        <div class="buttons-bar">
-            <button mat-raised-button color="primary" (click)="createController()">Add controller</button>
-        </div>
+        <mat-form-field>
+          <mat-select placeholder="Protocol" formControlName="protocol">
+            @for (protocol of protocols; track protocol.key) {
+            <mat-option [value]="protocol.key"> {{ protocol.name }} </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </form>
+    </mat-card>
+    <div class="buttons-bar">
+      <button mat-raised-button color="primary" (click)="createController()">Add controller</button>
     </div>
+  </div>
 </div>

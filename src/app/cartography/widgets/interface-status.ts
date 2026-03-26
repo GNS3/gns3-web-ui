@@ -53,18 +53,8 @@ export class InterfaceStatusWidget implements Widget {
           const destinationPort = l.nodes?.find((node) => node.nodeId === l.target.id)?.label?.text || '';
 
           statuses = [
-            new LinkStatus(
-              start_point.x,
-              start_point.y,
-              l.suspend ? 'suspended' : l.source.status,
-              sourcePort
-            ),
-            new LinkStatus(
-              end_point.x,
-              end_point.y,
-              l.suspend ? 'suspended' : l.target.status,
-              destinationPort
-            ),
+            new LinkStatus(start_point.x, start_point.y, l.suspend ? 'suspended' : l.source.status, sourcePort),
+            new LinkStatus(end_point.x, end_point.y, l.suspend ? 'suspended' : l.target.status, destinationPort),
           ];
         }
       }
@@ -91,7 +81,9 @@ export class InterfaceStatusWidget implements Widget {
           .merge(status_labels_enter)
           .attr('transform', (ls: LinkStatus) => `translate(${ls.x}, ${ls.y})`);
 
-        const status_rects = status_labels_merge.selectAll<SVGRectElement, LinkStatus>('rect').data((ls: LinkStatus) => [ls]);
+        const status_rects = status_labels_merge
+          .selectAll<SVGRectElement, LinkStatus>('rect')
+          .data((ls: LinkStatus) => [ls]);
         status_rects
           .enter()
           .append('rect')
@@ -109,7 +101,9 @@ export class InterfaceStatusWidget implements Widget {
           .attr('stroke-width', InterfaceStatusWidget.LABEL_STROKE_WIDTH);
         status_rects.exit().remove();
 
-        const status_texts = status_labels_merge.selectAll<SVGTextElement, LinkStatus>('text').data((ls: LinkStatus) => [ls]);
+        const status_texts = status_labels_merge
+          .selectAll<SVGTextElement, LinkStatus>('text')
+          .data((ls: LinkStatus) => [ls]);
         status_texts
           .enter()
           .append('text')
@@ -297,10 +291,7 @@ export class InterfaceStatusWidget implements Widget {
         if (linkContainer) {
           linkContainer.raise();
         }
-        linkGroup
-          .selectAll<SVGGElement, LinkStatus>('g.status_hover_tooltip')
-          .raise()
-          .attr('visibility', 'visible');
+        linkGroup.selectAll<SVGGElement, LinkStatus>('g.status_hover_tooltip').raise().attr('visibility', 'visible');
       })
       .on('mouseout.status_hover_tooltip', () => {
         linkGroup.selectAll<SVGGElement, LinkStatus>('g.status_hover_tooltip').attr('visibility', 'hidden');

@@ -2,7 +2,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { PrivilegeComponent } from './privilege.component';
-import {GroupPrivilegesPipe} from "@components/role-management/role-detail/privilege/group-privileges.pipe";
+import { GroupPrivilegesPipe } from '@components/role-management/role-detail/privilege/group-privileges.pipe';
 
 describe('PrivilegeComponent', () => {
   let component: PrivilegeComponent;
@@ -10,10 +10,9 @@ describe('PrivilegeComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ PrivilegeComponent, GroupPrivilegesPipe ],
-      providers: [provideZonelessChangeDetection()]
-    })
-    .compileComponents();
+      declarations: [PrivilegeComponent, GroupPrivilegesPipe],
+      providers: [provideZonelessChangeDetection()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(PrivilegeComponent);
     component = fixture.componentInstance;

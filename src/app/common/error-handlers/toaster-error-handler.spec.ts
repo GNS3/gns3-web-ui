@@ -15,7 +15,7 @@ describe('ToasterErrorHandler', () => {
       providers: [
         provideZonelessChangeDetection(),
         { provide: ToasterService, useClass: MockedToasterService },
-        { provide: SettingsService},
+        { provide: SettingsService },
         ToasterErrorHandler,
       ],
     });

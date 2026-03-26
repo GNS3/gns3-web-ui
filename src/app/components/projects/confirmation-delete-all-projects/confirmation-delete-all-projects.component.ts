@@ -27,26 +27,27 @@ export class ConfirmationDeleteAllProjectsComponent implements OnInit {
 
   constructor(@Inject(MAT_DIALOG_DATA) public deleteData: any) {}
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 
   async deleteAll() {
-    this.isDelete.set(true)
-    await this.deleteFile()
+    this.isDelete.set(true);
+    await this.deleteFile();
   }
 
   deleteFile() {
     const calls = [];
-    this.deleteData.deleteFilesPaths.forEach(project => {
-      calls.push(this.projectService.delete(this.deleteData.controller, project.project_id).pipe(catchError(error => of(error))))
+    this.deleteData.deleteFilesPaths.forEach((project) => {
+      calls.push(
+        this.projectService
+          .delete(this.deleteData.controller, project.project_id)
+          .pipe(catchError((error) => of(error)))
+      );
     });
-    forkJoin(calls).subscribe(responses => {
-      this.deleteFliesDetails.set(responses.filter(x => x !== null))
-      this.fileNotDeleted.set(responses.filter(x => x === null))
+    forkJoin(calls).subscribe((responses) => {
+      this.deleteFliesDetails.set(responses.filter((x) => x !== null));
+      this.fileNotDeleted.set(responses.filter((x) => x === null));
       this.isUsedFiles.set(true);
-      this.isDelete.set(true)
+      this.isDelete.set(true);
     });
-
   }
-
 }

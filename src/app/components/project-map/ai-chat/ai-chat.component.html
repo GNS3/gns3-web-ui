@@ -1,9 +1,5 @@
 @if (isDraggingEnabled && !isMaximized && !isMinimized) {
-  <div
-    class="drag-overlay"
-    (document:mousemove)="dragWidget($event)"
-    (document:mouseup)="toggleDragging(false)"
-  ></div>
+<div class="drag-overlay" (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)"></div>
 }
 
 <!-- AI Chat Container -->
@@ -27,123 +23,120 @@
 
   <!-- Normal/Maximized state -->
   @if (!isMinimized) {
-    <!-- Session sidebar -->
-    <div class="chat-sidebar" [class.collapsed]="sidebarCollapsed">
-      <div class="sidebar-header">
-        <h3
-          class="sidebar-title"
+  <!-- Session sidebar -->
+  <div class="chat-sidebar" [class.collapsed]="sidebarCollapsed">
+    <div class="sidebar-header">
+      <h3
+        class="sidebar-title"
+        (mousedown)="$event.stopPropagation()"
+        (click)="toggleSidebar()"
+        [class.clickable]="true"
+        title="Click to toggle sidebar"
+      >
+        <span class="ai-logo">AI</span>
+        @if (!sidebarCollapsed) {
+        <span class="sidebar-text">Assistant</span>
+        }
+      </h3>
+    </div>
+
+    <!-- New chat button for collapsed state -->
+    @if (sidebarCollapsed) {
+    <div class="sidebar-content">
+      <button class="collapsed-new-chat-btn" mat-icon-button (click)="onSessionCreated()">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+    } @if (!sidebarCollapsed) {
+    <div class="sidebar-content">
+      <app-chat-session-list
+        [sessions]="sessions"
+        [currentSessionId]="currentSessionId"
+        [controller]="controller"
+        [projectId]="project().project_id"
+        (sessionSelected)="onSessionSelected($event)"
+        (sessionCreated)="onSessionCreated()"
+        (sessionRenamed)="onSessionRenamed($event)"
+        (sessionDeleted)="onSessionDeleted($event)"
+        (sessionPinned)="onSessionPinned($event)"
+        (sessionUnpinned)="onSessionUnpinned($event)"
+      >
+      </app-chat-session-list>
+    </div>
+    }
+  </div>
+
+  <!-- Chat main area -->
+  <div class="chat-main">
+    <!-- Chat header -->
+    <div class="chat-header" (mousedown)="!isMaximized && toggleDragging(true)">
+      <div class="chat-title">
+        <span>{{ currentSessionTitle }}</span>
+      </div>
+      <div class="header-actions">
+        <button
+          mat-icon-button
           (mousedown)="$event.stopPropagation()"
-          (click)="toggleSidebar()"
-          [class.clickable]="true"
-          title="Click to toggle sidebar"
+          (click)="$event.stopPropagation(); minimizeChat()"
+          class="minimize-button"
         >
-          <span class="ai-logo">AI</span>
-          @if (!sidebarCollapsed) {
-            <span class="sidebar-text">Assistant</span>
-          }
-        </h3>
+          <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+            <path d="M19 13H5v-2h14v2z" />
+          </svg>
+        </button>
+        <button
+          mat-icon-button
+          (mousedown)="$event.stopPropagation()"
+          (click)="$event.stopPropagation(); maximizeChat()"
+          class="maximize-button"
+        >
+          <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+            @if (!isMaximized) {
+            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+            } @if (isMaximized) {
+            <path d="M5 5h14v14H5z" />
+            }
+          </svg>
+        </button>
+        <button
+          mat-icon-button
+          (mousedown)="$event.stopPropagation()"
+          (click)="$event.stopPropagation(); closeChat()"
+          class="close-button"
+        >
+          <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+            <path
+              d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+            />
+          </svg>
+        </button>
       </div>
-
-      <!-- New chat button for collapsed state -->
-      @if (sidebarCollapsed) {
-        <div class="sidebar-content">
-          <button class="collapsed-new-chat-btn" mat-icon-button (click)="onSessionCreated()">
-            <mat-icon>add</mat-icon>
-          </button>
-        </div>
-      }
-
-      @if (!sidebarCollapsed) {
-        <div class="sidebar-content">
-          <app-chat-session-list
-            [sessions]="sessions"
-            [currentSessionId]="currentSessionId"
-            [controller]="controller"
-            [projectId]="project().project_id"
-            (sessionSelected)="onSessionSelected($event)"
-            (sessionCreated)="onSessionCreated()"
-            (sessionRenamed)="onSessionRenamed($event)"
-            (sessionDeleted)="onSessionDeleted($event)"
-            (sessionPinned)="onSessionPinned($event)"
-            (sessionUnpinned)="onSessionUnpinned($event)"
-          >
-          </app-chat-session-list>
-        </div>
-      }
     </div>
 
-    <!-- Chat main area -->
-    <div class="chat-main">
-      <!-- Chat header -->
-      <div class="chat-header" (mousedown)="!isMaximized && toggleDragging(true)">
-        <div class="chat-title">
-          <span>{{ currentSessionTitle }}</span>
-        </div>
-        <div class="header-actions">
-          <button
-            mat-icon-button
-            (mousedown)="$event.stopPropagation()"
-            (click)="$event.stopPropagation(); minimizeChat()"
-            class="minimize-button"
-          >
-            <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
-              <path d="M19 13H5v-2h14v2z" />
-            </svg>
-          </button>
-          <button
-            mat-icon-button
-            (mousedown)="$event.stopPropagation()"
-            (click)="$event.stopPropagation(); maximizeChat()"
-            class="maximize-button"
-          >
-            <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
-              @if (!isMaximized) {
-                <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
-              }
-              @if (isMaximized) {
-                <path d="M5 5h14v14H5z" />
-              }
-            </svg>
-          </button>
-          <button
-            mat-icon-button
-            (mousedown)="$event.stopPropagation()"
-            (click)="$event.stopPropagation(); closeChat()"
-            class="close-button"
-          >
-            <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
-              <path
-                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-              />
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- Messages list -->
-      <div class="chat-messages">
-        <app-chat-message-list
-          [messages]="currentMessages"
-          [isStreaming]="isStreaming"
-          (scrollToEnd)="onScrollToEnd()"
-          (suggestionClicked)="onSuggestionClicked($event)"
-        >
-        </app-chat-message-list>
-      </div>
-
-      <!-- Input area -->
-      <div class="chat-input">
-        <app-chat-input-area
-          [disabled]="isStreaming"
-          [modelConfigs]="modelConfigs"
-          [currentModelId]="currentModelId"
-          [currentCopilotMode]="currentCopilotMode"
-          (messageSent)="onMessageSent($event)"
-          (modelSelected)="onModelSelected($event)"
-          (copilotModeSelected)="onCopilotModeSelected($event)"
-        >
-        </app-chat-input-area>
-      </div>
+    <!-- Messages list -->
+    <div class="chat-messages">
+      <app-chat-message-list
+        [messages]="currentMessages"
+        [isStreaming]="isStreaming"
+        (scrollToEnd)="onScrollToEnd()"
+        (suggestionClicked)="onSuggestionClicked($event)"
+      >
+      </app-chat-message-list>
     </div>
+
+    <!-- Input area -->
+    <div class="chat-input">
+      <app-chat-input-area
+        [disabled]="isStreaming"
+        [modelConfigs]="modelConfigs"
+        [currentModelId]="currentModelId"
+        [currentCopilotMode]="currentCopilotMode"
+        (messageSent)="onMessageSent($event)"
+        (modelSelected)="onModelSelected($event)"
+        (copilotModeSelected)="onCopilotModeSelected($event)"
+      >
+      </app-chat-input-area>
+    </div>
+  </div>
   }
 </div>

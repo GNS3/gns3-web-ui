@@ -1,4 +1,4 @@
-import {IGenericApiObject} from "@services/ApiInformation/IGenericApiObject";
+import { IGenericApiObject } from '@services/ApiInformation/IGenericApiObject';
 
 export interface IApiData {
   expired: number;

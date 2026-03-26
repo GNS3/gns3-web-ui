@@ -1,100 +1,114 @@
 <div class="ethernet-switch-details" [ngClass]="{ 'ethernet-switch-details--hidden': isSymbolSelectionOpened }">
   <header class="ethernet-switch-details__header">
     @if (controller) {
-      <button
-        class="ethernet-switch-details__back-btn"
-        (click)="goBack()"
-        mat-icon-button>
-        <mat-icon>arrow_back</mat-icon>
-      </button>
+    <button class="ethernet-switch-details__back-btn" (click)="goBack()" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     }
     <h1 class="ethernet-switch-details__title">Ethernet switch template configuration</h1>
   </header>
 
   @if (ethernetSwitchTemplate) {
-    <main class="ethernet-switch-details__content">
-      <section class="ethernet-switch-details__form-card">
-        <form class="ethernet-switch-details__form">
-          <mat-form-field appearance="fill" class="ethernet-switch-details__field">
-            <mat-label>Template name</mat-label>
-            <input matInput [value]="templateName()" (input)="templateName.set($event.target.value)" type="text" placeholder="Template name" />
+  <main class="ethernet-switch-details__content">
+    <section class="ethernet-switch-details__form-card">
+      <form class="ethernet-switch-details__form">
+        <mat-form-field appearance="fill" class="ethernet-switch-details__field">
+          <mat-label>Template name</mat-label>
+          <input
+            matInput
+            [value]="templateName()"
+            (input)="templateName.set($event.target.value)"
+            type="text"
+            placeholder="Template name"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="ethernet-switch-details__field">
+          <mat-label>Default name format</mat-label>
+          <input
+            matInput
+            [value]="defaultName()"
+            (input)="defaultName.set($event.target.value)"
+            type="text"
+            placeholder="Default name format"
+          />
+        </mat-form-field>
+
+        <div class="ethernet-switch-details__symbol-row">
+          <mat-form-field appearance="fill" class="ethernet-switch-details__field ethernet-switch-details__field--flex">
+            <mat-label>Symbol</mat-label>
+            <input
+              matInput
+              [value]="symbol()"
+              (input)="symbol.set($event.target.value)"
+              type="text"
+              placeholder="Symbol"
+            />
           </mat-form-field>
+          <button mat-button class="ethernet-switch-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
+        </div>
 
-          <mat-form-field appearance="fill" class="ethernet-switch-details__field">
-            <mat-label>Default name format</mat-label>
-            <input matInput [value]="defaultName()" (input)="defaultName.set($event.target.value)" type="text" placeholder="Default name format" />
-          </mat-form-field>
+        <mat-form-field appearance="fill" class="ethernet-switch-details__field">
+          <mat-label>Tags</mat-label>
+          <mat-chip-grid #chipList>
+            @for (tag of tags(); track tag) {
+            <mat-chip (removed)="removeTag(tag)">
+              {{ tag }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            }
+          </mat-chip-grid>
+          <input
+            matInput
+            placeholder="Add tags"
+            [matChipInputFor]="chipList"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            (matChipInputTokenEnd)="addTag($event)"
+          />
+        </mat-form-field>
 
-          <div class="ethernet-switch-details__symbol-row">
-            <mat-form-field appearance="fill" class="ethernet-switch-details__field ethernet-switch-details__field--flex">
-              <mat-label>Symbol</mat-label>
-              <input matInput [value]="symbol()" (input)="symbol.set($event.target.value)" type="text" placeholder="Symbol" />
-            </mat-form-field>
-            <button mat-button class="ethernet-switch-details__symbol-btn" (click)="chooseSymbol()">
-              Choose symbol
-            </button>
-          </div>
+        <mat-form-field appearance="fill" class="ethernet-switch-details__field">
+          <mat-label>Category</mat-label>
+          <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
+            @for (cat of categories; track $index) {
+            <mat-option [value]="cat[1]">
+              {{ cat[0] }}
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
 
-          <mat-form-field appearance="fill" class="ethernet-switch-details__field">
-            <mat-label>Tags</mat-label>
-            <mat-chip-grid #chipList>
-              @for (tag of tags(); track tag) {
-                <mat-chip (removed)="removeTag(tag)">
-                  {{ tag }}
-                  <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
-              }
-            </mat-chip-grid>
-            <input matInput placeholder="Add tags"
-                   [matChipInputFor]="chipList"
-                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                   (matChipInputTokenEnd)="addTag($event)" />
-          </mat-form-field>
+        <mat-form-field appearance="fill" class="ethernet-switch-details__field">
+          <mat-label>Console type</mat-label>
+          <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
+            @for (type of consoleTypes; track type) {
+            <mat-option [value]="type">
+              {{ type }}
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </form>
+    </section>
 
-          <mat-form-field appearance="fill" class="ethernet-switch-details__field">
-            <mat-label>Category</mat-label>
-            <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
-              @for (cat of categories; track $index) {
-                <mat-option [value]="cat[1]">
-                  {{ cat[0] }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
+    <section class="ethernet-switch-details__form-card">
+      <h3 class="ethernet-switch-details__section-title">Port settings</h3>
+      <app-ports #ports [ethernetPorts]="ethernetSwitchTemplate.ports_mapping"></app-ports>
+    </section>
 
-          <mat-form-field appearance="fill" class="ethernet-switch-details__field">
-            <mat-label>Console type</mat-label>
-            <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
-              @for (type of consoleTypes; track type) {
-                <mat-option [value]="type">
-                  {{ type }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </form>
-      </section>
-
-      <section class="ethernet-switch-details__form-card">
-        <h3 class="ethernet-switch-details__section-title">Port settings</h3>
-        <app-ports #ports [ethernetPorts]="ethernetSwitchTemplate.ports_mapping"></app-ports>
-      </section>
-
-      <div class="ethernet-switch-details__actions">
-        <button class="ethernet-switch-details__cancel-btn" (click)="goBack()" mat-button>
-          Cancel
-        </button>
-        <button mat-raised-button color="primary" class="ethernet-switch-details__save-btn" (click)="onSave()">
-          Save
-        </button>
-      </div>
-    </main>
+    <div class="ethernet-switch-details__actions">
+      <button class="ethernet-switch-details__cancel-btn" (click)="goBack()" mat-button>Cancel</button>
+      <button mat-raised-button color="primary" class="ethernet-switch-details__save-btn" (click)="onSave()">
+        Save
+      </button>
+    </div>
+  </main>
   }
 </div>
 @if (isSymbolSelectionOpened && ethernetSwitchTemplate) {
-  <app-symbols-menu
-    [controller]="controller"
-    [symbol]="symbol()"
-    (symbolChangedEmitter)="symbolChanged($event)"
-  ></app-symbols-menu>
+<app-symbols-menu
+  [controller]="controller"
+  [symbol]="symbol()"
+  (symbolChangedEmitter)="symbolChanged($event)"
+></app-symbols-menu>
 }

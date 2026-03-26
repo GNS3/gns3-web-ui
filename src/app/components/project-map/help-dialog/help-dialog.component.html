@@ -2,14 +2,14 @@
 
 <div class="modal-form-container">
   @for (message of messages; track $index; let i = $index) {
-    <div class="message">
-      <h6>
-        {{ message.name }}
-      </h6>
-      <span class="description">
-        {{ message.description }}
-      </span>
-    </div>
+  <div class="message">
+    <h6>
+      {{ message.name }}
+    </h6>
+    <span class="description">
+      {{ message.description }}
+    </span>
+  </div>
   }
 </div>
 

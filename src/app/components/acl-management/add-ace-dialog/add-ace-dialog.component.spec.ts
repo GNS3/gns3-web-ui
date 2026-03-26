@@ -2,13 +2,13 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
 
 import { AddAceDialogComponent } from './add-ace-dialog.component';
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
-import {AclService} from "@services/acl.service";
-import {UserService} from "@services/user.service";
-import {GroupService} from "@services/group.service";
-import {RoleService} from "@services/role.service";
-import {ToasterService} from "@services/toaster.service";
-import { CdkTreeModule } from "@angular/cdk/tree";
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { AclService } from '@services/acl.service';
+import { UserService } from '@services/user.service';
+import { GroupService } from '@services/group.service';
+import { RoleService } from '@services/role.service';
+import { ToasterService } from '@services/toaster.service';
+import { CdkTreeModule } from '@angular/cdk/tree';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -27,14 +27,14 @@ class FakeAclService {}
 class FakeUserService {}
 class FakeGroupService {}
 class FakeRoleService {}
-class FakeToasterService{}
+class FakeToasterService {}
 describe('AddAceDialogComponent', () => {
   let component: AddAceDialogComponent;
   let fixture: ComponentFixture<AddAceDialogComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ AddAceDialogComponent, AutocompleteComponent ],
+      declarations: [AddAceDialogComponent, AutocompleteComponent],
       imports: [
         CommonModule,
         ReactiveFormsModule,
@@ -47,20 +47,19 @@ describe('AddAceDialogComponent', () => {
         MatIconModule,
         MatAutocompleteModule,
         MatFormFieldModule,
-        MatInputModule
+        MatInputModule,
       ],
       providers: [
         provideZonelessChangeDetection(),
-        {provide: MatDialogRef, useClass: FakeMatDialogRef},
-        {provide: AclService, useClass: FakeAclService},
-        {provide: UserService, useClass: FakeUserService},
-        {provide: GroupService, useClass: FakeGroupService},
-        {provide: RoleService, useClass: FakeRoleService},
-        {provide: ToasterService, useClass: FakeToasterService},
-        {provide: MAT_DIALOG_DATA, useValue: {endpoints: []}}
-      ]
-    })
-    .compileComponents();
+        { provide: MatDialogRef, useClass: FakeMatDialogRef },
+        { provide: AclService, useClass: FakeAclService },
+        { provide: UserService, useClass: FakeUserService },
+        { provide: GroupService, useClass: FakeGroupService },
+        { provide: RoleService, useClass: FakeRoleService },
+        { provide: ToasterService, useClass: FakeToasterService },
+        { provide: MAT_DIALOG_DATA, useValue: { endpoints: [] } },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(AddAceDialogComponent);
     component = fixture.componentInstance;

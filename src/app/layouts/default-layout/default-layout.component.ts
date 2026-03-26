@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  HostListener,
+  OnDestroy,
+  OnInit,
+  inject,
+} from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { ProjectService } from '@services/project.service';

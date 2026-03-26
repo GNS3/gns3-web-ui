@@ -28,7 +28,7 @@ describe('DrawingAddedComponent', () => {
   );
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
         { provide: DrawingService, useValue: mockedDrawingService },

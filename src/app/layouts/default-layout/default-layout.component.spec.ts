@@ -21,7 +21,6 @@ import { MockedToasterService } from '@services/toaster.service.spec';
 import { DefaultLayoutComponent } from './default-layout.component';
 import { AppTestingModule } from 'app/testing/app-testing/app-testing.module';
 
-
 class MockedControllerManagementService {
   public controllerStatusChanged;
   public stopAll() {}
@@ -69,8 +68,8 @@ describe('DefaultLayoutComponent', () => {
         { provide: ControllerService },
         { provide: HttpController },
         { provide: ControllerErrorHandler },
-        { provide: MatDialogRef, useValue: {}},
-        { provide: MAT_DIALOG_DATA, useValue: {}},
+        { provide: MatDialogRef, useValue: {} },
+        { provide: MAT_DIALOG_DATA, useValue: {} },
         ProgressService,
       ],
     }).compileComponents();
@@ -89,7 +88,6 @@ describe('DefaultLayoutComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
 
   it('should show error when controller management service throw event', () => {
     const toaster: MockedToasterService = TestBed.get(ToasterService);

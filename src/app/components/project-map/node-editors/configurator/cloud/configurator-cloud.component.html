@@ -5,109 +5,112 @@
     <div class="default-content">
       <mat-card class="matCard">
         @if (name) {
-          <mat-tab-group>
-            <mat-tab label="Ethernet interfaces">
-              @for (port of portsMappingEthernet; track port.name) {
-                <div class="form-field">
-                  <div class="form-field">{{ port.name }}</div>
-                  <br /><br />
-                </div>
-              }
-              <mat-form-field class="select">
-                <mat-select
-                  placeholder="Ethernet interface"
-                  [ngModelOptions]="{ standalone: true }"
-                  [(ngModel)]="ethernetInterface"
-                >
-                  @for (type of ethernetInterfaces; track type) {
-                    <mat-option [value]="type">
-                      {{ type }}
-                    </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-              <button mat-button class="form-field" (click)="onAddEthernetInterface()">Add</button>
-            </mat-tab>
+        <mat-tab-group>
+          <mat-tab label="Ethernet interfaces">
+            @for (port of portsMappingEthernet; track port.name) {
+            <div class="form-field">
+              <div class="form-field">{{ port.name }}</div>
+              <br /><br />
+            </div>
+            }
+            <mat-form-field class="select">
+              <mat-select
+                placeholder="Ethernet interface"
+                [ngModelOptions]="{ standalone: true }"
+                [(ngModel)]="ethernetInterface"
+              >
+                @for (type of ethernetInterfaces; track type) {
+                <mat-option [value]="type">
+                  {{ type }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <button mat-button class="form-field" (click)="onAddEthernetInterface()">Add</button>
+          </mat-tab>
 
-            <mat-tab label="TAP interfaces">
-              @for (port of portsMappingTap; track port.name) {
-                <div class="form-field">
-                  <div class="form-field">{{ port.name }}</div>
-                  <br /><br />
-                </div>
-              }
+          <mat-tab label="TAP interfaces">
+            @for (port of portsMappingTap; track port.name) {
+            <div class="form-field">
+              <div class="form-field">{{ port.name }}</div>
+              <br /><br />
+            </div>
+            }
+            <mat-form-field class="form-field">
+              <input matInput type="text" [(ngModel)]="tapInterface" placeholder="TAP interface" />
+            </mat-form-field>
+            <button mat-button class="form-field" (click)="onAddTapInterface()">Add</button>
+          </mat-tab>
+
+          <mat-tab label="UDP tunnels">
+            <app-udp-tunnels #udpTunnels [dataSourceUdp]="portsMappingUdp"></app-udp-tunnels>
+          </mat-tab>
+
+          <mat-tab label="Miscellaneous">
+            <form [formGroup]="generalSettingsForm">
               <mat-form-field class="form-field">
-                <input matInput type="text" [(ngModel)]="tapInterface" placeholder="TAP interface" />
+                <input matInput type="text" formControlName="name" placeholder="Name" />
               </mat-form-field>
-              <button mat-button class="form-field" (click)="onAddTapInterface()">Add</button>
-            </mat-tab>
-
-            <mat-tab label="UDP tunnels">
-              <app-udp-tunnels #udpTunnels [dataSourceUdp]="portsMappingUdp"></app-udp-tunnels>
-            </mat-tab>
-
-            <mat-tab label="Miscellaneous">
-              <form [formGroup]="generalSettingsForm">
-                <mat-form-field class="form-field">
-                  <input matInput type="text" formControlName="name" placeholder="Name" />
-                </mat-form-field>
-              </form>
-              <mat-form-field class="form-field tags-field">
-                <mat-label>Tags</mat-label>
-                <mat-chip-grid #chipList>
-                  @for (tag of node?.tags; track tag) {
-                    <mat-chip (removed)="removeTag(tag)">
-                      {{ tag }}
-                      <mat-icon matChipRemove>cancel</mat-icon>
-                    </mat-chip>
-                  }
-                  <input matInput placeholder="Add tags"
-                         [matChipInputFor]="chipList"
-                         [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                         (matChipInputTokenEnd)="addTag($event)" />
-                </mat-chip-grid>
-              </mat-form-field>
-              <mat-form-field class="select">
-                <mat-select placeholder="Console type" [(ngModel)]="node.console_type">
-                  @for (type of consoleTypes; track type) {
-                    <mat-option [value]="type">
-                      {{ type }}
-                    </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field class="form-field">
+            </form>
+            <mat-form-field class="form-field tags-field">
+              <mat-label>Tags</mat-label>
+              <mat-chip-grid #chipList>
+                @for (tag of node?.tags; track tag) {
+                <mat-chip (removed)="removeTag(tag)">
+                  {{ tag }}
+                  <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+                }
                 <input
                   matInput
-                  type="text"
-                  [(ngModel)]="node.properties.remote_console_host"
-                  placeholder="Console host"
+                  placeholder="Add tags"
+                  [matChipInputFor]="chipList"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  (matChipInputTokenEnd)="addTag($event)"
                 />
-              </mat-form-field>
-              <mat-form-field class="form-field">
-                <input
-                  matInput
-                  type="text"
-                  [(ngModel)]="node.properties.remote_console_port"
-                  placeholder="Console port"
-                />
-              </mat-form-field>
-              <mat-form-field class="form-field">
-                <input
-                  matInput
-                  type="text"
-                  [(ngModel)]="node.properties.remote_console_http_path"
-                  placeholder="Console HTTP path"
-                />
-              </mat-form-field>
-            </mat-tab>
+              </mat-chip-grid>
+            </mat-form-field>
+            <mat-form-field class="select">
+              <mat-select placeholder="Console type" [(ngModel)]="node.console_type">
+                @for (type of consoleTypes; track type) {
+                <mat-option [value]="type">
+                  {{ type }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                type="text"
+                [(ngModel)]="node.properties.remote_console_host"
+                placeholder="Console host"
+              />
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                type="text"
+                [(ngModel)]="node.properties.remote_console_port"
+                placeholder="Console port"
+              />
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                type="text"
+                [(ngModel)]="node.properties.remote_console_http_path"
+                placeholder="Console HTTP path"
+              />
+            </mat-form-field>
+          </mat-tab>
 
-            <mat-tab label="Usage">
-              <mat-form-field class="form-field">
-                <textarea matInput type="text" [(ngModel)]="node.properties.usage"></textarea>
-              </mat-form-field>
-            </mat-tab>
-          </mat-tab-group>
+          <mat-tab label="Usage">
+            <mat-form-field class="form-field">
+              <textarea matInput type="text" [(ngModel)]="node.properties.usage"></textarea>
+            </mat-form-field>
+          </mat-tab>
+        </mat-tab-group>
         }
       </mat-card>
       <div></div>

@@ -70,11 +70,11 @@ export class SymbolService {
     return this.httpController.post(controller, `/symbols/${symbolName}/raw`, symbol);
   }
 
-  load(controller: Controller ): Observable<Symbol[]> {
+  load(controller: Controller): Observable<Symbol[]> {
     return this.httpController.get<Symbol[]>(controller, '/symbols');
   }
 
-  list(controller: Controller ) {
+  list(controller: Controller) {
     if (!this.cache) {
       this.cache = this.load(controller).pipe(shareReplay(CACHE_SIZE));
     }

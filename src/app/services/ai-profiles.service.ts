@@ -8,17 +8,16 @@ import {
   LLMModelConfigInheritedResponse,
   LLMModelConfigListResponse,
   CreateLLMModelConfigRequest,
-  UpdateLLMModelConfigRequest
+  UpdateLLMModelConfigRequest,
 } from '@models/ai-profile';
 
 /**
  * Service for managing LLM model configurations
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AiProfilesService {
-
   constructor(private httpController: HttpController) {}
 
   /* ==================== User Configuration Methods ==================== */
@@ -28,15 +27,14 @@ export class AiProfilesService {
    * GET /v3/access/users/{user_id}/llm-model-configs
    */
   getConfigs(controller: Controller, userId: string): Observable<LLMModelConfigInheritedResponse> {
-    return this.httpController.get<LLMModelConfigInheritedResponse>(
-      controller,
-      `/access/users/${userId}/llm-model-configs`
-    ).pipe(
-      catchError(error => {
-        console.error('Failed to get user configs:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.httpController
+      .get<LLMModelConfigInheritedResponse>(controller, `/access/users/${userId}/llm-model-configs`)
+      .pipe(
+        catchError((error) => {
+          console.error('Failed to get user configs:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
@@ -44,15 +42,14 @@ export class AiProfilesService {
    * GET /v3/access/users/{user_id}/llm-model-configs/own
    */
   getOwnConfigs(controller: Controller, userId: string): Observable<LLMModelConfigListResponse> {
-    return this.httpController.get<LLMModelConfigListResponse>(
-      controller,
-      `/access/users/${userId}/llm-model-configs/own`
-    ).pipe(
-      catchError(error => {
-        console.error('Failed to get user own configs:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.httpController
+      .get<LLMModelConfigListResponse>(controller, `/access/users/${userId}/llm-model-configs/own`)
+      .pipe(
+        catchError((error) => {
+          console.error('Failed to get user own configs:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
@@ -60,15 +57,14 @@ export class AiProfilesService {
    * GET /v3/access/users/{user_id}/llm-model-configs/default
    */
   getDefaultConfig(controller: Controller, userId: string): Observable<LLMModelConfigResponse> {
-    return this.httpController.get<LLMModelConfigResponse>(
-      controller,
-      `/access/users/${userId}/llm-model-configs/default`
-    ).pipe(
-      catchError(error => {
-        console.error('Failed to get default config:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.httpController
+      .get<LLMModelConfigResponse>(controller, `/access/users/${userId}/llm-model-configs/default`)
+      .pipe(
+        catchError((error) => {
+          console.error('Failed to get default config:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
@@ -80,16 +76,14 @@ export class AiProfilesService {
     userId: string,
     config: CreateLLMModelConfigRequest
   ): Observable<LLMModelConfigResponse> {
-    return this.httpController.post<LLMModelConfigResponse>(
-      controller,
-      `/access/users/${userId}/llm-model-configs`,
-      config
-    ).pipe(
-      catchError(error => {
-        console.error('Failed to create config:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.httpController
+      .post<LLMModelConfigResponse>(controller, `/access/users/${userId}/llm-model-configs`, config)
+      .pipe(
+        catchError((error) => {
+          console.error('Failed to create config:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
@@ -102,32 +96,23 @@ export class AiProfilesService {
     configId: string,
     updates: UpdateLLMModelConfigRequest
   ): Observable<LLMModelConfigResponse> {
-    return this.httpController.put<LLMModelConfigResponse>(
-      controller,
-      `/access/users/${userId}/llm-model-configs/${configId}`,
-      updates
-    ).pipe(
-      catchError(error => {
-        console.error('Failed to update config:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.httpController
+      .put<LLMModelConfigResponse>(controller, `/access/users/${userId}/llm-model-configs/${configId}`, updates)
+      .pipe(
+        catchError((error) => {
+          console.error('Failed to update config:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
    * Delete a user configuration
    * DELETE /v3/access/users/{user_id}/llm-model-configs/{config_id}
    */
-  deleteConfig(
-    controller: Controller,
-    userId: string,
-    configId: string
-  ): Observable<void> {
-    return this.httpController.delete<void>(
-      controller,
-      `/access/users/${userId}/llm-model-configs/${configId}`
-    ).pipe(
-      catchError(error => {
+  deleteConfig(controller: Controller, userId: string, configId: string): Observable<void> {
+    return this.httpController.delete<void>(controller, `/access/users/${userId}/llm-model-configs/${configId}`).pipe(
+      catchError((error) => {
         console.error('Failed to delete config:', error);
         return throwError(() => error);
       })
@@ -138,42 +123,32 @@ export class AiProfilesService {
    * Set default configuration for a user
    * PUT /v3/access/users/{user_id}/llm-model-configs/default/{config_id}
    */
-  setDefaultConfig(
-    controller: Controller,
-    userId: string,
-    configId: string
-  ): Observable<LLMModelConfigResponse> {
-    return this.httpController.put<LLMModelConfigResponse>(
-      controller,
-      `/access/users/${userId}/llm-model-configs/default/${configId}`,
-      {}
-    ).pipe(
-      catchError(error => {
-        console.error('Failed to set default config:', error);
-        return throwError(() => error);
-      })
-    );
+  setDefaultConfig(controller: Controller, userId: string, configId: string): Observable<LLMModelConfigResponse> {
+    return this.httpController
+      .put<LLMModelConfigResponse>(controller, `/access/users/${userId}/llm-model-configs/default/${configId}`, {})
+      .pipe(
+        catchError((error) => {
+          console.error('Failed to set default config:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
    * Unset default configuration for a user
    * PUT /v3/access/users/{user_id}/llm-model-configs/{config_id} with is_default: false
    */
-  unsetDefaultConfig(
-    controller: Controller,
-    userId: string,
-    configId: string
-  ): Observable<LLMModelConfigResponse> {
-    return this.httpController.put<LLMModelConfigResponse>(
-      controller,
-      `/access/users/${userId}/llm-model-configs/${configId}`,
-      { is_default: false }
-    ).pipe(
-      catchError(error => {
-        console.error('Failed to unset default config:', error);
-        return throwError(() => error);
+  unsetDefaultConfig(controller: Controller, userId: string, configId: string): Observable<LLMModelConfigResponse> {
+    return this.httpController
+      .put<LLMModelConfigResponse>(controller, `/access/users/${userId}/llm-model-configs/${configId}`, {
+        is_default: false,
       })
-    );
+      .pipe(
+        catchError((error) => {
+          console.error('Failed to unset default config:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   /* ==================== Group Configuration Methods ==================== */
@@ -183,15 +158,14 @@ export class AiProfilesService {
    * GET /v3/access/groups/{group_id}/llm-model-configs
    */
   getGroupConfigs(controller: Controller, groupId: string): Observable<LLMModelConfigListResponse> {
-    return this.httpController.get<LLMModelConfigListResponse>(
-      controller,
-      `/access/groups/${groupId}/llm-model-configs`
-    ).pipe(
-      catchError(error => {
-        console.error('Failed to get group configs:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.httpController
+      .get<LLMModelConfigListResponse>(controller, `/access/groups/${groupId}/llm-model-configs`)
+      .pipe(
+        catchError((error) => {
+          console.error('Failed to get group configs:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
@@ -199,15 +173,14 @@ export class AiProfilesService {
    * GET /v3/access/groups/{group_id}/llm-model-configs/default
    */
   getDefaultGroupConfig(controller: Controller, groupId: string): Observable<LLMModelConfigResponse> {
-    return this.httpController.get<LLMModelConfigResponse>(
-      controller,
-      `/access/groups/${groupId}/llm-model-configs/default`
-    ).pipe(
-      catchError(error => {
-        console.error('Failed to get default group config:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.httpController
+      .get<LLMModelConfigResponse>(controller, `/access/groups/${groupId}/llm-model-configs/default`)
+      .pipe(
+        catchError((error) => {
+          console.error('Failed to get default group config:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
@@ -219,16 +192,14 @@ export class AiProfilesService {
     groupId: string,
     config: CreateLLMModelConfigRequest
   ): Observable<LLMModelConfigResponse> {
-    return this.httpController.post<LLMModelConfigResponse>(
-      controller,
-      `/access/groups/${groupId}/llm-model-configs`,
-      config
-    ).pipe(
-      catchError(error => {
-        console.error('Failed to create group config:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.httpController
+      .post<LLMModelConfigResponse>(controller, `/access/groups/${groupId}/llm-model-configs`, config)
+      .pipe(
+        catchError((error) => {
+          console.error('Failed to create group config:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
@@ -241,32 +212,23 @@ export class AiProfilesService {
     configId: string,
     updates: UpdateLLMModelConfigRequest
   ): Observable<LLMModelConfigResponse> {
-    return this.httpController.put<LLMModelConfigResponse>(
-      controller,
-      `/access/groups/${groupId}/llm-model-configs/${configId}`,
-      updates
-    ).pipe(
-      catchError(error => {
-        console.error('Failed to update group config:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.httpController
+      .put<LLMModelConfigResponse>(controller, `/access/groups/${groupId}/llm-model-configs/${configId}`, updates)
+      .pipe(
+        catchError((error) => {
+          console.error('Failed to update group config:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
    * Delete a group configuration
    * DELETE /v3/access/groups/{group_id}/llm-model-configs/{config_id}
    */
-  deleteGroupConfig(
-    controller: Controller,
-    groupId: string,
-    configId: string
-  ): Observable<void> {
-    return this.httpController.delete<void>(
-      controller,
-      `/access/groups/${groupId}/llm-model-configs/${configId}`
-    ).pipe(
-      catchError(error => {
+  deleteGroupConfig(controller: Controller, groupId: string, configId: string): Observable<void> {
+    return this.httpController.delete<void>(controller, `/access/groups/${groupId}/llm-model-configs/${configId}`).pipe(
+      catchError((error) => {
         console.error('Failed to delete group config:', error);
         return throwError(() => error);
       })
@@ -277,21 +239,15 @@ export class AiProfilesService {
    * Set default configuration for a group
    * PUT /v3/access/groups/{group_id}/llm-model-configs/default/{config_id}
    */
-  setDefaultGroupConfig(
-    controller: Controller,
-    groupId: string,
-    configId: string
-  ): Observable<LLMModelConfigResponse> {
-    return this.httpController.put<LLMModelConfigResponse>(
-      controller,
-      `/access/groups/${groupId}/llm-model-configs/default/${configId}`,
-      {}
-    ).pipe(
-      catchError(error => {
-        console.error('Failed to set default group config:', error);
-        return throwError(() => error);
-      })
-    );
+  setDefaultGroupConfig(controller: Controller, groupId: string, configId: string): Observable<LLMModelConfigResponse> {
+    return this.httpController
+      .put<LLMModelConfigResponse>(controller, `/access/groups/${groupId}/llm-model-configs/default/${configId}`, {})
+      .pipe(
+        catchError((error) => {
+          console.error('Failed to set default group config:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
@@ -303,15 +259,15 @@ export class AiProfilesService {
     groupId: string,
     configId: string
   ): Observable<LLMModelConfigResponse> {
-    return this.httpController.put<LLMModelConfigResponse>(
-      controller,
-      `/access/groups/${groupId}/llm-model-configs/${configId}`,
-      { is_default: false }
-    ).pipe(
-      catchError(error => {
-        console.error('Failed to unset default group config:', error);
-        return throwError(() => error);
+    return this.httpController
+      .put<LLMModelConfigResponse>(controller, `/access/groups/${groupId}/llm-model-configs/${configId}`, {
+        is_default: false,
       })
-    );
+      .pipe(
+        catchError((error) => {
+          console.error('Failed to unset default group config:', error);
+          return throwError(() => error);
+        })
+      );
   }
 }

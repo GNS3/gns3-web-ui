@@ -17,7 +17,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-qemu-preferences',
   templateUrl: './qemu-preferences.component.html',
   styleUrls: ['./qemu-preferences.component.scss'],
-  imports: [CommonModule, FormsModule, RouterModule, MatButtonModule, MatCheckboxModule, MatListModule]
+  imports: [CommonModule, FormsModule, RouterModule, MatButtonModule, MatCheckboxModule, MatListModule],
 })
 export class QemuPreferencesComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -31,7 +31,7 @@ export class QemuPreferencesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
       this.controller = controller;
       this.cd.markForCheck();
 

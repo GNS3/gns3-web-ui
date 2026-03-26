@@ -1,7 +1,14 @@
 import { DataSource } from '@angular/cdk/collections';
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,7 +31,18 @@ import { TemplateFilter } from '@filters/templateFilter.pipe';
   templateUrl: './template-list-dialog.component.html',
   styleUrls: ['./template-list-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, TemplateFilter]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    TemplateFilter,
+  ],
 })
 export class TemplateListDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<TemplateListDialogComponent>);
@@ -58,13 +76,13 @@ export class TemplateListDialogComponent implements OnInit {
 
   nodeControllers: string[] = ['local', 'vm'];
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
     this.controller = data['controller'];
     this.project = data['project'];
     this.configurationForm = this.formBuilder.group({
-      numberOfNodes: new UntypedFormControl(1, [ Validators.compose([Validators.required, this.nonNegativeValidator.get])]),
+      numberOfNodes: new UntypedFormControl(1, [
+        Validators.compose([Validators.required, this.nonNegativeValidator.get]),
+      ]),
     });
     this.positionForm = this.formBuilder.group({
       top: new UntypedFormControl(0, Validators.required),

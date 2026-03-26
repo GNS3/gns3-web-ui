@@ -1,12 +1,9 @@
 <div class="cloud-nodes-add">
   <header class="cloud-nodes-add__header">
     @if (controller) {
-      <button
-        class="cloud-nodes-add__back-btn"
-        (click)="goBack()"
-        mat-icon-button>
-        <mat-icon>arrow_back</mat-icon>
-      </button>
+    <button class="cloud-nodes-add__back-btn" (click)="goBack()" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     }
     <h1 class="cloud-nodes-add__title">New cloud node template</h1>
   </header>
@@ -18,7 +15,8 @@
           class="cloud-nodes-add__radio"
           value="1"
           (click)="setControllerType('local')"
-          [checked]="true">
+          [checked]="true"
+        >
           Run the cloud node locally
         </mat-radio-button>
       </mat-radio-group>

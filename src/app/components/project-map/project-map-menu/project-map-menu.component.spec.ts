@@ -15,7 +15,7 @@ import { MapSettingsService } from '@services/mapsettings.service';
 import { SymbolService } from '@services/symbol.service';
 import { ToolsService } from '@services/tools.service';
 import { MockedSymbolService } from '../../preferences/common/symbols/symbols.component.spec';
-import { MockedDrawingService,MockedDrawingsDataSource } from '../project-map.component.spec';
+import { MockedDrawingService, MockedDrawingsDataSource } from '../project-map.component.spec';
 import { ProjectMapMenuComponent } from './project-map-menu.component';
 import { MockedProjectService } from '@services/project.service.spec';
 import { MockedNodesDataSource, MockedNodeService } from '../project-map.component.spec';

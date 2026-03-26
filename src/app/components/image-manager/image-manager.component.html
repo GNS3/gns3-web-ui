@@ -1,9 +1,6 @@
 <div class="image-manager">
   <header class="image-manager__header">
-    <button
-      class="image-manager__back-btn"
-      [routerLink]="'/controller/' + controllerId + '/projects'"
-      mat-icon-button>
+    <button class="image-manager__back-btn" [routerLink]="'/controller/' + controllerId + '/projects'" mat-icon-button>
       <mat-icon>arrow_back</mat-icon>
     </button>
     <h1 class="image-manager__title">Image Manager</h1>
@@ -12,21 +9,14 @@
         mat-icon-button
         matTooltip="Install all images"
         matTooltipClass="custom-tooltip"
-        (click)="installAllImages()">
+        (click)="installAllImages()"
+      >
         <mat-icon>done_all</mat-icon>
       </button>
-      <button
-        mat-icon-button
-        matTooltip="Prune images"
-        matTooltipClass="custom-tooltip"
-        (click)="pruneImages()">
+      <button mat-icon-button matTooltip="Prune images" matTooltipClass="custom-tooltip" (click)="pruneImages()">
         <mat-icon>delete</mat-icon>
       </button>
-      <button
-        mat-icon-button
-        matTooltip="Add image"
-        matTooltipClass="custom-tooltip"
-        (click)="addImageDialog()">
+      <button mat-icon-button matTooltip="Add image" matTooltipClass="custom-tooltip" (click)="addImageDialog()">
         <mat-icon>add_circle_outline</mat-icon>
       </button>
     </div>
@@ -55,16 +45,18 @@
             <mat-checkbox
               (change)="$event ? selectAllImages() : null"
               [checked]="hasSelection() && isAllSelected()"
-              [indeterminate]="hasSelection() && !isAllSelected()">
+              [indeterminate]="hasSelection() && !isAllSelected()"
+            >
             </mat-checkbox>
           </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <mat-checkbox (click)="onRowCheckboxClick($event, row)"
+            <mat-checkbox
+              (click)="onRowCheckboxClick($event, row)"
               [checked]="isRowSelected(row)"
-              [disabled]="!isPersistedRow(row)">
+              [disabled]="!isPersistedRow(row)"
+            >
             </mat-checkbox>
           </mat-cell>
-
         </ng-container>
 
         <ng-container matColumnDef="filename">
@@ -73,15 +65,17 @@
             <div class="image-manager__row-content">
               <span class="image-manager__filename">{{ row.filename }}</span>
               @if (hasUploadState(row)) {
-                <div class="image-manager__upload-status">
-                  <mat-progress-bar mode="determinate" [value]="row.uploadProgress || 0"></mat-progress-bar>
-                  <span class="image-manager__upload-text" [class.image-manager__upload-error]="row.uploadStatus === 'error'">
-                    {{ row.uploadStatus | titlecase }} {{ row.uploadProgress || 0 }}%
-                    @if (row.errorMessage) {
-                      <span> - {{ row.errorMessage }}</span>
-                    }
-                  </span>
-                </div>
+              <div class="image-manager__upload-status">
+                <mat-progress-bar mode="determinate" [value]="row.uploadProgress || 0"></mat-progress-bar>
+                <span
+                  class="image-manager__upload-text"
+                  [class.image-manager__upload-error]="row.uploadStatus === 'error'"
+                >
+                  {{ row.uploadStatus | titlecase }} {{ row.uploadProgress || 0 }}% @if (row.errorMessage) {
+                  <span> - {{ row.errorMessage }}</span>
+                  }
+                </span>
+              </div>
               }
             </div>
           </mat-cell>
@@ -99,41 +93,41 @@
 
         <ng-container matColumnDef="created_at">
           <mat-header-cell *matHeaderCellDef mat-sort-header> Created </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{ row.created_at ? (row.created_at | date:'short') : '-' }} </mat-cell>
+          <mat-cell *matCellDef="let row"> {{ row.created_at ? (row.created_at | date : 'short') : '-' }} </mat-cell>
         </ng-container>
 
-        <ng-container matColumnDef="delete" >
+        <ng-container matColumnDef="delete">
           <mat-header-cell *matHeaderCellDef>
             @if ((hasSelection() && isAllSelected()) || selectedCount() > 1) {
-              <button mat-icon-button (click)="deleteAllFiles()">
-                <mat-icon>delete</mat-icon>
-              </button>
+            <button mat-icon-button (click)="deleteAllFiles()">
+              <mat-icon>delete</mat-icon>
+            </button>
             }
           </mat-header-cell>
-          <mat-cell *matCellDef="let row" >
+          <mat-cell *matCellDef="let row">
             @if (isPersistedRow(row) && isRowSelected(row)) {
-              <button mat-icon-button (click)="deleteFile(row.path)">
-                <mat-icon>delete</mat-icon>
-              </button>
-            }
-            @if (hasUploadState(row) && (row.uploadStatus === 'uploading' || row.uploadStatus === 'queued')) {
-              <button
-                mat-icon-button
-                (click)="cancelUpload(row)"
-                matTooltip="Cancel upload"
-                matTooltipClass="custom-tooltip">
-                <mat-icon>cancel</mat-icon>
-              </button>
+            <button mat-icon-button (click)="deleteFile(row.path)">
+              <mat-icon>delete</mat-icon>
+            </button>
+            } @if (hasUploadState(row) && (row.uploadStatus === 'uploading' || row.uploadStatus === 'queued')) {
+            <button
+              mat-icon-button
+              (click)="cancelUpload(row)"
+              matTooltip="Cancel upload"
+              matTooltipClass="custom-tooltip"
+            >
+              <mat-icon>cancel</mat-icon>
+            </button>
             }
           </mat-cell>
         </ng-container>
         <mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns()" [class.image-manager__row-highlight]="isHighlighted(row)"></mat-row>
+        <mat-row
+          *matRowDef="let row; columns: displayedColumns()"
+          [class.image-manager__row-highlight]="isHighlighted(row)"
+        ></mat-row>
       </mat-table>
-      <mat-paginator
-        [pageSizeOptions]="pageSizeOptions"
-        showFirstLastButtons>
-      </mat-paginator>
+      <mat-paginator [pageSizeOptions]="pageSizeOptions" showFirstLastButtons> </mat-paginator>
     </div>
   </main>
 </div>

@@ -1,12 +1,9 @@
 <div class="ios-copy">
   <header class="ios-copy__header">
     @if (controller) {
-      <button
-        class="ios-copy__back-btn"
-        (click)="goBack()"
-        mat-icon-button>
-        <mat-icon>arrow_back</mat-icon>
-      </button>
+    <button class="ios-copy__back-btn" (click)="goBack()" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     }
     <h1 class="ios-copy__title">Copy IOS router template</h1>
   </header>
@@ -23,7 +20,9 @@
 
     <div class="ios-copy__actions">
       <button mat-button class="ios-copy__cancel-btn" (click)="goBack()">Cancel</button>
-      <button mat-raised-button color="primary" class="ios-copy__submit-btn" (click)="addTemplate()">Copy template</button>
+      <button mat-raised-button color="primary" class="ios-copy__submit-btn" (click)="addTemplate()">
+        Copy template
+      </button>
     </div>
   </main>
 </div>

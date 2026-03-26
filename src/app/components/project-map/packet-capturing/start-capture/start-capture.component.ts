@@ -1,6 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import {
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+  ReactiveFormsModule,
+  FormsModule,
+} from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -31,7 +38,7 @@ import { PacketFiltersDialogComponent } from '../packet-filters/packet-filters.c
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatCheckboxModule
+    MatCheckboxModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -74,7 +81,10 @@ export class StartCaptureDialogComponent implements OnInit {
     const sourcePort = sourceNode.ports[this.link.nodes[0].port_number];
     const targetPort = targetNode.ports[this.link.nodes[1].port_number];
     this.inputForm.controls['fileName'].setValue(
-      `${sourceNode.name}_${sourcePort.name}_to_${targetNode.name}_${targetPort.name}`.replace(new RegExp('[^0-9A-Za-z_-]', 'g'), '')
+      `${sourceNode.name}_${sourcePort.name}_to_${targetNode.name}_${targetPort.name}`.replace(
+        new RegExp('[^0-9A-Za-z_-]', 'g'),
+        ''
+      )
     );
   }
 
@@ -96,7 +106,12 @@ export class StartCaptureDialogComponent implements OnInit {
       };
 
       if (this.startProgram) {
-        this.packetCaptureService.startCapture(this.controller, this.project, this.link, captureSettings.capture_file_name);
+        this.packetCaptureService.startCapture(
+          this.controller,
+          this.project,
+          this.link,
+          captureSettings.capture_file_name
+        );
       }
 
       this.linkService.startCaptureOnLink(this.controller, this.link, captureSettings).subscribe(() => {

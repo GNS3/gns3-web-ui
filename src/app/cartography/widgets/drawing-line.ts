@@ -21,7 +21,7 @@ export class DrawingLineWidget {
     this.drawingLine.start = new Point(x, y);
     this.drawingLine.end = new Point(x, y);
 
-    const over = function(this: SVGGElement, event: MouseEvent, d: unknown) {
+    const over = function (this: SVGGElement, event: MouseEvent, d: unknown) {
       const node = self.selection.select<SVGGElement>('g.canvas').node();
       const coordinates = pointer(event, node);
       self.drawingLine.end.x = coordinates[0];

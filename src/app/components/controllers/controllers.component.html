@@ -3,10 +3,9 @@
     <!-- GNS3 Logo and Title -->
     <div class="controllers__header-content">
       @if (!isLightThemeEnabled()) {
-        <mat-icon class="controllers__logo-icon" svgIcon="gns3"></mat-icon>
-      }
-      @if (isLightThemeEnabled()) {
-        <mat-icon class="controllers__logo-icon" svgIcon="gns3black"></mat-icon>
+      <mat-icon class="controllers__logo-icon" svgIcon="gns3"></mat-icon>
+      } @if (isLightThemeEnabled()) {
+      <mat-icon class="controllers__logo-icon" svgIcon="gns3black"></mat-icon>
       }
       <h1>Controllers</h1>
     </div>
@@ -50,144 +49,122 @@
       [class.controllers__table-container--hidden]="!controllerDatabase || controllerDatabase.data.length === 0"
     >
       <mat-table #table [dataSource]="dataSource" matSort>
-          <!-- ID Column (hidden on mobile) -->
-          <ng-container matColumnDef="id">
-            <mat-header-cell *matHeaderCellDef mat-sort-header class="hide-mobile"> ID </mat-header-cell>
-            <mat-cell *matCellDef="let row" class="hide-mobile"> {{ row.id }} </mat-cell>
-          </ng-container>
+        <!-- ID Column (hidden on mobile) -->
+        <ng-container matColumnDef="id">
+          <mat-header-cell *matHeaderCellDef mat-sort-header class="hide-mobile"> ID </mat-header-cell>
+          <mat-cell *matCellDef="let row" class="hide-mobile"> {{ row.id }} </mat-cell>
+        </ng-container>
 
-          <!-- Name Column -->
-          <ng-container matColumnDef="name">
-            <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
-            <mat-cell *matCellDef="let row">
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            @if (getControllerStatus(row) === 'running') {
+            <a [routerLink]="['/controller', row.id, 'projects']" class="controllers__link">
+              {{ row.name }}
+            </a>
+            } @else {
+            <span class="controllers__name--inactive">{{ row.name }}</span>
+            }
+          </mat-cell>
+        </ng-container>
+
+        <!-- Status Column (with icon) -->
+        <ng-container matColumnDef="status">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Status </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            @switch (getControllerStatus(row)) { @case ('running') {
+            <div class="controllers__status-indicator controllers__status--running">
+              <span class="controllers__status-dot"></span>
+              <span>Running</span>
+            </div>
+            } @case ('starting') {
+            <div class="controllers__status-indicator controllers__status--starting">
+              <span class="controllers__status-dot"></span>
+              <span>Starting</span>
+            </div>
+            } @default {
+            <div class="controllers__status-indicator controllers__status--stopped">
+              <span class="controllers__status-dot"></span>
+              <span>Stopped</span>
+            </div>
+            } }
+          </mat-cell>
+        </ng-container>
+
+        <!-- Location Column -->
+        <ng-container matColumnDef="location">
+          <mat-header-cell *matHeaderCellDef mat-sort-header class="hide-mobile"> Location </mat-header-cell>
+          <mat-cell *matCellDef="let row" class="hide-mobile"> {{ row.location }} </mat-cell>
+        </ng-container>
+
+        <!-- Host Column -->
+        <ng-container matColumnDef="ip">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Host </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <span class="hide-desktop">{{ row.host }}:{{ row.port }}</span>
+            <span class="hide-mobile">{{ row.host }}</span>
+          </mat-cell>
+        </ng-container>
+
+        <!-- Port Column (hidden on mobile) -->
+        <ng-container matColumnDef="port">
+          <mat-header-cell *matHeaderCellDef mat-sort-header class="hide-mobile"> Port </mat-header-cell>
+          <mat-cell *matCellDef="let row" class="hide-mobile"> {{ row.port }} </mat-cell>
+        </ng-container>
+
+        <!-- Actions Column -->
+        <ng-container matColumnDef="actions">
+          <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <div class="controllers__actions-cell">
+              <!-- Primary Action: Go to Projects (only for running controllers) -->
               @if (getControllerStatus(row) === 'running') {
-                <a [routerLink]="['/controller', row.id, 'projects']" class="controllers__link">
-                  {{ row.name }}
-                </a>
-              } @else {
-                <span class="controllers__name--inactive">{{ row.name }}</span>
+              <button mat-icon-button color="primary" class="primary-action-btn" (click)="openProjects(row)">
+                <mat-icon>folder_open</mat-icon>
+              </button>
               }
-            </mat-cell>
-          </ng-container>
 
-          <!-- Status Column (with icon) -->
-          <ng-container matColumnDef="status">
-            <mat-header-cell *matHeaderCellDef mat-sort-header> Status </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-              @switch (getControllerStatus(row)) {
-                @case ('running') {
-                  <div class="controllers__status-indicator controllers__status--running">
-                    <span class="controllers__status-dot"></span>
-                    <span>Running</span>
-                  </div>
-                }
-                @case ('starting') {
-                  <div class="controllers__status-indicator controllers__status--starting">
-                    <span class="controllers__status-dot"></span>
-                    <span>Starting</span>
-                  </div>
-                }
-                @default {
-                  <div class="controllers__status-indicator controllers__status--stopped">
-                    <span class="controllers__status-dot"></span>
-                    <span>Stopped</span>
-                  </div>
-                }
+              <!-- Start Controller (only for local stopped controllers) -->
+              @if (row.location === 'local' && getControllerStatus(row) === 'stopped') {
+              <button mat-icon-button (click)="startController(row)">
+                <mat-icon aria-label="Start controller">play_arrow</mat-icon>
+              </button>
               }
-            </mat-cell>
-          </ng-container>
 
-          <!-- Location Column -->
-          <ng-container matColumnDef="location">
-            <mat-header-cell *matHeaderCellDef mat-sort-header class="hide-mobile"> Location </mat-header-cell>
-            <mat-cell *matCellDef="let row" class="hide-mobile"> {{ row.location }} </mat-cell>
-          </ng-container>
+              <!-- Stop Controller (only for local running controllers) -->
+              @if (row.location === 'local' && getControllerStatus(row) === 'running') {
+              <button mat-icon-button (click)="stopController(row)">
+                <mat-icon aria-label="Stop controller">stop</mat-icon>
+              </button>
+              }
 
-          <!-- Host Column -->
-          <ng-container matColumnDef="ip">
-            <mat-header-cell *matHeaderCellDef mat-sort-header> Host </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-              <span class="hide-desktop">{{ row.host }}:{{ row.port }}</span>
-              <span class="hide-mobile">{{ row.host }}</span>
-            </mat-cell>
-          </ng-container>
+              <!-- Loading Spinner (for starting controllers) -->
+              @if (row.location === 'local' && getControllerStatus(row) === 'starting') {
+              <mat-spinner [diameter]="24"></mat-spinner>
+              }
 
-          <!-- Port Column (hidden on mobile) -->
-          <ng-container matColumnDef="port">
-            <mat-header-cell *matHeaderCellDef mat-sort-header class="hide-mobile"> Port </mat-header-cell>
-            <mat-cell *matCellDef="let row" class="hide-mobile"> {{ row.port }} </mat-cell>
-          </ng-container>
+              <!-- Edit Controller -->
+              <button mat-icon-button (click)="editController(row)">
+                <mat-icon>edit</mat-icon>
+              </button>
 
-          <!-- Actions Column -->
-          <ng-container matColumnDef="actions">
-            <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
-            <mat-cell *matCellDef="let row">
-              <div class="controllers__actions-cell">
-                <!-- Primary Action: Go to Projects (only for running controllers) -->
-                @if (getControllerStatus(row) === 'running') {
-                  <button
-                    mat-icon-button
-                    color="primary"
-                    class="primary-action-btn"
-                    (click)="openProjects(row)"
-                  >
-                    <mat-icon>folder_open</mat-icon>
-                  </button>
-                }
+              <!-- Delete Controller -->
+              <button mat-icon-button color="warn" (click)="deleteController(row)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </mat-cell>
+        </ng-container>
 
-                <!-- Start Controller (only for local stopped controllers) -->
-                @if (row.location === 'local' && getControllerStatus(row) === 'stopped') {
-                  <button
-                    mat-icon-button
-                    (click)="startController(row)"
-                  >
-                    <mat-icon aria-label="Start controller">play_arrow</mat-icon>
-                  </button>
-                }
-
-                <!-- Stop Controller (only for local running controllers) -->
-                @if (row.location === 'local' && getControllerStatus(row) === 'running') {
-                  <button
-                    mat-icon-button
-                    (click)="stopController(row)"
-                  >
-                    <mat-icon aria-label="Stop controller">stop</mat-icon>
-                  </button>
-                }
-
-                <!-- Loading Spinner (for starting controllers) -->
-                @if (row.location === 'local' && getControllerStatus(row) === 'starting') {
-                  <mat-spinner [diameter]="24"></mat-spinner>
-                }
-
-                <!-- Edit Controller -->
-                <button
-                  mat-icon-button
-                  (click)="editController(row)"
-                >
-                  <mat-icon>edit</mat-icon>
-                </button>
-
-                <!-- Delete Controller -->
-                <button
-                  mat-icon-button
-                  color="warn"
-                  (click)="deleteController(row)"
-                >
-                  <mat-icon>delete</mat-icon>
-                </button>
-              </div>
-            </mat-cell>
-          </ng-container>
-
-          <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-          <mat-row
-            *matRowDef="let row; columns: displayedColumns"
-            [class.controllers__row--running]="getControllerStatus(row) === 'running'"
-            [class.controllers__row--starting]="getControllerStatus(row) === 'starting'"
-            [class.controllers__row--stopped]="getControllerStatus(row) === 'stopped'"
-          ></mat-row>
-        </mat-table>
+        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+        <mat-row
+          *matRowDef="let row; columns: displayedColumns"
+          [class.controllers__row--running]="getControllerStatus(row) === 'running'"
+          [class.controllers__row--starting]="getControllerStatus(row) === 'starting'"
+          [class.controllers__row--stopped]="getControllerStatus(row) === 'stopped'"
+        ></mat-row>
+      </mat-table>
     </div>
 
     <!-- Add Controller Button -->
@@ -195,18 +172,16 @@
       class="controllers__buttons-bar"
       [class.controllers__buttons-bar--hidden]="!controllerDatabase || controllerDatabase.data.length === 0"
     >
-        <button mat-raised-button class="controllers__button" color="primary" (click)="createModal()">
-          <mat-icon>add</mat-icon>
-          Add Controller
-        </button>
+      <button mat-raised-button class="controllers__button" color="primary" (click)="createModal()">
+        <mat-icon>add</mat-icon>
+        Add Controller
+      </button>
     </div>
 
     <!-- Version Footer -->
     <footer class="controllers__footer">
       <div class="controllers__footer-content">
-        <div class="controllers__footer-info">
-          GNS3 Web-UI &copy;2018-{{ currentYear }} v{{ version }}
-        </div>
+        <div class="controllers__footer-info">GNS3 Web-UI &copy;2018-{{ currentYear }} v{{ version }}</div>
         <div class="controllers__footer-social">
           <a
             class="controllers__footer-social-link"
@@ -225,10 +200,9 @@
             matTooltip="Website"
           >
             @if (!isLightThemeEnabled()) {
-              <mat-icon class="controllers__footer-icon" svgIcon="gns3"></mat-icon>
-            }
-            @if (isLightThemeEnabled()) {
-              <mat-icon class="controllers__footer-icon" svgIcon="gns3black"></mat-icon>
+            <mat-icon class="controllers__footer-icon" svgIcon="gns3"></mat-icon>
+            } @if (isLightThemeEnabled()) {
+            <mat-icon class="controllers__footer-icon" svgIcon="gns3black"></mat-icon>
             }
           </a>
         </div>

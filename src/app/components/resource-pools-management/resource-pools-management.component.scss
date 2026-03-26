@@ -80,7 +80,7 @@
   width: 100%;
   background: var(--mat-sys-surface);
   box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
-              0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
   transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   animation: fadeInSlideIn 0.4s ease-out 0.15s both;
 }
@@ -141,7 +141,7 @@ mat-cell {
 }
 
 // Name column - left align with link
-mat-cell[mat-column="name"] {
+mat-cell[mat-column='name'] {
   justify-content: flex-start;
   font-weight: 500;
 }
@@ -185,13 +185,13 @@ mat-cell[mat-column="name"] {
 }
 
 // Actions column - right align
-mat-cell[mat-column="actions"],
-mat-header-cell[mat-column="actions"] {
+mat-cell[mat-column='actions'],
+mat-header-cell[mat-column='actions'] {
   justify-content: flex-end;
   padding: 0 16px;
 }
 
-mat-cell[mat-column="actions"] {
+mat-cell[mat-column='actions'] {
   overflow: visible;
 }
 

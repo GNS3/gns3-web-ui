@@ -1,6 +1,20 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Inject, OnInit, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Inject,
+  OnInit,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -37,8 +51,8 @@ import { UploadingProcessbarComponent } from '../../../common/uploading-processb
     MatIconModule,
     MatTooltipModule,
     MatSnackBarModule,
-    FileUploadModule
-  ]
+    FileUploadModule,
+  ],
 })
 export class ImportProjectDialogComponent implements OnInit {
   private dialog = inject(MatDialog);
@@ -73,7 +87,7 @@ export class ImportProjectDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.uploader = new FileUploader({url: ''});
+    this.uploader = new FileUploader({ url: '' });
     this.uploader.onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };
@@ -98,15 +112,15 @@ export class ImportProjectDialogComponent implements OnInit {
     };
     this.uploader.onProgressItem = (progress: any) => {
       this.uploadProgress = progress['progress'];
-      this.uploadServiceService.processBarCount(this.uploadProgress)
+      this.uploadServiceService.processBarCount(this.uploadProgress);
       this.cd.markForCheck();
     };
 
     this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
       if (isCancel) {
-        this.cancelUploading()
+        this.cancelUploading();
       }
-    })
+    });
   }
 
   get form() {
@@ -141,12 +155,14 @@ export class ImportProjectDialogComponent implements OnInit {
   importProject() {
     const url = this.prepareUploadPath();
     this.uploader.queue.forEach((elem) => (elem.url = url));
-    this.uploader.authToken = `Bearer ${this.controller.authToken}`
+    this.uploader.authToken = `Bearer ${this.controller.authToken}`;
     this.isFirstStepCompleted = true;
     const itemToUpload = this.uploader.queue[0];
     this.uploader.uploadItem(itemToUpload);
-    this.snackBar.openFromComponent(UploadingProcessbarComponent,{panelClass: 'uplaoding-file-snackabar',data:{upload_file_type:'Project'}});
-
+    this.snackBar.openFromComponent(UploadingProcessbarComponent, {
+      panelClass: 'uplaoding-file-snackabar',
+      data: { upload_file_type: 'Project' },
+    });
   }
 
   openConfirmationDialog(existingProject: Project) {
@@ -197,10 +213,10 @@ export class ImportProjectDialogComponent implements OnInit {
 
   cancelUploading() {
     this.uploader.clearQueue();
-    this.uploadServiceService.processBarCount(null)
+    this.uploadServiceService.processBarCount(null);
     this.toasterService.warning('File upload cancelled');
-    this.uploadServiceService.cancelFileUploading(false)
-    this.isFirstStepCompleted = false
+    this.uploadServiceService.cancelFileUploading(false);
+    this.isFirstStepCompleted = false;
     this.uploader.cancelAll();
     this.dialogRef.close(true);
   }

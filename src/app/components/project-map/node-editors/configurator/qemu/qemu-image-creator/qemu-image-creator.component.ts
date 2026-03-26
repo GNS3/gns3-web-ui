@@ -1,6 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import {
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+  ReactiveFormsModule,
+  FormsModule,
+} from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -30,7 +37,7 @@ import { ToasterService } from '@services/toaster.service';
     MatSelectModule,
     MatOptionModule,
     MatCardModule,
-    MatRadioModule
+    MatRadioModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

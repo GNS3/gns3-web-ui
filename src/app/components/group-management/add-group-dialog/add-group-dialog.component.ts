@@ -1,36 +1,42 @@
 /*
-* Software Name : GNS3 Web UI
-* Version: 3
-* SPDX-FileCopyrightText: Copyright (c) 2022 Orange Business Services
-* SPDX-License-Identifier: GPL-3.0-or-later
-*
-* This software is distributed under the GPL-3.0 or any later version,
-* the text of which is available at https://www.gnu.org/licenses/gpl-3.0.txt
-* or see the "LICENSE" file for more details.
-*
-* Author: Sylvain MATHIEU, Elise LEBEAU
-*/
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {MAT_DIALOG_DATA, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
-import {ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators} from "@angular/forms";
-import {MatButtonModule} from '@angular/material/button';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
-import {MatIconModule} from '@angular/material/icon';
-import {groupNameAsyncValidator} from "@components/group-management/add-group-dialog/groupNameAsyncValidator";
-import {GroupNameValidator} from "@components/group-management/add-group-dialog/GroupNameValidator";
-import {GroupService} from "@services/group.service";
-import {Controller} from "@models/controller";
-import {BehaviorSubject, forkJoin, timer} from "rxjs";
-import {User} from "@models/users/user";
-import {UserService} from "@services/user.service";
-import {ToasterService} from "@services/toaster.service";
-import {PageEvent} from "@angular/material/paginator";
-import {Observable} from "rxjs";
-import {Group} from "@models/groups/group";
-import {map, startWith} from "rxjs/operators";
+ * Software Name : GNS3 Web UI
+ * Version: 3
+ * SPDX-FileCopyrightText: Copyright (c) 2022 Orange Business Services
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ * This software is distributed under the GPL-3.0 or any later version,
+ * the text of which is available at https://www.gnu.org/licenses/gpl-3.0.txt
+ * or see the "LICENSE" file for more details.
+ *
+ * Author: Sylvain MATHIEU, Elise LEBEAU
+ */
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import {
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatIconModule } from '@angular/material/icon';
+import { groupNameAsyncValidator } from '@components/group-management/add-group-dialog/groupNameAsyncValidator';
+import { GroupNameValidator } from '@components/group-management/add-group-dialog/GroupNameValidator';
+import { GroupService } from '@services/group.service';
+import { Controller } from '@models/controller';
+import { BehaviorSubject, forkJoin, timer } from 'rxjs';
+import { User } from '@models/users/user';
+import { UserService } from '@services/user.service';
+import { ToasterService } from '@services/toaster.service';
+import { PageEvent } from '@angular/material/paginator';
+import { Observable } from 'rxjs';
+import { Group } from '@models/groups/group';
+import { map, startWith } from 'rxjs/operators';
 
 @Component({
   standalone: true,
@@ -39,10 +45,18 @@ import {map, startWith} from "rxjs/operators";
   styleUrls: ['./add-group-dialog.component.scss'],
   providers: [GroupNameValidator],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule, MatIconModule]
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatAutocompleteModule,
+    MatIconModule,
+  ],
 })
 export class AddGroupDialogComponent implements OnInit {
-
   private dialogRef = inject(MatDialogRef<AddGroupDialogComponent>);
   private formBuilder = inject(UntypedFormBuilder);
   private groupService = inject(GroupService);
@@ -55,12 +69,14 @@ export class AddGroupDialogComponent implements OnInit {
 
   users: User[] = [];
   usersToAdd: Set<User> = new Set([]);
-  filteredUsers: Observable<User[]>
+  filteredUsers: Observable<User[]>;
   loading = false;
   autocompleteControl = new UntypedFormControl();
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { controller: Controller }, private groupNameValidator: GroupNameValidator) {
-  }
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: { controller: Controller },
+    private groupNameValidator: GroupNameValidator
+  ) {}
 
   ngOnInit(): void {
     this.controller = this.data.controller;
@@ -71,15 +87,14 @@ export class AddGroupDialogComponent implements OnInit {
         [groupNameAsyncValidator(this.data.controller, this.groupService)]
       ),
     });
-    this.userService.list(this.controller)
-      .subscribe((users: User[]) => {
-        this.users = users;
-        this.filteredUsers = this.autocompleteControl.valueChanges.pipe(
-          startWith(''),
-          map(value => this._filter(value)),
-        );
-        this.cd.markForCheck();
-      })
+    this.userService.list(this.controller).subscribe((users: User[]) => {
+      this.users = users;
+      this.filteredUsers = this.autocompleteControl.valueChanges.pipe(
+        startWith(''),
+        map((value) => this._filter(value))
+      );
+      this.cd.markForCheck();
+    });
   }
 
   onKeyDown(event) {
@@ -99,23 +114,27 @@ export class AddGroupDialogComponent implements OnInit {
     const groupName = this.groupNameForm.controls['groupName'].value;
     const toAdd = Array.from(this.usersToAdd.values());
 
-
-    this.groupService.addGroup(this.controller, groupName)
-      .subscribe((group) => {
+    this.groupService.addGroup(this.controller, groupName).subscribe(
+      (group) => {
         toAdd.forEach((user: User) => {
-          this.groupService.addMemberToGroup(this.controller, group, user)
-            .subscribe(() => {
-                this.toasterService.success(`user ${user.username} was added`);
-              },
-              (error) => {
-                this.toasterService.error(`An error occur while trying to add user ${user.username} to group ${groupName}`);
-              })
-        })
+          this.groupService.addMemberToGroup(this.controller, group, user).subscribe(
+            () => {
+              this.toasterService.success(`user ${user.username} was added`);
+            },
+            (error) => {
+              this.toasterService.error(
+                `An error occur while trying to add user ${user.username} to group ${groupName}`
+              );
+            }
+          );
+        });
         this.dialogRef.close(true);
-      }, (error) => {
+      },
+      (error) => {
         this.toasterService.error(`An error occur while trying to create new group ${groupName}`);
         this.dialogRef.close(false);
-      });
+      }
+    );
   }
 
   onNoClick() {
@@ -134,13 +153,14 @@ export class AddGroupDialogComponent implements OnInit {
     if (typeof value === 'string') {
       const filterValue = value.toLowerCase();
 
-      return this.users.filter(option => option.username.toLowerCase().includes(filterValue)
-        || (option.email?.toLowerCase().includes(filterValue)));
+      return this.users.filter(
+        (option) =>
+          option.username.toLowerCase().includes(filterValue) || option.email?.toLowerCase().includes(filterValue)
+      );
     }
   }
 
   displayFn(value): string {
     return value && value.username ? value.username : '';
   }
-
 }

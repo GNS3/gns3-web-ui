@@ -3,8 +3,8 @@
   <span>Console</span>
 </button>
 @if (node()?.node_type === 'docker' || node()?.node_type === 'dynamips' || node()?.node_type === 'qemu') {
-  <button mat-menu-item (click)="openConsole(auxiliary=true)">
-    <mat-icon>web_asset</mat-icon>
-    <span>Auxiliary console</span>
-  </button>
+<button mat-menu-item (click)="openConsole((auxiliary = true))">
+  <mat-icon>web_asset</mat-icon>
+  <span>Auxiliary console</span>
+</button>
 }

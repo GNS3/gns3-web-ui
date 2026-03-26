@@ -1,38 +1,35 @@
 @if (!isDelete() && !isUsedFiles()) {
-    <h1 mat-dialog-title>Do you want delete all projects?</h1>
-    <div mat-dialog-content>
-        <p>Your selected projects</p>
-        @for (file of deleteData?.deleteFilesPaths; track $index; let i = $index) {
-          <p>{{i+1}}. {{file?.filename}}</p>
-        }
-    </div>
-    <div mat-dialog-actions align="end">
-        <button mat-button (click)="deleteAll()">Delete</button>
-        <button mat-button mat-dialog-close cdkFocusInitial>Cancel</button>
-    </div>
-}
-@if (isDelete() && !isUsedFiles()) {
-    <h1 align="center" mat-dialog-title>Please wait.</h1>
+<h1 mat-dialog-title>Do you want delete all projects?</h1>
+<div mat-dialog-content>
+  <p>Your selected projects</p>
+  @for (file of deleteData?.deleteFilesPaths; track $index; let i = $index) {
+  <p>{{ i + 1 }}. {{ file?.filename }}</p>
+  }
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="deleteAll()">Delete</button>
+  <button mat-button mat-dialog-close cdkFocusInitial>Cancel</button>
+</div>
+} @if (isDelete() && !isUsedFiles()) {
+<h1 align="center" mat-dialog-title>Please wait.</h1>
 
-    <div mat-dialog-content align="center">
-        <mat-spinner color="accent"></mat-spinner>
-
-    </div>
-}
-
-@if (isDelete() && isUsedFiles()) {
-    <div mat-dialog-content>
-        @if (deleteFliesDetails().length > 0) {
-            <h5>Project can't be deleted because image used in one or more template.</h5>
-            @for (message of deleteFliesDetails(); track $index; let i = $index) {
-              <p [ngClass]="{'deleted-error-text': message?.error?.message}">@if (message != null) {<span>{{i+1}}. {{message?.error?.message}}</span>}</p>
-            }
-        }
-        @if (fileNotDeleted().length > 0) {
-            <h5 class="delete-text">{{fileNotDeleted().length}} Projects deleted successfully.</h5>
-        }
-    </div>
-    <div mat-dialog-actions align="end">
-        <button mat-raised-button color="primary" (click)="dialogRef.close(false)">Close</button>
-    </div>
+<div mat-dialog-content align="center">
+  <mat-spinner color="accent"></mat-spinner>
+</div>
+} @if (isDelete() && isUsedFiles()) {
+<div mat-dialog-content>
+  @if (deleteFliesDetails().length > 0) {
+  <h5>Project can't be deleted because image used in one or more template.</h5>
+  @for (message of deleteFliesDetails(); track $index; let i = $index) {
+  <p [ngClass]="{ 'deleted-error-text': message?.error?.message }">
+    @if (message != null) {<span>{{ i + 1 }}. {{ message?.error?.message }}</span
+    >}
+  </p>
+  } } @if (fileNotDeleted().length > 0) {
+  <h5 class="delete-text">{{ fileNotDeleted().length }} Projects deleted successfully.</h5>
+  }
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-raised-button color="primary" (click)="dialogRef.close(false)">Close</button>
+</div>
 }

@@ -14,11 +14,7 @@ import { GlobalUploadIndicatorComponent } from './components/global-upload-indic
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
-  imports: [
-    CommonModule,
-    RouterModule,
-    GlobalUploadIndicatorComponent,
-  ],
+  imports: [CommonModule, RouterModule, GlobalUploadIndicatorComponent],
   host: {
     class: 'componentCssClass',
   },
@@ -52,8 +48,14 @@ export class AppComponent implements OnInit {
   applyTheme(theme: string) {
     const classList = this.overlayContainer.getContainerElement().classList;
     classList.remove(
-      'theme-deeppurple-amber', 'theme-indigo-pink', 'theme-magenta-violet', 'theme-rose-red',
-      'theme-pink-bluegrey', 'theme-purple-green', 'theme-azure-blue', 'theme-cyan-orange'
+      'theme-deeppurple-amber',
+      'theme-indigo-pink',
+      'theme-magenta-violet',
+      'theme-rose-red',
+      'theme-pink-bluegrey',
+      'theme-purple-green',
+      'theme-azure-blue',
+      'theme-cyan-orange'
     );
     classList.add(`theme-${theme}`);
   }

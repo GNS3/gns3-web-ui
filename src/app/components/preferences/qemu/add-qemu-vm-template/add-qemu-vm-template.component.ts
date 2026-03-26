@@ -32,7 +32,20 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-add-qemu-virtual-machine-template',
   templateUrl: './add-qemu-vm-template.component.html',
   styleUrls: ['./add-qemu-vm-template.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, FileUploadModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatRadioModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatStepperModule,
+    FileUploadModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
@@ -75,12 +88,17 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
   auxConsoleStepCompleted = computed(() => !!this.auxConsoleType());
 
   ngOnInit() {
-    this.uploader.set(new FileUploader({url: ''}));
+    this.uploader.set(new FileUploader({ url: '' }));
 
     this.uploader().onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };
-    this.uploader().onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+    this.uploader().onErrorItem = (
+      item: FileItem,
+      response: string,
+      status: number,
+      headers: ParsedResponseHeaders
+    ) => {
       this.toasterService.error('An error occured: ' + response);
     };
     this.uploader().onSuccessItem = (
@@ -96,11 +114,11 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
     };
 
     this.uploader().onProgressItem = (progress: any) => {
-      this.uploadServiceService.processBarCount(progress['progress'])
+      this.uploadServiceService.processBarCount(progress['progress']);
     };
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((ctrl: Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((ctrl: Controller) => {
       this.controller.set(ctrl);
 
       this.templateMocksService.getQemuTemplate().subscribe((qemuTemplate: QemuTemplate) => {
@@ -119,12 +137,9 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
 
     this.subscription = this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
       if (isCancel) {
-        this.cancelUploading()
+        this.cancelUploading();
       }
-
-    })
-
-
+    });
   }
 
   setControllerType(controllerType: string) {
@@ -147,17 +162,20 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
 
     const itemToUpload = this.uploader().queue[0];
 
-    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers =[{name:'Authorization',value:'Bearer ' + this.controller().authToken}])
+    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true;
+    (itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller().authToken }];
     this.uploader().uploadItem(itemToUpload);
-    this.snackBar.openFromComponent(UploadingProcessbarComponent,{panelClass: 'uplaoding-file-snackabar', data:{upload_file_type:'Image'}});
+    this.snackBar.openFromComponent(UploadingProcessbarComponent, {
+      panelClass: 'uplaoding-file-snackabar',
+      data: { upload_file_type: 'Image' },
+    });
   }
 
   cancelUploading() {
     this.uploader().clearQueue();
-    this.uploadServiceService.processBarCount(null)
+    this.uploadServiceService.processBarCount(null);
     this.toasterService.warning('Image Uploading canceled');
-    this.uploadServiceService.cancelFileUploading(false)
-
+    this.uploadServiceService.cancelFileUploading(false);
   }
 
   goBack() {
@@ -191,5 +209,4 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
-
 }

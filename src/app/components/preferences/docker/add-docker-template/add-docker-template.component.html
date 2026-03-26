@@ -9,7 +9,12 @@
         <mat-step label="Controller type" [completed]="isLocalComputerChosen">
           <div class="docker-add__step-content">
             <mat-radio-group class="docker-add__radio-group">
-              <mat-radio-button class="docker-add__radio" value="1" (click)="setControllerType('local')" [checked]="true">
+              <mat-radio-button
+                class="docker-add__radio"
+                value="1"
+                (click)="setControllerType('local')"
+                [checked]="true"
+              >
                 Run this Docker container locally
               </mat-radio-button>
             </mat-radio-group>
@@ -20,7 +25,12 @@
           <div class="docker-add__step-content">
             <div class="docker-add__form">
               <mat-radio-group class="docker-add__radio-group">
-                <mat-radio-button class="docker-add__radio" value="1" (click)="setDiskImage('existingImage')" [checked]="!newImageSelected">
+                <mat-radio-button
+                  class="docker-add__radio"
+                  value="1"
+                  (click)="setDiskImage('existingImage')"
+                  [checked]="!newImageSelected"
+                >
                   Existing image
                 </mat-radio-button>
                 <mat-radio-button class="docker-add__radio" value="2" (click)="setDiskImage('newImage')">
@@ -28,20 +38,30 @@
                 </mat-radio-button>
               </mat-radio-group>
               @if (!newImageSelected) {
-                <mat-form-field appearance="fill" class="docker-add__field">
-                  <mat-label>Image list</mat-label>
-                  <mat-select placeholder="Image list" [value]="selectedImage" (selectionChange)="selectedImage = $event.value">
-                    @for (image of dockerImages; track image.image) {
-                      <mat-option [value]="image">{{ image.image }}</mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-              }
-              @if (newImageSelected) {
-                <mat-form-field appearance="fill" class="docker-add__field">
-                  <mat-label>Image name</mat-label>
-                  <input matInput class="filename" type="text" [value]="filename()" (input)="filename.set($event.target.value)" placeholder="Image name" />
-                </mat-form-field>
+              <mat-form-field appearance="fill" class="docker-add__field">
+                <mat-label>Image list</mat-label>
+                <mat-select
+                  placeholder="Image list"
+                  [value]="selectedImage"
+                  (selectionChange)="selectedImage = $event.value"
+                >
+                  @for (image of dockerImages; track image.image) {
+                  <mat-option [value]="image">{{ image.image }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              } @if (newImageSelected) {
+              <mat-form-field appearance="fill" class="docker-add__field">
+                <mat-label>Image name</mat-label>
+                <input
+                  matInput
+                  class="filename"
+                  type="text"
+                  [value]="filename()"
+                  (input)="filename.set($event.target.value)"
+                  placeholder="Image name"
+                />
+              </mat-form-field>
               }
             </div>
           </div>
@@ -52,7 +72,14 @@
             <div class="docker-add__form">
               <mat-form-field appearance="fill" class="docker-add__field">
                 <mat-label>Container name</mat-label>
-                <input matInput class="templatename" type="text" [value]="templateName()" (input)="templateName.set($event.target.value)" placeholder="Container name" />
+                <input
+                  matInput
+                  class="templatename"
+                  type="text"
+                  [value]="templateName()"
+                  (input)="templateName.set($event.target.value)"
+                  placeholder="Container name"
+                />
               </mat-form-field>
             </div>
           </div>
@@ -63,7 +90,14 @@
             <div class="docker-add__form">
               <mat-form-field appearance="fill" class="docker-add__field">
                 <mat-label>Adapters</mat-label>
-                <input matInput class="networkadapter" type="number" [value]="adapters()" (input)="adapters.set(+$event.target.value)" placeholder="Adapters" />
+                <input
+                  matInput
+                  class="networkadapter"
+                  type="number"
+                  [value]="adapters()"
+                  (input)="adapters.set(+$event.target.value)"
+                  placeholder="Adapters"
+                />
               </mat-form-field>
             </div>
           </div>
@@ -73,7 +107,13 @@
           <div class="docker-add__step-content">
             <mat-form-field appearance="fill" class="docker-add__field">
               <mat-label>Start command</mat-label>
-              <input matInput type="text" [value]="startCommand()" (input)="startCommand.set($event.target.value)" placeholder="Start command" />
+              <input
+                matInput
+                type="text"
+                [value]="startCommand()"
+                (input)="startCommand.set($event.target.value)"
+                placeholder="Start command"
+              />
             </mat-form-field>
           </div>
         </mat-step>
@@ -82,9 +122,13 @@
           <div class="docker-add__step-content">
             <mat-form-field appearance="fill" class="docker-add__field">
               <mat-label>Console type</mat-label>
-              <mat-select placeholder="Console type" [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
+              <mat-select
+                placeholder="Console type"
+                [value]="consoleType()"
+                (selectionChange)="consoleType.set($event.value)"
+              >
                 @for (type of consoleTypes; track type) {
-                  <mat-option [value]="type">{{ type }}</mat-option>
+                <mat-option [value]="type">{{ type }}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
@@ -95,9 +139,13 @@
           <div class="docker-add__step-content">
             <mat-form-field appearance="fill" class="docker-add__field">
               <mat-label>Auxiliary console type</mat-label>
-              <mat-select placeholder="Auxiliary console type" [value]="auxConsoleType()" (selectionChange)="auxConsoleType.set($event.value)">
+              <mat-select
+                placeholder="Auxiliary console type"
+                [value]="auxConsoleType()"
+                (selectionChange)="auxConsoleType.set($event.value)"
+              >
                 @for (type of auxConsoleTypes; track type) {
-                  <mat-option [value]="type">{{ type }}</mat-option>
+                <mat-option [value]="type">{{ type }}</mat-option>
                 }
               </mat-select>
             </mat-form-field>
@@ -108,7 +156,12 @@
           <div class="docker-add__step-content">
             <mat-form-field appearance="fill" class="docker-add__field">
               <mat-label>Environment</mat-label>
-              <textarea matInput type="text" [value]="environment()" (input)="environment.set($event.target.value)"></textarea>
+              <textarea
+                matInput
+                type="text"
+                [value]="environment()"
+                (input)="environment.set($event.target.value)"
+              ></textarea>
             </mat-form-field>
           </div>
         </mat-step>
@@ -117,7 +170,9 @@
 
     <div class="docker-add__actions">
       <button mat-button class="docker-add__cancel-btn" (click)="goBack()">Cancel</button>
-      <button mat-raised-button color="primary" class="docker-add__submit-btn" (click)="addTemplate()">Add template</button>
+      <button mat-raised-button color="primary" class="docker-add__submit-btn" (click)="addTemplate()">
+        Add template
+      </button>
     </div>
   </main>
 </div>

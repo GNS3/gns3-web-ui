@@ -20,7 +20,11 @@ export class NodeService {
   }
 
   unisolate(controller: Controller, node: Node) {
-    return this.httpController.post<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}/unisolate`, {});
+    return this.httpController.post<Node>(
+      controller,
+      `/projects/${node.project_id}/nodes/${node.node_id}/unisolate`,
+      {}
+    );
   }
 
   start(controller: Controller, node: Node) {
@@ -137,24 +141,26 @@ export class NodeService {
 
   updateNodeWithCustomAdapters(controller: Controller, node: Node): Observable<Node> {
     // Filter out null values from custom_adapters for QEMU nodes
-    const filtered_custom_adapters = node.custom_adapters ? node.custom_adapters.map(adapter => {
-      const filteredAdapter: any = {
-        adapter_number: adapter.adapter_number,
-        adapter_type: adapter.adapter_type
-      };
+    const filtered_custom_adapters = node.custom_adapters
+      ? node.custom_adapters.map((adapter) => {
+          const filteredAdapter: any = {
+            adapter_number: adapter.adapter_number,
+            adapter_type: adapter.adapter_type,
+          };
 
-      // Only include port_name if it's not null
-      if (adapter.port_name !== null && adapter.port_name !== undefined) {
-        filteredAdapter.port_name = adapter.port_name;
-      }
+          // Only include port_name if it's not null
+          if (adapter.port_name !== null && adapter.port_name !== undefined) {
+            filteredAdapter.port_name = adapter.port_name;
+          }
 
-      // Only include mac_address if it's not null
-      if (adapter.mac_address !== null && adapter.mac_address !== undefined) {
-        filteredAdapter.mac_address = adapter.mac_address;
-      }
+          // Only include mac_address if it's not null
+          if (adapter.mac_address !== null && adapter.mac_address !== undefined) {
+            filteredAdapter.mac_address = adapter.mac_address;
+          }
 
-      return filteredAdapter;
-    }) : [];
+          return filteredAdapter;
+        })
+      : [];
 
     return this.httpController.put<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`, {
       console_type: node.console_type,
@@ -255,10 +261,16 @@ export class NodeService {
   }
 
   getIdlePCProposals(controller: Controller, node: Node) {
-    return this.httpController.get(controller, `/projects/${node.project_id}/nodes/${node.node_id}/dynamips/idlepc_proposals`);
+    return this.httpController.get(
+      controller,
+      `/projects/${node.project_id}/nodes/${node.node_id}/dynamips/idlepc_proposals`
+    );
   }
 
   getAutoIdlePC(controller: Controller, node: Node) {
-    return this.httpController.get(controller, `/projects/${node.project_id}/nodes/${node.node_id}/dynamips/auto_idlepc`);
+    return this.httpController.get(
+      controller,
+      `/projects/${node.project_id}/nodes/${node.node_id}/dynamips/auto_idlepc`
+    );
   }
 }

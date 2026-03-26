@@ -16,7 +16,7 @@
 
 <div [ngClass]="{ lightTheme: isLightThemeEnabled }" #console class="console" [ngStyle]="style">
   @for (event of filteredEvents; track event) {
-    <span class="console-item"> {{ event.message }} <br /> </span>
+  <span class="console-item"> {{ event.message }} <br /> </span>
   }
 </div>
 

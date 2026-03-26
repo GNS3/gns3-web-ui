@@ -15,21 +15,15 @@ describe('UploadingProcessbarComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [UploadingProcessbarComponent],
-      imports:[
-        MatSnackBarModule,
-        MatProgressBarModule,
-        MatButtonModule
-      ],
+      imports: [MatSnackBarModule, MatProgressBarModule, MatButtonModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: MAT_SNACK_BAR_DATA, useValue: {} },
         { provide: MatSnackBarRef, useValue: {} },
-        { provide:  UploadServiceService, useClass: UploadServiceService },
-
+        { provide: UploadServiceService, useClass: UploadServiceService },
       ],
-      schemas: [NO_ERRORS_SCHEMA]
-    })
-      .compileComponents();
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
   });
 
   beforeEach(() => {

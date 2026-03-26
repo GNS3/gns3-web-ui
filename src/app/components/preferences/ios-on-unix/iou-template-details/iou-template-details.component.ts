@@ -24,7 +24,19 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
   selector: 'app-iou-template-details',
   templateUrl: './iou-template-details.component.html',
   styleUrls: ['./iou-template-details.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, MatCheckboxModule, SymbolsMenuComponent]
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatIconModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatChipsModule,
+    MatCheckboxModule,
+    SymbolsMenuComponent,
+  ],
 })
 export class IouTemplateDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);

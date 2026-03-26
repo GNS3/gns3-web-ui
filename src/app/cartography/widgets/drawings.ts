@@ -62,7 +62,7 @@ export class DrawingsWidget implements Widget {
       .attr('drawing_id', (l: MapDrawing) => l.id)
       .on('contextmenu', (event: any, l: MapDrawing) => {
         event.preventDefault();
-        this.onContextMenu.emit(new DrawingContextMenu(event,  l));
+        this.onContextMenu.emit(new DrawingContextMenu(event, l));
       });
 
     const merge = drawing.merge(drawing_enter);

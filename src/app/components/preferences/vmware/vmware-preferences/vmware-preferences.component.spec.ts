@@ -21,7 +21,7 @@ describe('VmwarePreferencesComponent', () => {
   let activatedRoute = new MockedActivatedRoute().get();
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [
         MatIconModule,
         MatToolbarModule,

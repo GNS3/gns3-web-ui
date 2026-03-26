@@ -1,6 +1,13 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,7 +31,18 @@ import { VpcsService } from '@services/vpcs.service';
   selector: 'app-add-vpcs-template',
   templateUrl: './add-vpcs-template.component.html',
   styleUrls: ['./add-vpcs-template.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatRadioModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
 })
 export class AddVpcsTemplateComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -50,7 +68,7 @@ export class AddVpcsTemplateComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
       this.controller = controller;
       this.cd.markForCheck();
     });
@@ -76,9 +94,7 @@ export class AddVpcsTemplateComponent implements OnInit {
         vpcsTemplate = template;
       });
 
-      (vpcsTemplate.template_id = uuid()),
-      (vpcsTemplate.name = this.templateName),
-      (vpcsTemplate.compute_id = 'local');
+      (vpcsTemplate.template_id = uuid()), (vpcsTemplate.name = this.templateName), (vpcsTemplate.compute_id = 'local');
 
       this.vpcsService.addTemplate(this.controller, vpcsTemplate).subscribe(() => {
         this.goBack();

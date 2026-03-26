@@ -22,15 +22,14 @@ export class LinkWidget implements Widget {
     private selectionManager: SelectionManager,
     private ethernetLinkWidget: EthernetLinkWidget,
     private serialLinkWidget: SerialLinkWidget
-  ) { }
+  ) {}
 
   public draw(view: SVGSelection) {
     const link_body = view.selectAll<SVGGElement, MapLink>('g.link_body').data((l) => [l]);
 
     const link_body_enter = link_body.enter().append<SVGGElement>('g').attr('class', 'link_body');
 
-    const link_body_merge = link_body.merge(link_body_enter)
-    .attr('transform', (link) => {
+    const link_body_merge = link_body.merge(link_body_enter).attr('transform', (link) => {
       const translation = this.multiLinkCalculatorHelper.linkTranslation(link.distance, link.source, link.target);
       return `translate (${translation.dx}, ${translation.dy})`;
     });
@@ -51,8 +50,9 @@ export class LinkWidget implements Widget {
       })
       .attr('class', 'capture-icon')
       .attr('transform', (link) => {
-        return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${(link.source.y + link.target.y) / 2 + 24
-          }) scale(0.5)`;
+        return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${
+          (link.source.y + link.target.y) / 2 + 24
+        }) scale(0.5)`;
       })
       .attr('viewBox', '0 0 20 20')
       .append<SVGImageElement>('image')
@@ -74,8 +74,9 @@ export class LinkWidget implements Widget {
       })
       .attr('class', 'filter-capture-icon')
       .attr('transform', (link) => {
-        return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${(link.source.y + link.target.y) / 2 + 24
-          }) scale(0.5)`;
+        return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${
+          (link.source.y + link.target.y) / 2 + 24
+        }) scale(0.5)`;
       })
       .attr('viewBox', '0 0 20 20')
       .append<SVGImageElement>('image')
@@ -99,8 +100,9 @@ export class LinkWidget implements Widget {
       .attr('width', '48px')
       .attr('height', '48px')
       .attr('transform', (link) => {
-        return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${(link.source.y + link.target.y) / 2 + 24
-          }) scale(0.5)`;
+        return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${
+          (link.source.y + link.target.y) / 2 + 24
+        }) scale(0.5)`;
       })
       .attr('viewBox', '0 0 20 20')
       .append<SVGImageElement>('image')
@@ -111,9 +113,7 @@ export class LinkWidget implements Widget {
     link_body.select('.pause-icon').remove();
     link_body
       .filter((l) => {
-        return (
-          l.suspend
-        );
+        return l.suspend;
       })
       .append<SVGGElement>('g')
       .on('contextmenu', (event: any, datum: MapLink) => {
@@ -122,8 +122,9 @@ export class LinkWidget implements Widget {
       })
       .attr('class', 'pause-icon')
       .attr('transform', (link) => {
-        return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${(link.source.y + link.target.y) / 2 + 24
-          }) scale(0.5)`;
+        return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${
+          (link.source.y + link.target.y) / 2 + 24
+        }) scale(0.5)`;
       })
       .attr('viewBox', '0 0 20 20')
       .append<SVGImageElement>('image')

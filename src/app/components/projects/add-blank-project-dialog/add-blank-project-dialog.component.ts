@@ -1,6 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatDialog, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,7 +29,15 @@ import { ProjectNameValidator } from '../models/projectNameValidator';
   styleUrls: ['./add-blank-project-dialog.component.scss'],
   providers: [ProjectNameValidator],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
 })
 export class AddBlankProjectDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<AddBlankProjectDialogComponent>);
@@ -76,16 +91,15 @@ export class AddBlankProjectDialogComponent implements OnInit {
 
   addProject(): void {
     this.uuid = uuid();
-    this.projectService
-      .add(this.controller, this.projectNameForm.controls['projectName'].value, this.uuid)
-      .subscribe((project: Project) => {
+    this.projectService.add(this.controller, this.projectNameForm.controls['projectName'].value, this.uuid).subscribe(
+      (project: Project) => {
         this.dialogRef.close();
         this.toasterService.success(`Project ${project.name} added`);
         this.router.navigate(['/controller', this.controller.id, 'project', project.project_id]);
       },
       (error) => {
-          this.toasterService.error("Cannot create new project");
-          console.log(error);
+        this.toasterService.error('Cannot create new project');
+        console.log(error);
       }
     );
   }

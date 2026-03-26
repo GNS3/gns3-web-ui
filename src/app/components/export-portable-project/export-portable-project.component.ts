@@ -50,7 +50,7 @@ interface SelectCompressionEvent {
     MatInputModule,
     MatSelectModule,
     MatCheckboxModule,
-    MatDividerModule
+    MatDividerModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -71,9 +71,7 @@ export class ExportPortableProjectComponent implements OnInit {
   private _fb = inject(UntypedFormBuilder);
   private destroyRef = inject(DestroyRef);
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: ExportDialogData
-  ) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: ExportDialogData) {
     this.controller = data.controllerDetails;
     this.project = data.projectDetails;
     if (this.project) {
@@ -110,10 +108,11 @@ export class ExportPortableProjectComponent implements OnInit {
   exportPortableProject() {
     this.isExport.set(true);
     const formValue = this.export_project_form.value;
-    const compressionValue = typeof formValue.compression === 'object' ? formValue.compression.value : formValue.compression;
+    const compressionValue =
+      typeof formValue.compression === 'object' ? formValue.compression.value : formValue.compression;
     const exportData = {
       ...formValue,
-      compression: compressionValue ?? 'zstd'
+      compression: compressionValue ?? 'zstd',
     };
     window.location.assign(
       this.projectService.getexportPortableProjectPath(this.controller, this.project.project_id, exportData)

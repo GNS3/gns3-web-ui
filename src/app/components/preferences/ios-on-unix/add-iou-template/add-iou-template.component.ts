@@ -30,7 +30,20 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-add-iou-template',
   templateUrl: './add-iou-template.component.html',
   styleUrls: ['./add-iou-template.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, FileUploadModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatRadioModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatStepperModule,
+    FileUploadModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddIouTemplateComponent implements OnInit, OnDestroy {
@@ -62,15 +75,20 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   nameStepCompleted = computed(() => !!this.templateName());
 
   ngOnInit() {
-    this.uploader.set(new FileUploader({url: ''}));
+    this.uploader.set(new FileUploader({ url: '' }));
     this.uploader().onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };
-    this.uploader().onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+    this.uploader().onErrorItem = (
+      item: FileItem,
+      response: string,
+      status: number,
+      headers: ParsedResponseHeaders
+    ) => {
       this.toasterService.error('An error occured: ' + response);
     };
     this.uploader().onProgressItem = (progress: any) => {
-      this.uploadServiceService.processBarCount(progress['progress'])
+      this.uploadServiceService.processBarCount(progress['progress']);
     };
 
     this.uploader().onSuccessItem = (
@@ -84,20 +102,18 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
     };
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((ctrl: Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((ctrl: Controller) => {
       this.controller.set(ctrl);
       this.getImages();
       this.templateMocksService.getIouTemplate().subscribe((iouTemplate: IouTemplate) => {
         this.iouTemplate.set(iouTemplate);
       });
     });
-   this.subscription =  this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
+    this.subscription = this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
       if (isCancel) {
-        this.cancelUploading()
+        this.cancelUploading();
       }
-
-    })
-
+    });
   }
 
   getImages() {
@@ -124,18 +140,18 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
     this.uploader().queue.forEach((elem) => (elem.url = url));
 
     const itemToUpload = this.uploader().queue[0];
-    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller().authToken }])
+    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true;
+    (itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller().authToken }];
     this.uploader().uploadItem(itemToUpload);
     this.snackBar.openFromComponent(UploadingProcessbarComponent, {
       panelClass: 'uplaoding-file-snackabar',
-      data:{upload_file_type:'Image'}
+      data: { upload_file_type: 'Image' },
     });
-
   }
 
   cancelUploading() {
     this.uploader().clearQueue();
-    this.uploadServiceService.processBarCount(100)
+    this.uploadServiceService.processBarCount(100);
     this.toasterService.warning('File upload cancelled');
   }
 

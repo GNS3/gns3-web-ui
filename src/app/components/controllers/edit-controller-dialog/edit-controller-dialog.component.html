@@ -5,7 +5,7 @@
       <mat-label>Name</mat-label>
       <input matInput formControlName="name" placeholder="Controller name" />
       @if (controllerForm.get('name').hasError('required')) {
-        <mat-error>Name is required</mat-error>
+      <mat-error>Name is required</mat-error>
       }
     </mat-form-field>
 
@@ -13,7 +13,7 @@
       <mat-label>Host</mat-label>
       <input matInput formControlName="host" placeholder="127.0.0.1" />
       @if (controllerForm.get('host').hasError('required')) {
-        <mat-error>Host is required</mat-error>
+      <mat-error>Host is required</mat-error>
       }
     </mat-form-field>
 
@@ -21,10 +21,9 @@
       <mat-label>Port</mat-label>
       <input matInput type="number" formControlName="port" placeholder="3080" />
       @if (controllerForm.get('port').hasError('required')) {
-        <mat-error>Port is required</mat-error>
-      }
-      @if (controllerForm.get('port').hasError('min')) {
-        <mat-error>Port must be at least 1</mat-error>
+      <mat-error>Port is required</mat-error>
+      } @if (controllerForm.get('port').hasError('min')) {
+      <mat-error>Port must be at least 1</mat-error>
       }
     </mat-form-field>
 
@@ -37,7 +36,7 @@
     </mat-form-field>
 
     @if (duplicateNameError) {
-      <mat-error>{{ duplicateNameError }}</mat-error>
+    <mat-error>{{ duplicateNameError }}</mat-error>
     }
   </form>
 </mat-dialog-content>

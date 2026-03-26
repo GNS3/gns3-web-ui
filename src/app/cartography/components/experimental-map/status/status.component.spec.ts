@@ -6,7 +6,7 @@ describe('StatusComponent', () => {
   let fixture: ComponentFixture<StatusComponent>;
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       declarations: [StatusComponent],
       providers: [provideZonelessChangeDetection()],
     }).compileComponents();

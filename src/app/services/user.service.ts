@@ -4,14 +4,12 @@ import { Observable } from 'rxjs';
 import { Controller } from '@models/controller';
 import { HttpController } from './http-controller.service';
 import { User } from '@models/users/user';
-import { Group } from "@models/groups/group";
-import {Image} from "@models/images";
+import { Group } from '@models/groups/group';
+import { Image } from '@models/images';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private httpController: HttpController
-  ) {}
+  constructor(private httpController: HttpController) {}
 
   getInformationAboutLoggedUser(controller: Controller) {
     return this.httpController.get<User>(controller, '/access/users/me/');

@@ -18,8 +18,7 @@
   color: var(--mat-sys-on-surface);
   border: 1px solid var(--mat-sys-outline-variant);
 
-  transition: box-shadow 200ms ease,
-              border-color 200ms ease;
+  transition: box-shadow 200ms ease, border-color 200ms ease;
 
   // GNS3 cyan gradient border effect
   &::before {
@@ -54,8 +53,7 @@
   &.minimized {
     border-radius: 50%;
     border: none;
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
-                0 0 15px var(--mat-sys-primary);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent), 0 0 15px var(--mat-sys-primary);
     backdrop-filter: none;
 
     &::before {
@@ -191,11 +189,7 @@
   font-weight: 700;
   font-family: system-ui, -apple-system, sans-serif;
   letter-spacing: -0.5px;
-  background: linear-gradient(
-    135deg,
-    var(--mat-sys-primary),
-    var(--mat-sys-primary)
-  );
+  background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-primary));
   color: var(--mat-sys-on-primary);
   padding: 6px 10px;
   border-radius: 4px;
@@ -388,13 +382,8 @@
   cursor: pointer;
   user-select: none;
   border-radius: 50%;
-  background: linear-gradient(
-    135deg,
-    var(--mat-sys-surface),
-    var(--mat-sys-surface)
-  );
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
-              0 0 20px var(--mat-sys-primary);
+  background: linear-gradient(135deg, var(--mat-sys-surface), var(--mat-sys-surface));
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent), 0 0 20px var(--mat-sys-primary);
   transition: all 200ms ease;
   animation: bounceIn 200ms ease;
   position: relative;
@@ -409,26 +398,17 @@
     height: 100%;
     transform: translate(-50%, -50%);
     border-radius: 50%;
-    background: radial-gradient(
-      circle,
-      var(--mat-sys-primary) 0%,
-      transparent 70%
-    );
+    background: radial-gradient(circle, var(--mat-sys-primary) 0%, transparent 70%);
     opacity: 0.3;
     animation: pulse 2s ease-in-out infinite;
   }
 
   &:hover {
     transform: scale(1.15);
-    box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-surface) 60%, transparent),
-                0 0 30px var(--mat-sys-primary);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-surface) 60%, transparent), 0 0 30px var(--mat-sys-primary);
 
     &::before {
-      background: radial-gradient(
-        circle,
-        var(--mat-sys-primary) 0%,
-        transparent 70%
-      );
+      background: radial-gradient(circle, var(--mat-sys-primary) 0%, transparent 70%);
       opacity: 0.5;
     }
   }
@@ -439,7 +419,8 @@
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.5;
     transform: translate(-50%, -50%) scale(1);
   }

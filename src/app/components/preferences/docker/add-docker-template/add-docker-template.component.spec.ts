@@ -95,23 +95,23 @@ xdescribe('AddDockerTemplateComponent', () => {
 
   it('should open first step at start', async () => {
     fixture.detectChanges();
-   await fixture.whenStable().then(() => {
+    await fixture.whenStable().then(() => {
       let stepperComponent = fixture.debugElement.query(By.css('mat-vertical-stepper')).componentInstance;
 
       expect(stepperComponent.selectedIndex).toBe(0);
     });
   });
 
-  it('should display correct label at start', async() => {
+  it('should display correct label at start', async () => {
     fixture.detectChanges();
-   await fixture.whenStable().then(() => {
+    await fixture.whenStable().then(() => {
       let selectedLabel = fixture.nativeElement.querySelector('[aria-selected="true"]');
 
       expect(selectedLabel.textContent).toMatch('Controller type');
     });
   });
 
-  it('should not call add template when required fields are empty', async() => {
+  it('should not call add template when required fields are empty', async () => {
     fixture.detectChanges();
     await fixture.whenStable().then(() => {
       let addButton = fixture.debugElement.nativeElement.querySelector('.add-button');
@@ -129,7 +129,7 @@ xdescribe('AddDockerTemplateComponent', () => {
 
   it('should call add template when required fields are filled', async () => {
     fixture.detectChanges();
-   await  fixture.whenStable().then(() => {
+    await fixture.whenStable().then(() => {
       let stepperComponent = fixture.debugElement.query(By.css('mat-vertical-stepper')).componentInstance;
       stepperComponent.selectedIndex = 1;
       component.newImageSelected = true;

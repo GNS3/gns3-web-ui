@@ -25,8 +25,8 @@ export class ConfirmationBottomSheetComponent implements OnInit {
       this.message.set(this.data.message);
     }
     this.themeService.getActualTheme() === 'light'
-      ? (this.isLightThemeEnabled.set(true))
-      : (this.isLightThemeEnabled.set(false));
+      ? this.isLightThemeEnabled.set(true)
+      : this.isLightThemeEnabled.set(false);
   }
 
   onNoClick(): void {

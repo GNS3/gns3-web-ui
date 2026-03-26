@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  inject,
+  input,
+} from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';

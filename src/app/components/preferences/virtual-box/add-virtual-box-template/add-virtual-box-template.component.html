@@ -1,40 +1,47 @@
 <div class="virtualbox-add">
   <header class="virtualbox-add__header">
     @if (controller()) {
-      <button
-        class="virtualbox-add__back-btn"
-        (click)="goBack()"
-        mat-icon-button>
-        <mat-icon>arrow_back</mat-icon>
-      </button>
+    <button class="virtualbox-add__back-btn" (click)="goBack()" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     }
     <h1 class="virtualbox-add__title">New VirtualBox VM template</h1>
   </header>
 
   @if (virtualBoxTemplate()) {
-    <main class="virtualbox-add__content">
-      <section class="virtualbox-add__form-card">
-        <div class="virtualbox-add__form">
-          <mat-form-field appearance="fill" class="virtualbox-add__field">
-            <mat-label>VM list</mat-label>
-            <mat-select placeholder="VM list" [value]="vm()" (selectionChange)="vm.set($event.value); selectedVM.set($event.value)">
-              @for (v of virtualMachines(); track v) {
-                <mat-option [value]="v">
-                  {{ v.vmname }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
-        <mat-checkbox [checked]="linkedClone()" (change)="linkedClone.set($event.checked)" class="virtualbox-add__checkbox">
-          Use as a linked base VM (experimental)
-        </mat-checkbox>
-      </section>
-
-      <div class="virtualbox-add__actions">
-        <button mat-button class="virtualbox-add__cancel-btn" (click)="goBack()">Cancel</button>
-        <button mat-raised-button color="primary" class="virtualbox-add__submit-btn" (click)="addTemplate()">Add template</button>
+  <main class="virtualbox-add__content">
+    <section class="virtualbox-add__form-card">
+      <div class="virtualbox-add__form">
+        <mat-form-field appearance="fill" class="virtualbox-add__field">
+          <mat-label>VM list</mat-label>
+          <mat-select
+            placeholder="VM list"
+            [value]="vm()"
+            (selectionChange)="vm.set($event.value); selectedVM.set($event.value)"
+          >
+            @for (v of virtualMachines(); track v) {
+            <mat-option [value]="v">
+              {{ v.vmname }}
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
       </div>
-    </main>
+      <mat-checkbox
+        [checked]="linkedClone()"
+        (change)="linkedClone.set($event.checked)"
+        class="virtualbox-add__checkbox"
+      >
+        Use as a linked base VM (experimental)
+      </mat-checkbox>
+    </section>
+
+    <div class="virtualbox-add__actions">
+      <button mat-button class="virtualbox-add__cancel-btn" (click)="goBack()">Cancel</button>
+      <button mat-raised-button color="primary" class="virtualbox-add__submit-btn" (click)="addTemplate()">
+        Add template
+      </button>
+    </div>
+  </main>
   }
 </div>

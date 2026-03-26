@@ -1,4 +1,4 @@
-import {ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
 import { QtDasharrayFixer } from 'app/cartography/helpers/qt-dasharray-fixer';
 import { RectComponent } from './rect.component';
 
@@ -9,7 +9,7 @@ describe('RectComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [RectComponent],
-      providers:[provideZonelessChangeDetection(), QtDasharrayFixer]
+      providers: [provideZonelessChangeDetection(), QtDasharrayFixer],
     }).compileComponents();
   });
 

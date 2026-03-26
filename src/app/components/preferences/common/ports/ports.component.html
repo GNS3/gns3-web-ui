@@ -43,18 +43,18 @@
     <mat-form-field class="ports__field">
       <mat-select placeholder="Type" [ngModelOptions]="{ standalone: true }" [(ngModel)]="newPort.type">
         @for (type of portTypes(); track type) {
-          <mat-option [value]="type">
-            {{ type }}
-          </mat-option>
+        <mat-option [value]="type">
+          {{ type }}
+        </mat-option>
         }
       </mat-select>
     </mat-form-field>
     <mat-form-field class="ports__field">
       <mat-select placeholder="EtherType" [ngModelOptions]="{ standalone: true }" [(ngModel)]="newPort.ethertype">
         @for (type of etherTypes(); track type) {
-          <mat-option [value]="type">
-            {{ type }}
-          </mat-option>
+        <mat-option [value]="type">
+          {{ type }}
+        </mat-option>
         }
       </mat-select>
     </mat-form-field>

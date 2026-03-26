@@ -14,7 +14,7 @@ import { ControllerService } from '@services/controller.service';
   selector: 'app-dynamips-preferences',
   templateUrl: './dynamips-preferences.component.html',
   styleUrls: ['./dynamips-preferences.component.scss'],
-  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule]
+  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule],
 })
 export class DynamipsPreferencesComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -26,7 +26,7 @@ export class DynamipsPreferencesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
       this.controller = controller;
       this.cd.markForCheck();
     });

@@ -1,46 +1,46 @@
 /*
-* Software Name : GNS3 Web UI
-* Version: 3
-* SPDX-FileCopyrightText: Copyright (c) 2022 Orange Business Services
-* SPDX-License-Identifier: GPL-3.0-or-later
-*
-* This software is distributed under the GPL-3.0 or any later version,
-* the text of which is available at https://www.gnu.org/licenses/gpl-3.0.txt
-* or see the "LICENSE" file for more details.
-*
-* Author: Sylvain MATHIEU, Elise LEBEAU
-*/
-import {ChangeDetectionStrategy, Component, OnInit, inject, signal} from '@angular/core';
+ * Software Name : GNS3 Web UI
+ * Version: 3
+ * SPDX-FileCopyrightText: Copyright (c) 2022 Orange Business Services
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ * This software is distributed under the GPL-3.0 or any later version,
+ * the text of which is available at https://www.gnu.org/licenses/gpl-3.0.txt
+ * or see the "LICENSE" file for more details.
+ *
+ * Author: Sylvain MATHIEU, Elise LEBEAU
+ */
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterModule } from "@angular/router";
-import { Controller } from "@models/controller";
-import { Group } from "@models/groups/group";
-import { User } from "@models/users/user";
-import { UntypedFormControl, UntypedFormGroup, Validators, ReactiveFormsModule, FormsModule } from "@angular/forms";
-import { MatDialog, MatDialogModule } from "@angular/material/dialog";
-import { AddUserToGroupDialogComponent } from "@components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component";
-import { RemoveToGroupDialogComponent } from "@components/group-details/remove-to-group-dialog/remove-to-group-dialog.component";
-import { GroupService } from "@services/group.service";
-import { ToasterService } from "@services/toaster.service";
-import { PageEvent, MatPaginatorModule } from "@angular/material/paginator";
-import { ACE, ACEDetailed, AceType } from "@models/api/ACE";
-import { UserService } from "@services/user.service";
-import { RoleService } from "@services/role.service";
-import { Role } from "@models/api/role";
-import { AclService } from "@services/acl.service";
-import { Endpoint } from "@models/api/endpoint";
-import { interval } from "rxjs";
-import { MatTableModule, MatTableDataSource } from "@angular/material/table";
-import { MatTabsModule } from "@angular/material/tabs";
-import { MatFormFieldModule } from "@angular/material/form-field";
-import { MatInputModule } from "@angular/material/input";
-import { MatCheckboxModule } from "@angular/material/checkbox";
-import { MatButtonModule } from "@angular/material/button";
-import { MatIconModule } from "@angular/material/icon";
-import { MatCardModule } from "@angular/material/card";
-import { GroupAiProfileTabComponent } from "@components/group-details/group-ai-profile-tab/group-ai-profile-tab.component";
-import { MembersFilterPipe } from "@components/group-details/members-filter.pipe";
-import { PaginatorPipe } from "@components/group-details/paginator.pipe";
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { Controller } from '@models/controller';
+import { Group } from '@models/groups/group';
+import { User } from '@models/users/user';
+import { UntypedFormControl, UntypedFormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { AddUserToGroupDialogComponent } from '@components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component';
+import { RemoveToGroupDialogComponent } from '@components/group-details/remove-to-group-dialog/remove-to-group-dialog.component';
+import { GroupService } from '@services/group.service';
+import { ToasterService } from '@services/toaster.service';
+import { PageEvent, MatPaginatorModule } from '@angular/material/paginator';
+import { ACE, ACEDetailed, AceType } from '@models/api/ACE';
+import { UserService } from '@services/user.service';
+import { RoleService } from '@services/role.service';
+import { Role } from '@models/api/role';
+import { AclService } from '@services/acl.service';
+import { Endpoint } from '@models/api/endpoint';
+import { interval } from 'rxjs';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCardModule } from '@angular/material/card';
+import { GroupAiProfileTabComponent } from '@components/group-details/group-ai-profile-tab/group-ai-profile-tab.component';
+import { MembersFilterPipe } from '@components/group-details/members-filter.pipe';
+import { PaginatorPipe } from '@components/group-details/paginator.pipe';
 
 @Component({
   selector: 'app-group-details',
@@ -63,7 +63,7 @@ import { PaginatorPipe } from "@components/group-details/paginator.pipe";
     MatCardModule,
     GroupAiProfileTabComponent,
     MembersFilterPipe,
-    PaginatorPipe
+    PaginatorPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -86,55 +86,55 @@ export class GroupDetailsComponent implements OnInit {
   private roleService = inject(RoleService);
 
   constructor() {
-
-
-
-    this.route.data.subscribe((d: { controller: Controller; group: Group, members: User[], aces: ACE[] }) => {
-
+    this.route.data.subscribe((d: { controller: Controller; group: Group; members: User[]; aces: ACE[] }) => {
       this.controller = d.controller;
       this.group.set(d.group);
       this.aces = d.aces;
-      this.members.set(d.members.sort((a: User, b: User) => a.username.toLowerCase().localeCompare(b.username.toLowerCase())));
+      this.members.set(
+        d.members.sort((a: User, b: User) => a.username.toLowerCase().localeCompare(b.username.toLowerCase()))
+      );
       this.editGroupForm = new UntypedFormGroup({
         groupname: new UntypedFormControl(d.group.name, [Validators.required]),
       });
     });
-
-
   }
 
   ngOnInit(): void {
     this.roleService.get(this.controller).subscribe((roles: Role[]) => {
       this.aclService.getEndpoints(this.controller).subscribe((endps: Endpoint[]) => {
         this.aceDatasource.data = this.aces.map((ace: ACE) => {
-          const endpoint = endps.filter((endp: Endpoint) => endp.endpoint === ace.path)[0]
-          const role = roles.filter((r: Role) => r.role_id === ace.role_id)[0]
-          return {...ace, endpoint_name: endpoint.name, role_name: role.name}
-        })
-      })
-    })
-
+          const endpoint = endps.filter((endp: Endpoint) => endp.endpoint === ace.path)[0];
+          const role = roles.filter((r: Role) => r.role_id === ace.role_id)[0];
+          return { ...ace, endpoint_name: endpoint.name, role_name: role.name };
+        });
+      });
+    });
   }
 
   onUpdate() {
-    this.group.update(g => { g.name = this.editGroupForm.get('groupname').value; return g; });
-    console.log(this.editGroupForm.get('groupname'))
-    this.groupService.update(this.controller, this.group())
-      .subscribe(() => {
+    this.group.update((g) => {
+      g.name = this.editGroupForm.get('groupname').value;
+      return g;
+    });
+    console.log(this.editGroupForm.get('groupname'));
+    this.groupService.update(this.controller, this.group()).subscribe(
+      () => {
         this.toastService.success(`group updated`);
-      }, (error) => {
+      },
+      (error) => {
         this.toastService.error('Error: Cannot update group');
         console.log(error);
-      });
+      }
+    );
   }
 
   openAddUserDialog() {
     this.dialog
-      .open<AddUserToGroupDialogComponent>(AddUserToGroupDialogComponent,
-        {
-          width: '700px', height: '500px',
-          data: {controller: this.controller, group: this.group()}
-        })
+      .open<AddUserToGroupDialogComponent>(AddUserToGroupDialogComponent, {
+        width: '700px',
+        height: '500px',
+        data: { controller: this.controller, group: this.group() },
+      })
       .afterClosed()
       .subscribe(() => {
         this.reloadMembers();
@@ -142,31 +142,32 @@ export class GroupDetailsComponent implements OnInit {
   }
 
   openRemoveUserDialog(user: User) {
-    this.dialog.open<RemoveToGroupDialogComponent>(RemoveToGroupDialogComponent,
-        {width: '500px', height: '200px', data: {name: user.username}})
+    this.dialog
+      .open<RemoveToGroupDialogComponent>(RemoveToGroupDialogComponent, {
+        width: '500px',
+        height: '200px',
+        data: { name: user.username },
+      })
       .afterClosed()
       .subscribe((confirm: boolean) => {
         if (confirm) {
-          this.groupService.removeUser(this.controller, this.group(), user)
-            .subscribe(() => {
-                this.toastService.success(`User ${user.username} was removed`);
-                this.reloadMembers();
-              },
-              (error) => {
-                this.toastService.error(`Error while removing user ${user.username} from ${this.group().name}`);
-                console.log(error);
-              });
+          this.groupService.removeUser(this.controller, this.group(), user).subscribe(
+            () => {
+              this.toastService.success(`User ${user.username} was removed`);
+              this.reloadMembers();
+            },
+            (error) => {
+              this.toastService.error(`Error while removing user ${user.username} from ${this.group().name}`);
+              console.log(error);
+            }
+          );
         }
       });
   }
 
-
-
   reloadMembers() {
-    this.groupService.getGroupMember(this.controller, this.group().user_group_id)
-      .subscribe((members: User[]) => {
-        this.members.set(members);
-      });
+    this.groupService.getGroupMember(this.controller, this.group().user_group_id).subscribe((members: User[]) => {
+      this.members.set(members);
+    });
   }
-
 }

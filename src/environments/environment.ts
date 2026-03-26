@@ -7,8 +7,8 @@ export const environment = {
   electron: false,
   githubio: false,
   solarputty_download_url: '',
-  current_version:'v3',
-  compute_id:'local'
+  current_version: 'v3',
+  compute_id: 'local',
 };
 
 /*

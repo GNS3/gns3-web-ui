@@ -37,23 +37,23 @@ export class SettingsComponent implements OnInit {
   availableMapBackgrounds = this.themeService.availableMapBackgrounds;
 
   get lightThemes() {
-    return this.themeService.availableThemes.filter(t => t.type === 'light');
+    return this.themeService.availableThemes.filter((t) => t.type === 'light');
   }
 
   get darkThemes() {
-    return this.themeService.availableThemes.filter(t => t.type === 'dark');
+    return this.themeService.availableThemes.filter((t) => t.type === 'dark');
   }
 
   get lightMapBackgrounds() {
-    return this.themeService.availableMapBackgrounds.filter(bg => bg.type === 'light' && bg.key !== 'auto');
+    return this.themeService.availableMapBackgrounds.filter((bg) => bg.type === 'light' && bg.key !== 'auto');
   }
 
   get darkMapBackgrounds() {
-    return this.themeService.availableMapBackgrounds.filter(bg => bg.type === 'dark');
+    return this.themeService.availableMapBackgrounds.filter((bg) => bg.type === 'dark');
   }
 
   get autoMapBackground() {
-    return this.themeService.availableMapBackgrounds.find(bg => bg.key === 'auto');
+    return this.themeService.availableMapBackgrounds.find((bg) => bg.key === 'auto');
   }
 
   ngOnInit() {
@@ -81,7 +81,7 @@ export class SettingsComponent implements OnInit {
     this.cdr.markForCheck();
   }
 
-    setMapTheme(theme: string) {
+  setMapTheme(theme: string) {
     this.mapTheme = theme;
     this.themeService.setMapTheme(theme as 'light' | 'dark' | 'auto');
     this.cdr.markForCheck();

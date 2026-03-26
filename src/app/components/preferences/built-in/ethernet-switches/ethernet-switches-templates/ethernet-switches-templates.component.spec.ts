@@ -18,7 +18,7 @@ import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { EthernetSwitchesTemplatesComponent } from './ethernet-switches-templates.component';
 
 export class MockedBuiltInTemplatesService {
-  public getTemplates(controller: Controller ) {
+  public getTemplates(controller: Controller) {
     return of([{} as EthernetSwitchTemplate]);
   }
 }
@@ -32,7 +32,7 @@ describe('EthernetSwitchesTemplatesComponent', () => {
   let activatedRoute = new MockedActivatedRoute().get();
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [
         MatIconModule,
         MatToolbarModule,
@@ -56,13 +56,13 @@ describe('EthernetSwitchesTemplatesComponent', () => {
     }).compileComponents();
   });
 
-beforeEach(() => {
-  fixture = TestBed.createComponent(EthernetSwitchesTemplatesComponent);
-  component = fixture.componentInstance;
-  fixture.detectChanges();
-});
+  beforeEach(() => {
+    fixture = TestBed.createComponent(EthernetSwitchesTemplatesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-it('should create', () => {
-  expect(component).toBeTruthy();
-});
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 });

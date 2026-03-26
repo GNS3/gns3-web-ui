@@ -3,15 +3,15 @@
 <div class="modal-form-container">
   <form [formGroup]="formGroup">
     @if (element.fill !== undefined) {
-      <mat-form-field class="form-field">
-        <input
-          matInput
-          [ngModelOptions]="{ standalone: true }"
-          placeholder="Fill color"
-          type="color"
-          [(ngModel)]="element.fill"
-        />
-      </mat-form-field>
+    <mat-form-field class="form-field">
+      <input
+        matInput
+        [ngModelOptions]="{ standalone: true }"
+        placeholder="Fill color"
+        type="color"
+        [(ngModel)]="element.fill"
+      />
+    </mat-form-field>
     }
 
     <mat-form-field class="form-field">
@@ -25,61 +25,54 @@
     </mat-form-field>
 
     <mat-form-field class="form-field">
-      <input
-        matInput formControlName="borderWidth"
-        placeholder="Border width"
-        type="number"
-        min="0"
-        max="100"
-      />
+      <input matInput formControlName="borderWidth" placeholder="Border width" type="number" min="0" max="100" />
     </mat-form-field>
     <mat-form-field class="form-field">
-      <mat-select placeholder="Border style" [ngModelOptions]="{ standalone: true }" [(ngModel)]="element.stroke_dasharray">
+      <mat-select
+        placeholder="Border style"
+        [ngModelOptions]="{ standalone: true }"
+        [(ngModel)]="element.stroke_dasharray"
+      >
         @for (type of borderTypes; track type.value) {
-          <mat-option [value]="type.value"> {{ type.name }} </mat-option>
+        <mat-option [value]="type.value"> {{ type.name }} </mat-option>
         }
       </mat-select>
     </mat-form-field>
 
     @if (element.width !== undefined) {
-      <mat-form-field class="form-field">
-        <input
-          matInput
-          [ngModelOptions]="{ standalone: true }"
-          placeholder="Width"
-          min="0"
-          type="number"
-          [(ngModel)]="element.width"
-        />
-      </mat-form-field>
-    }
-
-    @if (element.height !== undefined) {
-      <mat-form-field class="form-field">
-        <input
-          matInput
-          [ngModelOptions]="{ standalone: true }"
-          placeholder="Height"
-          min="0"
-          type="number"
-          [(ngModel)]="element.height"
-        />
-      </mat-form-field>
-    }
-
-
-    @if (element.rx !== undefined) {
-      <mat-form-field class="form-field">
-        <input
-          matInput
-          [ngModelOptions]="{ standalone: true }"
-          placeholder="Corner radius"
-          type="number"
-          min="0"
-          max="100"
-          [(ngModel)]="element.rx"
-        />
-      </mat-form-field>
+    <mat-form-field class="form-field">
+      <input
+        matInput
+        [ngModelOptions]="{ standalone: true }"
+        placeholder="Width"
+        min="0"
+        type="number"
+        [(ngModel)]="element.width"
+      />
+    </mat-form-field>
+    } @if (element.height !== undefined) {
+    <mat-form-field class="form-field">
+      <input
+        matInput
+        [ngModelOptions]="{ standalone: true }"
+        placeholder="Height"
+        min="0"
+        type="number"
+        [(ngModel)]="element.height"
+      />
+    </mat-form-field>
+    } @if (element.rx !== undefined) {
+    <mat-form-field class="form-field">
+      <input
+        matInput
+        [ngModelOptions]="{ standalone: true }"
+        placeholder="Corner radius"
+        type="number"
+        min="0"
+        max="100"
+        [(ngModel)]="element.rx"
+      />
+    </mat-form-field>
     }
 
     <mat-form-field class="form-field">

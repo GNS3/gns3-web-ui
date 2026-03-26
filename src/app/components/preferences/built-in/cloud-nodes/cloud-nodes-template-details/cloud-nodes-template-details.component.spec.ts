@@ -42,7 +42,7 @@ describe('CloudNodesTemplateDetailsComponent', () => {
   let activatedRoute = new MockedActivatedRoute().get();
 
   beforeEach(() => {
-  TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [
         FormsModule,
         ReactiveFormsModule,

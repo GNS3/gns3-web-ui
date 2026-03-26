@@ -39,7 +39,7 @@ export class MockedActivatedRoute {
           },
         },
         data: {
-          controller: new Controller  (),
+          controller: new Controller(),
         },
       },
     };
@@ -68,7 +68,7 @@ describe('ListOfSnapshotsComponent', () => {
   let mockedToasterService = new MockedToasterService();
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [
         MatDialogModule,
         MatTableModule,

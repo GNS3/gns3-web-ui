@@ -27,7 +27,7 @@ export class MockedVmwareService {
     return of(vmwareTemplate);
   }
 
-  public getVirtualMachines(controller: Controller ) {
+  public getVirtualMachines(controller: Controller) {
     return of([]);
   }
 }
@@ -42,7 +42,7 @@ describe('AddVmwareTemplateComponent', () => {
   let activatedRoute = new MockedActivatedRoute().get();
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [
         FormsModule,
         ReactiveFormsModule,

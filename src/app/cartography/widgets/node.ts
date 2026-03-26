@@ -79,11 +79,11 @@ export class NodeWidget implements Widget {
     // update image of node
     node_body_merge
       .select<SVGImageElement>('image')
-      .on('contextmenu', function(this: SVGImageElement, event: MouseEvent, n: MapNode) {
+      .on('contextmenu', function (this: SVGImageElement, event: MouseEvent, n: MapNode) {
         event.preventDefault();
         self.onContextMenu.emit(new NodeContextMenu(event, n));
       })
-      .on('dblclick', function(this: SVGImageElement, event: MouseEvent, n: MapNode) {
+      .on('dblclick', function (this: SVGImageElement, event: MouseEvent, n: MapNode) {
         event.preventDefault();
         self.onContextConsoleMenu.emit(new NodeContextMenu(event, n));
       })

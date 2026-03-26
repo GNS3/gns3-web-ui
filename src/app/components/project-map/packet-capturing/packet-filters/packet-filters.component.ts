@@ -19,7 +19,15 @@ import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
   selector: 'app-packet-filters',
   templateUrl: './packet-filters.component.html',
   styleUrl: './packet-filters.component.scss',
-  imports: [CommonModule, FormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatTabsModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatTabsModule,
+    MatButtonModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PacketFiltersDialogComponent implements OnInit {
@@ -57,10 +65,12 @@ export class PacketFiltersDialogComponent implements OnInit {
       this.cdr.markForCheck();
     });
 
-    this.linkService.getAvailableFilters(this.controller, this.link).subscribe((availableFilters: FilterDescription[]) => {
-      this.availableFilters = availableFilters;
-      this.cdr.markForCheck();
-    });
+    this.linkService
+      .getAvailableFilters(this.controller, this.link)
+      .subscribe((availableFilters: FilterDescription[]) => {
+        this.availableFilters = availableFilters;
+        this.cdr.markForCheck();
+      });
   }
 
   onNoClick() {

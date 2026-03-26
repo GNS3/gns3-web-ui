@@ -5,248 +5,233 @@
     <div class="default-content">
       <mat-card class="matCard">
         @if (name) {
-          <mat-tab-group>
-            <mat-tab label="General settings">
-              <br />
-              <mat-label>Platform: {{ node.properties.platform }}</mat-label>
-              @if (node.properties.chassis) {
-                <mat-label> (chassis: {{ node.properties.chassis }})</mat-label>
-              }
-              <br /><br />
-              <form [formGroup]="generalSettingsForm">
-                <mat-form-field class="form-field">
-                  <input matInput type="text" formControlName="name" placeholder="Name" />
-                </mat-form-field>
-                <mat-form-field class="form-field tags-field">
-                  <mat-label>Tags</mat-label>
-                  <mat-chip-grid #chipList>
-                    @for (tag of node?.tags; track tag) {
-                      <mat-chip (removed)="removeTag(tag)">
-                        {{ tag }}
-                        <mat-icon matChipRemove>cancel</mat-icon>
-                      </mat-chip>
-                    }
-                    <input matInput placeholder="Add tags"
-                           [matChipInputFor]="chipList"
-                           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                           (matChipInputTokenEnd)="addTag($event)" />
-                  </mat-chip-grid>
-                </mat-form-field>
-                <mat-form-field class="form-field">
-                  <input matInput type="text" formControlName="path" placeholder="IOS image path"/>
-                </mat-form-field>
-              </form>
-              @if (node.properties.midplane) {
-                <mat-form-field class="select">
-                  <mat-select placeholder="Midplane" [(ngModel)]="node.properties.midplane">
-                    @for (type of MidplaneTypes; track type) {
-                      <mat-option [value]="type">
-                        {{ type }}
-                      </mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-              }
-              @if (node.properties.npe) {
-                <mat-form-field class="select">
-                  <mat-select placeholder="NPE" [(ngModel)]="node.properties.npe">
-                    @for (type of NPETypes; track type) {
-                      <mat-option [value]="type">
-                        {{ type }}
-                      </mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-              }
-              <mat-form-field class="select">
-                <mat-select placeholder="Console type" [(ngModel)]="node.console_type">
-                  @for (type of consoleTypes; track type) {
-                    <mat-option [value]="type">
-                      {{ type }}
-                    </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field class="select">
-                <mat-select placeholder="Auxiliary console type" [(ngModel)]="node.properties.aux_type">
-                  @for (type of consoleTypes; track type) {
-                    <mat-option [value]="type">
-                      {{ type }}
-                    </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-              <mat-checkbox [(ngModel)]="node.console_auto_start"> Auto start console </mat-checkbox><br />
-            </mat-tab>
-
-            <mat-tab label="Memories and disks">
-              <br />
-              <form [formGroup]="memoryForm">
-                <mat-form-field class="form-field">
-                  <input
-                    matInput
-                    type="number"
-                    min="0"
-                    formControlName="ram"
-                    placeholder="RAM size"
-                  />
-                  <span matSuffix>MiB</span>
-                </mat-form-field>
-                <mat-form-field class="form-field">
-                  <input
-                    matInput
-                    type="number"
-                    min="0"
-                    formControlName="nvram"
-                    placeholder="NVRAM size"
-                  />
-                  <span matSuffix>MiB</span>
-                </mat-form-field>
-              </form>
-              @if (['c1700', 'c2600', 'c2691', 'c3600', 'c3725', 'c3745'].includes(node.properties.platform)) {
-                <mat-form-field class="form-field">
-                  <input
-                    matInput
-                    type="number"
-                    min="0"
-                    max="100"
-                    [(ngModel)]="node.properties.iomem"
-                    placeholder="I/O memory"
-                  />
-                  <span matSuffix>%</span>
-                </mat-form-field>
-              }
+        <mat-tab-group>
+          <mat-tab label="General settings">
+            <br />
+            <mat-label>Platform: {{ node.properties.platform }}</mat-label>
+            @if (node.properties.chassis) {
+            <mat-label> (chassis: {{ node.properties.chassis }})</mat-label>
+            }
+            <br /><br />
+            <form [formGroup]="generalSettingsForm">
               <mat-form-field class="form-field">
-                <input
-                  matInput
-                  type="number"
-                  min="0"
-                  [(ngModel)]="node.properties.disk0"
-                  placeholder="PCMCIA disk0"
-                />
-                <span matSuffix>MiB</span>
+                <input matInput type="text" formControlName="name" placeholder="Name" />
+              </mat-form-field>
+              <mat-form-field class="form-field tags-field">
+                <mat-label>Tags</mat-label>
+                <mat-chip-grid #chipList>
+                  @for (tag of node?.tags; track tag) {
+                  <mat-chip (removed)="removeTag(tag)">
+                    {{ tag }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                  }
+                  <input
+                    matInput
+                    placeholder="Add tags"
+                    [matChipInputFor]="chipList"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    (matChipInputTokenEnd)="addTag($event)"
+                  />
+                </mat-chip-grid>
               </mat-form-field>
               <mat-form-field class="form-field">
-                <input
-                  matInput
-                  type="number"
-                  min="0"
-                  [(ngModel)]="node.properties.disk1"
-                  placeholder="PCMCIA disk1"
-                />
-                <span matSuffix>MiB</span>
+                <input matInput type="text" formControlName="path" placeholder="IOS image path" />
               </mat-form-field>
-              <mat-checkbox [(ngModel)]="node.properties.auto_delete_disks"> Automatically delete NVRAM and disk files </mat-checkbox><br />
-            </mat-tab>
-
-            <mat-tab label="Slots">
-              <div class="slots-section">
-                <div class="slots-group">
-                  <h6 class="slots-title">Network Adapters</h6>
-                  <div class="slots-grid">
-                    @for (index of [0, 1, 2, 3, 4, 5, 6]; track index) {
-                      @if (adapterMatrix[node.properties.platform][node.properties.chassis || ''][index]) {
-                        <mat-form-field class="slot-field">
-                          <mat-label>Slot {{ index }}</mat-label>
-                          <mat-select
-                            [(ngModel)]="networkAdaptersForNode[index]"
-                            [ngModelOptions]="{ standalone: true }"
-                          >
-                            @if (adapterMatrix[node.properties.platform][node.properties.chassis || ''][index].length > 1 &&
-                                !adapterMatrix[node.properties.platform][node.properties.chassis || ''][index][0].startsWith('C7200')) {
-                              <mat-option [value]="">
-                                {{ "" }}
-                              </mat-option>
-                            }
-                            @for (option of adapterMatrix[node.properties.platform][node.properties.chassis || ''][index]; track option) {
-                              <mat-option [value]="option">
-                                {{ option }}
-                              </mat-option>
-                            }
-                          </mat-select>
-                        </mat-form-field>
-                      }
-                    }
-                  </div>
-                </div>
-
-                @if (wicMatrix[node.properties.platform]) {
-                  <div class="slots-group">
-                    <h6 class="slots-title">WICs</h6>
-                    <div class="slots-grid">
-                      @for (index of [0, 1, 2]; track index) {
-                        @if (wicMatrix[node.properties.platform][index]) {
-                          <mat-form-field class="slot-field">
-                            <mat-label>WIC {{ index }}</mat-label>
-                            <mat-select
-                              [(ngModel)]="wicsForNode[index]"
-                              [ngModelOptions]="{ standalone: true }"
-                            >
-                              <mat-option [value]="">
-                                {{ "" }}
-                              </mat-option>
-                              @for (option of wicMatrix[node.properties.platform][index]; track option) {
-                                <mat-option [value]="option">
-                                  {{ option }}
-                                </mat-option>
-                              }
-                            </mat-select>
-                          </mat-form-field>
-                        }
-                      }
-                    </div>
-                  </div>
+            </form>
+            @if (node.properties.midplane) {
+            <mat-form-field class="select">
+              <mat-select placeholder="Midplane" [(ngModel)]="node.properties.midplane">
+                @for (type of MidplaneTypes; track type) {
+                <mat-option [value]="type">
+                  {{ type }}
+                </mat-option>
                 }
-              </div>
-            </mat-tab>
+              </mat-select>
+            </mat-form-field>
+            } @if (node.properties.npe) {
+            <mat-form-field class="select">
+              <mat-select placeholder="NPE" [(ngModel)]="node.properties.npe">
+                @for (type of NPETypes; track type) {
+                <mat-option [value]="type">
+                  {{ type }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            }
+            <mat-form-field class="select">
+              <mat-select placeholder="Console type" [(ngModel)]="node.console_type">
+                @for (type of consoleTypes; track type) {
+                <mat-option [value]="type">
+                  {{ type }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="select">
+              <mat-select placeholder="Auxiliary console type" [(ngModel)]="node.properties.aux_type">
+                @for (type of consoleTypes; track type) {
+                <mat-option [value]="type">
+                  {{ type }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-checkbox [(ngModel)]="node.console_auto_start"> Auto start console </mat-checkbox><br />
+          </mat-tab>
 
-            <mat-tab label="Advanced">
-              <mat-card>
-                <mat-card-title></mat-card-title>
-                <mat-card-subtitle> System </mat-card-subtitle>
-                <mat-card-content>
-                  <mat-form-field class="form-field">
-                    <input matInput type="text" [(ngModel)]="node.properties.system_id" placeholder="System ID" />
+          <mat-tab label="Memories and disks">
+            <br />
+            <form [formGroup]="memoryForm">
+              <mat-form-field class="form-field">
+                <input matInput type="number" min="0" formControlName="ram" placeholder="RAM size" />
+                <span matSuffix>MiB</span>
+              </mat-form-field>
+              <mat-form-field class="form-field">
+                <input matInput type="number" min="0" formControlName="nvram" placeholder="NVRAM size" />
+                <span matSuffix>MiB</span>
+              </mat-form-field>
+            </form>
+            @if (['c1700', 'c2600', 'c2691', 'c3600', 'c3725', 'c3745'].includes(node.properties.platform)) {
+            <mat-form-field class="form-field">
+              <input
+                matInput
+                type="number"
+                min="0"
+                max="100"
+                [(ngModel)]="node.properties.iomem"
+                placeholder="I/O memory"
+              />
+              <span matSuffix>%</span>
+            </mat-form-field>
+            }
+            <mat-form-field class="form-field">
+              <input matInput type="number" min="0" [(ngModel)]="node.properties.disk0" placeholder="PCMCIA disk0" />
+              <span matSuffix>MiB</span>
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <input matInput type="number" min="0" [(ngModel)]="node.properties.disk1" placeholder="PCMCIA disk1" />
+              <span matSuffix>MiB</span>
+            </mat-form-field>
+            <mat-checkbox [(ngModel)]="node.properties.auto_delete_disks">
+              Automatically delete NVRAM and disk files </mat-checkbox
+            ><br />
+          </mat-tab>
+
+          <mat-tab label="Slots">
+            <div class="slots-section">
+              <div class="slots-group">
+                <h6 class="slots-title">Network Adapters</h6>
+                <div class="slots-grid">
+                  @for (index of [0, 1, 2, 3, 4, 5, 6]; track index) { @if
+                  (adapterMatrix[node.properties.platform][node.properties.chassis || ''][index]) {
+                  <mat-form-field class="slot-field">
+                    <mat-label>Slot {{ index }}</mat-label>
+                    <mat-select [(ngModel)]="networkAdaptersForNode[index]" [ngModelOptions]="{ standalone: true }">
+                      @if (adapterMatrix[node.properties.platform][node.properties.chassis || ''][index].length > 1 &&
+                      !adapterMatrix[node.properties.platform][node.properties.chassis ||
+                      ''][index][0].startsWith('C7200')) {
+                      <mat-option [value]="">
+                        {{ '' }}
+                      </mat-option>
+                      } @for (option of adapterMatrix[node.properties.platform][node.properties.chassis || ''][index];
+                      track option) {
+                      <mat-option [value]="option">
+                        {{ option }}
+                      </mat-option>
+                      }
+                    </mat-select>
                   </mat-form-field>
-                  <form [formGroup]="advancedSettingsForm">
+                  } }
+                </div>
+              </div>
+
+              @if (wicMatrix[node.properties.platform]) {
+              <div class="slots-group">
+                <h6 class="slots-title">WICs</h6>
+                <div class="slots-grid">
+                  @for (index of [0, 1, 2]; track index) { @if (wicMatrix[node.properties.platform][index]) {
+                  <mat-form-field class="slot-field">
+                    <mat-label>WIC {{ index }}</mat-label>
+                    <mat-select [(ngModel)]="wicsForNode[index]" [ngModelOptions]="{ standalone: true }">
+                      <mat-option [value]="">
+                        {{ '' }}
+                      </mat-option>
+                      @for (option of wicMatrix[node.properties.platform][index]; track option) {
+                      <mat-option [value]="option">
+                        {{ option }}
+                      </mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                  } }
+                </div>
+              </div>
+              }
+            </div>
+          </mat-tab>
+
+          <mat-tab label="Advanced">
+            <mat-card>
+              <mat-card-title></mat-card-title>
+              <mat-card-subtitle> System </mat-card-subtitle>
+              <mat-card-content>
+                <mat-form-field class="form-field">
+                  <input matInput type="text" [(ngModel)]="node.properties.system_id" placeholder="System ID" />
+                </mat-form-field>
+                <form [formGroup]="advancedSettingsForm">
                   <mat-form-field class="form-field">
                     <input matInput formControlName="mac_addr" type="text" placeholder="Base MAC" />
                   </mat-form-field>
-                  </form>
-                </mat-card-content>
-              </mat-card>
-              <mat-card>
-                <mat-card-title></mat-card-title>
-                <mat-card-subtitle> Optimizations </mat-card-subtitle>
-                <mat-card-content>
-                  <form [formGroup]="advancedSettingsForm">
+                </form>
+              </mat-card-content>
+            </mat-card>
+            <mat-card>
+              <mat-card-title></mat-card-title>
+              <mat-card-subtitle> Optimizations </mat-card-subtitle>
+              <mat-card-content>
+                <form [formGroup]="advancedSettingsForm">
                   <mat-form-field class="form-field">
                     <input matInput formControlName="idlepc" placeholder="Idle-PC" />
                   </mat-form-field>
-                  </form>
-                  <mat-form-field class="form-field">
-                    <input matInput type="number" min="0" [(ngModel)]="node.properties.idlemax" placeholder="Idlemax" />
-                  </mat-form-field>
-                  <mat-form-field class="form-field">
-                    <input matInput type="number" min="0" [(ngModel)]="node.properties.idlesleep" placeholder="Idlesleep" />
-                    <span matSuffix>ms</span>
-                  </mat-form-field>
-                  <mat-form-field class="form-field">
-                    <input matInput type="number" min="0" [(ngModel)]="node.properties.exec_area" placeholder="Exec area" />
-                    <span matSuffix>MiB</span>
-                  </mat-form-field>
-                  <mat-checkbox [(ngModel)]="node.properties.mmap"> Enable mmap support </mat-checkbox><br />
-                  <mat-checkbox [(ngModel)]="node.properties.sparsemem"> Enable sparse memory support </mat-checkbox><br />
-                </mat-card-content>
-              </mat-card>
-            </mat-tab>
+                </form>
+                <mat-form-field class="form-field">
+                  <input matInput type="number" min="0" [(ngModel)]="node.properties.idlemax" placeholder="Idlemax" />
+                </mat-form-field>
+                <mat-form-field class="form-field">
+                  <input
+                    matInput
+                    type="number"
+                    min="0"
+                    [(ngModel)]="node.properties.idlesleep"
+                    placeholder="Idlesleep"
+                  />
+                  <span matSuffix>ms</span>
+                </mat-form-field>
+                <mat-form-field class="form-field">
+                  <input
+                    matInput
+                    type="number"
+                    min="0"
+                    [(ngModel)]="node.properties.exec_area"
+                    placeholder="Exec area"
+                  />
+                  <span matSuffix>MiB</span>
+                </mat-form-field>
+                <mat-checkbox [(ngModel)]="node.properties.mmap"> Enable mmap support </mat-checkbox><br />
+                <mat-checkbox [(ngModel)]="node.properties.sparsemem"> Enable sparse memory support </mat-checkbox
+                ><br />
+              </mat-card-content>
+            </mat-card>
+          </mat-tab>
 
-            <mat-tab label="Usage">
-              <mat-form-field class="form-field">
-                <textarea matInput type="text" [(ngModel)]="node.properties.usage"></textarea>
-              </mat-form-field>
-            </mat-tab>
-          </mat-tab-group>
+          <mat-tab label="Usage">
+            <mat-form-field class="form-field">
+              <textarea matInput type="text" [(ngModel)]="node.properties.usage"></textarea>
+            </mat-form-field>
+          </mat-tab>
+        </mat-tab-group>
         }
       </mat-card>
     </div>

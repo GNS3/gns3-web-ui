@@ -16,20 +16,20 @@ describe('ProgressDialogComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ProgressDialogComponent],
-      imports:[
+      imports: [
         MatIconModule,
         MatToolbarModule,
         MatMenuModule,
         MatCheckboxModule,
         MatDialogModule,
-        MatProgressBarModule
+        MatProgressBarModule,
       ],
-      providers:[
+      providers: [
         provideZonelessChangeDetection(),
-        { provide: MatDialogRef, useValue: {}},
-        { provide: MAT_DIALOG_DATA, useValue: {}},
+        { provide: MatDialogRef, useValue: {} },
+        { provide: MAT_DIALOG_DATA, useValue: {} },
       ],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });
 

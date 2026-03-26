@@ -8,7 +8,7 @@ import { HttpController } from './http-controller.service';
 export class VpcsService {
   constructor(private httpController: HttpController) {}
 
-  getTemplates(controller: Controller ): Observable<VpcsTemplate[]> {
+  getTemplates(controller: Controller): Observable<VpcsTemplate[]> {
     return this.httpController.get<VpcsTemplate[]>(controller, '/templates') as Observable<VpcsTemplate[]>;
   }
 

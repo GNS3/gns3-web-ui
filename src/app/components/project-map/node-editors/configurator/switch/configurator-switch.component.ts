@@ -1,6 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatTableModule } from '@angular/material/table';
@@ -20,7 +27,19 @@ import { ToasterService } from '@services/toaster.service';
   templateUrl: './configurator-switch.component.html',
   styleUrls: ['../configurator.component.scss', '../../../../preferences/preferences.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatTableModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatTooltipModule]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatCardModule,
+    MatTableModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+  ],
 })
 export class ConfiguratorDialogSwitchComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogSwitchComponent>);

@@ -1,5 +1,14 @@
 import { DataSource } from '@angular/cdk/collections';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, AfterViewInit, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  AfterViewInit,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
@@ -31,7 +40,22 @@ import { version } from '../../version';
   templateUrl: './controllers.component.html',
   styleUrl: './controllers.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, RouterModule, MatDialogModule, MatSortModule, MatTableModule, MatFormFieldModule, MatInputModule, MatIconModule, MatButtonModule, MatBottomSheetModule, MatMenuModule, MatTooltipModule, ControllerDiscoveryComponent]
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatDialogModule,
+    MatSortModule,
+    MatTableModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatButtonModule,
+    MatBottomSheetModule,
+    MatMenuModule,
+    MatTooltipModule,
+    ControllerDiscoveryComponent,
+  ],
 })
 export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
   private dialog = inject(MatDialog);
@@ -58,16 +82,18 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild(MatSort, { static: false }) sort: MatSort;
 
-  constructor() { }
+  constructor() {}
 
   getControllers() {
     const runningControllerNames = this.controllerManagement.getRunningControllers();
 
-    this.controllerService.findAll().then((controllers: Controller []) => {
+    this.controllerService.findAll().then((controllers: Controller[]) => {
       controllers.forEach((controller) => {
         controller.status = 'stopped';
 
-        const controllerIndex = runningControllerNames.findIndex((controllerName) => controller.name === controllerName);
+        const controllerIndex = runningControllerNames.findIndex(
+          (controllerName) => controller.name === controllerName
+        );
         if (controllerIndex >= 0) {
           controller.status = 'running';
         }
@@ -99,56 +125,58 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     this.startStatusAutoRefresh();
 
-    this.controllerStatusSubscription = this.controllerManagement.controllerStatusChanged.subscribe((controllerStatus) => {
-      const controller = this.controllerDatabase.find(controllerStatus.controllerName);
-      if (!controller) {
-        return;
-      }
-
-      const pendingTimeout = this.startingTimeouts.get(controller.name);
-      if (pendingTimeout && controllerStatus.status !== 'started') {
-        clearTimeout(pendingTimeout);
-        this.startingTimeouts.delete(controller.name);
-      }
-
-      if (controllerStatus.status === 'starting') {
-        controller.status = 'starting';
-        this.startingTimestamps.set(controller.name, Date.now());
-        this.changeDetector.markForCheck();
-      }
-      if (controllerStatus.status === 'stopped') {
-        controller.status = 'stopped';
-        this.startingTimestamps.delete(controller.name);
-        this.changeDetector.markForCheck();
-      }
-      if (controllerStatus.status === 'errored') {
-        controller.status = 'stopped';
-        this.startingTimestamps.delete(controller.name);
-        this.changeDetector.markForCheck();
-      }
-      if (controllerStatus.status === 'started') {
-        const startedAt = this.startingTimestamps.get(controller.name) || Date.now();
-        const elapsed = Date.now() - startedAt;
-        const delay = Math.max(0, this.minStartingDisplayMs - elapsed);
-
-        if (delay > 0) {
-          const timeout = setTimeout(() => {
-            controller.status = 'running';
-            this.controllerDatabase.update(controller);
-            this.startingTimeouts.delete(controller.name);
-            this.startingTimestamps.delete(controller.name);
-            this.changeDetector.markForCheck();
-          }, delay);
-          this.startingTimeouts.set(controller.name, timeout);
+    this.controllerStatusSubscription = this.controllerManagement.controllerStatusChanged.subscribe(
+      (controllerStatus) => {
+        const controller = this.controllerDatabase.find(controllerStatus.controllerName);
+        if (!controller) {
           return;
         }
 
-        controller.status = 'running';
-        this.startingTimestamps.delete(controller.name);
-        this.controllerDatabase.update(controller);
-        this.changeDetector.markForCheck();
+        const pendingTimeout = this.startingTimeouts.get(controller.name);
+        if (pendingTimeout && controllerStatus.status !== 'started') {
+          clearTimeout(pendingTimeout);
+          this.startingTimeouts.delete(controller.name);
+        }
+
+        if (controllerStatus.status === 'starting') {
+          controller.status = 'starting';
+          this.startingTimestamps.set(controller.name, Date.now());
+          this.changeDetector.markForCheck();
+        }
+        if (controllerStatus.status === 'stopped') {
+          controller.status = 'stopped';
+          this.startingTimestamps.delete(controller.name);
+          this.changeDetector.markForCheck();
+        }
+        if (controllerStatus.status === 'errored') {
+          controller.status = 'stopped';
+          this.startingTimestamps.delete(controller.name);
+          this.changeDetector.markForCheck();
+        }
+        if (controllerStatus.status === 'started') {
+          const startedAt = this.startingTimestamps.get(controller.name) || Date.now();
+          const elapsed = Date.now() - startedAt;
+          const delay = Math.max(0, this.minStartingDisplayMs - elapsed);
+
+          if (delay > 0) {
+            const timeout = setTimeout(() => {
+              controller.status = 'running';
+              this.controllerDatabase.update(controller);
+              this.startingTimeouts.delete(controller.name);
+              this.startingTimestamps.delete(controller.name);
+              this.changeDetector.markForCheck();
+            }, delay);
+            this.startingTimeouts.set(controller.name, timeout);
+            return;
+          }
+
+          controller.status = 'running';
+          this.startingTimestamps.delete(controller.name);
+          this.controllerDatabase.update(controller);
+          this.changeDetector.markForCheck();
+        }
       }
-    });
+    );
   }
 
   ngAfterViewInit(): void {
@@ -194,14 +222,17 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((controller) => {
       if (controller) {
-        this.controllerService.create(controller).then((created: Controller ) => {
-          created.status = 'stopped';
-          this.controllerDatabase.addController(created);
-          this.updateControllerOnlineStatus(created);
-          this.changeDetector.markForCheck();
-        }).catch((error) => {
-          this.changeDetector.markForCheck();
-        });
+        this.controllerService
+          .create(controller)
+          .then((created: Controller) => {
+            created.status = 'stopped';
+            this.controllerDatabase.addController(created);
+            this.updateControllerOnlineStatus(created);
+            this.changeDetector.markForCheck();
+          })
+          .catch((error) => {
+            this.changeDetector.markForCheck();
+          });
       }
     });
   }
@@ -236,14 +267,14 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
     );
   }
 
-  getControllerStatus(controller: Controller ) {
+  getControllerStatus(controller: Controller) {
     if (controller.status === undefined) {
       return 'stopped';
     }
     return controller.status;
   }
 
-  deleteController(controller: Controller ) {
+  deleteController(controller: Controller) {
     const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
       data: { message: 'Do you want to delete the controller?' },
       panelClass: 'confirmation-bottom-sheet',
@@ -264,7 +295,7 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
       autoFocus: false,
       disableClose: true,
       panelClass: 'edit-controller-dialog-panel',
-      data: { controller: controller }
+      data: { controller: controller },
     });
 
     // Pass the controller to the dialog component
@@ -279,7 +310,7 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  async startController(controller: Controller ) {
+  async startController(controller: Controller) {
     if (!controller) {
       return;
     }
@@ -291,7 +322,7 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
     await this.controllerManagement.start(controller);
   }
 
-  async stopController(controller: Controller ) {
+  async stopController(controller: Controller) {
     await this.controllerManagement.stop(controller);
   }
 
@@ -317,7 +348,7 @@ export class ControllerDataSource extends DataSource<Controller> {
     this.filterChange.next((filter || '').trim().toLowerCase());
   }
 
-  connect(): Observable< Controller[] > {
+  connect(): Observable<Controller[]> {
     return merge(this.controllerDatabase.dataChange, this.sort.sortChange, this.filterChange).pipe(
       map(() => {
         let data = this.controllerDatabase.data.slice();
@@ -356,5 +387,5 @@ export class ControllerDataSource extends DataSource<Controller> {
     );
   }
 
-  disconnect() { }
+  disconnect() {}
 }

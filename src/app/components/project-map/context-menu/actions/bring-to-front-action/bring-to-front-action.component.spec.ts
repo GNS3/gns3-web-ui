@@ -43,33 +43,33 @@ describe('BringToFrontActionComponent', () => {
     }).compileComponents();
   });
 
-beforeEach(() => {
-  fixture = TestBed.createComponent(BringToFrontActionComponent);
-  component = fixture.componentInstance;
-  fixture.detectChanges();
-});
+  beforeEach(() => {
+    fixture = TestBed.createComponent(BringToFrontActionComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-it('should create', () => {
-  expect(component).toBeTruthy();
-});
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-it('should call node service when bring to front action called', () => {
-  spyOn(nodeService, 'update').and.returnValue(of());
-  component.nodes = [{ z: 0 } as Node];
-  component.drawings = [];
+  it('should call node service when bring to front action called', () => {
+    spyOn(nodeService, 'update').and.returnValue(of());
+    component.nodes = [{ z: 0 } as Node];
+    component.drawings = [];
 
-  component.bringToFront();
+    component.bringToFront();
 
-  expect(nodeService.update).toHaveBeenCalled();
-});
+    expect(nodeService.update).toHaveBeenCalled();
+  });
 
-it('should call drawing service when bring to front action called', () => {
-  spyOn(drawingService, 'update').and.returnValue(of());
-  component.nodes = [];
-  component.drawings = [{ z: 0 } as Drawing];
+  it('should call drawing service when bring to front action called', () => {
+    spyOn(drawingService, 'update').and.returnValue(of());
+    component.nodes = [];
+    component.drawings = [{ z: 0 } as Drawing];
 
-  component.bringToFront();
+    component.bringToFront();
 
-  expect(drawingService.update).toHaveBeenCalled();
-});
+    expect(drawingService.update).toHaveBeenCalled();
+  });
 });

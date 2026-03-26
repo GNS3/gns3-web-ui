@@ -1,25 +1,23 @@
 import { provideZonelessChangeDetection } from '@angular/core';
-import { ComponentFixture, TestBed} from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import {ResourcePoolDetailsComponent} from './resource-pool-details.component';
-import {ToasterService} from "@services/toaster.service";
-import {ActivatedRoute} from "@angular/router";
-import {ResourcePoolsService} from "@services/resource-pools.service";
-import {MatDialog} from "@angular/material/dialog";
-import {MatAutocompleteModule} from "@angular/material/autocomplete";
-import {MatFormFieldModule} from "@angular/material/form-field";
-import {MatIconModule} from "@angular/material/icon";
-import {MatDividerModule} from "@angular/material/divider";
-import {of} from "rxjs";
-import {HttpController} from "@services/http-controller.service";
-import {Project} from "@models/project";
+import { ResourcePoolDetailsComponent } from './resource-pool-details.component';
+import { ToasterService } from '@services/toaster.service';
+import { ActivatedRoute } from '@angular/router';
+import { ResourcePoolsService } from '@services/resource-pools.service';
+import { MatDialog } from '@angular/material/dialog';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
+import { MatDividerModule } from '@angular/material/divider';
+import { of } from 'rxjs';
+import { HttpController } from '@services/http-controller.service';
+import { Project } from '@models/project';
 
-class FakeToastService {
-
-}
+class FakeToastService {}
 
 class FakeActivatedRoute {
-  data = of({controller: {}, pool: {}});
+  data = of({ controller: {}, pool: {} });
 }
 
 class FakeResourcePoolService {
@@ -28,14 +26,12 @@ class FakeResourcePoolService {
   }
   getFreeResources() {
     const p = new Project();
-    p.name = "test";
+    p.name = 'test';
     return of(p);
   }
 }
 
-class FakeMatDialog {
-
-}
+class FakeMatDialog {}
 
 describe('ResourcePoolDetailsComponent', () => {
   let component: ResourcePoolDetailsComponent;
@@ -44,21 +40,15 @@ describe('ResourcePoolDetailsComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ResourcePoolDetailsComponent],
-      imports: [
-        MatAutocompleteModule,
-        MatFormFieldModule,
-        MatIconModule,
-        MatDividerModule
-      ],
+      imports: [MatAutocompleteModule, MatFormFieldModule, MatIconModule, MatDividerModule],
       providers: [
         provideZonelessChangeDetection(),
-        {provide: ToasterService, useClass: FakeToastService},
-        {provide: ActivatedRoute, useClass: FakeActivatedRoute},
-        {provide: ResourcePoolsService, useClass: FakeResourcePoolService},
-        {provide: MatDialog, useClass: FakeMatDialog}
-      ]
-    })
-      .compileComponents();
+        { provide: ToasterService, useClass: FakeToastService },
+        { provide: ActivatedRoute, useClass: FakeActivatedRoute },
+        { provide: ResourcePoolsService, useClass: FakeResourcePoolService },
+        { provide: MatDialog, useClass: FakeMatDialog },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ResourcePoolDetailsComponent);
     component = fixture.componentInstance;

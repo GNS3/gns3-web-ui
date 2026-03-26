@@ -23,7 +23,17 @@ import { VmwareService } from '@services/vmware.service';
   selector: 'app-add-vmware-template',
   templateUrl: './add-vmware-template.component.html',
   styleUrls: ['./add-vmware-template.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatSelectModule, MatCheckboxModule, MatFormFieldModule]
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatSelectModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+  ],
 })
 export class AddVmwareTemplateComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -44,9 +54,11 @@ export class AddVmwareTemplateComponent implements OnInit {
   linkedClone = model(false);
 
   ngOnInit() {
-    this.toasterService.error(`VMware VM support is deprecated and will be removed in a future version, please use Qemu VMs instead`);
+    this.toasterService.error(
+      `VMware VM support is deprecated and will be removed in a future version, please use Qemu VMs instead`
+    );
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
       this.controller.set(controller);
       this.cd.markForCheck();
 

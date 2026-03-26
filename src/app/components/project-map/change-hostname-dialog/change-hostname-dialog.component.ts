@@ -1,5 +1,11 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatInputModule } from '@angular/material/input';
@@ -16,14 +22,7 @@ import { ToasterService } from '@services/toaster.service';
   templateUrl: './change-hostname-dialog.component.html',
   styleUrls: ['./change-hostname-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    MatDialogModule,
-    MatButtonModule,
-    MatInputModule,
-    MatFormFieldModule,
-    MatCardModule,
-    ReactiveFormsModule,
-  ],
+  imports: [MatDialogModule, MatButtonModule, MatInputModule, MatFormFieldModule, MatCardModule, ReactiveFormsModule],
 })
 export class ChangeHostnameDialogComponent implements OnInit {
   public dialogRef = inject(MatDialogRef<ChangeHostnameDialogComponent>);
@@ -68,7 +67,7 @@ export class ChangeHostnameDialogComponent implements OnInit {
         error: (error) => {
           const message = error.error?.message || 'Failed to update node.';
           this.toasterService.error(message);
-        }
+        },
       });
     } else {
       this.toasterService.error(`Fill all required fields.`);

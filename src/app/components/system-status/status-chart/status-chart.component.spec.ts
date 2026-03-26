@@ -9,7 +9,7 @@ describe('StatusChartComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [StatusChartComponent],
-      providers: [provideZonelessChangeDetection()]
+      providers: [provideZonelessChangeDetection()],
     }).compileComponents();
   });
 

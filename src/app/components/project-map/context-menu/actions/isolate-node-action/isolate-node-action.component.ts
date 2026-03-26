@@ -10,7 +10,7 @@ import { ToasterService } from '@services/toaster.service';
 @Component({
   selector: 'app-isolate-node-action',
   templateUrl: './isolate-node-action.component.html',
-  imports: [ MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IsolateNodeActionComponent implements OnInit {

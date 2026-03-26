@@ -1,6 +1,12 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -19,7 +25,7 @@ import { ProjectNameValidator } from '../models/projectNameValidator';
   styleUrls: ['./save-project-dialog.component.scss'],
   providers: [ProjectNameValidator],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule]
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule],
 })
 export class SaveProjectDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<SaveProjectDialogComponent>);

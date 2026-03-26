@@ -25,9 +25,8 @@
   transition: box-shadow 100ms ease;
 
   &.console-active {
-    box-shadow: 0 4px 16px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
-                0 0 0 2px var(--mat-sys-primary),
-                0 0 12px var(--mat-sys-primary);
+    box-shadow: 0 4px 16px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent), 0 0 0 2px var(--mat-sys-primary),
+      0 0 12px var(--mat-sys-primary);
   }
 
   &:focus {
@@ -54,7 +53,7 @@
     }
   }
 
-  .mat-icon-button[title="Close"]:hover {
+  .mat-icon-button[title='Close']:hover {
     background-color: var(--mat-sys-error-container);
 
     mat-icon {
@@ -127,7 +126,7 @@
   }
 }
 
-.consoleHeader .mat-icon-button[title="Close"]:hover {
+.consoleHeader .mat-icon-button[title='Close']:hover {
   background-color: var(--mat-sys-error-container);
   box-shadow: 0 2px 8px var(--mat-sys-error);
 

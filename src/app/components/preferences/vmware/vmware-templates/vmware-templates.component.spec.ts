@@ -18,7 +18,7 @@ import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VmwareTemplatesComponent } from './vmware-templates.component';
 
 export class MockedVmwareService {
-  public getTemplates(controller: Controller ) {
+  public getTemplates(controller: Controller) {
     return of([{} as VmwareTemplate]);
   }
 }
@@ -56,13 +56,13 @@ describe('VmwareTemplatesComponent', () => {
     }).compileComponents();
   });
 
-beforeEach(() => {
-  fixture = TestBed.createComponent(VmwareTemplatesComponent);
-  component = fixture.componentInstance;
-  fixture.detectChanges();
-});
+  beforeEach(() => {
+    fixture = TestBed.createComponent(VmwareTemplatesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-it('should create', () => {
-  expect(component).toBeTruthy();
-});
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 });

@@ -60,7 +60,7 @@ describe('LogConsoleComponent', () => {
         { provide: LoginService, useValue: {} },
         { provide: ControllerService, useValue: {} },
         ProtocolHandlerService,
-        MapSettingsService
+        MapSettingsService,
       ],
       declarations: [LogConsoleComponent],
       schemas: [NO_ERRORS_SCHEMA],

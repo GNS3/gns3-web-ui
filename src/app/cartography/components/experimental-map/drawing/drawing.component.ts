@@ -27,7 +27,7 @@ export class DrawingComponent implements OnInit {
   ngOnInit() {
     try {
       this.drawing.element = this.svgToDrawingConverter.convert(this.drawing.svg);
-    } catch (error) { }
+    } catch (error) {}
   }
 
   OnDragging(evt) {

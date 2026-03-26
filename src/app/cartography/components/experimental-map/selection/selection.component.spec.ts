@@ -15,9 +15,8 @@ describe('SelectionComponent', () => {
     fixture.detectChanges();
   });
   afterEach(() => {
-    fixture.destroy()
-  })
-
+    fixture.destroy();
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

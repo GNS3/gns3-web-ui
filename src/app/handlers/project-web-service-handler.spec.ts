@@ -13,7 +13,13 @@ describe('ProjectWebServiceHandler', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection(), ProjectWebServiceHandler, NodesDataSource, LinksDataSource, DrawingsDataSource],
+      providers: [
+        provideZonelessChangeDetection(),
+        ProjectWebServiceHandler,
+        NodesDataSource,
+        LinksDataSource,
+        DrawingsDataSource,
+      ],
     });
 
     ws = new Subject<WebServiceMessage>();

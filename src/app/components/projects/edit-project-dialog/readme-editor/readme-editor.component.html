@@ -1,11 +1,11 @@
 <mat-tab-group>
-    <mat-tab label="Edit">
-        <textarea class="editorWrapper" matInput type="text" [(ngModel)]="markdown"></textarea>
-    </mat-tab>
+  <mat-tab label="Edit">
+    <textarea class="editorWrapper" matInput type="text" [(ngModel)]="markdown"></textarea>
+  </mat-tab>
 
-    <mat-tab label="Preview">
-        @if (markdown) {
-            <div class="textWrapper markdown-body" [innerHTML]="markdownHtml"></div>
-        }
-    </mat-tab>
+  <mat-tab label="Preview">
+    @if (markdown) {
+    <div class="textWrapper markdown-body" [innerHTML]="markdownHtml"></div>
+    }
+  </mat-tab>
 </mat-tab-group>

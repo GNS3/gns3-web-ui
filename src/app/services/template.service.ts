@@ -10,7 +10,7 @@ export class TemplateService {
 
   constructor(private httpController: HttpController) {}
 
-  list(controller: Controller ): Observable<Template[]> {
+  list(controller: Controller): Observable<Template[]> {
     return this.httpController.get<Template[]>(controller, '/templates') as Observable<Template[]>;
   }
 

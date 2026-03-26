@@ -3,28 +3,19 @@
 <div class="modal-form-container">
   <form [formGroup]="formGroup">
     <mat-form-field class="form-field">
-      <input
-        matInput
-        placeholder="Color"
-        formControlName="color" 
-        type="color"
-      />
+      <input matInput placeholder="Color" formControlName="color" type="color" />
     </mat-form-field>
 
     <mat-form-field class="form-field">
-      <input 
-        matInput 
-        formControlName="width" 
-        placeholder="Width" 
-        type="number" />
+      <input matInput formControlName="width" placeholder="Width" type="number" />
     </mat-form-field>
 
     <mat-form-field class="form-field">
-        <mat-select placeholder="Type" formControlName="type">
-            @for (type of borderTypes; track type) {
-              <mat-option [value]="type"> {{ type }} </mat-option>
-            }
-        </mat-select>
+      <mat-select placeholder="Type" formControlName="type">
+        @for (type of borderTypes; track type) {
+        <mat-option [value]="type"> {{ type }} </mat-option>
+        }
+      </mat-select>
     </mat-form-field>
   </form>
 </div>

@@ -17,7 +17,7 @@ describe('TextEditedComponent', () => {
   let mockedDrawingsEventSource = new DrawingsEventSource();
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
         { provide: DrawingService, useValue: mockedDrawingService },

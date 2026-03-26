@@ -8,15 +8,12 @@ import { StopNodeActionComponent } from './stop-node-action.component';
 describe('StopNodeActionComponent', () => {
   let component: StopNodeActionComponent;
   let fixture: ComponentFixture<StopNodeActionComponent>;
-  let mockedNodeService : MockedNodeService
-  
+  let mockedNodeService: MockedNodeService;
+
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [StopNodeActionComponent],
-      providers:[
-        provideZonelessChangeDetection(),
-        {provide:NodeService , useValue: mockedNodeService},
-      ]
+      providers: [provideZonelessChangeDetection(), { provide: NodeService, useValue: mockedNodeService }],
     }).compileComponents();
   });
 

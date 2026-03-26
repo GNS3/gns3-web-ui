@@ -17,7 +17,7 @@ describe('NodeDraggedComponent', () => {
   let mockedNodesEventSource = new NodesEventSource();
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
         { provide: NodesDataSource, useValue: mockedNodesDataSource },

@@ -7,9 +7,9 @@ describe('TextComponent', () => {
   let fixture: ComponentFixture<TextComponent>;
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       declarations: [TextComponent],
-      providers:[provideZonelessChangeDetection(), FontFixer]
+      providers: [provideZonelessChangeDetection(), FontFixer],
     }).compileComponents();
   });
 

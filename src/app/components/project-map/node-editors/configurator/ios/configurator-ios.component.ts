@@ -1,6 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -24,7 +31,21 @@ import { ToasterService } from '@services/toaster.service';
   templateUrl: './configurator-ios.component.html',
   styleUrls: ['../configurator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatChipsModule, MatIconModule, MatCheckboxModule]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatCardModule,
+    MatTabsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatChipsModule,
+    MatIconModule,
+    MatCheckboxModule,
+  ],
 })
 export class ConfiguratorDialogIosComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogIosComponent>);
@@ -88,7 +109,6 @@ export class ConfiguratorDialogIosComponent implements OnInit {
   }
 
   fillSlotsData() {
-
     // load network adapters
     for (let i = 0; i <= 6; i++) {
       if (this.node.properties[`slot${i}`]) {
@@ -105,7 +125,6 @@ export class ConfiguratorDialogIosComponent implements OnInit {
   }
 
   saveSlotsData() {
-
     // save network adapters
     for (let i = 0; i <= 6; i++) {
       const platform = this.node.properties.platform;
@@ -113,10 +132,8 @@ export class ConfiguratorDialogIosComponent implements OnInit {
       const slotAdapters = this.adapterMatrix?.[platform]?.[chassis]?.[i];
 
       if (slotAdapters) {
-        if (this.networkAdaptersForNode[i] === undefined)
-          this.node.properties[`slot${i}`] = ""
-        else
-          this.node.properties[`slot${i}`] = this.networkAdaptersForNode[i];
+        if (this.networkAdaptersForNode[i] === undefined) this.node.properties[`slot${i}`] = '';
+        else this.node.properties[`slot${i}`] = this.networkAdaptersForNode[i];
       } else {
         // Remove slot properties that don't exist on this platform/chassis
         delete this.node.properties[`slot${i}`];
@@ -129,10 +146,8 @@ export class ConfiguratorDialogIosComponent implements OnInit {
       const wicAdapters = this.wicMatrix?.[platform]?.[i];
 
       if (wicAdapters) {
-        if (this.wicsForNode[i] === undefined)
-          this.node.properties[`wic${i}`] = ""
-        else
-          this.node.properties[`wic${i}`] = this.wicsForNode[i];
+        if (this.wicsForNode[i] === undefined) this.node.properties[`wic${i}`] = '';
+        else this.node.properties[`wic${i}`] = this.wicsForNode[i];
       } else {
         // Remove WIC properties that don't exist on this platform
         delete this.node.properties[`wic${i}`];

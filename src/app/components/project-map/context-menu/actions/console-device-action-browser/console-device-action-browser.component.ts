@@ -15,7 +15,7 @@ import * as ipaddr from 'ipaddr.js';
 @Component({
   selector: 'app-console-device-action-browser',
   templateUrl: './console-device-action-browser.component.html',
-  imports: [ MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConsoleDeviceActionBrowserComponent {
@@ -45,12 +45,8 @@ export class ConsoleDeviceActionBrowserComponent {
     if (node.status !== 'started') {
       this.toasterService.error('This node must be started before a console can be opened');
     } else {
-      if (
-        node.console_host === '0.0.0.0' ||
-        node.console_host === '0:0:0:0:0:0:0:0' ||
-        node.console_host === '::'
-      ) {
-        node = {...node, console_host: this.controller().host};
+      if (node.console_host === '0.0.0.0' || node.console_host === '0:0:0:0:0:0:0:0' || node.console_host === '::') {
+        node = { ...node, console_host: this.controller().host };
         this.node.set(node);
       }
 
@@ -58,10 +54,9 @@ export class ConsoleDeviceActionBrowserComponent {
         var uri;
         var host = node.console_host;
         if (ipaddr.IPv6.isValid(host)) {
-           host = `[${host}]`;
+          host = `[${host}]`;
         }
         if (node.console_type === 'telnet') {
-
           var console_port;
           if (auxiliary === true) {
             console_port = node.properties.aux;
@@ -76,21 +71,20 @@ export class ConsoleDeviceActionBrowserComponent {
         } else if (node.console_type === 'vnc') {
           // Open VNC console in standalone page via WebSocket API
           this.vncConsoleService.openVncConsole(this.controller(), node);
-          return;  // Return early, don't use protocol handler
+          return; // Return early, don't use protocol handler
         } else if (node.console_type && node.console_type.startsWith('spice')) {
-          uri = `gns3+spice://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
+          uri = `gns3+spice://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`;
         } else if (node.console_type && node.console_type.startsWith('http')) {
-          uri = `${node.console_type}://${host}:${node.console}`
-          return window.open(uri);  // open an http console directly in a new window/tab
+          uri = `${node.console_type}://${host}:${node.console}`;
+          return window.open(uri); // open an http console directly in a new window/tab
         } else {
           this.toasterService.error('Supported console types are: telnet, vnc, spice and spice+agent.');
           return;
         }
 
         this.protocolHandlerService.open(uri);
-
       } catch (e) {
-          this.toasterService.error(e);
+        this.toasterService.error(e);
       }
     }
   }

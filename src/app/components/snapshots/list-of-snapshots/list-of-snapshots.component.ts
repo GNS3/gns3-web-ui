@@ -22,7 +22,18 @@ import { NameFilter } from '@filters/nameFilter.pipe';
   selector: 'app-list-of-snapshots',
   templateUrl: './list-of-snapshots.component.html',
   styleUrl: './list-of-snapshots.component.scss',
-  imports: [CommonModule, FormsModule, MatTableModule, MatSortModule, MatButtonModule, MatIconModule, MatTooltipModule, MatInputModule, MatCardModule, NameFilter],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatTableModule,
+    MatSortModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatInputModule,
+    MatCardModule,
+    NameFilter,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ListOfSnapshotsComponent implements OnInit {
@@ -76,14 +87,16 @@ export class ListOfSnapshotsComponent implements OnInit {
     if (!sort.active || sort.direction === '') return;
 
     let snapshots = this.snapshots().slice();
-    this.snapshots.set(snapshots.sort((a, b) => {
-      const isAsc = sort.direction === 'asc';
-      if (sort.active === 'name') {
-        return compareNames(a.name, b.name, isAsc);
-      } else if (sort.active === 'creationDate') {
-        return compareDates(+a.created_at, +b.created_at, !isAsc);
-      } else return 0;
-    }));
+    this.snapshots.set(
+      snapshots.sort((a, b) => {
+        const isAsc = sort.direction === 'asc';
+        if (sort.active === 'name') {
+          return compareNames(a.name, b.name, isAsc);
+        } else if (sort.active === 'creationDate') {
+          return compareDates(+a.created_at, +b.created_at, !isAsc);
+        } else return 0;
+      })
+    );
   }
 }
 

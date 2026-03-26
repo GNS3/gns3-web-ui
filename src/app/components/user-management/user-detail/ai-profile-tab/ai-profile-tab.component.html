@@ -3,7 +3,9 @@
   <div class="toolbar">
     <div class="toolbar-info">
       <h3>LLM Model Configurations</h3>
-      <p class="subtitle">Manage LLM model configurations. Your configs and configs inherited from your groups are shown below.</p>
+      <p class="subtitle">
+        Manage LLM model configurations. Your configs and configs inherited from your groups are shown below.
+      </p>
     </div>
     <div class="toolbar-actions">
       <button mat-button (click)="loadConfigs()" [disabled]="loading$ | async">
@@ -19,132 +21,132 @@
 
   <!-- Loading state -->
   @if (loading$ | async) {
-    <div class="loading-container">
-      <mat-spinner diameter="40"></mat-spinner>
-      <p>Loading...</p>
-    </div>
+  <div class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading...</p>
+  </div>
   }
 
   <!-- Content area -->
   @if (!(loading$ | async)) {
-    <div class="content-area">
+  <div class="content-area">
+    <!-- Configurations list -->
+    <mat-card class="list-card">
+      <mat-card-header>
+        <mat-card-title>All Configurations (Own + Inherited)</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (configs().length > 0) {
+        <div class="table-container">
+          <table mat-table [dataSource]="configs()" class="profiles-table">
+            <!-- Name column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let config">
+                <span class="profile-name">{{ config.name }}</span>
+                @if (config.source === 'group') {
+                <span class="group-badge">
+                  <mat-icon class="group-icon">group</mat-icon>
+                  {{ config.group_name }}
+                </span>
+                }
+              </td>
+            </ng-container>
 
-      <!-- Configurations list -->
-      <mat-card class="list-card">
-        <mat-card-header>
-          <mat-card-title>All Configurations (Own + Inherited)</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-          @if (configs().length > 0) {
-            <div class="table-container">
-              <table mat-table [dataSource]="configs()" class="profiles-table">
+            <!-- Model Type column -->
+            <ng-container matColumnDef="model_type">
+              <th mat-header-cell *matHeaderCellDef>Type</th>
+              <td mat-cell *matCellDef="let config">
+                <span class="model-type-badge" [class]="'model-type-' + config.model_type">
+                  {{ config.model_type }}
+                </span>
+              </td>
+            </ng-container>
 
-                <!-- Name column -->
-                <ng-container matColumnDef="name">
-                  <th mat-header-cell *matHeaderCellDef> Name </th>
-                  <td mat-cell *matCellDef="let config">
-                    <span class="profile-name">{{ config.name }}</span>
-                    @if (config.source === 'group') {
-                      <span class="group-badge">
-                        <mat-icon class="group-icon">group</mat-icon>
-                        {{ config.group_name }}
-                      </span>
-                    }
-                  </td>
-                </ng-container>
+            <!-- Provider column -->
+            <ng-container matColumnDef="provider">
+              <th mat-header-cell *matHeaderCellDef>Provider</th>
+              <td mat-cell *matCellDef="let config">
+                <span class="provider-badge">{{ config.config.provider }}</span>
+              </td>
+            </ng-container>
 
-                <!-- Model Type column -->
-                <ng-container matColumnDef="model_type">
-                  <th mat-header-cell *matHeaderCellDef> Type </th>
-                  <td mat-cell *matCellDef="let config">
-                    <span class="model-type-badge" [class]="'model-type-' + config.model_type">
-                      {{ config.model_type }}
-                    </span>
-                  </td>
-                </ng-container>
+            <!-- Model column -->
+            <ng-container matColumnDef="model">
+              <th mat-header-cell *matHeaderCellDef>Model</th>
+              <td mat-cell *matCellDef="let config">
+                <span class="model-name">{{ config.config.model }}</span>
+              </td>
+            </ng-container>
 
-                <!-- Provider column -->
-                <ng-container matColumnDef="provider">
-                  <th mat-header-cell *matHeaderCellDef> Provider </th>
-                  <td mat-cell *matCellDef="let config">
-                    <span class="provider-badge">{{ config.config.provider }}</span>
-                  </td>
-                </ng-container>
+            <!-- Context Limit column -->
+            <ng-container matColumnDef="context_limit">
+              <th mat-header-cell *matHeaderCellDef>Context Limit</th>
+              <td mat-cell *matCellDef="let config">
+                <span class="context-limit-value">{{ config.config.context_limit }}K</span>
+                @if (config.config.context_strategy) {
+                <span class="context-strategy-badge">
+                  {{ config.config.context_strategy }}
+                </span>
+                }
+              </td>
+            </ng-container>
 
-                <!-- Model column -->
-                <ng-container matColumnDef="model">
-                  <th mat-header-cell *matHeaderCellDef> Model </th>
-                  <td mat-cell *matCellDef="let config">
-                    <span class="model-name">{{ config.config.model }}</span>
-                  </td>
-                </ng-container>
+            <!-- Actions column -->
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Actions</th>
+              <td mat-cell *matCellDef="let config">
+                <div class="action-buttons">
+                  <!-- Toggle Default button (only for user's own configs) -->
+                  <button
+                    mat-icon-button
+                    (click)="toggleDefaultConfig(config)"
+                    [disabled]="(settingDefault$ | async)?.has(config.config_id) || !isEditable(config)"
+                    [class.active-btn]="isDefault(config)"
+                  >
+                    <mat-icon>check_circle</mat-icon>
+                  </button>
 
-                <!-- Context Limit column -->
-                <ng-container matColumnDef="context_limit">
-                  <th mat-header-cell *matHeaderCellDef> Context Limit </th>
-                  <td mat-cell *matCellDef="let config">
-                    <span class="context-limit-value">{{ config.config.context_limit }}K</span>
-                    @if (config.config.context_strategy) {
-                      <span class="context-strategy-badge">
-                        {{ config.config.context_strategy }}
-                      </span>
-                    }
-                  </td>
-                </ng-container>
+                  <!-- Edit button (only for user's own configs) -->
+                  <button mat-icon-button (click)="openEditDialog(config)" [disabled]="!isEditable(config)">
+                    <mat-icon>edit</mat-icon>
+                  </button>
 
-                <!-- Actions column -->
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef> Actions </th>
-                  <td mat-cell *matCellDef="let config">
-                    <div class="action-buttons">
-                      <!-- Toggle Default button (only for user's own configs) -->
-                      <button
-                        mat-icon-button
-                        (click)="toggleDefaultConfig(config)"
-                        [disabled]="(settingDefault$ | async)?.has(config.config_id) || !isEditable(config)"
-                        [class.active-btn]="isDefault(config)">
-                        <mat-icon>check_circle</mat-icon>
-                      </button>
+                  <!-- Delete button (only for user's own configs) -->
+                  <button
+                    mat-icon-button
+                    (click)="deleteConfig(config)"
+                    color="warn"
+                    class="delete-btn"
+                    [disabled]="!isEditable(config)"
+                  >
+                    <mat-icon>delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </ng-container>
 
-                      <!-- Edit button (only for user's own configs) -->
-                      <button
-                        mat-icon-button
-                        (click)="openEditDialog(config)"
-                        [disabled]="!isEditable(config)">
-                        <mat-icon>edit</mat-icon>
-                      </button>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns"
+              [class.active-row]="isDefault(row)"
+              [class.inherited-row]="row.source === 'group'"
+            ></tr>
+          </table>
+        </div>
+        }
 
-                      <!-- Delete button (only for user's own configs) -->
-                      <button
-                        mat-icon-button
-                        (click)="deleteConfig(config)"
-                        color="warn"
-                        class="delete-btn"
-                        [disabled]="!isEditable(config)">
-                        <mat-icon>delete</mat-icon>
-                      </button>
-                    </div>
-                  </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-                    [class.active-row]="isDefault(row)"
-                    [class.inherited-row]="row.source === 'group'"></tr>
-              </table>
-            </div>
-          }
-
-          <!-- Empty state -->
-          @if (configs.length === 0) {
-            <div class="empty-state">
-              <mat-icon class="empty-icon">folder_open</mat-icon>
-              <p>No configurations yet</p>
-              <p class="empty-hint">Click "New Configuration" above to create your first LLM model configuration</p>
-            </div>
-          }
-        </mat-card-content>
-      </mat-card>
-    </div>
+        <!-- Empty state -->
+        @if (configs.length === 0) {
+        <div class="empty-state">
+          <mat-icon class="empty-icon">folder_open</mat-icon>
+          <p>No configurations yet</p>
+          <p class="empty-hint">Click "New Configuration" above to create your first LLM model configuration</p>
+        </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
   }
 </div>

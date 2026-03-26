@@ -14,7 +14,16 @@ import { BuiltInTemplatesConfigurationService } from '@services/built-in-templat
   selector: 'app-udp-tunnels',
   templateUrl: './udp-tunnels.component.html',
   styleUrl: '../../preferences.component.scss',
-  imports: [CommonModule, FormsModule, MatTableModule, MatFormFieldModule, MatInputModule, MatButtonModule, MatIconModule, MatTooltipModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatTableModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UdpTunnelsComponent implements OnInit {

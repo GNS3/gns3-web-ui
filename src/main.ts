@@ -11,11 +11,10 @@ if (environment.production) {
 }
 
 bootstrapApplication(AppComponent, {
-  providers: [
-    provideZonelessChangeDetection(),
-    importProvidersFrom(AppModule),
-  ]
-}).then((appRef) => {
-  // allows to run `ng.profiler.timeChangeDetection();`
-  enableDebugTools(appRef.components[0]);
-}).catch((err) => console.log(err));
+  providers: [provideZonelessChangeDetection(), importProvidersFrom(AppModule)],
+})
+  .then((appRef) => {
+    // allows to run `ng.profiler.timeChangeDetection();`
+    enableDebugTools(appRef.components[0]);
+  })
+  .catch((err) => console.log(err));

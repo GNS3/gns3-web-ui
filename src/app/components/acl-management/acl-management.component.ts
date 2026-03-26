@@ -1,17 +1,17 @@
 /*
-* Software Name : GNS3 Web UI
-* Version: 3
-* SPDX-FileCopyrightText: Copyright (c) 2023 Orange Business Services
-* SPDX-License-Identifier: GPL-3.0-or-later
-*
-* This software is distributed under the GPL-3.0 or any later version,
-* the text of which is available at https://www.gnu.org/licenses/gpl-3.0.txt
-* or see the "LICENSE" file for more details.
-*
-* Author: Sylvain MATHIEU, Elise LEBEAU
-*/
+ * Software Name : GNS3 Web UI
+ * Version: 3
+ * SPDX-FileCopyrightText: Copyright (c) 2023 Orange Business Services
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ * This software is distributed under the GPL-3.0 or any later version,
+ * the text of which is available at https://www.gnu.org/licenses/gpl-3.0.txt
+ * or see the "LICENSE" file for more details.
+ *
+ * Author: Sylvain MATHIEU, Elise LEBEAU
+ */
 
-import {ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChildren, inject, signal} from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChildren, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -26,22 +26,37 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { SelectionModel } from '@angular/cdk/collections';
-import { Controller } from "@models/controller";
-import { ACE } from "@models/api/ACE";
-import { ActivatedRoute } from "@angular/router";
-import { ControllerService } from "@services/controller.service";
-import { ToasterService } from "@services/toaster.service";
-import { AclService } from "@services/acl.service";
-import { AddAceDialogComponent } from "@components/acl-management/add-ace-dialog/add-ace-dialog.component";
-import { DeleteAceDialogComponent } from "@components/acl-management/delete-ace-dialog/delete-ace-dialog.component";
-import { Endpoint } from "@models/api/endpoint";
-import { AceFilterPipe } from "@filters/ace-filter.pipe";
+import { Controller } from '@models/controller';
+import { ACE } from '@models/api/ACE';
+import { ActivatedRoute } from '@angular/router';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
+import { AclService } from '@services/acl.service';
+import { AddAceDialogComponent } from '@components/acl-management/add-ace-dialog/add-ace-dialog.component';
+import { DeleteAceDialogComponent } from '@components/acl-management/delete-ace-dialog/delete-ace-dialog.component';
+import { Endpoint } from '@models/api/endpoint';
+import { AceFilterPipe } from '@filters/ace-filter.pipe';
 
 @Component({
   selector: 'app-acl-management',
   templateUrl: './acl-management.component.html',
   styleUrl: './acl-management.component.scss',
-  imports: [CommonModule, FormsModule, RouterModule, MatTableModule, MatPaginator, MatSortModule, MatCheckboxModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatDialogModule, MatCardModule, AceFilterPipe],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatTableModule,
+    MatPaginator,
+    MatSortModule,
+    MatCheckboxModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDialogModule,
+    MatCardModule,
+    AceFilterPipe,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AclManagementComponent implements OnInit {
@@ -62,31 +77,27 @@ export class AclManagementComponent implements OnInit {
   searchText = '';
   readonly endpoints = signal<Endpoint[]>([]);
 
-  constructor() { }
+  constructor() {}
 
   ngOnInit(): void {
     const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');
     this.controllerService.get(+controllerId).then((controller: Controller) => {
       this.controller = controller;
-      this.aclService.getEndpoints(this.controller)
-        .subscribe((endpoints: Endpoint[]) => {
-          this.endpoints.set(endpoints);
-          this.refresh();
-        })
+      this.aclService.getEndpoints(this.controller).subscribe((endpoints: Endpoint[]) => {
+        this.endpoints.set(endpoints);
+        this.refresh();
+      });
     });
-
-
   }
 
   ngAfterViewInit() {
-    this.acesPaginator.changes.subscribe((comps: QueryList <MatPaginator>) =>
-    {
+    this.acesPaginator.changes.subscribe((comps: QueryList<MatPaginator>) => {
       this.dataSource.paginator = comps.first;
     });
 
     this.acesSort.changes.subscribe((comps: QueryList<MatSort>) => {
       this.dataSource.sort = comps.first;
-    })
+    });
 
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
@@ -115,26 +126,27 @@ export class AclManagementComponent implements OnInit {
       autoFocus: false,
       disableClose: true,
       panelClass: 'add-ace-dialog-panel',
-      data: {endpoints: this.endpoints()}
+      data: { endpoints: this.endpoints() },
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;
     dialogRef.afterClosed().subscribe(() => this.refresh());
   }
 
-
   onDelete(ace: ACE) {
     this.dialog
-      .open(DeleteAceDialogComponent, {width: '500px', data: {aces: [ace]}})
+      .open(DeleteAceDialogComponent, { width: '500px', data: { aces: [ace] } })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
-          this.aclService.delete(this.controller, ace.ace_id)
-            .subscribe(() => {
-              this.refresh()
-            }, (error) => {
+          this.aclService.delete(this.controller, ace.ace_id).subscribe(
+            () => {
+              this.refresh();
+            },
+            (error) => {
               this.toasterService.error(`An error occur while trying to delete ace ${ace.ace_id}`);
-            });
+            }
+          );
         }
       });
   }
@@ -146,25 +158,25 @@ export class AclManagementComponent implements OnInit {
   }
 
   masterToggle() {
-    this.isAllSelected() ?
-      this.selection.clear() :
-      this.aces.forEach(row => this.selection.select(row));
+    this.isAllSelected() ? this.selection.clear() : this.aces.forEach((row) => this.selection.select(row));
   }
 
   deleteMultiple() {
     this.dialog
-      .open(DeleteAceDialogComponent, {width: '500px', data: {aces: this.selection.selected}})
+      .open(DeleteAceDialogComponent, { width: '500px', data: { aces: this.selection.selected } })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
           this.selection.selected.forEach((ace: ACE) => {
-            this.aclService.delete(this.controller, ace.ace_id)
-              .subscribe(() => {
-                this.refresh()
-              }, (error) => {
+            this.aclService.delete(this.controller, ace.ace_id).subscribe(
+              () => {
+                this.refresh();
+              },
+              (error) => {
                 this.toasterService.error(`An error occur while trying to delete ace ${ace.ace_id}`);
-              });
-          })
+              }
+            );
+          });
           this.selection.clear();
         }
       });
@@ -172,12 +184,12 @@ export class AclManagementComponent implements OnInit {
 
   getNameByUuidFromEndpoint(uuid: string): string {
     if (this.endpoints()) {
-      const elt = this.endpoints().filter((endpoint: Endpoint) => endpoint.endpoint.includes(uuid))
+      const elt = this.endpoints().filter((endpoint: Endpoint) => endpoint.endpoint.includes(uuid));
       if (elt.length >= 1) {
-        return elt[0].name
+        return elt[0].name;
       }
     }
 
-    return ''
+    return '';
   }
 }

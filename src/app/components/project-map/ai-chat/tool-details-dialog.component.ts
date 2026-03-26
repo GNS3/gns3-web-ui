@@ -18,43 +18,36 @@ export interface ToolDetailsDialogData {
  */
 @Component({
   selector: 'app-tool-details-dialog',
-  imports: [
-    CommonModule,
-    MatDialogModule,
-    MatButtonModule,
-    NgxJsonViewerModule
-  ],
+  imports: [CommonModule, MatDialogModule, MatButtonModule, NgxJsonViewerModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <h1 mat-dialog-title>{{ title }}</h1>
 
     <div mat-dialog-content>
       @if (type() === 'tool_call' && toolCall()) {
-        <div class="info-section">
-          <div class="info-label">Function:</div>
-          <div class="info-value">{{ toolCall().function.name }}</div>
-        </div>
+      <div class="info-section">
+        <div class="info-label">Function:</div>
+        <div class="info-value">{{ toolCall().function.name }}</div>
+      </div>
 
-        <div class="info-section">
-          <div class="info-label">Arguments:</div>
-          <div class="json-container">
-            <ngx-json-viewer [json]="parsedArguments()" [expanded]="true"></ngx-json-viewer>
-          </div>
+      <div class="info-section">
+        <div class="info-label">Arguments:</div>
+        <div class="json-container">
+          <ngx-json-viewer [json]="parsedArguments()" [expanded]="true"></ngx-json-viewer>
         </div>
-      }
+      </div>
+      } @if (type() === 'tool_result') {
+      <div class="info-section">
+        <div class="info-label">Tool:</div>
+        <div class="info-value">{{ toolName() }}</div>
+      </div>
 
-      @if (type() === 'tool_result') {
-        <div class="info-section">
-          <div class="info-label">Tool:</div>
-          <div class="info-value">{{ toolName() }}</div>
+      <div class="info-section">
+        <div class="info-label">Output:</div>
+        <div class="json-container">
+          <ngx-json-viewer [json]="parsedOutput()" [expanded]="false"></ngx-json-viewer>
         </div>
-
-        <div class="info-section">
-          <div class="info-label">Output:</div>
-          <div class="json-container">
-            <ngx-json-viewer [json]="parsedOutput()" [expanded]="false"></ngx-json-viewer>
-          </div>
-        </div>
+      </div>
       }
     </div>
 
@@ -62,47 +55,48 @@ export interface ToolDetailsDialogData {
       <button mat-button (click)="closeDialog()">Close</button>
     </div>
   `,
-  styles: [`
-    .info-section {
-      margin-bottom: 16px;
-    }
+  styles: [
+    `
+      .info-section {
+        margin-bottom: 16px;
+      }
 
-    .info-section:last-child {
-      margin-bottom: 0;
-    }
+      .info-section:last-child {
+        margin-bottom: 0;
+      }
 
-    .info-label {
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--mat-sys-on-surface-variant);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
+      .info-label {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--mat-sys-on-surface-variant);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
 
-    .info-value {
-      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-      font-size: 13px;
-      color: var(--mat-sys-on-surface);
-      background: var(--mat-sys-surface-container-low);
-      padding: 8px 12px;
-      border-radius: 6px;
-      word-break: break-all;
-    }
+      .info-value {
+        font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+        font-size: 13px;
+        color: var(--mat-sys-on-surface);
+        background: var(--mat-sys-surface-container-low);
+        padding: 8px 12px;
+        border-radius: 6px;
+        word-break: break-all;
+      }
 
-    .json-container {
-      background: var(--mat-sys-surface-container-low);
-      border-radius: 6px;
-      padding: 12px;
-      max-height: 500px;
-      overflow-y: auto;
-      border: 1px solid var(--mat-sys-outline-variant);
-      white-space: pre-wrap;
-      font-size: 13px;
-      font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
-    }
-  `
-]
+      .json-container {
+        background: var(--mat-sys-surface-container-low);
+        border-radius: 6px;
+        padding: 12px;
+        max-height: 500px;
+        overflow-y: auto;
+        border: 1px solid var(--mat-sys-outline-variant);
+        white-space: pre-wrap;
+        font-size: 13px;
+        font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+      }
+    `,
+  ],
 })
 export class ToolDetailsDialogComponent {
   readonly type = signal<'tool_call' | 'tool_result'>('tool_call');

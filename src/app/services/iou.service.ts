@@ -10,7 +10,7 @@ import { HttpController } from './http-controller.service';
 export class IouService {
   constructor(private httpController: HttpController) {}
 
-  getTemplates(controller: Controller ): Observable<IouTemplate[]> {
+  getTemplates(controller: Controller): Observable<IouTemplate[]> {
     return this.httpController.get<IouTemplate[]>(controller, '/templates') as Observable<IouTemplate[]>;
   }
 
@@ -18,7 +18,7 @@ export class IouService {
     return this.httpController.get<IouTemplate>(controller, `/templates/${template_id}`) as Observable<IouTemplate>;
   }
 
-  getImages(controller: Controller ): Observable<any> {
+  getImages(controller: Controller): Observable<any> {
     return this.httpController.get<IouImage[]>(controller, '/images?image_type=iou') as Observable<IouImage[]>;
   }
 

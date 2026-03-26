@@ -16,7 +16,16 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-edit-controller-dialog',
   templateUrl: 'edit-controller-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule]
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
+  ],
 })
 export class EditControllerDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<EditControllerDialogComponent>);
@@ -33,7 +42,7 @@ export class EditControllerDialogComponent implements OnInit {
       name: new UntypedFormControl(this.controller.name, [Validators.required]),
       host: new UntypedFormControl(this.controller.host, [Validators.required]),
       port: new UntypedFormControl(this.controller.port, [Validators.required, Validators.min(1)]),
-      protocol: new UntypedFormControl(this.controller.protocol || 'http:')
+      protocol: new UntypedFormControl(this.controller.protocol || 'http:'),
     });
   }
 
@@ -61,7 +70,7 @@ export class EditControllerDialogComponent implements OnInit {
       name: newName,
       host: this.controllerForm.value.host,
       port: this.controllerForm.value.port,
-      protocol: this.controllerForm.value.protocol
+      protocol: this.controllerForm.value.protocol,
     };
 
     this.controllerService.update(updatedController).then(() => {

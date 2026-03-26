@@ -5,328 +5,315 @@
     <div class="default-content">
       <mat-card class="matCard">
         @if (name) {
-          <mat-tab-group>
-            <mat-tab label="General settings">
-              <br />
-              <form [formGroup]="generalSettingsForm">
+        <mat-tab-group>
+          <mat-tab label="General settings">
+            <br />
+            <form [formGroup]="generalSettingsForm">
+              <mat-form-field class="form-field">
+                <input matInput type="text" formControlName="name" placeholder="Name" />
+              </mat-form-field>
+              <mat-form-field class="form-field tags-field">
+                <mat-label>Tags</mat-label>
+                <mat-chip-grid #chipList>
+                  @for (tag of node?.tags; track tag) {
+                  <mat-chip (removed)="removeTag(tag)">
+                    {{ tag }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                  }
+                </mat-chip-grid>
+                <input
+                  matInput
+                  placeholder="Add tags"
+                  [matChipInputFor]="chipList"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  (matChipInputTokenEnd)="addTag($event)"
+                />
+              </mat-form-field>
+              <mat-form-field class="form-field">
+                <mat-select
+                  placeholder="Platform"
+                  [(ngModel)]="node.properties.platform"
+                  [ngModelOptions]="{ standalone: true }"
+                >
+                  @for (platform of selectPlatform; track platform) {
+                  <mat-option [value]="platform">
+                    {{ platform }}
+                  </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field class="form-field">
+                <input matInput type="number" formControlName="ram" placeholder="RAM" />
+                <span matSuffix>MB</span>
+              </mat-form-field>
+            </form>
+            <mat-form-field class="form-field">
+              <input matInput type="number" min="1" [(ngModel)]="node.properties.cpus" placeholder="vCPUs" />
+            </mat-form-field>
+
+            <mat-form-field class="form-field">
+              <mat-select placeholder="Boot priority" [(ngModel)]="node.properties.boot_priority">
+                @for (priority of bootPriorities; track priority[1]) {
+                <mat-option [value]="priority[1]">
+                  {{ priority[0] }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="form-field">
+              <mat-select placeholder="On close" [(ngModel)]="node.properties.on_close">
+                @for (option of onCloseOptions; track option[1]) {
+                <mat-option [value]="option[1]">
+                  {{ option[0] }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="select">
+              <mat-select placeholder="Console type" [(ngModel)]="node.console_type">
+                @for (type of consoleTypes; track type) {
+                <mat-option [value]="type">
+                  {{ type }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-form-field class="select">
+              <mat-select placeholder="Auxiliary console type" [(ngModel)]="node.aux_type">
+                @for (type of auxConsoleTypes; track type) {
+                <mat-option [value]="type">
+                  {{ type }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            <mat-checkbox [(ngModel)]="node.properties.console_auto_start"> Auto start console </mat-checkbox>
+          </mat-tab>
+          <mat-tab label="HDD">
+            <mat-card>
+              <!-- to do -->
+              <button mat-raised-button color="primary" (click)="openQemuImageCreator()" class="create-button">
+                Create Qemu image
+              </button>
+              <mat-card-title></mat-card-title>
+              <mat-card-subtitle> HDA (Primary Master) </mat-card-subtitle>
+              <mat-card-content>
+                <mat-select placeholder="Disk image" [(ngModel)]="node.properties.hda_disk_image">
+                  @for (image of qemuImages; track image.filename) {
+                  <mat-option [value]="image.filename">
+                    {{ image.filename }}
+                  </mat-option>
+                  }
+                </mat-select>
                 <mat-form-field class="form-field">
-                  <input matInput type="text" formControlName="name" placeholder="Name" />
-                </mat-form-field>
-                <mat-form-field class="form-field tags-field">
-                  <mat-label>Tags</mat-label>
-                  <mat-chip-grid #chipList>
-                    @for (tag of node?.tags; track tag) {
-                      <mat-chip (removed)="removeTag(tag)">
-                        {{ tag }}
-                        <mat-icon matChipRemove>cancel</mat-icon>
-                      </mat-chip>
-                    }
-                  </mat-chip-grid>
-                  <input matInput placeholder="Add tags"
-                         [matChipInputFor]="chipList"
-                         [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                         (matChipInputTokenEnd)="addTag($event)" />
-                </mat-form-field>
-                <mat-form-field class="form-field">
-                  <mat-select placeholder="Platform" [(ngModel)]="node.properties.platform"  [ngModelOptions]="{ standalone: true }">
-                    @for (platform of selectPlatform; track platform) {
-                      <mat-option [value]="platform">
-                        {{ platform }}
-                      </mat-option>
+                  <mat-select placeholder="Disk interface" [(ngModel)]="node.properties.hda_disk_interface">
+                    @for (interface of diskInterfaces; track interface) {
+                    <mat-option [value]="interface">
+                      {{ interface }}
+                    </mat-option>
                     }
                   </mat-select>
                 </mat-form-field>
+              </mat-card-content>
+            </mat-card>
+            <mat-card>
+              <mat-card-title></mat-card-title>
+              <mat-card-subtitle> HDB (Primary Slave) </mat-card-subtitle>
+              <mat-card-content>
+                <mat-select placeholder="Disk image" [(ngModel)]="node.properties.hdb_disk_image">
+                  @for (image of qemuImages; track image.filename) {
+                  <mat-option [value]="image.filename">
+                    {{ image.filename }}
+                  </mat-option>
+                  }
+                </mat-select>
+                <mat-form-field class="form-field">
+                  <mat-select placeholder="Disk interface" [(ngModel)]="node.properties.hdb_disk_interface">
+                    @for (interface of diskInterfaces; track interface) {
+                    <mat-option [value]="interface">
+                      {{ interface }}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </mat-card-content>
+            </mat-card>
+            <mat-card>
+              <mat-card-title></mat-card-title>
+              <mat-card-subtitle> HDC (Secondary Master) </mat-card-subtitle>
+              <mat-card-content>
+                <mat-select placeholder="Disk image" [(ngModel)]="node.properties.hdc_disk_image">
+                  @for (image of qemuImages; track image.filename) {
+                  <mat-option [value]="image.filename">
+                    {{ image.filename }}
+                  </mat-option>
+                  }
+                </mat-select>
+                <mat-form-field class="form-field">
+                  <mat-select placeholder="Disk interface" [(ngModel)]="node.properties.hdc_disk_interface">
+                    @for (interface of diskInterfaces; track interface) {
+                    <mat-option [value]="interface">
+                      {{ interface }}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </mat-card-content>
+            </mat-card>
+            <mat-card>
+              <mat-card-title></mat-card-title>
+              <mat-card-subtitle> HDD (Secondary Slave) </mat-card-subtitle>
+              <mat-card-content>
+                <mat-select placeholder="Disk image" [(ngModel)]="node.properties.hdd_disk_image">
+                  @for (image of qemuImages; track image.filename) {
+                  <mat-option [value]="image.filename">
+                    {{ image.filename }}
+                  </mat-option>
+                  }
+                </mat-select>
+                <mat-form-field class="form-field">
+                  <mat-select placeholder="Disk interface" [(ngModel)]="node.properties.hdd_disk_interface">
+                    @for (interface of diskInterfaces; track interface) {
+                    <mat-option [value]="interface">
+                      {{ interface }}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </mat-card-content>
+            </mat-card>
+          </mat-tab>
+          <mat-tab label="CD/DVD">
+            <div>
+              <button mat-raised-button color="primary" (click)="filecdrom.click()" class="file-button">Browse</button>
+              <input type="file" #filecdrom class="nonvisible" (change)="uploadCdromImageFile($event)" />
+              <mat-form-field class="file-name-form-field">
+                <input matInput type="text" [(ngModel)]="node.properties.cdrom_image" placeholder="Image" />
+              </mat-form-field>
+            </div>
+          </mat-tab>
+          <mat-tab label="Network">
+            <br />
+            <mat-form-field class="form-field">
+              <input matInput min="0" type="number" [(ngModel)]="node.properties.adapters" placeholder="Adapters" />
+            </mat-form-field>
+            <form [formGroup]="networkSettingsForm">
+              <mat-form-field class="form-field">
+                <input matInput formControlName="mac_address" type="text" placeholder="Base MAC" />
+              </mat-form-field>
+            </form>
+            <mat-select placeholder="Type" [(ngModel)]="node.properties.adapter_type">
+              @for (type of networkTypes; track type.value) {
+              <mat-option [value]="type.value"> {{ type.name }} ({{ type.value }}) </mat-option>
+              }
+            </mat-select>
+            <br /><br /><mat-checkbox [(ngModel)]="node.properties.replicate_network_connection_state">
+              Replicate network connection state
+            </mat-checkbox>
+          </mat-tab>
+          <mat-tab label="Advanced">
+            <mat-card>
+              <mat-card-title></mat-card-title>
+              <mat-card-subtitle> Linux boot specific settings </mat-card-subtitle>
+              <mat-card-content>
+                <div>
+                  <button mat-raised-button color="primary" (click)="fileinitrd.click()" class="file-button">
+                    Browse
+                  </button>
+                  <input type="file" #fileinitrd class="nonvisible" (change)="uploadInitrdFile($event)" />
+                  <mat-form-field class="file-name-form-field">
+                    <input
+                      matInput
+                      type="text"
+                      [(ngModel)]="node.properties.initrd"
+                      placeholder="Initial RAM disk (initrd)"
+                    />
+                  </mat-form-field>
+                </div>
+                <div>
+                  <button mat-raised-button color="primary" (click)="filekerenelimage.click()" class="file-button">
+                    Browse
+                  </button>
+                  <input type="file" #filekernelimage class="nonvisible" (change)="uploadKernelImageFile($event)" />
+                  <mat-form-field class="file-name-form-field">
+                    <input matInput type="text" [(ngModel)]="node.properties.kernel_image" placeholder="Kernel image" />
+                  </mat-form-field>
+                </div>
+                <mat-form-field class="form-field">
+                  <input
+                    matInput
+                    type="text"
+                    [(ngModel)]="node.properties.kernel_command_line"
+                    placeholder="Kernel command line"
+                  />
+                </mat-form-field>
+              </mat-card-content>
+            </mat-card>
+            <mat-card>
+              <mat-card-title></mat-card-title>
+              <mat-card-subtitle> Bios </mat-card-subtitle>
+              <mat-card-content>
+                <div>
+                  <button mat-raised-button color="primary" (click)="filebios.click()" class="file-button">
+                    Browse
+                  </button>
+                  <input type="file" #filebios class="nonvisible" (change)="uploadBiosFile($event)" />
+                  <mat-form-field class="file-name-form-field">
+                    <input matInput type="text" [(ngModel)]="node.properties.bios_image" placeholder="Bios image" />
+                  </mat-form-field>
+                </div>
+              </mat-card-content>
+            </mat-card>
+            <mat-card>
+              <mat-card-title></mat-card-title>
+              <mat-card-subtitle> Optimization </mat-card-subtitle>
+              <mat-card-content>
+                <mat-checkbox [(ngModel)]="activateCpuThrottling"> Activate CPU throttling </mat-checkbox>
+                @if (activateCpuThrottling) {
                 <mat-form-field class="form-field">
                   <input
                     matInput
                     type="number"
-                    formControlName="ram"
-                    placeholder="RAM"
-                  />
-                  <span matSuffix>MB</span>
-                </mat-form-field>
-              </form>
-              <mat-form-field class="form-field">
-                <input matInput type="number" min="1" [(ngModel)]="node.properties.cpus" placeholder="vCPUs" />
-              </mat-form-field>
-
-              <mat-form-field class="form-field">
-                <mat-select placeholder="Boot priority" [(ngModel)]="node.properties.boot_priority">
-                  @for (priority of bootPriorities; track priority[1]) {
-                    <mat-option [value]="priority[1]">
-                      {{ priority[0] }}
-                    </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field class="form-field">
-                <mat-select placeholder="On close" [(ngModel)]="node.properties.on_close">
-                  @for (option of onCloseOptions; track option[1]) {
-                    <mat-option [value]="option[1]">
-                      {{ option[0] }}
-                    </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field class="select">
-                <mat-select placeholder="Console type" [(ngModel)]="node.console_type">
-                  @for (type of consoleTypes; track type) {
-                    <mat-option [value]="type">
-                      {{ type }}
-                    </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field class="select">
-                <mat-select placeholder="Auxiliary console type" [(ngModel)]="node.aux_type">
-                  @for (type of auxConsoleTypes; track type) {
-                    <mat-option [value]="type">
-                      {{ type }}
-                    </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-              <mat-checkbox [(ngModel)]="node.properties.console_auto_start"> Auto start console </mat-checkbox>
-            </mat-tab>
-            <mat-tab label="HDD">
-              <mat-card>
-                <!-- to do -->
-                <button mat-raised-button color="primary" (click)="openQemuImageCreator()" class="create-button">
-                  Create Qemu image
-                </button>
-                <mat-card-title></mat-card-title>
-                <mat-card-subtitle> HDA (Primary Master) </mat-card-subtitle>
-                <mat-card-content>
-                  <mat-select placeholder="Disk image" [(ngModel)]="node.properties.hda_disk_image">
-                    @for (image of qemuImages; track image.filename) {
-                      <mat-option [value]="image.filename">
-                        {{ image.filename }}
-                      </mat-option>
-                    }
-                  </mat-select>
-                  <mat-form-field class="form-field">
-                    <mat-select placeholder="Disk interface" [(ngModel)]="node.properties.hda_disk_interface">
-                      @for (interface of diskInterfaces; track interface) {
-                        <mat-option [value]="interface">
-                          {{ interface }}
-                        </mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                </mat-card-content>
-              </mat-card>
-              <mat-card>
-                <mat-card-title></mat-card-title>
-                <mat-card-subtitle> HDB (Primary Slave) </mat-card-subtitle>
-                <mat-card-content>
-                  <mat-select placeholder="Disk image" [(ngModel)]="node.properties.hdb_disk_image">
-                    @for (image of qemuImages; track image.filename) {
-                      <mat-option [value]="image.filename">
-                        {{ image.filename }}
-                      </mat-option>
-                    }
-                  </mat-select>
-                  <mat-form-field class="form-field">
-                    <mat-select placeholder="Disk interface" [(ngModel)]="node.properties.hdb_disk_interface">
-                      @for (interface of diskInterfaces; track interface) {
-                        <mat-option [value]="interface">
-                          {{ interface }}
-                        </mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                </mat-card-content>
-              </mat-card>
-              <mat-card>
-                <mat-card-title></mat-card-title>
-                <mat-card-subtitle> HDC (Secondary Master) </mat-card-subtitle>
-                <mat-card-content>
-                  <mat-select placeholder="Disk image" [(ngModel)]="node.properties.hdc_disk_image">
-                    @for (image of qemuImages; track image.filename) {
-                      <mat-option [value]="image.filename">
-                        {{ image.filename }}
-                      </mat-option>
-                    }
-                  </mat-select>
-                  <mat-form-field class="form-field">
-                    <mat-select placeholder="Disk interface" [(ngModel)]="node.properties.hdc_disk_interface">
-                      @for (interface of diskInterfaces; track interface) {
-                        <mat-option [value]="interface">
-                          {{ interface }}
-                        </mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                </mat-card-content>
-              </mat-card>
-              <mat-card>
-                <mat-card-title></mat-card-title>
-                <mat-card-subtitle> HDD (Secondary Slave) </mat-card-subtitle>
-                <mat-card-content>
-                  <mat-select placeholder="Disk image" [(ngModel)]="node.properties.hdd_disk_image">
-                    @for (image of qemuImages; track image.filename) {
-                      <mat-option [value]="image.filename">
-                        {{ image.filename }}
-                      </mat-option>
-                    }
-                  </mat-select>
-                  <mat-form-field class="form-field">
-                    <mat-select placeholder="Disk interface" [(ngModel)]="node.properties.hdd_disk_interface">
-                      @for (interface of diskInterfaces; track interface) {
-                        <mat-option [value]="interface">
-                          {{ interface }}
-                        </mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                </mat-card-content>
-              </mat-card>
-            </mat-tab>
-            <mat-tab label="CD/DVD">
-              <div>
-                <button mat-raised-button color="primary" (click)="filecdrom.click()" class="file-button">Browse</button>
-                <input type="file" #filecdrom class="nonvisible" (change)="uploadCdromImageFile($event)" />
-                <mat-form-field class="file-name-form-field">
-                  <input matInput type="text" [(ngModel)]="node.properties.cdrom_image" placeholder="Image" />
-                </mat-form-field>
-              </div>
-            </mat-tab>
-            <mat-tab label="Network">
-              <br />
-              <mat-form-field class="form-field">
-                <input
-                  matInput
-                  min=0
-                  type="number"
-                  [(ngModel)]="node.properties.adapters"
-                  placeholder="Adapters"
-                />
-              </mat-form-field>
-              <form [formGroup]="networkSettingsForm">
-                <mat-form-field class="form-field">
-                  <input
-                    matInput
-                    formControlName="mac_address"
-                    type="text"
-                    placeholder="Base MAC"
+                    [(ngModel)]="node.properties.cpu_throttling"
+                    placeholder="Perecentage of CPU allowed"
                   />
                 </mat-form-field>
-              </form>
-              <mat-select placeholder="Type" [(ngModel)]="node.properties.adapter_type">
-                @for (type of networkTypes; track type.value) {
-                  <mat-option [value]="type.value">
-                    {{ type.name }} ({{ type.value }})
-                  </mat-option>
                 }
-              </mat-select>
-              <br /><br /><mat-checkbox [(ngModel)]="node.properties.replicate_network_connection_state">
-                Replicate network connection state
-              </mat-checkbox>
-            </mat-tab>
-            <mat-tab label="Advanced">
-              <mat-card>
-                <mat-card-title></mat-card-title>
-                <mat-card-subtitle> Linux boot specific settings </mat-card-subtitle>
-                <mat-card-content>
-                  <div>
-                    <button mat-raised-button color="primary" (click)="fileinitrd.click()" class="file-button">
-                      Browse
-                    </button>
-                    <input type="file" #fileinitrd class="nonvisible" (change)="uploadInitrdFile($event)" />
-                    <mat-form-field class="file-name-form-field">
-                      <input
-                        matInput
-                        type="text"
-                        [(ngModel)]="node.properties.initrd"
-                        placeholder="Initial RAM disk (initrd)"
-                      />
-                    </mat-form-field>
-                  </div>
-                  <div>
-                    <button mat-raised-button color="primary" (click)="filekerenelimage.click()" class="file-button">
-                      Browse
-                    </button>
-                    <input type="file" #filekernelimage class="nonvisible" (change)="uploadKernelImageFile($event)" />
-                    <mat-form-field class="file-name-form-field">
-                      <input matInput type="text" [(ngModel)]="node.properties.kernel_image" placeholder="Kernel image" />
-                    </mat-form-field>
-                  </div>
-                  <mat-form-field class="form-field">
-                    <input
-                      matInput
-                      type="text"
-                      [(ngModel)]="node.properties.kernel_command_line"
-                      placeholder="Kernel command line"
-                    />
-                  </mat-form-field>
-                </mat-card-content>
-              </mat-card>
-              <mat-card>
-                <mat-card-title></mat-card-title>
-                <mat-card-subtitle> Bios </mat-card-subtitle>
-                <mat-card-content>
-                  <div>
-                    <button mat-raised-button color="primary" (click)="filebios.click()" class="file-button">
-                      Browse
-                    </button>
-                    <input type="file" #filebios class="nonvisible" (change)="uploadBiosFile($event)" />
-                    <mat-form-field class="file-name-form-field">
-                      <input matInput type="text" [(ngModel)]="node.properties.bios_image" placeholder="Bios image" />
-                    </mat-form-field>
-                  </div>
-                </mat-card-content>
-              </mat-card>
-              <mat-card>
-                <mat-card-title></mat-card-title>
-                <mat-card-subtitle> Optimization </mat-card-subtitle>
-                <mat-card-content>
-                  <mat-checkbox [(ngModel)]="activateCpuThrottling"> Activate CPU throttling </mat-checkbox>
-                  @if (activateCpuThrottling) {
-                    <mat-form-field class="form-field">
-                      <input
-                        matInput
-                        type="number"
-                        [(ngModel)]="node.properties.cpu_throttling"
-                        placeholder="Perecentage of CPU allowed"
-                      />
-                    </mat-form-field>
-                  }
-                  <mat-form-field class="form-field">
-                    <mat-select placeholder="Process priority" [(ngModel)]="node.properties.process_priority">
-                      @for (priority of priorities; track priority) {
-                        <mat-option [value]="priority">
-                          {{ priority }}
-                        </mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                </mat-card-content>
-              </mat-card>
-              <mat-card>
-                <mat-card-title></mat-card-title>
-                <mat-card-subtitle> Additional settings </mat-card-subtitle>
-                <mat-card-content>
-                  <mat-form-field class="form-field">
-                    <input matInput type="text" [(ngModel)]="node.properties.qemu_path" placeholder="Qemu binary path" />
-                  </mat-form-field>
-                  <mat-form-field class="form-field">
-                    <input matInput type="text" [(ngModel)]="node.properties.options" placeholder="Options" />
-                  </mat-form-field>
-                  <br /><mat-checkbox [(ngModel)]="node.properties.tpm">
-                     Enable the Trusted Platform Module (TPM)
-                   </mat-checkbox>
-                  <br /><mat-checkbox [(ngModel)]="node.properties.uefi">
-                     Enable the UEFI boot mode
-                   </mat-checkbox>
-                </mat-card-content>
-              </mat-card>
-            </mat-tab>
-            <mat-tab label="Usage">
-              <mat-form-field class="form-field">
-                <textarea matInput type="text" [(ngModel)]="node.properties.usage"></textarea>
-              </mat-form-field>
-            </mat-tab>
-          </mat-tab-group>
+                <mat-form-field class="form-field">
+                  <mat-select placeholder="Process priority" [(ngModel)]="node.properties.process_priority">
+                    @for (priority of priorities; track priority) {
+                    <mat-option [value]="priority">
+                      {{ priority }}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              </mat-card-content>
+            </mat-card>
+            <mat-card>
+              <mat-card-title></mat-card-title>
+              <mat-card-subtitle> Additional settings </mat-card-subtitle>
+              <mat-card-content>
+                <mat-form-field class="form-field">
+                  <input matInput type="text" [(ngModel)]="node.properties.qemu_path" placeholder="Qemu binary path" />
+                </mat-form-field>
+                <mat-form-field class="form-field">
+                  <input matInput type="text" [(ngModel)]="node.properties.options" placeholder="Options" />
+                </mat-form-field>
+                <br /><mat-checkbox [(ngModel)]="node.properties.tpm">
+                  Enable the Trusted Platform Module (TPM)
+                </mat-checkbox>
+                <br /><mat-checkbox [(ngModel)]="node.properties.uefi"> Enable the UEFI boot mode </mat-checkbox>
+              </mat-card-content>
+            </mat-card>
+          </mat-tab>
+          <mat-tab label="Usage">
+            <mat-form-field class="form-field">
+              <textarea matInput type="text" [(ngModel)]="node.properties.usage"></textarea>
+            </mat-form-field>
+          </mat-tab>
+        </mat-tab-group>
         }
       </mat-card>
     </div>

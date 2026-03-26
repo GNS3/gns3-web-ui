@@ -126,7 +126,7 @@ import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edit
   styleUrls: ['./project-map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '(window:keydown.escape)': 'onEscapeKey()'
+    '(window:keydown.escape)': 'onEscapeKey()',
   },
   imports: [
     CommonModule,
@@ -286,7 +286,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   updateMapBackground() {
     const mapTheme = this.themeService.savedMapTheme;
     const backgrounds = this.themeService.availableMapBackgrounds;
-    const bgConfig = backgrounds.find(b => b.key === mapTheme);
+    const bgConfig = backgrounds.find((b) => b.key === mapTheme);
 
     if (bgConfig && bgConfig.background) {
       document.documentElement.style.setProperty('--gns3-map-background', bgConfig.background);
@@ -557,7 +557,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   deleteItems() {
     const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
-      data: { message: 'Do you want to delete all selected objects?' }
+      data: { message: 'Do you want to delete all selected objects?' },
     });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
@@ -1105,7 +1105,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public closeProject() {
     const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
-      data: { message: 'Do you want to close the project?' }
+      data: { message: 'Do you want to close the project?' },
     });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
@@ -1118,7 +1118,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public deleteProject() {
     const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
-      data: { message: 'Do you want to delete the project?' }
+      data: { message: 'Do you want to delete the project?' },
     });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {

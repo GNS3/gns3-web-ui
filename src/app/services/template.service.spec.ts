@@ -28,7 +28,7 @@ describe('TemplateService', () => {
   });
 
   it('should ask for the list from controller', () => {
-    const controller = new Controller  ();
+    const controller = new Controller();
     controller.host = '127.0.0.1';
     controller.port = 3080;
 

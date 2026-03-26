@@ -1,159 +1,236 @@
 <div class="docker-details" [ngClass]="{ 'docker-details--hidden': isSymbolSelectionOpened }">
   <header class="docker-details__header">
     @if (controller) {
-      <button
-        class="docker-details__back-btn"
-        (click)="goBack()"
-        mat-icon-button>
-        <mat-icon>arrow_back</mat-icon>
-      </button>
+    <button class="docker-details__back-btn" (click)="goBack()" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     }
     <h1 class="docker-details__title">Docker container template configuration</h1>
   </header>
 
   @if (dockerTemplate) {
-    <main class="docker-details__content">
-      <section class="docker-details__form-card">
-        <div class="docker-details__section-header" (click)="toggleSection('general')">
-          <h3 class="docker-details__section-title">General settings</h3>
-          <mat-icon class="docker-details__expand-icon">{{ generalSettingsExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
-        </div>
-        @if (generalSettingsExpanded) {
-          <form class="docker-details__form">
-            <mat-form-field appearance="fill" class="docker-details__field">
-              <mat-label>Template name</mat-label>
-              <input matInput [value]="name()" (input)="name.set($event.target.value)" type="text" placeholder="Template name" />
-            </mat-form-field>
-            <mat-form-field appearance="fill" class="docker-details__field">
-              <mat-label>Default name format</mat-label>
-              <input matInput [value]="defaultNameFormat()" (input)="defaultNameFormat.set($event.target.value)" type="text" placeholder="Default name format" />
-            </mat-form-field>
-            <mat-form-field appearance="fill" class="docker-details__field">
-              <mat-label>Category</mat-label>
-              <mat-select [value]="category()" (selectionChange)="category.set($event.value)" placeholder="Category">
-                @for (cat of categories; track $index) {
-                  <mat-option [value]="cat[1]">{{ cat[0] }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-            <div class="docker-details__symbol-row">
-              <mat-form-field appearance="fill" class="docker-details__field docker-details__field--flex">
-                <mat-label>Symbol</mat-label>
-                <input matInput [value]="symbol()" (input)="symbol.set($event.target.value)" type="text" placeholder="Symbol" />
-              </mat-form-field>
-              <button mat-button class="docker-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
-            </div>
-            <mat-form-field appearance="fill" class="docker-details__field">
-              <mat-label>Tags</mat-label>
-              <mat-chip-grid #chipList>
-                @for (tag of tags(); track tag) {
-                  <mat-chip (removed)="removeTag(tag)">
-                    {{ tag }}
-                    <mat-icon matChipRemove>cancel</mat-icon>
-                  </mat-chip>
-                }
-              </mat-chip-grid>
-              <input matInput placeholder="Add tags"
-                     [matChipInputFor]="chipList"
-                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                     (matChipInputTokenEnd)="addTag($event)" />
-            </mat-form-field>
-            <mat-form-field appearance="fill" class="docker-details__field">
-              <mat-label>Start command</mat-label>
-              <input matInput [value]="startCommand()" (input)="startCommand.set($event.target.value)" type="text" placeholder="Start command" />
-            </mat-form-field>
-            <mat-form-field appearance="fill" class="docker-details__field">
-              <mat-label>Base MAC</mat-label>
-              <input matInput [value]="macAddress()" (input)="macAddress.set($event.target.value)" type="text" placeholder="Base MAC" />
-            </mat-form-field>
-            <mat-form-field appearance="fill" class="docker-details__field">
-              <mat-label>Adapters</mat-label>
-              <input matInput [value]="adaptersCount()" (input)="adaptersCount.set(+$event.target.value)" type="number" placeholder="Adapters" />
-            </mat-form-field>
-            <mat-form-field appearance="fill" class="docker-details__field">
-              <mat-label>Console type</mat-label>
-              <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)" placeholder="Console type">
-                @for (type of consoleTypes; track type) {
-                  <mat-option [value]="type">{{ type }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field appearance="fill" class="docker-details__field">
-              <mat-label>Auxiliary console type</mat-label>
-              <mat-select [value]="auxConsoleType()" (selectionChange)="auxConsoleType.set($event.value)" placeholder="Auxiliary console type">
-                @for (type of auxConsoleTypes; track type) {
-                  <mat-option [value]="type">{{ type }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-            <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)" class="docker-details__checkbox">Auto start console</mat-checkbox>
-            <mat-form-field appearance="fill" class="docker-details__field">
-              <mat-label>VNC console resolution</mat-label>
-              <mat-select [value]="consoleResolution()" (selectionChange)="consoleResolution.set($event.value)" placeholder="VNC console resolution">
-                @for (resolution of consoleResolutions; track resolution) {
-                  <mat-option [value]="resolution">{{ resolution }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field appearance="fill" class="docker-details__field">
-              <mat-label>HTTP port in the container</mat-label>
-              <input matInput [value]="consoleHttpPort()" (input)="consoleHttpPort.set(+$event.target.value)" type="number" placeholder="HTTP port in the container" />
-            </mat-form-field>
-            <mat-form-field appearance="fill" class="docker-details__field">
-              <mat-label>HTTP path</mat-label>
-              <input matInput [value]="consoleHttpPath()" (input)="consoleHttpPath.set($event.target.value)" type="text" placeholder="HTTP path" />
-            </mat-form-field>
-            <h6 class="docker-details__section-subtitle">Environment</h6>
-            <mat-form-field appearance="fill" class="docker-details__field docker-details__field--full">
-              <mat-label>Environment</mat-label>
-              <textarea matInput [value]="environment()" (input)="environment.set($event.target.value)" type="text"></textarea>
-            </mat-form-field>
-          </form>
-        }
-      </section>
-
-      <section class="docker-details__form-card">
-        <div class="docker-details__section-header" (click)="toggleSection('advanced')">
-          <h3 class="docker-details__section-title">Advanced</h3>
-          <mat-icon class="docker-details__expand-icon">{{ advancedExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
-        </div>
-        @if (advancedExpanded) {
-          <div class="docker-details__form">
-            <h6 class="docker-details__section-subtitle">Extra hosts</h6>
-            <mat-form-field appearance="fill" class="docker-details__field docker-details__field--full">
-              <mat-label>Extra hosts</mat-label>
-              <textarea matInput [value]="extraHosts()" (input)="extraHosts.set($event.target.value)" type="text"></textarea>
-            </mat-form-field>
-          </div>
-        }
-      </section>
-
-      <section class="docker-details__form-card">
-        <div class="docker-details__section-header" (click)="toggleSection('usage')">
-          <h3 class="docker-details__section-title">Usage</h3>
-          <mat-icon class="docker-details__expand-icon">{{ usageExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
-        </div>
-        @if (usageExpanded) {
-          <div class="docker-details__form">
-            <mat-form-field appearance="fill" class="docker-details__field docker-details__field--full">
-              <mat-label>Usage</mat-label>
-              <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
-            </mat-form-field>
-          </div>
-        }
-      </section>
-
-      <div class="docker-details__actions">
-        <button class="docker-details__cancel-btn" (click)="goBack()" mat-button>Cancel</button>
-        <button mat-raised-button color="primary" class="docker-details__save-btn" (click)="onSave()">Save</button>
+  <main class="docker-details__content">
+    <section class="docker-details__form-card">
+      <div class="docker-details__section-header" (click)="toggleSection('general')">
+        <h3 class="docker-details__section-title">General settings</h3>
+        <mat-icon class="docker-details__expand-icon">{{
+          generalSettingsExpanded ? 'expand_less' : 'expand_more'
+        }}</mat-icon>
       </div>
-    </main>
+      @if (generalSettingsExpanded) {
+      <form class="docker-details__form">
+        <mat-form-field appearance="fill" class="docker-details__field">
+          <mat-label>Template name</mat-label>
+          <input
+            matInput
+            [value]="name()"
+            (input)="name.set($event.target.value)"
+            type="text"
+            placeholder="Template name"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="docker-details__field">
+          <mat-label>Default name format</mat-label>
+          <input
+            matInput
+            [value]="defaultNameFormat()"
+            (input)="defaultNameFormat.set($event.target.value)"
+            type="text"
+            placeholder="Default name format"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="docker-details__field">
+          <mat-label>Category</mat-label>
+          <mat-select [value]="category()" (selectionChange)="category.set($event.value)" placeholder="Category">
+            @for (cat of categories; track $index) {
+            <mat-option [value]="cat[1]">{{ cat[0] }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <div class="docker-details__symbol-row">
+          <mat-form-field appearance="fill" class="docker-details__field docker-details__field--flex">
+            <mat-label>Symbol</mat-label>
+            <input
+              matInput
+              [value]="symbol()"
+              (input)="symbol.set($event.target.value)"
+              type="text"
+              placeholder="Symbol"
+            />
+          </mat-form-field>
+          <button mat-button class="docker-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
+        </div>
+        <mat-form-field appearance="fill" class="docker-details__field">
+          <mat-label>Tags</mat-label>
+          <mat-chip-grid #chipList>
+            @for (tag of tags(); track tag) {
+            <mat-chip (removed)="removeTag(tag)">
+              {{ tag }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            }
+          </mat-chip-grid>
+          <input
+            matInput
+            placeholder="Add tags"
+            [matChipInputFor]="chipList"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            (matChipInputTokenEnd)="addTag($event)"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="docker-details__field">
+          <mat-label>Start command</mat-label>
+          <input
+            matInput
+            [value]="startCommand()"
+            (input)="startCommand.set($event.target.value)"
+            type="text"
+            placeholder="Start command"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="docker-details__field">
+          <mat-label>Base MAC</mat-label>
+          <input
+            matInput
+            [value]="macAddress()"
+            (input)="macAddress.set($event.target.value)"
+            type="text"
+            placeholder="Base MAC"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="docker-details__field">
+          <mat-label>Adapters</mat-label>
+          <input
+            matInput
+            [value]="adaptersCount()"
+            (input)="adaptersCount.set(+$event.target.value)"
+            type="number"
+            placeholder="Adapters"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="docker-details__field">
+          <mat-label>Console type</mat-label>
+          <mat-select
+            [value]="consoleType()"
+            (selectionChange)="consoleType.set($event.value)"
+            placeholder="Console type"
+          >
+            @for (type of consoleTypes; track type) {
+            <mat-option [value]="type">{{ type }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="docker-details__field">
+          <mat-label>Auxiliary console type</mat-label>
+          <mat-select
+            [value]="auxConsoleType()"
+            (selectionChange)="auxConsoleType.set($event.value)"
+            placeholder="Auxiliary console type"
+          >
+            @for (type of auxConsoleTypes; track type) {
+            <mat-option [value]="type">{{ type }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-checkbox
+          [checked]="consoleAutoStart()"
+          (change)="consoleAutoStart.set($event.checked)"
+          class="docker-details__checkbox"
+          >Auto start console</mat-checkbox
+        >
+        <mat-form-field appearance="fill" class="docker-details__field">
+          <mat-label>VNC console resolution</mat-label>
+          <mat-select
+            [value]="consoleResolution()"
+            (selectionChange)="consoleResolution.set($event.value)"
+            placeholder="VNC console resolution"
+          >
+            @for (resolution of consoleResolutions; track resolution) {
+            <mat-option [value]="resolution">{{ resolution }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="docker-details__field">
+          <mat-label>HTTP port in the container</mat-label>
+          <input
+            matInput
+            [value]="consoleHttpPort()"
+            (input)="consoleHttpPort.set(+$event.target.value)"
+            type="number"
+            placeholder="HTTP port in the container"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="fill" class="docker-details__field">
+          <mat-label>HTTP path</mat-label>
+          <input
+            matInput
+            [value]="consoleHttpPath()"
+            (input)="consoleHttpPath.set($event.target.value)"
+            type="text"
+            placeholder="HTTP path"
+          />
+        </mat-form-field>
+        <h6 class="docker-details__section-subtitle">Environment</h6>
+        <mat-form-field appearance="fill" class="docker-details__field docker-details__field--full">
+          <mat-label>Environment</mat-label>
+          <textarea
+            matInput
+            [value]="environment()"
+            (input)="environment.set($event.target.value)"
+            type="text"
+          ></textarea>
+        </mat-form-field>
+      </form>
+      }
+    </section>
+
+    <section class="docker-details__form-card">
+      <div class="docker-details__section-header" (click)="toggleSection('advanced')">
+        <h3 class="docker-details__section-title">Advanced</h3>
+        <mat-icon class="docker-details__expand-icon">{{ advancedExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </div>
+      @if (advancedExpanded) {
+      <div class="docker-details__form">
+        <h6 class="docker-details__section-subtitle">Extra hosts</h6>
+        <mat-form-field appearance="fill" class="docker-details__field docker-details__field--full">
+          <mat-label>Extra hosts</mat-label>
+          <textarea
+            matInput
+            [value]="extraHosts()"
+            (input)="extraHosts.set($event.target.value)"
+            type="text"
+          ></textarea>
+        </mat-form-field>
+      </div>
+      }
+    </section>
+
+    <section class="docker-details__form-card">
+      <div class="docker-details__section-header" (click)="toggleSection('usage')">
+        <h3 class="docker-details__section-title">Usage</h3>
+        <mat-icon class="docker-details__expand-icon">{{ usageExpanded ? 'expand_less' : 'expand_more' }}</mat-icon>
+      </div>
+      @if (usageExpanded) {
+      <div class="docker-details__form">
+        <mat-form-field appearance="fill" class="docker-details__field docker-details__field--full">
+          <mat-label>Usage</mat-label>
+          <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
+        </mat-form-field>
+      </div>
+      }
+    </section>
+
+    <div class="docker-details__actions">
+      <button class="docker-details__cancel-btn" (click)="goBack()" mat-button>Cancel</button>
+      <button mat-raised-button color="primary" class="docker-details__save-btn" (click)="onSave()">Save</button>
+    </div>
+  </main>
   }
 </div>
 @if (isSymbolSelectionOpened && dockerTemplate) {
-  <app-symbols-menu
-    [controller]="controller"
-    [symbol]="symbol()"
-    (symbolChangedEmitter)="symbolChanged($event)"
-  ></app-symbols-menu>
+<app-symbols-menu
+  [controller]="controller"
+  [symbol]="symbol()"
+  (symbolChangedEmitter)="symbolChanged($event)"
+></app-symbols-menu>
 }

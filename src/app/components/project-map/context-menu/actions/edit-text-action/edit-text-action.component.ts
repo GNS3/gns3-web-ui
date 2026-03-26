@@ -14,7 +14,7 @@ import { TextEditorDialogComponent } from '../../../drawings-editors/text-editor
 @Component({
   selector: 'app-edit-text-action',
   templateUrl: './edit-text-action.component.html',
-  imports: [ MatDialogModule, MatIconModule, MatMenuModule],
+  imports: [MatDialogModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditTextActionComponent implements OnInit {

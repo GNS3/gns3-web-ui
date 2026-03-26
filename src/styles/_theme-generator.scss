@@ -24,11 +24,12 @@
 
 $theme-configs: (
   // Light themes
-  'deeppurple-amber': (
-    theme-type: light,
-    primary: mat.$violet-palette,
-    tertiary: mat.$yellow-palette,
-  ),
+  'deeppurple-amber':
+    (
+      theme-type: light,
+      primary: mat.$violet-palette,
+      tertiary: mat.$yellow-palette,
+    ),
   'indigo-pink': (
     theme-type: light,
     primary: mat.$azure-palette,
@@ -45,11 +46,12 @@ $theme-configs: (
     tertiary: mat.$red-palette,
   ),
   // Dark themes
-  'pink-bluegrey': (
-    theme-type: dark,
-    primary: mat.$rose-palette,
-    tertiary: mat.$blue-palette,
-  ),
+  'pink-bluegrey':
+    (
+      theme-type: dark,
+      primary: mat.$rose-palette,
+      tertiary: mat.$blue-palette,
+    ),
   'purple-green': (
     theme-type: dark,
     primary: mat.$violet-palette,
@@ -64,7 +66,7 @@ $theme-configs: (
     theme-type: dark,
     primary: mat.$cyan-palette,
     tertiary: mat.$orange-palette,
-  ),
+  )
 );
 
 // ============================================
@@ -73,18 +75,22 @@ $theme-configs: (
 
 /// Generate complete CSS variables for a specified theme
 @mixin generate-theme($config, $class-name) {
-  $theme: mat.define-theme((
-    color: (
-      theme-type: map.get($config, theme-type),
-      primary: map.get($config, primary),
-      tertiary: map.get($config, tertiary),
-    ),
-    typography: (
-      brand-family: 'Roboto',
-      plain-family: 'Roboto',
-    ),
-    density: (scale: 0),
-  ));
+  $theme: mat.define-theme(
+    (
+      color: (
+        theme-type: map.get($config, theme-type),
+        primary: map.get($config, primary),
+        tertiary: map.get($config, tertiary),
+      ),
+      typography: (
+        brand-family: 'Roboto',
+        plain-family: 'Roboto',
+      ),
+      density: (
+        scale: 0,
+      ),
+    )
+  );
 
   :root.#{$class-name} {
     @include mat.all-component-themes($theme);

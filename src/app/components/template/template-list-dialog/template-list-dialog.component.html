@@ -15,19 +15,26 @@
     <h6>Template</h6>
   </div>
   <mat-form-field class="form-field" floatPlaceholder="never">
-    <input matInput placeholder="Search by name" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }" ngDefaultControl/>
+    <input
+      matInput
+      placeholder="Search by name"
+      [(ngModel)]="searchText"
+      [ngModelOptions]="{ standalone: true }"
+      ngDefaultControl
+    />
   </mat-form-field>
   <mat-form-field class="form-field">
     <mat-select
       [ngModelOptions]="{ standalone: true }"
       placeholder="Filter templates by type"
       (selectionChange)="filterTemplates($event)"
-      [(ngModel)]="selectedType" ngDefaultControl
+      [(ngModel)]="selectedType"
+      ngDefaultControl
     >
       @for (type of templateTypes; track type) {
-        <mat-option [value]="type">
-          {{ type }}
-        </mat-option>
+      <mat-option [value]="type">
+        {{ type }}
+      </mat-option>
       }
     </mat-select>
   </mat-form-field>
@@ -36,12 +43,13 @@
       [ngModelOptions]="{ standalone: true }"
       placeholder="Choose template"
       (selectionChange)="chooseTemplate($event)"
-      [(ngModel)]="selectedTemplate" ngDefaultControl
+      [(ngModel)]="selectedTemplate"
+      ngDefaultControl
     >
       @for (template of filteredTemplates | templatefilter: searchText; track template.name) {
-        <mat-option [value]="template">
-          {{ template.name }}
-        </mat-option>
+      <mat-option [value]="template">
+        {{ template.name }}
+      </mat-option>
       }
     </mat-select>
   </mat-form-field>
@@ -60,13 +68,13 @@
     </mat-form-field>
   </form>
   @if (selectedTemplate) {
-    <mat-select placeholder="Choose controller for node" [(value)]="selectedTemplate.compute_id">
-      @for (type of nodeControllers; track type) {
-        <mat-option [value]="type">
-          {{ type }}
-        </mat-option>
-      }
-    </mat-select>
+  <mat-select placeholder="Choose controller for node" [(value)]="selectedTemplate.compute_id">
+    @for (type of nodeControllers; track type) {
+    <mat-option [value]="type">
+      {{ type }}
+    </mat-option>
+    }
+  </mat-select>
   }
 
   <div class="title-container">

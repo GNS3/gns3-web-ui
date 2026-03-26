@@ -31,7 +31,7 @@ describe('DrawingResizingComponent', () => {
   let drawingsEventSource = new DrawingsEventSource();
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [NoopAnimationsModule],
       providers: [
         provideZonelessChangeDetection(),

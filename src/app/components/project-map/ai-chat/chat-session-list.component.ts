@@ -46,128 +46,114 @@ import {
 
       <!-- Sessions list -->
       <div class="sessions-container">
-        @if (sessions().length > 0) {
-          @for (session of sortedSessions; track session.thread_id) {
-            <div
-              class="session-item"
-              [class.active]="session.thread_id === currentSessionId()"
-              (click)="selectSession(session.thread_id)"
-            >
-              <!-- Pin indicator -->
-              @if (session.pinned) {
-                <svg
-                  class="session-pin-icon pin-animation"
-                  xmlns="http://www.w3.org/2000/svg"
-                  height="16"
-                  width="16"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M16 12V4H17V2H7V4H8V12L6 14V16H11V22H13V16H18V14L16 12Z" />
-                </svg>
-              }
-
-              <!-- Session text content -->
-              <div class="session-text">
-                <!-- Session title -->
-                @if (!session.editing) {
-                  <span class="session-title">{{ session.title || 'New chat' }}</span>
-                }
-
-                <!-- Edit title -->
-                @if (session.editing) {
-                  <mat-form-field class="session-edit-field" (click)="$event.stopPropagation()">
-                    <input
-                      matInput
-                      [value]="session.title"
-                      (keydown.enter)="finishRename(session, titleInput.value)"
-                      (keydown.escape)="cancelRename(session)"
-                      (blur)="finishRename(session, titleInput.value)"
-                      #titleInput
-                    />
-                  </mat-form-field>
-                }
-
-                <!-- Session preview -->
-                <span class="session-preview">
-                  <span class="session-stats">{{ session.message_count }} messages</span>
-                  <span class="session-time">{{ formatTime(session.updated_at) }}</span>
-                </span>
-              </div>
-
-              <!-- Session menu button -->
-              <button
-                mat-icon-button
-                class="session-menu-button"
-                [matMenuTriggerFor]="sessionMenu"
-                (click)="$event.stopPropagation()"
-              >
-                <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
-                  <path
-                    d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                  />
-                </svg>
-              </button>
-
-              <!-- Session menu -->
-              <mat-menu
-                #sessionMenu="matMenu"
-                xPosition="before"
-                panelClass="session-action-menu"
-                (opened)="onMenuOpened()"
-                (closed)="onMenuClosed()"
-              >
-                <button mat-menu-item (click)="renameSession(session)">
-                  <svg
-                    class="menu-item-icon"
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="20"
-                    width="20"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
-                    />
-                  </svg>
-                  <span>Rename</span>
-                </button>
-                <button mat-menu-item (click)="togglePinSession(session)">
-                  <svg
-                    class="menu-item-icon"
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="20"
-                    width="20"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M16 12V4H17V2H7V4H8V12L6 14V16H11V22H13V16H18V14L16 12Z" />
-                  </svg>
-                  <span>{{ session.pinned ? 'Unpin' : 'Pin' }}</span>
-                </button>
-                <mat-divider></mat-divider>
-                <button mat-menu-item (click)="deleteSession(session, $event)" class="delete-action">
-                  <svg
-                    class="menu-item-icon delete-icon"
-                    xmlns="http://www.w3.org/2000/svg"
-                    height="20"
-                    width="20"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
-                  </svg>
-                  <span>Delete</span>
-                </button>
-              </mat-menu>
-            </div>
+        @if (sessions().length > 0) { @for (session of sortedSessions; track session.thread_id) {
+        <div
+          class="session-item"
+          [class.active]="session.thread_id === currentSessionId()"
+          (click)="selectSession(session.thread_id)"
+        >
+          <!-- Pin indicator -->
+          @if (session.pinned) {
+          <svg
+            class="session-pin-icon pin-animation"
+            xmlns="http://www.w3.org/2000/svg"
+            height="16"
+            width="16"
+            viewBox="0 0 24 24"
+          >
+            <path d="M16 12V4H17V2H7V4H8V12L6 14V16H11V22H13V16H18V14L16 12Z" />
+          </svg>
           }
-        } @else {
-          <div class="no-sessions">
-            <svg class="no-sessions-icon" xmlns="http://www.w3.org/2000/svg" height="48" width="48" viewBox="0 0 24 24">
+
+          <!-- Session text content -->
+          <div class="session-text">
+            <!-- Session title -->
+            @if (!session.editing) {
+            <span class="session-title">{{ session.title || 'New chat' }}</span>
+            }
+
+            <!-- Edit title -->
+            @if (session.editing) {
+            <mat-form-field class="session-edit-field" (click)="$event.stopPropagation()">
+              <input
+                matInput
+                [value]="session.title"
+                (keydown.enter)="finishRename(session, titleInput.value)"
+                (keydown.escape)="cancelRename(session)"
+                (blur)="finishRename(session, titleInput.value)"
+                #titleInput
+              />
+            </mat-form-field>
+            }
+
+            <!-- Session preview -->
+            <span class="session-preview">
+              <span class="session-stats">{{ session.message_count }} messages</span>
+              <span class="session-time">{{ formatTime(session.updated_at) }}</span>
+            </span>
+          </div>
+
+          <!-- Session menu button -->
+          <button
+            mat-icon-button
+            class="session-menu-button"
+            [matMenuTriggerFor]="sessionMenu"
+            (click)="$event.stopPropagation()"
+          >
+            <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
               <path
-                d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z"
+                d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
               />
             </svg>
-            <p class="no-sessions-text">No sessions</p>
-            <p class="no-sessions-hint">Click button above to create new session</p>
-          </div>
+          </button>
+
+          <!-- Session menu -->
+          <mat-menu
+            #sessionMenu="matMenu"
+            xPosition="before"
+            panelClass="session-action-menu"
+            (opened)="onMenuOpened()"
+            (closed)="onMenuClosed()"
+          >
+            <button mat-menu-item (click)="renameSession(session)">
+              <svg class="menu-item-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+                <path
+                  d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
+                />
+              </svg>
+              <span>Rename</span>
+            </button>
+            <button mat-menu-item (click)="togglePinSession(session)">
+              <svg class="menu-item-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+                <path d="M16 12V4H17V2H7V4H8V12L6 14V16H11V22H13V16H18V14L16 12Z" />
+              </svg>
+              <span>{{ session.pinned ? 'Unpin' : 'Pin' }}</span>
+            </button>
+            <mat-divider></mat-divider>
+            <button mat-menu-item (click)="deleteSession(session, $event)" class="delete-action">
+              <svg
+                class="menu-item-icon delete-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                height="20"
+                width="20"
+                viewBox="0 0 24 24"
+              >
+                <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z" />
+              </svg>
+              <span>Delete</span>
+            </button>
+          </mat-menu>
+        </div>
+        } } @else {
+        <div class="no-sessions">
+          <svg class="no-sessions-icon" xmlns="http://www.w3.org/2000/svg" height="48" width="48" viewBox="0 0 24 24">
+            <path
+              d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z"
+            />
+          </svg>
+          <p class="no-sessions-text">No sessions</p>
+          <p class="no-sessions-hint">Click button above to create new session</p>
+        </div>
         }
       </div>
     </div>
@@ -431,7 +417,6 @@ import {
         display: flex;
         align-items: center;
       }
-
     `,
   ],
 })

@@ -111,7 +111,7 @@ describe('DraggableSelectionComponent', () => {
       interfaceDragged: { emit: () => {} },
     };
 
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
         { provide: NodesWidget, useValue: nodesWidgetStub },

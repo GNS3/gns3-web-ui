@@ -14,7 +14,6 @@ import { VpcsTemplate } from '@models/templates/vpcs-template';
 
 @Injectable()
 export class TemplateMocksService {
-
   getQemuTemplate(): Observable<QemuTemplate> {
     let template: QemuTemplate = {
       adapter_type: 'e1000',
@@ -297,6 +296,6 @@ export class TemplateMocksService {
   }
 
   list(): Observable<Template[]> {
-    return of([])
+    return of([]);
   }
 }

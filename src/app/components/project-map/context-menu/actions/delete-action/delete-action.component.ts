@@ -42,7 +42,7 @@ export class DeleteActionComponent implements OnInit {
 
   confirmDelete() {
     const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
-      data: { message: 'Do you want to delete all selected objects?' }
+      data: { message: 'Do you want to delete all selected objects?' },
     });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {

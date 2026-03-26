@@ -32,90 +32,70 @@
         [(ngModel)]="selectedType"
       >
         @for (type of templateTypes; track type) {
-          <mat-option [value]="type">
-            {{ type }}
-          </mat-option>
+        <mat-option [value]="type">
+          {{ type }}
+        </mat-option>
         }
       </mat-select>
     </mat-form-field>
   </div>
 
   <div class="template__list">
-    @for (template of filteredTemplates; track $index; let i = $index) {
-      @if (i % 4 === 0) {
-        <div class="template__row">
-          <div class="template__item">
-            <div
-              class="template__icon-wrapper"
-              mwlDraggable
-              [ghostElementAppendTo]="bodyElement"
-              (dragStart)="dragStart($event, filteredTemplates[i])"
-              (dragEnd)="dragEnd($event, filteredTemplates[i])"
-            >
-              <img
-                class="template__icon"
-                draggable="false"
-                [src]="getImageSourceForTemplate(filteredTemplates[i])"
-              />
-            </div>
-            <span class="template__name">{{ filteredTemplates[i].name }}</span>
-          </div>
-          @if (filteredTemplates[i + 1]) {
-            <div class="template__item">
-              <div
-                class="template__icon-wrapper"
-                mwlDraggable
-                [ghostElementAppendTo]="bodyElement"
-                (dragStart)="dragStart($event, filteredTemplates[i])"
-                (dragEnd)="dragEnd($event, filteredTemplates[i + 1])"
-              >
-                <img
-                  class="template__icon"
-                  draggable="false"
-                  [src]="getImageSourceForTemplate(filteredTemplates[i + 1])"
-                />
-              </div>
-              <span class="template__name">{{ filteredTemplates[i + 1].name }}</span>
-            </div>
-          }
-          @if (filteredTemplates[i + 2]) {
-            <div class="template__item">
-              <div
-                class="template__icon-wrapper"
-                mwlDraggable
-                [ghostElementAppendTo]="bodyElement"
-                (dragStart)="dragStart($event, filteredTemplates[i])"
-                (dragEnd)="dragEnd($event, filteredTemplates[i + 2])"
-              >
-                <img
-                  class="template__icon"
-                  draggable="false"
-                  [src]="getImageSourceForTemplate(filteredTemplates[i + 2])"
-                />
-              </div>
-              <span class="template__name">{{ filteredTemplates[i + 2].name }}</span>
-            </div>
-          }
-          @if (filteredTemplates[i + 3]) {
-            <div class="template__item">
-              <div
-                class="template__icon-wrapper"
-                mwlDraggable
-                [ghostElementAppendTo]="bodyElement"
-                (dragStart)="dragStart($event, filteredTemplates[i])"
-                (dragEnd)="dragEnd($event, filteredTemplates[i + 3])"
-              >
-                <img
-                  class="template__icon"
-                  draggable="false"
-                  [src]="getImageSourceForTemplate(filteredTemplates[i + 3])"
-                />
-              </div>
-              <span class="template__name">{{ filteredTemplates[i + 3].name }}</span>
-            </div>
-          }
+    @for (template of filteredTemplates; track $index; let i = $index) { @if (i % 4 === 0) {
+    <div class="template__row">
+      <div class="template__item">
+        <div
+          class="template__icon-wrapper"
+          mwlDraggable
+          [ghostElementAppendTo]="bodyElement"
+          (dragStart)="dragStart($event, filteredTemplates[i])"
+          (dragEnd)="dragEnd($event, filteredTemplates[i])"
+        >
+          <img class="template__icon" draggable="false" [src]="getImageSourceForTemplate(filteredTemplates[i])" />
         </div>
+        <span class="template__name">{{ filteredTemplates[i].name }}</span>
+      </div>
+      @if (filteredTemplates[i + 1]) {
+      <div class="template__item">
+        <div
+          class="template__icon-wrapper"
+          mwlDraggable
+          [ghostElementAppendTo]="bodyElement"
+          (dragStart)="dragStart($event, filteredTemplates[i])"
+          (dragEnd)="dragEnd($event, filteredTemplates[i + 1])"
+        >
+          <img class="template__icon" draggable="false" [src]="getImageSourceForTemplate(filteredTemplates[i + 1])" />
+        </div>
+        <span class="template__name">{{ filteredTemplates[i + 1].name }}</span>
+      </div>
+      } @if (filteredTemplates[i + 2]) {
+      <div class="template__item">
+        <div
+          class="template__icon-wrapper"
+          mwlDraggable
+          [ghostElementAppendTo]="bodyElement"
+          (dragStart)="dragStart($event, filteredTemplates[i])"
+          (dragEnd)="dragEnd($event, filteredTemplates[i + 2])"
+        >
+          <img class="template__icon" draggable="false" [src]="getImageSourceForTemplate(filteredTemplates[i + 2])" />
+        </div>
+        <span class="template__name">{{ filteredTemplates[i + 2].name }}</span>
+      </div>
+      } @if (filteredTemplates[i + 3]) {
+      <div class="template__item">
+        <div
+          class="template__icon-wrapper"
+          mwlDraggable
+          [ghostElementAppendTo]="bodyElement"
+          (dragStart)="dragStart($event, filteredTemplates[i])"
+          (dragEnd)="dragEnd($event, filteredTemplates[i + 3])"
+        >
+          <img class="template__icon" draggable="false" [src]="getImageSourceForTemplate(filteredTemplates[i + 3])" />
+        </div>
+        <span class="template__name">{{ filteredTemplates[i + 3].name }}</span>
+      </div>
       }
-    }
+    </div>
+    } }
   </div>
 </mat-menu>

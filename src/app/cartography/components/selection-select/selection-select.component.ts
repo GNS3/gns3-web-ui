@@ -9,7 +9,7 @@ import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
   templateUrl: './selection-select.component.html',
   styleUrls: ['./selection-select.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: []
+  imports: [],
 })
 export class SelectionSelectComponent implements OnInit, OnDestroy {
   private onSelected: Subscription;

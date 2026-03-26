@@ -1,47 +1,42 @@
 <div class="delete-files">
   @if (!isDelete && !isUsedFiles) {
-    <h1 mat-dialog-title class="delete-files__title">Do you want delete all files?</h1>
-    <mat-dialog-content class="delete-files__content">
-      <p class="delete-files__subtitle">Your selected files</p>
-      <ul class="delete-files__list">
-        @for (file of deleteData?.deleteFilesPaths; track $index; let i = $index) {
-          <li class="delete-files__list-item">{{i + 1}}. {{ file?.filename }}</li>
+  <h1 mat-dialog-title class="delete-files__title">Do you want delete all files?</h1>
+  <mat-dialog-content class="delete-files__content">
+    <p class="delete-files__subtitle">Your selected files</p>
+    <ul class="delete-files__list">
+      @for (file of deleteData?.deleteFilesPaths; track $index; let i = $index) {
+      <li class="delete-files__list-item">{{ i + 1 }}. {{ file?.filename }}</li>
+      }
+    </ul>
+  </mat-dialog-content>
+  <mat-dialog-actions class="delete-files__actions">
+    <button mat-button (click)="deleteAll()">Delete</button>
+    <button mat-button mat-dialog-close cdkFocusInitial>Cancel</button>
+  </mat-dialog-actions>
+  } @if (isDelete && !isUsedFiles) {
+  <h1 mat-dialog-title class="delete-files__title delete-files__title--center">Please wait.</h1>
+  <mat-dialog-content class="delete-files__content delete-files__content--center">
+    <mat-spinner color="accent"></mat-spinner>
+  </mat-dialog-content>
+  } @if (isDelete && isUsedFiles) {
+  <mat-dialog-content class="delete-files__content">
+    @if (deleteFliesDetails.length > 0) {
+    <h5 class="delete-files__error-title">Images can't be deleted because image used in one or more template.</h5>
+    <ul class="delete-files__list">
+      @for (message of deleteFliesDetails; track $index; let i = $index) {
+      <li class="delete-files__list-item" [class.delete-files__list-item--error]="message?.error?.message">
+        @if (message != null) {
+        {{ i + 1 }}. {{ message?.error?.message }}
         }
-      </ul>
-    </mat-dialog-content>
-    <mat-dialog-actions class="delete-files__actions">
-      <button mat-button (click)="deleteAll()">Delete</button>
-      <button mat-button mat-dialog-close cdkFocusInitial>Cancel</button>
-    </mat-dialog-actions>
-  }
-
-  @if (isDelete && !isUsedFiles) {
-    <h1 mat-dialog-title class="delete-files__title delete-files__title--center">Please wait.</h1>
-    <mat-dialog-content class="delete-files__content delete-files__content--center">
-      <mat-spinner color="accent"></mat-spinner>
-    </mat-dialog-content>
-  }
-
-  @if (isDelete && isUsedFiles) {
-    <mat-dialog-content class="delete-files__content">
-      @if (deleteFliesDetails.length > 0) {
-        <h5 class="delete-files__error-title">Images can't be deleted because image used in one or more template.</h5>
-        <ul class="delete-files__list">
-          @for (message of deleteFliesDetails; track $index; let i = $index) {
-            <li class="delete-files__list-item" [class.delete-files__list-item--error]="message?.error?.message">
-              @if (message != null) {
-                {{ i + 1 }}. {{ message?.error?.message }}
-              }
-            </li>
-          }
-        </ul>
+      </li>
       }
-      @if (fileNotDeleted.length > 0) {
-        <h5 class="delete-files__success-title">{{ fileNotDeleted.length }} Images deleted successfully.</h5>
-      }
-    </mat-dialog-content>
-    <mat-dialog-actions class="delete-files__actions">
-      <button mat-raised-button color="primary" (click)="dialogRef.close(false)">Close</button>
-    </mat-dialog-actions>
+    </ul>
+    } @if (fileNotDeleted.length > 0) {
+    <h5 class="delete-files__success-title">{{ fileNotDeleted.length }} Images deleted successfully.</h5>
+    }
+  </mat-dialog-content>
+  <mat-dialog-actions class="delete-files__actions">
+    <button mat-raised-button color="primary" (click)="dialogRef.close(false)">Close</button>
+  </mat-dialog-actions>
   }
 </div>

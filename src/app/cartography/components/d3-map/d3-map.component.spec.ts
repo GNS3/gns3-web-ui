@@ -13,6 +13,6 @@ describe('D3MapComponent', () => {
   });
 
   it('should create', () => {
-    expect(component)
+    expect(component);
   });
 });

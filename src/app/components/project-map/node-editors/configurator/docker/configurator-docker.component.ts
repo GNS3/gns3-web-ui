@@ -1,6 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatDialog, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -27,7 +34,21 @@ import { NonNegativeValidator } from '../../../../../validators/non-negative-val
   templateUrl: './configurator-docker.component.html',
   styleUrls: ['../configurator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatChipsModule, MatIconModule, MatCheckboxModule]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatCardModule,
+    MatTabsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatChipsModule,
+    MatIconModule,
+    MatCheckboxModule,
+  ],
 })
 export class ConfiguratorDialogDockerComponent implements OnInit {
   private dialogReference = inject(MatDialogRef<ConfiguratorDialogDockerComponent>);
@@ -46,7 +67,18 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
   auxConsoleTypes: string[] = [];
-  consoleResolutions: string[] = ['2560x1440', '1920x1080', '1680x1050', '1440x900', '1366x768', '1280x1024', '1280x800', '1024x768', '800x600', '640x480'];
+  consoleResolutions: string[] = [
+    '2560x1440',
+    '1920x1080',
+    '1680x1050',
+    '1440x900',
+    '1366x768',
+    '1280x1024',
+    '1280x800',
+    '1024x768',
+    '800x600',
+    '640x480',
+  ];
   private conf = {
     autoFocus: false,
     width: '800px',
@@ -55,29 +87,29 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   dialogRef;
 
   constructor() {
-      this.generalSettingsForm = this.formBuilder.group({
-          name: new UntypedFormControl('', Validators.required),
-          adapter: new UntypedFormControl('', Validators.required),
-          mac_address: new UntypedFormControl('', Validators.pattern(this.dockerConfigurationService.getMacAddrRegex())),
-          memory: new UntypedFormControl('', this.nonNegativeValidator.get),
-          cpus: new UntypedFormControl('', this.nonNegativeValidator.get),
-          startCommand: new UntypedFormControl(''),
-          consoleHttpPort: new UntypedFormControl('', Validators.required),
-          consoleHttpPath: new UntypedFormControl('', Validators.required)
-      });
+    this.generalSettingsForm = this.formBuilder.group({
+      name: new UntypedFormControl('', Validators.required),
+      adapter: new UntypedFormControl('', Validators.required),
+      mac_address: new UntypedFormControl('', Validators.pattern(this.dockerConfigurationService.getMacAddrRegex())),
+      memory: new UntypedFormControl('', this.nonNegativeValidator.get),
+      cpus: new UntypedFormControl('', this.nonNegativeValidator.get),
+      startCommand: new UntypedFormControl(''),
+      consoleHttpPort: new UntypedFormControl('', Validators.required),
+      consoleHttpPath: new UntypedFormControl('', Validators.required),
+    });
   }
 
   ngOnInit() {
-      this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
-          this.node = node;
-          this.name = node.name;
-          this.getConfiguration();
-          if (!this.node.properties.cpus) this.node.properties.cpus = 0.0;
-          if (!this.node.tags) {
-              this.node.tags = [];
-          }
-          this.cd.markForCheck();
-      });
+    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
+      this.node = node;
+      this.name = node.name;
+      this.getConfiguration();
+      if (!this.node.properties.cpus) this.node.properties.cpus = 0.0;
+      if (!this.node.tags) {
+        this.node.tags = [];
+      }
+      this.cd.markForCheck();
+    });
   }
 
   getConfiguration() {

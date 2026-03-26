@@ -22,11 +22,7 @@ describe('NodeService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [
-        provideZonelessChangeDetection(),
-        HttpController,
-        NodeService,
-      ],
+      providers: [provideZonelessChangeDetection(), HttpController, NodeService],
     });
 
     httpClient = TestBed.get(HttpClient);
@@ -51,7 +47,9 @@ describe('NodeService', () => {
 
     service.start(controller, node).subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id/start`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id/start`
+    );
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual({});
   }));
@@ -63,7 +61,9 @@ describe('NodeService', () => {
 
     service.stop(controller, node).subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id/stop`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id/stop`
+    );
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual({});
   }));
@@ -75,7 +75,9 @@ describe('NodeService', () => {
 
     service.suspend(controller, node).subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id/suspend`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id/suspend`
+    );
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual({});
   }));
@@ -87,7 +89,9 @@ describe('NodeService', () => {
 
     service.reload(controller, node).subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id/reload`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id/reload`
+    );
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual({});
   }));
@@ -99,7 +103,9 @@ describe('NodeService', () => {
 
     service.startAll(controller, project).subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/1/nodes/start`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/1/nodes/start`
+    );
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual({});
   }));
@@ -111,7 +117,9 @@ describe('NodeService', () => {
 
     service.stopAll(controller, project).subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/1/nodes/stop`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/1/nodes/stop`
+    );
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual({});
   }));
@@ -123,7 +131,9 @@ describe('NodeService', () => {
 
     service.suspendAll(controller, project).subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/1/nodes/suspend`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/1/nodes/suspend`
+    );
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual({});
   }));
@@ -135,7 +145,9 @@ describe('NodeService', () => {
 
     service.reloadAll(controller, project).subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/1/nodes/reload`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/1/nodes/reload`
+    );
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual({});
   }));
@@ -148,7 +160,9 @@ describe('NodeService', () => {
 
     service.createFromTemplate(controller, project, template, 10, 20, 'compute').subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/templates/mytemplate`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/templates/mytemplate`
+    );
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual({
       x: 10,
@@ -167,7 +181,9 @@ describe('NodeService', () => {
 
     service.updatePosition(controller, project, node, 10, 20).subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id`
+    );
     expect(req.request.method).toEqual('PUT');
     expect(req.request.body).toEqual({
       x: 10,
@@ -185,7 +201,9 @@ describe('NodeService', () => {
 
     service.updatePosition(controller, project, node, 10.1, 20.6).subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id`
+    );
     expect(req.request.method).toEqual('PUT');
     expect(req.request.body).toEqual({
       x: 10,
@@ -207,7 +225,9 @@ describe('NodeService', () => {
 
     service.updateLabel(controller, node, label).subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id`
+    );
     expect(req.request.method).toEqual('PUT');
     expect(req.request.body).toEqual({
       label: {
@@ -230,7 +250,9 @@ describe('NodeService', () => {
 
     service.update(controller, node).subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id`
+    );
     expect(req.request.method).toEqual('PUT');
     expect(req.request.body).toEqual({
       x: 10,
@@ -246,7 +268,9 @@ describe('NodeService', () => {
 
     service.delete(controller, node).subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes/id`
+    );
     expect(req.request.method).toEqual('DELETE');
   }));
 

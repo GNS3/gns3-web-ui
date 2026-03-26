@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, OnInit, Output, inject, input, viewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  OnInit,
+  Output,
+  inject,
+  input,
+  viewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { DomSanitizer } from '@angular/platform-browser';

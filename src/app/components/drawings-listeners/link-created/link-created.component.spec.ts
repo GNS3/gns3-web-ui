@@ -31,7 +31,7 @@ describe('LinkCreatedComponent', () => {
   let project = new Project();
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
         { provide: ProjectService, useClass: MockedProjectService },

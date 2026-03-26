@@ -9,7 +9,7 @@ describe('ChangeUserPasswordComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ChangeUserPasswordComponent],
-      providers: [provideZonelessChangeDetection()]
+      providers: [provideZonelessChangeDetection()],
     }).compileComponents();
   });
 

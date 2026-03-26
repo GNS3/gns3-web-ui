@@ -1,59 +1,57 @@
 <div class="docker-templates">
   <header class="docker-templates__header">
     @if (controller) {
-      <button
-        class="docker-templates__back-btn"
-        [routerLink]="'/controller/' + controller.id + '/preferences'"
-        mat-icon-button>
-        <mat-icon>arrow_back</mat-icon>
-      </button>
+    <button
+      class="docker-templates__back-btn"
+      [routerLink]="'/controller/' + controller.id + '/preferences'"
+      mat-icon-button
+    >
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     }
     <h1 class="docker-templates__title">Docker container templates</h1>
     @if (controller) {
-      <button
-        class="docker-templates__add-btn"
-        matTooltip="Add Docker container template"
-        matTooltipClass="custom-tooltip"
-        [routerLink]="'/controller/' + controller.id + '/preferences/docker/addtemplate'"
-        mat-icon-button>
-        <mat-icon>add_circle_outline</mat-icon>
-      </button>
+    <button
+      class="docker-templates__add-btn"
+      matTooltip="Add Docker container template"
+      matTooltipClass="custom-tooltip"
+      [routerLink]="'/controller/' + controller.id + '/preferences/docker/addtemplate'"
+      mat-icon-button
+    >
+      <mat-icon>add_circle_outline</mat-icon>
+    </button>
     }
   </header>
 
   <main class="docker-templates__content">
     @if (!dockerTemplates.length) {
-      <app-empty-templates-list></app-empty-templates-list>
-    }
-
-    @if (dockerTemplates.length) {
-      <nav class="docker-templates__list">
-        @for (template of dockerTemplates; track template.template_id) {
-          <a
-            class="docker-templates__list-item"
-            [routerLink]="template.template_id">
-            <mat-icon class="docker-templates__list-icon">developer_board</mat-icon>
-            <span class="docker-templates__list-name">{{ template.name }}</span>
-            <button mat-icon-button [matMenuTriggerFor]="menu" class="docker-templates__menu-btn">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu">
-              <button mat-menu-item [routerLink]="template.template_id">
-                <mat-icon>edit</mat-icon>
-                <span>Edit</span>
-              </button>
-              <button mat-menu-item (click)="copyTemplate(template)">
-                <mat-icon>content_copy</mat-icon>
-                <span>Copy</span>
-              </button>
-              <button mat-menu-item (click)="deleteTemplate(template)">
-                <mat-icon>delete</mat-icon>
-                <span>Delete</span>
-              </button>
-            </mat-menu>
-          </a>
-        }
-      </nav>
+    <app-empty-templates-list></app-empty-templates-list>
+    } @if (dockerTemplates.length) {
+    <nav class="docker-templates__list">
+      @for (template of dockerTemplates; track template.template_id) {
+      <a class="docker-templates__list-item" [routerLink]="template.template_id">
+        <mat-icon class="docker-templates__list-icon">developer_board</mat-icon>
+        <span class="docker-templates__list-name">{{ template.name }}</span>
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="docker-templates__menu-btn">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item [routerLink]="template.template_id">
+            <mat-icon>edit</mat-icon>
+            <span>Edit</span>
+          </button>
+          <button mat-menu-item (click)="copyTemplate(template)">
+            <mat-icon>content_copy</mat-icon>
+            <span>Copy</span>
+          </button>
+          <button mat-menu-item (click)="deleteTemplate(template)">
+            <mat-icon>delete</mat-icon>
+            <span>Delete</span>
+          </button>
+        </mat-menu>
+      </a>
+      }
+    </nav>
     }
   </main>
 </div>

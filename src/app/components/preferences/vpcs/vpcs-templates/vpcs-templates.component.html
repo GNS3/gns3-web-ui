@@ -1,55 +1,53 @@
 <div class="vpcs-templates">
   <header class="vpcs-templates__header">
     @if (controller) {
-      <button
-        class="vpcs-templates__back-btn"
-        [routerLink]="'/controller/' + controller.id + '/preferences'"
-        mat-icon-button>
-        <mat-icon>arrow_back</mat-icon>
-      </button>
+    <button
+      class="vpcs-templates__back-btn"
+      [routerLink]="'/controller/' + controller.id + '/preferences'"
+      mat-icon-button
+    >
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     }
     <h1 class="vpcs-templates__title">VPCS node templates</h1>
     @if (controller) {
-      <button
-        class="vpcs-templates__add-btn"
-        matTooltip="Add VPCS template"
-        matTooltipClass="custom-tooltip"
-        [routerLink]="'/controller/' + controller.id + '/preferences/vpcs/addtemplate'"
-        mat-icon-button>
-        <mat-icon>add_circle_outline</mat-icon>
-      </button>
+    <button
+      class="vpcs-templates__add-btn"
+      matTooltip="Add VPCS template"
+      matTooltipClass="custom-tooltip"
+      [routerLink]="'/controller/' + controller.id + '/preferences/vpcs/addtemplate'"
+      mat-icon-button
+    >
+      <mat-icon>add_circle_outline</mat-icon>
+    </button>
     }
   </header>
 
   <main class="vpcs-templates__content">
     @if (!vpcsTemplates.length) {
-      <app-empty-templates-list></app-empty-templates-list>
-    }
-
-    @if (vpcsTemplates.length) {
-      <nav class="vpcs-templates__list">
-        @for (template of vpcsTemplates; track template.template_id) {
-          <a
-            class="vpcs-templates__list-item"
-            [routerLink]="template.template_id">
-            <mat-icon class="vpcs-templates__list-icon">terminal</mat-icon>
-            <span class="vpcs-templates__list-name">{{ template.name }}</span>
-            <button mat-icon-button [matMenuTriggerFor]="menu" class="vpcs-templates__menu-btn">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu">
-              <button mat-menu-item [routerLink]="template.template_id">
-                <mat-icon>edit</mat-icon>
-                <span>Edit</span>
-              </button>
-              <button mat-menu-item (click)="deleteTemplate(template)">
-                <mat-icon>delete</mat-icon>
-                <span>Delete</span>
-              </button>
-            </mat-menu>
-          </a>
-        }
-      </nav>
+    <app-empty-templates-list></app-empty-templates-list>
+    } @if (vpcsTemplates.length) {
+    <nav class="vpcs-templates__list">
+      @for (template of vpcsTemplates; track template.template_id) {
+      <a class="vpcs-templates__list-item" [routerLink]="template.template_id">
+        <mat-icon class="vpcs-templates__list-icon">terminal</mat-icon>
+        <span class="vpcs-templates__list-name">{{ template.name }}</span>
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="vpcs-templates__menu-btn">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item [routerLink]="template.template_id">
+            <mat-icon>edit</mat-icon>
+            <span>Edit</span>
+          </button>
+          <button mat-menu-item (click)="deleteTemplate(template)">
+            <mat-icon>delete</mat-icon>
+            <span>Delete</span>
+          </button>
+        </mat-menu>
+      </a>
+      }
+    </nav>
     }
   </main>
 </div>

@@ -1,6 +1,13 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,7 +31,18 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-cloud-nodes-add-template',
   templateUrl: './cloud-nodes-add-template.component.html',
   styleUrls: ['./cloud-nodes-add-template.component.scss', '../../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatRadioModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
 })
 export class CloudNodesAddTemplateComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -50,7 +68,7 @@ export class CloudNodesAddTemplateComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
       this.controller = controller;
       this.cd.markForCheck();
     });

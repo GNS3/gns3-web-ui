@@ -1,9 +1,8 @@
 @if (!computeStatistics().length) {
-  <div>Statistics not loaded</div>
-}
-@for (statistics of computeStatistics(); track statistics.compute_name) {
-  <div>
-    {{ statistics.compute_name }}
-    <app-status-chart [computeStatistics]="statistics"></app-status-chart>
-  </div>
+<div>Statistics not loaded</div>
+} @for (statistics of computeStatistics(); track statistics.compute_name) {
+<div>
+  {{ statistics.compute_name }}
+  <app-status-chart [computeStatistics]="statistics"></app-status-chart>
+</div>
 }

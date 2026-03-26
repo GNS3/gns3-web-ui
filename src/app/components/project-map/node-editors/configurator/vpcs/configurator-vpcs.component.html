@@ -12,15 +12,18 @@
             <mat-label>Tags</mat-label>
             <mat-chip-grid #chipList>
               @for (tag of node?.tags; track tag) {
-                <mat-chip (removed)="removeTag(tag)">
-                  {{ tag }}
-                  <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
+              <mat-chip (removed)="removeTag(tag)">
+                {{ tag }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
               }
-              <input matInput placeholder="Add tags"
-                     [matChipInputFor]="chipList"
-                     [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                     (matChipInputTokenEnd)="addTag($event)" />
+              <input
+                matInput
+                placeholder="Add tags"
+                [matChipInputFor]="chipList"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                (matChipInputTokenEnd)="addTag($event)"
+              />
             </mat-chip-grid>
           </mat-form-field>
           <mat-form-field class="select">
@@ -30,9 +33,9 @@
               [(ngModel)]="node.console_type"
             >
               @for (type of consoleTypes; track type) {
-                <mat-option [value]="type">
-                  {{ type }}
-                </mat-option>
+              <mat-option [value]="type">
+                {{ type }}
+              </mat-option>
               }
             </mat-select>
           </mat-form-field>

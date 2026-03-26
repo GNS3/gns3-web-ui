@@ -12,7 +12,7 @@ import { Rectangle } from '../../models/rectangle';
   templateUrl: './selection-control.component.html',
   styleUrls: ['./selection-control.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: []
+  imports: [],
 })
 export class SelectionControlComponent implements OnInit, OnDestroy {
   private onSelection: Subscription;

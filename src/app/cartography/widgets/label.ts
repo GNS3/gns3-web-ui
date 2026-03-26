@@ -43,10 +43,12 @@ export class LabelWidget implements Widget {
       .attr('class', 'label_container')
       .attr('label_id', (label: MapLabel) => label.id);
 
-    const merge = label_view.merge(label_enter).on('contextmenu', function(this: SVGGElement, event: MouseEvent, n: MapLabel) {
-      event.preventDefault();
-      self.onContextMenu.emit(new LabelContextMenu(event, n));
-    });
+    const merge = label_view
+      .merge(label_enter)
+      .on('contextmenu', function (this: SVGGElement, event: MouseEvent, n: MapLabel) {
+        event.preventDefault();
+        self.onContextMenu.emit(new LabelContextMenu(event, n));
+      });
 
     this.drawLabel(merge);
 

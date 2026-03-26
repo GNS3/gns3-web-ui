@@ -10,7 +10,7 @@ import { ToasterService } from '@services/toaster.service';
 @Component({
   selector: 'app-start-node-action',
   templateUrl: './start-node-action.component.html',
-  imports: [ MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StartNodeActionComponent implements OnInit, OnChanges {

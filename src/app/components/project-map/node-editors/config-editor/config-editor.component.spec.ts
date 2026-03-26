@@ -47,7 +47,7 @@ describe('ConfigEditorDialogComponent', () => {
       declarations: [ConfigEditorDialogComponent],
     }).compileComponents();
 
-    controller = new Controller  ();
+    controller = new Controller();
     controller.host = 'localhost';
     controller.port = 80;
 
@@ -58,7 +58,7 @@ describe('ConfigEditorDialogComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ConfigEditorDialogComponent);
     component = fixture.componentInstance;
-    component.controller =  controller;
+    component.controller = controller;
     component.node = node;
     fixture.detectChanges();
   });

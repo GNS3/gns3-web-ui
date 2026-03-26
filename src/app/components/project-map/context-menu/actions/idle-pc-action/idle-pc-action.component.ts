@@ -11,7 +11,7 @@ import { NodeService } from '@services/node.service';
 @Component({
   selector: 'app-idle-pc-action',
   templateUrl: './idle-pc-action.component.html',
-  imports: [ MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IdlePcActionComponent {

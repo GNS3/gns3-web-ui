@@ -1,6 +1,12 @@
 import { ChangeDetectionStrategy, Component, Inject, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -33,10 +39,7 @@ export class TemplateNameDialogComponent implements OnInit {
   controller: Controller;
   templateNameForm: UntypedFormGroup;
 
-  constructor(
-    private templateNameValidator: ProjectNameValidator,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  constructor(private templateNameValidator: ProjectNameValidator, @Inject(MAT_DIALOG_DATA) public data: any) {}
 
   ngOnInit() {
     let name = this.data['name'];

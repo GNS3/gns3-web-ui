@@ -18,12 +18,12 @@ export interface WindowStyle {
  * Boundary check configuration interface
  */
 export interface BoundaryConfig {
-  minVisibleSize: number;  // Minimum visible size (pixels)
-  minWidth: number;        // Minimum window width
-  minHeight: number;       // Minimum window height
-  maxWidth?: number;       // Maximum window width (optional)
-  maxHeight?: number;      // Maximum window height (optional)
-  topOffset?: number;      // Top offset (e.g., toolbar height) to keep window below (optional)
+  minVisibleSize: number; // Minimum visible size (pixels)
+  minWidth: number; // Minimum window width
+  minHeight: number; // Minimum window height
+  maxWidth?: number; // Maximum window width (optional)
+  maxHeight?: number; // Maximum window height (optional)
+  topOffset?: number; // Top offset (e.g., toolbar height) to keep window below (optional)
 }
 
 /**
@@ -31,14 +31,14 @@ export interface BoundaryConfig {
  * Provides common window boundary check functionality for any draggable and resizable window component
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class WindowBoundaryService {
   // Default boundary configuration
   private defaultConfig: BoundaryConfig = {
-    minVisibleSize: 100,  // Keep at least 100px visible
-    minWidth: 500,        // Minimum width 500px
-    minHeight: 400        // Minimum height 400px
+    minVisibleSize: 100, // Keep at least 100px visible
+    minWidth: 500, // Minimum width 500px
+    minHeight: 400, // Minimum height 400px
   };
 
   // Current boundary configuration
@@ -186,7 +186,7 @@ export class WindowBoundaryService {
       width: constrainedWidth,
       height: constrainedHeight,
       left,
-      top
+      top,
     };
   }
 
@@ -258,8 +258,8 @@ export class WindowBoundaryService {
    */
   isValidSize(width: unknown, height: unknown): boolean {
     // Convert to number, treat invalid values as 0 (which will be < minWidth/minHeight)
-    const numWidth = typeof width === 'number' ? width : (typeof width === 'string' ? parseFloat(width) : 0);
-    const numHeight = typeof height === 'number' ? height : (typeof height === 'string' ? parseFloat(height) : 0);
+    const numWidth = typeof width === 'number' ? width : typeof width === 'string' ? parseFloat(width) : 0;
+    const numHeight = typeof height === 'number' ? height : typeof height === 'string' ? parseFloat(height) : 0;
 
     const config = this.config$.value;
     const validWidth = numWidth >= config.minWidth;

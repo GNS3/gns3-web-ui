@@ -1,8 +1,5 @@
 @if (isDraggingEnabled) {
-  <div
-    (document:mousemove)="dragWidget($event)"
-    (document:mouseup)="toggleDragging(false)"
-  ></div>
+<div (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)"></div>
 }
 <!-- Option with resizing -->
 <div
@@ -39,19 +36,19 @@
       >
         <mat-tab-group class="tabs" [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
           @for (node of nodes; track $index; let index = $index) {
-            <mat-tab [label]="tab">
-              <ng-template mat-tab-label>
-                <div class="col" style="margin-left: 20px">{{ node.name }}</div>
-                <button
-                  [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-                  mat-icon-button
-                  (mousedown)="$event.stopPropagation()"
-                  (click)="removeTab(index)"
-                >
-                  <mat-icon>close</mat-icon>
-                </button>
-              </ng-template>
-            </mat-tab>
+          <mat-tab [label]="tab">
+            <ng-template mat-tab-label>
+              <div class="col" style="margin-left: 20px">{{ node.name }}</div>
+              <button
+                [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
+                mat-icon-button
+                (mousedown)="$event.stopPropagation()"
+                (click)="removeTab(index)"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </ng-template>
+          </mat-tab>
           }
 
           <mat-tab>
@@ -62,46 +59,43 @@
         </mat-tab-group>
 
         @if (!isMinimized && !isMaximized) {
-          <button
-            [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-            mat-icon-button
-            (mousedown)="$event.stopPropagation()"
-            (click)="toggleMaximize()"
-            title="Maximize height"
-          >
-            <mat-icon>fullscreen</mat-icon>
-          </button>
-        }
-        @if (isMaximized) {
-          <button
-            [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-            mat-icon-button
-            (mousedown)="$event.stopPropagation()"
-            (click)="toggleMaximize()"
-            title="Restore"
-          >
-            <mat-icon>fullscreen_exit</mat-icon>
-          </button>
-        }
-        @if (!isMinimized) {
-          <button
-            [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-            mat-icon-button
-            (mousedown)="$event.stopPropagation()"
-            (click)="minimize(true)"
-          >
-            <mat-icon>remove</mat-icon>
-          </button>
-        }
-        @if (isMinimized) {
-          <button
-            [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-            mat-icon-button
-            (mousedown)="$event.stopPropagation()"
-            (click)="minimize(false)"
-          >
-            <mat-icon>web_asset</mat-icon>
-          </button>
+        <button
+          [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
+          mat-icon-button
+          (mousedown)="$event.stopPropagation()"
+          (click)="toggleMaximize()"
+          title="Maximize height"
+        >
+          <mat-icon>fullscreen</mat-icon>
+        </button>
+        } @if (isMaximized) {
+        <button
+          [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
+          mat-icon-button
+          (mousedown)="$event.stopPropagation()"
+          (click)="toggleMaximize()"
+          title="Restore"
+        >
+          <mat-icon>fullscreen_exit</mat-icon>
+        </button>
+        } @if (!isMinimized) {
+        <button
+          [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
+          mat-icon-button
+          (mousedown)="$event.stopPropagation()"
+          (click)="minimize(true)"
+        >
+          <mat-icon>remove</mat-icon>
+        </button>
+        } @if (isMinimized) {
+        <button
+          [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
+          mat-icon-button
+          (mousedown)="$event.stopPropagation()"
+          (click)="minimize(false)"
+        >
+          <mat-icon>web_asset</mat-icon>
+        </button>
         }
         <button
           [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
@@ -121,8 +115,12 @@
       </app-log-console>
 
       @for (node of nodes; track $index; let index = $index) {
-        <app-web-console [hidden]="isMinimized || !(selected.value === index)" [controller]="controller()" [node]="nodes[index]">
-        </app-web-console>
+      <app-web-console
+        [hidden]="isMinimized || !(selected.value === index)"
+        [controller]="controller()"
+        [node]="nodes[index]"
+      >
+      </app-web-console>
       }
     </div>
   </div>

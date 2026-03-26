@@ -12,14 +12,7 @@ import { ProgressService } from './progress.service';
   selector: 'app-progress',
   templateUrl: './progress.component.html',
   styleUrl: './progress.component.scss',
-  imports: [
-    CommonModule,
-    MatProgressSpinnerModule,
-    MatIconModule,
-    MatButtonModule,
-    MatTooltipModule,
-    RouterLink,
-  ],
+  imports: [CommonModule, MatProgressSpinnerModule, MatIconModule, MatButtonModule, MatTooltipModule, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProgressComponent implements OnInit, OnDestroy {

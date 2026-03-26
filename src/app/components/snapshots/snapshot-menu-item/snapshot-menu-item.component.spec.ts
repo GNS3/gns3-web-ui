@@ -25,15 +25,15 @@ describe('SnapshotMenuItemComponent', () => {
         HttpClientTestingModule,
         MatSnackBarModule,
         NoopAnimationsModule,
-        AppTestingModule
+        AppTestingModule,
       ],
       providers: [
         provideZonelessChangeDetection(),
         SnapshotService,
         HttpController,
         ProgressDialogService,
-        ToasterService
-      ]
+        ToasterService,
+      ],
     }).compileComponents();
   });
 

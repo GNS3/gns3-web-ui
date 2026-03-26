@@ -31,12 +31,16 @@ describe('ConsoleWrapperComponent', () => {
         MatSnackBarModule,
         MatTabsModule,
         MatIconModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
       ],
       providers: [
         provideZonelessChangeDetection(),
-        NodeConsoleService, ThemeService, MapSettingsService, ToasterService],
-      schemas: [NO_ERRORS_SCHEMA]
+        NodeConsoleService,
+        ThemeService,
+        MapSettingsService,
+        ToasterService,
+      ],
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
     toasterService = TestBed.inject(ToasterService);

@@ -25,7 +25,19 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
   selector: 'app-cloud-nodes-template-details',
   templateUrl: './cloud-nodes-template-details.component.html',
   styleUrls: ['./cloud-nodes-template-details.component.scss', '../../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, MatTableModule, SymbolsMenuComponent]
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatIconModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatChipsModule,
+    MatTableModule,
+    SymbolsMenuComponent,
+  ],
 })
 export class CloudNodesTemplateDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -209,7 +221,11 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
     this.cloudNodeTemplate.usage = this.usage();
     this.cloudNodeTemplate.tags = this.tags();
 
-    this.cloudNodeTemplate.ports_mapping = [...this.portsMappingEthernet, ...this.portsMappingTap, ...this.portsMappingUdp];
+    this.cloudNodeTemplate.ports_mapping = [
+      ...this.portsMappingEthernet,
+      ...this.portsMappingTap,
+      ...this.portsMappingUdp,
+    ];
 
     this.builtInTemplatesService
       .saveTemplate(this.controller, this.cloudNodeTemplate)

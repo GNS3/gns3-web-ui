@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, ElementRef, OnInit, OnDestroy, inject, viewChild, ChangeDetectorRef } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  OnInit,
+  OnDestroy,
+  inject,
+  viewChild,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';

@@ -9,7 +9,7 @@ import { NodeService } from '@services/node.service';
 @Component({
   selector: 'app-reload-node-action',
   templateUrl: './reload-node-action.component.html',
-  imports: [ MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReloadNodeActionComponent implements OnInit {

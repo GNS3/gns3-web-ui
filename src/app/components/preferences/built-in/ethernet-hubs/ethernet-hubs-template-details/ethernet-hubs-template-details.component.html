@@ -1,89 +1,107 @@
 <div class="ethernet-hub-details" [ngClass]="{ 'ethernet-hub-details--hidden': isSymbolSelectionOpened }">
   <header class="ethernet-hub-details__header">
     @if (controller) {
-      <button
-        class="ethernet-hub-details__back-btn"
-        (click)="goBack()"
-        mat-icon-button>
-        <mat-icon>arrow_back</mat-icon>
-      </button>
+    <button class="ethernet-hub-details__back-btn" (click)="goBack()" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     }
     <h1 class="ethernet-hub-details__title">Ethernet hub template configuration</h1>
   </header>
 
   @if (ethernetHubTemplate) {
-    <main class="ethernet-hub-details__content">
-      <section class="ethernet-hub-details__form-card">
-        <form class="ethernet-hub-details__form">
-          <mat-form-field appearance="fill" class="ethernet-hub-details__field">
-            <mat-label>Template name</mat-label>
-            <input matInput [value]="templateName()" (input)="templateName.set($event.target.value)" type="text" placeholder="Template name" />
+  <main class="ethernet-hub-details__content">
+    <section class="ethernet-hub-details__form-card">
+      <form class="ethernet-hub-details__form">
+        <mat-form-field appearance="fill" class="ethernet-hub-details__field">
+          <mat-label>Template name</mat-label>
+          <input
+            matInput
+            [value]="templateName()"
+            (input)="templateName.set($event.target.value)"
+            type="text"
+            placeholder="Template name"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="ethernet-hub-details__field">
+          <mat-label>Default name format</mat-label>
+          <input
+            matInput
+            [value]="defaultName()"
+            (input)="defaultName.set($event.target.value)"
+            type="text"
+            placeholder="Default name format"
+          />
+        </mat-form-field>
+
+        <div class="ethernet-hub-details__symbol-row">
+          <mat-form-field appearance="fill" class="ethernet-hub-details__field ethernet-hub-details__field--flex">
+            <mat-label>Symbol</mat-label>
+            <input
+              matInput
+              [value]="symbol()"
+              (input)="symbol.set($event.target.value)"
+              type="text"
+              placeholder="Symbol"
+            />
           </mat-form-field>
+          <button mat-button class="ethernet-hub-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
+        </div>
 
-          <mat-form-field appearance="fill" class="ethernet-hub-details__field">
-            <mat-label>Default name format</mat-label>
-            <input matInput [value]="defaultName()" (input)="defaultName.set($event.target.value)" type="text" placeholder="Default name format" />
-          </mat-form-field>
+        <mat-form-field appearance="fill" class="ethernet-hub-details__field">
+          <mat-label>Tags</mat-label>
+          <mat-chip-grid #chipList>
+            @for (tag of tags(); track tag) {
+            <mat-chip (removed)="removeTag(tag)">
+              {{ tag }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            }
+          </mat-chip-grid>
+          <input
+            matInput
+            placeholder="Add tags"
+            [matChipInputFor]="chipList"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            (matChipInputTokenEnd)="addTag($event)"
+          />
+        </mat-form-field>
 
-          <div class="ethernet-hub-details__symbol-row">
-            <mat-form-field appearance="fill" class="ethernet-hub-details__field ethernet-hub-details__field--flex">
-              <mat-label>Symbol</mat-label>
-              <input matInput [value]="symbol()" (input)="symbol.set($event.target.value)" type="text" placeholder="Symbol" />
-            </mat-form-field>
-            <button mat-button class="ethernet-hub-details__symbol-btn" (click)="chooseSymbol()">
-              Choose symbol
-            </button>
-          </div>
+        <mat-form-field appearance="fill" class="ethernet-hub-details__field">
+          <mat-label>Category</mat-label>
+          <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
+            @for (cat of categories; track $index) {
+            <mat-option [value]="cat[1]">
+              {{ cat[0] }}
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
 
-          <mat-form-field appearance="fill" class="ethernet-hub-details__field">
-            <mat-label>Tags</mat-label>
-            <mat-chip-grid #chipList>
-              @for (tag of tags(); track tag) {
-                <mat-chip (removed)="removeTag(tag)">
-                  {{ tag }}
-                  <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
-              }
-            </mat-chip-grid>
-            <input matInput placeholder="Add tags"
-                   [matChipInputFor]="chipList"
-                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                   (matChipInputTokenEnd)="addTag($event)" />
-          </mat-form-field>
+        <mat-form-field appearance="fill" class="ethernet-hub-details__field">
+          <mat-label>Number of ports</mat-label>
+          <input
+            matInput
+            [value]="numberOfPorts()"
+            (input)="numberOfPorts.set(+$event.target.value)"
+            type="number"
+            placeholder="Number of ports"
+          />
+        </mat-form-field>
+      </form>
+    </section>
 
-          <mat-form-field appearance="fill" class="ethernet-hub-details__field">
-            <mat-label>Category</mat-label>
-            <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
-              @for (cat of categories; track $index) {
-                <mat-option [value]="cat[1]">
-                  {{ cat[0] }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="ethernet-hub-details__field">
-            <mat-label>Number of ports</mat-label>
-            <input matInput [value]="numberOfPorts()" (input)="numberOfPorts.set(+$event.target.value)" type="number" placeholder="Number of ports" />
-          </mat-form-field>
-        </form>
-      </section>
-
-      <div class="ethernet-hub-details__actions">
-        <button class="ethernet-hub-details__cancel-btn" (click)="goBack()" mat-button>
-          Cancel
-        </button>
-        <button mat-raised-button color="primary" class="ethernet-hub-details__save-btn" (click)="onSave()">
-          Save
-        </button>
-      </div>
-    </main>
+    <div class="ethernet-hub-details__actions">
+      <button class="ethernet-hub-details__cancel-btn" (click)="goBack()" mat-button>Cancel</button>
+      <button mat-raised-button color="primary" class="ethernet-hub-details__save-btn" (click)="onSave()">Save</button>
+    </div>
+  </main>
   }
 </div>
 @if (isSymbolSelectionOpened && ethernetHubTemplate) {
-  <app-symbols-menu
-    [controller]="controller"
-    [symbol]="symbol()"
-    (symbolChangedEmitter)="symbolChanged($event)"
-  ></app-symbols-menu>
+<app-symbols-menu
+  [controller]="controller"
+  [symbol]="symbol()"
+  (symbolChangedEmitter)="symbolChanged($event)"
+></app-symbols-menu>
 }

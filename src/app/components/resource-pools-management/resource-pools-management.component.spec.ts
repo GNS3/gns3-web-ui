@@ -2,21 +2,18 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ResourcePoolsManagementComponent } from './resource-pools-management.component';
-import {of} from "rxjs";
-import {Project} from "@models/project";
-import {ToasterService} from "@services/toaster.service";
-import {ActivatedRoute} from "@angular/router";
-import {ResourcePoolsService} from "@services/resource-pools.service";
-import {MatDialog} from "@angular/material/dialog";
-import {ControllerService} from "@services/controller.service";
+import { of } from 'rxjs';
+import { Project } from '@models/project';
+import { ToasterService } from '@services/toaster.service';
+import { ActivatedRoute } from '@angular/router';
+import { ResourcePoolsService } from '@services/resource-pools.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ControllerService } from '@services/controller.service';
 
-
-class FakeToastService {
-
-}
+class FakeToastService {}
 
 class FakeActivatedRoute {
-  data = of({controller: {}, pool: {}});
+  data = of({ controller: {}, pool: {} });
 }
 
 class FakeResourcePoolService {
@@ -25,18 +22,14 @@ class FakeResourcePoolService {
   }
   getFreeResources() {
     const p = new Project();
-    p.name = "test";
+    p.name = 'test';
     return of(p);
   }
 }
 
-class FakeMatDialog {
+class FakeMatDialog {}
 
-}
-
-class FakeControllerService {
-
-}
+class FakeControllerService {}
 
 describe('ResourcePoolsManagementComponent', () => {
   let component: ResourcePoolsManagementComponent;
@@ -46,15 +39,14 @@ describe('ResourcePoolsManagementComponent', () => {
     TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
-        {provide: ToasterService, useClass: FakeToastService},
-        {provide: ActivatedRoute, useClass: FakeActivatedRoute},
-        {provide: ResourcePoolsService, useClass: FakeResourcePoolService},
-        {provide: MatDialog, useClass: FakeMatDialog},
-        {provide: ControllerService, useClass: FakeControllerService}
+        { provide: ToasterService, useClass: FakeToastService },
+        { provide: ActivatedRoute, useClass: FakeActivatedRoute },
+        { provide: ResourcePoolsService, useClass: FakeResourcePoolService },
+        { provide: MatDialog, useClass: FakeMatDialog },
+        { provide: ControllerService, useClass: FakeControllerService },
       ],
-      declarations: [ ResourcePoolsManagementComponent ]
-    })
-    .compileComponents();
+      declarations: [ResourcePoolsManagementComponent],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ResourcePoolsManagementComponent);
     component = fixture.componentInstance;

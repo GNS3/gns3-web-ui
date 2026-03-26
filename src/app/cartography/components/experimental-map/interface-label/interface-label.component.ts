@@ -1,4 +1,14 @@
-import { ChangeDetectorRef, Component, ElementRef, Input, OnInit, inject, input, viewChild, ChangeDetectionStrategy } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  inject,
+  input,
+  viewChild,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CssFixer } from '../../../helpers/css-fixer';
 

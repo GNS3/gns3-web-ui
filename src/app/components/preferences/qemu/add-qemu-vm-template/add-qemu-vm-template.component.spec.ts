@@ -32,7 +32,7 @@ export class MockedQemuService {
     return of(qemuTemplate);
   }
 
-  public getImages(controller: Controller ) {
+  public getImages(controller: Controller) {
     return of([]);
   }
 }
@@ -51,7 +51,7 @@ xdescribe('AddQemuVmTemplateComponent', () => {
   };
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [
         MatStepperModule,
         FormsModule,

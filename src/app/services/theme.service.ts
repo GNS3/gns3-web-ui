@@ -7,7 +7,15 @@ import { BehaviorSubject, Observable } from 'rxjs';
  * Light themes: deeppurple-amber, indigo-pink, magenta-violet, rose-red
  * Dark themes: pink-bluegrey, purple-green, azure-blue, cyan-orange
  */
-export type PrebuiltTheme = 'deeppurple-amber' | 'indigo-pink' | 'magenta-violet' | 'rose-red' | 'pink-bluegrey' | 'purple-green' | 'azure-blue' | 'cyan-orange';
+export type PrebuiltTheme =
+  | 'deeppurple-amber'
+  | 'indigo-pink'
+  | 'magenta-violet'
+  | 'rose-red'
+  | 'pink-bluegrey'
+  | 'purple-green'
+  | 'azure-blue'
+  | 'cyan-orange';
 
 /**
  * Theme type for internal use (maps to light/dark)
@@ -23,14 +31,23 @@ export type MapThemeType = 'light' | 'dark' | 'auto';
  * Map background preset keys
  * Using M3 surface container colors grouped by light/dark type
  */
-export type MapBackgroundKey = 'auto' | 'light-1' | 'light-2' | 'light-3' | 'light-4' | 'dark-1' | 'dark-2' | 'dark-3' | 'dark-4';
+export type MapBackgroundKey =
+  | 'auto'
+  | 'light-1'
+  | 'light-2'
+  | 'light-3'
+  | 'light-4'
+  | 'dark-1'
+  | 'dark-2'
+  | 'dark-3'
+  | 'dark-4';
 
 /**
  * Token for default theme
  */
 export const DEFAULT_THEME_TOKEN = new InjectionToken<PrebuiltTheme>('DEFAULT_THEME_TOKEN', {
   providedIn: 'root',
-  factory: () => 'deeppurple-amber' as PrebuiltTheme
+  factory: () => 'deeppurple-amber' as PrebuiltTheme,
 });
 
 /**
@@ -80,24 +97,75 @@ export class ThemeService {
   // Available map background presets using gradient colors
   // Light: radial gradient (soft, luminous feel)
   // Dark: linear gradient (deep, rich feel)
-  readonly availableMapBackgrounds: { key: MapBackgroundKey; label: string; background: string; textColor: string; type: 'light' | 'dark' }[] = [
+  readonly availableMapBackgrounds: {
+    key: MapBackgroundKey;
+    label: string;
+    background: string;
+    textColor: string;
+    type: 'light' | 'dark';
+  }[] = [
     { key: 'auto', label: 'Follow global theme', background: '', textColor: '', type: 'light' },
     // Light backgrounds (radial gradients - soft luminous)
-    { key: 'light-1', label: 'Cyan Sky', background: 'radial-gradient(ellipse at 20% 20%, #B2EBF2 0%, #E0F7FA 70%)', textColor: '#006064', type: 'light' },
-    { key: 'light-2', label: 'Blue Sky', background: 'radial-gradient(ellipse at 20% 20%, #BBDEFB 0%, #E3F2FD 70%)', textColor: '#1565C0', type: 'light' },
-    { key: 'light-3', label: 'Cloud Gray', background: 'radial-gradient(ellipse at 20% 20%, #F5F5F5 0%, #FAFAFA 70%)', textColor: '#424242', type: 'light' },
-    { key: 'light-4', label: 'Lavender', background: 'radial-gradient(ellipse at 20% 20%, #E1BEE7 0%, #F3E5F5 70%)', textColor: '#4A148C', type: 'light' },
+    {
+      key: 'light-1',
+      label: 'Cyan Sky',
+      background: 'radial-gradient(ellipse at 20% 20%, #B2EBF2 0%, #E0F7FA 70%)',
+      textColor: '#006064',
+      type: 'light',
+    },
+    {
+      key: 'light-2',
+      label: 'Blue Sky',
+      background: 'radial-gradient(ellipse at 20% 20%, #BBDEFB 0%, #E3F2FD 70%)',
+      textColor: '#1565C0',
+      type: 'light',
+    },
+    {
+      key: 'light-3',
+      label: 'Cloud Gray',
+      background: 'radial-gradient(ellipse at 20% 20%, #F5F5F5 0%, #FAFAFA 70%)',
+      textColor: '#424242',
+      type: 'light',
+    },
+    {
+      key: 'light-4',
+      label: 'Lavender',
+      background: 'radial-gradient(ellipse at 20% 20%, #E1BEE7 0%, #F3E5F5 70%)',
+      textColor: '#4A148C',
+      type: 'light',
+    },
     // Dark backgrounds (linear gradients - deep rich)
-    { key: 'dark-1', label: 'Deep Cyan', background: 'linear-gradient(135deg, #006064 0%, #00838F 50%, #006064 100%)', textColor: '#FFFFFF', type: 'dark' },
-    { key: 'dark-2', label: 'Deep Blue', background: 'linear-gradient(135deg, #1565C0 0%, #1976D2 50%, #1565C0 100%)', textColor: '#FFFFFF', type: 'dark' },
-    { key: 'dark-3', label: 'Charcoal', background: 'linear-gradient(135deg, #424242 0%, #616161 50%, #424242 100%)', textColor: '#FFFFFF', type: 'dark' },
-    { key: 'dark-4', label: 'Deep Purple', background: 'linear-gradient(135deg, #4A148C 0%, #6A1B9A 50%, #4A148C 100%)', textColor: '#FFFFFF', type: 'dark' },
+    {
+      key: 'dark-1',
+      label: 'Deep Cyan',
+      background: 'linear-gradient(135deg, #006064 0%, #00838F 50%, #006064 100%)',
+      textColor: '#FFFFFF',
+      type: 'dark',
+    },
+    {
+      key: 'dark-2',
+      label: 'Deep Blue',
+      background: 'linear-gradient(135deg, #1565C0 0%, #1976D2 50%, #1565C0 100%)',
+      textColor: '#FFFFFF',
+      type: 'dark',
+    },
+    {
+      key: 'dark-3',
+      label: 'Charcoal',
+      background: 'linear-gradient(135deg, #424242 0%, #616161 50%, #424242 100%)',
+      textColor: '#FFFFFF',
+      type: 'dark',
+    },
+    {
+      key: 'dark-4',
+      label: 'Deep Purple',
+      background: 'linear-gradient(135deg, #4A148C 0%, #6A1B9A 50%, #4A148C 100%)',
+      textColor: '#FFFFFF',
+      type: 'dark',
+    },
   ];
 
-  constructor(
-    @Inject(DOCUMENT) private document: Document,
-    @Inject(DEFAULT_THEME_TOKEN) defaultTheme: PrebuiltTheme
-  ) {
+  constructor(@Inject(DOCUMENT) private document: Document, @Inject(DEFAULT_THEME_TOKEN) defaultTheme: PrebuiltTheme) {
     // Initialize theme from localStorage or use default
     const savedTheme = localStorage.getItem('theme') as PrebuiltTheme | null;
     this.currentTheme = savedTheme || defaultTheme;
@@ -184,10 +252,10 @@ export class ThemeService {
 
     if (currentType === 'dark') {
       // Switch to light theme
-      newTheme = this.availableThemes.find(t => t.type === 'light')?.key || 'deeppurple-amber';
+      newTheme = this.availableThemes.find((t) => t.type === 'light')?.key || 'deeppurple-amber';
     } else {
       // Switch to dark theme
-      newTheme = this.availableThemes.find(t => t.type === 'dark')?.key || 'pink-bluegrey';
+      newTheme = this.availableThemes.find((t) => t.type === 'dark')?.key || 'pink-bluegrey';
     }
 
     this.setTheme(newTheme);
@@ -219,7 +287,7 @@ export class ThemeService {
    */
   restoreTheme(): void {
     const savedTheme = localStorage.getItem('theme') as PrebuiltTheme | null;
-    if (savedTheme && this.availableThemes.some(t => t.key === savedTheme)) {
+    if (savedTheme && this.availableThemes.some((t) => t.key === savedTheme)) {
       this.setTheme(savedTheme);
     }
   }
@@ -234,8 +302,14 @@ export class ThemeService {
 
     // Remove all theme-related classes from html
     htmlElement.classList.remove(
-      'theme-deeppurple-amber', 'theme-indigo-pink', 'theme-magenta-violet', 'theme-rose-red',
-      'theme-pink-bluegrey', 'theme-purple-green', 'theme-azure-blue', 'theme-cyan-orange'
+      'theme-deeppurple-amber',
+      'theme-indigo-pink',
+      'theme-magenta-violet',
+      'theme-rose-red',
+      'theme-pink-bluegrey',
+      'theme-purple-green',
+      'theme-azure-blue',
+      'theme-cyan-orange'
     );
 
     // Add theme class to html - this activates the CSS variables in :root.theme-xxx

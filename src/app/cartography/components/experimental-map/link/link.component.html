@@ -6,24 +6,16 @@
   [attr.transform]="transform"
 >
   @if (link?.linkType == 'ethernet') {
-    <svg:path
-      #path
-      class="ethernet_link"
-      [style.stroke]="'var(--mat-sys-on-surface)'"
-      stroke-width="2"
-      [attr.d]="d"
-    />
-  }
-
-  @if (link?.linkType == 'serial') {
-    <svg:path
-      #path
-      class="serial_link"
-      [style.stroke]="'var(--mat-sys-error)'"
-      fill="none"
-      stroke-width="2"
-      [attr.d]="d"
-    />
+  <svg:path #path class="ethernet_link" [style.stroke]="'var(--mat-sys-on-surface)'" stroke-width="2" [attr.d]="d" />
+  } @if (link?.linkType == 'serial') {
+  <svg:path
+    #path
+    class="serial_link"
+    [style.stroke]="'var(--mat-sys-error)'"
+    fill="none"
+    stroke-width="2"
+    [attr.d]="d"
+  />
   }
 
   <svg:g [app-status]="link?.source?.status" [direction]="'source'" [path]="path()" [d]="d" />
@@ -31,24 +23,22 @@
   <svg:g [app-status]="link?.target?.status" [direction]="'target'" [path]="path()" [d]="d" />
 
   @if (showInterfaceLabels()) {
-    <svg:g
-      [app-interface-label]
-      [x]="link?.source?.x + link?.nodes[0]?.label?.x"
-      [y]="link?.source?.y + link?.nodes[0]?.label?.y"
-      [text]="link?.nodes[0]?.label?.text"
-      [style]="link?.nodes[0]?.label?.style"
-      [rotation]="link?.nodes[0]?.label?.rotation"
-    />
-  }
-
-  @if (showInterfaceLabels()) {
-    <svg:g
-      [app-interface-label]
-      [x]="link?.target?.x + link?.nodes[1]?.label?.x"
-      [y]="link?.target?.y + link?.nodes[1]?.label?.y"
-      [text]="link?.nodes[1]?.label?.text"
-      [style]="link?.nodes[1]?.label?.style"
-      [rotation]="link?.nodes[1]?.label?.rotation"
-    />
+  <svg:g
+    [app-interface-label]
+    [x]="link?.source?.x + link?.nodes[0]?.label?.x"
+    [y]="link?.source?.y + link?.nodes[0]?.label?.y"
+    [text]="link?.nodes[0]?.label?.text"
+    [style]="link?.nodes[0]?.label?.style"
+    [rotation]="link?.nodes[0]?.label?.rotation"
+  />
+  } @if (showInterfaceLabels()) {
+  <svg:g
+    [app-interface-label]
+    [x]="link?.target?.x + link?.nodes[1]?.label?.x"
+    [y]="link?.target?.y + link?.nodes[1]?.label?.y"
+    [text]="link?.nodes[1]?.label?.text"
+    [style]="link?.nodes[1]?.label?.style"
+    [rotation]="link?.nodes[1]?.label?.rotation"
+  />
   }
 </svg:g>

@@ -11,7 +11,7 @@ import { Inject } from '@angular/core';
 })
 export class QuestionDialogComponent {
   public dialogRef = inject(MatDialogRef<QuestionDialogComponent>);
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { title: string, question: string}) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: { title: string; question: string }) {}
 
   onNoClick(): void {
     this.dialogRef.close(false);

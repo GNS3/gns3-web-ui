@@ -5,79 +5,84 @@
         mat-icon-button
         matTooltip="Back to user management"
         matTooltipClass="custom-tooltip"
-        [routerLink]="['/controller', controller.id, 'management', 'users']">
+        [routerLink]="['/controller', controller.id, 'management', 'users']"
+      >
         <mat-icon aria-label="Back to user management">keyboard_arrow_left</mat-icon>
       </button>
-      <h1 class="col">User {{user.username}}</h1>
+      <h1 class="col">User {{ user.username }}</h1>
     </div>
   </div>
   <div class="default-content">
     <mat-tab-group>
       <mat-tab label="Details" class="details">
-      <div class="user-edit">
-        <form [formGroup]="editUserForm" class="input-field">
-          <mat-form-field class="input-field">
-            <input matInput type="text" formControlName="username" placeholder="Username"/>
-            @if (form.username?.touched && form.username?.errors && form.username?.errors.required) {
+        <div class="user-edit">
+          <form [formGroup]="editUserForm" class="input-field">
+            <mat-form-field class="input-field">
+              <input matInput type="text" formControlName="username" placeholder="Username" />
+              @if (form.username?.touched && form.username?.errors && form.username?.errors.required) {
               <mat-error>Username is required</mat-error>
-            }
-            @if (form.username?.errors && form.username?.errors.pattern) {
+              } @if (form.username?.errors && form.username?.errors.pattern) {
               <mat-error>Username is incorrect</mat-error>
-            }
-            @if (form.username?.errors && form.username?.errors.userExists) {
+              } @if (form.username?.errors && form.username?.errors.userExists) {
               <mat-error>User with this username exists</mat-error>
-            }
-          </mat-form-field>
-          <mat-form-field class="input-field">
-            <input matInput type="text" formControlName="full_name" placeholder="Full name"/>
-          </mat-form-field>
-          <mat-form-field class="input-field">
-            <input matInput type="text" formControlName="email" placeholder="Email"/>
-            @if (form.email?.touched && form.email?.errors && form.email?.errors.required) {
+              }
+            </mat-form-field>
+            <mat-form-field class="input-field">
+              <input matInput type="text" formControlName="full_name" placeholder="Full name" />
+            </mat-form-field>
+            <mat-form-field class="input-field">
+              <input matInput type="text" formControlName="email" placeholder="Email" />
+              @if (form.email?.touched && form.email?.errors && form.email?.errors.required) {
               <mat-error>Email is required</mat-error>
-            }
-            @if (form.email?.errors && form.email?.errors.email) {
+              } @if (form.email?.errors && form.email?.errors.email) {
               <mat-error>Email is invalid</mat-error>
-            }
-            @if (form.email?.errors && form.email?.errors.emailExists) {
+              } @if (form.email?.errors && form.email?.errors.emailExists) {
               <mat-error>User with this email exists</mat-error>
-            }
-          </mat-form-field>
+              }
+            </mat-form-field>
 
-          <mat-checkbox formControlName="is_active">Is active</mat-checkbox>
+            <mat-checkbox formControlName="is_active">Is active</mat-checkbox>
+            <div>
+              <mat-checkbox [checked]="user.is_superadmin" disabled>Is Superadmin</mat-checkbox>
+            </div>
+
+            <div mat-dialog-actions class="button-div">
+              <button
+                mat-button
+                (click)="onEditClick()"
+                tabindex="2"
+                mat-raised-button
+                color="primary"
+                [disabled]="!editUserForm.valid"
+              >
+                Edit user
+              </button>
+            </div>
+          </form>
+
+          <button mat-button (click)="onChangePassword()" tabindex="2" mat-raised-button color="primary">
+            Change Password
+          </button>
+
           <div>
-            <mat-checkbox [checked]="user.is_superadmin" disabled>Is Superadmin</mat-checkbox>
+            <div>Creation date: {{ user.created_at }}</div>
+            <div>Last update Date: {{ user.updated_at }}</div>
+            <div>Last login: {{ user.last_login }}</div>
+            <div>UUID: {{ user.user_id }}</div>
           </div>
-
-          <div mat-dialog-actions class="button-div">
-            <button mat-button (click)="onEditClick()" tabindex="2" mat-raised-button color="primary"
-                    [disabled]="!editUserForm.valid">
-              Edit user
-            </button>
-          </div>
-        </form>
-
-        <button mat-button (click)="onChangePassword()" tabindex="2" mat-raised-button color="primary">
-          Change Password
-        </button>
-
-        <div>
-          <div>Creation date:   {{user.created_at}}</div>
-          <div>Last update Date:   {{user.updated_at}}</div>
-          <div>Last login: {{user.last_login}}</div>
-          <div>UUID:   {{user.user_id}}</div>
         </div>
-      </div>
-
       </mat-tab>
       <mat-tab label="Groups">
         <div class="user-groups">
           <ul>
             @for (group of groups; track group.user_group_id) {
-              <li>
-                <a [routerLink]="['/controller', controller.id, 'management','groups', group.user_group_id]"
-                   class="table-link">{{ group.name }}</a>
-              </li>
+            <li>
+              <a
+                [routerLink]="['/controller', controller.id, 'management', 'groups', group.user_group_id]"
+                class="table-link"
+                >{{ group.name }}</a
+              >
+            </li>
             }
           </ul>
         </div>
@@ -86,41 +91,33 @@
       <mat-tab label="ACEs">
         <div class="default-content">
           <table mat-table [dataSource]="aceDatasource" class="mat-elevation-z8">
-
             <ng-container matColumnDef="endpoint">
-              <th mat-header-cell *matHeaderCellDef> Endpoint </th>
-              <td mat-cell *matCellDef="let element">{{element.endpoint_name}}</td>
+              <th mat-header-cell *matHeaderCellDef>Endpoint</th>
+              <td mat-cell *matCellDef="let element">{{ element.endpoint_name }}</td>
             </ng-container>
 
             <ng-container matColumnDef="role">
-              <th mat-header-cell *matHeaderCellDef > Role </th>
-              <td mat-cell *matCellDef="let element"> {{element.role_name}} </td>
+              <th mat-header-cell *matHeaderCellDef>Role</th>
+              <td mat-cell *matCellDef="let element">{{ element.role_name }}</td>
             </ng-container>
             <ng-container matColumnDef="propagate">
-              <th mat-header-cell *matHeaderCellDef > Propagate </th>
-              <td mat-cell *matCellDef="let element"> {{element.propagate}} </td>
+              <th mat-header-cell *matHeaderCellDef>Propagate</th>
+              <td mat-cell *matCellDef="let element">{{ element.propagate }}</td>
             </ng-container>
             <ng-container matColumnDef="allowed">
-              <th mat-header-cell *matHeaderCellDef> Allowed </th>
-              <td mat-cell *matCellDef="let element"> {{element.allowed}} </td>
+              <th mat-header-cell *matHeaderCellDef>Allowed</th>
+              <td mat-cell *matCellDef="let element">{{ element.allowed }}</td>
             </ng-container>
 
-
             <tr mat-header-row *matHeaderRowDef="aceDisplayedColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: aceDisplayedColumns;"></tr>
-
-
+            <tr mat-row *matRowDef="let row; columns: aceDisplayedColumns"></tr>
           </table>
         </div>
       </mat-tab>
 
       <mat-tab label="AI Profiles">
-        <app-ai-profile-tab
-          [controller]="controller"
-          [user]="user">
-        </app-ai-profile-tab>
+        <app-ai-profile-tab [controller]="controller" [user]="user"> </app-ai-profile-tab>
       </mat-tab>
     </mat-tab-group>
-
   </div>
 </div>

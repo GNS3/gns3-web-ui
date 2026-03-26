@@ -9,10 +9,7 @@ describe('LinkComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [LinkComponent, StatusComponent],
-      providers: [
-        provideZonelessChangeDetection(),
-        { provide: MultiLinkCalculatorHelper, useValue: {} }
-      ]
+      providers: [provideZonelessChangeDetection(), { provide: MultiLinkCalculatorHelper, useValue: {} }],
     }).compileComponents();
   });
 

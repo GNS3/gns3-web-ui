@@ -57,8 +57,8 @@ describe('NodesWidget', () => {
       node.label = new MapLabel();
     });
     it('draggable behaviour', () => {
-      tryToDrag()
-    })
+      tryToDrag();
+    });
 
     // it('should be draggable when enabled', () => {
     //   widget.setDraggingEnabled(true);

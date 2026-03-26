@@ -22,9 +22,9 @@ describe('SettingsComponent', () => {
   let settingsService: SettingsService;
   let mapSettingsService = {
     integrateLinkLabelsToLinks: true,
-    toggleIntegrateInterfaceLabels(val: boolean) { },
-    toggleOpenReadme(val: boolean) { },
-    toggleOpenConsolesInWidget(val: boolean) { }
+    toggleIntegrateInterfaceLabels(val: boolean) {},
+    toggleOpenReadme(val: boolean) {},
+    toggleOpenConsolesInWidget(val: boolean) {},
   };
   let consoleService;
   let updatesService = autoSpy(UpdatesService);
@@ -58,39 +58,39 @@ describe('SettingsComponent', () => {
     settingsService = TestBed.get(SettingsService);
   });
 
-beforeEach(() => {
-  fixture = TestBed.createComponent(SettingsComponent);
-  component = fixture.componentInstance;
-  fixture.detectChanges();
-});
+  beforeEach(() => {
+    fixture = TestBed.createComponent(SettingsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-it('should create', () => {
-  expect(component).toBeTruthy();
-});
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-it('should get and save new settings', () => {
-  const settings = {
-    crash_reports: true,
-    experimental_features: true,
-    anonymous_statistics: true,
-    angular_map: false,
-    console_command: '',
-  };
-  const getAll = spyOn(settingsService, 'getAll').and.returnValue(settings);
-  const setAll = spyOn(settingsService, 'setAll');
-  spyOn(mapSettingsService, 'toggleIntegrateInterfaceLabels');
-  spyOn(mapSettingsService, 'toggleOpenConsolesInWidget');
+  it('should get and save new settings', () => {
+    const settings = {
+      crash_reports: true,
+      experimental_features: true,
+      anonymous_statistics: true,
+      angular_map: false,
+      console_command: '',
+    };
+    const getAll = spyOn(settingsService, 'getAll').and.returnValue(settings);
+    const setAll = spyOn(settingsService, 'setAll');
+    spyOn(mapSettingsService, 'toggleIntegrateInterfaceLabels');
+    spyOn(mapSettingsService, 'toggleOpenConsolesInWidget');
 
-  component.ngOnInit();
+    component.ngOnInit();
 
-  expect(getAll).toHaveBeenCalled();
-  expect(component.settings).toEqual(settings);
+    expect(getAll).toHaveBeenCalled();
+    expect(component.settings).toEqual(settings);
 
-  component.settings.crash_reports = false;
-  component.save();
+    component.settings.crash_reports = false;
+    component.save();
 
-  expect(setAll).toHaveBeenCalledWith(settings);
-  expect(mapSettingsService.toggleIntegrateInterfaceLabels).toHaveBeenCalled();
-  expect(mapSettingsService.toggleOpenConsolesInWidget).toHaveBeenCalled();
-});
+    expect(setAll).toHaveBeenCalledWith(settings);
+    expect(mapSettingsService.toggleIntegrateInterfaceLabels).toHaveBeenCalled();
+    expect(mapSettingsService.toggleOpenConsolesInWidget).toHaveBeenCalled();
+  });
 });

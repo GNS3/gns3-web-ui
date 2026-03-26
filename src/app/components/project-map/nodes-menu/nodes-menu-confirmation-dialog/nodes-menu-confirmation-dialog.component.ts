@@ -15,7 +15,7 @@ export class NodesMenuConfirmationDialogComponent implements OnInit {
 
   confirmActionData = {
     actionType: 'start',
-    isAction:false
+    isAction: false,
   };
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
@@ -25,7 +25,7 @@ export class NodesMenuConfirmationDialogComponent implements OnInit {
   }
 
   confirmAction() {
-    this.confirmActionData.isAction = true
+    this.confirmActionData.isAction = true;
     this.dialogRef.close(this.confirmActionData);
   }
 }

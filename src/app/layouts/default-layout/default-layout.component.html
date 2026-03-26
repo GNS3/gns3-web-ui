@@ -5,18 +5,9 @@
     </button>
 
     @if (!recentlyOpenedProjectId && controllerIdProjectList) {
-      <button mat-button (click)="listProjects()">
-        Projects
-      </button>
-    }
-
-    @if (recentlyOpenedProjectId && recentlyOpenedcontrollerId) {
-      <button
-        mat-button
-        (click)="backToProject()"
-      >
-        Back to project
-      </button>
+    <button mat-button (click)="listProjects()">Projects</button>
+    } @if (recentlyOpenedProjectId && recentlyOpenedcontrollerId) {
+    <button mat-button (click)="backToProject()">Back to project</button>
     }
 
     <span class="spacer"></span>
@@ -35,7 +26,11 @@
         <mat-icon>settings</mat-icon>
         <span>Settings</span>
       </button>
-      <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'management', 'users']">
+      <button
+        mat-menu-item
+        [disabled]="!controllerId"
+        [routerLink]="['controller', controllerId, 'management', 'users']"
+      >
         <mat-icon>groups</mat-icon>
         <span>Management</span>
       </button>

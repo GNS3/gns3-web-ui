@@ -5,7 +5,7 @@
       <mat-label>Name</mat-label>
       <input matInput tabindex="1" formControlName="name" placeholder="Controller name" />
       @if (controllerForm.get('name').hasError('required')) {
-        <mat-error>You must enter a value</mat-error>
+      <mat-error>You must enter a value</mat-error>
       }
     </mat-form-field>
 
@@ -23,33 +23,36 @@
       <mat-label>Protocol</mat-label>
       <mat-select formControlName="protocol">
         @for (protocol of protocols; track protocol.key) {
-          <mat-option [value]="protocol.key"> {{ protocol.name }} </mat-option>
+        <mat-option [value]="protocol.key"> {{ protocol.name }} </mat-option>
         }
       </mat-select>
     </mat-form-field>
   </div>
 
   @if (connectionError) {
-    <div mat-dialog-content>
-      <mat-error>{{ connectionError }}</mat-error>
-    </div>
-  }
-
-  @if (duplicateNameError) {
-    <div mat-dialog-content>
-      <mat-error>{{ duplicateNameError }}</mat-error>
-    </div>
+  <div mat-dialog-content>
+    <mat-error>{{ connectionError }}</mat-error>
+  </div>
+  } @if (duplicateNameError) {
+  <div mat-dialog-content>
+    <mat-error>{{ duplicateNameError }}</mat-error>
+  </div>
   }
 
   <div mat-dialog-actions align="end">
     <button mat-button (click)="onNoClick()" tabindex="-1" color="accent">Cancel</button>
-    <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary" [disabled]="isCheckingConnection">
+    <button
+      mat-button
+      (click)="onAddClick()"
+      tabindex="2"
+      mat-raised-button
+      color="primary"
+      [disabled]="isCheckingConnection"
+    >
       Add
     </button>
     @if (canAddAnyway) {
-      <button mat-button (click)="onAddAnywayClick()" mat-raised-button color="warn">
-        Add anyway
-      </button>
+    <button mat-button (click)="onAddAnywayClick()" mat-raised-button color="warn">Add anyway</button>
     }
   </div>
 </form>

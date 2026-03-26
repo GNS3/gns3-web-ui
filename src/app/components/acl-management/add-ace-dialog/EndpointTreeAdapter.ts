@@ -1,4 +1,4 @@
-import {Endpoint, RessourceType} from "@models/api/endpoint";
+import { Endpoint, RessourceType } from '@models/api/endpoint';
 
 export interface EndpointNode {
   endpoint: string;
@@ -11,39 +11,40 @@ export interface EndpointNode {
 }
 
 export class EndpointTreeAdapter {
-  private endpoints: Endpoint[]
+  private endpoints: Endpoint[];
 
   constructor(endpoints: Endpoint[]) {
-    this.endpoints = endpoints
+    this.endpoints = endpoints;
   }
 
   buildTreeFromEndpoints(): EndpointNode[] {
-    const parentNode: EndpointNode[] = []
-    let nodes = []
+    const parentNode: EndpointNode[] = [];
+    let nodes = [];
     this.endpoints.forEach((endp: Endpoint) => {
-      const node = this.extractParent(endp)
-      nodes.push(node)
-    })
+      const node = this.extractParent(endp);
+      nodes.push(node);
+    });
 
     nodes.forEach((node: EndpointNode) => {
-        if(node.depth > 0) {
-          const parent = nodes.filter((n: EndpointNode) => n.splitEndp.join('/') == node.splitEndp.slice(0, node.depth-1).join('/'))[0]
-          parent.children.push(node)
-        }
-      })
+      if (node.depth > 0) {
+        const parent = nodes.filter(
+          (n: EndpointNode) => n.splitEndp.join('/') == node.splitEndp.slice(0, node.depth - 1).join('/')
+        )[0];
+        parent.children.push(node);
+      }
+    });
 
-    parentNode.push(nodes.find((node: EndpointNode) => node.depth === 0))
+    parentNode.push(nodes.find((node: EndpointNode) => node.depth === 0));
 
-    return parentNode
+    return parentNode;
   }
 
   private extractParent(endp: Endpoint): EndpointNode {
-
     let splitEndp = endp.endpoint.split('/');
-    splitEndp = splitEndp.filter((value: string) => value !== '' && value !== 'access')
+    splitEndp = splitEndp.filter((value: string) => value !== '' && value !== 'access');
     let parent = [];
     if (splitEndp.length > 0) {
-      parent = splitEndp.slice(0,splitEndp.length - 1)
+      parent = splitEndp.slice(0, splitEndp.length - 1);
     }
     const node: EndpointNode = {
       children: [],
@@ -52,8 +53,8 @@ export class EndpointTreeAdapter {
       endpoint: endp.endpoint,
       endpoint_type: endp.endpoint_type,
       name: endp.name,
-      parent: parent
-    }
-    return node
+      parent: parent,
+    };
+    return node;
   }
 }

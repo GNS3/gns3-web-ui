@@ -1,146 +1,215 @@
-<div class="virtualbox-details" [ngClass]="{ 'virtualbox-details--hidden': isConfiguratorOpened || isSymbolSelectionOpened }">
+<div
+  class="virtualbox-details"
+  [ngClass]="{ 'virtualbox-details--hidden': isConfiguratorOpened || isSymbolSelectionOpened }"
+>
   <header class="virtualbox-details__header">
     @if (controller) {
-      <button
-        class="virtualbox-details__back-btn"
-        (click)="goBack()"
-        mat-icon-button>
-        <mat-icon>arrow_back</mat-icon>
-      </button>
+    <button class="virtualbox-details__back-btn" (click)="goBack()" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     }
     <h1 class="virtualbox-details__title">VirtualBox VM template configuration</h1>
   </header>
 
   @if (virtualBoxTemplate) {
-    <main class="virtualbox-details__content">
-      <section class="virtualbox-details__form-card">
-        <h3 class="virtualbox-details__section-title">General settings</h3>
-        <form class="virtualbox-details__form">
-          <mat-form-field appearance="fill" class="virtualbox-details__field">
-            <mat-label>Template name</mat-label>
-            <input matInput [value]="templateName()" (input)="templateName.set($event.target.value)" type="text" placeholder="Template name" />
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="virtualbox-details__field">
-            <mat-label>Default name format</mat-label>
-            <input matInput [value]="defaultName()" (input)="defaultName.set($event.target.value)" type="text" placeholder="Default name format" />
-          </mat-form-field>
-
-          <div class="virtualbox-details__symbol-row">
-            <mat-form-field appearance="fill" class="virtualbox-details__field virtualbox-details__field--flex">
-              <mat-label>Symbol</mat-label>
-              <input matInput [value]="symbol()" (input)="symbol.set($event.target.value)" type="text" placeholder="Symbol" />
-            </mat-form-field>
-            <button mat-button class="virtualbox-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
-          </div>
-
-          <mat-form-field appearance="fill" class="virtualbox-details__field">
-            <mat-label>Tags</mat-label>
-            <mat-chip-grid #chipList>
-              @for (tag of tags(); track tag) {
-                <mat-chip (removed)="removeTag(tag)">
-                  {{ tag }}
-                  <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
-              }
-            </mat-chip-grid>
-            <input matInput placeholder="Add tags"
-                   [matChipInputFor]="chipList"
-                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                   (matChipInputTokenEnd)="addTag($event)" />
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="virtualbox-details__field">
-            <mat-label>Category</mat-label>
-            <mat-select [value]="category()" (selectionChange)="category.set($event.value)" placeholder="Category">
-              @for (cat of categories; track $index) {
-                <mat-option [value]="cat[1]">{{ cat[0] }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="virtualbox-details__field">
-            <mat-label>Console type</mat-label>
-            <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)" placeholder="Console type">
-              @for (type of consoleTypes; track type) {
-                <mat-option [value]="type">{{ type }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)" class="virtualbox-details__checkbox">Auto start console</mat-checkbox>
-
-          <mat-form-field appearance="fill" class="virtualbox-details__field">
-            <mat-label>RAM</mat-label>
-            <input matInput [value]="ram()" (input)="ram.set(+$event.target.value)" type="number" placeholder="RAM" />
-            <span matSuffix>MB</span>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="virtualbox-details__field">
-            <mat-label>On close</mat-label>
-            <mat-select [value]="onClose()" (selectionChange)="onClose.set($event.value)" placeholder="On close">
-              @for (option of onCloseOptions; track option[1]) {
-                <mat-option [value]="option[1]">{{ option[0] }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <mat-checkbox [checked]="headless()" (change)="headless.set($event.checked)" class="virtualbox-details__checkbox">Start VM in headless mode</mat-checkbox>
-          <mat-checkbox [checked]="linkedClone()" (change)="linkedClone.set($event.checked)" class="virtualbox-details__checkbox">Use as a linked base VM (experimental)</mat-checkbox>
-        </form>
-      </section>
-
-      <section class="virtualbox-details__form-card">
-        <h3 class="virtualbox-details__section-title">Network</h3>
-        <form class="virtualbox-details__form">
-          <mat-form-field appearance="fill" class="virtualbox-details__field">
-            <mat-label>Adapters</mat-label>
-            <input matInput [value]="adapters()" (input)="adapters.set(+$event.target.value)" type="number" placeholder="Adapters" />
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="virtualbox-details__field">
-            <mat-label>First port name</mat-label>
-            <input matInput [value]="firstPortName()" (input)="firstPortName.set($event.target.value)" type="text" placeholder="First port name" />
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="virtualbox-details__field">
-            <mat-label>Name format</mat-label>
-            <input matInput [value]="nameFormat()" (input)="nameFormat.set($event.target.value)" type="text" placeholder="Name format" />
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="virtualbox-details__field">
-            <mat-label>Segment size</mat-label>
-            <input matInput [value]="segmentSize()" (input)="segmentSize.set(+$event.target.value)" type="number" placeholder="Segment size" />
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="virtualbox-details__field">
-            <mat-label>Type</mat-label>
-            <mat-select [value]="networkType()" (selectionChange)="networkType.set($event.value)" placeholder="Type">
-              @for (type of networkTypes; track type) {
-                <mat-option [value]="type">{{ type }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </form>
-        <button mat-button class="virtualbox-details__action-btn" (click)="setCustomAdaptersConfiguratorState(true)">
-          Configure custom adapters
-        </button>
-        <mat-checkbox [checked]="useAnyAdapter()" (change)="useAnyAdapter.set($event.checked)" class="virtualbox-details__checkbox">Allow GNS3 to use any configured VirtualBox adapter</mat-checkbox>
-      </section>
-
-      <section class="virtualbox-details__form-card">
-        <h3 class="virtualbox-details__section-title">Usage</h3>
+  <main class="virtualbox-details__content">
+    <section class="virtualbox-details__form-card">
+      <h3 class="virtualbox-details__section-title">General settings</h3>
+      <form class="virtualbox-details__form">
         <mat-form-field appearance="fill" class="virtualbox-details__field">
-          <mat-label>Usage</mat-label>
-          <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
+          <mat-label>Template name</mat-label>
+          <input
+            matInput
+            [value]="templateName()"
+            (input)="templateName.set($event.target.value)"
+            type="text"
+            placeholder="Template name"
+          />
         </mat-form-field>
-      </section>
 
-      <div class="virtualbox-details__actions">
-        <button class="virtualbox-details__cancel-btn" (click)="goBack()" mat-button>Cancel</button>
-        <button mat-raised-button color="primary" class="virtualbox-details__save-btn" (click)="onSave()">Save</button>
-      </div>
-    </main>
+        <mat-form-field appearance="fill" class="virtualbox-details__field">
+          <mat-label>Default name format</mat-label>
+          <input
+            matInput
+            [value]="defaultName()"
+            (input)="defaultName.set($event.target.value)"
+            type="text"
+            placeholder="Default name format"
+          />
+        </mat-form-field>
+
+        <div class="virtualbox-details__symbol-row">
+          <mat-form-field appearance="fill" class="virtualbox-details__field virtualbox-details__field--flex">
+            <mat-label>Symbol</mat-label>
+            <input
+              matInput
+              [value]="symbol()"
+              (input)="symbol.set($event.target.value)"
+              type="text"
+              placeholder="Symbol"
+            />
+          </mat-form-field>
+          <button mat-button class="virtualbox-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
+        </div>
+
+        <mat-form-field appearance="fill" class="virtualbox-details__field">
+          <mat-label>Tags</mat-label>
+          <mat-chip-grid #chipList>
+            @for (tag of tags(); track tag) {
+            <mat-chip (removed)="removeTag(tag)">
+              {{ tag }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            }
+          </mat-chip-grid>
+          <input
+            matInput
+            placeholder="Add tags"
+            [matChipInputFor]="chipList"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            (matChipInputTokenEnd)="addTag($event)"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="virtualbox-details__field">
+          <mat-label>Category</mat-label>
+          <mat-select [value]="category()" (selectionChange)="category.set($event.value)" placeholder="Category">
+            @for (cat of categories; track $index) {
+            <mat-option [value]="cat[1]">{{ cat[0] }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="virtualbox-details__field">
+          <mat-label>Console type</mat-label>
+          <mat-select
+            [value]="consoleType()"
+            (selectionChange)="consoleType.set($event.value)"
+            placeholder="Console type"
+          >
+            @for (type of consoleTypes; track type) {
+            <mat-option [value]="type">{{ type }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-checkbox
+          [checked]="consoleAutoStart()"
+          (change)="consoleAutoStart.set($event.checked)"
+          class="virtualbox-details__checkbox"
+          >Auto start console</mat-checkbox
+        >
+
+        <mat-form-field appearance="fill" class="virtualbox-details__field">
+          <mat-label>RAM</mat-label>
+          <input matInput [value]="ram()" (input)="ram.set(+$event.target.value)" type="number" placeholder="RAM" />
+          <span matSuffix>MB</span>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="virtualbox-details__field">
+          <mat-label>On close</mat-label>
+          <mat-select [value]="onClose()" (selectionChange)="onClose.set($event.value)" placeholder="On close">
+            @for (option of onCloseOptions; track option[1]) {
+            <mat-option [value]="option[1]">{{ option[0] }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-checkbox
+          [checked]="headless()"
+          (change)="headless.set($event.checked)"
+          class="virtualbox-details__checkbox"
+          >Start VM in headless mode</mat-checkbox
+        >
+        <mat-checkbox
+          [checked]="linkedClone()"
+          (change)="linkedClone.set($event.checked)"
+          class="virtualbox-details__checkbox"
+          >Use as a linked base VM (experimental)</mat-checkbox
+        >
+      </form>
+    </section>
+
+    <section class="virtualbox-details__form-card">
+      <h3 class="virtualbox-details__section-title">Network</h3>
+      <form class="virtualbox-details__form">
+        <mat-form-field appearance="fill" class="virtualbox-details__field">
+          <mat-label>Adapters</mat-label>
+          <input
+            matInput
+            [value]="adapters()"
+            (input)="adapters.set(+$event.target.value)"
+            type="number"
+            placeholder="Adapters"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="virtualbox-details__field">
+          <mat-label>First port name</mat-label>
+          <input
+            matInput
+            [value]="firstPortName()"
+            (input)="firstPortName.set($event.target.value)"
+            type="text"
+            placeholder="First port name"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="virtualbox-details__field">
+          <mat-label>Name format</mat-label>
+          <input
+            matInput
+            [value]="nameFormat()"
+            (input)="nameFormat.set($event.target.value)"
+            type="text"
+            placeholder="Name format"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="virtualbox-details__field">
+          <mat-label>Segment size</mat-label>
+          <input
+            matInput
+            [value]="segmentSize()"
+            (input)="segmentSize.set(+$event.target.value)"
+            type="number"
+            placeholder="Segment size"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="virtualbox-details__field">
+          <mat-label>Type</mat-label>
+          <mat-select [value]="networkType()" (selectionChange)="networkType.set($event.value)" placeholder="Type">
+            @for (type of networkTypes; track type) {
+            <mat-option [value]="type">{{ type }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </form>
+      <button mat-button class="virtualbox-details__action-btn" (click)="setCustomAdaptersConfiguratorState(true)">
+        Configure custom adapters
+      </button>
+      <mat-checkbox
+        [checked]="useAnyAdapter()"
+        (change)="useAnyAdapter.set($event.checked)"
+        class="virtualbox-details__checkbox"
+        >Allow GNS3 to use any configured VirtualBox adapter</mat-checkbox
+      >
+    </section>
+
+    <section class="virtualbox-details__form-card">
+      <h3 class="virtualbox-details__section-title">Usage</h3>
+      <mat-form-field appearance="fill" class="virtualbox-details__field">
+        <mat-label>Usage</mat-label>
+        <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
+      </mat-form-field>
+    </section>
+
+    <div class="virtualbox-details__actions">
+      <button class="virtualbox-details__cancel-btn" (click)="goBack()" mat-button>Cancel</button>
+      <button mat-raised-button color="primary" class="virtualbox-details__save-btn" (click)="onSave()">Save</button>
+    </div>
+  </main>
   }
 </div>
 <app-custom-adapters
@@ -152,9 +221,9 @@
   (saveConfigurationEmitter)="saveCustomAdapters($event)"
 ></app-custom-adapters>
 @if (isSymbolSelectionOpened && virtualBoxTemplate) {
-  <app-symbols-menu
-    [controller]="controller"
-    [symbol]="symbol()"
-    (symbolChangedEmitter)="symbolChanged($event)"
-  ></app-symbols-menu>
+<app-symbols-menu
+  [controller]="controller"
+  [symbol]="symbol()"
+  (symbolChangedEmitter)="symbolChanged($event)"
+></app-symbols-menu>
 }

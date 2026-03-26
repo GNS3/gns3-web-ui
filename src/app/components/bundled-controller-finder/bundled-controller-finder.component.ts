@@ -28,16 +28,18 @@ export class BundledControllerFinderComponent implements OnInit {
 
       if (parseInt(this.document.location.port, 10)) {
         port = parseInt(this.document.location.port, 10);
-      } else if (this.document.location.protocol == "https:") {
+      } else if (this.document.location.protocol == 'https:') {
         port = 443;
       } else {
         port = 80;
       }
 
-      this.controllerService.getLocalController(this.document.location.hostname, port).then((controller: Controller ) => {
-        this.router.navigate(['/controller', controller.id, 'projects']);
-        this.progressService.deactivate();
-      });
+      this.controllerService
+        .getLocalController(this.document.location.hostname, port)
+        .then((controller: Controller) => {
+          this.router.navigate(['/controller', controller.id, 'projects']);
+          this.progressService.deactivate();
+        });
     }, 100);
   }
 }

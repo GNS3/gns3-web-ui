@@ -1,7 +1,7 @@
 <h1 mat-dialog-title>Are you sure you want to delete the following users ?</h1>
 <ul>
   @for (user of data.users; track user.username) {
-    <li>{{ user.username }} {{ user.full_name ? '- ' + user.full_name : '' }}</li>
+  <li>{{ user.username }} {{ user.full_name ? '- ' + user.full_name : '' }}</li>
   }
 </ul>
 <div mat-dialog-actions class="button-div">

@@ -23,7 +23,18 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
   selector: 'app-ethernet-hubs-template-details',
   templateUrl: './ethernet-hubs-template-details.component.html',
   styleUrl: './ethernet-hubs-template-details.component.scss',
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, SymbolsMenuComponent]
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatIconModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatChipsModule,
+    SymbolsMenuComponent,
+  ],
 })
 export class EthernetHubsTemplateDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);

@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 

@@ -10,7 +10,7 @@ import { LinkStyleEditorDialogComponent } from '../../../drawings-editors/link-s
 @Component({
   selector: 'app-edit-link-style-action',
   templateUrl: './edit-link-style-action.component.html',
-  imports: [ MatDialogModule, MatIconModule, MatMenuModule],
+  imports: [MatDialogModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditLinkStyleActionComponent implements OnChanges {

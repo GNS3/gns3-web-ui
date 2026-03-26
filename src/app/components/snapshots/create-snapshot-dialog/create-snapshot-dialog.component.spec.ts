@@ -23,7 +23,7 @@ describe('CreateSnapshotDialogComponent', () => {
   let fixture: ComponentFixture<CreateSnapshotDialogComponent>;
   let mockedToasterService: MockedToasterService;
   let mockedSnapshotService: MockedSnapshotService;
-  let mockedNodesDataSource: MockedNodesDataSource
+  let mockedNodesDataSource: MockedNodesDataSource;
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [CreateSnapshotDialogComponent],
@@ -38,7 +38,7 @@ describe('CreateSnapshotDialogComponent', () => {
         ReactiveFormsModule,
         FormsModule,
         RouterTestingModule,
-        BrowserAnimationsModule
+        BrowserAnimationsModule,
       ],
       providers: [
         provideZonelessChangeDetection(),
@@ -47,7 +47,7 @@ describe('CreateSnapshotDialogComponent', () => {
         { provide: SnapshotService, useValue: mockedSnapshotService },
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
         { provide: MAT_DIALOG_DATA, useValue: {} },
-      ]
+      ],
     }).compileComponents();
   });
 

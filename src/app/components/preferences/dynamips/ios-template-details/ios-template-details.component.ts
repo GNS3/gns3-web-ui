@@ -1,6 +1,13 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,7 +23,7 @@ import { IosConfigurationService } from '@services/ios-configuration.service';
 import { IosService } from '@services/ios.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
-import { ProgressService } from "../../../../common/progress/progress.service";
+import { ProgressService } from '../../../../common/progress/progress.service';
 import { SymbolsMenuComponent } from '@components/preferences/common/symbols-menu/symbols-menu.component';
 
 @Component({
@@ -25,7 +32,20 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
   selector: 'app-ios-template-details',
   templateUrl: './ios-template-details.component.html',
   styleUrls: ['./ios-template-details.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, MatChipsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, MatExpansionModule, SymbolsMenuComponent]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MatChipsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    MatExpansionModule,
+    SymbolsMenuComponent,
+  ],
 })
 export class IosTemplateDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -96,7 +116,7 @@ export class IosTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
       this.controller = controller;
       this.cd.markForCheck();
 
@@ -126,23 +146,24 @@ export class IosTemplateDetailsComponent implements OnInit {
 
   findIdlePC() {
     let data = {
-      "image": this.iosTemplate.image,
-      "platform": this.iosTemplate.platform,
-      "ram": this.iosTemplate.ram
+      image: this.iosTemplate.image,
+      platform: this.iosTemplate.platform,
+      ram: this.iosTemplate.ram,
     };
     this.progressService.activate();
-    this.iosService.findIdlePC(this.controller, data).subscribe((result: any) => {
-      this.progressService.deactivate();
-      if (result.idlepc !== null) {
-        this.iosTemplate.idlepc = result.idlepc;
-        this.toasterService.success(`Idle-PC value found: ${result.idlepc}`);
-      }
-    },
+    this.iosService.findIdlePC(this.controller, data).subscribe(
+      (result: any) => {
+        this.progressService.deactivate();
+        if (result.idlepc !== null) {
+          this.iosTemplate.idlepc = result.idlepc;
+          this.toasterService.success(`Idle-PC value found: ${result.idlepc}`);
+        }
+      },
       (error) => {
         this.progressService.deactivate();
         this.toasterService.error(`Error while finding an idle-PC value`);
       }
-      );
+    );
   }
 
   generateBaseMAC() {
@@ -162,7 +183,6 @@ export class IosTemplateDetailsComponent implements OnInit {
   }
 
   fillSlotsData() {
-
     // load network adapters
     for (let i = 0; i <= 6; i++) {
       if (this.iosTemplate[`slot${i}`]) {
@@ -179,15 +199,12 @@ export class IosTemplateDetailsComponent implements OnInit {
   }
 
   saveSlotsData() {
-
     // save network adapters
     for (let i = 0; i <= 6; i++) {
       const slotAdapters = this.adapterMatrix?.[this.iosTemplate.platform]?.[this.iosTemplate.chassis || '']?.[i];
       if (slotAdapters) {
-        if (this.networkAdaptersForTemplate[i] === undefined)
-          this.iosTemplate[`slot${i}`] = ""
-        else
-          this.iosTemplate[`slot${i}`] = this.networkAdaptersForTemplate[i];
+        if (this.networkAdaptersForTemplate[i] === undefined) this.iosTemplate[`slot${i}`] = '';
+        else this.iosTemplate[`slot${i}`] = this.networkAdaptersForTemplate[i];
       } else {
         // Remove slot properties that don't exist on this platform/chassis
         delete this.iosTemplate[`slot${i}`];
@@ -198,10 +215,8 @@ export class IosTemplateDetailsComponent implements OnInit {
     for (let i = 0; i <= 3; i++) {
       const wicAdapters = this.wicMatrix?.[this.iosTemplate.platform]?.[i];
       if (wicAdapters) {
-        if (this.wicsForTemplate[i] === undefined)
-          this.iosTemplate[`wic${i}`] = ""
-        else
-          this.iosTemplate[`wic${i}`] = this.wicsForTemplate[i];
+        if (this.wicsForTemplate[i] === undefined) this.iosTemplate[`wic${i}`] = '';
+        else this.iosTemplate[`wic${i}`] = this.wicsForTemplate[i];
       } else {
         // Remove WIC properties that don't exist on this platform
         delete this.iosTemplate[`wic${i}`];

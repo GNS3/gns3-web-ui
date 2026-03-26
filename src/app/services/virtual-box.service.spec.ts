@@ -106,7 +106,9 @@ describe('VirtualBoxService', () => {
   it('should get available virtual machines', inject([VirtualBoxService], (service: VirtualBoxService) => {
     service.getVirtualMachines(controller).subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/computes/${environment.compute_id}/virtualbox/vms`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/computes/${environment.compute_id}/virtualbox/vms`
+    );
     expect(req.request.method).toEqual('GET');
   }));
 });

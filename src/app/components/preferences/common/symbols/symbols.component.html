@@ -24,34 +24,32 @@
 <div class="symbolsWrapper">
   <mat-accordion multi>
     @for (group of symbolGroups; track group.theme) {
-      <mat-expansion-panel [expanded]="isThemeExpanded(group.theme)">
-        <mat-expansion-panel-header (click)="toggleTheme(group.theme)">
-          <mat-panel-title>
-            {{ group.theme }}
-          </mat-panel-title>
-          <mat-panel-description>
-            {{ group.symbols.length }} symbols
-          </mat-panel-description>
-        </mat-expansion-panel-header>
-        <div class="wrapper">
-          @for (symbol of group.symbols | filenamefilter: searchText; track symbol.symbol_id) {
-            <div class="buttonWrapper">
-              <button
-                [ngClass]="{ buttonSelected: isSelected === symbol.symbol_id }"
-                class="button"
-                (click)="setSelected(symbol.symbol_id)"
-              >
-                <img
-                  lazyimg
-                  [ngClass]="{ imageSelected: isSelected === symbol.symbol_id }"
-                  class="image"
-                  [src]="getImageSourceForTemplate(symbol.symbol_id)"
-                />
-              </button>
-            </div>
-          }
+    <mat-expansion-panel [expanded]="isThemeExpanded(group.theme)">
+      <mat-expansion-panel-header (click)="toggleTheme(group.theme)">
+        <mat-panel-title>
+          {{ group.theme }}
+        </mat-panel-title>
+        <mat-panel-description> {{ group.symbols.length }} symbols </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="wrapper">
+        @for (symbol of group.symbols | filenamefilter: searchText; track symbol.symbol_id) {
+        <div class="buttonWrapper">
+          <button
+            [ngClass]="{ buttonSelected: isSelected === symbol.symbol_id }"
+            class="button"
+            (click)="setSelected(symbol.symbol_id)"
+          >
+            <img
+              lazyimg
+              [ngClass]="{ imageSelected: isSelected === symbol.symbol_id }"
+              class="image"
+              [src]="getImageSourceForTemplate(symbol.symbol_id)"
+            />
+          </button>
         </div>
-      </mat-expansion-panel>
+        }
+      </div>
+    </mat-expansion-panel>
     }
   </mat-accordion>
 </div>

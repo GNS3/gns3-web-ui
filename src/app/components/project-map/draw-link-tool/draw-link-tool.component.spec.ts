@@ -22,7 +22,7 @@ describe('DrawLinkToolComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [DrawLinkToolComponent, NodeSelectInterfaceComponent],
-      providers:[
+      providers: [
         provideZonelessChangeDetection(),
         DrawingLineWidget,
         NodesEventSource,
@@ -35,8 +35,8 @@ describe('DrawLinkToolComponent', () => {
         FontFixer,
         NodeToMapNodeConverter,
         LabelToMapLabelConverter,
-        PortToMapPortConverter
-      ]
+        PortToMapPortConverter,
+      ],
     }).compileComponents();
   });
 

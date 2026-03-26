@@ -18,18 +18,18 @@ export class UploadingProcessbarComponent implements OnInit {
 
   uploadProgress = signal<number>(0);
   subscription: Subscription;
-  upload_file_type:string
+  upload_file_type: string;
 
   constructor(@Inject(MAT_SNACK_BAR_DATA) public data) {}
 
   ngOnInit() {
-   this.upload_file_type =  this.data.upload_file_type
-    this.subscription = this._US.currentCount.subscribe((count:number) => {
+    this.upload_file_type = this.data.upload_file_type;
+    this.subscription = this._US.currentCount.subscribe((count: number) => {
       this.uploadProgress.set(count);
-      if (this.uploadProgress() === 100 || this.uploadProgress() == null ) {
-        this.dismiss()
+      if (this.uploadProgress() === 100 || this.uploadProgress() == null) {
+        this.dismiss();
       }
-    })
+    });
   }
 
   dismiss() {
@@ -37,11 +37,10 @@ export class UploadingProcessbarComponent implements OnInit {
   }
 
   cancelItem() {
-    this._US.cancelFileUploading(true)
+    this._US.cancelFileUploading(true);
   }
 
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
-
 }

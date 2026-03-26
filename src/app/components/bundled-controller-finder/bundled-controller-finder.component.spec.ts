@@ -18,18 +18,12 @@ describe('BundledControllerFinderComponent', () => {
   let progressService: MockedProgressService = new MockedProgressService();
   let controllerServiceMock: jasmine.SpyObj<ControllerService>;
 
-
   beforeEach(() => {
     router = {
       navigate: jasmine.createSpy('navigate'),
     };
 
-
-
-    controllerServiceMock = jasmine.createSpyObj<ControllerService>([
-      "getLocalController"
-    ]);
-
+    controllerServiceMock = jasmine.createSpyObj<ControllerService>(['getLocalController']);
 
     TestBed.configureTestingModule({
       providers: [
@@ -48,18 +42,16 @@ describe('BundledControllerFinderComponent', () => {
   });
 
   it('should create and redirect to controller', fakeAsync(() => {
-    const controller = new Controller ();
+    const controller = new Controller();
     controller.id = 99;
-    controllerServiceMock.getLocalController.and.returnValue(
-      Promise.resolve(controller)
-    );
+    controllerServiceMock.getLocalController.and.returnValue(Promise.resolve(controller));
     expect(component).toBeTruthy();
-    tick(101)
-    fixture.detectChanges()
+    tick(101);
+    fixture.detectChanges();
     fixture.whenStable().then(() => {
-      expect(controllerServiceMock.getLocalController).toHaveBeenCalledWith('vps3.gns3.net',3000);
+      expect(controllerServiceMock.getLocalController).toHaveBeenCalledWith('vps3.gns3.net', 3000);
       expect(router.navigate).toHaveBeenCalledWith(['/controller', 99, 'projects']);
-    })
+    });
     service = TestBed.inject(ControllerService);
   }));
 });

@@ -16,7 +16,16 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-add-controller-dialog',
   templateUrl: 'add-controller-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule]
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
+  ],
 })
 export class AddControllerDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<AddControllerDialogComponent>);
@@ -43,7 +52,7 @@ export class AddControllerDialogComponent implements OnInit {
     ubridge_path: new UntypedFormControl(''),
     host: new UntypedFormControl('', [Validators.required]),
     port: new UntypedFormControl('', [Validators.required, Validators.min(1)]),
-    protocol: new UntypedFormControl('http:')
+    protocol: new UntypedFormControl('http:'),
   });
 
   constructor() {}
@@ -127,7 +136,7 @@ export class AddControllerDialogComponent implements OnInit {
     this.isCheckingConnection = true;
     this.changeDetector.markForCheck();
 
-    const controller: Controller  = Object.assign({}, this.controllerForm.value);
+    const controller: Controller = Object.assign({}, this.controllerForm.value);
     this.controllerService.checkControllerVersion(controller).subscribe(
       (controllerInfo) => {
         this.isCheckingConnection = false;

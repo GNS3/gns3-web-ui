@@ -6,7 +6,7 @@ import { MapLink } from '../../models/map/map-link';
 import { SVGSelection } from '../../models/types';
 import { Widget } from '../widget';
 import { LinkStyle } from '@models/link-style';
-import { StyleTranslator} from './style-translator';
+import { StyleTranslator } from './style-translator';
 
 class EthernetLinkPath {
   constructor(public source: [number, number], public target: [number, number], public style: LinkStyle) {}
@@ -15,21 +15,28 @@ class EthernetLinkPath {
 @Injectable()
 export class EthernetLinkWidget implements Widget {
   public onContextMenu = new EventEmitter<LinkContextMenu>();
-  private defaultEthernetLinkStyle : LinkStyle = {
-    color: "#000000",
+  private defaultEthernetLinkStyle: LinkStyle = {
+    color: '#000000',
     width: 2,
-    type: 0
+    type: 0,
   };
 
   constructor() {}
 
   private linktoEthernetLink(link: MapLink) {
     // Validate source and target have valid coordinates
-    if (!link.source || !link.target ||
-        link.source.x == null || link.source.y == null ||
-        link.source.width == null || link.source.height == null ||
-        link.target.x == null || link.target.y == null ||
-        link.target.width == null || link.target.height == null) {
+    if (
+      !link.source ||
+      !link.target ||
+      link.source.x == null ||
+      link.source.y == null ||
+      link.source.width == null ||
+      link.source.height == null ||
+      link.target.x == null ||
+      link.target.y == null ||
+      link.target.width == null ||
+      link.target.height == null
+    ) {
       return null;
     }
 
@@ -40,12 +47,12 @@ export class EthernetLinkWidget implements Widget {
       ? {
           color: link.link_style.color,
           width: hasValidWidth ? link.link_style.width : this.defaultEthernetLinkStyle.width,
-          type: link.link_style.type !== undefined ? link.link_style.type : this.defaultEthernetLinkStyle.type
+          type: link.link_style.type !== undefined ? link.link_style.type : this.defaultEthernetLinkStyle.type,
         }
       : {
           color: this.defaultEthernetLinkStyle.color,
           width: hasValidWidth ? link.link_style.width : this.defaultEthernetLinkStyle.width,
-          type: link.link_style?.type !== undefined ? link.link_style.type : this.defaultEthernetLinkStyle.type
+          type: link.link_style?.type !== undefined ? link.link_style.type : this.defaultEthernetLinkStyle.type,
         };
 
     return new EthernetLinkPath(
@@ -70,7 +77,7 @@ export class EthernetLinkWidget implements Widget {
       .attr('class', 'ethernet_link')
       .attr('fill', 'none')
       .on('contextmenu', (event: any, datum) => {
-        let link: MapLink = (datum as unknown) as MapLink;
+        let link: MapLink = datum as unknown as MapLink;
         const evt = event;
         this.onContextMenu.emit(new LinkContextMenu(evt, link));
       })

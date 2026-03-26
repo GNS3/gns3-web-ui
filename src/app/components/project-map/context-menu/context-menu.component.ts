@@ -90,7 +90,7 @@ import { AlignVerticallyActionComponent } from './actions/align_vertically/align
     LockActionComponent,
     DeleteActionComponent,
     AlignHorizontallyActionComponent,
-    AlignVerticallyActionComponent
+    AlignVerticallyActionComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

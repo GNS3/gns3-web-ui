@@ -10,13 +10,11 @@
       placeholder="Template name"
     />
     @if (form.templateName?.touched && form.templateName?.errors && form.templateName?.errors.required) {
-      <mat-error>Template name is required</mat-error>
-    }
-    @if (form.templateName?.errors && form.templateName?.errors.invalidName) {
-      <mat-error>Template name is incorrect</mat-error>
-    }
-    @if (form.templateName?.errors && form.templateName?.errors.templateExist) {
-      <mat-error>Template with this name exists</mat-error>
+    <mat-error>Template name is required</mat-error>
+    } @if (form.templateName?.errors && form.templateName?.errors.invalidName) {
+    <mat-error>Template name is incorrect</mat-error>
+    } @if (form.templateName?.errors && form.templateName?.errors.templateExist) {
+    <mat-error>Template with this name exists</mat-error>
     }
   </mat-form-field>
   <div mat-dialog-actions>

@@ -39,6 +39,6 @@ export class HelpComponent implements OnInit {
   }
 
   goToDocumentation() {
-    window.location.href = "https://docs.gns3.com/docs/";
+    window.location.href = 'https://docs.gns3.com/docs/';
   }
 }

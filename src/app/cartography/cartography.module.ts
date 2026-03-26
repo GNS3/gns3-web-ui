@@ -101,10 +101,7 @@ import { SerialLinkWidget } from './widgets/links/serial-link';
     LinkEditingComponent,
     D3MapComponent,
   ],
-  declarations: [
-    MovingCanvasDirective,
-    ZoomingCanvasDirective,
-  ],
+  declarations: [MovingCanvasDirective, ZoomingCanvasDirective],
   providers: [
     CssFixer,
     FontFixer,

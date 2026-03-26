@@ -61,11 +61,10 @@ export class GraphLayout implements Widget {
 
   public updateSelectionHighlights(view: SVGSelection) {
     const canvas = view.select<SVGGElement>('g.canvas');
-    canvas.selectAll<SVGGElement, any>('g.node_body')
-      .classed('selected', (n) => this.selectionManager.isSelected(n));
-    canvas.selectAll<SVGGElement, any>('g.link_body')
-      .classed('selected', (l) => this.selectionManager.isSelected(l));
-    canvas.selectAll<SVGGElement, any>('g.drawing_body')
+    canvas.selectAll<SVGGElement, any>('g.node_body').classed('selected', (n) => this.selectionManager.isSelected(n));
+    canvas.selectAll<SVGGElement, any>('g.link_body').classed('selected', (l) => this.selectionManager.isSelected(l));
+    canvas
+      .selectAll<SVGGElement, any>('g.drawing_body')
       .classed('drawing_selected', (d) => this.selectionManager.isSelected(d));
   }
 

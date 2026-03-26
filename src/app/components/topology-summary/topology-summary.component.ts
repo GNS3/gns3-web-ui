@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnDestroy, OnInit, Output, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  inject,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSelectModule } from '@angular/material/select';
@@ -22,7 +32,7 @@ import { ThemeService } from '@services/theme.service';
   templateUrl: './topology-summary.component.html',
   styleUrl: './topology-summary.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatTabsModule, MatSelectModule, MatOptionModule, MatDividerModule]
+  imports: [CommonModule, MatTabsModule, MatSelectModule, MatOptionModule, MatDividerModule],
 })
 export class TopologySummaryComponent implements OnInit, OnDestroy {
   private nodesDataSource = inject(NodesDataSource);
@@ -94,7 +104,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     this.revertPosition();
   }
 
-  revertPosition(){
+  revertPosition() {
     let leftPosition = localStorage.getItem('leftPosition');
     let rightPosition = localStorage.getItem('rightPosition');
     let topPosition = localStorage.getItem('topPosition');
@@ -140,7 +150,6 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
       localStorage.setItem('topPosition', top.toString());
       localStorage.setItem('widthOfWidget', width.toString());
       localStorage.setItem('heightOfWidget', height.toString());
-
     } else {
       let right: number = Number(this.style['right'].split('px')[0]) - x;
       this.style = {

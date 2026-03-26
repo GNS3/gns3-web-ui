@@ -1,6 +1,6 @@
 import RFB from './novnc/core/rfb.js';
 
-(function() {
+(function () {
   'use strict';
 
   // Parse URL parameters
@@ -109,7 +109,10 @@ import RFB from './novnc/core/rfb.js';
 
   // Validate required parameters
   if (!wsUrl) {
-    showError('Missing Parameter', 'WebSocket URL (ws_url) is required. Please close this window and try opening the console again.');
+    showError(
+      'Missing Parameter',
+      'WebSocket URL (ws_url) is required. Please close this window and try opening the console again.'
+    );
     return;
   }
 
@@ -174,7 +177,7 @@ import RFB from './novnc/core/rfb.js';
         showError(
           'Connection Lost',
           `The VNC connection was closed unexpectedly.\n\nReason: ${reason}\n\n` +
-          'Please check if the node is still running and try again.'
+            'Please check if the node is still running and try again.'
         );
       }
     });
@@ -203,10 +206,10 @@ import RFB from './novnc/core/rfb.js';
       showError(
         'Security Error',
         'Security negotiation with the VNC server failed. This could be due to:\n\n' +
-        '• Unsupported security type\n' +
-        '• TLS/SSL configuration mismatch\n' +
-        '• Protocol version incompatibility\n\n' +
-        'Please check the server configuration and try again.'
+          '• Unsupported security type\n' +
+          '• TLS/SSL configuration mismatch\n' +
+          '• Protocol version incompatibility\n\n' +
+          'Please check the server configuration and try again.'
       );
     });
 
@@ -311,11 +314,13 @@ import RFB from './novnc/core/rfb.js';
     // Calculate elapsed time
     let elapsed = Date.now() - recordingStartTime - totalPausedTime;
     if (isPaused && pausedStartTime) {
-      elapsed -= (Date.now() - pausedStartTime);
+      elapsed -= Date.now() - pausedStartTime;
     }
 
     const seconds = Math.floor(elapsed / 1000);
-    const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const minutes = Math.floor(seconds / 60)
+      .toString()
+      .padStart(2, '0');
     const secs = (seconds % 60).toString().padStart(2, '0');
     const timestamp = `${minutes}:${secs}`;
 
@@ -352,7 +357,7 @@ import RFB from './novnc/core/rfb.js';
   // Toggle fullscreen
   function toggleFullscreen() {
     if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(err => {
+      document.documentElement.requestFullscreen().catch((err) => {
         log(`Failed to enter fullscreen: ${err.message}`, 'error');
       });
     } else {
@@ -373,12 +378,12 @@ import RFB from './novnc/core/rfb.js';
     if (rfb && isConnected) {
       log('Sending Ctrl+Alt+Backspace');
       // Send key sequence: Ctrl down, Alt down, Backspace down/up, Alt up, Ctrl up
-      rfb.sendKey(0xFFE3, 'ControlLeft', true);  // Ctrl down
-      rfb.sendKey(0xFFE9, 'AltLeft', true);      // Alt down
-      rfb.sendKey(0xFF08, 'BackSpace', true);    // Backspace down
-      rfb.sendKey(0xFF08, 'BackSpace', false);   // Backspace up
-      rfb.sendKey(0xFFE9, 'AltLeft', false);     // Alt up
-      rfb.sendKey(0xFFE3, 'ControlLeft', false); // Ctrl up
+      rfb.sendKey(0xffe3, 'ControlLeft', true); // Ctrl down
+      rfb.sendKey(0xffe9, 'AltLeft', true); // Alt down
+      rfb.sendKey(0xff08, 'BackSpace', true); // Backspace down
+      rfb.sendKey(0xff08, 'BackSpace', false); // Backspace up
+      rfb.sendKey(0xffe9, 'AltLeft', false); // Alt up
+      rfb.sendKey(0xffe3, 'ControlLeft', false); // Ctrl up
     }
   }
 
@@ -386,7 +391,7 @@ import RFB from './novnc/core/rfb.js';
   function sendTab() {
     if (rfb && isConnected) {
       log('Sending Tab');
-      rfb.sendKey(0xFF09, 'Tab');
+      rfb.sendKey(0xff09, 'Tab');
     }
   }
 
@@ -394,7 +399,7 @@ import RFB from './novnc/core/rfb.js';
   function sendEsc() {
     if (rfb && isConnected) {
       log('Sending Esc');
-      rfb.sendKey(0xFF1B, 'Escape');
+      rfb.sendKey(0xff1b, 'Escape');
     }
   }
 
@@ -425,7 +430,7 @@ import RFB from './novnc/core/rfb.js';
   function sendKeyCombination(fNum) {
     if (rfb && isConnected) {
       const modifiers = getSelectedModifiers();
-      const keysym = 0xFFBE + fNum - 1; // F1-F12 keysyms
+      const keysym = 0xffbe + fNum - 1; // F1-F12 keysyms
 
       // Build description
       const modDesc = modifiers.length > 0 ? modifiers.join('+').toUpperCase() + '+' : '';
@@ -433,12 +438,12 @@ import RFB from './novnc/core/rfb.js';
 
       // Send modifiers (key down)
       const modifierKeys = {
-        'ctrl': { code: 0xFFE3, name: 'ControlLeft' },
-        'alt': { code: 0xFFE9, name: 'AltLeft' },
-        'shift': { code: 0xFFE1, name: 'ShiftLeft' }
+        ctrl: { code: 0xffe3, name: 'ControlLeft' },
+        alt: { code: 0xffe9, name: 'AltLeft' },
+        shift: { code: 0xffe1, name: 'ShiftLeft' },
       };
 
-      modifiers.forEach(mod => {
+      modifiers.forEach((mod) => {
         rfb.sendKey(modifierKeys[mod].code, modifierKeys[mod].name, true);
       });
 
@@ -447,7 +452,7 @@ import RFB from './novnc/core/rfb.js';
       rfb.sendKey(keysym, `F${fNum}`, false);
 
       // Release modifiers (key up)
-      modifiers.reverse().forEach(mod => {
+      modifiers.reverse().forEach((mod) => {
         rfb.sendKey(modifierKeys[mod].code, modifierKeys[mod].name, false);
       });
     }
@@ -457,7 +462,7 @@ import RFB from './novnc/core/rfb.js';
   function sendPrintScreen() {
     if (rfb && isConnected) {
       log('Sending Print Screen');
-      rfb.sendKey(0xFF15, 'Print');
+      rfb.sendKey(0xff15, 'Print');
     }
   }
 
@@ -473,7 +478,7 @@ import RFB from './novnc/core/rfb.js';
 
     // If recording is active, toggle audio track
     if (audioStream) {
-      audioStream.getAudioTracks().forEach(track => {
+      audioStream.getAudioTracks().forEach((track) => {
         track.enabled = !isMuted;
       });
       log(isMuted ? 'Microphone muted' : 'Microphone unmuted');
@@ -537,7 +542,6 @@ import RFB from './novnc/core/rfb.js';
         log(`Screenshot saved: ${filename}`);
         updateStatus('Screenshot saved', 'success');
       }, 100);
-
     } catch (error) {
       log(`Screenshot error: ${error.message}`, 'error');
       log(error.stack, 'error');
@@ -579,7 +583,7 @@ import RFB from './novnc/core/rfb.js';
         try {
           cameraStream = await navigator.mediaDevices.getUserMedia({
             video: { width: 320, height: 240 },
-            audio: false
+            audio: false,
           });
 
           // Use existing preview video element from DOM
@@ -657,7 +661,7 @@ import RFB from './novnc/core/rfb.js';
       try {
         audioStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
         // Apply mute state
-        audioStream.getAudioTracks().forEach(track => {
+        audioStream.getAudioTracks().forEach((track) => {
           track.enabled = !isMuted;
           combinedStream.addTrack(track);
         });
@@ -668,9 +672,7 @@ import RFB from './novnc/core/rfb.js';
       }
 
       // Create MediaRecorder
-      const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
-        ? 'video/webm;codecs=vp9'
-        : 'video/webm';
+      const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm';
 
       mediaRecorder = new MediaRecorder(combinedStream, { mimeType });
       recordedChunks = [];
@@ -694,7 +696,7 @@ import RFB from './novnc/core/rfb.js';
             try {
               cameraStream = await navigator.mediaDevices.getUserMedia({
                 video: { width: 320, height: 240 },
-                audio: false
+                audio: false,
               });
 
               // Use existing preview video element from DOM
@@ -780,7 +782,9 @@ import RFB from './novnc/core/rfb.js';
           let elapsed = Date.now() - recordingStartTime - totalPausedTime;
 
           const seconds = Math.floor(elapsed / 1000);
-          const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+          const minutes = Math.floor(seconds / 60)
+            .toString()
+            .padStart(2, '0');
           const secs = (seconds % 60).toString().padStart(2, '0');
           const timestamp = `${minutes}:${secs}`;
 
@@ -814,15 +818,16 @@ import RFB from './novnc/core/rfb.js';
 
         // Steganography watermark - embed GNS3 in pixel data (for verification)
         // Embed with multiple positions and redundancy for robustness
-        const frameCount = Math.floor((Date.now() - recordingStartTime) / 1000 * 60);
-        if (frameCount % 30 === 0) { // Every ~0.5 seconds
+        const frameCount = Math.floor(((Date.now() - recordingStartTime) / 1000) * 60);
+        if (frameCount % 30 === 0) {
+          // Every ~0.5 seconds
           const watermarkText = 'GNS3';
 
           // Multiple embedding positions for redundancy
           const positions = [
             { x: recordingCanvas.width - 100, y: recordingCanvas.height - 40 },
             { x: recordingCanvas.width - 180, y: recordingCanvas.height - 30 },
-            { x: recordingCanvas.width - 60, y: recordingCanvas.height - 60 }
+            { x: recordingCanvas.width - 60, y: recordingCanvas.height - 60 },
           ];
 
           positions.forEach((pos, posIdx) => {
@@ -841,7 +846,7 @@ import RFB from './novnc/core/rfb.js';
                   if (pixelIdx < data.length) {
                     const bitValue = (charCode >> bit) & 1;
                     // Modify blue channel's 2nd bit (more robust than LSB)
-                    data[pixelIdx + 2] = (data[pixelIdx + 2] & 0xFD) | (bitValue << 1);
+                    data[pixelIdx + 2] = (data[pixelIdx + 2] & 0xfd) | (bitValue << 1);
                   }
                 }
               }
@@ -873,9 +878,10 @@ import RFB from './novnc/core/rfb.js';
         // Draw click effects (ripples)
         const currentTime = Date.now();
 
-        clickEffects = clickEffects.filter(effect => {
+        clickEffects = clickEffects.filter((effect) => {
           const age = currentTime - effect.startTime;
-          if (age > 600) { // Remove effects older than 600ms
+          if (age > 600) {
+            // Remove effects older than 600ms
             return false;
           }
 
@@ -944,13 +950,13 @@ import RFB from './novnc/core/rfb.js';
 
         // Stop and clear audio stream
         if (audioStream) {
-          audioStream.getTracks().forEach(track => track.stop());
+          audioStream.getTracks().forEach((track) => track.stop());
           audioStream = null;
         }
 
         // Stop and clear camera stream
         if (cameraStream) {
-          cameraStream.getTracks().forEach(track => track.stop());
+          cameraStream.getTracks().forEach((track) => track.stop());
           cameraStream = null;
         }
         cameraVideo = null;
@@ -1017,7 +1023,6 @@ import RFB from './novnc/core/rfb.js';
       recordingTimer = setInterval(updateRecordingTimer, 1000);
 
       log('Recording started (canvas capture mode)');
-
     } catch (error) {
       log(`Recording error: ${error.message}`, 'error');
       log(error.stack, 'error');
@@ -1203,11 +1208,13 @@ import RFB from './novnc/core/rfb.js';
 
     // If currently paused, don't count the paused time
     if (isPaused && pausedStartTime) {
-      elapsed -= (Date.now() - pausedStartTime);
+      elapsed -= Date.now() - pausedStartTime;
     }
 
     const seconds = Math.floor(elapsed / 1000);
-    const minutes = Math.floor(seconds / 60).toString().padStart(2, '0');
+    const minutes = Math.floor(seconds / 60)
+      .toString()
+      .padStart(2, '0');
     const secs = (seconds % 60).toString().padStart(2, '0');
 
     const timeDisplay = document.getElementById('recording-time');
@@ -1225,10 +1232,10 @@ import RFB from './novnc/core/rfb.js';
       const isOpen = menu.classList.contains('show');
 
       // Close all other dropdowns first
-      document.querySelectorAll('.dropdown-menu').forEach(m => {
+      document.querySelectorAll('.dropdown-menu').forEach((m) => {
         m.classList.remove('show');
       });
-      document.querySelectorAll('.dropdown').forEach(d => {
+      document.querySelectorAll('.dropdown').forEach((d) => {
         d.classList.remove('active');
       });
 
@@ -1246,7 +1253,7 @@ import RFB from './novnc/core/rfb.js';
   // Close dropdown when clicking outside
   function handleClickOutside(event) {
     const dropdowns = document.querySelectorAll('.dropdown');
-    dropdowns.forEach(dropdown => {
+    dropdowns.forEach((dropdown) => {
       const menu = dropdown.querySelector('.dropdown-menu');
       if (menu && menu.classList.contains('show')) {
         if (!dropdown.contains(event.target)) {
@@ -1516,10 +1523,10 @@ import RFB from './novnc/core/rfb.js';
         showError(
           'Connection Timeout',
           'Could not connect to the VNC server. Please verify:\n\n' +
-          '• The node is started\n' +
-          '• The console type is set to VNC\n' +
-          '• Your network connection is stable\n' +
-          '• No firewall is blocking the connection'
+            '• The node is started\n' +
+            '• The console type is set to VNC\n' +
+            '• Your network connection is stable\n' +
+            '• No firewall is blocking the connection'
         );
         if (rfb) {
           rfb.disconnect();
@@ -1535,8 +1542,8 @@ import RFB from './novnc/core/rfb.js';
 
     // Create RFB instance
     rfb = new RFB(container, wsUrl, {
-      resizeSession: false,  // Don't resize the remote session
-      scaleViewport: true,   // Scale the display to fit the container
+      resizeSession: false, // Don't resize the remote session
+      scaleViewport: true, // Scale the display to fit the container
       // Additional noVNC options can be added here
     });
 
@@ -1553,119 +1560,126 @@ import RFB from './novnc/core/rfb.js';
 
     // Mouse click tracking for recording effects
     // Use document-level listener to capture all clicks, even if noVNC intercepts them
-    document.addEventListener('mousedown', (e) => {
-      log(`Document MouseDown detected: recording=${isRecording}, paused=${isPaused}`);
+    document.addEventListener(
+      'mousedown',
+      (e) => {
+        log(`Document MouseDown detected: recording=${isRecording}, paused=${isPaused}`);
 
-      if (!isRecording || isPaused) {
-        return;
-      }
+        if (!isRecording || isPaused) {
+          return;
+        }
 
-      // Check if click is within VNC container
-      const containerRect = container.getBoundingClientRect();
-      if (
-        e.clientX < containerRect.left ||
-        e.clientX > containerRect.right ||
-        e.clientY < containerRect.top ||
-        e.clientY > containerRect.bottom
-      ) {
-        log('Click outside VNC container, ignoring');
-        return;
-      }
+        // Check if click is within VNC container
+        const containerRect = container.getBoundingClientRect();
+        if (
+          e.clientX < containerRect.left ||
+          e.clientX > containerRect.right ||
+          e.clientY < containerRect.top ||
+          e.clientY > containerRect.bottom
+        ) {
+          log('Click outside VNC container, ignoring');
+          return;
+        }
 
-      log('Click inside VNC container, processing...');
+        log('Click inside VNC container, processing...');
 
-      // Get VNC canvas to calculate coordinates
-      let vncCanvas = null;
-      if (typeof rfb.get_canvas === 'function') {
-        vncCanvas = rfb.get_canvas();
-      } else if (rfb.canvas) {
-        vncCanvas = rfb.canvas;
-      } else {
-        vncCanvas = container.querySelector('canvas');
-      }
+        // Get VNC canvas to calculate coordinates
+        let vncCanvas = null;
+        if (typeof rfb.get_canvas === 'function') {
+          vncCanvas = rfb.get_canvas();
+        } else if (rfb.canvas) {
+          vncCanvas = rfb.canvas;
+        } else {
+          vncCanvas = container.querySelector('canvas');
+        }
 
-      if (!vncCanvas) {
-        log('Cannot find VNC canvas for click tracking');
-        return;
-      }
+        if (!vncCanvas) {
+          log('Cannot find VNC canvas for click tracking');
+          return;
+        }
 
-      log(`VNC Canvas: ${vncCanvas.width}x${vncCanvas.height}`);
+        log(`VNC Canvas: ${vncCanvas.width}x${vncCanvas.height}`);
 
-      // Get canvas position and dimensions
-      const rect = vncCanvas.getBoundingClientRect();
-      log(`Canvas rect: left=${rect.left}, top=${rect.top}, width=${rect.width}, height=${rect.height}`);
-      log(`Mouse client: x=${e.clientX}, y=${e.clientY}`);
+        // Get canvas position and dimensions
+        const rect = vncCanvas.getBoundingClientRect();
+        log(`Canvas rect: left=${rect.left}, top=${rect.top}, width=${rect.width}, height=${rect.height}`);
+        log(`Mouse client: x=${e.clientX}, y=${e.clientY}`);
 
-      // Calculate click position relative to canvas
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      // Scale coordinates to match canvas internal resolution
-      const scaleX = vncCanvas.width / rect.width;
-      const scaleY = vncCanvas.height / rect.height;
-      const canvasX = x * scaleX;
-      const canvasY = y * scaleY;
-
-      log(`Click position: relative=(${x.toFixed(0)}, ${y.toFixed(0)}), scaled=(${canvasX.toFixed(0)}, ${canvasY.toFixed(0)})`);
-
-      // Add click effect
-      const effect = {
-        x: canvasX,
-        y: canvasY,
-        startTime: Date.now()
-      };
-      clickEffects.push(effect);
-
-      log(`✓ Click effect added! Total effects: ${clickEffects.length}`);
-    }, true); // Use capture phase to catch events before noVNC
-
-    // Track mouse position for cursor rendering in recording
-    document.addEventListener('mousemove', (e) => {
-      // Only track when recording
-      if (!isRecording) {
-        currentMousePos = null;
-        return;
-      }
-
-      // Get VNC canvas
-      let vncCanvas = null;
-      if (typeof rfb.get_canvas === 'function') {
-        vncCanvas = rfb.get_canvas();
-      } else if (rfb.canvas) {
-        vncCanvas = rfb.canvas;
-      } else {
-        vncCanvas = container.querySelector('canvas');
-      }
-
-      if (!vncCanvas) {
-        return;
-      }
-
-      // Get canvas position and dimensions
-      const rect = vncCanvas.getBoundingClientRect();
-
-      // Check if mouse is within canvas
-      if (
-        e.clientX >= rect.left &&
-        e.clientX <= rect.right &&
-        e.clientY >= rect.top &&
-        e.clientY <= rect.bottom
-      ) {
-        // Calculate position relative to canvas
+        // Calculate click position relative to canvas
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
-        // Scale to canvas resolution
+        // Scale coordinates to match canvas internal resolution
         const scaleX = vncCanvas.width / rect.width;
         const scaleY = vncCanvas.height / rect.height;
-        currentMousePos = {
-          x: x * scaleX,
-          y: y * scaleY
+        const canvasX = x * scaleX;
+        const canvasY = y * scaleY;
+
+        log(
+          `Click position: relative=(${x.toFixed(0)}, ${y.toFixed(0)}), scaled=(${canvasX.toFixed(
+            0
+          )}, ${canvasY.toFixed(0)})`
+        );
+
+        // Add click effect
+        const effect = {
+          x: canvasX,
+          y: canvasY,
+          startTime: Date.now(),
         };
-      } else {
-        currentMousePos = null;
-      }
-    }, true);
+        clickEffects.push(effect);
+
+        log(`✓ Click effect added! Total effects: ${clickEffects.length}`);
+      },
+      true
+    ); // Use capture phase to catch events before noVNC
+
+    // Track mouse position for cursor rendering in recording
+    document.addEventListener(
+      'mousemove',
+      (e) => {
+        // Only track when recording
+        if (!isRecording) {
+          currentMousePos = null;
+          return;
+        }
+
+        // Get VNC canvas
+        let vncCanvas = null;
+        if (typeof rfb.get_canvas === 'function') {
+          vncCanvas = rfb.get_canvas();
+        } else if (rfb.canvas) {
+          vncCanvas = rfb.canvas;
+        } else {
+          vncCanvas = container.querySelector('canvas');
+        }
+
+        if (!vncCanvas) {
+          return;
+        }
+
+        // Get canvas position and dimensions
+        const rect = vncCanvas.getBoundingClientRect();
+
+        // Check if mouse is within canvas
+        if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom) {
+          // Calculate position relative to canvas
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+
+          // Scale to canvas resolution
+          const scaleX = vncCanvas.width / rect.width;
+          const scaleY = vncCanvas.height / rect.height;
+          currentMousePos = {
+            x: x * scaleX,
+            y: y * scaleY,
+          };
+        } else {
+          currentMousePos = null;
+        }
+      },
+      true
+    );
 
     // Keyboard shortcuts (as alternative to toolbar buttons)
     document.addEventListener('keydown', (e) => {
@@ -1739,17 +1753,15 @@ import RFB from './novnc/core/rfb.js';
     });
 
     log('noVNC RFB initialized successfully');
-
   } catch (error) {
     clearTimeout(connectionTimeout);
     hideLoading();
     showError(
       'Initialization Error',
       `Failed to initialize VNC console:\n\n${error.message}\n\n` +
-      'Please ensure you are using a modern browser with WebSocket support.'
+        'Please ensure you are using a modern browser with WebSocket support.'
     );
     log(`Initialization error: ${error.message}`, 'error');
     log(error.stack, 'error');
   }
-
 })();

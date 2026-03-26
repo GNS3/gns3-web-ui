@@ -32,7 +32,8 @@
 .selection-on-primary {
   background: color-mix(in srgb, var(--mat-sys-on-primary) var(--gns3-selection-opacity-normal), transparent);
 
-  mat-icon, .icon {
+  mat-icon,
+  .icon {
     color: var(--mat-sys-on-primary);
   }
 }
@@ -41,7 +42,8 @@
 .selection-on-surface {
   background: var(--mat-sys-primary-container);
 
-  mat-icon, .icon {
+  mat-icon,
+  .icon {
     color: var(--mat-sys-primary);
   }
 }

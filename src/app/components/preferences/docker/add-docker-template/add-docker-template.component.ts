@@ -29,7 +29,20 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-add-docker-template',
   templateUrl: './add-docker-template.component.html',
   styleUrls: ['./add-docker-template.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, MatCheckboxModule]
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatRadioModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatStepperModule,
+    MatCheckboxModule,
+  ],
 })
 export class AddDockerTemplateComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -98,9 +111,7 @@ export class AddDockerTemplateComponent implements OnInit {
   addTemplate() {
     if (
       (!this.newImageSelected && this.selectedImage) ||
-      (this.newImageSelected && this.filename()) &&
-      this.templateName() &&
-      this.adapters()
+      (this.newImageSelected && this.filename() && this.templateName() && this.adapters())
     ) {
       this.dockerTemplate.template_id = uuid();
 

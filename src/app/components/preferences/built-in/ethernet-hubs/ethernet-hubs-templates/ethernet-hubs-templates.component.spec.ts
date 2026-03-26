@@ -18,7 +18,7 @@ import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { EthernetHubsTemplatesComponent } from './ethernet-hubs-templates.component';
 
 export class MockedBuiltInTemplatesService {
-  public getTemplates(controller: Controller ) {
+  public getTemplates(controller: Controller) {
     return of([{} as EthernetHubTemplate]);
   }
 }
@@ -32,7 +32,7 @@ describe('EthernetHubsTemplatesComponent', () => {
   let activatedRoute = new MockedActivatedRoute().get();
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [
         MatIconModule,
         MatToolbarModule,
@@ -56,13 +56,13 @@ describe('EthernetHubsTemplatesComponent', () => {
     }).compileComponents();
   });
 
-beforeEach(() => {
-  fixture = TestBed.createComponent(EthernetHubsTemplatesComponent);
-  component = fixture.componentInstance;
-  fixture.detectChanges();
-});
+  beforeEach(() => {
+    fixture = TestBed.createComponent(EthernetHubsTemplatesComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-it('should create', () => {
-  expect(component).toBeTruthy();
-});
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 });

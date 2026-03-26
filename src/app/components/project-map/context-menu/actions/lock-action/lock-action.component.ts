@@ -14,7 +14,7 @@ import { ProjectService } from '@services/project.service';
 @Component({
   selector: 'app-lock-action',
   templateUrl: './lock-action.component.html',
-  imports: [ MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LockActionComponent implements OnChanges {

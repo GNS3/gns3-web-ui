@@ -1,12 +1,9 @@
 <div class="ethernet-hub-add">
   <header class="ethernet-hub-add__header">
     @if (controller) {
-      <button
-        class="ethernet-hub-add__back-btn"
-        (click)="goBack()"
-        mat-icon-button>
-        <mat-icon>arrow_back</mat-icon>
-      </button>
+    <button class="ethernet-hub-add__back-btn" (click)="goBack()" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     }
     <h1 class="ethernet-hub-add__title">New Ethernet hub template</h1>
   </header>
@@ -18,7 +15,8 @@
           class="ethernet-hub-add__radio"
           value="1"
           (click)="setControllerType('local')"
-          [checked]="true">
+          [checked]="true"
+        >
           Run the Ethernet Hub locally
         </mat-radio-button>
       </mat-radio-group>

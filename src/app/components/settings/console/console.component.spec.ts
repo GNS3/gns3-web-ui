@@ -48,31 +48,31 @@ describe('ConsoleComponent', () => {
     }).compileComponents();
   });
 
-beforeEach(() => {
-  fixture = TestBed.createComponent(ConsoleComponent);
-  component = fixture.componentInstance;
-  fixture.detectChanges();
-});
+  beforeEach(() => {
+    fixture = TestBed.createComponent(ConsoleComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
 
-it('should create', () => {
-  expect(component).toBeTruthy();
-});
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
 
-it('should set default command', () => {
-  component.ngOnInit();
-  expect(component.consoleForm.value.command).toEqual('command');
-});
+  it('should set default command', () => {
+    component.ngOnInit();
+    expect(component.consoleForm.value.command).toEqual('command');
+  });
 
-it('should go back', () => {
-  component.goBack();
-  expect(router.navigate).toHaveBeenCalledWith(['/settings']);
-});
+  it('should go back', () => {
+    component.goBack();
+    expect(router.navigate).toHaveBeenCalledWith(['/settings']);
+  });
 
-it('should update console command', () => {
-  component.consoleForm.get('command').setValue('newCommand');
-  spyOn(component, 'goBack');
-  component.save();
-  expect(toaster.success.length).toEqual(1);
-  expect(component.goBack).toHaveBeenCalled();
-});
+  it('should update console command', () => {
+    component.consoleForm.get('command').setValue('newCommand');
+    spyOn(component, 'goBack');
+    component.save();
+    expect(toaster.success.length).toEqual(1);
+    expect(component.goBack).toHaveBeenCalled();
+  });
 });

@@ -8,8 +8,8 @@
   [attr.transform]="transformation"
 >
   @for (line of lines; track $index; let i = $index) {
-    <svg:tspan xml:space="preserve" x="0" [attr.dy]="i == 0 ? '0em' : '1.4em'">
-      {{ line }}
-    </svg:tspan>
+  <svg:tspan xml:space="preserve" x="0" [attr.dy]="i == 0 ? '0em' : '1.4em'">
+    {{ line }}
+  </svg:tspan>
   }
 </svg:text>

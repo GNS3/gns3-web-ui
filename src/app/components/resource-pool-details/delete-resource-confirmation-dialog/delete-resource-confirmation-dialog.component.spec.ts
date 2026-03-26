@@ -2,15 +2,13 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DeleteResourceConfirmationDialogComponent } from './delete-resource-confirmation-dialog.component';
-import {Resource} from "@models/resourcePools/Resource";
-import {DIALOG_DATA} from "@angular/cdk/dialog";
-import {MatDialogRef} from "@angular/material/dialog";
+import { Resource } from '@models/resourcePools/Resource';
+import { DIALOG_DATA } from '@angular/cdk/dialog';
+import { MatDialogRef } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
-class FakeMatDialogRef {
-
-}
+class FakeMatDialogRef {}
 
 describe('DeleteResourceConfirmationDialogComponent', () => {
   let component: DeleteResourceConfirmationDialogComponent;
@@ -18,16 +16,15 @@ describe('DeleteResourceConfirmationDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ DeleteResourceConfirmationDialogComponent ],
-      imports: [ MatButtonModule ],
+      declarations: [DeleteResourceConfirmationDialogComponent],
+      imports: [MatButtonModule],
       providers: [
         provideZonelessChangeDetection(),
-        {provide: DIALOG_DATA,  useValue: {}},
-        {provide: MatDialogRef, useClass: FakeMatDialogRef}
+        { provide: DIALOG_DATA, useValue: {} },
+        { provide: MatDialogRef, useClass: FakeMatDialogRef },
       ],
-      schemas: [NO_ERRORS_SCHEMA]
-    })
-    .compileComponents();
+      schemas: [NO_ERRORS_SCHEMA],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(DeleteResourceConfirmationDialogComponent);
     component = fixture.componentInstance;

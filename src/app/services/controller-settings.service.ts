@@ -8,7 +8,7 @@ import { HttpController } from './http-controller.service';
 export class ControllerSettingsService {
   constructor(private httpController: HttpController) {}
 
-  get(controller: Controller ) {
+  get(controller: Controller) {
     return this.httpController.get<ControllerSettings>(controller, `/settings`);
   }
 
@@ -16,7 +16,7 @@ export class ControllerSettingsService {
     return this.httpController.post<ControllerSettings>(controller, `/settings`, controllerSettings);
   }
 
-  getSettingsForQemu(controller: Controller ) {
+  getSettingsForQemu(controller: Controller) {
     return this.httpController.get<QemuSettings>(controller, `/settings/qemu`);
   }
 

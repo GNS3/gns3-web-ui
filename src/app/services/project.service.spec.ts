@@ -18,7 +18,7 @@ import { getTestController } from './testing';
 export class MockedProjectService {
   public projects: Project[] = [];
 
-  list(controller: Controller ) {
+  list(controller: Controller) {
     return of(this.projects);
   }
 
@@ -49,7 +49,7 @@ export class MockedProjectService {
   getStatistics(controller: Controller, project_id: string) {
     return of({});
   }
-  exportPortableProject(controller: Controller, formData:{}) {
+  exportPortableProject(controller: Controller, formData: {}) {
     return of({});
   }
   getCompression() {
@@ -100,14 +100,18 @@ describe('ProjectService', () => {
   it('should get the project', () => {
     service.get(controller, 'myproject').subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject`
+    );
     expect(req.request.method).toEqual('GET');
   });
 
   it('should open the project', () => {
     service.open(controller, 'myproject').subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/open`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/open`
+    );
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual({});
   });
@@ -115,7 +119,9 @@ describe('ProjectService', () => {
   it('should close the project', () => {
     service.close(controller, 'myproject').subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/close`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/close`
+    );
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual({});
   });
@@ -130,35 +136,45 @@ describe('ProjectService', () => {
   it('should get nodes of project', () => {
     service.nodes(controller, 'myproject').subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/nodes`
+    );
     expect(req.request.method).toEqual('GET');
   });
 
   it('should get links of project', () => {
     service.links(controller, 'myproject').subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/links`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/links`
+    );
     expect(req.request.method).toEqual('GET');
   });
 
   it('should get drawings of project', () => {
     service.drawings(controller, 'myproject').subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject/drawings`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/drawings`
+    );
     expect(req.request.method).toEqual('GET');
   });
 
   it('should delete the project', () => {
     service.delete(controller, 'myproject').subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/myproject`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject`
+    );
     expect(req.request.method).toEqual('DELETE');
   });
 
   it('should duplicate the project', () => {
     service.duplicate(controller, 'projectId', 'projectName').subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/projects/projectId/duplicate`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/projects/projectId/duplicate`
+    );
     expect(req.request.method).toEqual('POST');
   });
 

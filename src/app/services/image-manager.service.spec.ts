@@ -7,7 +7,7 @@ import { HttpController } from './http-controller.service';
 import { getTestController } from './testing';
 
 import { ImageManagerService } from './image-manager.service';
-import { Image } from "@models/images";
+import { Image } from '@models/images';
 import { environment } from 'environments/environment';
 
 describe('ImageManagerService', () => {
@@ -32,7 +32,6 @@ describe('ImageManagerService', () => {
     httpTestingController.verify();
   });
 
-
   it('should be get Images', inject([ImageManagerService], (service: ImageManagerService) => {
     service.getImages(controller).subscribe();
     const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/images`);
@@ -41,7 +40,7 @@ describe('ImageManagerService', () => {
   }));
 
   it('should add image', inject([ImageManagerService], (service: ImageManagerService) => {
-    let  install_appliance = true
+    let install_appliance = true;
     const image: Image = {
       filename: '',
       path: '',
@@ -54,7 +53,9 @@ describe('ImageManagerService', () => {
     };
 
     service.uploadedImage(controller, install_appliance, image.filename, image).subscribe();
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/images/upload/?install_appliances=true`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/images/upload/?install_appliances=true`
+    );
     expect(req.request.method).toEqual('POST');
     expect(req.request.body).toEqual(image);
   }));

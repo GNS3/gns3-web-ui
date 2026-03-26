@@ -1,12 +1,9 @@
 <div class="vpcs-add">
   <header class="vpcs-add__header">
     @if (controller) {
-      <button
-        class="vpcs-add__back-btn"
-        (click)="goBack()"
-        mat-icon-button>
-        <mat-icon>arrow_back</mat-icon>
-      </button>
+    <button class="vpcs-add__back-btn" (click)="goBack()" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     }
     <h1 class="vpcs-add__title">New VPCS node template</h1>
   </header>
@@ -14,11 +11,7 @@
   <main class="vpcs-add__content">
     <section class="vpcs-add__form-card">
       <mat-radio-group class="vpcs-add__radio-group">
-        <mat-radio-button
-          class="vpcs-add__radio"
-          value="1"
-          (click)="setControllerType('local')"
-          [checked]="true">
+        <mat-radio-button class="vpcs-add__radio" value="1" (click)="setControllerType('local')" [checked]="true">
           Run the VPCS node locally
         </mat-radio-button>
       </mat-radio-group>

@@ -3,63 +3,54 @@
   <div class="header">
     <div class="title">Privileges</div>
     @if (!disable()) {
-      <div>
-        @if (!editMode) {
-          <button mat-button>
-            <mat-icon (click)="editMode = true">edit</mat-icon>
-          </button>
-        }
-        @if (editMode) {
-          <button mat-raised-button color="warn" (click)="editMode = false">Cancel</button>
-        }
-        @if (editMode) {
-          <button mat-raised-button color="primary" (click)="close()">Update</button>
-        }
-      </div>
+    <div>
+      @if (!editMode) {
+      <button mat-button>
+        <mat-icon (click)="editMode = true">edit</mat-icon>
+      </button>
+      } @if (editMode) {
+      <button mat-raised-button color="warn" (click)="editMode = false">Cancel</button>
+      } @if (editMode) {
+      <button mat-raised-button color="primary" (click)="close()">Update</button>
+      }
+    </div>
     }
   </div>
-  @for (privilegeName of privileges() | groupPrivileges; track privilegeName.key) {
-    @if (editMode) {
-      <div>
-        <div class="privilege">
-          <div class="key">{{ privilegeName.key }}:</div>
-          <div class="values">
-            @for (privilegeVerb of privilegeName.values; track privilegeVerb.privilege.privilege_id) {
-              <div class="box">
-                <mat-checkbox
-                  (change)="onPrivilegeChange($event.checked, privilegeVerb.privilege)"
-                  [checked]="ownedPrivilegesList().includes(privilegeVerb.privilege.privilege_id)"
-                ></mat-checkbox>
-                <div
-                  [ngClass]="{
-                    add: changer.isAdded(privilegeVerb.privilege.privilege_id),
-                    delete: changer.isDeleted(privilegeVerb.privilege.privilege_id)
-                  }"
-                >
-                  {{ privilegeVerb.verb }}
-                </div>
-              </div>
-            }
+  @for (privilegeName of privileges() | groupPrivileges; track privilegeName.key) { @if (editMode) {
+  <div>
+    <div class="privilege">
+      <div class="key">{{ privilegeName.key }}:</div>
+      <div class="values">
+        @for (privilegeVerb of privilegeName.values; track privilegeVerb.privilege.privilege_id) {
+        <div class="box">
+          <mat-checkbox
+            (change)="onPrivilegeChange($event.checked, privilegeVerb.privilege)"
+            [checked]="ownedPrivilegesList().includes(privilegeVerb.privilege.privilege_id)"
+          ></mat-checkbox>
+          <div
+            [ngClass]="{
+              add: changer.isAdded(privilegeVerb.privilege.privilege_id),
+              delete: changer.isDeleted(privilegeVerb.privilege.privilege_id)
+            }"
+          >
+            {{ privilegeVerb.verb }}
           </div>
         </div>
+        }
       </div>
-    } @else {
-      @if (ownedPrivilegesName().includes(privilegeName.key)) {
-        <div class="privilege">
-          <div class="key">{{ privilegeName.key }}:</div>
-          <div class="values">
-            @for (privilegeVerb of privilegeName.values; track privilegeVerb.privilege.privilege_id) {
-              @if (ownedPrivilegesList().includes(privilegeVerb.privilege.privilege_id)) {
-                <div
-                  [ngClass]="{ box: ownedPrivilegesList().includes(privilegeVerb.privilege.privilege_id) }"
-                >
-                  {{ privilegeVerb.verb }}
-                </div>
-              }
-            }
-          </div>
-        </div>
-      }
-    }
-  }
+    </div>
+  </div>
+  } @else { @if (ownedPrivilegesName().includes(privilegeName.key)) {
+  <div class="privilege">
+    <div class="key">{{ privilegeName.key }}:</div>
+    <div class="values">
+      @for (privilegeVerb of privilegeName.values; track privilegeVerb.privilege.privilege_id) { @if
+      (ownedPrivilegesList().includes(privilegeVerb.privilege.privilege_id)) {
+      <div [ngClass]="{ box: ownedPrivilegesList().includes(privilegeVerb.privilege.privilege_id) }">
+        {{ privilegeVerb.verb }}
+      </div>
+      } }
+    </div>
+  </div>
+  } } }
 </div>

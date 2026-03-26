@@ -1,6 +1,13 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -21,7 +28,17 @@ import { LinkToMapLinkConverter } from '../../../../cartography/converters/map/l
   selector: 'app-link-style-editor',
   templateUrl: './link-style-editor.component.html',
   styleUrl: './link-style-editor.component.scss',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatButtonModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LinkStyleEditorDialogComponent implements OnInit {
@@ -38,13 +55,13 @@ export class LinkStyleEditorDialogComponent implements OnInit {
   project: Project;
   link: Link;
   formGroup: UntypedFormGroup;
-  borderTypes = ["Solid", "Dash", "Dot", "Dash Dot", "Dash Dot Dot"];
+  borderTypes = ['Solid', 'Dash', 'Dot', 'Dash Dot', 'Dash Dot Dot'];
 
   constructor() {
     this.formGroup = this.formBuilder.group({
       color: new UntypedFormControl('', [Validators.required]),
       width: new UntypedFormControl('', [Validators.required, this.nonNegativeValidator.get]),
-      type: new UntypedFormControl('', [Validators.required])
+      type: new UntypedFormControl('', [Validators.required]),
     });
   }
 
@@ -59,7 +76,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
 
     let type = this.borderTypes[0];
     if (this.link.link_style?.type !== undefined) {
-        type = this.borderTypes[this.link.link_style.type];
+      type = this.borderTypes[this.link.link_style.type];
     }
     this.formGroup.controls['type'].setValue(type);
   }
@@ -79,7 +96,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
       this.linkService.updateLinkStyle(this.controller, this.link).subscribe((link) => {
         this.linksDataSource.update(link);
         this.linksEventSource.edited.next(this.linkToMapLink.convert(link));
-        location.reload()
+        location.reload();
         // we add this code/line for reload the entire page because single graph/link style is not updated automatically.
         // this.toasterService.success("Link updated");
         this.dialogRef.close();

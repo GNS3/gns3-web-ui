@@ -1,6 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -24,7 +31,21 @@ import { ToasterService } from '@services/toaster.service';
   templateUrl: './configurator-iou.component.html',
   styleUrls: ['../configurator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule, MatCardModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatChipsModule, MatIconModule, MatCheckboxModule]
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatCardModule,
+    MatTabsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatChipsModule,
+    MatIconModule,
+    MatCheckboxModule,
+  ],
 })
 export class ConfiguratorDialogIouComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfiguratorDialogIouComponent>);

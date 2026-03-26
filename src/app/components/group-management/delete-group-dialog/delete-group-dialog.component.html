@@ -1,6 +1,6 @@
-<h1 mat-dialog-title>Are you sure to delete group named: </h1>
+<h1 mat-dialog-title>Are you sure to delete group named:</h1>
 @for (group of data.groups; track group.name) {
-  <p>{{group.name}}</p>
+<p>{{ group.name }}</p>
 }
 <div mat-dialog-actions>
   <button mat-button (click)="onCancel()" color="accent">No, cancel</button>

@@ -3,48 +3,51 @@
 <div class="modal-form-container">
   <div class="content">
     @if (node) {
-      <div class="default-content">
-        <mat-card class="matCard">
-          <form [formGroup]="inputForm">
-            <mat-form-field class="form-field">
-              <input matInput type="text" formControlName="name" placeholder="Name" />
-            </mat-form-field>
+    <div class="default-content">
+      <mat-card class="matCard">
+        <form [formGroup]="inputForm">
+          <mat-form-field class="form-field">
+            <input matInput type="text" formControlName="name" placeholder="Name" />
+          </mat-form-field>
 
-            <mat-form-field class="form-field tags-field">
-              <mat-label>Tags</mat-label>
-              <mat-chip-grid #chipList>
-                @for (tag of node?.tags; track tag) {
-                  <mat-chip (removed)="removeTag(tag)">
-                    {{ tag }}
-                    <mat-icon matChipRemove>cancel</mat-icon>
-                  </mat-chip>
-                }
-                <input matInput placeholder="Add tags"
-                       [matChipInputFor]="chipList"
-                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                       (matChipInputTokenEnd)="addTag($event)" />
-              </mat-chip-grid>
-            </mat-form-field>
+          <mat-form-field class="form-field tags-field">
+            <mat-label>Tags</mat-label>
+            <mat-chip-grid #chipList>
+              @for (tag of node?.tags; track tag) {
+              <mat-chip (removed)="removeTag(tag)">
+                {{ tag }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+              }
+              <input
+                matInput
+                placeholder="Add tags"
+                [matChipInputFor]="chipList"
+                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                (matChipInputTokenEnd)="addTag($event)"
+              />
+            </mat-chip-grid>
+          </mat-form-field>
 
-            <mat-form-field class="select">
-              <mat-select
-                placeholder="Console type"
-                [ngModelOptions]="{ standalone: true }"
-                [(ngModel)]="node.console_type"
-              >
-                @for (type of consoleTypes; track type) {
-                  <mat-option [value]="type">
-                    {{ type }}
-                  </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          </form>
-          @if (node.properties) {
-            <app-ports #ports [ethernetPorts]="node.properties.ports_mapping"></app-ports>
-          }
-        </mat-card>
-      </div>
+          <mat-form-field class="select">
+            <mat-select
+              placeholder="Console type"
+              [ngModelOptions]="{ standalone: true }"
+              [(ngModel)]="node.console_type"
+            >
+              @for (type of consoleTypes; track type) {
+              <mat-option [value]="type">
+                {{ type }}
+              </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </form>
+        @if (node.properties) {
+        <app-ports #ports [ethernetPorts]="node.properties.ports_mapping"></app-ports>
+        }
+      </mat-card>
+    </div>
     }
   </div>
 </div>

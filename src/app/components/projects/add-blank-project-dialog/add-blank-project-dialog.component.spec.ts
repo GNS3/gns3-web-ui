@@ -87,7 +87,7 @@ describe('AddBlankProjectDialogComponent', () => {
       declarations: [AddBlankProjectDialogComponent],
     }).compileComponents();
 
-    controller = new Controller  ();
+    controller = new Controller();
     controller.host = 'localhost';
     controller.port = 80;
   });
@@ -95,7 +95,7 @@ describe('AddBlankProjectDialogComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(AddBlankProjectDialogComponent);
     component = fixture.componentInstance;
-    component.controller =  controller;
+    component.controller = controller;
     fixture.detectChanges();
   });
 

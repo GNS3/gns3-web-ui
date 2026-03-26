@@ -9,7 +9,7 @@ describe('AddUserDialogComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [AddUserDialogComponent],
-      providers: [provideZonelessChangeDetection()]
+      providers: [provideZonelessChangeDetection()],
     }).compileComponents();
   });
 

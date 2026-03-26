@@ -25,7 +25,20 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
   selector: 'app-vpcs-template-details',
   templateUrl: './vpcs-template-details.component.html',
   styleUrls: ['./vpcs-template-details.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatCheckboxModule, MatChipsModule, SymbolsMenuComponent]
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatCheckboxModule,
+    MatChipsModule,
+    SymbolsMenuComponent,
+  ],
 })
 export class VpcsTemplateDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);

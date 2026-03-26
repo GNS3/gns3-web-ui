@@ -17,27 +17,21 @@ import { ImageManagerComponent } from '../image-manager.component';
 import { DeleteAllImageFilesDialogComponent } from './deleteallfiles-dialog.component';
 
 export class MockedImageManagerService {
-  public deleteALLFile(controller:Server , image_path) {
+  public deleteALLFile(controller: Server, image_path) {
     return of();
   }
 }
 
- describe('DeleteAllImageFilesDialogComponent', () => {
+describe('DeleteAllImageFilesDialogComponent', () => {
   let component: DeleteAllImageFilesDialogComponent;
   let fixture: ComponentFixture<DeleteAllImageFilesDialogComponent>;
   let mockedControllerService = new MockedControllerService();
-  let mockedImageManagerService = new MockedImageManagerService()
-  let mockedToasterService = new MockedToasterService()
+  let mockedImageManagerService = new MockedImageManagerService();
+  let mockedToasterService = new MockedToasterService();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        MatIconModule,
-        MatToolbarModule,
-        MatMenuModule,
-        MatCheckboxModule,
-        MatDialogModule,
-      ],
+      imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: ControllerService, useValue: mockedControllerService },
@@ -45,13 +39,10 @@ export class MockedImageManagerService {
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: MatDialogRef, useValue: {} },
         { provide: ToasterService, useValue: mockedToasterService },
-
       ],
-      declarations: [DeleteAllImageFilesDialogComponent,
-      ],
+      declarations: [DeleteAllImageFilesDialogComponent],
       schemas: [NO_ERRORS_SCHEMA],
-    })
-      .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {

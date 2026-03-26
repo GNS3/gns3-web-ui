@@ -3,31 +3,22 @@
   <div mat-dialog-content>
     <mat-form-field appearance="fill" class="full-width-field">
       <mat-label>Role name</mat-label>
-      <input matInput
-             type="text"
-             formControlName="name"
-             placeholder="Please enter role name" />
+      <input matInput type="text" formControlName="name" placeholder="Please enter role name" />
       @if (form.name?.touched && form.name?.errors && form.name?.errors.required) {
-        <mat-error>Role name is required</mat-error>
-      }
-      @if (form.name?.errors && form.name?.errors.invalidName) {
-        <mat-error>Role name is incorrect</mat-error>
+      <mat-error>Role name is required</mat-error>
+      } @if (form.name?.errors && form.name?.errors.invalidName) {
+      <mat-error>Role name is incorrect</mat-error>
       }
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="full-width-field">
       <mat-label>Description</mat-label>
-      <input matInput
-             type="text"
-             formControlName="description"
-             placeholder="Please enter a description" />
+      <input matInput type="text" formControlName="description" placeholder="Please enter a description" />
     </mat-form-field>
   </div>
 
   <div mat-dialog-actions align="end">
     <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
-    <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary">
-      Add Role
-    </button>
+    <button mat-button (click)="onAddClick()" tabindex="2" mat-raised-button color="primary">Add Role</button>
   </div>
 </form>

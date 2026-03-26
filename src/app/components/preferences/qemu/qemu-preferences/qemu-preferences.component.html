@@ -3,34 +3,34 @@
     <div class="row">
       <h1 class="col">QEMU preferences</h1>
       @if (controller) {
-        <button
-          class="top-button"
-          routerLink="/controller/{{ controller.id }}/preferences/qemu/templates"
-          mat-raised-button
-          color="primary"
-        >
-          QEMU VM templates
-        </button>
+      <button
+        class="top-button"
+        routerLink="/controller/{{ controller.id }}/preferences/qemu/templates"
+        mat-raised-button
+        color="primary"
+      >
+        QEMU VM templates
+      </button>
       }
     </div>
   </div>
   <div class="default-content">
     <div class="container mat-elevation-z8">
       @if (settings) {
-        <mat-nav-list>
-          <mat-list-item>
-            <mat-checkbox [(ngModel)]="settings.enable_hardware_acceleration">
-              Enable Hardware Acceleration (KVM/HAXM)
-            </mat-checkbox>
-          </mat-list-item>
-          @if (settings.enable_hardware_acceleration) {
-            <mat-list-item>
-              <mat-checkbox [(ngModel)]="settings.require_hardware_acceleration">
-                Require Hardware Acceleration (KVM/HAXM)
-              </mat-checkbox>
-            </mat-list-item>
-          }
-        </mat-nav-list>
+      <mat-nav-list>
+        <mat-list-item>
+          <mat-checkbox [(ngModel)]="settings.enable_hardware_acceleration">
+            Enable Hardware Acceleration (KVM/HAXM)
+          </mat-checkbox>
+        </mat-list-item>
+        @if (settings.enable_hardware_acceleration) {
+        <mat-list-item>
+          <mat-checkbox [(ngModel)]="settings.require_hardware_acceleration">
+            Require Hardware Acceleration (KVM/HAXM)
+          </mat-checkbox>
+        </mat-list-item>
+        }
+      </mat-nav-list>
       }
     </div>
 

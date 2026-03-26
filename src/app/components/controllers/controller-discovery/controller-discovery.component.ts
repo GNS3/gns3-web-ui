@@ -39,11 +39,13 @@ export class ControllerDiscoveryComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     if (this.controllerService.isServiceInitialized) this.discoverFirstController();
-    this.serviceInitializedSubscription = this.controllerService.serviceInitialized.subscribe(async (value: boolean) => {
-      if (value) {
-        this.discoverFirstController();
+    this.serviceInitializedSubscription = this.controllerService.serviceInitialized.subscribe(
+      async (value: boolean) => {
+        if (value) {
+          this.discoverFirstController();
+        }
       }
-    });
+    );
   }
 
   ngOnDestroy() {
@@ -123,9 +125,7 @@ export class ControllerDiscoveryComponent implements OnInit, OnDestroy {
     const controller = new Controller();
     controller.host = ip;
     controller.port = port;
-    return this.versionService.get(controller).pipe(
-      mergeMap((version: Version) => of(controller))
-    );
+    return this.versionService.get(controller).pipe(mergeMap((version: Version) => of(controller)));
   }
 
   ignore(controller: Controller) {

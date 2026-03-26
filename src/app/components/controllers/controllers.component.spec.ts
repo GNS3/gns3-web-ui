@@ -19,9 +19,9 @@ import { of } from 'rxjs';
 describe('ControllersComponent', () => {
   let component: ControllersComponent;
   let fixture: ComponentFixture<ControllersComponent>;
-  let controllerMockedService: MockedControllerService
-  let mockedActivatedRoute: MockedActivatedRoute
-  let mockedRouter: MockedRouter
+  let controllerMockedService: MockedControllerService;
+  let mockedActivatedRoute: MockedActivatedRoute;
+  let mockedRouter: MockedRouter;
   let mockedControllerManagementService: any;
 
   beforeEach(() => {
@@ -29,7 +29,9 @@ describe('ControllersComponent', () => {
     // Add missing properties that the component expects
     controllerMockedService['isServiceInitialized'] = true;
     controllerMockedService['serviceInitialized'] = of(true);
-    controllerMockedService['checkControllerVersion'] = jasmine.createSpy('checkControllerVersion').and.returnValue(of({ version: '3.0.0' }));
+    controllerMockedService['checkControllerVersion'] = jasmine
+      .createSpy('checkControllerVersion')
+      .and.returnValue(of({ version: '3.0.0' }));
     controllerMockedService['delete'] = jasmine.createSpy('delete').and.returnValue(Promise.resolve());
 
     mockedActivatedRoute = new MockedActivatedRoute();
@@ -40,7 +42,7 @@ describe('ControllersComponent', () => {
       getRunningControllers: jasmine.createSpy('getRunningControllers').and.returnValue([]),
       controllerStatusChanged: of({}),
       start: jasmine.createSpy('start').and.returnValue(Promise.resolve()),
-      stop: jasmine.createSpy('stop').and.returnValue(Promise.resolve())
+      stop: jasmine.createSpy('stop').and.returnValue(Promise.resolve()),
     };
 
     TestBed.configureTestingModule({
@@ -51,7 +53,7 @@ describe('ControllersComponent', () => {
         MatBottomSheetModule,
         MatTableModule,
         MatSortModule,
-        NoopAnimationsModule
+        NoopAnimationsModule,
       ],
       providers: [
         provideZonelessChangeDetection(),
@@ -64,7 +66,7 @@ describe('ControllersComponent', () => {
         { provide: ActivatedRoute, useValue: mockedActivatedRoute },
         { provide: Router, useValue: mockedRouter },
       ],
-      schemas: [NO_ERRORS_SCHEMA]
+      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });
 
@@ -79,7 +81,7 @@ describe('ControllersComponent', () => {
       direction: '',
       disableClear: false,
       start: 'asc',
-      active: 'id'
+      active: 'id',
     } as any;
 
     fixture.detectChanges();

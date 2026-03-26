@@ -1,12 +1,9 @@
 <div class="qemu-add">
   <header class="qemu-add__header">
     @if (controller()) {
-      <button
-        class="qemu-add__back-btn"
-        (click)="goBack()"
-        mat-icon-button>
-        <mat-icon>arrow_back</mat-icon>
-      </button>
+    <button class="qemu-add__back-btn" (click)="goBack()" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     }
     <h1 class="qemu-add__title">New QEMU VM template</h1>
   </header>
@@ -16,11 +13,7 @@
       <mat-vertical-stepper [linear]="true" class="qemu-add__stepper">
         <mat-step label="Controller type" [completed]="isLocalComputerChosen()">
           <mat-radio-group class="qemu-add__radio-group">
-            <mat-radio-button
-              class="qemu-add__radio"
-              value="1"
-              (click)="setControllerType('local')"
-              [checked]="true">
+            <mat-radio-button class="qemu-add__radio" value="1" (click)="setControllerType('local')" [checked]="true">
               Run this QEMU VM locally
             </mat-radio-button>
           </mat-radio-group>
@@ -30,7 +23,13 @@
           <div class="qemu-add__form">
             <mat-form-field appearance="fill" class="qemu-add__field">
               <mat-label>Template name</mat-label>
-              <input matInput type="text" [value]="templateName()" (input)="templateName.set($event.target.value)" placeholder="Please choose a descriptive name for your new QEMU virtual machine" />
+              <input
+                matInput
+                type="text"
+                [value]="templateName()"
+                (input)="templateName.set($event.target.value)"
+                placeholder="Please choose a descriptive name for your new QEMU virtual machine"
+              />
             </mat-form-field>
           </div>
         </mat-step>
@@ -39,18 +38,29 @@
           <div class="qemu-add__form">
             <mat-form-field appearance="fill" class="qemu-add__field">
               <mat-label>Platform</mat-label>
-              <mat-select placeholder="Platform" [value]="selectedPlatform()" (selectionChange)="selectedPlatform.set($event.value)">
+              <mat-select
+                placeholder="Platform"
+                [value]="selectedPlatform()"
+                (selectionChange)="selectedPlatform.set($event.value)"
+              >
                 @for (platform of selectPlatform(); track platform) {
-                  <mat-option [value]="platform">
-                    {{ platform }}
-                  </mat-option>
+                <mat-option [value]="platform">
+                  {{ platform }}
+                </mat-option>
                 }
               </mat-select>
             </mat-form-field>
 
             <mat-form-field appearance="fill" class="qemu-add__field">
               <mat-label>RAM</mat-label>
-              <input matInput type="number" min="1" placeholder="RAM" [value]="ramMemory()" (input)="ramMemory.set(+$event.target.value)" />
+              <input
+                matInput
+                type="number"
+                min="1"
+                placeholder="RAM"
+                [value]="ramMemory()"
+                (input)="ramMemory.set(+$event.target.value)"
+              />
               <span matSuffix>MB</span>
             </mat-form-field>
           </div>
@@ -59,11 +69,15 @@
         <mat-step label="Console type" [completed]="consoleStepCompleted()">
           <mat-form-field appearance="fill" class="qemu-add__field">
             <mat-label>Console type</mat-label>
-            <mat-select placeholder="Console type" [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
+            <mat-select
+              placeholder="Console type"
+              [value]="consoleType()"
+              (selectionChange)="consoleType.set($event.value)"
+            >
               @for (type of consoleTypes(); track type) {
-                <mat-option [value]="type">
-                  {{ type }}
-                </mat-option>
+              <mat-option [value]="type">
+                {{ type }}
+              </mat-option>
               }
             </mat-select>
           </mat-form-field>
@@ -72,11 +86,15 @@
         <mat-step label="Auxiliary console type" [completed]="auxConsoleStepCompleted()">
           <mat-form-field appearance="fill" class="qemu-add__field">
             <mat-label>Auxiliary console type</mat-label>
-            <mat-select placeholder="Auxiliary console type" [value]="auxConsoleType()" (selectionChange)="auxConsoleType.set($event.value)">
+            <mat-select
+              placeholder="Auxiliary console type"
+              [value]="auxConsoleType()"
+              (selectionChange)="auxConsoleType.set($event.value)"
+            >
               @for (type of auxConsoleTypes(); track type) {
-                <mat-option [value]="type">
-                  {{ type }}
-                </mat-option>
+              <mat-option [value]="type">
+                {{ type }}
+              </mat-option>
               }
             </mat-select>
           </mat-form-field>
@@ -89,50 +107,60 @@
                 class="qemu-add__radio"
                 value="1"
                 (click)="setDiskImage('existingImage')"
-                [checked]="!newImageSelected()">
+                [checked]="!newImageSelected()"
+              >
                 Existing image
               </mat-radio-button>
               <mat-radio-button
                 class="qemu-add__radio"
                 value="2"
                 (click)="setDiskImage('newImage')"
-                [checked]="newImageSelected()">
+                [checked]="newImageSelected()"
+              >
                 New image
               </mat-radio-button>
             </mat-radio-group>
 
             @if (!newImageSelected()) {
-              <mat-form-field appearance="fill" class="qemu-add__field">
-                <mat-label>Disk image (hda)</mat-label>
-                <mat-select placeholder="Disk image (hda)" [value]="selectedImage()" (selectionChange)="selectedImage.set($event.value)">
-                  @for (image of qemuImages(); track image.filename) {
-                    <mat-option [value]="image">
-                      {{ image.filename }}
-                    </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-            }
-
-            @if (newImageSelected()) {
-              <div class="qemu-add__file-row">
+            <mat-form-field appearance="fill" class="qemu-add__field">
+              <mat-label>Disk image (hda)</mat-label>
+              <mat-select
+                placeholder="Disk image (hda)"
+                [value]="selectedImage()"
+                (selectionChange)="selectedImage.set($event.value)"
+              >
+                @for (image of qemuImages(); track image.filename) {
+                <mat-option [value]="image">
+                  {{ image.filename }}
+                </mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+            } @if (newImageSelected()) {
+            <div class="qemu-add__file-row">
+              <input
+                type="file"
+                accept=".qcow2"
+                #file
+                class="qemu-add__file-input"
+                (change)="uploadImageFile($event)"
+                ng2FileSelect
+                [uploader]="uploader()"
+              />
+              <button mat-raised-button color="primary" (click)="file.click()" class="qemu-add__browse-btn">
+                Browse
+              </button>
+              <mat-form-field appearance="fill" class="qemu-add__field qemu-add__field--flex">
+                <mat-label>Image name</mat-label>
                 <input
-                  type="file"
-                  accept=".qcow2"
-                  #file
-                  class="qemu-add__file-input"
-                  (change)="uploadImageFile($event)"
-                  ng2FileSelect
-                  [uploader]="uploader()"
+                  matInput
+                  type="text"
+                  [value]="fileName()"
+                  (input)="fileName.set($event.target.value)"
+                  placeholder="Please enter name"
                 />
-                <button mat-raised-button color="primary" (click)="file.click()" class="qemu-add__browse-btn">
-                  Browse
-                </button>
-                <mat-form-field appearance="fill" class="qemu-add__field qemu-add__field--flex">
-                  <mat-label>Image name</mat-label>
-                  <input matInput type="text" [value]="fileName()" (input)="fileName.set($event.target.value)" placeholder="Please enter name" />
-                </mat-form-field>
-              </div>
+              </mat-form-field>
+            </div>
             }
           </div>
         </mat-step>

@@ -12,7 +12,7 @@ import { VersionService } from './version.service';
 export class MockedVersionService {
   public response: Observable<any>;
 
-  public get(controller: Controller ) {
+  public get(controller: Controller) {
     return this.response;
   }
 }

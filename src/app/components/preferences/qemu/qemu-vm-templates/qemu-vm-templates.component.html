@@ -1,59 +1,57 @@
 <div class="qemu-vm-templates">
   <header class="qemu-vm-templates__header">
     @if (controller) {
-      <button
-        class="qemu-vm-templates__back-btn"
-        [routerLink]="'/controller/' + controller.id + '/preferences'"
-        mat-icon-button>
-        <mat-icon>arrow_back</mat-icon>
-      </button>
+    <button
+      class="qemu-vm-templates__back-btn"
+      [routerLink]="'/controller/' + controller.id + '/preferences'"
+      mat-icon-button
+    >
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     }
     <h1 class="qemu-vm-templates__title">QEMU VM templates</h1>
     @if (controller) {
-      <button
-        class="qemu-vm-templates__add-btn"
-        matTooltip="Add QEMU VM template"
-        matTooltipClass="custom-tooltip"
-        [routerLink]="'/controller/' + controller.id + '/preferences/qemu/addtemplate'"
-        mat-icon-button>
-        <mat-icon>add_circle_outline</mat-icon>
-      </button>
+    <button
+      class="qemu-vm-templates__add-btn"
+      matTooltip="Add QEMU VM template"
+      matTooltipClass="custom-tooltip"
+      [routerLink]="'/controller/' + controller.id + '/preferences/qemu/addtemplate'"
+      mat-icon-button
+    >
+      <mat-icon>add_circle_outline</mat-icon>
+    </button>
     }
   </header>
 
   <main class="qemu-vm-templates__content">
     @if (!qemuTemplates.length) {
-      <app-empty-templates-list></app-empty-templates-list>
-    }
-
-    @if (qemuTemplates.length) {
-      <nav class="qemu-vm-templates__list">
-        @for (template of qemuTemplates; track template.template_id) {
-          <a
-            class="qemu-vm-templates__list-item"
-            [routerLink]="template.template_id">
-            <mat-icon class="qemu-vm-templates__list-icon">memory</mat-icon>
-            <span class="qemu-vm-templates__list-name">{{ template.name }}</span>
-            <button mat-icon-button [matMenuTriggerFor]="menu" class="qemu-vm-templates__menu-btn">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu">
-              <button mat-menu-item [routerLink]="template.template_id">
-                <mat-icon>edit</mat-icon>
-                <span>Edit</span>
-              </button>
-              <button mat-menu-item (click)="copyTemplate(template)">
-                <mat-icon>content_copy</mat-icon>
-                <span>Copy</span>
-              </button>
-              <button mat-menu-item (click)="deleteTemplate(template)">
-                <mat-icon>delete</mat-icon>
-                <span>Delete</span>
-              </button>
-            </mat-menu>
-          </a>
-        }
-      </nav>
+    <app-empty-templates-list></app-empty-templates-list>
+    } @if (qemuTemplates.length) {
+    <nav class="qemu-vm-templates__list">
+      @for (template of qemuTemplates; track template.template_id) {
+      <a class="qemu-vm-templates__list-item" [routerLink]="template.template_id">
+        <mat-icon class="qemu-vm-templates__list-icon">memory</mat-icon>
+        <span class="qemu-vm-templates__list-name">{{ template.name }}</span>
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="qemu-vm-templates__menu-btn">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item [routerLink]="template.template_id">
+            <mat-icon>edit</mat-icon>
+            <span>Edit</span>
+          </button>
+          <button mat-menu-item (click)="copyTemplate(template)">
+            <mat-icon>content_copy</mat-icon>
+            <span>Copy</span>
+          </button>
+          <button mat-menu-item (click)="deleteTemplate(template)">
+            <mat-icon>delete</mat-icon>
+            <span>Delete</span>
+          </button>
+        </mat-menu>
+      </a>
+      }
+    </nav>
     }
   </main>
 </div>

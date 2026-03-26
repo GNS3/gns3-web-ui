@@ -9,7 +9,7 @@ describe('SystemStatusComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [SystemStatusComponent],
-      providers: [provideZonelessChangeDetection()]
+      providers: [provideZonelessChangeDetection()],
     }).compileComponents();
   });
 

@@ -6,7 +6,7 @@ xdescribe('AdbutlerComponent', () => {
   let fixture: ComponentFixture<AdbutlerComponent>;
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       declarations: [AdbutlerComponent],
       providers: [provideZonelessChangeDetection()],
     }).compileComponents();

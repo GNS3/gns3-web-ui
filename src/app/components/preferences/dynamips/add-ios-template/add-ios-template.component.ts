@@ -32,7 +32,20 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-add-ios-template',
   templateUrl: './add-ios-template.component.html',
   styleUrls: ['./add-ios-template.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatButtonModule, MatCardModule, MatRadioModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepperModule, FileUploadModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatRadioModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatStepperModule,
+    FileUploadModule,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddIosTemplateComponent implements OnInit, OnDestroy {
@@ -80,11 +93,16 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   memoryStepCompleted = computed(() => !!this.memory());
 
   ngOnInit() {
-    this.uploader.set(new FileUploader({url: ''}));
+    this.uploader.set(new FileUploader({ url: '' }));
     this.uploader().onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };
-    this.uploader().onErrorItem = (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+    this.uploader().onErrorItem = (
+      item: FileItem,
+      response: string,
+      status: number,
+      headers: ParsedResponseHeaders
+    ) => {
       this.toasterService.error('An error occured: ' + response);
     };
     this.uploader().onSuccessItem = (
@@ -97,17 +115,16 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
       this.toasterService.success('Image uploaded');
     };
     this.uploader().onProgressItem = (progress: any) => {
-      this.uploadServiceService.processBarCount(progress['progress'])
+      this.uploadServiceService.processBarCount(progress['progress']);
     };
-   this.subscription = this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
+    this.subscription = this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
       if (isCancel) {
-        this.cancelUploading()
+        this.cancelUploading();
       }
-
-    })
+    });
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((ctrl: Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((ctrl: Controller) => {
       this.controller.set(ctrl);
 
       this.getImages();
@@ -115,7 +132,9 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
       this.templateMocksService.getIosTemplate().subscribe((iosTemplate: IosTemplate) => {
         this.iosTemplate.set(iosTemplate);
         this.platforms.set(this.iosConfigurationService.getAvailablePlatforms());
-        this.platformsWithEtherSwitchRouterOption.set(this.iosConfigurationService.getPlatformsWithEtherSwitchRouterOption());
+        this.platformsWithEtherSwitchRouterOption.set(
+          this.iosConfigurationService.getPlatformsWithEtherSwitchRouterOption()
+        );
         this.chassisOptions.set(this.iosConfigurationService.getChassis());
         this.defaultRam.set(this.iosConfigurationService.getDefaultRamSettings());
         this.adapterMatrix.set(this.iosConfigurationService.getAdapterMatrix());
@@ -159,29 +178,24 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     this.uploader().queue.forEach((elem) => (elem.url = url));
 
     const itemToUpload = this.uploader().queue[0];
-    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true; ((itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller().authToken }])
+    if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true;
+    (itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller().authToken }];
     this.uploader().uploadItem(itemToUpload);
     this.snackBar.openFromComponent(UploadingProcessbarComponent, {
       panelClass: 'uplaoding-file-snackabar',
-      data:{upload_file_type:'Image'}
+      data: { upload_file_type: 'Image' },
     });
   }
 
   addTemplate() {
-    if (
-      this.imageName() &&
-      this.templateName() &&
-      this.platform() &&
-      this.memory()
-    ) {
+    if (this.imageName() && this.templateName() && this.platform() && this.memory()) {
       const template = this.iosTemplate();
       template.template_id = uuid();
       template.image = this.imageName();
       template.name = this.templateName();
       template.platform = this.platform();
 
-      if (this.chassisOptions()[this.platform()])
-        template.chassis = this.chassis();
+      if (this.chassisOptions()[this.platform()]) template.chassis = this.chassis();
       template.ram = +this.memory();
 
       if (this.isEtherSwitchRouter()) {
@@ -205,10 +219,8 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     const matrix = this.adapterMatrix();
     for (let i = 0; i <= 6; i++) {
       if (matrix[template.platform][template.chassis || ''][i]) {
-        if (this.networkAdaptersForTemplate()[i] === undefined)
-          template[`slot${i}`] = ""
-        else
-          template[`slot${i}`] = this.networkAdaptersForTemplate()[i];
+        if (this.networkAdaptersForTemplate()[i] === undefined) template[`slot${i}`] = '';
+        else template[`slot${i}`] = this.networkAdaptersForTemplate()[i];
       }
     }
   }
@@ -217,10 +229,8 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     const matrix = this.wicMatrix();
     for (let i = 0; i <= 3; i++) {
       if (matrix[template.platform][i]) {
-        if (this.wicsForTemplate()[i] === undefined)
-          template[`wic${i}`] = ""
-        else
-          template[`wic${i}`] = this.wicsForTemplate()[i];
+        if (this.wicsForTemplate()[i] === undefined) template[`wic${i}`] = '';
+        else template[`wic${i}`] = this.wicsForTemplate()[i];
       }
     }
   }
@@ -239,8 +249,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
       this.platform.set(name);
     }
 
-    if (name === 'c3620' || name === 'c3640' || name === 'c3660')
-      this.chassis.set(name.substring(1));
+    if (name === 'c3620' || name === 'c3640' || name === 'c3660') this.chassis.set(name.substring(1));
     else if (name === 'c1700') {
       this.chassis.set('1760');
     } else if (name === 'c2600') {
@@ -255,27 +264,25 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   onPlatformChosen() {
     const template = this.iosTemplate();
     template.chassis = '';
-    this.iosTemplate.set({...template});
+    this.iosTemplate.set({ ...template });
     this.networkAdaptersForTemplate.set([]);
     this.wicsForTemplate.set([]);
-    if (!this.chassisOptions()[this.platform()])
-      this.fillDefaultSlots();
+    if (!this.chassisOptions()[this.platform()]) this.fillDefaultSlots();
   }
 
   onChassisChosen() {
     this.networkAdaptersForTemplate.set([]);
-    if (this.chassisOptions()[this.platform()])
-      this.fillDefaultSlots();
+    if (this.chassisOptions()[this.platform()]) this.fillDefaultSlots();
   }
 
   cancelUploading() {
     this.uploader().clearQueue();
-    this.uploadServiceService.processBarCount(null)
+    this.uploadServiceService.processBarCount(null);
     this.toasterService.warning('File upload cancelled');
   }
 
   onAdapterChange(index: number, value: string): void {
-    this.networkAdaptersForTemplate.update(adapters => {
+    this.networkAdaptersForTemplate.update((adapters) => {
       const newAdapters = [...adapters];
       newAdapters[index] = value;
       return newAdapters;
@@ -283,7 +290,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   }
 
   onWicChange(index: number, value: string): void {
-    this.wicsForTemplate.update(wics => {
+    this.wicsForTemplate.update((wics) => {
       const newWics = [...wics];
       newWics[index] = value;
       return newWics;

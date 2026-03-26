@@ -18,18 +18,12 @@ describe('ConfirmationDeleteAllProjectsComponent', () => {
   let component: ConfirmationDeleteAllProjectsComponent;
   let fixture: ComponentFixture<ConfirmationDeleteAllProjectsComponent>;
   let mockedControllerService = new MockedControllerService();
-  let mockedImageManagerService = new MockedProjectService()
-  let mockedToasterService = new MockedToasterService()
+  let mockedImageManagerService = new MockedProjectService();
+  let mockedToasterService = new MockedToasterService();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [
-        MatIconModule,
-        MatToolbarModule,
-        MatMenuModule,
-        MatCheckboxModule,
-        MatDialogModule,
-      ],
+      imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: ControllerService, useValue: mockedControllerService },
@@ -37,11 +31,9 @@ describe('ConfirmationDeleteAllProjectsComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: MatDialogRef, useValue: {} },
         { provide: ToasterService, useValue: mockedToasterService },
-
       ],
-      declarations: [ ConfirmationDeleteAllProjectsComponent ]
-    })
-    .compileComponents();
+      declarations: [ConfirmationDeleteAllProjectsComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

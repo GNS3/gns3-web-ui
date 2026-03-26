@@ -45,7 +45,7 @@ xdescribe('AddIouTemplateComponent', () => {
   let activatedRoute = new MockedActivatedRoute().get();
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [
         MatStepperModule,
         FormsModule,

@@ -6,22 +6,14 @@
   (dragged)="OnDragged($event)"
 >
   @if (is(drawing?.element, 'ellipse')) {
-    <svg:g [app-ellipse]="drawing?.element" />
-  }
-
-  @if (is(drawing?.element, 'image')) {
-    <svg:g [app-image]="drawing?.element" />
-  }
-
-  @if (is(drawing?.element, 'line')) {
-    <svg:g [app-line]="drawing?.element" />
-  }
-
-  @if (is(drawing?.element, 'rect')) {
-    <svg:g [app-rect]="drawing?.element" />
-  }
-
-  @if (is(drawing?.element, 'text')) {
-    <svg:g [app-text]="drawing?.element" />
+  <svg:g [app-ellipse]="drawing?.element" />
+  } @if (is(drawing?.element, 'image')) {
+  <svg:g [app-image]="drawing?.element" />
+  } @if (is(drawing?.element, 'line')) {
+  <svg:g [app-line]="drawing?.element" />
+  } @if (is(drawing?.element, 'rect')) {
+  <svg:g [app-rect]="drawing?.element" />
+  } @if (is(drawing?.element, 'text')) {
+  <svg:g [app-text]="drawing?.element" />
   }
 </svg:g>

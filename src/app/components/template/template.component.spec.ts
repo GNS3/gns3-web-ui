@@ -20,7 +20,7 @@ import { TemplateComponent } from './template.component';
 describe('TemplateComponent', () => {
   let component: TemplateComponent;
   let fixture: ComponentFixture<TemplateComponent>;
-  let mockedSymbolService: MockedSymbolService
+  let mockedSymbolService: MockedSymbolService;
   beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [TemplateComponent],
@@ -32,7 +32,7 @@ describe('TemplateComponent', () => {
         MatInputModule,
         MatSelectModule,
         FormsModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
       ],
       providers: [
         provideZonelessChangeDetection(),
@@ -47,7 +47,7 @@ describe('TemplateComponent', () => {
         Context,
         { provide: SymbolService, useClass: mockedSymbolService },
       ],
-      schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
   });
 
@@ -56,11 +56,10 @@ describe('TemplateComponent', () => {
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
- afterEach(()=>{
-   fixture.destroy()
- })
+  afterEach(() => {
+    fixture.destroy();
+  });
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
 });

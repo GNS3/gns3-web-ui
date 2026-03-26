@@ -14,9 +14,7 @@ export class DeleteConfirmationDialogComponent implements OnInit {
 
   readonly templateName = signal<string>('');
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
     this.templateName.set(data['templateName']);
   }
 

@@ -190,7 +190,9 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     this.kernelImage.set(this.qemuTemplate.kernel_image || '');
     this.kernelCommandLine.set(this.qemuTemplate.kernel_command_line || '');
     this.biosImage.set(this.qemuTemplate.bios_image || '');
-    this.activateCpuThrottling.set(this.qemuTemplate.cpu_throttling !== undefined && this.qemuTemplate.cpu_throttling > 0);
+    this.activateCpuThrottling.set(
+      this.qemuTemplate.cpu_throttling !== undefined && this.qemuTemplate.cpu_throttling > 0
+    );
     this.cpuThrottling.set(this.qemuTemplate.cpu_throttling || 0);
     this.processPriority.set(this.qemuTemplate.process_priority || '');
     this.qemuPath.set(this.qemuTemplate.qemu_path || '');

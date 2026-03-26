@@ -24,7 +24,19 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
   selector: 'app-ethernet-switches-template-details',
   templateUrl: './ethernet-switches-template-details.component.html',
   styleUrls: ['./ethernet-switches-template-details.component.scss', '../../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, PortsComponent, SymbolsMenuComponent]
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatIconModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatChipsModule,
+    PortsComponent,
+    SymbolsMenuComponent,
+  ],
 })
 export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
   @ViewChild(PortsComponent) portsComponent: PortsComponent;

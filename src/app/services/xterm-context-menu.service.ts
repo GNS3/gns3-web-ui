@@ -6,7 +6,7 @@ import { Terminal } from 'xterm';
  * Provides copy/paste functionality with proper cleanup
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class XtermContextMenuService {
   /**
@@ -59,7 +59,11 @@ export class XtermContextMenuService {
   /**
    * Calculate menu position to prevent viewport overflow
    */
-  private calculateMenuPosition(event: MouseEvent, menuWidth: number, menuHeight: number): { left: number; top: number } {
+  private calculateMenuPosition(
+    event: MouseEvent,
+    menuWidth: number,
+    menuHeight: number
+  ): { left: number; top: number } {
     let left = event.clientX;
     let top = event.clientY;
 
@@ -89,7 +93,8 @@ export class XtermContextMenuService {
       const copyItem = this.createMenuItem('Copy', () => {
         const selection = terminal.getSelection();
         if (selection) {
-          navigator.clipboard.writeText(selection)
+          navigator.clipboard
+            .writeText(selection)
             .then(() => {
               // Successfully copied
             })
@@ -103,7 +108,8 @@ export class XtermContextMenuService {
 
     // Paste menu item
     const pasteItem = this.createMenuItem('Paste', () => {
-      navigator.clipboard.readText()
+      navigator.clipboard
+        .readText()
         .then((text) => {
           terminal.paste(text);
         })

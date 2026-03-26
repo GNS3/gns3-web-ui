@@ -5,22 +5,23 @@
         mat-icon-button
         matTooltip="back to resource pools management"
         mattooltipclass="custom-tooltip"
-        [routerLink]="['/controller', controller.id, 'management', 'pools']">
+        [routerLink]="['/controller', controller.id, 'management', 'pools']"
+      >
         <mat-icon aria-label="back to resource pools management">keyboard_arrow_left</mat-icon>
       </a>
-      <h1 class="col">Resource pool {{pool().name}}</h1>
+      <h1 class="col">Resource pool {{ pool().name }}</h1>
     </div>
     <div class="main">
       <div class="details">
         <div>
           <mat-form-field>
             <mat-label>Resource pool name:</mat-label>
-            <input matInput type="text" [(ngModel)]="pool().name">
+            <input matInput type="text" [(ngModel)]="pool().name" />
           </mat-form-field>
         </div>
-        <div>creation date:   {{pool().created_at}}</div>
-        <div>last update date:   {{pool().updated_at}}</div>
-        <div>uuid:   {{pool().resource_pool_id}}</div>
+        <div>creation date: {{ pool().created_at }}</div>
+        <div>last update date: {{ pool().updated_at }}</div>
+        <div>uuid: {{ pool().resource_pool_id }}</div>
         <div mat-dialog-actions class="button-div">
           <button mat-button (click)="onUpdate()" tabindex="2" mat-raised-button color="primary">
             Update resource pool
@@ -30,17 +31,19 @@
       <mat-divider [vertical]="true"></mat-divider>
       <div class="resources">
         <div class="addResource">
-          <div >
-            <input type="text"
-                   placeholder="add project to resource pool"
-                   matInput
-                   [formControl]="addResourceFormControl"
-                   [matAutocomplete]="auto">
+          <div>
+            <input
+              type="text"
+              placeholder="add project to resource pool"
+              matInput
+              [formControl]="addResourceFormControl"
+              [matAutocomplete]="auto"
+            />
             <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
               @for (option of addResourceFilteredOptions | async; track option) {
-                <mat-option [value]="option">
-                  {{option}}
-                </mat-option>
+              <mat-option [value]="option">
+                {{ option }}
+              </mat-option>
               }
             </mat-autocomplete>
           </div>
@@ -50,16 +53,16 @@
             </button>
           </div>
         </div>
-          @for (resource of pool().resources; track resource.name) {
-            <div class="ownedResources">
-              <div>{{resource.name}}</div>
-              <div>
-                <button mat-button>
-                  <mat-icon (click)="deleteResource(resource)">delete</mat-icon>
-                </button>
-              </div>
-            </div>
-          }
+        @for (resource of pool().resources; track resource.name) {
+        <div class="ownedResources">
+          <div>{{ resource.name }}</div>
+          <div>
+            <button mat-button>
+              <mat-icon (click)="deleteResource(resource)">delete</mat-icon>
+            </button>
+          </div>
+        </div>
+        }
       </div>
     </div>
   </div>

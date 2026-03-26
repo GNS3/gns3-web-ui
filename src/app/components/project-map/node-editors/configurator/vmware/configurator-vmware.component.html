@@ -5,80 +5,83 @@
     <div class="default-content">
       <mat-card class="matCard">
         @if (name) {
-          <mat-tab-group>
-            <mat-tab label="General settings">
-              <br />
-              <form [formGroup]="generalSettingsForm">
-                <mat-form-field class="form-field">
-                  <input matInput formControlName="name" type="text" placeholder="Name" />
-                </mat-form-field>
-                <mat-form-field class="form-field tags-field">
-                  <mat-label>Tags</mat-label>
-                  <mat-chip-grid #chipList>
-                    @for (tag of node?.tags; track tag) {
-                      <mat-chip (removed)="removeTag(tag)">
-                        {{ tag }}
-                        <mat-icon matChipRemove>cancel</mat-icon>
-                      </mat-chip>
-                    }
-                    <input matInput placeholder="Add tags"
-                           [matChipInputFor]="chipList"
-                           [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                           (matChipInputTokenEnd)="addTag($event)" />
-                  </mat-chip-grid>
-                </mat-form-field>
-                <mat-form-field class="select">
-                  <mat-select
-                    [ngModelOptions]="{ standalone: true }"
-                    placeholder="Console type"
-                    [(ngModel)]="node.console_type"
-                  >
-                    @for (type of consoleTypes; track type) {
-                      <mat-option [value]="type">
-                        {{ type }}
-                      </mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-                <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="node.console_auto_start">
-                  Auto start console
-                </mat-checkbox>
-                <mat-form-field class="form-field">
-                  <mat-select
-                    [ngModelOptions]="{ standalone: true }"
-                    placeholder="On close"
-                    [(ngModel)]="node.properties.on_close"
-                  >
-                    @for (option of onCloseOptions; track option[1]) {
-                      <mat-option [value]="option[1]">
-                        {{ option[0] }}
-                      </mat-option>
-                    }
-                  </mat-select>
-                </mat-form-field>
-              </form>
-              <mat-checkbox [(ngModel)]="node.properties.headless"> Start VM in headless mode </mat-checkbox><br />
-              <mat-checkbox [(ngModel)]="node.properties.linked_clone">
-                Use a linked base VM (experimental)
-              </mat-checkbox>
-            </mat-tab>
-            <mat-tab label="Network">
-              <br /><mat-checkbox [(ngModel)]="node.properties.use_any_adapter">
-                Allow GNS3 to override non custom VMware adapter
-              </mat-checkbox>
-              <app-custom-adapters-table
-                #customAdapters
-                [networkTypes]="networkTypes"
-                [displayedColumns]="displayedColumns"
-                [adapters]="node.ports"
-              ></app-custom-adapters-table>
-            </mat-tab>
-            <mat-tab label="Usage">
+        <mat-tab-group>
+          <mat-tab label="General settings">
+            <br />
+            <form [formGroup]="generalSettingsForm">
               <mat-form-field class="form-field">
-                <textarea matInput type="text" [(ngModel)]="node.properties.usage"></textarea>
+                <input matInput formControlName="name" type="text" placeholder="Name" />
               </mat-form-field>
-            </mat-tab>
-          </mat-tab-group>
+              <mat-form-field class="form-field tags-field">
+                <mat-label>Tags</mat-label>
+                <mat-chip-grid #chipList>
+                  @for (tag of node?.tags; track tag) {
+                  <mat-chip (removed)="removeTag(tag)">
+                    {{ tag }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                  }
+                  <input
+                    matInput
+                    placeholder="Add tags"
+                    [matChipInputFor]="chipList"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    (matChipInputTokenEnd)="addTag($event)"
+                  />
+                </mat-chip-grid>
+              </mat-form-field>
+              <mat-form-field class="select">
+                <mat-select
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="Console type"
+                  [(ngModel)]="node.console_type"
+                >
+                  @for (type of consoleTypes; track type) {
+                  <mat-option [value]="type">
+                    {{ type }}
+                  </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+              <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="node.console_auto_start">
+                Auto start console
+              </mat-checkbox>
+              <mat-form-field class="form-field">
+                <mat-select
+                  [ngModelOptions]="{ standalone: true }"
+                  placeholder="On close"
+                  [(ngModel)]="node.properties.on_close"
+                >
+                  @for (option of onCloseOptions; track option[1]) {
+                  <mat-option [value]="option[1]">
+                    {{ option[0] }}
+                  </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </form>
+            <mat-checkbox [(ngModel)]="node.properties.headless"> Start VM in headless mode </mat-checkbox><br />
+            <mat-checkbox [(ngModel)]="node.properties.linked_clone">
+              Use a linked base VM (experimental)
+            </mat-checkbox>
+          </mat-tab>
+          <mat-tab label="Network">
+            <br /><mat-checkbox [(ngModel)]="node.properties.use_any_adapter">
+              Allow GNS3 to override non custom VMware adapter
+            </mat-checkbox>
+            <app-custom-adapters-table
+              #customAdapters
+              [networkTypes]="networkTypes"
+              [displayedColumns]="displayedColumns"
+              [adapters]="node.ports"
+            ></app-custom-adapters-table>
+          </mat-tab>
+          <mat-tab label="Usage">
+            <mat-form-field class="form-field">
+              <textarea matInput type="text" [(ngModel)]="node.properties.usage"></textarea>
+            </mat-form-field>
+          </mat-tab>
+        </mat-tab-group>
         }
       </mat-card>
     </div>

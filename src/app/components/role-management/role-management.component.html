@@ -1,81 +1,82 @@
 @if (isReady()) {
-  <header class="role-management__header">
-    <h1 class="role-management__title">Roles</h1>
-    <div class="role-management__actions">
-      <button mat-raised-button
-              color="primary"
-              class="role-management__button"
-              [disabled]="selection.selected.length === 0"
-              (click)="onDelete(selection.selected)">
-        Delete roles
-      </button>
-      <button mat-raised-button
-              color="primary"
-              class="role-management__button"
-              (click)="addRole()">
-        Add Role
-      </button>
-    </div>
-  </header>
-
-  <form class="role-management__search-form">
-    <mat-form-field class="role-management__search">
-      <input matInput
-             placeholder="Search role by name"
-             [(ngModel)]="searchText"
-             [ngModelOptions]="{ standalone: true }" />
-    </mat-form-field>
-  </form>
-
-  <div class="role-management__table-container">
-    <mat-table [dataSource]="dataSource | roleFilter: searchText"
-               matSort
-               #rolesSort="matSort">
-
-      <ng-container matColumnDef="select">
-        <mat-header-cell *matHeaderCellDef class="role-management__small-col">
-          <mat-checkbox (change)="$event ? masterToggle() : null"
-                        [checked]="selection.hasValue() && isAllSelected()"
-                        [indeterminate]="selection.hasValue() && !isAllSelected()">
-          </mat-checkbox>
-        </mat-header-cell>
-        <mat-cell *matCellDef="let row" class="role-management__small-col">
-          <mat-checkbox (click)="$event.stopPropagation()"
-                        (change)="$event ? selection.toggle(row) : null"
-                        [checked]="selection.isSelected(row)">
-          </mat-checkbox>
-        </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="name">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
-        <mat-cell *matCellDef="let row">
-          <a class="role-management__link"
-             [routerLink]="['/controller', controller.id, 'management/roles', row.role_id]">
-            {{ row.name }}
-          </a>
-        </mat-cell>
-      </ng-container>
-
-      <ng-container matColumnDef="description">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>Description</mat-header-cell>
-        <mat-cell *matCellDef="let row">
-          <span class="role-management__overflow-text">{{ row.description }}</span>
-        </mat-cell>
-      </ng-container>
-
-      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-    </mat-table>
-
-    <mat-paginator #rolesPaginator="matPaginator"
-                   [pageSizeOptions]="[5, 10, 20]"
-                   showFirstLastButtons
-                   aria-label="Select page">
-    </mat-paginator>
+<header class="role-management__header">
+  <h1 class="role-management__title">Roles</h1>
+  <div class="role-management__actions">
+    <button
+      mat-raised-button
+      color="primary"
+      class="role-management__button"
+      [disabled]="selection.selected.length === 0"
+      (click)="onDelete(selection.selected)"
+    >
+      Delete roles
+    </button>
+    <button mat-raised-button color="primary" class="role-management__button" (click)="addRole()">Add Role</button>
   </div>
+</header>
+
+<form class="role-management__search-form">
+  <mat-form-field class="role-management__search">
+    <input
+      matInput
+      placeholder="Search role by name"
+      [(ngModel)]="searchText"
+      [ngModelOptions]="{ standalone: true }"
+    />
+  </mat-form-field>
+</form>
+
+<div class="role-management__table-container">
+  <mat-table [dataSource]="dataSource | roleFilter : searchText" matSort #rolesSort="matSort">
+    <ng-container matColumnDef="select">
+      <mat-header-cell *matHeaderCellDef class="role-management__small-col">
+        <mat-checkbox
+          (change)="$event ? masterToggle() : null"
+          [checked]="selection.hasValue() && isAllSelected()"
+          [indeterminate]="selection.hasValue() && !isAllSelected()"
+        >
+        </mat-checkbox>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row" class="role-management__small-col">
+        <mat-checkbox
+          (click)="$event.stopPropagation()"
+          (change)="$event ? selection.toggle(row) : null"
+          [checked]="selection.isSelected(row)"
+        >
+        </mat-checkbox>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Name</mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <a class="role-management__link" [routerLink]="['/controller', controller.id, 'management/roles', row.role_id]">
+          {{ row.name }}
+        </a>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="description">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Description</mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <span class="role-management__overflow-text">{{ row.description }}</span>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+  </mat-table>
+
+  <mat-paginator
+    #rolesPaginator="matPaginator"
+    [pageSizeOptions]="[5, 10, 20]"
+    showFirstLastButtons
+    aria-label="Select page"
+  >
+  </mat-paginator>
+</div>
 } @else {
-  <div class="role-management__loader">
-    <mat-spinner class="role-management__spinner"></mat-spinner>
-  </div>
+<div class="role-management__loader">
+  <mat-spinner class="role-management__spinner"></mat-spinner>
+</div>
 }

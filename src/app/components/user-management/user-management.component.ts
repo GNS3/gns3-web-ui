@@ -1,41 +1,51 @@
 /*
-* Software Name : GNS3 Web UI
-* Version: 3
-* SPDX-FileCopyrightText: Copyright (c) 2022 Orange Business Services
-* SPDX-License-Identifier: GPL-3.0-or-later
-*
-* This software is distributed under the GPL-3.0 or any later version,
-* the text of which is available at https://www.gnu.org/licenses/gpl-3.0.txt
-* or see the "LICENSE" file for more details.
-*
-* Author: Sylvain MATHIEU, Elise LEBEAU
-*/
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, QueryList, ViewChildren, inject, signal, computed} from '@angular/core';
-import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
-import {Location} from '@angular/common';
-import {ActivatedRoute, Router, RouterModule} from "@angular/router";
-import {Controller} from "@models/controller";
-import {MatSort, MatSortModule} from "@angular/material/sort";
-import {MatTableModule} from '@angular/material/table';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatButtonModule} from '@angular/material/button';
-import {MatIconModule} from '@angular/material/icon';
-import {MatPaginator} from "@angular/material/paginator";
-import {MatDialog, MatDialogModule} from "@angular/material/dialog";
-import {UserService} from "@services/user.service";
-import {ProgressService} from "../../common/progress/progress.service";
-import {User} from "@models/users/user";
-import {SelectionModel} from "@angular/cdk/collections";
-import {AddUserDialogComponent} from "@components/user-management/add-user-dialog/add-user-dialog.component";
-import {DeleteUserDialogComponent} from "@components/user-management/delete-user-dialog/delete-user-dialog.component";
-import {ToasterService} from "@services/toaster.service";
-import {MatTableDataSource} from "@angular/material/table";
-import {ControllerService} from "@services/controller.service";
-import {UserFilterPipe} from "@filters/user-filter.pipe";
-import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+ * Software Name : GNS3 Web UI
+ * Version: 3
+ * SPDX-FileCopyrightText: Copyright (c) 2022 Orange Business Services
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ * This software is distributed under the GPL-3.0 or any later version,
+ * the text of which is available at https://www.gnu.org/licenses/gpl-3.0.txt
+ * or see the "LICENSE" file for more details.
+ *
+ * Author: Sylvain MATHIEU, Elise LEBEAU
+ */
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  QueryList,
+  ViewChildren,
+  inject,
+  signal,
+  computed,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Location } from '@angular/common';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Controller } from '@models/controller';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { UserService } from '@services/user.service';
+import { ProgressService } from '../../common/progress/progress.service';
+import { User } from '@models/users/user';
+import { SelectionModel } from '@angular/cdk/collections';
+import { AddUserDialogComponent } from '@components/user-management/add-user-dialog/add-user-dialog.component';
+import { DeleteUserDialogComponent } from '@components/user-management/delete-user-dialog/delete-user-dialog.component';
+import { ToasterService } from '@services/toaster.service';
+import { MatTableDataSource } from '@angular/material/table';
+import { ControllerService } from '@services/controller.service';
+import { UserFilterPipe } from '@filters/user-filter.pipe';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   standalone: true,
@@ -57,8 +67,8 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     MatSortModule,
     MatDialogModule,
     UserFilterPipe,
-    MatProgressSpinnerModule
-  ]
+    MatProgressSpinnerModule,
+  ],
 })
 export class UserManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);
@@ -89,13 +99,12 @@ export class UserManagementComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.usersPaginator.changes.subscribe((comps: QueryList <MatPaginator>) =>
-    {
+    this.usersPaginator.changes.subscribe((comps: QueryList<MatPaginator>) => {
       this.dataSource.paginator = comps.first;
     });
     this.usersSort.changes.subscribe((comps: QueryList<MatSort>) => {
       this.dataSource.sort = comps.first;
-    })
+    });
 
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
@@ -137,21 +146,21 @@ export class UserManagementComponent implements OnInit {
 
   onDelete(user: User) {
     this.dialog
-      .open(DeleteUserDialogComponent, {width: '500px', data: {users: [user]}})
+      .open(DeleteUserDialogComponent, { width: '500px', data: { users: [user] } })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
-          this.userService.delete(this.controller, user.user_id)
-            .subscribe(() => {
-              this.refresh()
-            }, (error) => {
+          this.userService.delete(this.controller, user.user_id).subscribe(
+            () => {
+              this.refresh();
+            },
+            (error) => {
               this.toasterService.error(`An error occur while trying to delete user ${user.username}`);
-            });
+            }
+          );
         }
       });
   }
-
-
 
   isAllSelected() {
     const numSelected = this.selection.selected.length;
@@ -160,28 +169,27 @@ export class UserManagementComponent implements OnInit {
   }
 
   masterToggle() {
-    this.isAllSelected() ?
-      this.selection.clear() :
-      this.dataSource.data.forEach(row => this.selection.select(row));
+    this.isAllSelected() ? this.selection.clear() : this.dataSource.data.forEach((row) => this.selection.select(row));
   }
 
   deleteMultiple() {
     this.dialog
-      .open(DeleteUserDialogComponent, {width: '500px', data: {users: this.selection.selected}})
+      .open(DeleteUserDialogComponent, { width: '500px', data: { users: this.selection.selected } })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
           this.selection.selected.forEach((user: User) => {
-            this.userService.delete(this.controller, user.user_id)
-              .subscribe(() => {
-                this.refresh()
-              }, (error) => {
+            this.userService.delete(this.controller, user.user_id).subscribe(
+              () => {
+                this.refresh();
+              },
+              (error) => {
                 this.toasterService.error(`An error occur while trying to delete user ${user.username}`);
-              });
-          })
+              }
+            );
+          });
           this.selection.clear();
         }
       });
-
   }
 }

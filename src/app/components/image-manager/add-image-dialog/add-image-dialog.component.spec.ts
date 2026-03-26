@@ -18,10 +18,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ImageUploadSessionService } from '@services/image-upload-session.service';
 
 export class MockedImageManagerService {
-  public getImages(controller: Controller ) {
+  public getImages(controller: Controller) {
     return of();
   }
-
 }
 
 describe('AddImageDialogComponent', () => {
@@ -29,8 +28,8 @@ describe('AddImageDialogComponent', () => {
   let fixture: ComponentFixture<AddImageDialogComponent>;
 
   let mockedControllerService = new MockedControllerService();
-  let mockedImageManagerService = new MockedImageManagerService()
-  let mockedToasterService = new MockedToasterService()
+  let mockedImageManagerService = new MockedImageManagerService();
+  let mockedToasterService = new MockedToasterService();
   let mockedImageUploadSessionService = {
     cancelRequests$: new Subject(),
     emit: jasmine.createSpy('emit'),
@@ -40,14 +39,14 @@ describe('AddImageDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports:[
+      imports: [
         MatIconModule,
         MatToolbarModule,
         MatMenuModule,
         MatCheckboxModule,
         MatDialogModule,
         MatSnackBarModule,
-        require('@angular/common/http/testing').HttpClientTestingModule
+        require('@angular/common/http/testing').HttpClientTestingModule,
       ],
       providers: [
         provideZonelessChangeDetection(),
@@ -58,10 +57,9 @@ describe('AddImageDialogComponent', () => {
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: ImageUploadSessionService, useValue: mockedImageUploadSessionService },
       ],
-      declarations: [ AddImageDialogComponent ],
+      declarations: [AddImageDialogComponent],
       schemas: [NO_ERRORS_SCHEMA],
-    })
-    .compileComponents();
+    }).compileComponents();
   });
 
   beforeEach(() => {

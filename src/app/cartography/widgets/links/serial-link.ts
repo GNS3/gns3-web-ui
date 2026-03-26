@@ -6,7 +6,7 @@ import { MapLink } from '../../models/map/map-link';
 import { SVGSelection } from '../../models/types';
 import { Widget } from '../widget';
 import { LinkStyle } from '@models/link-style';
-import { StyleTranslator} from './style-translator';
+import { StyleTranslator } from './style-translator';
 
 class SerialLinkPath {
   constructor(
@@ -21,21 +21,28 @@ class SerialLinkPath {
 @Injectable()
 export class SerialLinkWidget implements Widget {
   public onContextMenu = new EventEmitter<LinkContextMenu>();
-  private defaultSerialLinkStyle : LinkStyle = {
-    color: "#800000",
+  private defaultSerialLinkStyle: LinkStyle = {
+    color: '#800000',
     width: 2,
-    type: 0
+    type: 0,
   };
 
   constructor() {}
 
   private linkToSerialLink(link: MapLink) {
     // Validate source and target have valid coordinates
-    if (!link.source || !link.target ||
-        link.source.x == null || link.source.y == null ||
-        link.source.width == null || link.source.height == null ||
-        link.target.x == null || link.target.y == null ||
-        link.target.width == null || link.target.height == null) {
+    if (
+      !link.source ||
+      !link.target ||
+      link.source.x == null ||
+      link.source.y == null ||
+      link.source.width == null ||
+      link.source.height == null ||
+      link.target.x == null ||
+      link.target.y == null ||
+      link.target.width == null ||
+      link.target.height == null
+    ) {
       return null;
     }
 
@@ -72,20 +79,15 @@ export class SerialLinkWidget implements Widget {
       ? {
           color: link.link_style.color,
           width: hasValidWidth ? link.link_style.width : this.defaultSerialLinkStyle.width,
-          type: link.link_style.type !== undefined ? link.link_style.type : this.defaultSerialLinkStyle.type
+          type: link.link_style.type !== undefined ? link.link_style.type : this.defaultSerialLinkStyle.type,
         }
       : {
           color: this.defaultSerialLinkStyle.color,
           width: hasValidWidth ? link.link_style.width : this.defaultSerialLinkStyle.width,
-          type: link.link_style?.type !== undefined ? link.link_style.type : this.defaultSerialLinkStyle.type
+          type: link.link_style?.type !== undefined ? link.link_style.type : this.defaultSerialLinkStyle.type,
         };
 
-    return new SerialLinkPath(
-      [source.x, source.y],
-      angle_source,
-      angle_target,
-      [target.x, target.y],
-      style);
+    return new SerialLinkPath([source.x, source.y], angle_source, angle_target, [target.x, target.y], style);
   }
 
   public draw(view: SVGSelection) {
@@ -103,7 +105,7 @@ export class SerialLinkWidget implements Widget {
       .attr('class', 'serial_link')
       .attr('fill', 'none')
       .on('contextmenu', (event: any, datum) => {
-        let link: MapLink = (datum as unknown) as MapLink;
+        let link: MapLink = datum as unknown as MapLink;
         const evt = event;
         this.onContextMenu.emit(new LinkContextMenu(evt, link));
       })

@@ -46,7 +46,9 @@ describe('SymbolService', () => {
   it('should get raw symbol', inject([SymbolService], (service: SymbolService) => {
     service.raw(controller, ':my/tested.png').subscribe();
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/symbols/:my/tested.png/raw`);
+    const req = httpTestingController.expectOne(
+      `http://127.0.0.1:3080/${environment.current_version}/symbols/:my/tested.png/raw`
+    );
     expect(req.request.method).toEqual('GET');
   }));
 });

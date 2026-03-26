@@ -15,7 +15,7 @@ export class ProjectMapLockConfirmationDialogComponent implements OnInit {
 
   confirmActionData = {
     actionType: 'Unlock',
-    isAction:false
+    isAction: false,
   };
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
@@ -25,8 +25,7 @@ export class ProjectMapLockConfirmationDialogComponent implements OnInit {
   }
 
   confirmAction() {
-    this.confirmActionData.isAction = this.data.actionType == 'Lock'? true : false;
+    this.confirmActionData.isAction = this.data.actionType == 'Lock' ? true : false;
     this.dialogRef.close(this.confirmActionData);
   }
-
 }

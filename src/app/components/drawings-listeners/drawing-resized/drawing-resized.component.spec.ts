@@ -19,7 +19,7 @@ describe('DrawingResizedComponent', () => {
   let mockedMapDrawingToSvgConverter = new MapDrawingToSvgConverter();
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       providers: [
         provideZonelessChangeDetection(),
         { provide: DrawingService, useValue: mockedDrawingService },

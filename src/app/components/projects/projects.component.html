@@ -30,20 +30,22 @@
 
     <!-- Projects Table -->
     <div class="projects__table-container">
-      <mat-table #table [dataSource]="dataSource | projectsfilter: searchText" matSort>
+      <mat-table #table [dataSource]="dataSource | projectsfilter : searchText" matSort>
         <ng-container matColumnDef="select">
           <mat-header-cell *matHeaderCellDef>
             <mat-checkbox
               (change)="$event ? selectAllImages() : null"
               [checked]="selection.hasValue() && isAllSelected()"
-              [indeterminate]="selection.hasValue() && !isAllSelected()">
+              [indeterminate]="selection.hasValue() && !isAllSelected()"
+            >
             </mat-checkbox>
           </mat-header-cell>
           <mat-cell *matCellDef="let row">
             <mat-checkbox
               (click)="$event.stopPropagation()"
               (change)="$event ? selection.toggle(row) : null"
-              [checked]="selection.isSelected(row)">
+              [checked]="selection.isSelected(row)"
+            >
             </mat-checkbox>
           </mat-cell>
         </ng-container>
@@ -51,9 +53,7 @@
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <a
-              [routerLink]="['/controller', controller.id, 'project', row.project_id]"
-              class="projects__link">
+            <a [routerLink]="['/controller', controller.id, 'project', row.project_id]" class="projects__link">
               {{ row.name }}
             </a>
           </mat-cell>
@@ -64,37 +64,19 @@
           <mat-cell class="projects__cell--actions" *matCellDef="let row">
             <div class="projects__actions-cell">
               @if (row.status == 'closed') {
-                <button
-                  mat-icon-button
-                  (click)="open(row)"
-                  matTooltip="Open project"
-                >
-                  <mat-icon aria-label="Open project">play_arrow</mat-icon>
-                </button>
+              <button mat-icon-button (click)="open(row)" matTooltip="Open project">
+                <mat-icon aria-label="Open project">play_arrow</mat-icon>
+              </button>
+              } @if (row.status == 'opened') {
+              <button mat-icon-button (click)="close(row)" matTooltip="Close project">
+                <mat-icon aria-label="Close project">pause</mat-icon>
+              </button>
+              } @if (row.status == 'closed') {
+              <button mat-icon-button (click)="duplicate(row)" matTooltip="Duplicate project">
+                <mat-icon aria-label="Save project as">content_copy</mat-icon>
+              </button>
               }
-              @if (row.status == 'opened') {
-                <button
-                  mat-icon-button
-                  (click)="close(row)"
-                  matTooltip="Close project"
-                >
-                  <mat-icon aria-label="Close project">pause</mat-icon>
-                </button>
-              }
-              @if (row.status == 'closed') {
-                <button
-                  mat-icon-button
-                  (click)="duplicate(row)"
-                  matTooltip="Duplicate project"
-                >
-                  <mat-icon aria-label="Save project as">content_copy</mat-icon>
-                </button>
-              }
-              <button
-                mat-icon-button
-                (click)="exportSelectProject(row)"
-                matTooltip="Export project"
-              >
+              <button mat-icon-button (click)="exportSelectProject(row)" matTooltip="Export project">
                 <mat-icon aria-label="Export project">file_download</mat-icon>
               </button>
             </div>
@@ -104,24 +86,16 @@
         <ng-container matColumnDef="delete">
           <mat-header-cell *matHeaderCellDef class="projects__cell--actions">
             @if (selection.selected.length > 1) {
-              <button
-                mat-button
-                (click)="deleteAllFiles()"
-                color="warn"
-                matTooltip="Delete all selected">
-                <mat-icon>delete</mat-icon>
-              </button>
+            <button mat-button (click)="deleteAllFiles()" color="warn" matTooltip="Delete all selected">
+              <mat-icon>delete</mat-icon>
+            </button>
             }
           </mat-header-cell>
           <mat-cell *matCellDef="let row" class="projects__cell--actions">
             @if (row.status == 'closed' && selection.isSelected(row)) {
-              <button
-                mat-icon-button
-                (click)="delete(row)"
-                color="warn"
-                matTooltip="Delete project">
-                <mat-icon aria-label="Delete project">delete</mat-icon>
-              </button>
+            <button mat-icon-button (click)="delete(row)" color="warn" matTooltip="Delete project">
+              <mat-icon aria-label="Delete project">delete</mat-icon>
+            </button>
             }
           </mat-cell>
         </ng-container>
@@ -134,9 +108,7 @@
     <!-- Footer -->
     <footer class="projects__footer">
       <div class="projects__footer-content">
-        <div class="projects__footer-info">
-          GNS3 Web-UI &copy;2018-{{ currentYear }} v{{ version }}
-        </div>
+        <div class="projects__footer-info">GNS3 Web-UI &copy;2018-{{ currentYear }} v{{ version }}</div>
         <div class="projects__footer-social">
           <a
             class="projects__footer-social-link"
@@ -155,10 +127,9 @@
             matTooltip="Website"
           >
             @if (!isLightThemeEnabled()) {
-              <mat-icon class="projects__footer-icon" svgIcon="gns3"></mat-icon>
-            }
-            @if (isLightThemeEnabled()) {
-              <mat-icon class="projects__footer-icon" svgIcon="gns3black"></mat-icon>
+            <mat-icon class="projects__footer-icon" svgIcon="gns3"></mat-icon>
+            } @if (isLightThemeEnabled()) {
+            <mat-icon class="projects__footer-icon" svgIcon="gns3black"></mat-icon>
             }
           </a>
         </div>

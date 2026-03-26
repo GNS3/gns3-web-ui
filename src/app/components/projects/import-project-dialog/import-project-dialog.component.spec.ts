@@ -22,7 +22,6 @@ import { ToasterService } from '@services/toaster.service';
 import { MockedToasterService } from '@services/toaster.service.spec';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
-
 export class MockedProjectService {
   public projects: Project[] = [
     {
@@ -66,7 +65,7 @@ describe('ImportProjectDialogComponent', () => {
   let controller: Controller;
   let debugElement: DebugElement;
   let fileSelectDirective: FileSelectDirective;
-  let mockedToasterService = new MockedToasterService()
+  let mockedToasterService = new MockedToasterService();
 
   let dialogRef = {
     close: jasmine.createSpy('close'),
@@ -95,12 +94,11 @@ describe('ImportProjectDialogComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: [] },
         { provide: ProjectService, useClass: MockedProjectService },
         { provide: ToasterService, useValue: mockedToasterService },
-
       ],
       declarations: [ImportProjectDialogComponent],
     }).compileComponents();
 
-    controller = new Controller  ();
+    controller = new Controller();
     controller.host = 'localhost';
     controller.port = 80;
   });
@@ -109,7 +107,7 @@ describe('ImportProjectDialogComponent', () => {
     fixture = TestBed.createComponent(ImportProjectDialogComponent);
     debugElement = fixture.debugElement;
     component = fixture.componentInstance;
-    component.controller =  controller;
+    component.controller = controller;
     component.projectNameForm.controls['projectName'].setValue('ValidName');
     fixture.detectChanges();
 
@@ -149,7 +147,7 @@ describe('ImportProjectDialogComponent', () => {
   });
 
   it('should call uploading item with correct arguments', () => {
-    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {url: ''});
+    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), { url: '' });
     fileSelectDirective.uploader.queue.push(fileItem);
     spyOn(fileSelectDirective.uploader, 'uploadItem');
 
@@ -168,7 +166,9 @@ describe('ImportProjectDialogComponent', () => {
   });
 
   it('should clear queue after calling delete', () => {
-    fileSelectDirective.uploader.queue.push(new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {url: ''}));
+    fileSelectDirective.uploader.queue.push(
+      new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), { url: '' })
+    );
     spyOn(fileSelectDirective.uploader.queue, 'pop');
 
     component.onDeleteClick();
@@ -178,7 +178,9 @@ describe('ImportProjectDialogComponent', () => {
   });
 
   it('should prepare correct upload path for file', () => {
-    fileSelectDirective.uploader.queue.push(new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {url: ''}));
+    fileSelectDirective.uploader.queue.push(
+      new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), { url: '' })
+    );
     component.projectNameForm.controls['projectName'].setValue('newProject');
 
     component.onImportClick();
@@ -188,7 +190,7 @@ describe('ImportProjectDialogComponent', () => {
   });
 
   it('should navigate to progress view after clicking import', () => {
-    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {url: ''});
+    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), { url: '' });
     fileSelectDirective.uploader.queue.push(fileItem);
 
     component.onImportClick();
@@ -228,7 +230,7 @@ describe('ImportProjectDialogComponent', () => {
   });
 
   it('should show delete button after selecting project', () => {
-    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {url: ''});
+    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), { url: '' });
     fileSelectDirective.uploader.queue.push(fileItem);
     let event = {
       target: {
@@ -241,7 +243,7 @@ describe('ImportProjectDialogComponent', () => {
   });
 
   it('should hide delete button after deselecting project', () => {
-    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), {url: ''});
+    let fileItem = new FileItem(fileSelectDirective.uploader, new File([], 'fileName'), { url: '' });
     fileSelectDirective.uploader.queue.push(fileItem);
     let event = {
       target: {

@@ -157,7 +157,9 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
       data: {
         mode: 'create',
         config: null,
-        existingNames: this.configs().filter((c) => c.source === 'user').map((c) => c.name),
+        existingNames: this.configs()
+          .filter((c) => c.source === 'user')
+          .map((c) => c.name),
       },
     });
 

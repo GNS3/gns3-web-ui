@@ -1,55 +1,53 @@
 <div class="ethernet-switches">
   <header class="ethernet-switches__header">
     @if (controller) {
-      <button
-        class="ethernet-switches__back-btn"
-        [routerLink]="'/controller/' + controller.id + '/preferences/builtin'"
-        mat-icon-button>
-        <mat-icon>arrow_back</mat-icon>
-      </button>
+    <button
+      class="ethernet-switches__back-btn"
+      [routerLink]="'/controller/' + controller.id + '/preferences/builtin'"
+      mat-icon-button
+    >
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     }
     <h1 class="ethernet-switches__title">Ethernet switches templates</h1>
     @if (controller) {
-      <button
-        class="ethernet-switches__add-btn"
-        matTooltip="Add Ethernet switch template"
-        matTooltipClass="custom-tooltip"
-        [routerLink]="'/controller/' + controller.id + '/preferences/builtin/ethernet-switches/addtemplate'"
-        mat-icon-button>
-        <mat-icon>add_circle_outline</mat-icon>
-      </button>
+    <button
+      class="ethernet-switches__add-btn"
+      matTooltip="Add Ethernet switch template"
+      matTooltipClass="custom-tooltip"
+      [routerLink]="'/controller/' + controller.id + '/preferences/builtin/ethernet-switches/addtemplate'"
+      mat-icon-button
+    >
+      <mat-icon>add_circle_outline</mat-icon>
+    </button>
     }
   </header>
 
   <main class="ethernet-switches__content">
     @if (!ethernetSwitchesTemplates.length) {
-      <app-empty-templates-list></app-empty-templates-list>
-    }
-
-    @if (ethernetSwitchesTemplates.length) {
-      <nav class="ethernet-switches__list">
-        @for (template of ethernetSwitchesTemplates; track template.template_id) {
-          <a
-            class="ethernet-switches__list-item"
-            [routerLink]="template.template_id">
-            <mat-icon class="ethernet-switches__list-icon">settings_ethernet</mat-icon>
-            <span class="ethernet-switches__list-name">{{ template.name }}</span>
-            <button mat-icon-button [matMenuTriggerFor]="menu" class="ethernet-switches__menu-btn">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu">
-              <button mat-menu-item (click)="deleteTemplate(template)">
-                <mat-icon>delete</mat-icon>
-                <span>Delete</span>
-              </button>
-              <button mat-menu-item [routerLink]="template.template_id">
-                <mat-icon>edit</mat-icon>
-                <span>Edit</span>
-              </button>
-            </mat-menu>
-          </a>
-        }
-      </nav>
+    <app-empty-templates-list></app-empty-templates-list>
+    } @if (ethernetSwitchesTemplates.length) {
+    <nav class="ethernet-switches__list">
+      @for (template of ethernetSwitchesTemplates; track template.template_id) {
+      <a class="ethernet-switches__list-item" [routerLink]="template.template_id">
+        <mat-icon class="ethernet-switches__list-icon">settings_ethernet</mat-icon>
+        <span class="ethernet-switches__list-name">{{ template.name }}</span>
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="ethernet-switches__menu-btn">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="deleteTemplate(template)">
+            <mat-icon>delete</mat-icon>
+            <span>Delete</span>
+          </button>
+          <button mat-menu-item [routerLink]="template.template_id">
+            <mat-icon>edit</mat-icon>
+            <span>Edit</span>
+          </button>
+        </mat-menu>
+      </a>
+      }
+    </nav>
     }
   </main>
 </div>

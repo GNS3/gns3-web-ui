@@ -73,7 +73,7 @@ xdescribe('ProjectsComponent', () => {
     projectService = TestBed.inject(ProjectService);
     progressService = TestBed.inject(ProgressService);
 
-    controller = new Controller  ();
+    controller = new Controller();
     controller.id = 99;
 
     const settings = {} as Settings;
@@ -86,73 +86,73 @@ xdescribe('ProjectsComponent', () => {
     spyOn(progressService, 'deactivate');
   });
 
-beforeEach(() => {
-  fixture = TestBed.createComponent(ProjectsComponent);
-  component = fixture.componentInstance;
-  fixture.detectChanges();
-});
-
-it('should create', () => {
-  expect(component).toBeTruthy();
-});
-
-it('should remove item after delete action', () => {
-  spyOn(mockedProjectService, 'delete').and.returnValue(of());
-  let project = new Project();
-  project.project_id = '1';
-
-  component.delete(project);
-
-  expect(mockedProjectService.delete).toHaveBeenCalled();
-});
-
-it('should call list on refresh', () => {
-  mockedProjectService.list = jasmine.createSpy().and.returnValue(of([]));
-
-  component.refresh();
-
-  expect(mockedProjectService.list).toHaveBeenCalled();
-});
-
-describe('ProjectComponent open', () => {
-  let project: Project;
-
   beforeEach(() => {
-    project = new Project();
+    fixture = TestBed.createComponent(ProjectsComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+
+  it('should remove item after delete action', () => {
+    spyOn(mockedProjectService, 'delete').and.returnValue(of());
+    let project = new Project();
     project.project_id = '1';
 
-    spyOn(projectService, 'open').and.returnValue(of(project));
+    component.delete(project);
 
-    component.controller = controller;
+    expect(mockedProjectService.delete).toHaveBeenCalled();
   });
 
-  it('should open project', () => {
-    component.open(project);
-    expect(projectService.open).toHaveBeenCalledWith(controller, project.project_id);
+  it('should call list on refresh', () => {
+    mockedProjectService.list = jasmine.createSpy().and.returnValue(of([]));
 
-    expect(progressService.activate).toHaveBeenCalled();
-    expect(progressService.deactivate).toHaveBeenCalled();
-  });
-});
+    component.refresh();
 
-describe('ProjectComponent close', () => {
-  let project: Project;
-
-  beforeEach(() => {
-    project = new Project();
-    project.project_id = '1';
-
-    spyOn(projectService, 'close').and.returnValue(of(project));
-
-    component.controller = controller;
+    expect(mockedProjectService.list).toHaveBeenCalled();
   });
 
-  xit('should close project', () => {
-    component.close(project);
-    expect(projectService.close).toHaveBeenCalledWith(controller, project.project_id);
+  describe('ProjectComponent open', () => {
+    let project: Project;
 
-    expect(progressService.activate).toHaveBeenCalled();
-    expect(progressService.deactivate).toHaveBeenCalled();
+    beforeEach(() => {
+      project = new Project();
+      project.project_id = '1';
+
+      spyOn(projectService, 'open').and.returnValue(of(project));
+
+      component.controller = controller;
+    });
+
+    it('should open project', () => {
+      component.open(project);
+      expect(projectService.open).toHaveBeenCalledWith(controller, project.project_id);
+
+      expect(progressService.activate).toHaveBeenCalled();
+      expect(progressService.deactivate).toHaveBeenCalled();
+    });
   });
-});
+
+  describe('ProjectComponent close', () => {
+    let project: Project;
+
+    beforeEach(() => {
+      project = new Project();
+      project.project_id = '1';
+
+      spyOn(projectService, 'close').and.returnValue(of(project));
+
+      component.controller = controller;
+    });
+
+    xit('should close project', () => {
+      component.close(project);
+      expect(projectService.close).toHaveBeenCalledWith(controller, project.project_id);
+
+      expect(progressService.activate).toHaveBeenCalled();
+      expect(progressService.deactivate).toHaveBeenCalled();
+    });
+  });
 });

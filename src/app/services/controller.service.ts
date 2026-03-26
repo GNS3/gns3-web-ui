@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
-import {Controller, ControllerProtocol } from '@models/controller';
+import { Controller, ControllerProtocol } from '@models/controller';
 import { HttpController } from './http-controller.service';
 
 @Injectable()
@@ -15,10 +15,10 @@ export class ControllerService {
     this.serviceInitialized.next(this.isServiceInitialized);
   }
 
-  getcontrollerIds() : string[]{
-    let str = localStorage.getItem("controllerIds");
+  getcontrollerIds(): string[] {
+    let str = localStorage.getItem('controllerIds');
     if (str?.length > 0) {
-      const ids = str.split(",");
+      const ids = str.split(',');
       // Remove duplicates and empty strings
       return [...new Set(ids)].filter((n) => n && n.trim().length > 0);
     }
@@ -26,19 +26,19 @@ export class ControllerService {
   }
 
   updatecontrollerIds() {
-    localStorage.removeItem("controllerIds");
-    localStorage.setItem("controllerIds", this.controllerIds.toString());
+    localStorage.removeItem('controllerIds');
+    localStorage.setItem('controllerIds', this.controllerIds.toString());
   }
 
   public get(id: number): Promise<Controller> {
-    let controller: Controller  = JSON.parse(localStorage.getItem(`controller-${id}`));
+    let controller: Controller = JSON.parse(localStorage.getItem(`controller-${id}`));
     let promise = new Promise<Controller>((resolve) => {
       resolve(controller);
     });
     return promise;
   }
 
-  public create(controller: Controller ) {
+  public create(controller: Controller) {
     // Check for duplicate name
     const existingControllers = this.findAllSync();
     if (existingControllers.some((c) => c.name === controller.name)) {
@@ -79,7 +79,7 @@ export class ControllerService {
     return existingControllers.some((c) => c.name === name);
   }
 
-  public update(controller: Controller ) {
+  public update(controller: Controller) {
     localStorage.removeItem(`controller-${controller.id}`);
     localStorage.setItem(`controller-${controller.id}`, JSON.stringify(controller));
 
@@ -91,7 +91,7 @@ export class ControllerService {
 
   public findAll() {
     let promise = new Promise<Controller[]>((resolve) => {
-      let controllers: Controller [] = [];
+      let controllers: Controller[] = [];
       this.controllerIds.forEach((n) => {
         const data = localStorage.getItem(n);
         if (data) {
@@ -104,7 +104,7 @@ export class ControllerService {
     return promise;
   }
 
-  public delete(controller: Controller ) {
+  public delete(controller: Controller) {
     localStorage.removeItem(`controller-${controller.id}`);
     this.controllerIds = this.controllerIds.filter((n) => n !== `controller-${controller.id}`);
     this.updatecontrollerIds();
@@ -125,7 +125,7 @@ export class ControllerService {
 
   public getLocalController(host: string, port: number) {
     const promise = new Promise((resolve, reject) => {
-      this.findAll().then((controllers: Controller []) => {
+      this.findAll().then((controllers: Controller[]) => {
         const local = controllers.find((controller) => controller.location === 'bundled');
         if (local) {
           local.host = host;
@@ -135,7 +135,7 @@ export class ControllerService {
             resolve(updated);
           }, reject);
         } else {
-          const controller = new Controller ();
+          const controller = new Controller();
           controller.name = 'local';
           controller.host = host;
           controller.port = port;

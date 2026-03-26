@@ -71,7 +71,7 @@ describe('ConsoleDeviceActionComponent', () => {
       ];
 
       component.nodes = nodes;
-      component.controller =  controller;
+      component.controller = controller;
 
       settingsService.setConsoleSettings('command');
     });

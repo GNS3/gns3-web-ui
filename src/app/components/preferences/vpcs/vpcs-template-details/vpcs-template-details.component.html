@@ -1,103 +1,123 @@
 <div class="vpcs-template-details" [ngClass]="{ 'vpcs-template-details--hidden': isSymbolSelectionOpened }">
   <header class="vpcs-template-details__header">
     @if (controller) {
-      <button
-        class="vpcs-template-details__back-btn"
-        (click)="goBack()"
-        mat-icon-button>
-        <mat-icon>arrow_back</mat-icon>
-      </button>
+    <button class="vpcs-template-details__back-btn" (click)="goBack()" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     }
     <h1 class="vpcs-template-details__title">VPCS node template configuration</h1>
   </header>
 
   @if (vpcsTemplate) {
-    <main class="vpcs-template-details__content">
-      <section class="vpcs-template-details__form-card">
-        <h3 class="vpcs-template-details__section-title">General settings</h3>
-        <form class="vpcs-template-details__form">
-          <mat-form-field appearance="fill" class="vpcs-template-details__field">
-            <mat-label>Template name</mat-label>
-            <input matInput [value]="templateName()" (input)="templateName.set($event.target.value)" type="text" placeholder="Template name" />
+  <main class="vpcs-template-details__content">
+    <section class="vpcs-template-details__form-card">
+      <h3 class="vpcs-template-details__section-title">General settings</h3>
+      <form class="vpcs-template-details__form">
+        <mat-form-field appearance="fill" class="vpcs-template-details__field">
+          <mat-label>Template name</mat-label>
+          <input
+            matInput
+            [value]="templateName()"
+            (input)="templateName.set($event.target.value)"
+            type="text"
+            placeholder="Template name"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="vpcs-template-details__field">
+          <mat-label>Default name format</mat-label>
+          <input
+            matInput
+            [value]="defaultName()"
+            (input)="defaultName.set($event.target.value)"
+            type="text"
+            placeholder="Default name format"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="vpcs-template-details__field">
+          <mat-label>Base script file</mat-label>
+          <input
+            matInput
+            [value]="scriptFile()"
+            (input)="scriptFile.set($event.target.value)"
+            type="text"
+            placeholder="Base script file"
+          />
+        </mat-form-field>
+
+        <div class="vpcs-template-details__symbol-row">
+          <mat-form-field appearance="fill" class="vpcs-template-details__field vpcs-template-details__field--flex">
+            <mat-label>Symbol</mat-label>
+            <input
+              matInput
+              [value]="symbol()"
+              (input)="symbol.set($event.target.value)"
+              type="text"
+              placeholder="Symbol"
+            />
           </mat-form-field>
+          <button mat-button class="vpcs-template-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
+        </div>
 
-          <mat-form-field appearance="fill" class="vpcs-template-details__field">
-            <mat-label>Default name format</mat-label>
-            <input matInput [value]="defaultName()" (input)="defaultName.set($event.target.value)" type="text" placeholder="Default name format" />
-          </mat-form-field>
+        <mat-form-field appearance="fill" class="vpcs-template-details__field">
+          <mat-label>Tags</mat-label>
+          <mat-chip-grid #chipList>
+            @for (tag of tags(); track tag) {
+            <mat-chip (removed)="removeTag(tag)">
+              {{ tag }}
+              <mat-icon matChipRemove>cancel</mat-icon>
+            </mat-chip>
+            }
+          </mat-chip-grid>
+          <input
+            matInput
+            placeholder="Add tags"
+            [matChipInputFor]="chipList"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            (matChipInputTokenEnd)="addTag($event)"
+          />
+        </mat-form-field>
 
-          <mat-form-field appearance="fill" class="vpcs-template-details__field">
-            <mat-label>Base script file</mat-label>
-            <input matInput [value]="scriptFile()" (input)="scriptFile.set($event.target.value)" type="text" placeholder="Base script file" />
-          </mat-form-field>
+        <mat-form-field appearance="fill" class="vpcs-template-details__field">
+          <mat-label>Category</mat-label>
+          <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
+            @for (cat of categories; track $index) {
+            <mat-option [value]="cat[1]">
+              {{ cat[0] }}
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
 
-          <div class="vpcs-template-details__symbol-row">
-            <mat-form-field appearance="fill" class="vpcs-template-details__field vpcs-template-details__field--flex">
-              <mat-label>Symbol</mat-label>
-              <input matInput [value]="symbol()" (input)="symbol.set($event.target.value)" type="text" placeholder="Symbol" />
-            </mat-form-field>
-            <button mat-button class="vpcs-template-details__symbol-btn" (click)="chooseSymbol()">
-              Choose symbol
-            </button>
-          </div>
+        <mat-form-field appearance="fill" class="vpcs-template-details__field">
+          <mat-label>Console type</mat-label>
+          <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
+            @for (type of consoleTypes; track type) {
+            <mat-option [value]="type">
+              {{ type }}
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
 
-          <mat-form-field appearance="fill" class="vpcs-template-details__field">
-            <mat-label>Tags</mat-label>
-            <mat-chip-grid #chipList>
-              @for (tag of tags(); track tag) {
-                <mat-chip (removed)="removeTag(tag)">
-                  {{ tag }}
-                  <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
-              }
-            </mat-chip-grid>
-            <input matInput placeholder="Add tags"
-                   [matChipInputFor]="chipList"
-                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                   (matChipInputTokenEnd)="addTag($event)" />
-          </mat-form-field>
+        <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)"
+          >Auto start console</mat-checkbox
+        >
+      </form>
+    </section>
 
-          <mat-form-field appearance="fill" class="vpcs-template-details__field">
-            <mat-label>Category</mat-label>
-            <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
-              @for (cat of categories; track $index) {
-                <mat-option [value]="cat[1]">
-                  {{ cat[0] }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <mat-form-field appearance="fill" class="vpcs-template-details__field">
-            <mat-label>Console type</mat-label>
-            <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
-              @for (type of consoleTypes; track type) {
-                <mat-option [value]="type">
-                  {{ type }}
-                </mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-
-          <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)">Auto start console</mat-checkbox>
-        </form>
-      </section>
-
-      <div class="vpcs-template-details__actions">
-        <button class="vpcs-template-details__cancel-btn" (click)="goBack()" mat-button>
-          Cancel
-        </button>
-        <button mat-raised-button color="primary" class="vpcs-template-details__save-btn" (click)="onSave()">
-          Save
-        </button>
-      </div>
-    </main>
+    <div class="vpcs-template-details__actions">
+      <button class="vpcs-template-details__cancel-btn" (click)="goBack()" mat-button>Cancel</button>
+      <button mat-raised-button color="primary" class="vpcs-template-details__save-btn" (click)="onSave()">Save</button>
+    </div>
+  </main>
   }
 </div>
 @if (isSymbolSelectionOpened && vpcsTemplate) {
-  <app-symbols-menu
-    [controller]="controller"
-    [symbol]="symbol()"
-    (symbolChangedEmitter)="symbolChanged($event)"
-  ></app-symbols-menu>
+<app-symbols-menu
+  [controller]="controller"
+  [symbol]="symbol()"
+  (symbolChangedEmitter)="symbolChanged($event)"
+></app-symbols-menu>
 }

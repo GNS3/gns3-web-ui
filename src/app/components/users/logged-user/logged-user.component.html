@@ -5,37 +5,31 @@
 
   <main class="logged-user__content">
     @if (user()) {
-      <section class="logged-user__card">
-        <div class="logged-user__info">
-          <div class="logged-user__info-row">
-            <span class="logged-user__info-label">Username:</span>
-            <span class="logged-user__info-value">{{ user().username }}</span>
-          </div>
-          <div class="logged-user__info-row">
-            <span class="logged-user__info-label">Full name:</span>
-            <span class="logged-user__info-value">{{ user().full_name }}</span>
-          </div>
-          <div class="logged-user__info-row">
-            <span class="logged-user__info-label">Email:</span>
-            <span class="logged-user__info-value">{{ user().email }}</span>
-          </div>
+    <section class="logged-user__card">
+      <div class="logged-user__info">
+        <div class="logged-user__info-row">
+          <span class="logged-user__info-label">Username:</span>
+          <span class="logged-user__info-value">{{ user().username }}</span>
         </div>
+        <div class="logged-user__info-row">
+          <span class="logged-user__info-label">Full name:</span>
+          <span class="logged-user__info-value">{{ user().full_name }}</span>
+        </div>
+        <div class="logged-user__info-row">
+          <span class="logged-user__info-label">Email:</span>
+          <span class="logged-user__info-value">{{ user().email }}</span>
+        </div>
+      </div>
 
-        <div class="logged-user__actions">
-          <button mat-raised-button
-                  color="primary"
-                  class="logged-user__button"
-                  (click)="changePassword()">
-            Change password
-          </button>
-          <button mat-raised-button
-                  color="primary"
-                  class="logged-user__button"
-                  (click)="copyToken()">
-            Click to copy access token
-          </button>
-        </div>
-      </section>
+      <div class="logged-user__actions">
+        <button mat-raised-button color="primary" class="logged-user__button" (click)="changePassword()">
+          Change password
+        </button>
+        <button mat-raised-button color="primary" class="logged-user__button" (click)="copyToken()">
+          Click to copy access token
+        </button>
+      </div>
+    </section>
     }
   </main>
 </div>

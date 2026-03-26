@@ -12,7 +12,7 @@ import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog
 @Component({
   selector: 'app-export-config-action',
   templateUrl: './export-config-action.component.html',
-  imports: [ MatButtonModule, MatIconModule, MatMenuModule],
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExportConfigActionComponent {

@@ -1,4 +1,13 @@
-import { Component, DoCheck, ElementRef, OnInit, ViewChild, inject, input, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  DoCheck,
+  ElementRef,
+  OnInit,
+  ViewChild,
+  inject,
+  input,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FontFixer } from '../../../../../helpers/font-fixer';
 import { TextElement } from '../../../../../models/drawings/text-element';

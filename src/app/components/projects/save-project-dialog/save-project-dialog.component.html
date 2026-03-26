@@ -10,10 +10,9 @@
       placeholder="Please enter name"
     />
     @if (form.projectName?.touched && form.projectName?.errors && form.projectName?.errors.required) {
-      <mat-error>Project name is required</mat-error>
-    }
-    @if (form.projectName?.touched && form.projectName?.errors && form.projectName?.errors.invalidName) {
-      <mat-error>Project name is incorrect</mat-error>
+    <mat-error>Project name is required</mat-error>
+    } @if (form.projectName?.touched && form.projectName?.errors && form.projectName?.errors.invalidName) {
+    <mat-error>Project name is incorrect</mat-error>
     }
   </mat-form-field>
   <div mat-dialog-actions>

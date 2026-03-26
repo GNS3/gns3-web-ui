@@ -22,7 +22,7 @@ describe('ZoomingCanvasDirective', () => {
   let movingEventSource = new MovingEventSource();
 
   beforeEach(() => {
-   TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [NoopAnimationsModule],
       providers: [
         provideZonelessChangeDetection(),

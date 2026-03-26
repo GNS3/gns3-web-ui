@@ -1,4 +1,4 @@
-import * as utils from "../utils/common.js";
+import * as utils from '../utils/common.js';
 
 var MAXBITS = 15;
 var ENOUGH_LENS = 852;
@@ -9,51 +9,49 @@ var CODES = 0;
 var LENS = 1;
 var DISTS = 2;
 
-var lbase = [ /* Length codes 257..285 base */
-  3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31,
-  35, 43, 51, 59, 67, 83, 99, 115, 131, 163, 195, 227, 258, 0, 0
+var lbase = [
+  /* Length codes 257..285 base */ 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 15, 17, 19, 23, 27, 31, 35, 43, 51, 59, 67, 83, 99,
+  115, 131, 163, 195, 227, 258, 0, 0,
 ];
 
-var lext = [ /* Length codes 257..285 extra */
-  16, 16, 16, 16, 16, 16, 16, 16, 17, 17, 17, 17, 18, 18, 18, 18,
-  19, 19, 19, 19, 20, 20, 20, 20, 21, 21, 21, 21, 16, 72, 78
+var lext = [
+  /* Length codes 257..285 extra */ 16, 16, 16, 16, 16, 16, 16, 16, 17, 17, 17, 17, 18, 18, 18, 18, 19, 19, 19, 19, 20,
+  20, 20, 20, 21, 21, 21, 21, 16, 72, 78,
 ];
 
-var dbase = [ /* Distance codes 0..29 base */
-  1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193,
-  257, 385, 513, 769, 1025, 1537, 2049, 3073, 4097, 6145,
-  8193, 12289, 16385, 24577, 0, 0
+var dbase = [
+  /* Distance codes 0..29 base */ 1, 2, 3, 4, 5, 7, 9, 13, 17, 25, 33, 49, 65, 97, 129, 193, 257, 385, 513, 769, 1025,
+  1537, 2049, 3073, 4097, 6145, 8193, 12289, 16385, 24577, 0, 0,
 ];
 
-var dext = [ /* Distance codes 0..29 extra */
-  16, 16, 16, 16, 17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22,
-  23, 23, 24, 24, 25, 25, 26, 26, 27, 27,
-  28, 28, 29, 29, 64, 64
+var dext = [
+  /* Distance codes 0..29 extra */ 16, 16, 16, 16, 17, 17, 18, 18, 19, 19, 20, 20, 21, 21, 22, 22, 23, 23, 24, 24, 25,
+  25, 26, 26, 27, 27, 28, 28, 29, 29, 64, 64,
 ];
 
-export default function inflate_table(type, lens, lens_index, codes, table, table_index, work, opts)
-{
+export default function inflate_table(type, lens, lens_index, codes, table, table_index, work, opts) {
   var bits = opts.bits;
-      //here = opts.here; /* table entry for duplication */
+  //here = opts.here; /* table entry for duplication */
 
-  var len = 0;               /* a code's length in bits */
-  var sym = 0;               /* index of code symbols */
-  var min = 0, max = 0;          /* minimum and maximum code lengths */
-  var root = 0;              /* number of index bits for root table */
-  var curr = 0;              /* number of index bits for current table */
-  var drop = 0;              /* code bits to drop for sub-table */
-  var left = 0;                   /* number of prefix codes available */
-  var used = 0;              /* code entries in table used */
-  var huff = 0;              /* Huffman code */
-  var incr;              /* for incrementing code, index */
-  var fill;              /* index for replicating entries */
-  var low;               /* low bits for current root entry */
-  var mask;              /* mask for low root bits */
-  var next;             /* next available space in table */
-  var base = null;     /* base value table to use */
+  var len = 0; /* a code's length in bits */
+  var sym = 0; /* index of code symbols */
+  var min = 0,
+    max = 0; /* minimum and maximum code lengths */
+  var root = 0; /* number of index bits for root table */
+  var curr = 0; /* number of index bits for current table */
+  var drop = 0; /* code bits to drop for sub-table */
+  var left = 0; /* number of prefix codes available */
+  var used = 0; /* code entries in table used */
+  var huff = 0; /* Huffman code */
+  var incr; /* for incrementing code, index */
+  var fill; /* index for replicating entries */
+  var low; /* low bits for current root entry */
+  var mask; /* mask for low root bits */
+  var next; /* next available space in table */
+  var base = null; /* base value table to use */
   var base_index = 0;
-//  var shoextra;    /* extra bits table to use */
-  var end;                    /* use base and extra for symbol > end */
+  //  var shoextra;    /* extra bits table to use */
+  var end; /* use base and extra for symbol > end */
   var count = new utils.Buf16(MAXBITS + 1); //[MAXBITS+1];    /* number of codes of each length */
   var offs = new utils.Buf16(MAXBITS + 1); //[MAXBITS+1];     /* offsets in table for each length */
   var extra = null;
@@ -103,17 +101,19 @@ export default function inflate_table(type, lens, lens_index, codes, table, tabl
   /* bound code lengths, force root to be within code lengths */
   root = bits;
   for (max = MAXBITS; max >= 1; max--) {
-    if (count[max] !== 0) { break; }
+    if (count[max] !== 0) {
+      break;
+    }
   }
   if (root > max) {
     root = max;
   }
-  if (max === 0) {                     /* no symbols to code at all */
+  if (max === 0) {
+    /* no symbols to code at all */
     //table.op[opts.table_index] = 64;  //here.op = (var char)64;    /* invalid code marker */
     //table.bits[opts.table_index] = 1;   //here.bits = (var char)1;
     //table.val[opts.table_index++] = 0;   //here.val = (var short)0;
     table[table_index++] = (1 << 24) | (64 << 16) | 0;
-
 
     //table.op[opts.table_index] = 64;
     //table.bits[opts.table_index] = 1;
@@ -121,10 +121,12 @@ export default function inflate_table(type, lens, lens_index, codes, table, tabl
     table[table_index++] = (1 << 24) | (64 << 16) | 0;
 
     opts.bits = 1;
-    return 0;     /* no symbols, but wait for decoding to report error */
+    return 0; /* no symbols, but wait for decoding to report error */
   }
   for (min = 1; min < max; min++) {
-    if (count[min] !== 0) { break; }
+    if (count[min] !== 0) {
+      break;
+    }
   }
   if (root < min) {
     root = min;
@@ -137,10 +139,10 @@ export default function inflate_table(type, lens, lens_index, codes, table, tabl
     left -= count[len];
     if (left < 0) {
       return -1;
-    }        /* over-subscribed */
+    } /* over-subscribed */
   }
   if (left > 0 && (type === CODES || max !== 1)) {
-    return -1;                      /* incomplete set */
+    return -1; /* incomplete set */
   }
 
   /* generate offsets into symbol table for each length for sorting */
@@ -191,36 +193,34 @@ export default function inflate_table(type, lens, lens_index, codes, table, tabl
   // poor man optimization - use if-else instead of switch,
   // to avoid deopts in old v8
   if (type === CODES) {
-    base = extra = work;    /* dummy value--not used */
+    base = extra = work; /* dummy value--not used */
     end = 19;
-
   } else if (type === LENS) {
     base = lbase;
     base_index -= 257;
     extra = lext;
     extra_index -= 257;
     end = 256;
-
-  } else {                    /* DISTS */
+  } else {
+    /* DISTS */
     base = dbase;
     extra = dext;
     end = -1;
   }
 
   /* initialize opts for loop */
-  huff = 0;                   /* starting code */
-  sym = 0;                    /* starting code symbol */
-  len = min;                  /* starting code length */
-  next = table_index;              /* current table to fill in */
-  curr = root;                /* current table index bits */
-  drop = 0;                   /* current bits to drop from code for index */
-  low = -1;                   /* trigger new sub-table when len > root */
-  used = 1 << root;          /* use root table entries */
-  mask = used - 1;            /* mask for comparing low */
+  huff = 0; /* starting code */
+  sym = 0; /* starting code symbol */
+  len = min; /* starting code length */
+  next = table_index; /* current table to fill in */
+  curr = root; /* current table index bits */
+  drop = 0; /* current bits to drop from code for index */
+  low = -1; /* trigger new sub-table when len > root */
+  used = 1 << root; /* use root table entries */
+  mask = used - 1; /* mask for comparing low */
 
   /* check available table space */
-  if ((type === LENS && used > ENOUGH_LENS) ||
-    (type === DISTS && used > ENOUGH_DISTS)) {
+  if ((type === LENS && used > ENOUGH_LENS) || (type === DISTS && used > ENOUGH_DISTS)) {
     return 1;
   }
 
@@ -231,23 +231,21 @@ export default function inflate_table(type, lens, lens_index, codes, table, tabl
     if (work[sym] < end) {
       here_op = 0;
       here_val = work[sym];
-    }
-    else if (work[sym] > end) {
+    } else if (work[sym] > end) {
       here_op = extra[extra_index + work[sym]];
       here_val = base[base_index + work[sym]];
-    }
-    else {
-      here_op = 32 + 64;         /* end of block */
+    } else {
+      here_op = 32 + 64; /* end of block */
       here_val = 0;
     }
 
     /* replicate for those indices with low len bits equal to huff */
     incr = 1 << (len - drop);
     fill = 1 << curr;
-    min = fill;                 /* save offset to next table */
+    min = fill; /* save offset to next table */
     do {
       fill -= incr;
-      table[next + (huff >> drop) + fill] = (here_bits << 24) | (here_op << 16) | here_val |0;
+      table[next + (huff >> drop) + fill] = (here_bits << 24) | (here_op << 16) | here_val | 0;
     } while (fill !== 0);
 
     /* backwards increment the len-bit code huff */
@@ -265,7 +263,9 @@ export default function inflate_table(type, lens, lens_index, codes, table, tabl
     /* go to next symbol, update count, len */
     sym++;
     if (--count[len] === 0) {
-      if (len === max) { break; }
+      if (len === max) {
+        break;
+      }
       len = lens[lens_index + work[sym]];
     }
 
@@ -277,22 +277,23 @@ export default function inflate_table(type, lens, lens_index, codes, table, tabl
       }
 
       /* increment past last table */
-      next += min;            /* here min is 1 << curr */
+      next += min; /* here min is 1 << curr */
 
       /* determine length of next table */
       curr = len - drop;
       left = 1 << curr;
       while (curr + drop < max) {
         left -= count[curr + drop];
-        if (left <= 0) { break; }
+        if (left <= 0) {
+          break;
+        }
         curr++;
         left <<= 1;
       }
 
       /* check for enough space */
       used += 1 << curr;
-      if ((type === LENS && used > ENOUGH_LENS) ||
-        (type === DISTS && used > ENOUGH_DISTS)) {
+      if ((type === LENS && used > ENOUGH_LENS) || (type === DISTS && used > ENOUGH_DISTS)) {
         return 1;
       }
 
@@ -301,7 +302,7 @@ export default function inflate_table(type, lens, lens_index, codes, table, tabl
       /*table.op[low] = curr;
       table.bits[low] = root;
       table.val[low] = next - opts.table_index;*/
-      table[low] = (root << 24) | (curr << 16) | (next - table_index) |0;
+      table[low] = (root << 24) | (curr << 16) | (next - table_index) | 0;
     }
   }
 
@@ -312,11 +313,11 @@ export default function inflate_table(type, lens, lens_index, codes, table, tabl
     //table.op[next + huff] = 64;            /* invalid code marker */
     //table.bits[next + huff] = len - drop;
     //table.val[next + huff] = 0;
-    table[next + huff] = ((len - drop) << 24) | (64 << 16) |0;
+    table[next + huff] = ((len - drop) << 24) | (64 << 16) | 0;
   }
 
   /* set return parameters */
   //opts.table_index += used;
   opts.bits = root;
   return 0;
-};
+}

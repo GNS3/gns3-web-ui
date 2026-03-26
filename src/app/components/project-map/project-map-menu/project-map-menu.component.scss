@@ -126,7 +126,8 @@ button.mat-mdc-icon-button {
 }
 
 @keyframes pulse-minimized {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 16px var(--mat-sys-primary), inset 0 0 8px var(--mat-sys-primary);
     transform: scale(1);
   }
@@ -137,7 +138,8 @@ button.mat-mdc-icon-button {
 }
 
 @keyframes blink-indicator {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
     transform: translateX(-50%) scale(1);
   }

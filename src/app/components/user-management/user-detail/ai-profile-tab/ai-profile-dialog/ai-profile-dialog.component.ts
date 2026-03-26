@@ -1,6 +1,13 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  AbstractControl,
+  ValidationErrors,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,7 +25,7 @@ import {
   CreateLLMModelConfigRequest,
   ModelType,
   ContextStrategy,
-  CopilotMode
+  CopilotMode,
 } from '@models/ai-profile';
 
 export interface ConfigDialogData {
@@ -51,7 +58,7 @@ export const PROVIDER_PRESETS: ProviderPreset[] = [
     provider: 'openai',
     baseUrl: '',
     models: [],
-    defaultTemperature: 0.3
+    defaultTemperature: 0.3,
   },
   {
     id: 'openrouter',
@@ -64,7 +71,7 @@ export const PROVIDER_PRESETS: ProviderPreset[] = [
       'anthropic/claude-sonnet-4',
       'z-ai/glm-4.7',
       'openai/gpt-4o',
-      'google/gemini-2.5-flash'
+      'google/gemini-2.5-flash',
     ],
     defaultTemperature: 0.3,
     modelContextLimits: {
@@ -73,8 +80,8 @@ export const PROVIDER_PRESETS: ProviderPreset[] = [
       'anthropic/claude-sonnet-4': 200,
       'z-ai/glm-4.7': 200,
       'openai/gpt-4o': 128,
-      'google/gemini-2.5-flash': 1000
-    }
+      'google/gemini-2.5-flash': 1000,
+    },
   },
   {
     id: 'deepseek',
@@ -84,9 +91,9 @@ export const PROVIDER_PRESETS: ProviderPreset[] = [
     models: ['deepseek-chat'],
     defaultTemperature: 0.3,
     modelContextLimits: {
-      'deepseek-chat': 128
-    }
-  }
+      'deepseek-chat': 128,
+    },
+  },
 ];
 
 // Model type options
@@ -98,24 +105,36 @@ export const MODEL_TYPES: { value: ModelType; label: string; description: string
   { value: 'multimodal', label: 'Multimodal', description: 'Multiple input types' },
   { value: 'embedding', label: 'Embedding', description: 'Text embedding models' },
   { value: 'reranking', label: 'Reranking', description: 'Reranking models' },
-  { value: 'other', label: 'Other', description: 'Other model types' }
+  { value: 'other', label: 'Other', description: 'Other model types' },
 ];
 
 // Context strategy options
 export const CONTEXT_STRATEGIES: { value: ContextStrategy; label: string; description: string }[] = [
   { value: 'conservative', label: 'Conservative', description: '60% of context limit' },
   { value: 'balanced', label: 'Balanced', description: '75% of context limit (default)' },
-  { value: 'aggressive', label: 'Aggressive', description: '85% of context limit' }
+  { value: 'aggressive', label: 'Aggressive', description: '85% of context limit' },
 ];
 
 // Copilot mode options
 export const COPILOT_MODES: { value: CopilotMode; label: string; description: string }[] = [
   { value: 'teaching_assistant', label: 'Teaching Assistant', description: 'Diagnostics only' },
-  { value: 'lab_automation_assistant', label: 'Lab Automation Assistant', description: 'Full configuration access' }
+  { value: 'lab_automation_assistant', label: 'Lab Automation Assistant', description: 'Full configuration access' },
 ];
 
 // Standard fields that are already in the form
-const STANDARD_FIELDS = ['name', 'model_type', 'provider', 'model', 'api_key', 'base_url', 'temperature', 'context_limit', 'context_strategy', 'copilot_mode', 'is_default'];
+const STANDARD_FIELDS = [
+  'name',
+  'model_type',
+  'provider',
+  'model',
+  'api_key',
+  'base_url',
+  'temperature',
+  'context_limit',
+  'context_strategy',
+  'copilot_mode',
+  'is_default',
+];
 
 @Component({
   standalone: true,
@@ -135,8 +154,8 @@ const STANDARD_FIELDS = ['name', 'model_type', 'provider', 'model', 'api_key', '
     MatOptionModule,
     MatCheckboxModule,
     MatButtonModule,
-    MatTooltipModule
-  ]
+    MatTooltipModule,
+  ],
 })
 export class AiProfileDialogComponent implements OnInit {
   form: FormGroup;
@@ -161,21 +180,21 @@ export class AiProfileDialogComponent implements OnInit {
     { value: 'aws', label: 'AWS Bedrock' },
     { value: 'ollama', label: 'Ollama' },
     { value: 'deepseek', label: 'DeepSeek' },
-    { value: 'xai', label: 'xAI' }
+    { value: 'xai', label: 'xAI' },
   ];
 
   // Default base URLs for providers
   providerDefaultUrls: { [key: string]: string } = {
-    'openai': 'https://api.openai.com/v1',
-    'anthropic': 'https://api.anthropic.com',
-    'google': 'https://generativelanguage.googleapis.com',
-    'deepseek': 'https://api.deepseek.com/v1',
-    'xai': 'https://api.x.ai'
+    openai: 'https://api.openai.com/v1',
+    anthropic: 'https://api.anthropic.com',
+    google: 'https://generativelanguage.googleapis.com',
+    deepseek: 'https://api.deepseek.com/v1',
+    xai: 'https://api.x.ai',
   };
 
   // Get non-custom presets for Basic Mode
   get basicModePresets(): ProviderPreset[] {
-    return this.providerPresets.filter(preset => preset.id !== 'custom');
+    return this.providerPresets.filter((preset) => preset.id !== 'custom');
   }
 
   // Enums for template access
@@ -225,7 +244,7 @@ export class AiProfileDialogComponent implements OnInit {
         context_limit: config.config.context_limit,
         context_strategy: config.config.context_strategy || 'balanced',
         copilot_mode: config.config.copilot_mode || 'teaching_assistant',
-        is_default: config.is_default
+        is_default: config.is_default,
       });
 
       // Extract custom fields (non-standard fields from config object)
@@ -239,7 +258,7 @@ export class AiProfileDialogComponent implements OnInit {
     }
 
     // Watch for provider changes to auto-fill base URL in Custom mode
-    this.form.get('provider')?.valueChanges.subscribe(providerValue => {
+    this.form.get('provider')?.valueChanges.subscribe((providerValue) => {
       // Only auto-fill in Custom mode (not when using presets)
       if (this.selectedPresetId === 'custom' && providerValue) {
         const defaultUrl = this.providerDefaultUrls[providerValue];
@@ -255,27 +274,30 @@ export class AiProfileDialogComponent implements OnInit {
   }
 
   private createForm(): FormGroup {
-    return this.fb.group({
-      name: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(1),
-          Validators.maxLength(100),
-          Validators.pattern(/^[a-zA-Z0-9_-]+$/)
-        ]
-      ],
-      model_type: ['text', Validators.required],
-      provider: ['', Validators.required],
-      model: ['', Validators.required],
-      api_key: ['', [Validators.required, Validators.minLength(10)]],
-      base_url: [''],
-      temperature: [0.7, [Validators.min(0), Validators.max(2)]],
-      context_limit: [128, [Validators.required, Validators.min(1), Validators.max(10000)]],
-      context_strategy: ['balanced'],
-      copilot_mode: ['teaching_assistant'],
-      is_default: [false]
-    }, { validators: this.nameUniqueValidator.bind(this) });
+    return this.fb.group(
+      {
+        name: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(1),
+            Validators.maxLength(100),
+            Validators.pattern(/^[a-zA-Z0-9_-]+$/),
+          ],
+        ],
+        model_type: ['text', Validators.required],
+        provider: ['', Validators.required],
+        model: ['', Validators.required],
+        api_key: ['', [Validators.required, Validators.minLength(10)]],
+        base_url: [''],
+        temperature: [0.7, [Validators.min(0), Validators.max(2)]],
+        context_limit: [128, [Validators.required, Validators.min(1), Validators.max(10000)]],
+        context_strategy: ['balanced'],
+        copilot_mode: ['teaching_assistant'],
+        is_default: [false],
+      },
+      { validators: this.nameUniqueValidator.bind(this) }
+    );
   }
 
   /**
@@ -286,10 +308,8 @@ export class AiProfileDialogComponent implements OnInit {
     const baseUrl = this.form.get('base_url')?.value;
 
     // Find matching preset
-    const matchingPreset = this.providerPresets.find(preset =>
-      preset.id !== 'custom' &&
-      preset.provider === provider &&
-      preset.baseUrl === baseUrl
+    const matchingPreset = this.providerPresets.find(
+      (preset) => preset.id !== 'custom' && preset.provider === provider && preset.baseUrl === baseUrl
     );
 
     if (matchingPreset) {
@@ -313,7 +333,7 @@ export class AiProfileDialogComponent implements OnInit {
    */
   onPresetChange(presetId: string): void {
     this.selectedPresetId = presetId;
-    this.selectedPreset = this.providerPresets.find(p => p.id === presetId) || null;
+    this.selectedPreset = this.providerPresets.find((p) => p.id === presetId) || null;
 
     if (this.selectedPreset && presetId !== 'custom') {
       // Auto-fill configuration from preset
@@ -368,7 +388,11 @@ export class AiProfileDialogComponent implements OnInit {
       this.form.get('model')?.setValue(modelValue);
 
       // Set context limit for the selected model
-      if (this.selectedPreset && this.selectedPreset.modelContextLimits && this.selectedPreset.modelContextLimits[modelValue]) {
+      if (
+        this.selectedPreset &&
+        this.selectedPreset.modelContextLimits &&
+        this.selectedPreset.modelContextLimits[modelValue]
+      ) {
         this.form.get('context_limit')?.setValue(this.selectedPreset.modelContextLimits[modelValue]);
       }
     }
@@ -443,7 +467,7 @@ export class AiProfileDialogComponent implements OnInit {
    */
   getContextStrategyDescription(): string {
     const value = this.form.get('context_strategy')?.value;
-    const strategy = this.contextStrategies.find(s => s.value === value);
+    const strategy = this.contextStrategies.find((s) => s.value === value);
     return strategy ? strategy.description : '';
   }
 
@@ -452,7 +476,7 @@ export class AiProfileDialogComponent implements OnInit {
    */
   getCopilotModeDescription(): string {
     const value = this.form.get('copilot_mode')?.value;
-    const mode = this.copilotModes.find(m => m.value === value);
+    const mode = this.copilotModes.find((m) => m.value === value);
     return mode ? mode.description : '';
   }
 
@@ -499,7 +523,7 @@ export class AiProfileDialogComponent implements OnInit {
       context_limit: parseInt(value.context_limit, 10),
       context_strategy: value.context_strategy,
       copilot_mode: value.copilot_mode,
-      is_default: value.is_default || false
+      is_default: value.is_default || false,
     };
 
     // Only include api_key if provided (create mode) or if user entered a new value (edit mode)
@@ -508,7 +532,7 @@ export class AiProfileDialogComponent implements OnInit {
     }
 
     // Add custom fields
-    this.customFields.forEach(field => {
+    this.customFields.forEach((field) => {
       if (field.key && field.key.trim() && field.value !== null && field.value !== undefined && field.value !== '') {
         configData[field.key.trim()] = field.value;
       }

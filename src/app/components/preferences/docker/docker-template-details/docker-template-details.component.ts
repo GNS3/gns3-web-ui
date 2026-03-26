@@ -25,7 +25,19 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
   selector: 'app-docker-template-details',
   templateUrl: './docker-template-details.component.html',
   styleUrls: ['./docker-template-details.component.scss', '../../preferences.component.scss'],
-  imports: [CommonModule, FormsModule, RouterModule, MatIconModule, MatButtonModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatChipsModule, MatCheckboxModule, SymbolsMenuComponent]
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatIconModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatChipsModule,
+    MatCheckboxModule,
+    SymbolsMenuComponent,
+  ],
 })
 export class DockerTemplateDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);

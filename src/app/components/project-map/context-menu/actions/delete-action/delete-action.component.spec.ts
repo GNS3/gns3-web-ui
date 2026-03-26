@@ -38,7 +38,7 @@ describe('DeleteActionComponent', () => {
         { provide: NodeService, useValue: mockedNodeService },
         { provide: DrawingService, useValue: mockedDrawingService },
         { provide: LinkService, useValue: mockedLinkService },
-        { provide: ToasterService, useValue: mockedToasterService},
+        { provide: ToasterService, useValue: mockedToasterService },
       ],
       declarations: [DeleteActionComponent],
     }).compileComponents();
