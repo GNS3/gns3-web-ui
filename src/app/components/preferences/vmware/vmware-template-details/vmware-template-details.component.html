@@ -1,7 +1,4 @@
-<div
-  class="vmware-template-details"
-  [ngClass]="{ 'vmware-template-details--hidden': isSymbolSelectionOpened }"
->
+<div class="vmware-template-details" [ngClass]="{ 'vmware-template-details--hidden': isSymbolSelectionOpened }">
   <header class="vmware-template-details__header">
     @if (controller) {
     <button class="vmware-template-details__back-btn" (click)="goBack()" mat-icon-button>
@@ -190,11 +187,7 @@
           </mat-select>
         </mat-form-field>
 
-        <button
-          mat-button
-          class="vmware-template-details__config-btn"
-          (click)="openCustomAdaptersDialog()"
-        >
+        <button mat-button class="vmware-template-details__config-btn" (click)="openCustomAdaptersDialog()">
           Configure custom adapters
         </button>
 

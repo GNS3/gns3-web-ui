@@ -20,12 +20,12 @@ export interface CustomAdaptersDialogData {
   networkTypes: NetworkType[];
   portNameFormat?: string;
   portSegmentSize?: number;
-  currentAdapters?: number;  // 当前 adapters 数量
+  currentAdapters?: number; // 当前 adapters 数量
 }
 
 export interface CustomAdaptersDialogResult {
   adapters: CustomAdapter[];
-  requiredAdapters?: number;  // 需要的最小 adapters 数量
+  requiredAdapters?: number; // 需要的最小 adapters 数量
 }
 
 @Component({
@@ -61,9 +61,7 @@ export class CustomAdaptersComponent {
 
   onAdd() {
     // Find the highest adapter_number to avoid duplicates
-    const maxAdapterNumber = this.adapters.length > 0
-      ? Math.max(...this.adapters.map(a => a.adapter_number))
-      : -1;
+    const maxAdapterNumber = this.adapters.length > 0 ? Math.max(...this.adapters.map((a) => a.adapter_number)) : -1;
     const adapterNumber = maxAdapterNumber + 1;
 
     const portNameFormat = this.data.portNameFormat || 'Ethernet{0}';
@@ -114,9 +112,7 @@ export class CustomAdaptersComponent {
   }
 
   hasInvalidMacAddresses(): boolean {
-    return this.adapters.some(adapter =>
-      adapter.mac_address && !this.isValidMacAddress(adapter.mac_address)
-    );
+    return this.adapters.some((adapter) => adapter.mac_address && !this.isValidMacAddress(adapter.mac_address));
   }
 
   getMacErrorMessage(mac: string): string {
@@ -141,11 +137,11 @@ export class CustomAdaptersComponent {
   configureCustomAdapters() {
     // Check for invalid MAC addresses before submitting
     if (this.hasInvalidMacAddresses()) {
-      const invalidAdapters = this.adapters.filter(adapter =>
-        adapter.mac_address && !this.isValidMacAddress(adapter.mac_address)
+      const invalidAdapters = this.adapters.filter(
+        (adapter) => adapter.mac_address && !this.isValidMacAddress(adapter.mac_address)
       );
 
-      const errorMessages = invalidAdapters.map(adapter => {
+      const errorMessages = invalidAdapters.map((adapter) => {
         const error = this.getMacErrorMessage(adapter.mac_address);
         return `Adapter ${adapter.adapter_number}: ${error}`;
       });
@@ -155,20 +151,18 @@ export class CustomAdaptersComponent {
     }
 
     // Clean up empty mac_address to avoid backend validation error
-    const cleanedAdapters = this.adapters.map(adapter => ({
+    const cleanedAdapters = this.adapters.map((adapter) => ({
       ...adapter,
-      mac_address: adapter.mac_address || null,  // Convert empty string to null
+      mac_address: adapter.mac_address || null, // Convert empty string to null
     }));
 
     // Calculate required adapters based on the highest adapter_number in custom adapters
     // This handles both adding and deleting adapters
-    const maxAdapterNumber = this.adapters.length > 0
-      ? Math.max(...this.adapters.map(a => a.adapter_number))
-      : -1;
+    const maxAdapterNumber = this.adapters.length > 0 ? Math.max(...this.adapters.map((a) => a.adapter_number)) : -1;
 
     const result: CustomAdaptersDialogResult = {
       adapters: cleanedAdapters,
-      requiredAdapters: maxAdapterNumber + 1,  // Need at least maxAdapterNumber + 1 adapters
+      requiredAdapters: maxAdapterNumber + 1, // Need at least maxAdapterNumber + 1 adapters
     };
 
     this.dialogRef.close(result);

@@ -14,10 +14,10 @@
     <div class="adapter-item">
       <span class="adapter-label">Adapter {{ adapter.adapter_number }}</span>
       <mat-form-field appearance="fill" subscriptSizing="dynamic" class="adapter-field">
-        <input matInput [(ngModel)]="adapter.port_name" name="port_name_{{i}}" />
+        <input matInput [(ngModel)]="adapter.port_name" name="port_name_{{ i }}" />
       </mat-form-field>
       <mat-form-field appearance="fill" subscriptSizing="dynamic" class="adapter-field">
-        <mat-select [(ngModel)]="adapter.adapter_type" name="adapter_type_{{i}}">
+        <mat-select [(ngModel)]="adapter.adapter_type" name="adapter_type_{{ i }}">
           @for (type of networkTypes; track type.value) {
           <mat-option [value]="type.value">{{ type.name }}</mat-option>
           }
@@ -28,7 +28,7 @@
           matInput
           [(ngModel)]="adapter.mac_address"
           (ngModelChange)="adapter.mac_address = formatMacAddress($event)"
-          name="mac_address_{{i}}"
+          name="mac_address_{{ i }}"
           placeholder="Paste any MAC format"
         />
         @if (adapter.mac_address && !isValidMacAddress(adapter.mac_address)) {
