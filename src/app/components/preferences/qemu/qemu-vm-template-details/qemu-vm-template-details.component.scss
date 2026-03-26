@@ -129,7 +129,7 @@
 }
 
 .qemu-template-details__file-row {
-  padding: 0 24px 16px;
+  padding: 16px 24px 16px;
   display: flex;
   align-items: flex-start;
   gap: 16px;
@@ -268,7 +268,7 @@
 
   .qemu-template-details__file-row {
     flex-direction: column;
-    padding: 0 16px 16px;
+    padding: 16px 16px 16px;
   }
 
   .qemu-template-details__disk-grid {
