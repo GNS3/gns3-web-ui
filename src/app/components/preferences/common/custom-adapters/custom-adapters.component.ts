@@ -10,9 +10,14 @@ import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/materia
 import { ToasterService } from '@services/toaster.service';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 
+export interface NetworkType {
+  value: string;
+  name: string;
+}
+
 export interface CustomAdaptersDialogData {
   adapters: CustomAdapter[];
-  networkTypes: any[];
+  networkTypes: NetworkType[];
   portNameFormat?: string;
   portSegmentSize?: number;
   currentAdapters?: number;  // 当前 adapters 数量
@@ -55,7 +60,12 @@ export class CustomAdaptersComponent {
   }
 
   onAdd() {
-    const adapterNumber = this.adapters.length;
+    // Find the highest adapter_number to avoid duplicates
+    const maxAdapterNumber = this.adapters.length > 0
+      ? Math.max(...this.adapters.map(a => a.adapter_number))
+      : -1;
+    const adapterNumber = maxAdapterNumber + 1;
+
     const portNameFormat = this.data.portNameFormat || 'Ethernet{0}';
     const segmentSize = this.data.portSegmentSize || 0;
 

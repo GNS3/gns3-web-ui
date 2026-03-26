@@ -364,12 +364,17 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     // Don't call fillCustomAdapters() here as it will override user's custom adapters
     // User configures custom adapters through the dialog
 
-    this.qemuService.saveTemplate(this.controller, this.qemuTemplate).subscribe((savedTemplate: QemuTemplate) => {
-      this.toasterService.success('Changes saved');
-      // Update local template with server response to reflect changes immediately
-      this.qemuTemplate = savedTemplate;
-      this.initFormFromTemplate();
-      this.cd.markForCheck();
+    this.qemuService.saveTemplate(this.controller, this.qemuTemplate).subscribe({
+      next: (savedTemplate: QemuTemplate) => {
+        this.toasterService.success('Changes saved');
+        // Update local template with server response to reflect changes immediately
+        this.qemuTemplate = savedTemplate;
+        this.initFormFromTemplate();
+        this.cd.markForCheck();
+      },
+      error: (error) => {
+        this.toasterService.error('Failed to save template: ' + (error.message || 'Unknown error'));
+      }
     });
   }
 

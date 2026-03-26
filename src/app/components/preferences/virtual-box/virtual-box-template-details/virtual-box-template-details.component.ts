@@ -168,13 +168,27 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     let copyOfAdapters = this.virtualBoxTemplate.custom_adapters ? this.virtualBoxTemplate.custom_adapters : [];
     this.virtualBoxTemplate.custom_adapters = [];
 
+    const portNameFormat = this.nameFormat() || 'Ethernet{0}';
+    const segmentSize = this.segmentSize() || 0;
+
     for (let i = 0; i < this.adapters(); i++) {
       if (copyOfAdapters[i]) {
         this.virtualBoxTemplate.custom_adapters.push(copyOfAdapters[i]);
       } else {
+        // Calculate port name based on format
+        let portName: string;
+        if (segmentSize > 0) {
+          const segment = Math.floor(i / segmentSize);
+          const portInSegment = i % segmentSize;
+          portName = portNameFormat.replace('{0}', String(segment * segmentSize + portInSegment));
+        } else {
+          portName = portNameFormat.replace('{0}', String(i));
+        }
+
         this.virtualBoxTemplate.custom_adapters.push({
           adapter_number: i,
           adapter_type: 'e1000',
+          port_name: portName,
         });
       }
     }
@@ -221,12 +235,17 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
 
     this.virtualBoxService
       .saveTemplate(this.controller, this.virtualBoxTemplate)
-      .subscribe((virtualBoxTemplate: VirtualBoxTemplate) => {
-        this.toasterService.success('Changes saved');
-        // Update local template with server response to reflect changes immediately
-        this.virtualBoxTemplate = virtualBoxTemplate;
-        this.initFormFromTemplate();
-        this.cd.markForCheck();
+      .subscribe({
+        next: (virtualBoxTemplate: VirtualBoxTemplate) => {
+          this.toasterService.success('Changes saved');
+          // Update local template with server response to reflect changes immediately
+          this.virtualBoxTemplate = virtualBoxTemplate;
+          this.initFormFromTemplate();
+          this.cd.markForCheck();
+        },
+        error: (error) => {
+          this.toasterService.error('Failed to save template: ' + (error.message || 'Unknown error'));
+        }
       });
   }
 

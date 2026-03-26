@@ -178,12 +178,17 @@ export class VmwareTemplateDetailsComponent implements OnInit {
 
     this.vmwareService
       .saveTemplate(this.controller, this.vmwareTemplate)
-      .subscribe((vmwareTemplate: VmwareTemplate) => {
-        this.toasterService.success('Changes saved');
-        // Update local template with server response to reflect changes immediately
-        this.vmwareTemplate = vmwareTemplate;
-        this.initFormFromTemplate();
-        this.cd.markForCheck();
+      .subscribe({
+        next: (vmwareTemplate: VmwareTemplate) => {
+          this.toasterService.success('Changes saved');
+          // Update local template with server response to reflect changes immediately
+          this.vmwareTemplate = vmwareTemplate;
+          this.initFormFromTemplate();
+          this.cd.markForCheck();
+        },
+        error: (error) => {
+          this.toasterService.error('Failed to save template: ' + (error.message || 'Unknown error'));
+        }
       });
   }
 
@@ -218,13 +223,27 @@ export class VmwareTemplateDetailsComponent implements OnInit {
     let copyOfAdapters = this.vmwareTemplate.custom_adapters ? this.vmwareTemplate.custom_adapters : [];
     this.vmwareTemplate.custom_adapters = [];
 
+    const portNameFormat = this.nameFormat() || 'Ethernet{0}';
+    const segmentSize = this.segmentSize() || 0;
+
     for (let i = 0; i < this.adapters(); i++) {
       if (copyOfAdapters[i]) {
         this.vmwareTemplate.custom_adapters.push(copyOfAdapters[i]);
       } else {
+        // Calculate port name based on format
+        let portName: string;
+        if (segmentSize > 0) {
+          const segment = Math.floor(i / segmentSize);
+          const portInSegment = i % segmentSize;
+          portName = portNameFormat.replace('{0}', String(segment * segmentSize + portInSegment));
+        } else {
+          portName = portNameFormat.replace('{0}', String(i));
+        }
+
         this.vmwareTemplate.custom_adapters.push({
           adapter_number: i,
           adapter_type: 'e1000',
+          port_name: portName,
         });
       }
     }
