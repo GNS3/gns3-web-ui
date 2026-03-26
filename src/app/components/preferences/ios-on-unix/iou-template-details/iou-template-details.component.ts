@@ -76,9 +76,9 @@ export class IouTemplateDetailsComponent implements OnInit {
   tags = model<string[]>([]);
 
   // Section collapse states
-  generalSettingsExpanded = model(true);
-  networkExpanded = model(true);
-  usageExpanded = model(true);
+  generalSettingsExpanded = model(false);
+  networkExpanded = model(false);
+  usageExpanded = model(false);
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
