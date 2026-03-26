@@ -6,7 +6,14 @@
 
   <ng-container matColumnDef="port_name">
     <th mat-header-cell *matHeaderCellDef>Port name</th>
-    <td mat-cell *matCellDef="let element">Ethernet {{ element.adapter_number }}</td>
+    <td mat-cell *matCellDef="let element">
+      <input
+        matInput
+        [(ngModel)]="element.port_name"
+        placeholder="Port name"
+        style="width: 120px"
+      />
+    </td>
   </ng-container>
 
   <ng-container matColumnDef="adapter_type">
@@ -19,6 +26,18 @@
         </mat-option>
         }
       </mat-select>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="mac_address">
+    <th mat-header-cell *matHeaderCellDef>MAC address</th>
+    <td mat-cell *matCellDef="let element">
+      <input
+        matInput
+        [(ngModel)]="element.mac_address"
+        placeholder="XX:XX:XX:XX:XX:XX"
+        style="width: 150px"
+      />
     </td>
   </ng-container>
 

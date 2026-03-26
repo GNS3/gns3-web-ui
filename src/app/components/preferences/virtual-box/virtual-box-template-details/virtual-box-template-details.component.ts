@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject, viewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 import { Controller } from '@models/controller';
@@ -17,7 +18,7 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { VirtualBoxConfigurationService } from '@services/virtual-box-configuration.service';
 import { VirtualBoxService } from '@services/virtual-box.service';
-import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
+import { CustomAdaptersComponent, CustomAdaptersDialogData, CustomAdaptersDialogResult } from '../../common/custom-adapters/custom-adapters.component';
 import { SymbolsMenuComponent } from '@components/preferences/common/symbols-menu/symbols-menu.component';
 
 @Component({
@@ -37,7 +38,6 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
     MatSelectModule,
     MatChipsModule,
     MatCheckboxModule,
-    CustomAdaptersComponent,
     SymbolsMenuComponent,
   ],
 })
@@ -49,6 +49,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   private virtualBoxConfigurationService = inject(VirtualBoxConfigurationService);
   private router = inject(Router);
   private cd = inject(ChangeDetectorRef);
+  private dialog = inject(MatDialog);
 
   controller: Controller;
   virtualBoxTemplate: VirtualBoxTemplate;
@@ -58,10 +59,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   onCloseOptions: any[] = [];
   categories: any[] = [];
   networkTypes: any[] = [];
-  displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
-  isConfiguratorOpened = false;
-
-  readonly customAdaptersConfigurator = viewChild<CustomAdaptersComponent>('customAdaptersConfigurator');
+  displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'mac_address', 'actions'];
 
   // Model signals for form fields
   templateName = model('');
@@ -139,25 +137,31 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     this.networkTypes = this.virtualBoxConfigurationService.getNetworkTypes();
   }
 
-  setCustomAdaptersConfiguratorState(state: boolean) {
-    this.isConfiguratorOpened = state;
+  openCustomAdaptersDialog() {
+    this.fillCustomAdapters();
+    const adapters = this.virtualBoxTemplate.custom_adapters ? [...this.virtualBoxTemplate.custom_adapters] : [];
 
-    if (state) {
-      this.fillCustomAdapters();
-      this.customAdaptersConfigurator().numberOfAdapters = this.adapters();
-      this.customAdaptersConfigurator().adapters = [];
-      this.virtualBoxTemplate.custom_adapters.forEach((adapter: CustomAdapter) => {
-        this.customAdaptersConfigurator().adapters.push({
-          adapter_number: adapter.adapter_number,
-          adapter_type: adapter.adapter_type,
-        });
-      });
-    }
-  }
+    const dialogRef = this.dialog.open(CustomAdaptersComponent, {
+      panelClass: 'custom-adapters-dialog-panel',
+      data: {
+        adapters: adapters,
+        networkTypes: this.networkTypes,
+        portNameFormat: this.nameFormat() || 'Ethernet{0}',
+        portSegmentSize: this.segmentSize() || 0,
+        currentAdapters: this.adapters(),
+      } as CustomAdaptersDialogData,
+    });
 
-  saveCustomAdapters(adapters: CustomAdapter[]) {
-    this.setCustomAdaptersConfiguratorState(false);
-    this.virtualBoxTemplate.custom_adapters = adapters;
+    dialogRef.afterClosed().subscribe((result: CustomAdaptersDialogResult) => {
+      if (result) {
+        this.virtualBoxTemplate.custom_adapters = result.adapters;
+        // Auto-update adapters count based on custom adapters configuration
+        if (result.requiredAdapters !== undefined) {
+          this.adapters.set(result.requiredAdapters);
+        }
+        this.cd.markForCheck();
+      }
+    });
   }
 
   fillCustomAdapters() {
@@ -212,12 +216,17 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     this.virtualBoxTemplate.usage = this.usage();
     this.virtualBoxTemplate.tags = this.tags();
 
-    this.fillCustomAdapters();
+    // Don't call fillCustomAdapters() here as it will override user's custom adapters
+    // User configures custom adapters through the dialog
 
     this.virtualBoxService
       .saveTemplate(this.controller, this.virtualBoxTemplate)
       .subscribe((virtualBoxTemplate: VirtualBoxTemplate) => {
         this.toasterService.success('Changes saved');
+        // Update local template with server response to reflect changes immediately
+        this.virtualBoxTemplate = virtualBoxTemplate;
+        this.initFormFromTemplate();
+        this.cd.markForCheck();
       });
   }
 

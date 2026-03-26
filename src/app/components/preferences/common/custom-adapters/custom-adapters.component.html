@@ -1,21 +1,52 @@
-<div class="content" class="configurator">
-  <div class="default-header">
-    <div class="row">
-      <h1 class="col">Custom adapters configuration</h1>
+<h1 mat-dialog-title>Custom adapters configuration</h1>
+<div mat-dialog-content class="content">
+  <div class="adapter-form">
+    <!-- Table Header -->
+    <div class="adapter-header">
+      <span class="adapter-header-label">Adapter</span>
+      <span class="adapter-header-field">Port name</span>
+      <span class="adapter-header-field">Type</span>
+      <span class="adapter-header-field">MAC address</span>
+      <span class="adapter-header-actions"></span>
     </div>
+
+    @for (adapter of adapters; track adapter.adapter_number; let i = $index) {
+    <div class="adapter-item">
+      <span class="adapter-label">Adapter {{ adapter.adapter_number }}</span>
+      <mat-form-field appearance="fill" subscriptSizing="dynamic" class="adapter-field">
+        <input matInput [(ngModel)]="adapter.port_name" name="port_name_{{i}}" />
+      </mat-form-field>
+      <mat-form-field appearance="fill" subscriptSizing="dynamic" class="adapter-field">
+        <mat-select [(ngModel)]="adapter.adapter_type" name="adapter_type_{{i}}">
+          @for (type of networkTypes; track type.value) {
+          <mat-option [value]="type.value">{{ type.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="fill" subscriptSizing="dynamic" class="adapter-field">
+        <input
+          matInput
+          [(ngModel)]="adapter.mac_address"
+          (ngModelChange)="adapter.mac_address = formatMacAddress($event)"
+          name="mac_address_{{i}}"
+          placeholder="Paste any MAC format"
+        />
+        @if (adapter.mac_address && !isValidMacAddress(adapter.mac_address)) {
+        <mat-error>{{ getMacErrorMessage(adapter.mac_address) }}</mat-error>
+        }
+      </mat-form-field>
+      <button mat-icon-button matTooltip="Delete" (click)="delete(adapter)" class="adapter-actions">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+    }
   </div>
-  <div class="default-content">
-    <div class="container mat-elevation-z8">
-      <app-custom-adapters-table
-        #customAdapters
-        [networkTypes]="networkTypes()"
-        [displayedColumns]="displayedColumns()"
-        [adapters]="adapters"
-      ></app-custom-adapters-table>
-    </div>
-    <div class="buttons-bar">
-      <button mat-button (click)="cancelConfigureCustomAdapters()">Cancel</button>
-      <button mat-raised-button color="primary" (click)="configureCustomAdapters()">Apply</button><br />
-    </div>
-  </div>
+  <button class="add-btn" mat-button (click)="onAdd()">
+    <mat-icon>add</mat-icon>
+    Add adapter
+  </button>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="cancelConfigureCustomAdapters()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="configureCustomAdapters()">Apply</button>
 </div>

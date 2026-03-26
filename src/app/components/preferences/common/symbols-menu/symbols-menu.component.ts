@@ -7,7 +7,7 @@ import { SymbolsComponent } from '../symbols/symbols.component';
 @Component({
   selector: 'app-symbols-menu',
   templateUrl: './symbols-menu.component.html',
-  styleUrls: ['./symbols-menu.component.scss', '../../preferences.component.scss'],
+  styleUrls: ['./symbols-menu.component.scss'],
   imports: [CommonModule, MatButtonModule, SymbolsComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

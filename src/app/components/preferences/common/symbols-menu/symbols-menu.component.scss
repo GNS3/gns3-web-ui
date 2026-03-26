@@ -1,6 +1,82 @@
 /**
  * GNS3 Symbols Menu Component Styles
- *
- * Migrated to Angular Material 14+ theming system
  * Using CSS custom properties and design tokens
  */
+
+:host {
+  display: block;
+}
+
+/* =============================================
+// Configurator Overlay
+// ============================================= */
+.configurator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: color-mix(in srgb, var(--mat-sys-shadow) 50%, transparent);
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.content {
+  max-width: 800px;
+  margin: 40px auto;
+  background: var(--mat-sys-surface);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
+    0 4px 12px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
+}
+
+.default-header {
+  padding: 16px 24px;
+  border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+  }
+}
+
+.default-content {
+  padding: 24px;
+}
+
+.top-button {
+  text-transform: none;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.cancel-button {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 768px) {
+  .content {
+    margin: 16px;
+    max-width: calc(100% - 32px);
+  }
+
+  .default-header {
+    padding: 12px 16px;
+  }
+
+  .default-content {
+    padding: 16px;
+  }
+}

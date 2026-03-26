@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject, viewChild } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 import { Controller } from '@models/controller';
@@ -17,7 +18,7 @@ import { QemuConfigurationService } from '@services/qemu-configuration.service';
 import { QemuService } from '@services/qemu.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
-import { CustomAdaptersComponent } from '../../common/custom-adapters/custom-adapters.component';
+import { CustomAdaptersComponent, CustomAdaptersDialogData, CustomAdaptersDialogResult } from '../../common/custom-adapters/custom-adapters.component';
 import { SymbolsMenuComponent } from '@components/preferences/common/symbols-menu/symbols-menu.component';
 
 @Component({
@@ -37,7 +38,6 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
     MatSelectModule,
     MatChipsModule,
     MatCheckboxModule,
-    CustomAdaptersComponent,
     SymbolsMenuComponent,
   ],
 })
@@ -49,6 +49,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   private configurationService = inject(QemuConfigurationService);
   private router = inject(Router);
   private cd = inject(ChangeDetectorRef);
+  private dialog = inject(MatDialog);
 
   controller: Controller;
   qemuTemplate: QemuTemplate;
@@ -61,7 +62,7 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   onCloseOptions: any[] = [];
   categories: any[] = [];
   priorities: string[] = [];
-  displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
+  displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'mac_address', 'actions'];
   selectPlatform: string[] = [];
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
@@ -72,10 +73,6 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
   networkExpanded = false;
   advancedExpanded = false;
   usageExpanded = false;
-
-  isConfiguratorOpened = false;
-
-  readonly customAdaptersConfigurator = viewChild<CustomAdaptersComponent>('customAdaptersConfigurator');
 
   // Model signals for form fields
   templateName = model('');
@@ -244,38 +241,59 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     }
   }
 
-  setCustomAdaptersConfiguratorState(state: boolean) {
-    this.isConfiguratorOpened = state;
+  openCustomAdaptersDialog() {
+    this.fillCustomAdapters();
+    const adapters = this.qemuTemplate.custom_adapters ? [...this.qemuTemplate.custom_adapters] : [];
 
-    if (state) {
-      this.fillCustomAdapters();
-      this.customAdaptersConfigurator().numberOfAdapters = this.adapters();
-      this.customAdaptersConfigurator().adapters = [];
-      this.qemuTemplate.custom_adapters.forEach((adapter: CustomAdapter) => {
-        this.customAdaptersConfigurator().adapters.push({
-          adapter_number: adapter.adapter_number,
-          adapter_type: adapter.adapter_type,
-        });
-      });
-    }
-  }
+    const dialogRef = this.dialog.open(CustomAdaptersComponent, {
+      panelClass: 'custom-adapters-dialog-panel',
+      data: {
+        adapters: adapters,
+        networkTypes: this.networkTypes,
+        portNameFormat: this.portNameFormat() || 'Ethernet{0}',
+        portSegmentSize: this.portSegmentSize() || 0,
+        currentAdapters: this.adapters(),  // 传递当前 adapters 数量
+      } as CustomAdaptersDialogData,
+    });
 
-  saveCustomAdapters(adapters: CustomAdapter[]) {
-    this.setCustomAdaptersConfiguratorState(false);
-    this.qemuTemplate.custom_adapters = adapters;
+    dialogRef.afterClosed().subscribe((result: CustomAdaptersDialogResult) => {
+      if (result) {
+        this.qemuTemplate.custom_adapters = result.adapters;
+        // Auto-update adapters count based on custom adapters configuration
+        if (result.requiredAdapters !== undefined) {
+          this.adapters.set(result.requiredAdapters);
+        }
+        this.cd.markForCheck();
+      }
+    });
   }
 
   fillCustomAdapters() {
     let copyOfAdapters = this.qemuTemplate.custom_adapters ? this.qemuTemplate.custom_adapters : [];
     this.qemuTemplate.custom_adapters = [];
 
+    const portNameFormat = this.portNameFormat() || 'Ethernet {0}';
+    const firstPortName = this.firstPortName();
+    const segmentSize = this.portSegmentSize() || 0;
+
     for (let i = 0; i < this.adapters(); i++) {
       if (copyOfAdapters[i]) {
         this.qemuTemplate.custom_adapters.push(copyOfAdapters[i]);
       } else {
+        // Calculate port name based on format
+        let portName: string;
+        if (segmentSize > 0) {
+          const segment = Math.floor(i / segmentSize);
+          const portInSegment = i % segmentSize;
+          portName = portNameFormat.replace('{0}', String(segment * segmentSize + portInSegment));
+        } else {
+          portName = portNameFormat.replace('{0}', String(i));
+        }
+
         this.qemuTemplate.custom_adapters.push({
           adapter_number: i,
           adapter_type: 'e1000',
+          port_name: portName,
         });
       }
     }
@@ -343,10 +361,15 @@ export class QemuVmTemplateDetailsComponent implements OnInit {
     this.qemuTemplate.usage = this.usage();
     this.qemuTemplate.tags = this.tags();
 
-    this.fillCustomAdapters();
+    // Don't call fillCustomAdapters() here as it will override user's custom adapters
+    // User configures custom adapters through the dialog
 
     this.qemuService.saveTemplate(this.controller, this.qemuTemplate).subscribe((savedTemplate: QemuTemplate) => {
       this.toasterService.success('Changes saved');
+      // Update local template with server response to reflect changes immediately
+      this.qemuTemplate = savedTemplate;
+      this.initFormFromTemplate();
+      this.cd.markForCheck();
     });
   }
 

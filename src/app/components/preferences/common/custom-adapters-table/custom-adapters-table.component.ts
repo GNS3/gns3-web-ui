@@ -7,6 +7,8 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 
 @Component({
@@ -22,6 +24,8 @@ import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
     MatButtonModule,
     MatIconModule,
     MatTooltipModule,
+    MatInputModule,
+    MatFormFieldModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

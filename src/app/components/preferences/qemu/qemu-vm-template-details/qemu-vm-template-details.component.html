@@ -1,6 +1,6 @@
 <div
   class="qemu-template-details"
-  [ngClass]="{ 'qemu-template-details--hidden': isConfiguratorOpened || isSymbolSelectionOpened }"
+  [ngClass]="{ 'qemu-template-details--hidden': isSymbolSelectionOpened }"
 >
   <header class="qemu-template-details__header">
     @if (controller) {
@@ -386,7 +386,7 @@
           </mat-select>
         </mat-form-field>
 
-        <button mat-button type="button" class="qemu-template-details__config-btn" (click)="setCustomAdaptersConfiguratorState(true)">
+        <button mat-button type="button" class="qemu-template-details__config-btn" (click)="openCustomAdaptersDialog()">
           Configure custom adapters
         </button>
 
@@ -590,14 +590,6 @@
   </main>
   }
 </div>
-<app-custom-adapters
-  [hidden]="!(isConfiguratorOpened && qemuTemplate)"
-  #customAdaptersConfigurator
-  [networkTypes]="networkTypes"
-  [displayedColumns]="displayedColumns"
-  (closeConfiguratorEmitter)="setCustomAdaptersConfiguratorState($event)"
-  (saveConfigurationEmitter)="saveCustomAdapters($event)"
-></app-custom-adapters>
 @if (isSymbolSelectionOpened && qemuTemplate) {
 <app-symbols-menu
   [controller]="controller"

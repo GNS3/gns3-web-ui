@@ -1,6 +1,6 @@
 <div
   class="virtualbox-details"
-  [ngClass]="{ 'virtualbox-details--hidden': isConfiguratorOpened || isSymbolSelectionOpened }"
+  [ngClass]="{ 'virtualbox-details--hidden': isSymbolSelectionOpened }"
 >
   <header class="virtualbox-details__header">
     @if (controller) {
@@ -186,7 +186,7 @@
           </mat-select>
         </mat-form-field>
       </form>
-      <button mat-button class="virtualbox-details__action-btn" (click)="setCustomAdaptersConfiguratorState(true)">
+      <button mat-button class="virtualbox-details__action-btn" (click)="openCustomAdaptersDialog()">
         Configure custom adapters
       </button>
       <mat-checkbox
@@ -214,14 +214,6 @@
   </main>
   }
 </div>
-<app-custom-adapters
-  [hidden]="!(isConfiguratorOpened && virtualBoxTemplate)"
-  #customAdaptersConfigurator
-  [networkTypes]="networkTypes"
-  [displayedColumns]="displayedColumns"
-  (closeConfiguratorEmitter)="setCustomAdaptersConfiguratorState($event)"
-  (saveConfigurationEmitter)="saveCustomAdapters($event)"
-></app-custom-adapters>
 @if (isSymbolSelectionOpened && virtualBoxTemplate) {
 <app-symbols-menu
   [controller]="controller"

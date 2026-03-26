@@ -1,6 +1,6 @@
 <div
   class="vmware-template-details"
-  [ngClass]="{ 'vmware-template-details--hidden': isConfiguratorOpened || isSymbolSelectionOpened }"
+  [ngClass]="{ 'vmware-template-details--hidden': isSymbolSelectionOpened }"
 >
   <header class="vmware-template-details__header">
     @if (controller) {
@@ -193,7 +193,7 @@
         <button
           mat-button
           class="vmware-template-details__config-btn"
-          (click)="setCustomAdaptersConfiguratorState(true)"
+          (click)="openCustomAdaptersDialog()"
         >
           Configure custom adapters
         </button>
@@ -231,14 +231,6 @@
   </main>
   }
 </div>
-<app-custom-adapters
-  [hidden]="!(isConfiguratorOpened && vmwareTemplate)"
-  #customAdaptersConfigurator
-  [networkTypes]="networkTypes"
-  [displayedColumns]="displayedColumns"
-  (closeConfiguratorEmitter)="setCustomAdaptersConfiguratorState($event)"
-  (saveConfigurationEmitter)="saveCustomAdapters($event)"
-></app-custom-adapters>
 @if (isSymbolSelectionOpened && vmwareTemplate) {
 <app-symbols-menu
   [controller]="controller"

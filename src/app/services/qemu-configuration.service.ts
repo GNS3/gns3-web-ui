@@ -67,12 +67,13 @@ export class QemuConfigurationService {
       { value: 'i82559er', name: 'Intel i82559ER Ethernet' },
       { value: 'i82562', name: 'Intel i82562 Ethernet' },
       { value: 'i82801', name: 'Intel i82801 Ethernet' },
-      { value: 'igb', name: 'Intel 82576 Gigabit Ethernet' },
+      { value: 'igb', name: 'Intel I350 Gigabit Ethernet' },
       { value: 'ne2k_pci', name: 'NE2000 Ethernet' },
       { value: 'pcnet', name: 'AMD PCNet Ethernet' },
       { value: 'rocker', name: 'Rocker L2 switch device' },
       { value: 'rtl8139', name: 'Realtek 8139 Ethernet' },
-      { value: 'virtio-net-pci', name: 'Paravirtualized Network I/O' },
+      { value: 'virtio', name: 'Virtio network' },
+      { value: 'virtio-net-pci', name: 'Virtio network PCI' },
       { value: 'vmxnet3', name: 'VMWare Paravirtualized Ethernet v3' },
     ];
 
