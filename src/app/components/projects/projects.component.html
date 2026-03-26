@@ -71,7 +71,11 @@
               <button mat-icon-button (click)="close(row)" matTooltip="Close project">
                 <mat-icon aria-label="Close project">pause</mat-icon>
               </button>
-              } @if (row.status == 'closed') {
+              }
+              <button mat-icon-button (click)="editProject(row)" matTooltip="Rename/Edit project">
+                <mat-icon aria-label="Rename project">edit</mat-icon>
+              </button>
+              @if (row.status == 'closed') {
               <button mat-icon-button (click)="duplicate(row)" matTooltip="Duplicate project">
                 <mat-icon aria-label="Save project as">content_copy</mat-icon>
               </button>

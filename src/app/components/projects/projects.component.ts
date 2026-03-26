@@ -21,6 +21,7 @@ import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-b
 import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
 import { ConfirmationBottomSheetComponent } from './confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { ConfirmationDeleteAllProjectsComponent } from './confirmation-delete-all-projects/confirmation-delete-all-projects.component';
+import { EditProjectDialogComponent } from './edit-project-dialog/edit-project-dialog.component';
 import { ImportProjectDialogComponent } from './import-project-dialog/import-project-dialog.component';
 import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog.component';
 import { MatTableModule } from '@angular/material/table';
@@ -158,6 +159,20 @@ export class ProjectsComponent implements OnInit {
   duplicate(project: Project) {
     const dialogRef = this.dialog.open(ChooseNameDialogComponent, {
       width: '400px',
+      autoFocus: false,
+      disableClose: true,
+    });
+    let instance = dialogRef.componentInstance;
+    instance.controller = this.controller;
+    instance.project = project;
+    dialogRef.afterClosed().subscribe(() => {
+      this.refresh();
+    });
+  }
+
+  editProject(project: Project) {
+    const dialogRef = this.dialog.open(EditProjectDialogComponent, {
+      width: '700px',
       autoFocus: false,
       disableClose: true,
     });
