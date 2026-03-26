@@ -2,7 +2,7 @@
 
 > This document provides essential information for Claude Code to understand and work effectively with the GNS3 Web UI project.
 
-**Last Updated**: 2026-03-25
+**Last Updated**: 2026-03-26
 
 ---
 
@@ -25,13 +25,26 @@
 
 | Category | Technology |
 |----------|------------|
-| Framework | Angular 21.0.0 |
+| Framework | Angular 21.0.0 (Zoneless) |
 | UI Library | Angular Material 21.0.0 (MDC-based) |
 | State Management | Signals (modern) + RxJS (legacy) |
+| Change Detection | Zoneless (no Zone.js) |
+| Component Architecture | Standalone Components |
 | Styling | SCSS, Bootstrap 5.1.3, Tailwind CSS 3.4.19 |
 | Map Rendering | D3.js (dagre-d3-es for graph layout) |
 | Terminal Emulation | xterm.js |
 | Testing | Karma + Jasmine |
+
+### Framework Architecture
+
+**CRITICAL**: This project uses **Angular 17+ Zoneless Framework** with the following architectural decisions:
+
+| Feature | Status | Description |
+|---------|--------|-------------|
+| **Zoneless** | ✅ Enabled | Zone.js is NOT used. All change detection is explicit. |
+| **Signals** | ✅ Primary | Use signals for all reactive state management. |
+| **Standalone** | ✅ Required | All components must be standalone (no NgModules). |
+| **OnPush** | ✅ Required | All components must use `ChangeDetectionStrategy.OnPush`. |
 
 ---
 
@@ -90,6 +103,130 @@ yarn prettier:check
 
 ## Architecture Patterns
 
+### ⚠️ CRITICAL: Zoneless Framework Requirements
+
+**This project is built on Angular 17+ Zoneless architecture. Zone.js is NOT used.**
+
+#### Forbidden Zone.js APIs (STRICTLY PROHIBITED)
+
+The following Zone.js related APIs and patterns are **FORBIDDEN** in this codebase:
+
+| API/Pattern | Status | Alternative |
+|-------------|--------|-------------|
+| `Zone.run()` | ❌ FORBIDDEN | Use `effect()` or direct state updates |
+| `Zone.current` | ❌ FORBIDDEN | N/A (not applicable in zoneless) |
+| `NgZone` | ❌ FORBIDDEN | Use `EffectScheduler` or `markForCheck()` |
+| `zone.js` imports | ❌ FORBIDDEN | Remove all zone.js imports |
+| `patchEvent()` | ❌ FORBIDDEN | Use explicit event handling |
+| Async auto-detection | ❌ DISABLED | Must use `markForCheck()` after async ops |
+| `ApplicationRef.tick()` | ❌ FORBIDDEN | Use `ChangeDetectorRef.markForCheck()` |
+| `[(ngModel)]` | ❌ DISCOURAGED | Use `model()` signals or Reactive Forms |
+
+#### Why ngModel is Discouraged
+
+`[(ngModel)]` is not strictly a Zone.js API, but it's **discouraged** in this codebase because:
+
+1. **Requires FormsModule** - Adds unnecessary bundle size
+2. **Incompatible with signals** - Doesn't work well with Angular's modern signal-based architecture
+3. **Implicit state** - Makes state management less explicit
+4. **Zoneless limitations** - May not work reliably without zone.js
+
+#### Recommended Form Handling Patterns
+
+**Use `model()` signals for simple forms**:
+
+```typescript
+// ✅ CORRECT: Using model() signals
+@Component({
+  standalone: true,
+  // No FormsModule needed!
+})
+export class MyComponent {
+  name = model('');
+  email = model('');
+  acceptedTerms = model(false);
+}
+```
+
+```html
+<!-- ✅ CORRECT: Signal-based two-way binding -->
+<input [value]="name()" (input)="name.set($event.target.value)" />
+<mat-checkbox [checked]="acceptedTerms()" (change)="acceptedTerms.set($event.checked)">
+  Accept Terms
+</mat-checkbox>
+```
+
+**Use Reactive Forms for complex forms**:
+
+```typescript
+// ✅ CORRECT: Using Reactive Forms
+import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
+
+@Component({
+  standalone: true,
+  imports: [ReactiveFormsModule],
+})
+export class MyComponent {
+  form = new FormGroup({
+    name: new FormControl(''),
+    email: new FormControl(''),
+  });
+}
+```
+
+```html
+<!-- ✅ CORRECT: Reactive Forms -->
+<form [formGroup]="form">
+  <input formControlName="name" />
+  <input formControlName="email" />
+</form>
+```
+
+#### Correct Zoneless Patterns
+
+```typescript
+// ✅ CORRECT: Use signals for reactive state
+readonly count = signal(0);
+readonly doubled = computed(() => this.count() * 2);
+
+// ✅ CORRECT: Use effects for side effects
+constructor() {
+  effect(() => {
+    console.log('Count changed:', this.count());
+  });
+}
+
+// ✅ CORRECT: Explicit change detection with async operations
+constructor(private http: HttpClient, private cd: ChangeDetectorRef) {}
+
+loadData() {
+  this.http.get('/api/data').subscribe(data => {
+    this.data.set(data);
+    this.cd.markForCheck(); // Required in zoneless
+  });
+}
+
+// ✅ CORRECT: Use RxJS with explicit change detection
+readonly data$ = toObservable(this.data);
+```
+
+```typescript
+// ❌ WRONG: Using NgZone (FORBIDDEN)
+constructor(private ngZone: NgZone) { } // ❌ DO NOT USE
+
+this.ngZone.run(() => {
+  // ❌ WRONG: Zone.run is forbidden
+});
+
+// ❌ WRONG: Relying on automatic async change detection
+this.http.get('/api/data').subscribe(data => {
+  this.data = data; // ❌ WRONG: No automatic detection in zoneless
+});
+
+// ❌ WRONG: ZoneAware timers
+timer(1000); // ❌ WRONG: Use RxJS timer or setTimeout with markForCheck()
+```
+
 ### 1. Standalone Components
 
 All components use standalone architecture (no NgModules required for components).
@@ -106,9 +243,36 @@ export class MyComponent { }
 
 ### 2. Change Detection Strategy
 
-- **OnPush** is the standard for all components (105/253 already migrated)
-- All components/services are **Zoneless compatible** (100% verified)
+**Zoneless Change Detection Rules**:
+
+- **OnPush is MANDATORY** for all components (105/253 already migrated)
+- **Zone.js is NOT used** - All change detection is explicit
+- **Async operations require `markForCheck()`** - No automatic detection
+- **100% Zoneless compatible** - All 324 components/services verified
 - Migration progress tracked in `docs/angular-21/component-migration-tracker.md`
+
+**Explicit Change Detection Pattern**:
+
+```typescript
+@Component({
+  selector: 'app-my-component',
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush, // MANDATORY
+})
+export class MyComponent {
+  constructor(
+    private http: HttpClient,
+    private cd: ChangeDetectorRef // Required for async operations
+  ) {}
+
+  loadData() {
+    this.http.get('/api/data').subscribe(data => {
+      this.data.set(data);
+      this.cd.markForCheck(); // REQUIRED after async operations
+    });
+  }
+}
+```
 
 ### 3. Signal-Based State Management
 
@@ -132,7 +296,7 @@ export class LegacyService {
 
 ### 4. Model Input Signals (Two-Way Binding)
 
-Use `model()` for two-way data binding instead of `ngModel`:
+**CRITICAL**: Use `model()` signals for two-way data binding. **Do NOT use `[(ngModel)]`**.
 
 ```typescript
 // Model signals for form fields
@@ -344,7 +508,7 @@ const dialogRef = this.dialog.open(MyDialogComponent, {
 | Components | kebab-case | `<app-project-map>` |
 | Events | (eventName) | `(click)`, `(ngSubmit)` |
 | Property binding | [property] | `[node]="selectedNode"` |
-| Two-way binding | [(ngModel)] or [(value)] | `[(name)]` for model signals |
+| Two-way binding | [(value)] for model signals | `[(name)]` - DO NOT use `[(ngModel)]` |
 | Style class binding | [class.className] | `[class.is-active]="isActive()"` |
 | Structural directives | @if, @for, @switch | `@for (node of nodes(); track node.id)` |
 
@@ -378,13 +542,15 @@ readonly value = this._value.asReadonly();
 readonly value = input<string>('');
 ```
 
-#### ngModel to model()
+#### ngModel Migration Pattern (MIGRATION ONLY)
+
+**NOTE**: This is for migrating existing code. New code should use `model()` signals directly.
 
 ```typescript
-// Before
+// ❌ BEFORE: Using ngModel (to be migrated)
 <input [(ngModel)]="template.name" />
 
-// After
+// ✅ AFTER: Using signal-based binding
 <input [value]="name()" (input)="name.set($event.target.value)" />
 ```
 
@@ -474,12 +640,93 @@ this.http.get('/api/data').subscribe(data => {
 });
 ```
 
+### Zoneless Async Patterns
+
+**CRITICAL**: In zoneless architecture, async operations do NOT trigger automatic change detection.
+
+```typescript
+// ✅ CORRECT: RxJS Observable with explicit change detection
+loadData(): void {
+  this.isLoading.set(true);
+  this.http.get<Data>('/api/data').subscribe({
+    next: (data) => {
+      this.data.set(data);
+      this.isLoading.set(false);
+      this.cd.markForCheck(); // REQUIRED
+    },
+    error: (err) => {
+      this.error.set(err);
+      this.isLoading.set(false);
+      this.cd.markForCheck(); // REQUIRED
+    }
+  });
+}
+
+// ✅ CORRECT: Promise with explicit change detection
+async fetchData(): Promise<void> {
+  try {
+    const data = await this.http.get<Data>('/api/data').toPromise();
+    this.data.set(data);
+    this.cd.markForCheck(); // REQUIRED
+  } catch (err) {
+    this.error.set(err);
+    this.cd.markForCheck(); // REQUIRED
+  }
+}
+
+// ✅ CORRECT: RxJS timer with effect
+readonly countdown = signal(10);
+
+constructor() {
+  interval(1000).pipe(
+    take(this.countdown())
+  ).subscribe(() => {
+    this.countdown.update(v => v - 1);
+    this.cd.markForCheck(); // REQUIRED
+  });
+}
+
+// ✅ CORRECT: Using toObservable with effects
+readonly filter = signal('');
+readonly filteredData = computed(() =>
+  this.data().filter(item => item.name.includes(this.filter()))
+);
+
+constructor() {
+  // Effect automatically handles change detection
+  effect(() => {
+    console.log('Filter changed:', this.filter());
+  });
+}
+```
+
+```typescript
+// ❌ WRONG: Assuming automatic async change detection
+this.http.get('/api/data').subscribe(data => {
+  this.data.set(data);
+  // ❌ WRONG: No markForCheck() - view won't update
+});
+
+// ❌ WRONG: Using NgZone (FORBIDDEN)
+constructor(private ngZone: NgZone) {} // ❌ DO NOT USE
+
+this.ngZone.run(() => {
+  this.data.set(data);
+});
+
+// ❌ WRONG: Using ZoneAware timers
+zone.runTask(() => {
+  this.data.set(data);
+});
+```
+
 ---
 
 ## Pre-commit Checklist
 
 Before committing code, ensure:
 
+### CSS/Style Checks
 - [ ] No `!important` in SCSS
 - [ ] No `::ng-deep` in SCSS
 - [ ] No `ViewEncapsulation.None` (except documented exception)
@@ -488,8 +735,20 @@ Before committing code, ensure:
 - [ ] Dialog styles use `panelClass` in centralized location
 - [ ] Components use BEM naming convention
 - [ ] Style logic controlled in HTML templates
+
+### Framework/Architecture Checks
+- [ ] **Zoneless compliance** - No `NgZone`, `Zone.run()`, or zone.js imports
+- [ ] **No ngModel** - Use `model()` signals or Reactive Forms instead
+- [ ] **Standalone component** - All components are standalone
+- [ ] **OnPush strategy** - `ChangeDetectionStrategy.OnPush` applied
+- [ ] **Signals used** - Reactive state uses signals, not setters
+- [ ] **Explicit change detection** - `markForCheck()` called after async operations
+- [ ] **No forbidden APIs** - No Zone.js related APIs
+
+### Code Quality Checks
 - [ ] Code formatted with `yarn prettier:write`
-- [ ] OnPush change detection strategy applied
+- [ ] TypeScript compilation passes
+- [ ] No linting errors
 
 ---
 
@@ -506,6 +765,42 @@ Full documentation available in `/docs`:
 | `docs/angular21-CSS/01-css-coding-standards.md` | CSS coding standards |
 | `docs/angular21-CSS/02-material3-css-variables.md` | Material 3 variable reference |
 | `docs/dialog-style-isolation-guide.md` | Dialog styling guide |
+| `CLAUDE.md` (this file) | Zoneless framework requirements & standards |
+
+---
+
+## Zoneless Framework Summary
+
+### What Zoneless Means
+
+This project runs without Zone.js, which means:
+
+1. **No automatic async change detection** - You must explicitly call `markForCheck()` after async operations
+2. **Better performance** - No zone.js overhead, smaller bundle size
+3. **Explicit is better** - Change detection is predictable and debuggable
+4. **Signals are primary** - Use signals for reactive state, not zone-aware patterns
+
+### Key Zoneless Rules
+
+| Rule | Description | Example |
+|------|-------------|---------|
+| **No Zone.js APIs** | Never use `NgZone`, `Zone.run()`, etc. | ❌ `constructor(private ngZone: NgZone)` |
+| **No ngModel** | Use `model()` signals or Reactive Forms | ❌ `[(ngModel)]="name"` |
+| **Always OnPush** | All components must use OnPush strategy | ✅ `changeDetection: ChangeDetectionStrategy.OnPush` |
+| **Explicit async detection** | Call `markForCheck()` after async ops | ✅ `this.cd.markForCheck()` |
+| **Use signals** | Prefer signals over BehaviorSubjects | ✅ `signal()` vs `BehaviorSubject` |
+| **Effects for side effects** | Use `effect()` for signal side effects | ✅ `effect(() => console.log(this.count()))` |
+
+### Zoneless Checklist for New Code
+
+- [ ] Component is standalone
+- [ ] Component uses `ChangeDetectionStrategy.OnPush`
+- [ ] No `NgZone` imports or usage
+- [ ] No zone.js imports
+- [ ] No `[(ngModel)]` usage - use `model()` signals instead
+- [ ] Async operations use `markForCheck()`
+- [ ] State uses signals (not just BehaviorSubjects)
+- [ ] Effects used for signal side effects
 
 ---
 
