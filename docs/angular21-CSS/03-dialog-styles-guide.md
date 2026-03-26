@@ -47,6 +47,7 @@ h2[mat-dialog-title] {
 | Delete All Files Dialog | `src/app/components/image-manager/deleteallfiles-dialog/` | BEM naming |
 | Add Image Dialog | `src/app/components/image-manager/add-image-dialog/` | BEM naming |
 | Import Project Dialog | `src/app/components/projects/import-project-dialog/` | File upload |
+| **Edit Project Dialog** | `src/app/components/projects/edit-project-dialog/` | **Tabbed form, modal-form-container** |
 | New Template Dialog | `src/app/components/project-map/new-template-dialog/` | Multi-step wizard |
 | Change Hostname Dialog | `src/app/components/project-map/change-hostname-dialog/` | Form input |
 | Change Symbol Dialog | `src/app/components/project-map/change-symbol-dialog/` | Symbol selection |
@@ -92,10 +93,145 @@ All centralized dialog styles are in `src/styles/_dialogs.scss`:
 // Edit Controller Dialog
 // ============================================= */
 .edit-controller-dialog-panel {
+  .mat-mdc-dialog-container {
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+      box-shadow: 0 12px 40px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
+        0 4px 12px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
+    }
+  }
+
   .mat-mdc-dialog-title {
     font-size: 18px;
     font-weight: 500;
     color: var(--mat-sys-on-surface);
+    margin-bottom: 24px;
+    padding: 24px 24px 0 24px;
+  }
+
+  .mat-mdc-dialog-content {
+    padding: 0 24px;
+    margin-bottom: 16px;
+  }
+}
+
+/* =============================================
+// Add Controller Dialog
+// ============================================= */
+.add-controller-dialog-panel {
+  .mat-mdc-dialog-container {
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+      box-shadow: 0 12px 40px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
+        0 4px 12px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
+    }
+  }
+
+  .mat-mdc-dialog-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    margin-bottom: 24px;
+    padding: 24px 24px 0 24px;
+  }
+
+  .mat-mdc-dialog-content {
+    padding: 0 24px;
+    margin-bottom: 16px;
+  }
+}
+
+/* =============================================
+// Edit Project Dialog
+// ============================================= */
+.edit-project-dialog-panel {
+  --mat-dialog-container-max-width: 700px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 700px;
+    max-width: 700px;
+
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+      box-shadow: 0 12px 40px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
+        0 4px 12px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
+    }
+  }
+
+  .mat-mdc-dialog-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    margin-bottom: 24px;
+    padding: 24px 24px 0 24px;
+  }
+
+  .mat-mdc-dialog-content {
+    padding: 0;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  .mat-mdc-dialog-actions {
+    padding: 16px 24px;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  /* Modal form container */
+  .modal-form-container {
+    padding: 16px 24px;
+  }
+
+  /* Form styling */
+  form {
+    margin-top: 16px;
+  }
+
+  /* Form fields */
+  .form-field {
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  /* Checkboxes spacing */
+  mat-checkbox {
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  /* Table styles for variables tab */
+  table {
+    width: 100%;
+    margin-top: 16px;
+  }
+
+  th.mat-header-cell {
+    padding-bottom: 16px;
+    border: 0;
+  }
+
+  td.mat-cell {
+    padding-top: 16px;
+  }
+}
+
+/* =============================================
+// Custom Adapters Dialog
+// ============================================= */
+.custom-adapters-dialog-panel {
+  --mat-dialog-container-max-width: 1000px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 1000px;
+    max-width: 1000px;
+  }
+
+  .mat-mdc-dialog-content {
+    max-height: 600px;
+    overflow-y: auto;
   }
 }
 
@@ -197,13 +333,50 @@ For dialogs with unique requirements, use BEM naming:
 
 ## Padding Standards
 
-| Element | Padding |
-|---------|---------|
-| Dialog container | 0 (handled by content) |
-| Dialog title | 24px 24px 16px |
-| Dialog content | 0 24px 16px |
-| Dialog actions | 16px 24px 24px |
-| Form fields | 16px horizontal gap |
+| Element | Padding/Margin | Notes |
+|---------|----------------|-------|
+| Dialog container | 0 | Handled by content |
+| Dialog title | 24px 24px 0 24px | Only bottom margin needed |
+| Dialog content | 0 24px | Horizontal padding only |
+| Dialog actions | 16px 24px | Top and horizontal padding |
+| **modal-form-container** | **16px 24px** | **Form wrapper with vertical spacing** |
+| **form elements** | **margin-top: 16px** | **First form field spacing** |
+| **.form-field** | **margin-bottom: 16px** | **Spacing between form fields** |
+| **mat-checkbox** | **margin-bottom: 12px** | **Spacing between checkboxes** |
+| Form fields | 16px horizontal gap | For inline form layouts |
+
+### Form Spacing Best Practices
+
+When using `modal-form-container` in dialogs:
+
+```scss
+// Container with padding
+.modal-form-container {
+  padding: 16px 24px;  // Vertical 16px, horizontal 24px
+}
+
+// Form with top margin
+form {
+  margin-top: 16px;  // Space for first element
+}
+
+// Form fields with bottom margin
+.form-field {
+  margin-bottom: 16px;  // Space between fields
+}
+
+// Checkboxes as block elements
+mat-checkbox {
+  display: block;
+  margin-bottom: 12px;  // Space between checkboxes
+}
+```
+
+This ensures:
+- First form field has 16px spacing from container top
+- Consistent spacing between all form elements
+- Proper visual hierarchy
+- Consistent with Material Design guidelines
 
 ---
 
