@@ -1,24 +1,6 @@
 /**
  * GNS3 Edit Project Dialog Component Styles
- * Using MD3 CSS variables
+ *
+ * Main dialog styles are now in src/styles/_dialogs.scss
+ * This file is kept for component-specific styles if needed
  */
-
-table {
-  width: 100%;
-}
-
-.form-field {
-  width: 100%;
-}
-
-th {
-  border: 0;
-}
-
-th.mat-header-cell {
-  padding-bottom: 16px;
-}
-
-td.mat-cell {
-  padding-top: 16px;
-}

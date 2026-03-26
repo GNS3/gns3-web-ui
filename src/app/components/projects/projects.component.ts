@@ -175,6 +175,7 @@ export class ProjectsComponent implements OnInit {
       width: '700px',
       autoFocus: false,
       disableClose: true,
+      panelClass: 'edit-project-dialog-panel',
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;
