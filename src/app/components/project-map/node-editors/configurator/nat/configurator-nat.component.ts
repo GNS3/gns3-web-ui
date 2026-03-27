@@ -25,7 +25,7 @@ import { ToasterService } from '@services/toaster.service';
   standalone: true,
   selector: 'app-configurator-nat',
   templateUrl: './configurator-nat.component.html',
-  styleUrls: ['../configurator.component.scss'],
+  // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,

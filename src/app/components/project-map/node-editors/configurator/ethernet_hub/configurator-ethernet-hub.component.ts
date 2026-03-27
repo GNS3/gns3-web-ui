@@ -26,7 +26,7 @@ import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
   standalone: true,
   selector: 'app-configurator-ethernet-hub',
   templateUrl: './configurator-ethernet-hub.component.html',
-  styleUrls: ['../configurator.component.scss'],
+  // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,

@@ -28,7 +28,7 @@ import { ToasterService } from '@services/toaster.service';
   standalone: true,
   selector: 'app-configurator-ethernet-switch',
   templateUrl: './configurator-ethernet-switch.component.html',
-  styleUrls: ['../configurator.component.scss'],
+  // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -65,6 +65,7 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
   constructor() {
     this.inputForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
+      console_type: new UntypedFormControl(''),
     });
   }
 
@@ -72,6 +73,13 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
     this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = this.node.name;
+
+      // Update form values with node data
+      this.inputForm.patchValue({
+        name: node.name,
+        console_type: node.console_type || '',
+      });
+
       this.getConfiguration();
       if (!this.node.tags) {
         this.node.tags = [];
@@ -86,6 +94,12 @@ export class ConfiguratorDialogEthernetSwitchComponent implements OnInit {
 
   onSaveClick() {
     if (this.inputForm.valid) {
+      // Merge form values back into node
+      const formValues = this.inputForm.value;
+
+      this.node.name = formValues.name;
+      this.node.console_type = formValues.console_type;
+
       this.node.properties.ports_mapping = this.portsComponent().ethernetPorts;
       this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
