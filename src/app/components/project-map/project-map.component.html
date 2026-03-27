@@ -145,7 +145,6 @@
   </div>
 
   <!-- Project toolbar -->
-  @if (!settings.angular_map) {
   <app-d3-map
     [controller]="controller"
     [project]="project"
@@ -163,22 +162,6 @@
     (onDrawingResized)="onDrawingResized($event)"
   >
   </app-d3-map>
-  } @if (settings.angular_map) {
-  <app-experimental-map
-    [symbols]="symbols"
-    [nodes]="nodes()"
-    [links]="links"
-    [drawings]="drawings"
-    [width]="project.scene_width"
-    [height]="project.scene_height"
-    [show-interface-labels]="isInterfaceLabelVisible"
-    [selection-tool]="tools.selection"
-    [moving-tool]="tools.moving"
-    [draw-link-tool]="tools.draw_link"
-    [readonly]="inReadOnlyMode"
-  >
-  </app-experimental-map>
-  }
 
   <!-- Project toolbar -->
   <div id="project-toolbar">

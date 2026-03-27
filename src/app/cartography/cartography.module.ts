@@ -2,28 +2,14 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { ANGULAR_MAP_DECLARATIONS } from './angular-map.imports';
 import { D3MapComponent } from './components/d3-map/d3-map.component';
 import { DraggableSelectionComponent } from './components/draggable-selection/draggable-selection.component';
 import { LinkEditingComponent } from './components/link-editing/link-editing.component';
 import { DrawingAddingComponent } from './components/drawing-adding/drawing-adding.component';
 import { DrawingResizingComponent } from './components/drawing-resizing/drawing-resizing.component';
-import { ExperimentalMapComponent } from './components/experimental-map/experimental-map.component';
 import { SelectionControlComponent } from './components/selection-control/selection-control.component';
 import { SelectionSelectComponent } from './components/selection-select/selection-select.component';
 import { TextEditorComponent } from './components/text-editor/text-editor.component';
-import { DraggableComponent } from './components/experimental-map/draggable/draggable.component';
-import { DrawingComponent } from './components/experimental-map/drawing/drawing.component';
-import { EllipseComponent } from './components/experimental-map/drawing/drawings/ellipse/ellipse.component';
-import { ImageComponent } from './components/experimental-map/drawing/drawings/image/image.component';
-import { LineComponent } from './components/experimental-map/drawing/drawings/line/line.component';
-import { RectComponent } from './components/experimental-map/drawing/drawings/rect/rect.component';
-import { TextComponent } from './components/experimental-map/drawing/drawings/text/text.component';
-import { InterfaceLabelComponent } from './components/experimental-map/interface-label/interface-label.component';
-import { LinkComponent as MapLinkComponent } from './components/experimental-map/link/link.component';
-import { NodeComponent } from './components/experimental-map/node/node.component';
-import { SelectionComponent } from './components/experimental-map/selection/selection.component';
-import { StatusComponent } from './components/experimental-map/status/status.component';
 import { DrawingToMapDrawingConverter } from './converters/map/drawing-to-map-drawing-converter';
 import { LabelToMapLabelConverter } from './converters/map/label-to-map-label-converter';
 import { LinkNodeToMapLinkNodeConverter } from './converters/map/link-node-to-map-link-node-converter';
@@ -79,19 +65,6 @@ import { SerialLinkWidget } from './widgets/links/serial-link';
     CommonModule,
     MatMenuModule,
     MatIconModule,
-    ExperimentalMapComponent,
-    DraggableComponent,
-    DrawingComponent,
-    EllipseComponent,
-    ImageComponent,
-    LineComponent,
-    RectComponent,
-    TextComponent,
-    InterfaceLabelComponent,
-    MapLinkComponent,
-    NodeComponent,
-    SelectionComponent,
-    StatusComponent,
     DrawingAddingComponent,
     DrawingResizingComponent,
     TextEditorComponent,
@@ -149,6 +122,6 @@ import { SerialLinkWidget } from './widgets/links/serial-link';
     SerialLinkWidget,
     ...D3_MAP_IMPORTS,
   ],
-  exports: [D3MapComponent, ExperimentalMapComponent],
+  exports: [D3MapComponent],
 })
 export class CartographyModule {}

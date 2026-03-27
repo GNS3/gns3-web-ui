@@ -110,7 +110,6 @@ import { NodesMenuComponent } from './nodes-menu/nodes-menu.component';
 import { ProgressComponent } from '../../common/progress/progress.component';
 import { TemplateComponent } from '../template/template.component';
 import { SnapshotMenuItemComponent } from '../snapshots/snapshot-menu-item/snapshot-menu-item.component';
-import { ExperimentalMapComponent } from '../../cartography/components/experimental-map/experimental-map.component';
 import { DrawingDraggedComponent } from '../drawings-listeners/drawing-dragged/drawing-dragged.component';
 import { DrawingResizedComponent } from '../drawings-listeners/drawing-resized/drawing-resized.component';
 import { InterfaceLabelDraggedComponent } from '../drawings-listeners/interface-label-dragged/interface-label-dragged.component';
@@ -137,7 +136,6 @@ import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edit
     MatMenuModule,
     RouterModule,
     D3MapComponent,
-    ExperimentalMapComponent,
     ContextMenuComponent,
     ProjectMapMenuComponent,
     DrawLinkToolComponent,
