@@ -28,7 +28,7 @@ import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
   standalone: true,
   selector: 'app-configurator-vpcs',
   templateUrl: './configurator-vpcs.component.html',
-  styleUrls: ['../configurator.component.scss'],
+  // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -63,6 +63,8 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
   constructor() {
     this.inputForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
+      console_type: new UntypedFormControl(''),
+      console_auto_start: new UntypedFormControl(false),
     });
   }
 
@@ -70,6 +72,14 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
     this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = node.name;
+
+      // Update form values with node data
+      this.inputForm.patchValue({
+        name: node.name,
+        console_type: node.console_type || '',
+        console_auto_start: node.console_auto_start || false,
+      });
+
       this.getConfiguration();
       if (!this.node.tags) {
         this.node.tags = [];
@@ -84,6 +94,13 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
 
   onSaveClick() {
     if (this.inputForm.valid) {
+      // Merge form values back into node
+      const formValues = this.inputForm.value;
+
+      this.node.name = formValues.name;
+      this.node.console_type = formValues.console_type;
+      this.node.console_auto_start = formValues.console_auto_start;
+
       this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();
