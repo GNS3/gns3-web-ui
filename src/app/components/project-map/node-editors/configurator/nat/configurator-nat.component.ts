@@ -63,6 +63,12 @@ export class ConfiguratorDialogNatComponent implements OnInit {
     this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = node.name;
+
+      // Update form values with node data
+      this.generalSettingsForm.patchValue({
+        name: node.name,
+      });
+
       if (!this.node.tags) {
         this.node.tags = [];
       }
@@ -72,6 +78,11 @@ export class ConfiguratorDialogNatComponent implements OnInit {
 
   onSaveClick() {
     if (this.generalSettingsForm.valid) {
+      // Merge form values back into node
+      const formValues = this.generalSettingsForm.value;
+
+      this.node.name = formValues.name;
+
       this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();
