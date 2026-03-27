@@ -157,6 +157,7 @@ export class IosTemplateDetailsComponent implements OnInit {
         this.progressService.deactivate();
         if (result.idlepc !== null) {
           this.iosTemplate.idlepc = result.idlepc;
+          this.advancedForm.get('idlepc').setValue(result.idlepc);
           this.toasterService.success(`Idle-PC value found: ${result.idlepc}`);
         }
       },
@@ -180,6 +181,7 @@ export class IosTemplateDetailsComponent implements OnInit {
       }
     }
     this.iosTemplate.mac_addr = mac;
+    this.advancedForm.get('mac_addr').setValue(mac);
     this.toasterService.success(`Base MAC generated: ${mac}`);
   }
 
