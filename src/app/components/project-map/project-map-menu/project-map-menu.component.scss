@@ -101,13 +101,10 @@ button.mat-mdc-icon-button {
 .ai-chat-button.ai-minimized {
   position: relative;
   background-color: var(--mat-sys-primary-container);
-  box-shadow: 0 0 16px var(--mat-sys-primary), inset 0 0 8px var(--mat-sys-primary);
-  border: 2px solid var(--mat-sys-primary-container);
 }
 
 .ai-chat-button.ai-minimized .ai-icon {
   color: var(--mat-sys-primary-container);
-  text-shadow: 0 0 8px var(--mat-sys-primary-container);
   font-weight: 900;
 }
 
@@ -120,7 +117,6 @@ button.mat-mdc-icon-button {
   height: 4px;
   background-color: var(--mat-sys-primary-container);
   border-radius: 50%;
-  box-shadow: 0 0 4px var(--mat-sys-primary-container);
 }
 
 /* Menu button hover effect */
