@@ -195,7 +195,7 @@ export class TemplateMocksService {
       private_config: '',
       ram: 128,
       sparsemem: true,
-      startup_config: '',
+      startup_config: 'ios_base_startup-config.txt',
       symbol: 'router',
       system_id: 'FTX0945W0MY',
       template_id: '',
