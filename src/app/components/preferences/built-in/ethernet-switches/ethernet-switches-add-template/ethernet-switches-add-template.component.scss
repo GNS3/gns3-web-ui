@@ -1,0 +1,211 @@
+/**
+ * GNS3 Ethernet Switch Add Template Component Styles
+ * BEM naming applied, Material theme variables used
+ * Design language unified with ethernet-hubs template details
+ */
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--mat-sys-primary-container) 0%, var(--mat-sys-background) 100%);
+  min-height: 100vh;
+}
+
+/* =============================================
+// Header
+// ============================================= */
+.ethernet-switch-add__header {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 20px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: fadeInSlideIn 0.4s ease-out;
+}
+
+.ethernet-switch-add__back-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  color: var(--mat-sys-on-surface);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+  }
+}
+
+.ethernet-switch-add__title {
+  flex: 1;
+  font-size: 28px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin: 0;
+}
+
+/* =============================================
+// Content
+// ============================================= */
+.ethernet-switch-add__content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px 20px;
+  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+}
+
+.ethernet-switch-add--hidden {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* =============================================
+// Form Card
+// ============================================= */
+.ethernet-switch-add__form-card {
+  background: var(--mat-sys-surface);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  margin-bottom: 16px;
+}
+
+.ethernet-switch-add__section-header {
+  padding: 16px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 5%, transparent);
+  }
+}
+
+.ethernet-switch-add__section-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.ethernet-switch-add__expand-icon {
+  color: var(--mat-sys-on-surface-variant);
+  transition: transform 0.2s ease;
+}
+
+.ethernet-switch-add__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px 24px 24px;
+}
+
+.ethernet-switch-add__field {
+  width: 100%;
+}
+
+.ethernet-switch-add__field--flex {
+  flex: 1;
+}
+
+.ethernet-switch-add__symbol-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.ethernet-switch-add__symbol-btn {
+  margin-top: 4px;
+  height: 48px;
+}
+
+/* =============================================
+// Actions
+// ============================================= */
+.ethernet-switch-add__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.ethernet-switch-add__cancel-btn {
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: none;
+}
+
+.ethernet-switch-add__save-btn {
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.5px;
+}
+
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 768px) {
+  .ethernet-switch-add__header {
+    padding: 24px 16px 12px;
+    gap: 12px;
+  }
+
+  .ethernet-switch-add__back-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .ethernet-switch-add__title {
+    font-size: 22px;
+  }
+
+  .ethernet-switch-add__content {
+    padding: 0 16px 16px;
+  }
+
+  .ethernet-switch-add__section-header {
+    padding: 12px 16px;
+  }
+
+  .ethernet-switch-add__form {
+    padding: 16px 16px 16px;
+  }
+
+  .ethernet-switch-add__symbol-row {
+    flex-direction: column;
+  }
+
+  .ethernet-switch-add__actions {
+    flex-direction: column;
+  }
+
+  .ethernet-switch-add__cancel-btn,
+  .ethernet-switch-add__save-btn {
+    width: 100%;
+    height: 44px;
+  }
+}

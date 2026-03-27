@@ -1,29 +1,22 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormsModule,
-  ReactiveFormsModule,
-  UntypedFormBuilder,
-  UntypedFormControl,
-  UntypedFormGroup,
-  Validators,
-} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatRadioModule } from '@angular/material/radio';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
+import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { v4 as uuid } from 'uuid';
-import { Compute } from '@models/compute';
 import { Controller } from '@models/controller';
 import { EthernetSwitchTemplate } from '@models/templates/ethernet-switch-template';
+import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
 import { BuiltInTemplatesService } from '@services/built-in-templates.service';
-import { ComputeService } from '@services/compute.service';
 import { ControllerService } from '@services/controller.service';
-import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
+import { SymbolsMenuComponent } from '@components/preferences/common/symbols-menu/symbols-menu.component';
 
 @Component({
   standalone: true,
@@ -34,86 +27,146 @@ import { ToasterService } from '@services/toaster.service';
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule,
     RouterModule,
     MatIconModule,
     MatButtonModule,
-    MatCardModule,
-    MatRadioModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
+    MatChipsModule,
+    SymbolsMenuComponent,
   ],
 })
 export class EthernetSwitchesAddTemplateComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private builtInTemplatesService = inject(BuiltInTemplatesService);
-  private router = inject(Router);
   private toasterService = inject(ToasterService);
-  private templateMocksService = inject(TemplateMocksService);
-  private formBuilder = inject(UntypedFormBuilder);
-  private computeService = inject(ComputeService);
+  private builtInTemplatesConfigurationService = inject(BuiltInTemplatesConfigurationService);
+  private router = inject(Router);
   private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
-  templateName: string = '';
-  formGroup: UntypedFormGroup;
-  isLocalComputerChosen: boolean = true;
+  isSymbolSelectionOpened = false;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
-  constructor() {
-    this.formGroup = this.formBuilder.group({
-      templateName: new UntypedFormControl('', Validators.required),
-      numberOfPorts: new UntypedFormControl(8, Validators.required),
-    });
-  }
+  categories: any[] = [];
+  consoleTypes: string[] = [];
+
+  // Model signals for form fields
+  templateName = model('');
+  defaultName = model('');
+  symbol = model('');
+  category = model('');
+  consoleType = model('');
+  numberOfPorts = model(8);
+  tags = model<string[]>([]);
+  usage = model('');
+
+  // Section collapse states
+  generalSettingsExpanded = model(false);
+  portsExpanded = model(false);
+  usageExpanded = model(false);
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
       this.controller = controller;
       this.cd.markForCheck();
+
+      this.getConfiguration();
     });
+  }
+
+  getConfiguration() {
+    this.categories = this.builtInTemplatesConfigurationService.getCategoriesForEthernetSwitches();
+    this.consoleTypes = this.builtInTemplatesConfigurationService.getConsoleTypesForEthernetSwitches();
   }
 
   goBack() {
     this.router.navigate(['/controller', this.controller.id, 'preferences', 'builtin', 'ethernet-switches']);
   }
 
-  setControllerType(controllerType: string) {
-    if (controllerType === 'local') {
-      this.isLocalComputerChosen = true;
+  onSave() {
+    const ethernetSwitchTemplate: EthernetSwitchTemplate = {
+      template_id: uuid(),
+      builtin: false,
+      name: this.templateName(),
+      default_name_format: this.defaultName(),
+      symbol: this.symbol(),
+      category: this.category(),
+      console_type: this.consoleType(),
+      compute_id: 'local',
+      template_type: 'ethernet_switch',
+      tags: this.tags(),
+      usage: this.usage(),
+      ports_mapping: [],
+    };
+
+    // Create port mappings
+    const numPorts = this.numberOfPorts();
+    for (let i = 0; i < numPorts; i++) {
+      ethernetSwitchTemplate.ports_mapping.push({
+        name: `Ethernet${i}`,
+        port_number: i,
+        ethertype: '0x8100',
+        type: 'access',
+        vlan: 1,
+      });
+    }
+
+    this.builtInTemplatesService
+      .addTemplate(this.controller, ethernetSwitchTemplate)
+      .subscribe(() => {
+        this.toasterService.success('Template added successfully');
+        this.goBack();
+      });
+  }
+
+  chooseSymbol() {
+    this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
+  }
+
+  symbolChanged(chosenSymbol: string) {
+    this.isSymbolSelectionOpened = false;
+    this.symbol.set(chosenSymbol);
+  }
+
+  addTag(event: MatChipInputEvent): void {
+    const value = (event.value || '').trim();
+    const currentTags = this.tags();
+
+    if (value) {
+      this.tags.set([...currentTags, value]);
+    }
+
+    if (event.chipInput) {
+      event.chipInput.clear();
     }
   }
 
-  addTemplate() {
-    if (!this.formGroup.invalid) {
-      let ethernetSwitchTemplate: EthernetSwitchTemplate;
+  removeTag(tag: string): void {
+    const currentTags = this.tags();
+    const index = currentTags.indexOf(tag);
 
-      this.templateMocksService.getEthernetSwitchTemplate().subscribe((template: EthernetSwitchTemplate) => {
-        ethernetSwitchTemplate = template;
-      });
+    if (index >= 0) {
+      const newTags = [...currentTags];
+      newTags.splice(index, 1);
+      this.tags.set(newTags);
+    }
+  }
 
-      ethernetSwitchTemplate.template_id = uuid();
-      ethernetSwitchTemplate.name = this.formGroup.get('templateName').value;
-      ethernetSwitchTemplate.compute_id = 'local';
-
-      for (let i = 0; i < this.formGroup.get('numberOfPorts').value; i++) {
-        ethernetSwitchTemplate.ports_mapping.push({
-          ethertype: '0x8100',
-          name: `Ethernet${i}`,
-          port_number: i,
-          type: 'access',
-          vlan: 1,
-        });
-      }
-
-      this.builtInTemplatesService
-        .addTemplate(this.controller, ethernetSwitchTemplate)
-        .subscribe((ethernetSwitchTemplate) => {
-          this.goBack();
-        });
-    } else {
-      this.toasterService.error(`Fill all required fields`);
+  toggleSection(section: string): void {
+    switch (section) {
+      case 'general':
+        this.generalSettingsExpanded.set(!this.generalSettingsExpanded());
+        break;
+      case 'ports':
+        this.portsExpanded.set(!this.portsExpanded());
+        break;
+      case 'usage':
+        this.usageExpanded.set(!this.usageExpanded());
+        break;
     }
   }
 }
