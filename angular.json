@@ -43,7 +43,12 @@
                         "assets": [
                             "src/assets",
                             "src/favicon.ico",
-                            "src/ReleaseNotes.txt"
+                            "src/ReleaseNotes.txt",
+                            {
+                                "glob": "**/*.woff2",
+                                "input": "node_modules/material-symbols",
+                                "output": "."
+                            }
                         ],
                         "styles": [
                             "node_modules/bootstrap/dist/css/bootstrap.min.css",
