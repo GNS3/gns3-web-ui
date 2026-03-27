@@ -53,7 +53,7 @@
                         "styles": [
                             "node_modules/bootstrap/dist/css/bootstrap.min.css",
                             "node_modules/notosans-fontface/css/notosans-fontface.min.css",
-                            "node_modules/material-symbols/index.css",
+                            "src/styles/material-symbols-font.scss",
                             "node_modules/xterm/css/xterm.css",
                             "src/styles/material3-theme-supplement.scss",
                             "src/styles.scss"
@@ -143,7 +143,7 @@
                         "styles": [
                             "node_modules/bootstrap/dist/css/bootstrap.min.css",
                             "node_modules/notosans-fontface/css/notosans-fontface.min.css",
-                            "node_modules/material-symbols/index.css",
+                            "src/styles/material-symbols-font.scss",
                             "node_modules/xterm/css/xterm.css",
                             "src/styles.scss"
                         ],
