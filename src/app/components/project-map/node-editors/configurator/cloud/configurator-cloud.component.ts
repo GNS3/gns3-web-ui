@@ -31,7 +31,7 @@ import { ToasterService } from '@services/toaster.service';
   standalone: true,
   selector: 'app-configurator-cloud',
   templateUrl: './configurator-cloud.component.html',
-  styleUrls: ['../configurator.component.scss'],
+  // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -82,6 +82,11 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
   constructor() {
     this.generalSettingsForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
+      console_type: new UntypedFormControl(''),
+      remote_console_host: new UntypedFormControl(''),
+      remote_console_port: new UntypedFormControl(''),
+      remote_console_http_path: new UntypedFormControl(''),
+      usage: new UntypedFormControl(''),
     });
   }
 
@@ -89,6 +94,17 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
     this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = node.name;
+
+      // Update form values with node data
+      this.generalSettingsForm.patchValue({
+        name: node.name,
+        console_type: node.console_type || '',
+        remote_console_host: node.properties.remote_console_host || '',
+        remote_console_port: node.properties.remote_console_port || '',
+        remote_console_http_path: node.properties.remote_console_http_path || '',
+        usage: node.properties.usage || '',
+      });
+
       this.getConfiguration();
 
       if (!this.node.tags) {
@@ -132,6 +148,16 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
 
   onSaveClick() {
     if (this.generalSettingsForm.valid) {
+      // Merge form values back into node
+      const formValues = this.generalSettingsForm.value;
+
+      this.node.name = formValues.name;
+      this.node.console_type = formValues.console_type;
+      this.node.properties.remote_console_host = formValues.remote_console_host;
+      this.node.properties.remote_console_port = formValues.remote_console_port;
+      this.node.properties.remote_console_http_path = formValues.remote_console_http_path;
+      this.node.properties.usage = formValues.usage;
+
       this.portsMappingUdp = this.udpTunnels().dataSourceUdp;
 
       this.node.properties.ports_mapping = this.portsMappingUdp

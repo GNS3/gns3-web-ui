@@ -77,13 +77,12 @@ This document tracks the migration status of all node configurator dialogs to:
   - Console type uses `[(ngModel)]`
   - Tags input structure wrong
 
-#### 3. Cloud Configurator
+#### 3. ~~Cloud Configurator~~
 - **File**: `cloud/configurator-cloud.component.html`
-- **Reactive Forms**: ❌ Uses `ngModel`
-- **Tags Structure**: ❌ Input inside chip-grid
-- **Issues**:
-  - Multiple `ngModel` bindings
-  - Tags input structure wrong
+- **Reactive Forms**: ✅ Complete
+- **Tags Structure**: ✅ Correct (input outside chip-grid)
+- **Styling**: ✅ Centralized
+- **Migrated**: 2026-03-27
 
 #### 4. IOU Configurator
 - **File**: `iou/configurator-iou.component.html`

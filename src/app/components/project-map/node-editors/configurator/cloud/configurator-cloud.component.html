@@ -49,18 +49,20 @@
           <mat-tab label="Miscellaneous">
             <form [formGroup]="generalSettingsForm">
               <mat-form-field class="form-field">
-                <input matInput type="text" formControlName="name" placeholder="Name" />
+                <mat-label>Name</mat-label>
+                <input matInput type="text" formControlName="name" />
               </mat-form-field>
-            </form>
-            <mat-form-field class="form-field tags-field">
-              <mat-label>Tags</mat-label>
-              <mat-chip-grid #chipList>
-                @for (tag of node?.tags; track tag) {
-                <mat-chip (removed)="removeTag(tag)">
-                  {{ tag }}
-                  <mat-icon matChipRemove>cancel</mat-icon>
-                </mat-chip>
-                }
+
+              <mat-form-field class="form-field tags-field">
+                <mat-label>Tags</mat-label>
+                <mat-chip-grid #chipList>
+                  @for (tag of node?.tags; track tag) {
+                  <mat-chip (removed)="removeTag(tag)">
+                    {{ tag }}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+                  }
+                </mat-chip-grid>
                 <input
                   matInput
                   placeholder="Add tags"
@@ -68,47 +70,43 @@
                   [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
                   (matChipInputTokenEnd)="addTag($event)"
                 />
-              </mat-chip-grid>
-            </mat-form-field>
-            <mat-form-field class="select">
-              <mat-select placeholder="Console type" [(ngModel)]="node.console_type">
-                @for (type of consoleTypes; track type) {
-                <mat-option [value]="type">
-                  {{ type }}
-                </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-            <mat-form-field class="form-field">
-              <input
-                matInput
-                type="text"
-                [(ngModel)]="node.properties.remote_console_host"
-                placeholder="Console host"
-              />
-            </mat-form-field>
-            <mat-form-field class="form-field">
-              <input
-                matInput
-                type="text"
-                [(ngModel)]="node.properties.remote_console_port"
-                placeholder="Console port"
-              />
-            </mat-form-field>
-            <mat-form-field class="form-field">
-              <input
-                matInput
-                type="text"
-                [(ngModel)]="node.properties.remote_console_http_path"
-                placeholder="Console HTTP path"
-              />
-            </mat-form-field>
+              </mat-form-field>
+
+              <mat-form-field class="form-field">
+                <mat-label>Console type</mat-label>
+                <mat-select formControlName="console_type">
+                  @for (type of consoleTypes; track type) {
+                  <mat-option [value]="type">
+                    {{ type }}
+                  </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field class="form-field">
+                <mat-label>Console host</mat-label>
+                <input matInput type="text" formControlName="remote_console_host" />
+              </mat-form-field>
+
+              <mat-form-field class="form-field">
+                <mat-label>Console port</mat-label>
+                <input matInput type="text" formControlName="remote_console_port" />
+              </mat-form-field>
+
+              <mat-form-field class="form-field">
+                <mat-label>Console HTTP path</mat-label>
+                <input matInput type="text" formControlName="remote_console_http_path" />
+              </mat-form-field>
+            </form>
           </mat-tab>
 
           <mat-tab label="Usage">
-            <mat-form-field class="form-field">
-              <textarea matInput type="text" [(ngModel)]="node.properties.usage"></textarea>
-            </mat-form-field>
+            <form [formGroup]="generalSettingsForm">
+              <mat-form-field class="form-field">
+                <mat-label>Usage</mat-label>
+                <textarea matInput formControlName="usage"></textarea>
+              </mat-form-field>
+            </form>
           </mat-tab>
         </mat-tab-group>
         }
