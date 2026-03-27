@@ -110,6 +110,36 @@ export class StyleTranslator {
         return StyleTranslator.getStraightPath(source, target);
     }
 
+    /**
+     * Computes a freeform bezier path where the curve passes through the mouse point.
+     * Uses quadratic bezier internally - the curve at t=0.5 passes through the control point.
+     */
+    static getFreeformBezierPath(
+        source: [number, number],
+        target: [number, number],
+        sourceOrientation?: ConnectorOrientation,
+        targetOrientation?: ConnectorOrientation,
+        mousePoint?: [number, number]
+    ): string {
+        const lineGenerator = path();
+        lineGenerator.moveTo(source[0], source[1]);
+
+        if (mousePoint) {
+            // Use quadratic bezier: B(t) = (1-t)²P0 + 2(1-t)tP1 + t²P3
+            // At t=0.5: B(0.5) = 0.25*P0 + 0.5*P1 + 0.25*P3
+            // Solving for P1 when B(0.5) = mousePoint:
+            // P1 = 2*mousePoint - 0.5*(P0 + P3)
+            const controlX = 2 * mousePoint[0] - 0.5 * (source[0] + target[0]);
+            const controlY = 2 * mousePoint[1] - 0.5 * (source[1] + target[1]);
+            lineGenerator.quadraticCurveTo(controlX, controlY, target[0], target[1]);
+        } else {
+            // Fallback to straight line if no mouse point
+            lineGenerator.lineTo(target[0], target[1]);
+        }
+
+        return lineGenerator.toString();
+    }
+
     static getLinkTransform(linkStyle: LinkStyle): string | null {
         const linkType = StyleTranslator.normalizeLinkType(linkStyle?.link_type);
 

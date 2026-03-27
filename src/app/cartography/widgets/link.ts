@@ -158,19 +158,18 @@ export class LinkWidget implements Widget {
       const targetCenterX = l.target.x + l.target.width / 2;
       const targetCenterY = l.target.y + l.target.height / 2;
 
-      // Calculate perpendicular direction to the link
+      // Calculate perpendicular and tangent directions to the link
       const dx = targetCenterX - sourceCenterX;
       const dy = targetCenterY - sourceCenterY;
       const length = Math.hypot(dx, dy) || 1;
       const perpX = -dy / length;
       const perpY = dx / length;
+      const tangentX = dx / length;
+      const tangentY = dy / length;
 
       // Midpoint of the link
       const midX = (sourceCenterX + targetCenterX) / 2;
       const midY = (sourceCenterY + targetCenterY) / 2;
-
-      // Get initial curviness at drag start
-      const initialCurviness = l.link_style?.bezier_curviness ?? 0;
 
       // Add drag behavior to path
       path
@@ -187,28 +186,33 @@ export class LinkWidget implements Widget {
               select(this).attr('cursor', 'grabbing');
             })
             .on('drag', function(event: D3DragEvent<SVGPathElement, MapLink, MapLink>, l: MapLink) {
-              // Calculate perpendicular offset from midpoint
-              const offsetX = event.x - midX;
-              const offsetY = event.y - midY;
-              const perpOffset = offsetX * perpX + offsetY * perpY;
+              // Use mouse position directly for curve shaping
+              const mousePos: [number, number] = [event.x, event.y];
 
-              // Set curviness based on perpendicular offset
-              if (!l.link_style) {
-                l.link_style = {};
-              }
-              l.link_style.bezier_curviness = initialCurviness + perpOffset;
-
-              // Update path in real-time using actual center points
+              // Update path in real-time using freeform bezier with mouse influence
               const sourceCenter: [number, number] = [sourceCenterX, sourceCenterY];
               const targetCenter: [number, number] = [targetCenterX, targetCenterY];
               const sourceOrientation = StyleTranslator.getContinuousOrientation(sourceCenter, targetCenter);
               const targetOrientation = StyleTranslator.getContinuousOrientation(targetCenter, sourceCenter);
-              const newPath = StyleTranslator.getLinkPath(sourceCenter, targetCenter, l.link_style, {
+              const newPath = StyleTranslator.getFreeformBezierPath(
+                sourceCenter,
+                targetCenter,
                 sourceOrientation,
                 targetOrientation,
-                bezierVariation: 0,
-              });
+                mousePos
+              );
               select(this).attr('d', newPath);
+
+              // Calculate perpendicular distance from mouse to line for saving
+              const offsetX = event.x - midX;
+              const offsetY = event.y - midY;
+              const perpOffset = offsetX * perpX + offsetY * perpY;
+
+              // Store curviness for final save
+              if (!l.link_style) {
+                l.link_style = {};
+              }
+              l.link_style.bezier_curviness = perpOffset;
             })
             .on('end', function(event: D3DragEvent<SVGPathElement, MapLink, MapLink>, l: MapLink) {
               select(this).attr('cursor', 'grab');
