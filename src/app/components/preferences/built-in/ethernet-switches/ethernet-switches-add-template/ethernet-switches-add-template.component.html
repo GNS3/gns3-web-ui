@@ -1,4 +1,4 @@
-<div class="ethernet-switch-add" [ngClass]="{ 'ethernet-switch-add--hidden': isSymbolSelectionOpened }">
+<div class="ethernet-switch-add">
   <header class="ethernet-switch-add__header">
     @if (controller) {
     <button class="ethernet-switch-add__back-btn" (click)="goBack()" mat-icon-button>
@@ -134,10 +134,3 @@
     </div>
   </main>
 </div>
-@if (isSymbolSelectionOpened) {
-<app-symbols-menu
-  [controller]="controller"
-  [symbol]="symbol()"
-  (symbolChangedEmitter)="symbolChanged($event)"
-></app-symbols-menu>
-}

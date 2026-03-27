@@ -1,0 +1,14 @@
+/**
+ * GNS3 Template Symbol Dialog Component Styles
+ * Uses panelClass 'change-symbol-dialog-panel' for unified styling
+ */
+
+:host {
+  display: block;
+}
+
+.modal-form-container {
+  padding: 16px;
+  overflow-y: auto;
+  max-height: 500px;
+}
