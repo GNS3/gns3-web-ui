@@ -59,8 +59,8 @@ export class LinkStyleEditorDialogComponent implements OnInit {
   link: Link;
   formGroup: UntypedFormGroup;
   borderTypes = ['Invisible', 'Solid', 'Dash', 'Dot', 'Dash Dot', 'Dash Dot Dot'];
-  linkTypes = ['Straight', 'Bezier', 'Flowchart', 'StateMachine'];
-  private readonly linkTypeValues = ['straight', 'bezier', 'flowchart', 'statemachine'];
+  linkTypes = ['Straight', 'Bezier', 'Flowchart', 'StateMachine', 'Freeform'];
+  private readonly linkTypeValues = ['straight', 'bezier', 'flowchart', 'statemachine', 'freeform'];
   bezierCurvinessMin = StyleTranslator.BEZIER_CURVINESS_MIN;
   bezierCurvinessMax = StyleTranslator.BEZIER_CURVINESS_MAX;
   bezierCurvinessStep = StyleTranslator.BEZIER_CURVINESS_STEP;

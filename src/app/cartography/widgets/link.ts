@@ -142,11 +142,11 @@ export class LinkWidget implements Widget {
       .select<SVGPathElement>('path')
       .classed('selected', (l: MapLink) => this.selectionManager.isSelected(l));
 
-    // Curviness drag: directly drag path to adjust bezier/statemachine curvature (Photoshop-like)
+    // Curviness drag: directly drag path to adjust bezier/statemachine/freeform curvature (Photoshop-like)
     const self = this;
     link_body_merge.each(function(l: MapLink) {
       const linkType = StyleTranslator.normalizeLinkType(l.link_style?.link_type);
-      if (linkType !== 'bezier' && linkType !== 'statemachine') return;
+      if (linkType !== 'bezier' && linkType !== 'statemachine' && linkType !== 'freeform') return;
 
       const linkGroup = select(this);
       const path = linkGroup.select<SVGPathElement>('path');

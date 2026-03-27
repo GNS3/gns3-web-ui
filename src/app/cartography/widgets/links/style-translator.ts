@@ -15,7 +15,7 @@ import {
 } from '@models/link-style-constants';
 import { LinkStyle } from '@models/link-style';
 
-export type ConnectorLinkType = 'straight' | 'bezier' | 'flowchart' | 'statemachine';
+export type ConnectorLinkType = 'straight' | 'bezier' | 'flowchart' | 'statemachine' | 'freeform';
 export type ConnectorOrientation = [number, number];
 export type LinkPathOptions = {
     bezierVariation?: number;
@@ -69,6 +69,9 @@ export class StyleTranslator {
         }
         if (normalized === 'statemachine') {
             return 'statemachine';
+        }
+        if (normalized === 'freeform') {
+            return 'freeform';
         }
         return StyleTranslator.DEFAULT_LINK_TYPE;
     }
