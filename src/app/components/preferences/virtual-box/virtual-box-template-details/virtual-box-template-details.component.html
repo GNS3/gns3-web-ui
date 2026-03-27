@@ -1,4 +1,4 @@
-<div class="virtualbox-details" [ngClass]="{ 'virtualbox-details--hidden': isSymbolSelectionOpened }">
+<div class="virtualbox-details">
   <header class="virtualbox-details__header">
     @if (controller) {
     <button class="virtualbox-details__back-btn" (click)="goBack()" mat-icon-button>
@@ -211,10 +211,3 @@
   </main>
   }
 </div>
-@if (isSymbolSelectionOpened && virtualBoxTemplate) {
-<app-symbols-menu
-  [controller]="controller"
-  [symbol]="symbol()"
-  (symbolChangedEmitter)="symbolChanged($event)"
-></app-symbols-menu>
-}

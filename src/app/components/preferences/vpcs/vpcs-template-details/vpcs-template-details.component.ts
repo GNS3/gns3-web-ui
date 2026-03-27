@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
+import { MatDialog } from '@angular/material/dialog';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Controller } from '@models/controller';
 import { VpcsTemplate } from '@models/templates/vpcs-template';
@@ -17,7 +18,7 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
 import { VpcsService } from '@services/vpcs.service';
-import { SymbolsMenuComponent } from '@components/preferences/common/symbols-menu/symbols-menu.component';
+import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
 
 @Component({
   standalone: true,
@@ -37,7 +38,6 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
     MatSelectModule,
     MatCheckboxModule,
     MatChipsModule,
-    SymbolsMenuComponent,
   ],
 })
 export class VpcsTemplateDetailsComponent implements OnInit {
@@ -48,10 +48,10 @@ export class VpcsTemplateDetailsComponent implements OnInit {
   private vpcsConfigurationService = inject(VpcsConfigurationService);
   private router = inject(Router);
   private cd = inject(ChangeDetectorRef);
+  private dialog = inject(MatDialog);
 
   controller: Controller;
   vpcsTemplate: VpcsTemplate;
-  isSymbolSelectionOpened: boolean = false;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
   categories = [];
@@ -137,12 +137,21 @@ export class VpcsTemplateDetailsComponent implements OnInit {
   }
 
   chooseSymbol() {
-    this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
-  }
-
-  symbolChanged(chosenSymbol: string) {
-    this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
-    this.symbol.set(chosenSymbol);
+    const dialogRef = this.dialog.open(TemplateSymbolDialogComponent, {
+      width: '800px',
+      autoFocus: false,
+      disableClose: false,
+      panelClass: 'change-symbol-dialog-panel',
+      data: {
+        controller: this.controller,
+        symbol: this.symbol(),
+      },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.symbol.set(result);
+      }
+    });
   }
 
   addTag(event: MatChipInputEvent): void {

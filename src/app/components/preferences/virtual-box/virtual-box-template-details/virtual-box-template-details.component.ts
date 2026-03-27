@@ -23,7 +23,7 @@ import {
   CustomAdaptersDialogData,
   CustomAdaptersDialogResult,
 } from '../../common/custom-adapters/custom-adapters.component';
-import { SymbolsMenuComponent } from '@components/preferences/common/symbols-menu/symbols-menu.component';
+import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
 
 @Component({
   standalone: true,
@@ -42,7 +42,6 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
     MatSelectModule,
     MatChipsModule,
     MatCheckboxModule,
-    SymbolsMenuComponent,
   ],
 })
 export class VirtualBoxTemplateDetailsComponent implements OnInit {
@@ -57,7 +56,6 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
 
   controller: Controller;
   virtualBoxTemplate: VirtualBoxTemplate;
-  isSymbolSelectionOpened = false;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   consoleTypes: string[] = [];
   onCloseOptions: any[] = [];
@@ -259,12 +257,21 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   }
 
   chooseSymbol() {
-    this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
-  }
-
-  symbolChanged(chosenSymbol: string) {
-    this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
-    this.symbol.set(chosenSymbol);
+    const dialogRef = this.dialog.open(TemplateSymbolDialogComponent, {
+      width: '800px',
+      autoFocus: false,
+      disableClose: false,
+      panelClass: 'change-symbol-dialog-panel',
+      data: {
+        controller: this.controller,
+        symbol: this.symbol(),
+      },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.symbol.set(result);
+      }
+    });
   }
 
   addTag(event: MatChipInputEvent): void {

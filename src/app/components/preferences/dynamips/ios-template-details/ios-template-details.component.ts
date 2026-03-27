@@ -17,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Controller } from '@models/controller';
 import { IosTemplate } from '@models/templates/ios-template';
@@ -25,7 +26,7 @@ import { IosService } from '@services/ios.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { ProgressService } from '../../../../common/progress/progress.service';
-import { SymbolsMenuComponent } from '@components/preferences/common/symbols-menu/symbols-menu.component';
+import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
 
 @Component({
   standalone: true,
@@ -46,7 +47,6 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
     MatIconModule,
     MatExpansionModule,
     MatCheckboxModule,
-    SymbolsMenuComponent,
   ],
 })
 export class IosTemplateDetailsComponent implements OnInit {
@@ -59,10 +59,10 @@ export class IosTemplateDetailsComponent implements OnInit {
   private progressService = inject(ProgressService);
   private router = inject(Router);
   private cd = inject(ChangeDetectorRef);
+  private dialog = inject(MatDialog);
 
   controller: Controller;
   iosTemplate: IosTemplate;
-  isSymbolSelectionOpened: boolean = false;
   platforms: string[] = [];
   consoleTypes: string[] = [];
   categories = [];
@@ -345,11 +345,25 @@ export class IosTemplateDetailsComponent implements OnInit {
   }
 
   chooseSymbol() {
-    this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
+    const dialogRef = this.dialog.open(TemplateSymbolDialogComponent, {
+      width: '800px',
+      autoFocus: false,
+      disableClose: false,
+      panelClass: 'change-symbol-dialog-panel',
+      data: {
+        controller: this.controller,
+        symbol: this.iosTemplate.symbol,
+      },
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.iosTemplate.symbol = result;
+        this.generalSettingsForm.get('symbol').setValue(result);
+      }
+    });
   }
 
   symbolChanged(chosenSymbol: string) {
-    this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
     this.iosTemplate.symbol = chosenSymbol;
   }
 

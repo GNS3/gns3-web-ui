@@ -1,4 +1,4 @@
-<div class="cloud-nodes-details" [ngClass]="{ 'cloud-nodes-details--hidden': isSymbolSelectionOpened }">
+<div class="cloud-nodes-details">
   <header class="cloud-nodes-details__header">
     @if (controller) {
     <button class="cloud-nodes-details__back-btn" (click)="goBack()" mat-icon-button>
@@ -276,10 +276,3 @@
   </main>
   }
 </div>
-@if (isSymbolSelectionOpened && cloudNodeTemplate) {
-<app-symbols-menu
-  [controller]="controller"
-  [symbol]="symbol()"
-  (symbolChangedEmitter)="symbolChanged($event)"
-></app-symbols-menu>
-}

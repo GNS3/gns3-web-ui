@@ -1,4 +1,4 @@
-<div class="qemu-template-details" [ngClass]="{ 'qemu-template-details--hidden': isSymbolSelectionOpened }">
+<div class="qemu-template-details">
   <header class="qemu-template-details__header">
     @if (controller) {
     <button class="qemu-template-details__back-btn" (click)="goBack()" mat-icon-button>
@@ -587,10 +587,3 @@
   </main>
   }
 </div>
-@if (isSymbolSelectionOpened && qemuTemplate) {
-<app-symbols-menu
-  [controller]="controller"
-  [symbol]="symbol()"
-  (symbolChangedEmitter)="symbolChanged($event)"
-></app-symbols-menu>
-}

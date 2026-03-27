@@ -1,4 +1,4 @@
-<div class="iou-template-details" [ngClass]="{ 'iou-template-details--hidden': isSymbolSelectionOpened }">
+<div class="iou-template-details">
   <header class="iou-template-details__header">
     @if (controller) {
     <button class="iou-template-details__back-btn" (click)="goBack()" mat-icon-button>
@@ -240,10 +240,3 @@
   </main>
   }
 </div>
-@if (isSymbolSelectionOpened && iouTemplate) {
-<app-symbols-menu
-  [controller]="controller"
-  [symbol]="symbol()"
-  (symbolChangedEmitter)="symbolChanged($event)"
-></app-symbols-menu>
-}

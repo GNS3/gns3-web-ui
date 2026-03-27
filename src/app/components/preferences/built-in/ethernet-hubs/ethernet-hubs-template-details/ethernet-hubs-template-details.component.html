@@ -1,4 +1,4 @@
-<div class="ethernet-hub-details" [ngClass]="{ 'ethernet-hub-details--hidden': isSymbolSelectionOpened }">
+<div class="ethernet-hub-details">
   <header class="ethernet-hub-details__header">
     @if (controller) {
     <button class="ethernet-hub-details__back-btn" (click)="goBack()" mat-icon-button>
@@ -123,10 +123,3 @@
   </main>
   }
 </div>
-@if (isSymbolSelectionOpened && ethernetHubTemplate) {
-<app-symbols-menu
-  [controller]="controller"
-  [symbol]="symbol()"
-  (symbolChangedEmitter)="symbolChanged($event)"
-></app-symbols-menu>
-}

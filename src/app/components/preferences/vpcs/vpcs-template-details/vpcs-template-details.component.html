@@ -1,4 +1,4 @@
-<div class="vpcs-template-details" [ngClass]="{ 'vpcs-template-details--hidden': isSymbolSelectionOpened }">
+<div class="vpcs-template-details">
   <header class="vpcs-template-details__header">
     @if (controller) {
     <button class="vpcs-template-details__back-btn" (click)="goBack()" mat-icon-button>
@@ -124,10 +124,3 @@
   </main>
   }
 </div>
-@if (isSymbolSelectionOpened && vpcsTemplate) {
-<app-symbols-menu
-  [controller]="controller"
-  [symbol]="symbol()"
-  (symbolChangedEmitter)="symbolChanged($event)"
-></app-symbols-menu>
-}

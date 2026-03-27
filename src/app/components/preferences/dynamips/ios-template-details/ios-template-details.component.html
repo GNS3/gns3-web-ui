@@ -1,4 +1,4 @@
-<div class="ios-details" [ngClass]="{ 'ios-details--hidden': isSymbolSelectionOpened }">
+<div class="ios-details">
   <header class="ios-details__header">
     @if (controller) {
     <button class="ios-details__back-btn" (click)="goBack()" mat-icon-button>
@@ -299,10 +299,3 @@
   </main>
   }
 </div>
-@if (isSymbolSelectionOpened && iosTemplate) {
-<app-symbols-menu
-  [controller]="controller"
-  [symbol]="iosTemplate.symbol"
-  (symbolChangedEmitter)="symbolChanged($event)"
-></app-symbols-menu>
-}

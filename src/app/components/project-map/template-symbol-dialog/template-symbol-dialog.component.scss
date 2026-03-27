@@ -1,14 +1,31 @@
 /**
- * GNS3 Template Symbol Dialog Component Styles
- * Uses panelClass 'change-symbol-dialog-panel' for unified styling
+ * GNS3 Change Symbol Dialog Component Styles
+ * Using MD3 CSS variables
  */
-
-:host {
-  display: block;
-}
 
 .modal-form-container {
   padding: 16px;
   overflow-y: auto;
   max-height: 500px;
+}
+
+.menu {
+  display: flex;
+  justify-content: space-between;
+}
+
+.radio-selection {
+  width: 90%;
+}
+
+.mat-radio-button ~ .mat-radio-button {
+  margin-left: 16px;
+}
+
+.non-visible {
+  display: none;
+}
+
+.example-full-width {
+  width: 100%;
 }

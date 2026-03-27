@@ -1,4 +1,4 @@
-<div class="vmware-template-details" [ngClass]="{ 'vmware-template-details--hidden': isSymbolSelectionOpened }">
+<div class="vmware-template-details">
   <header class="vmware-template-details__header">
     @if (controller) {
     <button class="vmware-template-details__back-btn" (click)="goBack()" mat-icon-button>
@@ -224,10 +224,3 @@
   </main>
   }
 </div>
-@if (isSymbolSelectionOpened && vmwareTemplate) {
-<app-symbols-menu
-  [controller]="controller"
-  [symbol]="symbol()"
-  (symbolChangedEmitter)="symbolChanged($event)"
-></app-symbols-menu>
-}

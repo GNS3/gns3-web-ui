@@ -96,6 +96,7 @@ import { VpcsTemplateDetailsComponent } from '@components/preferences/vpcs/vpcs-
 import { VpcsTemplatesComponent } from '@components/preferences/vpcs/vpcs-templates/vpcs-templates.component';
 import { ChangeHostnameDialogComponent } from '@components/project-map/change-hostname-dialog/change-hostname-dialog.component';
 import { ChangeSymbolDialogComponent } from '@components/project-map/change-symbol-dialog/change-symbol-dialog.component';
+import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
 import { ConsoleWrapperComponent } from '@components/project-map/console-wrapper/console-wrapper.component';
 import { ConsoleDevicesPanelComponent } from '@components/project-map/console-wrapper/console-devices-panel.component';
 import { ContextConsoleMenuComponent } from '@components/project-map/context-console-menu/context-console-menu.component';
@@ -527,6 +528,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     ProgressDialogComponent,
     UploadingProcessbarComponent,
     ChangeSymbolDialogComponent,
+    TemplateSymbolDialogComponent,
     SymbolsComponent,
     UdpTunnelsComponent,
     CustomAdaptersTableComponent,
