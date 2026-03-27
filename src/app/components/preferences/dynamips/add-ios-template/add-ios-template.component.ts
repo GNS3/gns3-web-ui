@@ -207,6 +207,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
 
       if (this.networkAdaptersForTemplate().length > 0) this.completeAdaptersData(template);
       if (this.wicsForTemplate().length > 0) this.completeWicsData(template);
+      if (this.idlepc()) template.idlepc = this.idlepc();
       template.compute_id = 'local';
 
       this.iosService.addTemplate(this.controller(), template).subscribe((iosTemplate: IosTemplate) => {
