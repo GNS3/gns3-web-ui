@@ -310,7 +310,7 @@ Upload via **Preferences → Symbols**, not as drawing.
 | File | Purpose |
 |------|---------|
 | `src/app/services/http-controller.service.ts` | Added `postBlob()` for binary upload |
-| `src/app/services/symbol.service.ts` | Added `addFile()` for binary upload |
+| `src/app/services/symbol.service.ts` | Symbol list caching with `listBuiltinSymbols()` / `listCustomSymbols()` |
 | `src/app/services/dialog-config.service.ts` | Centralized dialog configuration |
 | `src/app/components/preferences/common/symbols/symbols.component.ts` | Main symbols browsing and selection interface |
 | `src/app/components/preferences/common/symbols/symbols-manager-dialog/` | Symbols Manager dialog for adding/managing symbols |
@@ -318,6 +318,23 @@ Upload via **Preferences → Symbols**, not as drawing.
 | `src/app/cartography/widgets/node.ts` | Renders symbols on canvas |
 | `src/app/cartography/widgets/drawings/image-drawing.ts` | Renders drawing images |
 | `src/styles/_dialogs.scss` | Centralized dialog styles |
+
+### Caching Mechanism
+
+The `SymbolService` implements a caching strategy to reduce network requests:
+
+| Method | Description | Cache |
+|--------|-------------|-------|
+| `list(controller)` | Full symbol list | Cached, invalidated on add/delete |
+| `listBuiltinSymbols(controller)` | Built-in symbols only | **Permanently cached** |
+| `listCustomSymbols(controller)` | Custom symbols only | No cache (always fresh) |
+| `getSymbolBlobUrl(controller, url)` | Symbol image blob URL | Cached with `shareReplay(1)` |
+| `getDimensions(controller, id)` | Symbol dimensions | Cached with `shareReplay(1)` |
+
+**Benefits:**
+- Built-in symbols load once per session
+- Custom symbols always show latest data
+- Blob URLs cached to avoid re-fetching images
 
 ### Upload Code
 
@@ -395,4 +412,4 @@ A: "Delete symbols" in the main view enters delete mode for batch deletion. Symb
 
 ---
 
-**Last Updated:** 2026-03-28
+**Last Updated:** 2026-03-28 (updated with caching docs)
