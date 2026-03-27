@@ -7,10 +7,10 @@
         @if (name) {
         <mat-tab-group>
           <mat-tab label="General settings">
-            <br />
             <form [formGroup]="generalSettingsForm">
               <mat-form-field class="form-field">
-                <input matInput formControlName="name" type="text" placeholder="Name" />
+                <mat-label>Name</mat-label>
+                <input matInput formControlName="name" type="text" />
               </mat-form-field>
 
               <mat-form-field class="form-field tags-field">
@@ -22,22 +22,19 @@
                     <mat-icon matChipRemove>cancel</mat-icon>
                   </mat-chip>
                   }
-                  <input
-                    matInput
-                    placeholder="Add tags"
-                    [matChipInputFor]="chipList"
-                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                    (matChipInputTokenEnd)="addTag($event)"
-                  />
                 </mat-chip-grid>
+                <input
+                  matInput
+                  placeholder="Add tags"
+                  [matChipInputFor]="chipList"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  (matChipInputTokenEnd)="addTag($event)"
+                />
               </mat-form-field>
 
-              <mat-form-field class="select">
-                <mat-select
-                  [ngModelOptions]="{ standalone: true }"
-                  placeholder="Console type"
-                  [(ngModel)]="node.console_type"
-                >
+              <mat-form-field class="form-field">
+                <mat-label>Console type</mat-label>
+                <mat-select formControlName="console_type">
                   @for (type of consoleTypes; track type) {
                   <mat-option [value]="type">
                     {{ type }}
@@ -45,19 +42,18 @@
                   }
                 </mat-select>
               </mat-form-field>
-              <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="node.console_auto_start">
-                Auto start console
-              </mat-checkbox>
+
+              <mat-checkbox formControlName="console_auto_start"> Auto start console </mat-checkbox>
+
               <mat-form-field class="form-field">
-                <input matInput formControlName="ram" type="number" placeholder="RAM" />
+                <mat-label>RAM</mat-label>
+                <input matInput formControlName="ram" type="number" />
                 <span matSuffix>MB</span>
               </mat-form-field>
+
               <mat-form-field class="form-field">
-                <mat-select
-                  [ngModelOptions]="{ standalone: true }"
-                  placeholder="On close"
-                  [(ngModel)]="node.properties.on_close"
-                >
+                <mat-label>On close</mat-label>
+                <mat-select formControlName="on_close">
                   @for (option of onCloseOptions; track option[1]) {
                   <mat-option [value]="option[1]">
                     {{ option[0] }}
@@ -65,20 +61,26 @@
                   }
                 </mat-select>
               </mat-form-field>
+
+              <mat-checkbox formControlName="headless"> Start VM in headless mode </mat-checkbox>
             </form>
-            <mat-checkbox [(ngModel)]="node.properties.headless"> Start VM in headless mode </mat-checkbox>
           </mat-tab>
           <mat-tab label="Network">
-            <br /><mat-checkbox [(ngModel)]="node.properties.use_any_adapter">
-              Allow GNS3 to use any configured VirtualBox adapter
-            </mat-checkbox>
-            <br /><br />
-            <button mat-raised-button color="primary" (click)="openCustomAdaptersDialog()">Custom Adapters</button>
+            <form [formGroup]="generalSettingsForm">
+              <mat-checkbox formControlName="use_any_adapter">
+                Allow GNS3 to use any configured VirtualBox adapter
+              </mat-checkbox>
+              <br /><br />
+              <button mat-raised-button color="primary" (click)="openCustomAdaptersDialog()">Custom Adapters</button>
+            </form>
           </mat-tab>
           <mat-tab label="Usage">
-            <mat-form-field class="form-field">
-              <textarea matInput type="text" [(ngModel)]="node.properties.usage"></textarea>
-            </mat-form-field>
+            <form [formGroup]="generalSettingsForm">
+              <mat-form-field class="form-field">
+                <mat-label>Usage</mat-label>
+                <textarea matInput formControlName="usage"></textarea>
+              </mat-form-field>
+            </form>
           </mat-tab>
         </mat-tab-group>
         }
