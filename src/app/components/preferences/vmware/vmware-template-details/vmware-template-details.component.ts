@@ -18,7 +18,11 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { VmwareConfigurationService } from '@services/vmware-configuration.service';
 import { VmwareService } from '@services/vmware.service';
-import { CustomAdaptersComponent, CustomAdaptersDialogData, CustomAdaptersDialogResult } from '../../common/custom-adapters/custom-adapters.component';
+import {
+  CustomAdaptersComponent,
+  CustomAdaptersDialogData,
+  CustomAdaptersDialogResult,
+} from '../../common/custom-adapters/custom-adapters.component';
 import { SymbolsMenuComponent } from '@components/preferences/common/symbols-menu/symbols-menu.component';
 
 @Component({
@@ -175,20 +179,18 @@ export class VmwareTemplateDetailsComponent implements OnInit {
 
     // Custom adapters are already managed through the dialog (incremental save)
 
-    this.vmwareService
-      .saveTemplate(this.controller, this.vmwareTemplate)
-      .subscribe({
-        next: (vmwareTemplate: VmwareTemplate) => {
-          this.toasterService.success('Changes saved');
-          // Update local template with server response to reflect changes immediately
-          this.vmwareTemplate = vmwareTemplate;
-          this.initFormFromTemplate();
-          this.cd.markForCheck();
-        },
-        error: (error) => {
-          this.toasterService.error('Failed to save template: ' + (error.message || 'Unknown error'));
-        }
-      });
+    this.vmwareService.saveTemplate(this.controller, this.vmwareTemplate).subscribe({
+      next: (vmwareTemplate: VmwareTemplate) => {
+        this.toasterService.success('Changes saved');
+        // Update local template with server response to reflect changes immediately
+        this.vmwareTemplate = vmwareTemplate;
+        this.initFormFromTemplate();
+        this.cd.markForCheck();
+      },
+      error: (error) => {
+        this.toasterService.error('Failed to save template: ' + (error.message || 'Unknown error'));
+      },
+    });
   }
 
   openCustomAdaptersDialog() {
@@ -205,7 +207,7 @@ export class VmwareTemplateDetailsComponent implements OnInit {
     const adaptersForDialog: CustomAdapter[] = [];
 
     for (let i = 0; i < adapterCount; i++) {
-      const customAdapter = serverCustomAdapters.find(adapter => adapter.adapter_number === i);
+      const customAdapter = serverCustomAdapters.find((adapter) => adapter.adapter_number === i);
 
       if (customAdapter) {
         adaptersForDialog.push({

@@ -32,7 +32,13 @@ export class QemuService {
    * Create a QEMU disk image for a node
    * API: POST /projects/{project_id}/nodes/{node_id}/qemu/disk_image/{disk_name}
    */
-  createDiskImage(controller: Controller, projectId: string, nodeId: string, diskName: string, options: QemuDiskImageOptions): Observable<any> {
+  createDiskImage(
+    controller: Controller,
+    projectId: string,
+    nodeId: string,
+    diskName: string,
+    options: QemuDiskImageOptions
+  ): Observable<any> {
     return this.httpController.post<any>(
       controller,
       `/projects/${projectId}/nodes/${nodeId}/qemu/disk_image/${diskName}`,
@@ -55,7 +61,7 @@ export class QemuService {
 
 export interface QemuDiskImageOptions {
   format: string;
-  size: number;  // Size in MB
+  size: number; // Size in MB
   preallocation?: string;
   cluster_size?: number;
   refcount_bits?: number;

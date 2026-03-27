@@ -7,7 +7,7 @@
         @if (name) {
         <form [formGroup]="generalSettingsForm">
           <mat-tab-group>
-          <mat-tab label="General settings">
+            <mat-tab label="General settings">
               <!-- Name field - full width -->
               <mat-form-field class="form-field">
                 <mat-label>Name</mat-label>
@@ -107,286 +107,329 @@
                   Auto start console
                 </mat-checkbox>
               </div>
-          </mat-tab>
-          <mat-tab label="HDD">
-            <div class="hdd-create-section">
-              <button mat-raised-button color="primary" (click)="openQemuImageCreator()" class="create-button">
-                Create Qemu image
-              </button>
-            </div>
-            <div class="disk-cards-grid">
-              <!-- HDA - Primary Master -->
-              <div class="disk-card">
-                <div class="disk-card__header">
-                  <h3 class="disk-card__title">HDA</h3>
-                  <span class="disk-card__badge">Primary Master</span>
-                </div>
-                <div class="disk-card__content">
-                  <mat-form-field class="form-field">
-                    <mat-label>Disk image</mat-label>
-                    <input matInput type="text" formControlName="hda_disk_image" [matAutocomplete]="hdaAuto" (input)="onHdaImageInput($event)" (focus)="filteredImages = qemuImages" />
-                    <mat-autocomplete #hdaAuto="matAutocomplete">
-                      @for (image of filteredImages; track image.filename) {
-                      <mat-option [value]="image.filename">
-                        {{ image.filename }}
-                      </mat-option>
-                      }
-                    </mat-autocomplete>
-                  </mat-form-field>
-                  <mat-form-field class="form-field">
-                    <mat-label>Disk interface</mat-label>
-                    <mat-select formControlName="hda_disk_interface">
-                      @for (interface of diskInterfaces; track interface) {
-                      <mat-option [value]="interface">
-                        {{ interface }}
-                      </mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                </div>
+            </mat-tab>
+            <mat-tab label="HDD">
+              <div class="hdd-create-section">
+                <button mat-raised-button color="primary" (click)="openQemuImageCreator()" class="create-button">
+                  Create Qemu image
+                </button>
               </div>
-
-              <!-- HDB - Primary Slave -->
-              <div class="disk-card">
-                <div class="disk-card__header">
-                  <h3 class="disk-card__title">HDB</h3>
-                  <span class="disk-card__badge">Primary Slave</span>
-                </div>
-                <div class="disk-card__content">
-                  <mat-form-field class="form-field">
-                    <mat-label>Disk image</mat-label>
-                    <input matInput type="text" formControlName="hdb_disk_image" [matAutocomplete]="hdbAuto" (input)="onHdbImageInput($event)" (focus)="filteredImages = qemuImages" />
-                    <mat-autocomplete #hdbAuto="matAutocomplete">
-                      @for (image of filteredImages; track image.filename) {
-                      <mat-option [value]="image.filename">
-                        {{ image.filename }}
-                      </mat-option>
-                      }
-                    </mat-autocomplete>
-                  </mat-form-field>
-                  <mat-form-field class="form-field">
-                    <mat-label>Disk interface</mat-label>
-                    <mat-select formControlName="hdb_disk_interface">
-                      @for (interface of diskInterfaces; track interface) {
-                      <mat-option [value]="interface">
-                        {{ interface }}
-                      </mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-              </div>
-
-              <!-- HDC - Secondary Master -->
-              <div class="disk-card">
-                <div class="disk-card__header">
-                  <h3 class="disk-card__title">HDC</h3>
-                  <span class="disk-card__badge">Secondary Master</span>
-                </div>
-                <div class="disk-card__content">
-                  <mat-form-field class="form-field">
-                    <mat-label>Disk image</mat-label>
-                    <input matInput type="text" formControlName="hdc_disk_image" [matAutocomplete]="hdcAuto" (input)="onHdcImageInput($event)" (focus)="filteredImages = qemuImages" />
-                    <mat-autocomplete #hdcAuto="matAutocomplete">
-                      @for (image of filteredImages; track image.filename) {
-                      <mat-option [value]="image.filename">
-                        {{ image.filename }}
-                      </mat-option>
-                      }
-                    </mat-autocomplete>
-                  </mat-form-field>
-                  <mat-form-field class="form-field">
-                    <mat-label>Disk interface</mat-label>
-                    <mat-select formControlName="hdc_disk_interface">
-                      @for (interface of diskInterfaces; track interface) {
-                      <mat-option [value]="interface">
-                        {{ interface }}
-                      </mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-              </div>
-
-              <!-- HDD - Secondary Slave -->
-              <div class="disk-card">
-                <div class="disk-card__header">
-                  <h3 class="disk-card__title">HDD</h3>
-                  <span class="disk-card__badge">Secondary Slave</span>
-                </div>
-                <div class="disk-card__content">
-                  <mat-form-field class="form-field">
-                    <mat-label>Disk image</mat-label>
-                    <input matInput type="text" formControlName="hdd_disk_image" [matAutocomplete]="hddAuto" (input)="onHddImageInput($event)" (focus)="filteredImages = qemuImages" />
-                    <mat-autocomplete #hddAuto="matAutocomplete">
-                      @for (image of filteredImages; track image.filename) {
-                      <mat-option [value]="image.filename">
-                        {{ image.filename }}
-                      </mat-option>
-                      }
-                    </mat-autocomplete>
-                  </mat-form-field>
-                  <mat-form-field class="form-field">
-                    <mat-label>Disk interface</mat-label>
-                    <mat-select formControlName="hdd_disk_interface">
-                      @for (interface of diskInterfaces; track interface) {
-                      <mat-option [value]="interface">
-                        {{ interface }}
-                      </mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
-                </div>
-              </div>
-            </div>
-          </mat-tab>
-          <mat-tab label="CD/DVD">
-            <div class="file-upload-section">
-              <button mat-raised-button color="primary" (click)="filecdrom.click()" class="file-button">Browse</button>
-              <input type="file" #filecdrom class="nonvisible" (change)="uploadCdromImageFile($event)" />
-              <mat-form-field class="file-name-form-field">
-                <mat-label>Image</mat-label>
-                <input matInput type="text" formControlName="cdrom_image" />
-              </mat-form-field>
-              <p class="file-upload-hint">Note: File upload is not implemented in Web UI. Please ensure the ISO file exists on the GNS3 server.</p>
-            </div>
-          </mat-tab>
-          <mat-tab label="Network">
-            <form [formGroup]="networkSettingsForm">
-              <mat-form-field class="form-field">
-                <mat-label>Number of adapters</mat-label>
-                <input matInput min="0" type="number" formControlName="adapters" />
-              </mat-form-field>
-              <mat-form-field class="form-field">
-                <mat-label>Base MAC</mat-label>
-                <input matInput formControlName="mac_address" type="text" />
-              </mat-form-field>
-              <mat-form-field class="form-field">
-                <mat-label>Type</mat-label>
-                <mat-select formControlName="adapter_type">
-                  @for (type of networkTypes; track type.value) {
-                  <mat-option [value]="type.value"> {{ type.name }} ({{ type.value }}) </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
-              <div class="custom-adapters-section">
-                <button mat-raised-button color="primary" (click)="openCustomAdaptersDialog()">Configurator Custom Adapters</button>
-              </div>
-              <mat-checkbox formControlName="replicate_network_connection_state">
-                Replicate network connection state
-              </mat-checkbox>
-            </form>
-          </mat-tab>
-          <mat-tab label="Advanced">
-            <div class="card-stack">
-              <!-- Linux boot specific settings -->
-              <div class="disk-card">
-                <div class="disk-card__header">
-                  <h3 class="disk-card__title">Linux boot specific settings</h3>
-                </div>
-                <div class="disk-card__content">
-                  <div class="file-upload-section">
-                    <button mat-raised-button color="primary" (click)="fileinitrd.click()" class="file-button">
-                      Browse
-                    </button>
-                    <input type="file" #fileinitrd class="nonvisible" (change)="uploadInitrdFile($event)" />
-                    <mat-form-field class="file-name-form-field">
-                      <mat-label>Initial RAM disk (initrd)</mat-label>
-                      <input matInput type="text" formControlName="initrd" />
-                    </mat-form-field>
-                    <p class="file-upload-hint">Note: File upload is not implemented in Web UI. Please ensure the file exists on the GNS3 server.</p>
+              <div class="disk-cards-grid">
+                <!-- HDA - Primary Master -->
+                <div class="disk-card">
+                  <div class="disk-card__header">
+                    <h3 class="disk-card__title">HDA</h3>
+                    <span class="disk-card__badge">Primary Master</span>
                   </div>
-                  <div class="file-upload-section">
-                    <button mat-raised-button color="primary" (click)="filekernelimage.click()" class="file-button">
-                      Browse
-                    </button>
-                    <input type="file" #filekernelimage class="nonvisible" (change)="uploadKernelImageFile($event)" />
-                    <mat-form-field class="file-name-form-field">
-                      <mat-label>Kernel image</mat-label>
-                      <input matInput type="text" formControlName="kernel_image" />
+                  <div class="disk-card__content">
+                    <mat-form-field class="form-field">
+                      <mat-label>Disk image</mat-label>
+                      <input
+                        matInput
+                        type="text"
+                        formControlName="hda_disk_image"
+                        [matAutocomplete]="hdaAuto"
+                        (input)="onHdaImageInput($event)"
+                        (focus)="filteredImages = qemuImages"
+                      />
+                      <mat-autocomplete #hdaAuto="matAutocomplete">
+                        @for (image of filteredImages; track image.filename) {
+                        <mat-option [value]="image.filename">
+                          {{ image.filename }}
+                        </mat-option>
+                        }
+                      </mat-autocomplete>
                     </mat-form-field>
-                    <p class="file-upload-hint">Note: File upload is not implemented in Web UI. Please ensure the file exists on the GNS3 server.</p>
+                    <mat-form-field class="form-field">
+                      <mat-label>Disk interface</mat-label>
+                      <mat-select formControlName="hda_disk_interface">
+                        @for (interface of diskInterfaces; track interface) {
+                        <mat-option [value]="interface">
+                          {{ interface }}
+                        </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
                   </div>
-                  <mat-form-field class="form-field">
-                    <mat-label>Kernel command line</mat-label>
-                    <input matInput type="text" formControlName="kernel_command_line" />
-                  </mat-form-field>
                 </div>
-              </div>
 
-              <!-- Bios -->
-              <div class="disk-card">
-                <div class="disk-card__header">
-                  <h3 class="disk-card__title">Bios</h3>
-                </div>
-                <div class="disk-card__content">
-                  <div class="file-upload-section">
-                    <button mat-raised-button color="primary" (click)="filebios.click()" class="file-button">
-                      Browse
-                    </button>
-                    <input type="file" #filebios class="nonvisible" (change)="uploadBiosFile($event)" />
-                    <mat-form-field class="file-name-form-field">
-                      <mat-label>Bios image</mat-label>
-                      <input matInput type="text" formControlName="bios_image" />
+                <!-- HDB - Primary Slave -->
+                <div class="disk-card">
+                  <div class="disk-card__header">
+                    <h3 class="disk-card__title">HDB</h3>
+                    <span class="disk-card__badge">Primary Slave</span>
+                  </div>
+                  <div class="disk-card__content">
+                    <mat-form-field class="form-field">
+                      <mat-label>Disk image</mat-label>
+                      <input
+                        matInput
+                        type="text"
+                        formControlName="hdb_disk_image"
+                        [matAutocomplete]="hdbAuto"
+                        (input)="onHdbImageInput($event)"
+                        (focus)="filteredImages = qemuImages"
+                      />
+                      <mat-autocomplete #hdbAuto="matAutocomplete">
+                        @for (image of filteredImages; track image.filename) {
+                        <mat-option [value]="image.filename">
+                          {{ image.filename }}
+                        </mat-option>
+                        }
+                      </mat-autocomplete>
                     </mat-form-field>
-                    <p class="file-upload-hint">Note: File upload is not implemented in Web UI. Please ensure the file exists on the GNS3 server.</p>
+                    <mat-form-field class="form-field">
+                      <mat-label>Disk interface</mat-label>
+                      <mat-select formControlName="hdb_disk_interface">
+                        @for (interface of diskInterfaces; track interface) {
+                        <mat-option [value]="interface">
+                          {{ interface }}
+                        </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <!-- HDC - Secondary Master -->
+                <div class="disk-card">
+                  <div class="disk-card__header">
+                    <h3 class="disk-card__title">HDC</h3>
+                    <span class="disk-card__badge">Secondary Master</span>
+                  </div>
+                  <div class="disk-card__content">
+                    <mat-form-field class="form-field">
+                      <mat-label>Disk image</mat-label>
+                      <input
+                        matInput
+                        type="text"
+                        formControlName="hdc_disk_image"
+                        [matAutocomplete]="hdcAuto"
+                        (input)="onHdcImageInput($event)"
+                        (focus)="filteredImages = qemuImages"
+                      />
+                      <mat-autocomplete #hdcAuto="matAutocomplete">
+                        @for (image of filteredImages; track image.filename) {
+                        <mat-option [value]="image.filename">
+                          {{ image.filename }}
+                        </mat-option>
+                        }
+                      </mat-autocomplete>
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                      <mat-label>Disk interface</mat-label>
+                      <mat-select formControlName="hdc_disk_interface">
+                        @for (interface of diskInterfaces; track interface) {
+                        <mat-option [value]="interface">
+                          {{ interface }}
+                        </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <!-- HDD - Secondary Slave -->
+                <div class="disk-card">
+                  <div class="disk-card__header">
+                    <h3 class="disk-card__title">HDD</h3>
+                    <span class="disk-card__badge">Secondary Slave</span>
+                  </div>
+                  <div class="disk-card__content">
+                    <mat-form-field class="form-field">
+                      <mat-label>Disk image</mat-label>
+                      <input
+                        matInput
+                        type="text"
+                        formControlName="hdd_disk_image"
+                        [matAutocomplete]="hddAuto"
+                        (input)="onHddImageInput($event)"
+                        (focus)="filteredImages = qemuImages"
+                      />
+                      <mat-autocomplete #hddAuto="matAutocomplete">
+                        @for (image of filteredImages; track image.filename) {
+                        <mat-option [value]="image.filename">
+                          {{ image.filename }}
+                        </mat-option>
+                        }
+                      </mat-autocomplete>
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                      <mat-label>Disk interface</mat-label>
+                      <mat-select formControlName="hdd_disk_interface">
+                        @for (interface of diskInterfaces; track interface) {
+                        <mat-option [value]="interface">
+                          {{ interface }}
+                        </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
                   </div>
                 </div>
               </div>
-
-              <!-- Optimization -->
-              <div class="disk-card">
-                <div class="disk-card__header">
-                  <h3 class="disk-card__title">Optimization</h3>
+            </mat-tab>
+            <mat-tab label="CD/DVD">
+              <div class="file-upload-section">
+                <button mat-raised-button color="primary" (click)="filecdrom.click()" class="file-button">
+                  Browse
+                </button>
+                <input type="file" #filecdrom class="nonvisible" (change)="uploadCdromImageFile($event)" />
+                <mat-form-field class="file-name-form-field">
+                  <mat-label>Image</mat-label>
+                  <input matInput type="text" formControlName="cdrom_image" />
+                </mat-form-field>
+                <p class="file-upload-hint">
+                  Note: File upload is not implemented in Web UI. Please ensure the ISO file exists on the GNS3 server.
+                </p>
+              </div>
+            </mat-tab>
+            <mat-tab label="Network">
+              <form [formGroup]="networkSettingsForm">
+                <mat-form-field class="form-field">
+                  <mat-label>Number of adapters</mat-label>
+                  <input matInput min="0" type="number" formControlName="adapters" />
+                </mat-form-field>
+                <mat-form-field class="form-field">
+                  <mat-label>Base MAC</mat-label>
+                  <input matInput formControlName="mac_address" type="text" />
+                </mat-form-field>
+                <mat-form-field class="form-field">
+                  <mat-label>Type</mat-label>
+                  <mat-select formControlName="adapter_type">
+                    @for (type of networkTypes; track type.value) {
+                    <mat-option [value]="type.value"> {{ type.name }} ({{ type.value }}) </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+                <div class="custom-adapters-section">
+                  <button mat-raised-button color="primary" (click)="openCustomAdaptersDialog()">
+                    Configurator Custom Adapters
+                  </button>
                 </div>
-                <div class="disk-card__content">
-                  <mat-checkbox formControlName="activateCpuThrottling"> Activate CPU throttling </mat-checkbox>
-                  @if (generalSettingsForm.controls.activateCpuThrottling.value) {
-                  <mat-form-field class="form-field">
-                    <mat-label>Percentage of CPU allowed</mat-label>
-                    <input matInput type="number" formControlName="cpu_throttling" />
-                  </mat-form-field>
-                  }
-                  <mat-form-field class="form-field">
-                    <mat-label>Process priority</mat-label>
-                    <mat-select formControlName="process_priority">
-                      @for (priority of priorities; track priority) {
-                      <mat-option [value]="priority">
-                        {{ priority }}
-                      </mat-option>
-                      }
-                    </mat-select>
-                  </mat-form-field>
+                <mat-checkbox formControlName="replicate_network_connection_state">
+                  Replicate network connection state
+                </mat-checkbox>
+              </form>
+            </mat-tab>
+            <mat-tab label="Advanced">
+              <div class="card-stack">
+                <!-- Linux boot specific settings -->
+                <div class="disk-card">
+                  <div class="disk-card__header">
+                    <h3 class="disk-card__title">Linux boot specific settings</h3>
+                  </div>
+                  <div class="disk-card__content">
+                    <div class="file-upload-section">
+                      <button mat-raised-button color="primary" (click)="fileinitrd.click()" class="file-button">
+                        Browse
+                      </button>
+                      <input type="file" #fileinitrd class="nonvisible" (change)="uploadInitrdFile($event)" />
+                      <mat-form-field class="file-name-form-field">
+                        <mat-label>Initial RAM disk (initrd)</mat-label>
+                        <input matInput type="text" formControlName="initrd" />
+                      </mat-form-field>
+                      <p class="file-upload-hint">
+                        Note: File upload is not implemented in Web UI. Please ensure the file exists on the GNS3
+                        server.
+                      </p>
+                    </div>
+                    <div class="file-upload-section">
+                      <button mat-raised-button color="primary" (click)="filekernelimage.click()" class="file-button">
+                        Browse
+                      </button>
+                      <input type="file" #filekernelimage class="nonvisible" (change)="uploadKernelImageFile($event)" />
+                      <mat-form-field class="file-name-form-field">
+                        <mat-label>Kernel image</mat-label>
+                        <input matInput type="text" formControlName="kernel_image" />
+                      </mat-form-field>
+                      <p class="file-upload-hint">
+                        Note: File upload is not implemented in Web UI. Please ensure the file exists on the GNS3
+                        server.
+                      </p>
+                    </div>
+                    <mat-form-field class="form-field">
+                      <mat-label>Kernel command line</mat-label>
+                      <input matInput type="text" formControlName="kernel_command_line" />
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <!-- Bios -->
+                <div class="disk-card">
+                  <div class="disk-card__header">
+                    <h3 class="disk-card__title">Bios</h3>
+                  </div>
+                  <div class="disk-card__content">
+                    <div class="file-upload-section">
+                      <button mat-raised-button color="primary" (click)="filebios.click()" class="file-button">
+                        Browse
+                      </button>
+                      <input type="file" #filebios class="nonvisible" (change)="uploadBiosFile($event)" />
+                      <mat-form-field class="file-name-form-field">
+                        <mat-label>Bios image</mat-label>
+                        <input matInput type="text" formControlName="bios_image" />
+                      </mat-form-field>
+                      <p class="file-upload-hint">
+                        Note: File upload is not implemented in Web UI. Please ensure the file exists on the GNS3
+                        server.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Optimization -->
+                <div class="disk-card">
+                  <div class="disk-card__header">
+                    <h3 class="disk-card__title">Optimization</h3>
+                  </div>
+                  <div class="disk-card__content">
+                    <mat-checkbox formControlName="activateCpuThrottling"> Activate CPU throttling </mat-checkbox>
+                    @if (generalSettingsForm.controls.activateCpuThrottling.value) {
+                    <mat-form-field class="form-field">
+                      <mat-label>Percentage of CPU allowed</mat-label>
+                      <input matInput type="number" formControlName="cpu_throttling" />
+                    </mat-form-field>
+                    }
+                    <mat-form-field class="form-field">
+                      <mat-label>Process priority</mat-label>
+                      <mat-select formControlName="process_priority">
+                        @for (priority of priorities; track priority) {
+                        <mat-option [value]="priority">
+                          {{ priority }}
+                        </mat-option>
+                        }
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+                </div>
+
+                <!-- Additional settings -->
+                <div class="disk-card">
+                  <div class="disk-card__header">
+                    <h3 class="disk-card__title">Additional settings</h3>
+                  </div>
+                  <div class="disk-card__content">
+                    <mat-form-field class="form-field">
+                      <mat-label>Qemu binary path</mat-label>
+                      <input matInput type="text" formControlName="qemu_path" />
+                    </mat-form-field>
+                    <mat-form-field class="form-field">
+                      <mat-label>Options</mat-label>
+                      <input matInput type="text" formControlName="options" />
+                    </mat-form-field>
+                    <mat-checkbox formControlName="tpm"> Enable the Trusted Platform Module (TPM) </mat-checkbox>
+                    <mat-checkbox formControlName="uefi"> Enable the UEFI boot mode </mat-checkbox>
+                  </div>
                 </div>
               </div>
-
-              <!-- Additional settings -->
-              <div class="disk-card">
-                <div class="disk-card__header">
-                  <h3 class="disk-card__title">Additional settings</h3>
-                </div>
-                <div class="disk-card__content">
-                  <mat-form-field class="form-field">
-                    <mat-label>Qemu binary path</mat-label>
-                    <input matInput type="text" formControlName="qemu_path" />
-                  </mat-form-field>
-                  <mat-form-field class="form-field">
-                    <mat-label>Options</mat-label>
-                    <input matInput type="text" formControlName="options" />
-                  </mat-form-field>
-                  <mat-checkbox formControlName="tpm"> Enable the Trusted Platform Module (TPM) </mat-checkbox>
-                  <mat-checkbox formControlName="uefi"> Enable the UEFI boot mode </mat-checkbox>
-                </div>
-              </div>
-            </div>
-          </mat-tab>
-          <mat-tab label="Usage">
-            <mat-form-field class="form-field">
-              <mat-label>Usage</mat-label>
-              <textarea matInput formControlName="usage"></textarea>
-            </mat-form-field>
-          </mat-tab>
-        </mat-tab-group>
+            </mat-tab>
+            <mat-tab label="Usage">
+              <mat-form-field class="form-field">
+                <mat-label>Usage</mat-label>
+                <textarea matInput formControlName="usage"></textarea>
+              </mat-form-field>
+            </mat-tab>
+          </mat-tab-group>
         </form>
         }
       </mat-card>

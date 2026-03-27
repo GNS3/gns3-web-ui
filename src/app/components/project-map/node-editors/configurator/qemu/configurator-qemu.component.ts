@@ -251,7 +251,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
 
   filterImages(event: Event): QemuImage[] {
     const filterValue = (event.target as HTMLInputElement).value.toLowerCase();
-    return this.qemuImages.filter(image => image.filename.toLowerCase().includes(filterValue));
+    return this.qemuImages.filter((image) => image.filename.toLowerCase().includes(filterValue));
   }
 
   onHdaImageInput(event: Event) {

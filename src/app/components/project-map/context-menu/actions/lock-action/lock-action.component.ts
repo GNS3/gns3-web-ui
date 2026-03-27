@@ -51,7 +51,7 @@ export class LockActionComponent implements OnChanges {
 
     // Only show confirmation for multiple items
     if (totalItems > 1) {
-      const isLocking = !nodes.every(n => n.locked) || !drawings.every(d => d.locked);
+      const isLocking = !nodes.every((n) => n.locked) || !drawings.every((d) => d.locked);
       const action = isLocking ? 'lock' : 'unlock';
 
       const dialogRef = this.dialog.open(LockConfirmDialogComponent, {
@@ -59,11 +59,11 @@ export class LockActionComponent implements OnChanges {
         data: {
           title: `Confirm ${action === 'lock' ? 'Lock' : 'Unlock'} All`,
           message: `Are you sure you want to ${action} ${totalItems} item${totalItems > 1 ? 's' : ''}?`,
-          action: action
-        }
+          action: action,
+        },
       });
 
-      dialogRef.afterClosed().subscribe(confirmed => {
+      dialogRef.afterClosed().subscribe((confirmed) => {
         if (confirmed) {
           this.performLockUnlock();
         }
@@ -102,7 +102,9 @@ export class LockActionComponent implements OnChanges {
     </div>
     <div mat-dialog-actions align="end">
       <button mat-button (click)="dialogRef.close(false)">Cancel</button>
-      <button mat-raised-button color="primary" (click)="dialogRef.close(true)">{{ data.action === 'lock' ? 'Lock' : 'Unlock' }}</button>
+      <button mat-raised-button color="primary" (click)="dialogRef.close(true)">
+        {{ data.action === 'lock' ? 'Lock' : 'Unlock' }}
+      </button>
     </div>
   `,
   imports: [MatDialogModule, MatButtonModule],

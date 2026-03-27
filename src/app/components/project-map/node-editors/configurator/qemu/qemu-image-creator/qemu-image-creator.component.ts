@@ -69,13 +69,13 @@ export class QemuImageCreatorComponent {
     // Setup autocomplete filtering
     this.filteredDisks$ = this.inputForm.get('disk_name')!.valueChanges.pipe(
       startWith(''),
-      map(value => this._filterDisks(value || ''))
+      map((value) => this._filterDisks(value || ''))
     );
   }
 
   private _filterDisks(value: string): string[] {
     const filterValue = value.toLowerCase();
-    return this.diskOptions.filter(disk => disk.toLowerCase().includes(filterValue));
+    return this.diskOptions.filter((disk) => disk.toLowerCase().includes(filterValue));
   }
 
   onSaveClick() {
@@ -89,21 +89,17 @@ export class QemuImageCreatorComponent {
       if (formValue.preallocation) options.preallocation = formValue.preallocation;
       if (formValue.lazy_refcounts) options.lazy_refcounts = formValue.lazy_refcounts;
 
-      this.qemuService.createDiskImage(
-        this.controller,
-        this.projectId,
-        this.nodeId,
-        formValue.disk_name,
-        options
-      ).subscribe({
-        next: () => {
-          this.dialogRef.close();
-        },
-        error: (error) => {
-          const errorMessage = error.error?.detail || error.message || 'Failed to create image';
-          this.toasterService.error(errorMessage);
-        },
-      });
+      this.qemuService
+        .createDiskImage(this.controller, this.projectId, this.nodeId, formValue.disk_name, options)
+        .subscribe({
+          next: () => {
+            this.dialogRef.close();
+          },
+          error: (error) => {
+            const errorMessage = error.error?.detail || error.message || 'Failed to create image';
+            this.toasterService.error(errorMessage);
+          },
+        });
     } else {
       const missingFields: string[] = [];
       if (!this.inputForm.get('disk_name')?.value) missingFields.push('Disk name');

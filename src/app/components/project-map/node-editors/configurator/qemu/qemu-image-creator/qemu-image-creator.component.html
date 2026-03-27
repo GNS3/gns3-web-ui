@@ -4,13 +4,19 @@
   <div class="content">
     <div class="default-content">
       <p class="info-note">
-        Note: The created image will be saved in the project's files directory and cannot be mounted via Web UI at this time.
+        Note: The created image will be saved in the project's files directory and cannot be mounted via Web UI at this
+        time.
       </p>
       <mat-card class="matCard">
         <form [formGroup]="inputForm">
           <mat-form-field class="form-field">
             <mat-label>Disk name *</mat-label>
-            <input matInput formControlName="disk_name" [matAutocomplete]="auto" placeholder="Type to search or enter" />
+            <input
+              matInput
+              formControlName="disk_name"
+              [matAutocomplete]="auto"
+              placeholder="Type to search or enter"
+            />
             <mat-autocomplete #auto="matAutocomplete">
               @for (disk of filteredDisks$ | async; track disk) {
               <mat-option [value]="disk">{{ disk }}</mat-option>

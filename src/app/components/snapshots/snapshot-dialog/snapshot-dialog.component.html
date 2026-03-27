@@ -26,17 +26,29 @@
 
       <ng-container matColumnDef="created_at">
         <mat-header-cell *matHeaderCellDef class="snapshot-dialog__column-date">Date</mat-header-cell>
-        <mat-cell *matCellDef="let row" class="snapshot-dialog__column-date">{{ row.created_at | datefilter }}</mat-cell>
+        <mat-cell *matCellDef="let row" class="snapshot-dialog__column-date">{{
+          row.created_at | datefilter
+        }}</mat-cell>
       </ng-container>
 
       <ng-container matColumnDef="actions">
         <mat-header-cell *matHeaderCellDef class="snapshot-dialog__column-actions">Actions</mat-header-cell>
         <mat-cell *matCellDef="let row" class="snapshot-dialog__column-actions">
           <div class="snapshot-dialog__actions">
-            <button mat-icon-button matTooltip="Restore snapshot" matTooltipClass="custom-tooltip" (click)="restoreSnapshot(row)">
+            <button
+              mat-icon-button
+              matTooltip="Restore snapshot"
+              matTooltipClass="custom-tooltip"
+              (click)="restoreSnapshot(row)"
+            >
               <mat-icon>restore</mat-icon>
             </button>
-            <button mat-icon-button matTooltip="Delete snapshot" matTooltipClass="custom-tooltip" (click)="deleteSnapshot(row)">
+            <button
+              mat-icon-button
+              matTooltip="Delete snapshot"
+              matTooltipClass="custom-tooltip"
+              (click)="deleteSnapshot(row)"
+            >
               <mat-icon>delete</mat-icon>
             </button>
           </div>
@@ -48,7 +60,7 @@
     </mat-table>
 
     @if (snapshots().length === 0) {
-      <div class="snapshot-dialog__empty">No snapshots available</div>
+    <div class="snapshot-dialog__empty">No snapshots available</div>
     }
   </div>
 </div>

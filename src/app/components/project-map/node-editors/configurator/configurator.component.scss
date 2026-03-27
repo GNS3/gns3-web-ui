@@ -11,6 +11,9 @@
  * 3. Ensure panelClass: 'configurator-dialog-panel' is used when opening dialog
  *
  * This file is kept for backward compatibility during migration.
+ *
+ * IOS-specific styles have been moved to configurator-ios.component.scss
+ * using BEM naming convention (.ios-configurator__*).
  */
 
 table {
@@ -22,10 +25,6 @@ table {
 }
 
 .configButton {
-  width: 100%;
-}
-
-.select {
   width: 100%;
 }
 
@@ -55,37 +54,5 @@ mat-radio-button {
 }
 
 .tags-field {
-  width: 100%;
-}
-
-// Slots section styling
-.slots-section {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.slots-group {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.slots-title {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--mat-sys-on-surface-variant);
-  margin: 0;
-  padding: 0 0 4px 0;
-  border-bottom: 1px solid var(--mat-sys-outline-variant);
-}
-
-.slots-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 12px;
-}
-
-.slot-field {
   width: 100%;
 }

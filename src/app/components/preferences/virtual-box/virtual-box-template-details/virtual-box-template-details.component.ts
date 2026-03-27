@@ -18,7 +18,11 @@ import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { VirtualBoxConfigurationService } from '@services/virtual-box-configuration.service';
 import { VirtualBoxService } from '@services/virtual-box.service';
-import { CustomAdaptersComponent, CustomAdaptersDialogData, CustomAdaptersDialogResult } from '../../common/custom-adapters/custom-adapters.component';
+import {
+  CustomAdaptersComponent,
+  CustomAdaptersDialogData,
+  CustomAdaptersDialogResult,
+} from '../../common/custom-adapters/custom-adapters.component';
 import { SymbolsMenuComponent } from '@components/preferences/common/symbols-menu/symbols-menu.component';
 
 @Component({
@@ -151,7 +155,7 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     const adaptersForDialog: CustomAdapter[] = [];
 
     for (let i = 0; i < adapterCount; i++) {
-      const customAdapter = serverCustomAdapters.find(adapter => adapter.adapter_number === i);
+      const customAdapter = serverCustomAdapters.find((adapter) => adapter.adapter_number === i);
 
       if (customAdapter) {
         adaptersForDialog.push({
@@ -240,20 +244,18 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
 
     // Custom adapters are already managed through the dialog (incremental save)
 
-    this.virtualBoxService
-      .saveTemplate(this.controller, this.virtualBoxTemplate)
-      .subscribe({
-        next: (virtualBoxTemplate: VirtualBoxTemplate) => {
-          this.toasterService.success('Changes saved');
-          // Update local template with server response to reflect changes immediately
-          this.virtualBoxTemplate = virtualBoxTemplate;
-          this.initFormFromTemplate();
-          this.cd.markForCheck();
-        },
-        error: (error) => {
-          this.toasterService.error('Failed to save template: ' + (error.message || 'Unknown error'));
-        }
-      });
+    this.virtualBoxService.saveTemplate(this.controller, this.virtualBoxTemplate).subscribe({
+      next: (virtualBoxTemplate: VirtualBoxTemplate) => {
+        this.toasterService.success('Changes saved');
+        // Update local template with server response to reflect changes immediately
+        this.virtualBoxTemplate = virtualBoxTemplate;
+        this.initFormFromTemplate();
+        this.cd.markForCheck();
+      },
+      error: (error) => {
+        this.toasterService.error('Failed to save template: ' + (error.message || 'Unknown error'));
+      },
+    });
   }
 
   chooseSymbol() {

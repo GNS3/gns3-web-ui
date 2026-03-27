@@ -25,7 +25,11 @@ import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 import { VirtualBoxConfigurationService } from '@services/virtual-box-configuration.service';
-import { CustomAdaptersComponent, CustomAdaptersDialogData, CustomAdaptersDialogResult } from '@components/preferences/common/custom-adapters/custom-adapters.component';
+import {
+  CustomAdaptersComponent,
+  CustomAdaptersDialogData,
+  CustomAdaptersDialogResult,
+} from '@components/preferences/common/custom-adapters/custom-adapters.component';
 
 @Component({
   standalone: true,

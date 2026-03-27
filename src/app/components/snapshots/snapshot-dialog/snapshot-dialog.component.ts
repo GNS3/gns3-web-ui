@@ -105,19 +105,21 @@ export class SnapshotDialogComponent {
       if (!result) return;
 
       const progress = this.progressDialogService.open();
-      const subscription = this.snapshotService.restore(this.controller, this.project.project_id, snapshot.snapshot_id).subscribe({
-        next: () => {
-          this.toaster.success(`Snapshot "${snapshot.name}" has been restored.`);
-          progress.close();
-          this.cd.markForCheck();
-        },
-        error: (err) => {
-          progress.close();
-          const errorMessage = err.error?.message || err.message || 'Unknown error';
-          this.toaster.error(`Failed to restore snapshot: ${errorMessage}`);
-          this.cd.markForCheck();
-        },
-      });
+      const subscription = this.snapshotService
+        .restore(this.controller, this.project.project_id, snapshot.snapshot_id)
+        .subscribe({
+          next: () => {
+            this.toaster.success(`Snapshot "${snapshot.name}" has been restored.`);
+            progress.close();
+            this.cd.markForCheck();
+          },
+          error: (err) => {
+            progress.close();
+            const errorMessage = err.error?.message || err.message || 'Unknown error';
+            this.toaster.error(`Failed to restore snapshot: ${errorMessage}`);
+            this.cd.markForCheck();
+          },
+        });
 
       progress.afterClosed().subscribe((result) => {
         if (result === ProgressDialogComponent.CANCELLED) {
