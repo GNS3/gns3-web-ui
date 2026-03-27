@@ -47,7 +47,7 @@
                             {
                                 "glob": "**/*.woff2",
                                 "input": "node_modules/material-symbols",
-                                "output": "."
+                                "output": "assets/fonts/material-symbols"
                             }
                         ],
                         "styles": [
