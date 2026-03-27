@@ -119,9 +119,6 @@
   (click)="openAIChat()"
 >
   <span class="ai-icon">AI</span>
-  @if (isAIChatOpen && isAIMinimized) {
-  <span class="ai-minimize-indicator"></span>
-  }
 </button>
 <app-drawing-added
   [controller]="controller()"
