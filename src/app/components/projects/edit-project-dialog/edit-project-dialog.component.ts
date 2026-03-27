@@ -138,7 +138,7 @@ export class EditProjectDialogComponent implements OnInit {
 
       this.projectService.update(this.controller, this.project).subscribe((project: Project) => {
         this.projectService
-          .postReadmeFile(this.controller, this.project.project_id, this.editor().markdown)
+          .postReadmeFile(this.controller, this.project.project_id, this.editor().markdown())
           .subscribe((response) => {
             this.toasterService.success(`Project ${project.name} updated.`);
             this.onNoClick();
