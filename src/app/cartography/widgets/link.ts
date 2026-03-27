@@ -186,32 +186,41 @@ export class LinkWidget implements Widget {
               select(this).attr('cursor', 'grabbing');
             })
             .on('drag', function(event: D3DragEvent<SVGPathElement, MapLink, MapLink>, l: MapLink) {
-              // Use mouse position directly for curve shaping
-              const mousePos: [number, number] = [event.x, event.y];
+              // Get mouse position from sourceEvent (native mouse event)
+              const sourceEvent = event.sourceEvent;
+              const svgElement = (sourceEvent.target as SVGElement).ownerSVGElement;
+              const point = svgElement.createSVGPoint();
+              point.x = sourceEvent.clientX;
+              point.y = sourceEvent.clientY;
+              const ctm = svgElement.getScreenCTM();
+              if (ctm) {
+                const svgPoint = point.matrixTransform(ctm.inverse());
+                // svgPoint.x, svgPoint.y is in SVG coordinate system
 
-              // Update path in real-time using freeform bezier with mouse influence
-              const sourceCenter: [number, number] = [sourceCenterX, sourceCenterY];
-              const targetCenter: [number, number] = [targetCenterX, targetCenterY];
-              const sourceOrientation = StyleTranslator.getContinuousOrientation(sourceCenter, targetCenter);
-              const targetOrientation = StyleTranslator.getContinuousOrientation(targetCenter, sourceCenter);
-              const newPath = StyleTranslator.getFreeformBezierPath(
-                sourceCenter,
-                targetCenter,
-                sourceOrientation,
-                targetOrientation,
-                mousePos
-              );
-              select(this).attr('d', newPath);
+                // Update path in real-time using freeform bezier
+                const sourceCenter: [number, number] = [sourceCenterX, sourceCenterY];
+                const targetCenter: [number, number] = [targetCenterX, targetCenterY];
+                const sourceOrientation = StyleTranslator.getContinuousOrientation(sourceCenter, targetCenter);
+                const targetOrientation = StyleTranslator.getContinuousOrientation(targetCenter, sourceCenter);
+                const newPath = StyleTranslator.getFreeformBezierPath(
+                  sourceCenter,
+                  targetCenter,
+                  sourceOrientation,
+                  targetOrientation,
+                  [svgPoint.x, svgPoint.y]
+                );
+                select(this).attr('d', newPath);
 
-              // Store control_offset for final save (relative to midpoint)
-              const offsetX = event.x - midX;
-              const offsetY = event.y - midY;
+                // Store control_offset for final save (relative to midpoint)
+                const offsetX = svgPoint.x - midX;
+                const offsetY = svgPoint.y - midY;
 
-              if (!l.link_style) {
-                l.link_style = {};
+                if (!l.link_style) {
+                  l.link_style = {};
+                }
+                l.link_style.link_type = 'freeform';
+                l.link_style.control_offset = [offsetX, offsetY];
               }
-              l.link_style.link_type = 'freeform';
-              l.link_style.control_offset = [offsetX, offsetY];
             })
             .on('end', function(event: D3DragEvent<SVGPathElement, MapLink, MapLink>, l: MapLink) {
               select(this).attr('cursor', 'grab');
