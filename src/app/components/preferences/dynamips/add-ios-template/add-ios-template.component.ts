@@ -27,6 +27,7 @@ import { IosService } from '@services/ios.service';
 import { ControllerService } from '@services/controller.service';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
+import { ProgressService } from '../../../../common/progress/progress.service';
 
 @Component({
   selector: 'app-add-ios-template',
@@ -58,6 +59,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   private iosConfigurationService = inject(IosConfigurationService);
   private computeService = inject(ComputeService);
   private uploadServiceService = inject(UploadServiceService);
+  private progressService = inject(ProgressService);
   private snackBar = inject(MatSnackBar);
 
   readonly controller = signal<Controller | undefined>(undefined);
@@ -295,6 +297,28 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
       newWics[index] = value;
       return newWics;
     });
+  }
+
+  findIdlePC() {
+    const data = {
+      image: this.imageName(),
+      platform: this.platform(),
+      ram: +this.memory(),
+    };
+    this.progressService.activate();
+    this.iosService.findIdlePC(this.controller(), data).subscribe(
+      (result: any) => {
+        this.progressService.deactivate();
+        if (result.idlepc !== null) {
+          this.idlepc.set(result.idlepc);
+          this.toasterService.success(`Idle-PC value found: ${result.idlepc}`);
+        }
+      },
+      (error) => {
+        this.progressService.deactivate();
+        this.toasterService.error(`Error while finding an idle-PC value`);
+      }
+    );
   }
 
   ngOnDestroy() {
