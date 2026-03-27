@@ -74,19 +74,20 @@
 
 .delete-button {
   position: absolute;
-  top: calc(-4px * var(--zoom-level));
-  right: calc(-4px * var(--zoom-level));
-  width: calc(20px * var(--zoom-level));
-  height: calc(20px * var(--zoom-level));
+  top: calc(-2px * var(--zoom-level));
+  right: calc(-2px * var(--zoom-level));
+  width: calc(16px * var(--zoom-level));
+  height: calc(16px * var(--zoom-level));
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   background-color: transparent;
   transition: transform 0.2s ease;
+  z-index: 1;
 
   mat-icon {
-    font-size: calc(16px * var(--zoom-level));
+    font-size: calc(12px * var(--zoom-level));
     width: auto;
     height: auto;
   }
