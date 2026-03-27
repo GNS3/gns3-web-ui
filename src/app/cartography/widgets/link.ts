@@ -203,16 +203,15 @@ export class LinkWidget implements Widget {
               );
               select(this).attr('d', newPath);
 
-              // Calculate perpendicular distance from mouse to line for saving
+              // Store control_offset for final save (relative to midpoint)
               const offsetX = event.x - midX;
               const offsetY = event.y - midY;
-              const perpOffset = offsetX * perpX + offsetY * perpY;
 
-              // Store curviness for final save
               if (!l.link_style) {
                 l.link_style = {};
               }
-              l.link_style.bezier_curviness = perpOffset;
+              l.link_style.link_type = 'freeform';
+              l.link_style.control_offset = [offsetX, offsetY];
             })
             .on('end', function(event: D3DragEvent<SVGPathElement, MapLink, MapLink>, l: MapLink) {
               select(this).attr('cursor', 'grab');

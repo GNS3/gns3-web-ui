@@ -15,7 +15,8 @@ class EthernetLinkPath {
     public style: LinkStyle,
     public bezierVariation: number = 0,
     public sourceOrientation?: ConnectorOrientation,
-    public targetOrientation?: ConnectorOrientation
+    public targetOrientation?: ConnectorOrientation,
+    public controlOffset?: [number, number]
   ) {}
 }
 
@@ -58,6 +59,7 @@ export class EthernetLinkWidget implements Widget {
           ? StyleTranslator.normalizeStateMachineCurviness(link.link_style?.bezier_curviness)
           : StyleTranslator.normalizeBezierCurviness(link.link_style?.bezier_curviness),
       flowchart_roundness: StyleTranslator.normalizeFlowchartRoundness(link.link_style?.flowchart_roundness),
+      control_offset: link.link_style?.control_offset,
     };
 
     let sourcePoint = sourceCenter;
@@ -102,7 +104,8 @@ export class EthernetLinkWidget implements Widget {
       style,
       bezierVariation,
       sourceOrientation,
-      targetOrientation
+      targetOrientation,
+      style.control_offset
     );
   }
 
@@ -153,6 +156,16 @@ export class EthernetLinkWidget implements Widget {
         return datum.style.type === 0 ? 'stroke' : null;
       })
       .attr('d', (ethernet) => {
+        // Use freeform bezier if link_type is freeform and has control_offset
+        if (ethernet.style.link_type === 'freeform' && ethernet.controlOffset) {
+          return StyleTranslator.getFreeformBezierPath(
+            ethernet.source,
+            ethernet.target,
+            ethernet.sourceOrientation,
+            ethernet.targetOrientation,
+            ethernet.controlOffset
+          );
+        }
         return StyleTranslator.getLinkPath(ethernet.source, ethernet.target, ethernet.style, {
           bezierVariation: ethernet.bezierVariation,
           sourceOrientation: ethernet.sourceOrientation,

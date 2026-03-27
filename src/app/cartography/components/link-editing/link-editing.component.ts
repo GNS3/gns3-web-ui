@@ -33,14 +33,12 @@ export class LinkEditingComponent implements OnInit, OnDestroy {
     this.linkEditedSubscription = this.linksEventSource.edited.subscribe((mapLink: MapLink) => {
       this.linksWidget.redrawLink(svg, mapLink);
 
-      // Save curviness to server if controller is available
-      if (ctrl && mapLink.link_style?.bezier_curviness !== undefined) {
+      // Save control_offset to server if controller is available and link is freeform
+      if (ctrl && mapLink.link_style?.control_offset !== undefined) {
         const link = this.linksDataSource.get(mapLink.id) as Link;
         if (link) {
-          // Clone and normalize curviness to integer before saving
           link.link_style = {
             ...mapLink.link_style,
-            bezier_curviness: StyleTranslator.normalizeBezierCurviness(mapLink.link_style.bezier_curviness),
           };
           this.linkService.updateLinkStyle(ctrl, link).subscribe();
         }

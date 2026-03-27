@@ -16,7 +16,8 @@ class SerialLinkPath {
     public bezierVariation: number = 0,
     public useLegacySerialPattern: boolean = false,
     public sourceOrientation?: ConnectorOrientation,
-    public targetOrientation?: ConnectorOrientation
+    public targetOrientation?: ConnectorOrientation,
+    public controlOffset?: [number, number]
   ) {}
 }
 
@@ -82,6 +83,7 @@ export class SerialLinkWidget implements Widget {
           ? StyleTranslator.normalizeStateMachineCurviness(link.link_style?.bezier_curviness)
           : StyleTranslator.normalizeBezierCurviness(link.link_style?.bezier_curviness),
       flowchart_roundness: StyleTranslator.normalizeFlowchartRoundness(link.link_style?.flowchart_roundness),
+      control_offset: link.link_style?.control_offset,
     };
 
     let sourcePoint = sourceCenter;
@@ -127,7 +129,8 @@ export class SerialLinkWidget implements Widget {
       bezierVariation,
       normalizedLinkType === StyleTranslator.DEFAULT_LINK_TYPE,
       sourceOrientation,
-      targetOrientation
+      targetOrientation,
+      style.control_offset
     );
   }
 
@@ -180,6 +183,17 @@ export class SerialLinkWidget implements Widget {
       .attr('d', (serial) => {
         if (serial.useLegacySerialPattern) {
           return this.getLegacySerialPath(serial.source, serial.target);
+        }
+
+        // Use freeform bezier if link_type is freeform and has control_offset
+        if (serial.style.link_type === 'freeform' && serial.controlOffset) {
+          return StyleTranslator.getFreeformBezierPath(
+            serial.source,
+            serial.target,
+            serial.sourceOrientation,
+            serial.targetOrientation,
+            serial.controlOffset
+          );
         }
 
         return StyleTranslator.getLinkPath(serial.source, serial.target, serial.style, {
