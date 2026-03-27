@@ -271,6 +271,7 @@ export class MyService {
 | **Use `panelClass`** | For dialog style scoping |
 | **BEM naming required** | Use `.gns3-card__header` pattern |
 | **Style logic in HTML** | Prefer `[class.is-active]="signal()"` over string concatenation |
+| **No style overrides in TS** | Dialog width/height/maxWidth/maxHeight must be in CSS, not TS |
 
 ### Material Theme Variables
 

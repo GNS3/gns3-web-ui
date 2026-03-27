@@ -6,6 +6,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { ChangeSymbolDialogComponent } from '../../../change-symbol-dialog/change-symbol-dialog.component';
+import { DialogConfigService } from '@services/dialog-config.service';
 
 @Component({
   selector: 'app-change-symbol-action',
@@ -15,6 +16,7 @@ import { ChangeSymbolDialogComponent } from '../../../change-symbol-dialog/chang
 })
 export class ChangeSymbolActionComponent implements OnInit {
   private dialog = inject(MatDialog);
+  private dialogConfig = inject(DialogConfigService);
 
   readonly controller = input<Controller>(undefined);
   readonly node = input<Node>(undefined);
@@ -22,12 +24,11 @@ export class ChangeSymbolActionComponent implements OnInit {
   ngOnInit() {}
 
   changeSymbol() {
-    const dialogRef = this.dialog.open(ChangeSymbolDialogComponent, {
-      width: '800px',
+    const dialogConfig = this.dialogConfig.openConfig('changeSymbol', {
       autoFocus: false,
       disableClose: false,
-      panelClass: 'change-symbol-dialog-panel',
     });
+    const dialogRef = this.dialog.open(ChangeSymbolDialogComponent, dialogConfig);
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller();
     instance.node = this.node();

@@ -28,15 +28,28 @@ GNS3 Web UI supports multiple image formats for node symbols, rendered on the pr
 ### Upload a Symbol
 
 1. **Web UI** → **Preferences** → **Symbols**
-2. Click **Add symbol**
-3. Select file (SVG/PNG/JPG/GIF)
-4. Symbol appears in list
+2. Click **Symbols Manager**
+3. Go to **Add Symbol** tab
+4. Click **Choose File to Upload**
+5. Select file (SVG/PNG/JPG/GIF)
+6. Symbol appears in list
 
 ### Use a Symbol
 
 1. Right-click node on canvas
 2. Select **Change symbol**
 3. Choose from list
+
+### Delete Symbols
+
+1. **Web UI** → **Preferences** → **Symbols**
+2. Click **Symbols Manager**
+3. Go to **Manage Symbols** tab for instructions
+4. Or use the delete mode in the main symbols view:
+   - Click **Delete symbols** button
+   - Click on symbols to select them (red border indicates selection)
+   - Click **Delete** button to remove selected symbols
+   - Only custom symbols can be deleted
 
 ---
 
@@ -50,6 +63,40 @@ GNS3 Web UI supports multiple image formats for node symbols, rendered on the pr
 | **GIF** | `.gif` | Yes | Simple animations | 1 MB |
 
 **Recommended Dimensions:** 128×128 pixels (GNS3 scales to max 80px)
+
+---
+
+## Symbols Manager
+
+The Symbols Manager is a centralized dialog for managing your symbol library.
+
+### Access
+
+- **Web UI** → **Preferences** → **Symbols** → **Symbols Manager** button
+
+### Features
+
+#### Add Symbol Tab
+
+- Upload new symbols in SVG, PNG, JPG, JPEG, or GIF format
+- Shows upload status with success/error messages
+- Automatically refreshes the symbols list after successful upload
+
+#### Manage Symbols Tab
+
+- Displays all custom symbols in a grid view
+- Click symbols to select them for deletion (red border indicates selection)
+- Use "Select all" / "Clear" buttons for batch operations
+- Click "Delete" button to remove selected symbols
+- Only custom symbols can be deleted (built-in symbols are excluded)
+
+### Benefits
+
+- **Centralized Interface**: All symbol management in one place
+- **Visual Selection**: See all custom symbols at once with grid layout
+- **Clear Feedback**: Upload status shows success or errors
+- **Easy Selection**: Red border highlights selected symbols for deletion
+- **Consistent**: Follows Material Design guidelines
 
 ---
 
@@ -264,9 +311,13 @@ Upload via **Preferences → Symbols**, not as drawing.
 |------|---------|
 | `src/app/services/http-controller.service.ts` | Added `postBlob()` for binary upload |
 | `src/app/services/symbol.service.ts` | Added `addFile()` for binary upload |
-| `src/app/components/preferences/common/symbols/symbols.component.ts` | Separate handling for text vs binary |
+| `src/app/services/dialog-config.service.ts` | Centralized dialog configuration |
+| `src/app/components/preferences/common/symbols/symbols.component.ts` | Main symbols browsing and selection interface |
+| `src/app/components/preferences/common/symbols/symbols-manager-dialog/` | Symbols Manager dialog for adding/managing symbols |
+| `src/app/components/project-map/template-symbol-dialog/` | Template symbol selection dialog |
 | `src/app/cartography/widgets/node.ts` | Renders symbols on canvas |
 | `src/app/cartography/widgets/drawings/image-drawing.ts` | Renders drawing images |
+| `src/styles/_dialogs.scss` | Centralized dialog styles |
 
 ### Upload Code
 
@@ -336,6 +387,12 @@ A: Yes, GNS3 auto-scales to max 80px.
 **Q: Can I delete built-in symbols?**
 A: No, only custom symbols can be deleted.
 
+**Q: Where is the Symbols Manager?**
+A: In the Symbols preferences page, click the "Symbols Manager" button to access upload and management functions.
+
+**Q: What's the difference between "Delete symbols" and Symbols Manager?**
+A: "Delete symbols" in the main view enters delete mode for batch deletion. Symbols Manager provides a dedicated "Manage Symbols" tab with a visual grid of custom symbols for easier selection and deletion.
+
 ---
 
-**Last Updated:** 2026-03-27
+**Last Updated:** 2026-03-28

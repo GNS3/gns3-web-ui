@@ -5,14 +5,9 @@
       <mat-radio-button value="2" (click)="setFilter('builtin')">Built-in symbols</mat-radio-button>
       <mat-radio-button value="3" (click)="setFilter('custom')">Custom symbols</mat-radio-button>
     </mat-radio-group>
-    <input type="file" accept=".svg,.svgz,.png,.jpg,.jpeg,.gif" class="non-visible" #file (change)="uploadSymbolFile($event)" />
-    <button mat-button (click)="file.click()">
-      <mat-icon>add</mat-icon>
-      Add symbol
-    </button>
-    <button mat-button (click)="toggleDeleteMode()">
-      <mat-icon>delete</mat-icon>
-      Delete symbols
+    <button mat-button (click)="openSymbolsManager()">
+      <mat-icon>settings</mat-icon>
+      Symbols Manager
     </button>
   } @else {
     <div class="delete-actions">

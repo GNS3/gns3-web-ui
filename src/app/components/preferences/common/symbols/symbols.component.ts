@@ -27,6 +27,8 @@ import { SymbolService } from '@services/symbol.service';
 import { SearchFilter } from '@filters/searchFilter.pipe';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import type { ConfirmationDialogData } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
+import { SymbolsManagerDialogComponent } from '@components/preferences/common/symbols/symbols-manager-dialog/symbols-manager-dialog.component';
+import { DialogConfigService } from '@services/dialog-config.service';
 
 interface SymbolGroup {
   theme: string;
@@ -56,6 +58,7 @@ export class SymbolsComponent implements OnInit {
   private symbolService = inject(SymbolService);
   private cd = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
+  private dialogConfig = inject(DialogConfigService);
 
   readonly controller = input<Controller>(undefined);
   readonly symbol = input<string>(undefined);
@@ -129,52 +132,6 @@ export class SymbolsComponent implements OnInit {
     this.symbolGroups = Array.from(groupMap.entries())
       .map(([theme, symbols]) => ({ theme, symbols }))
       .sort((a, b) => a.theme.localeCompare(b.theme));
-  }
-
-  public uploadSymbolFile(event) {
-    this.readSymbolFile(event.target);
-  }
-
-  private readSymbolFile(symbolInput: HTMLInputElement) {
-    const file: File = symbolInput.files![0];
-    if (!file) return;
-
-    const fileName = file.name;
-    const fileExtension = fileName.split('.').pop()?.toLowerCase();
-
-    // SVG files: read as text
-    if (fileExtension === 'svg' || fileExtension === 'svgz') {
-      const fileReader: FileReader = new FileReader();
-
-      fileReader.onloadend = () => {
-        const svgContent = fileReader.result as string;
-        this.symbolService.add(this.controller(), fileName, svgContent).subscribe(() => {
-          this.loadSymbols();
-        });
-      };
-
-      fileReader.readAsText(file);
-    }
-    // PNG/JPG/GIF: upload as binary blob
-    else if (
-      fileExtension === 'png' ||
-      fileExtension === 'jpg' ||
-      fileExtension === 'jpeg' ||
-      fileExtension === 'gif'
-    ) {
-      // Create blob directly from file (no need for FileReader)
-      const blob = new Blob([file], { type: file.type });
-      this.symbolService.addFile(this.controller(), fileName, blob).subscribe(() => {
-        this.loadSymbols();
-      });
-    }
-    // Fallback: try as binary
-    else {
-      const blob = new Blob([file], { type: file.type || 'application/octet-stream' });
-      this.symbolService.addFile(this.controller(), fileName, blob).subscribe(() => {
-        this.loadSymbols();
-      });
-    }
   }
 
   getImageSourceForTemplate(symbol: string) {
@@ -320,6 +277,19 @@ export class SymbolsComponent implements OnInit {
           this.loadSymbols();
         });
       }
+    });
+  }
+
+  openSymbolsManager() {
+    const dialogConfig = this.dialogConfig.openConfig('symbolsManager', {
+      data: {
+        controller: this.controller(),
+      },
+    });
+    const dialogRef = this.dialog.open(SymbolsManagerDialogComponent, dialogConfig);
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.loadSymbols();
     });
   }
 }

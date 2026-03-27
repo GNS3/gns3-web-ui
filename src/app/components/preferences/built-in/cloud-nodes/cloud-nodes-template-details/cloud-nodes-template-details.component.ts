@@ -19,6 +19,7 @@ import { BuiltInTemplatesService } from '@services/built-in-templates.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
+import { DialogConfigService } from '@services/dialog-config.service';
 
 @Component({
   standalone: true,
@@ -48,6 +49,7 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
   private router = inject(Router);
   private cd = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
+  private dialogConfig = inject(DialogConfigService);
 
   controller: Controller;
   cloudNodeTemplate: CloudTemplate;
@@ -235,16 +237,15 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
   }
 
   chooseSymbol() {
-    const dialogRef = this.dialog.open(TemplateSymbolDialogComponent, {
-      width: '800px',
+    const dialogConfig = this.dialogConfig.openConfig('templateSymbol', {
       autoFocus: false,
       disableClose: false,
-      panelClass: 'change-symbol-dialog-panel',
       data: {
         controller: this.controller,
         symbol: this.symbol(),
       },
     });
+    const dialogRef = this.dialog.open(TemplateSymbolDialogComponent, dialogConfig);
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.symbol.set(result);
