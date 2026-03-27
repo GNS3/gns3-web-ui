@@ -1,5 +1,4 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { event } from 'd3-selection';
 import { LinkContextMenu } from '../../events/event-source';
 import { MapLink } from '../../models/map/map-link';
 import { SVGSelection } from '../../models/types';
@@ -35,28 +34,6 @@ export class SerialLinkWidget implements Widget {
   };
 
   constructor() {}
-
-  private resolveContextMenuLink(arg1: unknown, arg2: unknown): MapLink | undefined {
-    const candidates = [arg2, arg1];
-
-    for (const candidate of candidates) {
-      if (!candidate || typeof candidate !== 'object') {
-        continue;
-      }
-
-      const maybePath = candidate as Partial<SerialLinkPath>;
-      if (maybePath.link) {
-        return maybePath.link;
-      }
-
-      const maybeMapLink = candidate as Partial<MapLink>;
-      if (typeof maybeMapLink.id === 'string' && Array.isArray(maybeMapLink.nodes)) {
-        return maybeMapLink as MapLink;
-      }
-    }
-
-    return undefined;
-  }
 
   private getLegacySerialPath(source: [number, number], target: [number, number]) {
     const dx = target[0] - source[0];
@@ -158,7 +135,7 @@ export class SerialLinkWidget implements Widget {
     const linksInView = view.data() as MapLink[];
     this.bezierLayout.buildEndpointOrder(Array.isArray(linksInView) ? linksInView : []);
 
-    const link = view.selectAll<SVGPathElement, SerialLinkPath>('path.serial_link').data((l) => {
+    const link = view.selectAll('path.serial_link').data((l: MapLink) => {
       if (l.linkType === 'serial') {
         const serialLink = this.linkToSerialLink(l);
         return serialLink ? [serialLink] : [];
@@ -169,19 +146,18 @@ export class SerialLinkWidget implements Widget {
     const link_enter = link
       .enter()
       .append<SVGPathElement>('path')
-      .attr('class', 'serial_link')
-      .on('contextmenu', (arg1: unknown, arg2: unknown) => {
-        const evt = event;
-        const link = this.resolveContextMenuLink(arg1, arg2);
-        if (!link) {
-          return;
-        }
-        this.onContextMenu.emit(new LinkContextMenu(evt, link));
-      });
+      .attr('class', 'serial_link');
 
     const link_merge = link.merge(link_enter);
 
     link_merge
+      .on('contextmenu', (evt: any, datum: any) => {
+        const link: MapLink = datum;
+        if (!link) {
+          return;
+        }
+        this.onContextMenu.emit(new LinkContextMenu(evt, link));
+      })
       .attr('transform', (datum) => {
         return StyleTranslator.getLinkTransform(datum.style);
       })

@@ -246,6 +246,19 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.mat-mdc-menu-p
   stroke: var(--mat-sys-error);
   stroke-width: 4px;
   cursor: pointer;
+  stroke-opacity: 1 !important;
+}
+
+/* Hidden links - reveal on hover with subtle outline */
+.ethernet_link[style*="stroke-opacity: 0"],
+.serial_link[style*="stroke-opacity: 0"] {
+  stroke-opacity: 0 !important;
+}
+
+.ethernet_link[style*="stroke-opacity: 0"]:hover,
+.serial_link[style*="stroke-opacity: 0"]:hover {
+  stroke-opacity: 0.3 !important;
+  stroke: var(--mat-sys-outline) !important;
 }
 
 /* =============================================
