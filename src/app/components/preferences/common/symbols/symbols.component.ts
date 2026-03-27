@@ -9,6 +9,7 @@ import {
   input,
   signal,
 } from '@angular/core';
+import { forkJoin } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -64,9 +65,12 @@ export class SymbolsComponent implements OnInit {
   filteredSymbols: Symbol[] = [];
   symbolGroups: SymbolGroup[] = [];
   isSelected: string = '';
+  selectedForDeletion = signal<Set<string>>(new Set());
   searchText: string = '';
   expandedThemes = signal<string[]>([]);
   zoomLevel = signal(1.0);
+  isDeleteMode = signal(false);
+  previousFilter = '';
 
   readonly Math = Math;
 
@@ -223,5 +227,99 @@ export class SymbolsComponent implements OnInit {
 
   resetZoom() {
     this.zoomLevel.set(1.0);
+  }
+
+  toggleSelection(symbol_id: string) {
+    const current = this.selectedForDeletion();
+    const updated = new Set(current);
+
+    if (updated.has(symbol_id)) {
+      updated.delete(symbol_id);
+    } else {
+      updated.add(symbol_id);
+    }
+
+    this.selectedForDeletion.set(updated);
+    this.cd.markForCheck();
+  }
+
+  isSymbolSelected(symbol_id: string): boolean {
+    return this.selectedForDeletion().has(symbol_id);
+  }
+
+  toggleDeleteMode() {
+    const wasDeleteMode = this.isDeleteMode();
+    this.isDeleteMode.update(value => !value);
+
+    if (!wasDeleteMode && this.isDeleteMode()) {
+      // Entering delete mode: show only custom symbols
+      this.previousFilter = 'all';
+      this.setFilter('custom');
+    } else if (wasDeleteMode && !this.isDeleteMode()) {
+      // Exiting delete mode: restore previous filter
+      this.selectedForDeletion.set(new Set());
+      if (this.previousFilter) {
+        this.setFilter(this.previousFilter);
+      }
+    }
+    this.cd.markForCheck();
+  }
+
+  selectAllVisible() {
+    const customSymbols = this.filteredSymbols.filter((s) => !s.builtin);
+    const allIds = new Set(customSymbols.map((s) => s.symbol_id));
+    this.selectedForDeletion.set(allIds);
+    this.cd.markForCheck();
+  }
+
+  clearSelection() {
+    this.selectedForDeletion.set(new Set());
+    this.cd.markForCheck();
+  }
+
+  hasSelectedSymbols(): boolean {
+    return this.selectedForDeletion().size > 0;
+  }
+
+  deleteSelectedSymbols() {
+    const selectedSymbols = this.filteredSymbols.filter((s) =>
+      this.selectedForDeletion().has(s.symbol_id)
+    );
+
+    if (selectedSymbols.length === 0) {
+      return;
+    }
+
+    const message =
+      selectedSymbols.length === 1
+        ? `Are you sure you want to delete the symbol "${selectedSymbols[0].symbol_id}"?`
+        : `Are you sure you want to delete ${selectedSymbols.length} symbols?`;
+
+    const dialogData: ConfirmationDialogData = {
+      title: 'Delete Symbols',
+      message: message,
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+    };
+
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      data: dialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // Delete all selected symbols
+        const deleteObservables = selectedSymbols.map((symbol) =>
+          this.symbolService.delete(this.controller(), symbol.symbol_id)
+        );
+
+        // Use forkJoin to wait for all deletions
+        forkJoin(deleteObservables).subscribe(() => {
+          this.selectedForDeletion.set(new Set());
+          this.loadSymbols();
+        });
+      }
+    });
   }
 }

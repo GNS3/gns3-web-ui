@@ -103,11 +103,26 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .radio-selection {
   display: flex;
   gap: 8px;
+}
+
+.delete-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+
+  .selected-count {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+  }
 }
 
 .example-full-width {
@@ -117,4 +132,31 @@
 
 .non-visible {
   display: none;
+}
+
+// Delete mode styles
+.symbol-item {
+  &.delete-mode {
+    padding: 2px;
+    border-radius: 4px;
+  }
+}
+
+.button {
+  background: border-box;
+  border-width: 0;
+  outline: none;
+  width: 100%;
+  height: 100%;
+  padding: calc(4px * var(--zoom-level));
+
+  &.in-delete-mode {
+    cursor: pointer;
+  }
+
+  &.delete-selected {
+    outline: 2px solid var(--mat-sys-error);
+    outline-offset: -2px;
+    box-shadow: 0 0 0 2px var(--mat-sys-error);
+  }
 }
