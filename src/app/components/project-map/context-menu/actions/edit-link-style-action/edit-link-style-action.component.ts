@@ -6,6 +6,7 @@ import { Link } from '@models/link';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { LinkStyleEditorDialogComponent } from '../../../drawings-editors/link-style-editor/link-style-editor.component';
+import { DialogConfigService } from '@services/dialog-config.service';
 
 @Component({
   selector: 'app-edit-link-style-action',
@@ -15,6 +16,7 @@ import { LinkStyleEditorDialogComponent } from '../../../drawings-editors/link-s
 })
 export class EditLinkStyleActionComponent implements OnChanges {
   private dialog = inject(MatDialog);
+  private dialogConfig = inject(DialogConfigService);
 
   readonly controller = input<Controller>(undefined);
   readonly project = input<Project>(undefined);
@@ -25,11 +27,11 @@ export class EditLinkStyleActionComponent implements OnChanges {
   ngOnChanges() {}
 
   editStyle() {
-    const dialogRef = this.dialog.open(LinkStyleEditorDialogComponent, {
-      width: '800px',
+    const dialogConfig = this.dialogConfig.openConfig('linkStyleEditor', {
       autoFocus: false,
       disableClose: false,
     });
+    const dialogRef = this.dialog.open(LinkStyleEditorDialogComponent, dialogConfig);
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller();
     instance.project = this.project();

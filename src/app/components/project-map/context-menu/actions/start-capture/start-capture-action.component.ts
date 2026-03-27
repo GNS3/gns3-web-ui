@@ -7,6 +7,7 @@ import { Link } from '@models/link';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { StartCaptureDialogComponent } from '../../../packet-capturing/start-capture/start-capture.component';
+import { DialogConfigService } from '@services/dialog-config.service';
 
 @Component({
   selector: 'app-start-capture-action',
@@ -16,17 +17,18 @@ import { StartCaptureDialogComponent } from '../../../packet-capturing/start-cap
 })
 export class StartCaptureActionComponent {
   private dialog = inject(MatDialog);
+  private dialogConfig = inject(DialogConfigService);
 
   readonly controller = input<Controller>(undefined);
   readonly project = input<Project>(undefined);
   readonly link = input<Link>(undefined);
 
   startCapture() {
-    const dialogRef = this.dialog.open(StartCaptureDialogComponent, {
-      width: '400px',
+    const dialogConfig = this.dialogConfig.openConfig('startCapture', {
       autoFocus: false,
       disableClose: false,
     });
+    const dialogRef = this.dialog.open(StartCaptureDialogComponent, dialogConfig);
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller();
     instance.project = this.project();

@@ -7,6 +7,7 @@ import { Link } from '@models/link';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { PacketFiltersDialogComponent } from '../../../packet-capturing/packet-filters/packet-filters.component';
+import { DialogConfigService } from '@services/dialog-config.service';
 
 @Component({
   selector: 'app-packet-filters-action',
@@ -16,18 +17,18 @@ import { PacketFiltersDialogComponent } from '../../../packet-capturing/packet-f
 })
 export class PacketFiltersActionComponent {
   private dialog = inject(MatDialog);
+  private dialogConfig = inject(DialogConfigService);
 
   readonly controller = input<Controller>(undefined);
   readonly project = input<Project>(undefined);
   readonly link = input<Link>(undefined);
 
   openPacketFilters() {
-    const dialogRef = this.dialog.open(PacketFiltersDialogComponent, {
-      width: '900px',
-      height: '400px',
+    const dialogConfig = this.dialogConfig.openConfig('packetFilters', {
       autoFocus: false,
       disableClose: false,
     });
+    const dialogRef = this.dialog.open(PacketFiltersDialogComponent, dialogConfig);
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller();
     instance.project = this.project();

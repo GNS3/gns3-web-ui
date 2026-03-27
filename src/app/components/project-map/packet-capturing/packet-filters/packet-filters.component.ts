@@ -14,6 +14,7 @@ import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { LinkService } from '@services/link.service';
 import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
+import { DialogConfigService } from '@services/dialog-config.service';
 
 @Component({
   selector: 'app-packet-filters',
@@ -34,6 +35,7 @@ export class PacketFiltersDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<PacketFiltersDialogComponent>);
   private linkService = inject(LinkService);
   private dialog = inject(MatDialog);
+  private dialogConfig = inject(DialogConfigService);
   private cdr = inject(ChangeDetectorRef);
 
   controller: Controller;
@@ -99,11 +101,11 @@ export class PacketFiltersDialogComponent implements OnInit {
   }
 
   onHelpClick() {
-    const dialogRef = this.dialog.open(HelpDialogComponent, {
-      width: '500px',
+    const dialogConfig = this.dialogConfig.openConfig('helpDialog', {
       autoFocus: false,
       disableClose: true,
     });
+    const dialogRef = this.dialog.open(HelpDialogComponent, dialogConfig);
     let instance = dialogRef.componentInstance;
     instance.title = 'Help for filters';
     let messages: Message[] = [];

@@ -133,6 +133,30 @@ export class DialogConfigService {
       maxWidth: '500px',
       maxHeight: '200px',
     });
+
+    // Start Capture Dialog - simple dialog (500px)
+    this.configs.set('startCapture', {
+      ...simpleConfig,
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+    });
+
+    // Link Style Editor Dialog - simple dialog (500px)
+    this.configs.set('linkStyleEditor', {
+      ...simpleConfig,
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+    });
+
+    // Packet Filters Dialog - simple dialog (500px)
+    this.configs.set('packetFilters', {
+      ...simpleConfig,
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+    });
+
+    // Help Dialog - simple dialog (500px)
+    this.configs.set('helpDialog', {
+      ...simpleConfig,
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+    });
   }
 
   getConfig(name: string): DialogConfig {

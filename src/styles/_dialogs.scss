@@ -53,6 +53,11 @@
     margin-bottom: 4px;
   }
 
+  /* Modal form container padding */
+  .modal-form-container {
+    padding: 16px 24px;
+  }
+
   /* Checkboxes - common spacing */
   mat-checkbox {
     display: block;
@@ -141,11 +146,6 @@
         }
       }
     }
-  }
-
-  /* Modal form container padding */
-  .modal-form-container {
-    padding: 16px 24px;
   }
 
   /* Two-column form layout */
