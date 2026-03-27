@@ -86,6 +86,9 @@
   padding: 16px 24px;
   border-bottom: 1px solid var(--mat-sys-outline-variant);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--mat-sys-on-surface);
 
   &:last-child {
     border-bottom: none;
@@ -94,15 +97,6 @@
   &:hover {
     background-color: color-mix(in srgb, var(--mat-sys-on-surface) 5%, transparent);
   }
-}
-
-.ethernet-hubs__list-link {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex: 1;
-  color: var(--mat-sys-on-surface);
-  text-decoration: none;
 }
 
 .ethernet-hubs__list-icon {

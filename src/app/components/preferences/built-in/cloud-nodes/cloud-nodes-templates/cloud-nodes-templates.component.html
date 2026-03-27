@@ -29,12 +29,10 @@
     } @if (cloudNodesTemplates.length) {
     <nav class="cloud-nodes__list">
       @for (template of cloudNodesTemplates; track template.template_id) {
-      <div class="cloud-nodes__list-item">
-        <a class="cloud-nodes__list-link" [routerLink]="template.template_id">
-          <mat-icon class="cloud-nodes__list-icon">cloud</mat-icon>
-          <span class="cloud-nodes__list-name">{{ template.name }}</span>
-        </a>
-        <button mat-icon-button [matMenuTriggerFor]="menu" class="cloud-nodes__menu-btn" (click)="$event.stopPropagation(); $event.preventDefault()">
+      <div class="cloud-nodes__list-item" [routerLink]="template.template_id">
+        <mat-icon class="cloud-nodes__list-icon">cloud</mat-icon>
+        <span class="cloud-nodes__list-name">{{ template.name }}</span>
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="cloud-nodes__menu-btn" (click)="$event.stopPropagation()">
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu" xPosition="before">

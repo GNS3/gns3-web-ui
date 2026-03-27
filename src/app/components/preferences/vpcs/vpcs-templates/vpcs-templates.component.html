@@ -29,12 +29,10 @@
     } @if (vpcsTemplates.length) {
     <nav class="vpcs-templates__list">
       @for (template of vpcsTemplates; track template.template_id) {
-      <div class="vpcs-templates__list-item">
-        <a class="vpcs-templates__list-link" [routerLink]="template.template_id">
-          <mat-icon class="vpcs-templates__list-icon">terminal</mat-icon>
-          <span class="vpcs-templates__list-name">{{ template.name }}</span>
-        </a>
-        <button mat-icon-button [matMenuTriggerFor]="menu" class="vpcs-templates__menu-btn" (click)="$event.stopPropagation(); $event.preventDefault()">
+      <div class="vpcs-templates__list-item" [routerLink]="template.template_id">
+        <mat-icon class="vpcs-templates__list-icon">terminal</mat-icon>
+        <span class="vpcs-templates__list-name">{{ template.name }}</span>
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="vpcs-templates__menu-btn" (click)="$event.stopPropagation()">
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu" xPosition="before">

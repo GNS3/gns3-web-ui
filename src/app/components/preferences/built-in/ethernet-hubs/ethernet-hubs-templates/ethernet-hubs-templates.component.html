@@ -29,12 +29,10 @@
     } @if (ethernetHubsTemplates.length) {
     <nav class="ethernet-hubs__list">
       @for (template of ethernetHubsTemplates; track template.template_id) {
-      <div class="ethernet-hubs__list-item">
-        <a class="ethernet-hubs__list-link" [routerLink]="template.template_id">
-          <mat-icon class="ethernet-hubs__list-icon">device_hub</mat-icon>
-          <span class="ethernet-hubs__list-name">{{ template.name }}</span>
-        </a>
-        <button mat-icon-button [matMenuTriggerFor]="menu" class="ethernet-hubs__menu-btn" (click)="$event.stopPropagation(); $event.preventDefault()">
+      <div class="ethernet-hubs__list-item" [routerLink]="template.template_id">
+        <mat-icon class="ethernet-hubs__list-icon">device_hub</mat-icon>
+        <span class="ethernet-hubs__list-name">{{ template.name }}</span>
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="ethernet-hubs__menu-btn" (click)="$event.stopPropagation()">
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu" xPosition="before">

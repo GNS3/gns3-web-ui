@@ -29,12 +29,10 @@
     } @if (qemuTemplates.length) {
     <nav class="qemu-vm-templates__list">
       @for (template of qemuTemplates; track template.template_id) {
-      <div class="qemu-vm-templates__list-item">
-        <a class="qemu-vm-templates__list-link" [routerLink]="template.template_id">
-          <mat-icon class="qemu-vm-templates__list-icon">memory</mat-icon>
-          <span class="qemu-vm-templates__list-name">{{ template.name }}</span>
-        </a>
-        <button mat-icon-button [matMenuTriggerFor]="menu" class="qemu-vm-templates__menu-btn" (click)="$event.stopPropagation(); $event.preventDefault()">
+      <div class="qemu-vm-templates__list-item" [routerLink]="template.template_id">
+        <mat-icon class="qemu-vm-templates__list-icon">memory</mat-icon>
+        <span class="qemu-vm-templates__list-name">{{ template.name }}</span>
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="qemu-vm-templates__menu-btn" (click)="$event.stopPropagation()">
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu" xPosition="before">

@@ -29,12 +29,10 @@
     } @if (virtualBoxTemplates.length) {
     <nav class="virtualbox-templates__list">
       @for (template of virtualBoxTemplates; track template.template_id) {
-      <div class="virtualbox-templates__list-item">
-        <a class="virtualbox-templates__list-link" [routerLink]="template.template_id">
-          <mat-icon class="virtualbox-templates__list-icon">computer</mat-icon>
-          <span class="virtualbox-templates__list-name">{{ template.name }}</span>
-        </a>
-        <button mat-icon-button [matMenuTriggerFor]="menu" class="virtualbox-templates__menu-btn" (click)="$event.stopPropagation(); $event.preventDefault()">
+      <div class="virtualbox-templates__list-item" [routerLink]="template.template_id">
+        <mat-icon class="virtualbox-templates__list-icon">computer</mat-icon>
+        <span class="virtualbox-templates__list-name">{{ template.name }}</span>
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="virtualbox-templates__menu-btn" (click)="$event.stopPropagation()">
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu" xPosition="before">
