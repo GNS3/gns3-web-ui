@@ -31,7 +31,6 @@ export class InterfaceStatusWidget implements Widget {
       const link_group = select<SVGGElement, MapLink>(this);
       const link_path = link_group.select<SVGPathElement>('path');
       const showInterfaceLabels = self.mapSettingsService.showInterfaceLabels;
-      const linkHidden = l.link_style?.type === 0;
       const useIntegratedLabels = showInterfaceLabels && self.mapSettingsService.integrateLinkLabelsToLinks;
       const useTooltipOnlyLabels = showInterfaceLabels && self.shouldRenderTooltipOnly(l);
 
@@ -80,8 +79,7 @@ export class InterfaceStatusWidget implements Widget {
 
         const status_labels_merge = status_labels
           .merge(status_labels_enter)
-          .attr('transform', (ls: LinkStatus) => `translate(${ls.x}, ${ls.y})`)
-          .classed('link-hidden', () => linkHidden);
+          .attr('transform', (ls: LinkStatus) => `translate(${ls.x}, ${ls.y})`);
 
         const status_rects = status_labels_merge
           .selectAll<SVGRectElement, LinkStatus>('rect')
@@ -141,8 +139,7 @@ export class InterfaceStatusWidget implements Widget {
           .attr('cy', (ls: LinkStatus) => ls.y)
           .attr('r', 6)
           .attr('text', (ls: LinkStatus) => ls.port || '')
-          .attr('fill', '#2ecc71')
-          .classed('link-hidden', () => linkHidden);
+          .attr('fill', '#2ecc71');
 
         status_started.exit().remove();
 
@@ -161,8 +158,7 @@ export class InterfaceStatusWidget implements Widget {
           .attr('y', (ls: LinkStatus) => ls.y - STOPPED_STATUS_RECT_WIDTH / 2)
           .attr('width', STOPPED_STATUS_RECT_WIDTH)
           .attr('height', STOPPED_STATUS_RECT_WIDTH)
-          .attr('fill', 'red')
-          .classed('link-hidden', () => linkHidden);
+          .attr('fill', 'red');
 
         status_stopped.exit().remove();
 
@@ -178,8 +174,7 @@ export class InterfaceStatusWidget implements Widget {
           .attr('cx', (ls: LinkStatus) => ls.x)
           .attr('cy', (ls: LinkStatus) => ls.y)
           .attr('r', 6)
-          .attr('fill', '#FFFF00')
-          .classed('link-hidden', () => linkHidden);
+          .attr('fill', '#FFFF00');
 
         status_suspended.exit().remove();
       }

@@ -45,13 +45,10 @@ export class InterfaceLabelWidget {
 
     const link_node_position = selection
       .selectAll<SVGGElement, MapLinkNode>('g.link_node_position')
-      .data((link: MapLink) => {
-        const linkHidden = link.link_style?.type === 0;
-        return [
-          [link.source, link.nodes[0], linkHidden],
-          [link.target, link.nodes[1], linkHidden],
-        ];
-      });
+      .data((link: MapLink) => [
+        [link.source, link.nodes[0]],
+        [link.target, link.nodes[1]],
+      ]);
 
     const enter_link_node_position = link_node_position
       .enter()
@@ -60,17 +57,13 @@ export class InterfaceLabelWidget {
 
     const merge_link_node_position = link_node_position.merge(enter_link_node_position);
 
-    merge_link_node_position
-      .attr('transform', (nodeAndMapLinkNode: [MapNode, MapLinkNode, boolean]) => {
-        return `translate(${nodeAndMapLinkNode[0].x}, ${nodeAndMapLinkNode[0].y})`;
-      })
-      .classed('link-hidden', (nodeAndMapLinkNode: [MapNode, MapLinkNode, boolean]) => {
-        return nodeAndMapLinkNode[2];
-      });
+    merge_link_node_position.attr('transform', (nodeAndMapLinkNode: [MapNode, MapLinkNode]) => {
+      return `translate(${nodeAndMapLinkNode[0].x}, ${nodeAndMapLinkNode[0].y})`;
+    });
 
     const labels = merge_link_node_position
-      .selectAll<SVGGElement, [MapNode, MapLinkNode, boolean]>('g.interface_label_container')
-      .data((nodeAndMapLinkNode: [MapNode, MapLinkNode, boolean]) => {
+      .selectAll<SVGGElement, [MapNode, MapLinkNode]>('g.interface_label_container')
+      .data((nodeAndMapLinkNode: [MapNode, MapLinkNode]) => {
         if (this.enabled) {
           return [nodeAndMapLinkNode[1]];
         }
@@ -105,12 +98,10 @@ export class InterfaceLabelWidget {
         styles = this.applyThemeLabelColor(styles);
         return styles;
       })
-      .attr('x', (l: MapLinkNode) => this.getRenderedLabelX(l))
-      .attr('y', (l: MapLinkNode) => this.getRenderedLabelY(l))
+      .attr('x', (l: MapLinkNode) => l.label.x)
+      .attr('y', (l: MapLinkNode) => l.label.y)
       .attr('transform', (l: MapLinkNode) => {
-        const renderedX = this.getRenderedLabelX(l);
-        const renderedY = this.getRenderedLabelY(l);
-        return `rotate(${l.label.rotation}, ${renderedX}, ${renderedY})`;
+        return `rotate(${l.label.rotation}, ${l.label.x}, ${l.label.y})`;
       });
 
     // update surrounding rect

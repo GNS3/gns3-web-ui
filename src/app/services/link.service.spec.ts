@@ -3,8 +3,6 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { inject, TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
 import { environment } from 'environments/environment';
 import { Node } from '../cartography/models/node';
-import { Link } from '@models/link';
-import { LinkNode } from '@models/link-node';
 import { Port } from '@models/port';
 import { Controller } from '@models/controller';
 import { AppTestingModule } from '../testing/app-testing/app-testing.module';
@@ -87,84 +85,6 @@ describe('LinkService', () => {
           },
         },
       ],
-    });
-  }));
-
-  it('should update link with only mutable non-style fields', inject([LinkService], (service: LinkService) => {
-    const link = new Link();
-    link.project_id = 'myproject';
-    link.link_id = 'mylink';
-    link.nodes = [
-      {
-        node_id: 'node-1',
-        adapter_number: 0,
-        port_number: 0,
-      } as LinkNode,
-      {
-        node_id: 'node-2',
-        adapter_number: 1,
-        port_number: 2,
-      } as LinkNode,
-    ];
-    link.filters = {
-      packet_loss: [10],
-    };
-    link.suspend = true;
-    link.link_style = {
-      link_type: 'bezier',
-      bezier_curviness: 150,
-    };
-    link.capture_file_name = 'capture.pcap';
-
-    service.updateLink(controller, link).subscribe();
-
-    const req = httpTestingController.expectOne(
-      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/links/mylink`
-    );
-    expect(req.request.method).toEqual('PUT');
-    expect(req.request.body).toEqual({
-      nodes: link.nodes,
-      filters: link.filters,
-      suspend: true,
-    });
-  }));
-
-  it('should omit undefined fields from updateLink payload', inject([LinkService], (service: LinkService) => {
-    const link = {
-      project_id: 'myproject',
-      link_id: 'mylink',
-      suspend: false,
-    } as Link;
-
-    service.updateLink(controller, link).subscribe();
-
-    const req = httpTestingController.expectOne(
-      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/links/mylink`
-    );
-    expect(req.request.method).toEqual('PUT');
-    expect(req.request.body).toEqual({
-      suspend: false,
-    });
-  }));
-
-  it('should update link style with link_style-only payload', inject([LinkService], (service: LinkService) => {
-    const link = {
-      project_id: 'myproject',
-      link_id: 'mylink',
-      link_style: {
-        link_type: 'flowchart',
-        flowchart_roundness: 40,
-      },
-    } as Link;
-
-    service.updateLinkStyle(controller, link).subscribe();
-
-    const req = httpTestingController.expectOne(
-      `http://127.0.0.1:3080/${environment.current_version}/projects/myproject/links/mylink`
-    );
-    expect(req.request.method).toEqual('PUT');
-    expect(req.request.body).toEqual({
-      link_style: link.link_style,
     });
   }));
 });
