@@ -4,7 +4,7 @@
     <mat-radio-button value="2" (click)="setFilter('builtin')">Built-in symbols</mat-radio-button>
     <mat-radio-button value="3" (click)="setFilter('custom')">Custom symbols</mat-radio-button>
   </mat-radio-group>
-  <input type="file" accept=".svg" class="non-visible" #file (change)="uploadSymbolFile($event)" />
+  <input type="file" accept=".svg,.svgz,.png,.jpg,.jpeg,.gif" class="non-visible" #file (change)="uploadSymbolFile($event)" />
   <button mat-button (click)="file.click()">
     <mat-icon>add</mat-icon>
     Add symbol

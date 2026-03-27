@@ -128,22 +128,49 @@ export class SymbolsComponent implements OnInit {
   }
 
   public uploadSymbolFile(event) {
-    this.readSvgFile(event.target);
+    this.readSymbolFile(event.target);
   }
 
-  private readSvgFile(symbolInput: HTMLInputElement) {
+  private readSymbolFile(symbolInput: HTMLInputElement) {
     const file: File = symbolInput.files![0];
-    const fileName = file.name;
-    const fileReader: FileReader = new FileReader();
+    if (!file) return;
 
-    fileReader.onloadend = () => {
-      const svgContent = fileReader.result as string;
-      this.symbolService.add(this.controller(), fileName, svgContent).subscribe(() => {
+    const fileName = file.name;
+    const fileExtension = fileName.split('.').pop()?.toLowerCase();
+
+    // SVG files: read as text
+    if (fileExtension === 'svg' || fileExtension === 'svgz') {
+      const fileReader: FileReader = new FileReader();
+
+      fileReader.onloadend = () => {
+        const svgContent = fileReader.result as string;
+        this.symbolService.add(this.controller(), fileName, svgContent).subscribe(() => {
+          this.loadSymbols();
+        });
+      };
+
+      fileReader.readAsText(file);
+    }
+    // PNG/JPG/GIF: upload as binary blob
+    else if (
+      fileExtension === 'png' ||
+      fileExtension === 'jpg' ||
+      fileExtension === 'jpeg' ||
+      fileExtension === 'gif'
+    ) {
+      // Create blob directly from file (no need for FileReader)
+      const blob = new Blob([file], { type: file.type });
+      this.symbolService.addFile(this.controller(), fileName, blob).subscribe(() => {
         this.loadSymbols();
       });
-    };
-
-    fileReader.readAsText(file);
+    }
+    // Fallback: try as binary
+    else {
+      const blob = new Blob([file], { type: file.type || 'application/octet-stream' });
+      this.symbolService.addFile(this.controller(), fileName, blob).subscribe(() => {
+        this.loadSymbols();
+      });
+    }
   }
 
   getImageSourceForTemplate(symbol: string) {

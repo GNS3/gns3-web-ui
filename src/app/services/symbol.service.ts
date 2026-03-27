@@ -70,6 +70,11 @@ export class SymbolService {
     return this.httpController.post(controller, `/symbols/${symbolName}/raw`, symbol);
   }
 
+  addFile(controller: Controller, symbolName: string, file: Blob) {
+    this.cache = null;
+    return this.httpController.postBlob(controller, `/symbols/${symbolName}/raw`, file);
+  }
+
   delete(controller: Controller, symbolId: string) {
     this.cache = null;
     const encoded_uri = encodeURI(symbolId);
