@@ -6712,6 +6712,11 @@ material-design-icons@^3.0.1:
   resolved "https://registry.npmjs.org/material-design-icons/-/material-design-icons-3.0.1.tgz"
   integrity sha512-t19Z+QZBwSZulxptEu05kIm+UyfIdJY1JDwI+nx02j269m6W414whiQz9qfvQIiLrdx71RQv+T48nHhuQXOCIQ==
 
+material-symbols@^0.43.0:
+  version "0.43.0"
+  resolved "https://registry.yarnpkg.com/material-symbols/-/material-symbols-0.43.0.tgz#190106665045c9d7cc8a2e00cde7a709d24d49ce"
+  integrity sha512-40zgnHCv6d+Nx/9WQ6vhZitQoqtntgZNXN1YJGyn1NJRQLoB7lWWD8vpu/i68nKtZs8OxHyMudBEkS2mrUHiqQ==
+
 math-intrinsics@^1.1.0:
   version "1.1.0"
   resolved "https://registry.npmjs.org/math-intrinsics/-/math-intrinsics-1.1.0.tgz"
