@@ -119,7 +119,6 @@ import { NodeDraggedComponent } from '../drawings-listeners/node-dragged/node-dr
 import { NodeLabelDraggedComponent } from '../drawings-listeners/node-label-dragged/node-label-dragged.component';
 import { TextAddedComponent } from '../drawings-listeners/text-added/text-added.component';
 import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edited.component';
-import { ProjectTitlebarComponent } from './project-titlebar/project-titlebar.component';
 
 @Component({
   selector: 'app-project-map',
@@ -157,7 +156,6 @@ import { ProjectTitlebarComponent } from './project-titlebar/project-titlebar.co
     NodeLabelDraggedComponent,
     TextAddedComponent,
     TextEditedComponent,
-    ProjectTitlebarComponent,
   ],
 })
 export class ProjectMapComponent implements OnInit, OnDestroy {
