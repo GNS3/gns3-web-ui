@@ -61,6 +61,7 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
   constructor() {
     this.inputForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
+      numberOfPorts: new UntypedFormControl(''),
     });
   }
 
@@ -69,6 +70,13 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
       this.node = node;
       this.name = this.node.name;
       this.numberOfPorts = this.node.ports.length;
+
+      // Update form values with node data
+      this.inputForm.patchValue({
+        name: node.name,
+        numberOfPorts: this.node.ports.length,
+      });
+
       this.getConfiguration();
       if (!this.node.tags) {
         this.node.tags = [];
@@ -84,6 +92,12 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
 
   onSaveClick() {
     if (this.inputForm.valid) {
+      // Merge form values back into node
+      const formValues = this.inputForm.value;
+
+      this.node.name = formValues.name;
+      this.numberOfPorts = formValues.numberOfPorts;
+
       this.node.properties.ports_mapping = [];
       for (let i = 0; i < this.numberOfPorts; i++) {
         this.node.properties.ports_mapping.push({

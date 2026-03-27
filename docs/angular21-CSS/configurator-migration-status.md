@@ -19,8 +19,8 @@ This document tracks the migration status of all node configurator dialogs to:
 
 | Status | Count | Configurators |
 |--------|-------|---------------|
-| ✅ **Fully Migrated** | 4 | QEMU, VPCS, IOS, NAT |
-| ❌ **Not Migrated** | 8 | Ethernet Hub, Ethernet Switch, Cloud, IOU, VirtualBox, VMware, Docker, ATM Switch |
+| ✅ **Fully Migrated** | 5 | QEMU, VPCS, IOS, NAT, Ethernet Hub |
+| ❌ **Not Migrated** | 7 | Ethernet Switch, Cloud, IOU, VirtualBox, VMware, Docker, ATM Switch |
 | N/A | 1 | Frame Relay Switch (no tags, no ngModel) |
 
 ---
@@ -62,14 +62,12 @@ This document tracks the migration status of all node configurator dialogs to:
 
 ### ❌ Not Migrated (8)
 
-#### 1. Ethernet Hub Configurator
+#### 1. ~~Ethernet Hub Configurator~~
 - **File**: `ethernet_hub/configurator-ethernet-hub.component.html`
-- **Reactive Forms**: ❌ Uses `ngModel`
-- **Tags Structure**: ❌ Input inside chip-grid
-- **Issues**:
-  - Name field uses `[(ngModel)]`
-  - Console type uses `[(ngModel)]`
-  - Tags input structure wrong
+- **Reactive Forms**: ✅ Complete
+- **Tags Structure**: ✅ Correct (input outside chip-grid)
+- **Styling**: ✅ Centralized
+- **Migrated**: 2026-03-27
 
 #### 2. Ethernet Switch Configurator
 - **File**: `ethernet-switch/configurator-ethernet-switch.component.html`
