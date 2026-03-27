@@ -26,7 +26,7 @@ import { ToasterService } from '@services/toaster.service';
   standalone: true,
   selector: 'app-configurator-atm-switch',
   templateUrl: './configurator-atm-switch.component.html',
-  styleUrls: ['../configurator.component.scss', '../../../../preferences/preferences.component.scss'],
+  // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -75,6 +75,7 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
   constructor() {
     this.nameForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
+      useVpiOnly: new UntypedFormControl(false),
     });
 
     this.inputForm = this.formBuilder.group({
@@ -94,6 +95,12 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
     this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = node.name;
+
+      // Update form values with node data
+      this.nameForm.patchValue({
+        name: node.name,
+        useVpiOnly: false,
+      });
 
       let mappings = node.properties.mappings;
       Object.keys(mappings).forEach((key) => {
@@ -117,7 +124,9 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
   add() {
     if (this.inputForm.valid) {
       let nodeMapping: NodeMapping;
-      if (!this.useVpiOnly) {
+      const useVpiOnly = this.nameForm.value.useVpiOnly;
+
+      if (!useVpiOnly) {
         if (this.abstractForm.valid) {
           nodeMapping = {
             portIn: `${this.sourcePort}:${this.sourceVpi}:${this.sourceVci}`,
@@ -170,6 +179,12 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
 
   onSaveClick() {
     if (this.nameForm.valid) {
+      // Merge form values back into node
+      const formValues = this.nameForm.value;
+
+      this.node.name = formValues.name;
+      this.useVpiOnly = formValues.useVpiOnly;
+
       this.nodeMappings.clear();
       this.nodeMappingsDataSource.forEach((elem) => {
         this.nodeMappings.set(elem.portIn, elem.portOut);

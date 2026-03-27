@@ -120,12 +120,12 @@ This document tracks the migration status of all node configurator dialogs to:
   - Usage textarea uses `[(ngModel)]`
   - Tags input structure wrong
 
-#### 8. ATM Switch Configurator
+#### 8. ~~ATM Switch Configurator~~
 - **File**: `atm_switch/configurator-atm-switch.component.html`
-- **Reactive Forms**: ❌ Uses `ngModel` (checkbox)
+- **Reactive Forms**: ✅ Complete
 - **Tags Structure**: N/A (no tags field)
-- **Issues**:
-  - "Use VPI only" checkbox uses `[(ngModel)]`
+- **Styling**: ✅ Centralized
+- **Migrated**: 2026-03-27
 
 ---
 
