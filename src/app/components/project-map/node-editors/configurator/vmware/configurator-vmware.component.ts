@@ -35,7 +35,7 @@ import {
   standalone: true,
   selector: 'app-configurator-vmware',
   templateUrl: './configurator-vmware.component.html',
-  styleUrls: ['../configurator.component.scss'],
+  // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -75,6 +75,13 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
   constructor() {
     this.generalSettingsForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
+      console_type: new UntypedFormControl(''),
+      console_auto_start: new UntypedFormControl(false),
+      on_close: new UntypedFormControl(''),
+      headless: new UntypedFormControl(false),
+      linked_clone: new UntypedFormControl(false),
+      use_any_adapter: new UntypedFormControl(false),
+      usage: new UntypedFormControl(''),
     });
   }
 
@@ -83,9 +90,16 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
       this.node = node;
       this.name = node.name;
 
-      // Update form values
+      // Update form values with node data
       this.generalSettingsForm.patchValue({
         name: node.name,
+        console_type: node.console_type || '',
+        console_auto_start: node.console_auto_start || false,
+        on_close: node.properties.on_close || '',
+        headless: node.properties.headless || false,
+        linked_clone: node.properties.linked_clone || false,
+        use_any_adapter: node.properties.use_any_adapter || false,
+        usage: node.properties.usage || '',
       });
 
       if (!this.node.tags) {
@@ -165,6 +179,18 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
 
   onSaveClick() {
     if (this.generalSettingsForm.valid) {
+      // Merge form values back into node
+      const formValues = this.generalSettingsForm.value;
+
+      this.node.name = formValues.name;
+      this.node.console_type = formValues.console_type;
+      this.node.console_auto_start = formValues.console_auto_start;
+      this.node.properties.on_close = formValues.on_close;
+      this.node.properties.headless = formValues.headless;
+      this.node.properties.linked_clone = formValues.linked_clone;
+      this.node.properties.use_any_adapter = formValues.use_any_adapter;
+      this.node.properties.usage = formValues.usage;
+
       this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();

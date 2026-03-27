@@ -103,18 +103,12 @@ This document tracks the migration status of all node configurator dialogs to:
 - **Styling**: ✅ Centralized
 - **Migrated**: 2026-03-27
 
-#### 6. VMware Configurator
+#### 6. ~~VMware Configurator~~
 - **File**: `vmware/configurator-vmware.component.html`
-- **Reactive Forms**: ❌ Uses `ngModel`
-- **Tags Structure**: ❌ Input inside chip-grid
-- **Issues**:
-  - Console type uses `[(ngModel)]`
-  - Console auto start uses `[(ngModel)]`
-  - On close uses `[(ngModel)]`
-  - Headless mode uses `[(ngModel)]`
-  - Linked clone uses `[(ngModel)]`
-  - Usage textarea uses `[(ngModel)]`
-  - Tags input structure wrong
+- **Reactive Forms**: ✅ Complete
+- **Tags Structure**: ✅ Correct (input outside chip-grid)
+- **Styling**: ✅ Centralized
+- **Migrated**: 2026-03-27
 
 #### 7. Docker Configurator
 - **File**: `docker/configurator-docker.component.html`
