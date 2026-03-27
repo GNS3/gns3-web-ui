@@ -34,7 +34,11 @@
         [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
         (mousedown)="toggleDragging(true)"
       >
-        <mat-tab-group class="tabs" [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
+        <mat-tab-group
+          class="console-wrapper__tabs"
+          [selectedIndex]="selected.value"
+          (selectedIndexChange)="selected.setValue($event)"
+        >
           @for (node of nodes; track $index; let index = $index) {
           <mat-tab [label]="tab">
             <ng-template mat-tab-label>
@@ -53,53 +57,33 @@
           </mat-tab>
         </mat-tab-group>
 
-        @if (!isMinimized && !isMaximized) {
-        <button
-          [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-          mat-icon-button
-          (mousedown)="$event.stopPropagation()"
-          (click)="toggleMaximize()"
-          title="Maximize height"
-        >
-          <mat-icon>fullscreen</mat-icon>
-        </button>
-        } @if (isMaximized) {
-        <button
-          [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-          mat-icon-button
-          (mousedown)="$event.stopPropagation()"
-          (click)="toggleMaximize()"
-          title="Restore"
-        >
-          <mat-icon>fullscreen_exit</mat-icon>
-        </button>
-        } @if (!isMinimized) {
-        <button
-          [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-          mat-icon-button
-          (mousedown)="$event.stopPropagation()"
-          (click)="minimize(true)"
-        >
-          <mat-icon>remove</mat-icon>
-        </button>
-        } @if (isMinimized) {
-        <button
-          [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-          mat-icon-button
-          (mousedown)="$event.stopPropagation()"
-          (click)="minimize(false)"
-        >
-          <mat-icon>web_asset</mat-icon>
-        </button>
-        }
-        <button
-          [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-          mat-icon-button
-          (mousedown)="$event.stopPropagation()"
-          (click)="close()"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
+        <div class="console-header-actions">
+          @if (!isMinimized && !isMaximized) {
+          <button
+            mat-icon-button
+            (mousedown)="$event.stopPropagation()"
+            (click)="toggleMaximize()"
+            title="Maximize height"
+          >
+            <mat-icon>fullscreen</mat-icon>
+          </button>
+          } @if (isMaximized) {
+          <button mat-icon-button (mousedown)="$event.stopPropagation()" (click)="toggleMaximize()" title="Restore">
+            <mat-icon>fullscreen_exit</mat-icon>
+          </button>
+          } @if (!isMinimized) {
+          <button mat-icon-button (mousedown)="$event.stopPropagation()" (click)="minimize(true)">
+            <mat-icon>remove</mat-icon>
+          </button>
+          } @if (isMinimized) {
+          <button mat-icon-button (mousedown)="$event.stopPropagation()" (click)="minimize(false)">
+            <mat-icon>web_asset</mat-icon>
+          </button>
+          }
+          <button mat-icon-button (mousedown)="$event.stopPropagation()" (click)="close()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
       </div>
 
       <app-log-console

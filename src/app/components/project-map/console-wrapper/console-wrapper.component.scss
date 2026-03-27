@@ -87,6 +87,7 @@
   display: flex;
   padding: 2px;
   justify-content: space-between;
+  align-items: center;
   background: var(--mat-sys-surface);
   cursor: grab;
   position: relative;
@@ -102,36 +103,6 @@
 
 .consoleHeader:active {
   cursor: grabbing;
-}
-
-.consoleHeader .mat-icon-button {
-  transition: all 100ms ease;
-  border-radius: 50%;
-
-  &:hover {
-    background-color: var(--mat-sys-hover-state-layer);
-
-    mat-icon {
-      color: var(--mat-sys-primary);
-    }
-  }
-
-  &:active {
-    background-color: var(--mat-sys-focus-state-layer);
-  }
-}
-
-.consoleHeader .mat-icon-button[title='Close']:hover {
-  background-color: var(--mat-sys-error-container);
-
-  mat-icon {
-    color: var(--mat-sys-error);
-  }
-
-  &:active {
-    background-color: var(--mat-sys-error);
-    opacity: 0.8;
-  }
 }
 
 .mat-tab-label {
@@ -185,7 +156,7 @@
   }
 }
 
-.tabs {
+.console-wrapper__tabs {
   width: 80%;
 }
 
