@@ -1,6 +1,9 @@
 import { EventEmitter, Injectable } from '@angular/core';
+import { drag, D3DragEvent } from 'd3-drag';
+import { select } from 'd3-selection';
 
 import { LinkContextMenu } from '../events/event-source';
+import { LinksEventSource } from '../events/links-event-source';
 import { MultiLinkCalculatorHelper } from '../helpers/multi-link-calculator-helper';
 import { SelectionManager } from '../managers/selection-manager';
 import { MapLink } from '../models/map/map-link';
@@ -9,6 +12,7 @@ import { InterfaceLabelWidget } from './interface-label';
 import { InterfaceStatusWidget } from './interface-status';
 import { EthernetLinkWidget } from './links/ethernet-link';
 import { SerialLinkWidget } from './links/serial-link';
+import { StyleTranslator } from './links/style-translator';
 import { Widget } from './widget';
 
 @Injectable()
@@ -21,7 +25,8 @@ export class LinkWidget implements Widget {
     private interfaceStatusWidget: InterfaceStatusWidget,
     private selectionManager: SelectionManager,
     private ethernetLinkWidget: EthernetLinkWidget,
-    private serialLinkWidget: SerialLinkWidget
+    private serialLinkWidget: SerialLinkWidget,
+    private linksEventSource: LinksEventSource
   ) {}
 
   public draw(view: SVGSelection) {
@@ -136,6 +141,82 @@ export class LinkWidget implements Widget {
     link_body_merge
       .select<SVGPathElement>('path')
       .classed('selected', (l: MapLink) => this.selectionManager.isSelected(l));
+
+    // Curviness drag: directly drag path to adjust bezier/statemachine curvature (Photoshop-like)
+    const self = this;
+    link_body_merge.each(function(l: MapLink) {
+      const linkType = StyleTranslator.normalizeLinkType(l.link_style?.link_type);
+      if (linkType !== 'bezier' && linkType !== 'statemachine') return;
+
+      const linkGroup = select(this);
+      const path = linkGroup.select<SVGPathElement>('path');
+      if (path.empty()) return;
+
+      // Get actual center points (same as used in linkToXxxLink methods)
+      const sourceCenterX = l.source.x + l.source.width / 2;
+      const sourceCenterY = l.source.y + l.source.height / 2;
+      const targetCenterX = l.target.x + l.target.width / 2;
+      const targetCenterY = l.target.y + l.target.height / 2;
+
+      // Calculate perpendicular direction to the link
+      const dx = targetCenterX - sourceCenterX;
+      const dy = targetCenterY - sourceCenterY;
+      const length = Math.hypot(dx, dy) || 1;
+      const perpX = -dy / length;
+      const perpY = dx / length;
+
+      // Midpoint of the link
+      const midX = (sourceCenterX + targetCenterX) / 2;
+      const midY = (sourceCenterY + targetCenterY) / 2;
+
+      // Get initial curviness at drag start
+      const initialCurviness = l.link_style?.bezier_curviness ?? 0;
+
+      // Add drag behavior to path
+      path
+        .attr('cursor', 'grab')
+        .on('mouseenter', function() {
+          select(this).attr('cursor', 'grab');
+        })
+        .on('mouseleave', function() {
+          select(this).attr('cursor', 'default');
+        })
+        .call(
+          drag<SVGPathElement, MapLink>()
+            .on('start', function() {
+              select(this).attr('cursor', 'grabbing');
+            })
+            .on('drag', function(event: D3DragEvent<SVGPathElement, MapLink, MapLink>, l: MapLink) {
+              // Calculate perpendicular offset from midpoint
+              const offsetX = event.x - midX;
+              const offsetY = event.y - midY;
+              const perpOffset = offsetX * perpX + offsetY * perpY;
+
+              // Set curviness based on perpendicular offset
+              if (!l.link_style) {
+                l.link_style = {};
+              }
+              l.link_style.bezier_curviness = initialCurviness + perpOffset;
+
+              // Update path in real-time using actual center points
+              const sourceCenter: [number, number] = [sourceCenterX, sourceCenterY];
+              const targetCenter: [number, number] = [targetCenterX, targetCenterY];
+              const sourceOrientation = StyleTranslator.getContinuousOrientation(sourceCenter, targetCenter);
+              const targetOrientation = StyleTranslator.getContinuousOrientation(targetCenter, sourceCenter);
+              const newPath = StyleTranslator.getLinkPath(sourceCenter, targetCenter, l.link_style, {
+                sourceOrientation,
+                targetOrientation,
+                bezierVariation: 0,
+              });
+              select(this).attr('d', newPath);
+            })
+            .on('end', function(event: D3DragEvent<SVGPathElement, MapLink, MapLink>, l: MapLink) {
+              select(this).attr('cursor', 'grab');
+              // Emit edited event to persist changes
+              self.linksEventSource.edited.next(l);
+            })
+        );
+    });
 
     this.interfaceLabelWidget.draw(link_body_merge);
     this.interfaceStatusWidget.draw(link_body_merge);

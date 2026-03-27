@@ -262,6 +262,18 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.mat-mdc-menu-p
 }
 
 /* =============================================
+// Curviness Anchor (Link Drag Handle)
+// ============================================= */
+.curviness-anchor {
+  transition: r 150ms ease, fill 150ms ease;
+}
+
+.curviness-anchor:hover {
+  r: 10;
+  fill: #1976D2;
+}
+
+/* =============================================
 // Material Overlays Z-Index Fix
 // ============================================= */
 /*
