@@ -7,10 +7,10 @@
         @if (name) {
         <mat-tab-group>
           <mat-tab label="General settings">
-            <br />
             <form [formGroup]="generalSettingsForm">
               <mat-form-field class="form-field">
-                <input matInput type="text" formControlName="name" placeholder="Name" />
+                <mat-label>Name</mat-label>
+                <input matInput type="text" formControlName="name" />
               </mat-form-field>
 
               <mat-form-field class="form-field tags-field">
@@ -22,58 +22,71 @@
                     <mat-icon matChipRemove>cancel</mat-icon>
                   </mat-chip>
                   }
-                  <input
-                    matInput
-                    placeholder="Add tags"
-                    [matChipInputFor]="chipList"
-                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                    (matChipInputTokenEnd)="addTag($event)"
-                  />
                 </mat-chip-grid>
+                <input
+                  matInput
+                  placeholder="Add tags"
+                  [matChipInputFor]="chipList"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  (matChipInputTokenEnd)="addTag($event)"
+                />
               </mat-form-field>
+
+              <mat-form-field class="form-field">
+                <mat-label>Console type</mat-label>
+                <mat-select formControlName="console_type">
+                  @for (type of consoleTypes; track type) {
+                  <mat-option [value]="type">
+                    {{ type }}
+                  </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-checkbox formControlName="console_auto_start"> Auto start console </mat-checkbox>
+
+              <mat-checkbox formControlName="use_default_iou_values">
+                Use default IOU values for memories
+              </mat-checkbox>
+
+              @if (!generalSettingsForm.value.use_default_iou_values) {
+              <mat-form-field class="form-field">
+                <mat-label>RAM size</mat-label>
+                <input matInput type="number" min="1" formControlName="ram" />
+                <span matSuffix>MB</span>
+              </mat-form-field>
+              }
+
+              @if (!generalSettingsForm.value.use_default_iou_values) {
+              <mat-form-field class="form-field">
+                <mat-label>NVRAM size</mat-label>
+                <input matInput type="number" min="1" formControlName="nvram" />
+                <span matSuffix>KB</span>
+              </mat-form-field>
+              }
             </form>
-            <mat-form-field class="select">
-              <mat-select placeholder="Console type" [(ngModel)]="node.console_type">
-                @for (type of consoleTypes; track type) {
-                <mat-option [value]="type">
-                  {{ type }}
-                </mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-            <mat-checkbox [(ngModel)]="node.console_auto_start"> Auto start console </mat-checkbox><br />
-            <mat-checkbox [(ngModel)]="node.properties.use_default_iou_values">
-              Use default IOU values for memories
-            </mat-checkbox>
-            @if (!node.properties.use_default_iou_values) {
-            <mat-form-field class="form-field">
-              <input matInput type="number" min="1" [(ngModel)]="node.properties.ram" placeholder="RAM size" />
-              <span matSuffix>MB</span>
-            </mat-form-field>
-            } @if (!node.properties.use_default_iou_values) {
-            <mat-form-field class="form-field">
-              <input matInput type="number" min="1" [(ngModel)]="node.properties.nvram" placeholder="NVRAM size" />
-              <span matSuffix>KB</span>
-            </mat-form-field>
-            }
           </mat-tab>
 
           <mat-tab label="Network">
-            <br />
             <form [formGroup]="networkForm">
               <mat-form-field class="form-field">
-                <input matInput formControlName="ethernetAdapters" type="number" placeholder="Ethernet adapters" />
+                <mat-label>Ethernet adapters</mat-label>
+                <input matInput formControlName="ethernetAdapters" type="number" />
               </mat-form-field>
               <mat-form-field class="form-field">
-                <input matInput formControlName="serialAdapters" type="number" placeholder="Serial adapters" />
+                <mat-label>Serial adapters</mat-label>
+                <input matInput formControlName="serialAdapters" type="number" />
               </mat-form-field>
             </form>
           </mat-tab>
 
           <mat-tab label="Usage">
-            <mat-form-field class="form-field">
-              <textarea matInput type="text" [(ngModel)]="node.properties.usage"></textarea>
-            </mat-form-field>
+            <form [formGroup]="generalSettingsForm">
+              <mat-form-field class="form-field">
+                <mat-label>Usage</mat-label>
+                <textarea matInput formControlName="usage"></textarea>
+              </mat-form-field>
+            </form>
           </mat-tab>
         </mat-tab-group>
         }

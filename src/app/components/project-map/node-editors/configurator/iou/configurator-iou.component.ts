@@ -29,7 +29,7 @@ import { ToasterService } from '@services/toaster.service';
   standalone: true,
   selector: 'app-configurator-iou',
   templateUrl: './configurator-iou.component.html',
-  styleUrls: ['../configurator.component.scss'],
+  // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -66,6 +66,12 @@ export class ConfiguratorDialogIouComponent implements OnInit {
   constructor() {
     this.generalSettingsForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
+      console_type: new UntypedFormControl(''),
+      console_auto_start: new UntypedFormControl(false),
+      use_default_iou_values: new UntypedFormControl(true),
+      ram: new UntypedFormControl(''),
+      nvram: new UntypedFormControl(''),
+      usage: new UntypedFormControl(''),
     });
 
     this.networkForm = this.formBuilder.group({
@@ -78,7 +84,18 @@ export class ConfiguratorDialogIouComponent implements OnInit {
     this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = node.name;
-      this.generalSettingsForm.patchValue({ name: node.name });
+
+      // Update form values with node data
+      this.generalSettingsForm.patchValue({
+        name: node.name,
+        console_type: node.console_type || '',
+        console_auto_start: node.console_auto_start || false,
+        use_default_iou_values: node.properties.use_default_iou_values !== undefined ? node.properties.use_default_iou_values : true,
+        ram: node.properties.ram || '',
+        nvram: node.properties.nvram || '',
+        usage: node.properties.usage || '',
+      });
+
       this.networkForm.patchValue({
         ethernetAdapters: node.properties.ethernet_adapters,
         serialAdapters: node.properties.serial_adapters,
@@ -97,9 +114,21 @@ export class ConfiguratorDialogIouComponent implements OnInit {
 
   onSaveClick() {
     if (this.generalSettingsForm.valid && this.networkForm.valid) {
-      // Sync form values back to node.properties
+      // Merge form values back into node
+      const formValues = this.generalSettingsForm.value;
+
+      this.node.name = formValues.name;
+      this.node.console_type = formValues.console_type;
+      this.node.console_auto_start = formValues.console_auto_start;
+      this.node.properties.use_default_iou_values = formValues.use_default_iou_values;
+      this.node.properties.ram = formValues.ram;
+      this.node.properties.nvram = formValues.nvram;
+      this.node.properties.usage = formValues.usage;
+
+      // Sync network form values
       this.node.properties.ethernet_adapters = this.networkForm.value.ethernetAdapters;
       this.node.properties.serial_adapters = this.networkForm.value.serialAdapters;
+
       this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();

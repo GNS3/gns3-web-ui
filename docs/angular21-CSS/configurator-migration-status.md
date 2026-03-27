@@ -84,17 +84,12 @@ This document tracks the migration status of all node configurator dialogs to:
 - **Styling**: ✅ Centralized
 - **Migrated**: 2026-03-27
 
-#### 4. IOU Configurator
+#### 4. ~~IOU Configurator~~
 - **File**: `iou/configurator-iou.component.html`
-- **Reactive Forms**: ❌ Uses `ngModel`
-- **Tags Structure**: ❌ Input inside chip-grid
-- **Issues**:
-  - Console type uses `[(ngModel)]`
-  - Console auto start uses `[(ngModel)]`
-  - Use default IOU values checkbox uses `[(ngModel)]`
-  - RAM/NVRAM fields use `[(ngModel)]`
-  - Usage textarea uses `[(ngModel)]`
-  - Tags input structure wrong
+- **Reactive Forms**: ✅ Complete
+- **Tags Structure**: ✅ Correct (input outside chip-grid)
+- **Styling**: ✅ Centralized
+- **Migrated**: 2026-03-27
 
 #### 5. ~~VirtualBox Configurator~~
 - **File**: `virtualbox/configurator-virtualbox.component.html`
