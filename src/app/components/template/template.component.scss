@@ -24,6 +24,10 @@
 .template__add-btn {
   transition: transform 100ms ease;
 
+  mat-icon {
+    color: var(--mat-sys-on-primary);
+  }
+
   &:hover {
     transform: scale(1.1);
   }

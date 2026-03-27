@@ -15,4 +15,8 @@
 
 .menu-button {
   margin: 0 4px;
+
+  mat-icon {
+    color: var(--mat-sys-on-primary);
+  }
 }
