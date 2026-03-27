@@ -4,7 +4,9 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MockedLinkService } from '@components/project-map/project-map.component.spec';
 import { LinkService } from '@services/link.service';
 import { MapScaleService } from '@services/mapScale.service';
+import { NodeService } from '@services/node.service';
 import { ToolsService } from '@services/tools.service';
+import { of } from 'rxjs';
 import { LinksDataSource } from '../../datasources/links-datasource';
 import { NodesDataSource } from '../../datasources/nodes-datasource';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
@@ -17,6 +19,9 @@ describe('TextEditorComponent', () => {
   let component: TextEditorComponent;
   let fixture: ComponentFixture<TextEditorComponent>;
   let mockedLinkService: MockedLinkService = new MockedLinkService();
+  const mockedNodeService = {
+    updateNode: () => of({}),
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -29,6 +34,7 @@ describe('TextEditorComponent', () => {
         { provide: Renderer2, useClass: Renderer2 },
         { provide: MapScaleService, useClass: MapScaleService },
         { provide: LinkService, useValue: mockedLinkService },
+        { provide: NodeService, useValue: mockedNodeService },
         { provide: NodesDataSource, useClass: NodesDataSource },
         { provide: LinksDataSource, useClass: LinksDataSource },
         { provide: SelectionManager, useClass: SelectionManager },

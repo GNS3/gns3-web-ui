@@ -9,7 +9,15 @@ import { LinkStyle } from '@models/link-style';
 import { StyleTranslator } from './style-translator';
 
 class EthernetLinkPath {
-  constructor(public source: [number, number], public target: [number, number], public style: LinkStyle) {}
+  constructor(
+    public link: MapLink,
+    public source: [number, number],
+    public target: [number, number],
+    public style: LinkStyle,
+    public bezierVariation: number = 0,
+    public sourceOrientation?: ConnectorOrientation,
+    public targetOrientation?: ConnectorOrientation
+  ) {}
 }
 
 @Injectable()
@@ -22,6 +30,28 @@ export class EthernetLinkWidget implements Widget {
   };
 
   constructor() {}
+
+  private resolveContextMenuLink(arg1: unknown, arg2: unknown): MapLink | undefined {
+    const candidates = [arg2, arg1];
+
+    for (const candidate of candidates) {
+      if (!candidate || typeof candidate !== 'object') {
+        continue;
+      }
+
+      const maybePath = candidate as Partial<EthernetLinkPath>;
+      if (maybePath.link) {
+        return maybePath.link;
+      }
+
+      const maybeMapLink = candidate as Partial<MapLink>;
+      if (typeof maybeMapLink.id === 'string' && Array.isArray(maybeMapLink.nodes)) {
+        return maybeMapLink as MapLink;
+      }
+    }
+
+    return undefined;
+  }
 
   private linktoEthernetLink(link: MapLink) {
     // Validate source and target have valid coordinates
@@ -56,13 +86,20 @@ export class EthernetLinkWidget implements Widget {
         };
 
     return new EthernetLinkPath(
-      [link.source.x + link.source.width / 2, link.source.y + link.source.height / 2],
-      [link.target.x + link.target.width / 2, link.target.y + link.target.height / 2],
-      style
+      link,
+      sourcePoint,
+      targetPoint,
+      style,
+      bezierVariation,
+      sourceOrientation,
+      targetOrientation
     );
   }
 
   public draw(view: SVGSelection) {
+    const linksInView = view.data() as MapLink[];
+    this.bezierLayout.buildEndpointOrder(Array.isArray(linksInView) ? linksInView : []);
+
     const link = view.selectAll<SVGPathElement, EthernetLinkPath>('path.ethernet_link').data((l) => {
       if (l.linkType === 'ethernet') {
         const ethernetLink = this.linktoEthernetLink(l);
@@ -79,21 +116,19 @@ export class EthernetLinkWidget implements Widget {
       .on('contextmenu', (event: any, datum) => {
         let link: MapLink = datum as unknown as MapLink;
         const evt = event;
+        const link = this.resolveContextMenuLink(arg1, arg2);
+        if (!link) {
+          return;
+        }
         this.onContextMenu.emit(new LinkContextMenu(evt, link));
-      })
-      .attr('stroke', (datum) => {
-        return datum.style.color;
-      })
-      .attr('stroke-width', (datum) => {
-        return datum.style.width;
-      })
-      .attr('stroke-dasharray', (datum) => {
-        return StyleTranslator.getLinkStyle(datum.style);
       });
 
     const link_merge = link.merge(link_enter);
 
     link_merge
+      .attr('transform', (datum) => {
+        return StyleTranslator.getLinkTransform(datum.style);
+      })
       .attr('fill', 'none')
       .attr('stroke', (datum) => {
         return datum.style.color;
@@ -104,11 +139,22 @@ export class EthernetLinkWidget implements Widget {
       .attr('stroke-dasharray', (datum) => {
         return StyleTranslator.getLinkStyle(datum.style);
       })
+      .attr('stroke-opacity', (datum) => {
+        return datum.style.type === 0 ? 0 : 1;
+      })
+      .attr('pointer-events', (datum) => {
+        return datum.style.type === 0 ? 'stroke' : null;
+      })
       .attr('d', (ethernet) => {
-        const line_generator = path();
-        line_generator.moveTo(ethernet.source[0], ethernet.source[1]);
-        line_generator.lineTo(ethernet.target[0], ethernet.target[1]);
-        return line_generator.toString();
+        return StyleTranslator.getLinkPath(ethernet.source, ethernet.target, ethernet.style, {
+          bezierVariation: ethernet.bezierVariation,
+          sourceOrientation: ethernet.sourceOrientation,
+          targetOrientation: ethernet.targetOrientation,
+          flowchartDistance:
+            typeof ethernet.link.distance === 'number' && !Number.isNaN(ethernet.link.distance)
+              ? ethernet.link.distance
+              : 0,
+        });
       });
   }
 }
