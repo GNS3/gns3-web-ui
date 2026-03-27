@@ -10,127 +10,30 @@
 
   <main class="ethernet-switch-add__content">
     <section class="ethernet-switch-add__form-card">
-      <div class="ethernet-switch-add__section-header" (click)="toggleSection('general')">
-        <h3 class="ethernet-switch-add__section-title">General settings</h3>
-        <mat-icon class="ethernet-switch-add__expand-icon">{{
-          generalSettingsExpanded() ? 'expand_less' : 'expand_more'
-        }}</mat-icon>
-      </div>
-      @if (generalSettingsExpanded()) {
-      <form class="ethernet-switch-add__form">
+      <mat-radio-group class="ethernet-switch-add__radio-group">
+        <mat-radio-button class="ethernet-switch-add__radio" value="1" (click)="setControllerType('local')" [checked]="true">
+          Run the Ethernet switch locally
+        </mat-radio-button>
+      </mat-radio-group>
+
+      <form [formGroup]="formGroup" class="ethernet-switch-add__form">
         <mat-form-field appearance="fill" class="ethernet-switch-add__field">
           <mat-label>Template name</mat-label>
-          <input
-            matInput
-            [value]="templateName()"
-            (input)="templateName.set($event.target.value)"
-            type="text"
-            placeholder="Template name"
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" class="ethernet-switch-add__field">
-          <mat-label>Default name format</mat-label>
-          <input
-            matInput
-            [value]="defaultName()"
-            (input)="defaultName.set($event.target.value)"
-            type="text"
-            placeholder="Default name format"
-          />
-          <mat-hint>Use {{ '{' }}name{{ '}' }} for template name, {{ '{' }}0{{ '}' }} for instance number (e.g., Switch{{ '{' }}0{{ '}' }} → Switch0, Switch1...)</mat-hint>
-        </mat-form-field>
-
-        <div class="ethernet-switch-add__symbol-row">
-          <mat-form-field appearance="fill" class="ethernet-switch-add__field ethernet-switch-add__field--flex">
-            <mat-label>Symbol</mat-label>
-            <input
-              matInput
-              [value]="symbol()"
-              (input)="symbol.set($event.target.value)"
-              type="text"
-              placeholder="Symbol"
-            />
-          </mat-form-field>
-          <button mat-button class="ethernet-switch-add__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
-        </div>
-
-        <mat-form-field appearance="fill" class="ethernet-switch-add__field">
-          <mat-label>Tags</mat-label>
-          <mat-chip-grid #chipList>
-            @for (tag of tags(); track tag) {
-            <mat-chip (removed)="removeTag(tag)">
-              {{ tag }}
-              <mat-icon matChipRemove>cancel</mat-icon>
-            </mat-chip>
-            }
-          </mat-chip-grid>
-          <input
-            matInput
-            placeholder="Add tags"
-            [matChipInputFor]="chipList"
-            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-            (matChipInputTokenEnd)="addTag($event)"
-          />
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" class="ethernet-switch-add__field">
-          <mat-label>Category</mat-label>
-          <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
-            @for (cat of categories; track $index) {
-            <mat-option [value]="cat[1]">
-              {{ cat[0] }}
-            </mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="fill" class="ethernet-switch-add__field">
-          <mat-label>Console type</mat-label>
-          <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
-            @for (type of consoleTypes; track type) {
-            <mat-option [value]="type">
-              {{ type }}
-            </mat-option>
-            }
-          </mat-select>
+          <input formControlName="templateName" matInput type="text" placeholder="Template name" />
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="ethernet-switch-add__field">
           <mat-label>Number of ports</mat-label>
-          <input
-            matInput
-            [value]="numberOfPorts()"
-            (input)="numberOfPorts.set(+$event.target.value)"
-            type="number"
-            min="0"
-            placeholder="Number of ports"
-          />
+          <input formControlName="numberOfPorts" matInput type="number" min="0" placeholder="Number of ports" />
         </mat-form-field>
       </form>
-      }
-    </section>
-
-    <section class="ethernet-switch-add__form-card">
-      <div class="ethernet-switch-add__section-header" (click)="toggleSection('usage')">
-        <h3 class="ethernet-switch-add__section-title">Usage</h3>
-        <mat-icon class="ethernet-switch-add__expand-icon">{{
-          usageExpanded() ? 'expand_less' : 'expand_more'
-        }}</mat-icon>
-      </div>
-      @if (usageExpanded()) {
-      <div class="preferences__usage-form">
-        <mat-form-field appearance="fill" class="preferences__usage-field--full">
-          <mat-label>Usage notes</mat-label>
-          <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
-        </mat-form-field>
-      </div>
-      }
     </section>
 
     <div class="ethernet-switch-add__actions">
-      <button class="ethernet-switch-add__cancel-btn" (click)="goBack()" mat-button>Cancel</button>
-      <button mat-raised-button color="primary" class="ethernet-switch-add__save-btn" (click)="onSave()">Add template</button>
+      <button mat-button class="ethernet-switch-add__cancel-btn" (click)="goBack()">Cancel</button>
+      <button mat-raised-button color="primary" class="ethernet-switch-add__submit-btn" (click)="addTemplate()">
+        Add template
+      </button>
     </div>
   </main>
 </div>
