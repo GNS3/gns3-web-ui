@@ -171,6 +171,13 @@ export class LinkWidget implements Widget {
       const midX = (sourceCenterX + targetCenterX) / 2;
       const midY = (sourceCenterY + targetCenterY) / 2;
 
+      // Drag state to track initial position and offset
+      const dragState = {
+        startX: 0,
+        startY: 0,
+        startOffset: [0, 0] as [number, number],
+      };
+
       // Add drag behavior to path
       path
         .attr('cursor', 'grab')
@@ -182,12 +189,34 @@ export class LinkWidget implements Widget {
         })
         .call(
           drag<SVGPathElement, MapLink>()
-            .on('start', function() {
+            .on('start', function(event: D3DragEvent<SVGPathElement, MapLink, MapLink>) {
               select(this).attr('cursor', 'grabbing');
+              // Store initial position and current control offset
+              dragState.startX = event.x;
+              dragState.startY = event.y;
+              // Get current control position from existing offset or calculate from midpoint
+              if (l.link_style?.control_offset) {
+                dragState.startOffset = [l.link_style.control_offset[0], l.link_style.control_offset[1]];
+              } else {
+                dragState.startOffset = [midX, midY];
+              }
             })
             .on('drag', function(event: D3DragEvent<SVGPathElement, MapLink, MapLink>, l: MapLink) {
               // D3 drag provides event.x/y in the path's coordinate system
               const mousePos: [number, number] = [event.x, event.y];
+
+              // Get the stored start position and apply delta
+              const startX = dragState.startX;
+              const startY = dragState.startY;
+              const startOffset = dragState.startOffset;
+
+              // Calculate delta from drag start
+              const deltaX = mousePos[0] - startX;
+              const deltaY = mousePos[1] - startY;
+
+              // Apply delta to initial offset to get current control position
+              const controlX = startOffset[0] + deltaX;
+              const controlY = startOffset[1] + deltaY;
 
               // Update path in real-time using freeform bezier
               const sourceCenter: [number, number] = [sourceCenterX, sourceCenterY];
@@ -199,7 +228,7 @@ export class LinkWidget implements Widget {
                 targetCenter,
                 sourceOrientation,
                 targetOrientation,
-                mousePos
+                [controlX, controlY]
               );
               select(this).attr('d', newPath);
 
@@ -208,7 +237,7 @@ export class LinkWidget implements Widget {
                 l.link_style = {};
               }
               l.link_style.link_type = 'freeform';
-              l.link_style.control_offset = [mousePos[0], mousePos[1]];
+              l.link_style.control_offset = [controlX, controlY];
             })
             .on('end', function(event: D3DragEvent<SVGPathElement, MapLink, MapLink>, l: MapLink) {
               select(this).attr('cursor', 'grab');
