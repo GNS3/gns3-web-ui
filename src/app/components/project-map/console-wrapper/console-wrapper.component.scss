@@ -138,28 +138,16 @@
   height: 3rem;
   min-width: 8rem;
   flex-shrink: 0;
-  padding: 0 8px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
-.tab-label-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  gap: 8px;
-}
-
-.tab-label-text {
+.mat-tab-label > .tab-label-text {
   flex: 1;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.mat-tab-label .mat-icon-button {
+.mat-tab-label > .mat-icon-button {
   flex-shrink: 0;
   width: 32px;
   height: 32px;
