@@ -14,7 +14,7 @@ import { CommonModule } from '@angular/common';
 import { Terminal } from 'xterm';
 import { AttachAddon } from 'xterm-addon-attach';
 import { FitAddon } from 'xterm-addon-fit';
-import { Subscription } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';
 import { Node as GNS3Node } from '../../../cartography/models/node';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
@@ -26,7 +26,7 @@ import { XtermService } from '@services/xterm.service';
 @Component({
   selector: 'app-web-console',
   templateUrl: './web-console.component.html',
-  styleUrls: ['./web-console.component.scss'],
+  styleUrl: './web-console.component.scss',
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -42,15 +42,16 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     cursorStyle: 'block',
     fontSize: 15,
     fontFamily: 'courier-new, courier, monospace',
-    rightClickSelectsWord: true, // Enable right-click to select word
-    altClickMovesCursor: true, // Enable Alt+Click to move cursor
+    rightClickSelectsWord: true,
+    altClickMovesCursor: true,
     scrollback: 1000,
   });
   public fitAddon: FitAddon = new FitAddon();
+  private socket: WebSocket | null = null;
   public isLightThemeEnabled: boolean = false;
   private resizeObserver: ResizeObserver | null = null;
   private contextMenuCleanup: (() => void) | null = null;
-  private themeSubscription: Subscription | null = null;
+  private destroy$ = new Subject<void>();
 
   readonly terminal = viewChild<ElementRef>('terminal');
 
@@ -67,23 +68,15 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     this.cdr.markForCheck();
 
     // Subscribe to theme changes
-    this.themeSubscription = this.themeService.themeChanged.subscribe(() => {
+    this.themeService.themeChanged.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.xtermService.updateTerminalTheme(this.term, this.cdr);
       this.isLightThemeEnabled = this.themeService.getActualTheme() === 'light';
     });
 
-    this.consoleService.consoleResized.subscribe((ev) => {
+    this.consoleService.consoleResized.pipe(takeUntil(this.destroy$)).subscribe(() => {
       // Delay to ensure DOM has been updated with new dimensions
       setTimeout(() => {
-        // Use FitAddon to calculate proper dimensions
-        this.fitAddon.fit();
-        const cols = this.term.cols;
-        const rows = this.term.rows;
-
-        this.consoleService.setNumberOfColumns(cols);
-        this.consoleService.setNumberOfRows(rows);
-
-        this.term.resize(cols, rows);
+        this.fitTerminal();
       }, 50);
     });
 
@@ -99,19 +92,22 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     // Set theme based on current Material Design 3 theme
     this.xtermService.updateTerminalTheme(this.term, this.cdr);
 
-    const socket = new WebSocket(this.consoleService.getUrl(this.controller(), this.node()));
+    this.socket = new WebSocket(this.consoleService.getUrl(this.controller(), this.node()));
 
-    socket.onerror = (event) => {
+    this.socket.onerror = () => {
       console.error('[WebConsole] Socket connection error');
       this.term.write('\r\n\x1b[31mConnection lost. Please check if the node is still running.\x1b[0m\r\n');
     };
-    socket.onclose = (event) => {
-      console.log('[WebConsole] Socket closed:', event.code, event.reason);
+    this.socket.onclose = () => {
+      console.log('[WebConsole] Socket closed');
       this.term.write('\r\n\x1b[33mConnection closed.\x1b[0m\r\n');
-      this.consoleService.closeConsoleForNode(this.node());
+      const currentNode = this.node();
+      if (currentNode) {
+        this.consoleService.closeConsoleForNode(currentNode);
+      }
     };
 
-    const attachAddon = new AttachAddon(socket);
+    const attachAddon = new AttachAddon(this.socket);
     this.term.loadAddon(attachAddon);
     this.term.options.cursorBlink = true;
     this.xtermService.initTerminal(this.term, this.fitAddon);
@@ -160,33 +156,30 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         // Skip if width or height is 0 (element is hidden)
         if (width === 0 || height === 0) continue;
 
-        // Use requestAnimationFrame × 2 + Promise to ensure DOM is fully rendered
-        // and Angular change detection has completed before fitting
+        // Use requestAnimationFrame to ensure DOM is fully rendered
         requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            Promise.resolve().then(() => {
-              try {
-                // Fit terminal to container
-                this.fitAddon.fit();
-
-                // Also update columns/rows for service
-                const cols = this.term.cols;
-                const rows = this.term.rows;
-                this.consoleService.setNumberOfColumns(cols);
-                this.consoleService.setNumberOfRows(rows);
-
-                // Explicitly call resize to ensure terminal updates
-                this.term.resize(cols, rows);
-              } catch (e) {
-                // Ignore fit errors when element is not visible
-              }
-            });
-          });
+          try {
+            this.fitTerminal();
+          } catch (e) {
+            // Ignore fit errors when element is not visible
+          }
         });
       }
     });
 
     this.resizeObserver.observe(terminal.nativeElement);
+  }
+
+  /**
+   * Fit terminal to container and update service state
+   */
+  private fitTerminal(): void {
+    this.fitAddon.fit();
+    const cols = this.term.cols;
+    const rows = this.term.rows;
+    this.consoleService.setNumberOfColumns(cols);
+    this.consoleService.setNumberOfRows(rows);
+    this.term.resize(cols, rows);
   }
 
   /**
@@ -203,10 +196,14 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
    * Cleanup on component destroy
    */
   ngOnDestroy(): void {
-    // Cleanup theme subscription
-    if (this.themeSubscription) {
-      this.themeSubscription.unsubscribe();
-      this.themeSubscription = null;
+    // Complete destroy$ to unsubscribe all takeUntil subscriptions
+    this.destroy$.next();
+    this.destroy$.complete();
+
+    // Close WebSocket connection
+    if (this.socket) {
+      this.socket.close();
+      this.socket = null;
     }
 
     // Cleanup ResizeObserver to prevent memory leaks

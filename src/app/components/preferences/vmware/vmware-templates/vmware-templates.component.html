@@ -32,7 +32,12 @@
       <div class="vmware-templates__list-item" [routerLink]="template.template_id">
         <mat-icon class="vmware-templates__list-icon">memory</mat-icon>
         <span class="vmware-templates__list-name">{{ template.name }}</span>
-        <button mat-icon-button [matMenuTriggerFor]="menu" class="vmware-templates__menu-btn" (click)="$event.stopPropagation()">
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="menu"
+          class="vmware-templates__menu-btn"
+          (click)="$event.stopPropagation()"
+        >
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu" xPosition="before">

@@ -38,22 +38,21 @@
           @for (node of nodes; track $index; let index = $index) {
           <mat-tab [label]="tab">
             <ng-template mat-tab-label>
-              <div class="col" style="margin-left: 20px">{{ node.name }}</div>
-              <button
-                [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-                mat-icon-button
-                (mousedown)="$event.stopPropagation()"
-                (click)="removeTab(index)"
-              >
-                <mat-icon>close</mat-icon>
-              </button>
+              <span class="tab-label-content">
+                <span class="tab-label-text">{{ node.name }}</span>
+                <button mat-icon-button (mousedown)="$event.stopPropagation()" (click)="removeTab(index)">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </span>
             </ng-template>
           </mat-tab>
           }
 
           <mat-tab>
             <ng-template mat-tab-label>
-              <div class="col" style="margin-left: 20px">GNS3 console</div>
+              <span class="tab-label-content">
+                <span class="tab-label-text">GNS3 console</span>
+              </span>
             </ng-template>
           </mat-tab>
         </mat-tab-group>

@@ -105,12 +105,10 @@ export class EthernetSwitchesAddTemplateComponent implements OnInit {
         });
       }
 
-      this.builtInTemplatesService
-        .addTemplate(this.controller, ethernetSwitchTemplate)
-        .subscribe(() => {
-          this.toasterService.success('Template added successfully');
-          this.goBack();
-        });
+      this.builtInTemplatesService.addTemplate(this.controller, ethernetSwitchTemplate).subscribe(() => {
+        this.toasterService.success('Template added successfully');
+        this.goBack();
+      });
     } else {
       this.toasterService.error(`Fill all required fields`);
     }

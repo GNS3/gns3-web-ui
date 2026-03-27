@@ -32,7 +32,12 @@
       <div class="ios-templates__list-item" [routerLink]="template.template_id">
         <mat-icon class="ios-templates__list-icon">router</mat-icon>
         <span class="ios-templates__list-name">{{ template.name }}</span>
-        <button mat-icon-button [matMenuTriggerFor]="menu" class="ios-templates__menu-btn" (click)="$event.stopPropagation()">
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="menu"
+          class="ios-templates__menu-btn"
+          (click)="$event.stopPropagation()"
+        >
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu" xPosition="before">

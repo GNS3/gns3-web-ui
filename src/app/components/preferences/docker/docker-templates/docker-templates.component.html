@@ -32,7 +32,12 @@
       <div class="docker-templates__list-item" [routerLink]="template.template_id">
         <mat-icon class="docker-templates__list-icon">developer_board</mat-icon>
         <span class="docker-templates__list-name">{{ template.name }}</span>
-        <button mat-icon-button [matMenuTriggerFor]="menu" class="docker-templates__menu-btn" (click)="$event.stopPropagation()">
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="menu"
+          class="docker-templates__menu-btn"
+          (click)="$event.stopPropagation()"
+        >
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu" xPosition="before">

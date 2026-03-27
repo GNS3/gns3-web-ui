@@ -32,7 +32,12 @@
       <div class="iou-templates__list-item" [routerLink]="template.template_id">
         <mat-icon class="iou-templates__list-icon">settings_ethernet</mat-icon>
         <span class="iou-templates__list-name">{{ template.name }}</span>
-        <button mat-icon-button [matMenuTriggerFor]="menu" class="iou-templates__menu-btn" (click)="$event.stopPropagation()">
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="menu"
+          class="iou-templates__menu-btn"
+          (click)="$event.stopPropagation()"
+        >
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu" xPosition="before">

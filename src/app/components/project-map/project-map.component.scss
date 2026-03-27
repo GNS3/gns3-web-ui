@@ -28,16 +28,6 @@
 // Standardized selection states for different backgrounds
 // ============================================= */
 
-/* Selection on primary background (e.g., titlebar) */
-.selection-on-primary {
-  background: color-mix(in srgb, var(--mat-sys-on-primary) var(--gns3-selection-opacity-normal), transparent);
-
-  mat-icon,
-  .icon {
-    color: var(--mat-sys-on-primary);
-  }
-}
-
 /* Selection on surface background (e.g., toolbar, menus) */
 .selection-on-surface {
   background: var(--mat-sys-primary-container);
@@ -91,75 +81,6 @@ g.node:hover {
 
   g.drawing-line-tool path {
     stroke: var(--mat-sys-on-surface);
-  }
-}
-
-#project-titlebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 64px;
-  padding: 0 16px;
-  background-color: var(--mat-sys-primary);
-  color: var(--mat-sys-on-primary);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  @extend .shadow-normal;
-  z-index: 2;
-  transition: background-color 200ms ease;
-
-  .gns3-button {
-    position: relative;
-    top: -2px;
-
-    mat-icon {
-      width: 30px;
-      height: 30px;
-    }
-  }
-
-  .primary-controls {
-    border-right: 1px solid color-mix(in srgb, var(--mat-sys-on-primary) var(--gns3-border-opacity-medium), transparent);
-    padding-right: 16px;
-    margin-right: 16px;
-  }
-
-  .menu-button-group {
-    display: flex;
-    align-items: center;
-    height: 40px;
-  }
-
-  .menu-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 40px;
-    width: 40px;
-    margin: 0 8px;
-    border-radius: 20px;
-    background: none;
-    font-size: 14px;
-    transition: transform 100ms ease;
-  }
-
-  .menu-button:hover {
-    transform: scale(1.3);
-  }
-
-  .add-menu-button mat-icon {
-    font-size: 28px;
-  }
-
-  .selected {
-    @extend .selection-on-primary;
-  }
-
-  .project-titlebar-controls {
-    display: flex;
-    align-items: center;
   }
 }
 

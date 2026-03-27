@@ -11,7 +11,12 @@
   <main class="ethernet-switch-add__content">
     <section class="ethernet-switch-add__form-card">
       <mat-radio-group class="ethernet-switch-add__radio-group">
-        <mat-radio-button class="ethernet-switch-add__radio" value="1" (click)="setControllerType('local')" [checked]="true">
+        <mat-radio-button
+          class="ethernet-switch-add__radio"
+          value="1"
+          (click)="setControllerType('local')"
+          [checked]="true"
+        >
           Run the Ethernet switch locally
         </mat-radio-button>
       </mat-radio-group>

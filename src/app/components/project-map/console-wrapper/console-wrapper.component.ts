@@ -64,7 +64,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   filters: string[] = ['all', 'errors', 'warnings', 'info', 'map updates', 'controller requests'];
   selectedFilter: string = 'all';
 
-  public style: object = {};
+  public style: WindowStyle = {};
   public styleInside: object = { height: `120px` };
   public isDraggingEnabled: boolean = false;
   public isLightThemeEnabled: boolean = false;
@@ -253,7 +253,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     }
   }
 
-  dragWidget(event) {
+  dragWidget(event: MouseEvent) {
     // Use boundary service to constrain position
     this.style = this.boundaryService.constrainDragPosition(this.style, event.movementX, event.movementY);
   }

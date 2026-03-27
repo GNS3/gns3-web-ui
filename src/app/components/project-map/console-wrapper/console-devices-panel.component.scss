@@ -57,15 +57,6 @@
   width: 14px;
   height: 14px;
   color: var(--mat-sys-primary);
-  transition: transform 100ms ease;
-}
-
-.header-title.clickable:hover .panel-icon {
-  transform: scale(1.08);
-}
-
-.header-title.clickable:active .panel-icon {
-  transform: scale(0.95);
 }
 
 .header-text {
@@ -88,13 +79,11 @@
   margin-bottom: 4px;
   border-radius: 4px;
   cursor: pointer;
-  transition: all 100ms ease;
+  transition: background-color 100ms ease;
   background: var(--mat-sys-surface-container-low);
 
   &:hover {
     background: var(--mat-sys-surface-container);
-    transform: translateX(4px);
-    box-shadow: 0 2px 8px var(--mat-sys-primary);
   }
 
   &.started {
@@ -144,17 +133,11 @@
   color: var(--mat-sys-primary);
   flex-shrink: 0;
   opacity: 0.8;
-  transition: all 100ms ease;
 
   &.disabled {
     color: var(--mat-sys-on-surface-variant);
     opacity: 0.4;
   }
-}
-
-.device-item:hover .device-icon:not(.disabled) {
-  opacity: 1;
-  transform: scale(1.1);
 }
 
 .empty-state {

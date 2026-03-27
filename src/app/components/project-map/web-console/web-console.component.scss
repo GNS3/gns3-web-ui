@@ -18,7 +18,7 @@
 }
 
 /* Terminal container styling - minimal styling to avoid interfering with xterm.js */
-#terminal {
+.terminal {
   width: 100%;
   height: 100%;
 }
@@ -38,14 +38,13 @@
   background: var(--mat-sys-surface);
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: 8px;
-  box-shadow: 0 4px 16px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent);
   padding: 4px 0;
   min-width: 160px;
   max-width: 240px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 12px;
-  backdrop-filter: blur(8px) saturate(120%);
-  animation: contextMenuFadeIn 100ms ease-out;
+  animation: contextMenuFadeIn 80ms ease-out;
   cursor: default;
   user-select: none;
   z-index: 1000;
@@ -54,7 +53,7 @@
     padding: 10px 16px;
     color: var(--mat-sys-on-surface);
     cursor: pointer;
-    transition: all 100ms ease;
+    transition: background-color 100ms ease;
     display: flex;
     align-items: center;
     gap: 8px;

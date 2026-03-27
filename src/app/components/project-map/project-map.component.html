@@ -1,5 +1,36 @@
 @if (project) {
 <div class="project-map">
+  <!-- Project Titlebar -->
+  <app-project-titlebar
+    [project]="project"
+    [controller]="controller"
+    [readonly]="inReadOnlyMode"
+    [toolsDrawLink]="tools.draw_link"
+    [toolsMoving]="tools.moving"
+    [isTopologySummaryVisible]="isTopologySummaryVisible"
+    [isInterfaceLabelVisible]="isInterfaceLabelVisible"
+    [isConsoleVisible]="isConsoleVisible"
+    [notificationsVisibility]="notificationsVisibility"
+    [layersVisibility]="layersVisibility"
+    [gridVisibility]="gridVisibility"
+    [symbolScaling]="symbolScaling"
+    (toggleDrawLine)="toggleDrawLineMode()"
+    (toggleMovingMode)="toggleMovingMode()"
+    (toggleTopologySummary)="toggleShowTopologySummary($event)"
+    (toggleShowInterfaceLabels)="toggleShowInterfaceLabels($event)"
+    (toggleShowConsole)="toggleShowConsole($event)"
+    (toggleNotifications)="toggleNotifications($event)"
+    (toggleLayers)="toggleLayers($event)"
+    (toggleGrid)="toggleGrid($event)"
+    (toggleSnapToGrid)="toggleSnapToGrid($event)"
+    (toggleSymbolScaling)="toggleSymbolScaling($event)"
+    (onNodeCreation)="onNodeCreation($event)"
+  >
+  </app-project-titlebar>
+
+  <!-- Context Menu for right-click on map -->
+  <app-context-menu [project]="project" [controller]="controller"></app-context-menu>
+
   @if (!settings.angular_map) {
   <app-d3-map
     [controller]="controller"
@@ -34,150 +65,6 @@
   >
   </app-experimental-map>
   }
-
-  <!-- Project Titlebar -->
-  <div id="project-titlebar">
-    <button
-      matTooltip="Open menu"
-      matTooltipClass="custom-tooltip"
-      matTooltipPosition="left"
-      mat-icon-button
-      class="gns3-button menu-button"
-      [matMenuTriggerFor]="mainMenu"
-    >
-      <mat-icon svgIcon="gns3"></mat-icon>
-    </button>
-    <div class="project-titlebar-controls">
-      @if (!readonly) {
-      <div class="menu-button-group primary-controls">
-        <app-template [controller]="controller" [project]="project" (onNodeCreation)="onNodeCreation($event)">
-        </app-template>
-        <button
-          matTooltip="Add a link"
-          matTooltipClass="custom-tooltip"
-          matTooltipPosition="below"
-          class="menu-button"
-          mat-icon-button
-          [ngClass]="{ selected: tools.draw_link }"
-          [color]="tools.draw_link ? 'primary' : 'basic'"
-          (click)="toggleDrawLineMode()"
-        >
-          <mat-icon>timeline</mat-icon>
-        </button>
-      </div>
-      }
-      <div class="menu-button-group">
-        <app-nodes-menu [controller]="controller" [project]="project"></app-nodes-menu>
-        <app-context-menu [project]="project" [controller]="controller"></app-context-menu>
-      </div>
-    </div>
-    <div>
-      <button
-        matTooltip="Toggle topology/controllers summary"
-        matTooltipClass="custom-tooltip"
-        matTooltipPosition="left"
-        mat-icon-button
-        (click)="toggleShowTopologySummary(!isTopologySummaryVisible)"
-      >
-        <mat-icon>toc</mat-icon>
-      </button>
-    </div>
-
-    <!-- GNS3 menu -->
-    <mat-menu #mainMenu="matMenu" [overlapTrigger]="false">
-      <button mat-menu-item [routerLink]="['/controllers']">
-        <mat-icon>developer_board</mat-icon>
-        <span>Controllers</span>
-      </button>
-      <button mat-menu-item [routerLink]="['/controller', controller.id, 'projects']">
-        <mat-icon>work</mat-icon>
-        <span>Projects</span>
-      </button>
-
-      <button mat-menu-item routerLink="/controller/{{ controller.id }}/preferences">
-        <mat-icon>settings_applications</mat-icon>
-        <span>Template preferences</span>
-      </button>
-      <button mat-menu-item [routerLink]="['/controller', controller.id, 'image-manager']">
-        <mat-icon>collections</mat-icon>
-        <span>Image manager</span>
-      </button>
-      <button mat-menu-item (click)="addNewTemplate()">
-        <mat-icon>control_point</mat-icon>
-        <span>New template</span>
-      </button>
-      <app-import-appliance [controller]="controller" [project]="project"></app-import-appliance>
-      <button mat-menu-item [matMenuTriggerFor]="projectMenu">
-        <mat-icon>settings</mat-icon>
-        <span>Project settings</span>
-      </button>
-      <button mat-menu-item [matMenuTriggerFor]="viewMenu">
-        <mat-icon>view_module</mat-icon>
-        <span>Map settings</span>
-      </button>
-    </mat-menu>
-
-    <!-- Project Settings sub-menu -->
-    <mat-menu #projectMenu="matMenu" [overlapTrigger]="false">
-      <div>
-        <button mat-menu-item (click)="addNewProject()">
-          <mat-icon>add</mat-icon>
-          <span>Add new blank project</span>
-        </button>
-        <button mat-menu-item (click)="saveProject()">
-          <mat-icon>save</mat-icon>
-          <span>Save project as</span>
-        </button>
-        <button mat-menu-item (click)="editProject()">
-          <mat-icon>edit</mat-icon>
-          <span>Edit project</span>
-        </button>
-        <button mat-menu-item (click)="exportProject()">
-          <mat-icon>call_made</mat-icon>
-          <span>Export project</span>
-        </button>
-        <button mat-menu-item (click)="importProject()">
-          <mat-icon>call_received</mat-icon>
-          <span>Import project</span>
-        </button>
-        <button mat-menu-item (click)="closeProject()">
-          <mat-icon>close</mat-icon>
-          <span>Close project</span>
-        </button>
-        <button mat-menu-item (click)="deleteProject()">
-          <mat-icon>delete</mat-icon>
-          <span>Delete project</span>
-        </button>
-      </div>
-    </mat-menu>
-
-    <!-- Map Settings sub-menu -->
-    <mat-menu #viewMenu="matMenu" [overlapTrigger]="false">
-      <div class="options-item">
-        <mat-checkbox [ngModel]="isInterfaceLabelVisible" (change)="toggleShowInterfaceLabels($event.checked)">
-          Show interface labels </mat-checkbox
-        ><br />
-        <mat-checkbox [ngModel]="isConsoleVisible" (change)="toggleShowConsole($event.checked)">
-          Show console </mat-checkbox
-        ><br />
-        <mat-checkbox [ngModel]="isTopologySummaryVisible" (change)="toggleShowTopologySummary($event.checked)">
-          Show topology/controllers summary </mat-checkbox
-        ><br />
-        <mat-checkbox [ngModel]="notificationsVisibility" (change)="toggleNotifications($event.checked)">
-          Show notifications </mat-checkbox
-        ><br />
-        <mat-checkbox [ngModel]="layersVisibility" (change)="toggleLayers($event.checked)"> Show layers </mat-checkbox
-        ><br />
-        <mat-checkbox [ngModel]="gridVisibility" (change)="toggleGrid($event.checked)"> Show grid </mat-checkbox><br />
-        <mat-checkbox [ngModel]="project.snap_to_grid" (change)="toggleSnapToGrid($event.checked)">
-          Snap to grid </mat-checkbox
-        ><br />
-        <mat-checkbox [ngModel]="symbolScaling" (change)="toggleSymbolScaling($event.checked)">
-          Scale symbols </mat-checkbox
-        ><br />
-      </div>
-    </mat-menu>
-  </div>
 
   <!-- Project toolbar -->
   <div id="project-toolbar">

@@ -55,9 +55,7 @@
                 <input matInput type="number" min="1" formControlName="ram" />
                 <span matSuffix>MB</span>
               </mat-form-field>
-              }
-
-              @if (!generalSettingsForm.value.use_default_iou_values) {
+              } @if (!generalSettingsForm.value.use_default_iou_values) {
               <mat-form-field class="form-field">
                 <mat-label>NVRAM size</mat-label>
                 <input matInput type="number" min="1" formControlName="nvram" />

@@ -90,7 +90,8 @@ export class ConfiguratorDialogIouComponent implements OnInit {
         name: node.name,
         console_type: node.console_type || '',
         console_auto_start: node.console_auto_start || false,
-        use_default_iou_values: node.properties.use_default_iou_values !== undefined ? node.properties.use_default_iou_values : true,
+        use_default_iou_values:
+          node.properties.use_default_iou_values !== undefined ? node.properties.use_default_iou_values : true,
         ram: node.properties.ram || '',
         nvram: node.properties.nvram || '',
         usage: node.properties.usage || '',

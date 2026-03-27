@@ -32,7 +32,12 @@
       <div class="ethernet-switches__list-item" [routerLink]="template.template_id">
         <mat-icon class="ethernet-switches__list-icon">settings_ethernet</mat-icon>
         <span class="ethernet-switches__list-name">{{ template.name }}</span>
-        <button mat-icon-button [matMenuTriggerFor]="menu" class="ethernet-switches__menu-btn" (click)="$event.stopPropagation()">
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="menu"
+          class="ethernet-switches__menu-btn"
+          (click)="$event.stopPropagation()"
+        >
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu" xPosition="before">

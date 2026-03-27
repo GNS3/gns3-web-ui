@@ -6,34 +6,34 @@
  */
 
 @font-face {
-  font-family: "Material Symbols Outlined";
+  font-family: 'Material Symbols Outlined';
   font-style: normal;
   font-weight: 100 700;
   font-display: block;
-  src: url("/assets/fonts/material-symbols/material-symbols-outlined.woff2") format("woff2");
+  src: url('/assets/fonts/material-symbols/material-symbols-outlined.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: "Material Symbols Rounded";
+  font-family: 'Material Symbols Rounded';
   font-style: normal;
   font-weight: 100 700;
   font-display: block;
-  src: url("/assets/fonts/material-symbols/material-symbols-rounded.woff2") format("woff2");
+  src: url('/assets/fonts/material-symbols/material-symbols-rounded.woff2') format('woff2');
 }
 
 @font-face {
-  font-family: "Material Symbols Sharp";
+  font-family: 'Material Symbols Sharp';
   font-style: normal;
   font-weight: 100 700;
   font-display: block;
-  src: url("/assets/fonts/material-symbols/material-symbols-sharp.woff2") format("woff2");
+  src: url('/assets/fonts/material-symbols/material-symbols-sharp.woff2') format('woff2');
 }
 
 .material-symbols-outlined,
 .material-symbols-rounded,
 .material-symbols-sharp,
 .material-icons {
-  font-family: "Material Symbols Outlined";
+  font-family: 'Material Symbols Outlined';
   font-weight: normal;
   font-style: normal;
   font-size: 24px;
@@ -47,5 +47,5 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  font-feature-settings: "liga";
+  font-feature-settings: 'liga';
 }

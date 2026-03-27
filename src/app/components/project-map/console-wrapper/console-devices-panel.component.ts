@@ -106,17 +106,18 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Get status color
+   * Get status color using CSS variable
    */
   getStatusColor(status: string): string {
-    const colorMap = {
-      started: '#22c55e',
-      starting: '#eab308',
-      stopped: '#6b7280',
-      suspended: '#f97316',
-      errored: '#ef4444',
+    // Use CSS custom properties for theme consistency
+    const colorMap: Record<string, string> = {
+      started: 'var(--mat-sys-primary)',
+      starting: 'var(--mat-sys-tertiary)',
+      stopped: 'var(--mat-sys-outline)',
+      suspended: 'var(--mat-sys-secondary)',
+      errored: 'var(--mat-sys-error)',
     };
-    return colorMap[status] || '#6b7280';
+    return colorMap[status] || 'var(--mat-sys-outline)';
   }
 
   /**
