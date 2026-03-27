@@ -29,23 +29,25 @@
     } @if (ethernetHubsTemplates.length) {
     <nav class="ethernet-hubs__list">
       @for (template of ethernetHubsTemplates; track template.template_id) {
-      <a class="ethernet-hubs__list-item" [routerLink]="template.template_id">
-        <mat-icon class="ethernet-hubs__list-icon">device_hub</mat-icon>
-        <span class="ethernet-hubs__list-name">{{ template.name }}</span>
-        <button mat-icon-button [matMenuTriggerFor]="menu" class="ethernet-hubs__menu-btn">
+      <div class="ethernet-hubs__list-item">
+        <a class="ethernet-hubs__list-link" [routerLink]="template.template_id">
+          <mat-icon class="ethernet-hubs__list-icon">device_hub</mat-icon>
+          <span class="ethernet-hubs__list-name">{{ template.name }}</span>
+        </a>
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="ethernet-hubs__menu-btn" (click)="$event.stopPropagation(); $event.preventDefault()">
           <mat-icon>more_vert</mat-icon>
         </button>
-        <mat-menu #menu="matMenu">
+        <mat-menu #menu="matMenu" xPosition="before">
           <button mat-menu-item (click)="deleteTemplate(template)">
             <mat-icon>delete</mat-icon>
             <span>Delete</span>
           </button>
-          <button mat-menu-item [routerLink]="template.template_id">
+          <a mat-menu-item [routerLink]="template.template_id">
             <mat-icon>edit</mat-icon>
             <span>Edit</span>
-          </button>
+          </a>
         </mat-menu>
-      </a>
+      </div>
       }
     </nav>
     }

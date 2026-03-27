@@ -84,8 +84,6 @@
   align-items: center;
   gap: 16px;
   padding: 16px 24px;
-  color: var(--mat-sys-on-surface);
-  text-decoration: none;
   border-bottom: 1px solid var(--mat-sys-outline-variant);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -96,6 +94,15 @@
   &:hover {
     background-color: color-mix(in srgb, var(--mat-sys-on-surface) 5%, transparent);
   }
+}
+
+.ethernet-switches__list-link {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  color: var(--mat-sys-on-surface);
+  text-decoration: none;
 }
 
 .ethernet-switches__list-icon {
@@ -110,6 +117,7 @@
 
 .ethernet-switches__menu-btn {
   color: var(--mat-sys-on-surface-variant);
+  flex-shrink: 0;
 }
 
 /* =============================================
