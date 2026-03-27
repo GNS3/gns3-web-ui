@@ -16,6 +16,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Controller } from '@models/controller';
 import { IosTemplate } from '@models/templates/ios-template';
@@ -44,6 +45,7 @@ import { SymbolsMenuComponent } from '@components/preferences/common/symbols-men
     MatButtonModule,
     MatIconModule,
     MatExpansionModule,
+    MatCheckboxModule,
     SymbolsMenuComponent,
   ],
 })
@@ -110,6 +112,8 @@ export class IosTemplateDetailsComponent implements OnInit {
       execarea: new UntypedFormControl('', Validators.required),
       idlepc: new UntypedFormControl('', Validators.pattern(this.iosConfigurationService.getIdlepcRegex())),
       mac_addr: new UntypedFormControl('', Validators.pattern(this.iosConfigurationService.getMacAddrRegex())),
+      mmap: new UntypedFormControl(true),
+      sparsemem: new UntypedFormControl(true),
     });
   }
 
@@ -224,6 +228,8 @@ export class IosTemplateDetailsComponent implements OnInit {
       execarea: this.iosTemplate.exec_area,
       idlepc: this.iosTemplate.idlepc,
       mac_addr: this.iosTemplate.mac_addr,
+      mmap: this.iosTemplate.mmap,
+      sparsemem: this.iosTemplate.sparsemem,
     });
   }
 
@@ -325,6 +331,8 @@ export class IosTemplateDetailsComponent implements OnInit {
       this.iosTemplate.exec_area = this.advancedForm.get('execarea').value;
       this.iosTemplate.idlepc = this.advancedForm.get('idlepc').value;
       this.iosTemplate.mac_addr = this.advancedForm.get('mac_addr').value;
+      this.iosTemplate.mmap = this.advancedForm.get('mmap').value;
+      this.iosTemplate.sparsemem = this.advancedForm.get('sparsemem').value;
 
       this.iosService.saveTemplate(this.controller, this.iosTemplate).subscribe((iosTemplate: IosTemplate) => {
         this.toasterService.success('Changes saved');
