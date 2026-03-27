@@ -32,7 +32,7 @@ import { NonNegativeValidator } from '../../../../../validators/non-negative-val
   standalone: true,
   selector: 'app-configurator-docker',
   templateUrl: './configurator-docker.component.html',
-  styleUrls: ['../configurator.component.scss'],
+  // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -89,13 +89,20 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   constructor() {
     this.generalSettingsForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
+      startCommand: new UntypedFormControl(''),
       adapter: new UntypedFormControl('', Validators.required),
       mac_address: new UntypedFormControl('', Validators.pattern(this.dockerConfigurationService.getMacAddrRegex())),
       memory: new UntypedFormControl('', this.nonNegativeValidator.get),
       cpus: new UntypedFormControl('', this.nonNegativeValidator.get),
-      startCommand: new UntypedFormControl(''),
+      console_type: new UntypedFormControl(''),
+      aux_type: new UntypedFormControl(''),
+      console_auto_start: new UntypedFormControl(false),
+      console_resolution: new UntypedFormControl(''),
       consoleHttpPort: new UntypedFormControl('', Validators.required),
       consoleHttpPath: new UntypedFormControl('', Validators.required),
+      extra_hosts: new UntypedFormControl(''),
+      extra_volumes: new UntypedFormControl(''),
+      usage: new UntypedFormControl(''),
     });
   }
 
@@ -103,6 +110,26 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
     this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
       this.node = node;
       this.name = node.name;
+
+      // Update form values with node data
+      this.generalSettingsForm.patchValue({
+        name: node.name,
+        startCommand: node.properties.start_command || '',
+        adapter: node.properties.adapters || 0,
+        mac_address: node.properties.mac_address || '',
+        memory: node.properties.memory || 0,
+        cpus: node.properties.cpus || 0,
+        console_type: node.console_type || '',
+        aux_type: node.aux_type || '',
+        console_auto_start: node.console_auto_start || false,
+        console_resolution: node.properties.console_resolution || '',
+        consoleHttpPort: node.properties.console_http_port || '',
+        consoleHttpPath: node.properties.console_http_path || '',
+        extra_hosts: node.properties.extra_hosts || '',
+        extra_volumes: node.properties.extra_volumes || '',
+        usage: node.properties.usage || '',
+      });
+
       this.getConfiguration();
       if (!this.node.properties.cpus) this.node.properties.cpus = 0.0;
       if (!this.node.tags) {
@@ -133,6 +160,25 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
 
   onSaveClick() {
     if (this.generalSettingsForm.valid) {
+      // Merge form values back into node
+      const formValues = this.generalSettingsForm.value;
+
+      this.node.name = formValues.name;
+      this.node.properties.start_command = formValues.startCommand;
+      this.node.properties.adapters = formValues.adapter;
+      this.node.properties.mac_address = formValues.mac_address;
+      this.node.properties.memory = formValues.memory;
+      this.node.properties.cpus = formValues.cpus;
+      this.node.console_type = formValues.console_type;
+      this.node.aux_type = formValues.aux_type;
+      this.node.console_auto_start = formValues.console_auto_start;
+      this.node.properties.console_resolution = formValues.console_resolution;
+      this.node.properties.console_http_port = formValues.consoleHttpPort;
+      this.node.properties.console_http_path = formValues.consoleHttpPath;
+      this.node.properties.extra_hosts = formValues.extra_hosts;
+      this.node.properties.extra_volumes = formValues.extra_volumes;
+      this.node.properties.usage = formValues.usage;
+
       this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
         this.toasterService.success(`Node ${this.node.name} updated.`);
         this.onCancelClick();

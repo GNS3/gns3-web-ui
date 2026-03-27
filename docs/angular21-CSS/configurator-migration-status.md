@@ -27,7 +27,7 @@ This document tracks the migration status of all node configurator dialogs to:
 
 ## Detailed Status
 
-### ✅ Fully Migrated (3)
+### ✅ All Fully Migrated (12)
 
 #### QEMU Configurator
 - **File**: `qemu/configurator-qemu.component.html`
@@ -105,20 +105,12 @@ This document tracks the migration status of all node configurator dialogs to:
 - **Styling**: ✅ Centralized
 - **Migrated**: 2026-03-27
 
-#### 7. Docker Configurator
+#### 7. ~~Docker Configurator~~
 - **File**: `docker/configurator-docker.component.html`
-- **Reactive Forms**: ❌ Uses `ngModel`
-- **Tags Structure**: ❌ Input inside chip-grid
-- **Issues**:
-  - Console type uses `[(ngModel)]`
-  - Aux console type uses `[(ngModel)]`
-  - Console auto start uses `[(ngModel)]`
-  - VNC resolution uses `[(ngModel)]`
-  - Environment textarea uses `[(ngModel)]`
-  - Extra hosts textarea uses `[(ngModel)]`
-  - Extra volumes textarea uses `[(ngModel)]`
-  - Usage textarea uses `[(ngModel)]`
-  - Tags input structure wrong
+- **Reactive Forms**: ✅ Complete
+- **Tags Structure**: ✅ Correct (input outside chip-grid)
+- **Styling**: ✅ Centralized
+- **Migrated**: 2026-03-27
 
 #### 8. ~~ATM Switch Configurator~~
 - **File**: `atm_switch/configurator-atm-switch.component.html`
