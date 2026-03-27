@@ -29,23 +29,25 @@
     } @if (vmwareTemplates.length) {
     <nav class="vmware-templates__list">
       @for (template of vmwareTemplates; track template.template_id) {
-      <a class="vmware-templates__list-item" [routerLink]="template.template_id">
-        <mat-icon class="vmware-templates__list-icon">memory</mat-icon>
-        <span class="vmware-templates__list-name">{{ template.name }}</span>
-        <button mat-icon-button [matMenuTriggerFor]="menu" class="vmware-templates__menu-btn">
+      <div class="vmware-templates__list-item">
+        <a class="vmware-templates__list-link" [routerLink]="template.template_id">
+          <mat-icon class="vmware-templates__list-icon">memory</mat-icon>
+          <span class="vmware-templates__list-name">{{ template.name }}</span>
+        </a>
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="vmware-templates__menu-btn" (click)="$event.stopPropagation(); $event.preventDefault()">
           <mat-icon>more_vert</mat-icon>
         </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item [routerLink]="template.template_id">
+        <mat-menu #menu="matMenu" xPosition="before">
+          <a mat-menu-item [routerLink]="template.template_id">
             <mat-icon>edit</mat-icon>
             <span>Edit</span>
-          </button>
+          </a>
           <button mat-menu-item (click)="deleteTemplate(template)">
             <mat-icon>delete</mat-icon>
             <span>Delete</span>
           </button>
         </mat-menu>
-      </a>
+      </div>
       }
     </nav>
     }

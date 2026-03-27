@@ -29,17 +29,19 @@
     } @if (dockerTemplates.length) {
     <nav class="docker-templates__list">
       @for (template of dockerTemplates; track template.template_id) {
-      <a class="docker-templates__list-item" [routerLink]="template.template_id">
-        <mat-icon class="docker-templates__list-icon">developer_board</mat-icon>
-        <span class="docker-templates__list-name">{{ template.name }}</span>
-        <button mat-icon-button [matMenuTriggerFor]="menu" class="docker-templates__menu-btn">
+      <div class="docker-templates__list-item">
+        <a class="docker-templates__list-link" [routerLink]="template.template_id">
+          <mat-icon class="docker-templates__list-icon">developer_board</mat-icon>
+          <span class="docker-templates__list-name">{{ template.name }}</span>
+        </a>
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="docker-templates__menu-btn" (click)="$event.stopPropagation(); $event.preventDefault()">
           <mat-icon>more_vert</mat-icon>
         </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item [routerLink]="template.template_id">
+        <mat-menu #menu="matMenu" xPosition="before">
+          <a mat-menu-item [routerLink]="template.template_id">
             <mat-icon>edit</mat-icon>
             <span>Edit</span>
-          </button>
+          </a>
           <button mat-menu-item (click)="copyTemplate(template)">
             <mat-icon>content_copy</mat-icon>
             <span>Copy</span>
@@ -49,7 +51,7 @@
             <span>Delete</span>
           </button>
         </mat-menu>
-      </a>
+      </div>
       }
     </nav>
     }

@@ -29,13 +29,15 @@
     } @if (iouTemplates.length) {
     <nav class="iou-templates__list">
       @for (template of iouTemplates; track template.template_id) {
-      <a class="iou-templates__list-item" [routerLink]="template.template_id">
-        <mat-icon class="iou-templates__list-icon">settings_ethernet</mat-icon>
-        <span class="iou-templates__list-name">{{ template.name }}</span>
-        <button mat-icon-button [matMenuTriggerFor]="menu" class="iou-templates__menu-btn">
+      <div class="iou-templates__list-item">
+        <a class="iou-templates__list-link" [routerLink]="template.template_id">
+          <mat-icon class="iou-templates__list-icon">settings_ethernet</mat-icon>
+          <span class="iou-templates__list-name">{{ template.name }}</span>
+        </a>
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="iou-templates__menu-btn" (click)="$event.stopPropagation(); $event.preventDefault()">
           <mat-icon>more_vert</mat-icon>
         </button>
-        <mat-menu #menu="matMenu">
+        <mat-menu #menu="matMenu" xPosition="before">
           <button mat-menu-item (click)="deleteTemplate(template)">
             <mat-icon>delete</mat-icon>
             <span>Delete</span>
@@ -44,12 +46,12 @@
             <mat-icon>content_copy</mat-icon>
             <span>Copy</span>
           </button>
-          <button mat-menu-item [routerLink]="template.template_id">
+          <a mat-menu-item [routerLink]="template.template_id">
             <mat-icon>edit</mat-icon>
             <span>Edit</span>
-          </button>
+          </a>
         </mat-menu>
-      </a>
+      </div>
       }
     </nav>
     }

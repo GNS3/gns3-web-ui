@@ -17,7 +17,7 @@ export class Properties {
   linked_clone: boolean;
   on_close: string;
   aux: number;
-  aux_type: boolean;
+  aux_type?: string;
   ram: number;
   system_id: string;
   dynamips_id?: number;

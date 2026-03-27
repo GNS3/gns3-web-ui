@@ -29,17 +29,19 @@
     } @if (qemuTemplates.length) {
     <nav class="qemu-vm-templates__list">
       @for (template of qemuTemplates; track template.template_id) {
-      <a class="qemu-vm-templates__list-item" [routerLink]="template.template_id">
-        <mat-icon class="qemu-vm-templates__list-icon">memory</mat-icon>
-        <span class="qemu-vm-templates__list-name">{{ template.name }}</span>
-        <button mat-icon-button [matMenuTriggerFor]="menu" class="qemu-vm-templates__menu-btn">
+      <div class="qemu-vm-templates__list-item">
+        <a class="qemu-vm-templates__list-link" [routerLink]="template.template_id">
+          <mat-icon class="qemu-vm-templates__list-icon">memory</mat-icon>
+          <span class="qemu-vm-templates__list-name">{{ template.name }}</span>
+        </a>
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="qemu-vm-templates__menu-btn" (click)="$event.stopPropagation(); $event.preventDefault()">
           <mat-icon>more_vert</mat-icon>
         </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item [routerLink]="template.template_id">
+        <mat-menu #menu="matMenu" xPosition="before">
+          <a mat-menu-item [routerLink]="template.template_id">
             <mat-icon>edit</mat-icon>
             <span>Edit</span>
-          </button>
+          </a>
           <button mat-menu-item (click)="copyTemplate(template)">
             <mat-icon>content_copy</mat-icon>
             <span>Copy</span>
@@ -49,7 +51,7 @@
             <span>Delete</span>
           </button>
         </mat-menu>
-      </a>
+      </div>
       }
     </nav>
     }
