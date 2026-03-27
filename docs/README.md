@@ -2,7 +2,7 @@
 
 > Complete documentation index for GNS3 Web UI project
 
-**Last Updated**: 2026-03-18
+**Last Updated**: 2026-03-27
 
 ---
 
@@ -10,29 +10,108 @@
 
 ```
 docs/
-├── ai-chat-complete-guide.md             # ⭐ Complete AI Chat implementation guide
-├── ai-profile-management.md              # AI Profile / LLM Model Configuration management
-├── console-devices-panel-implementation.md # Console devices panel docs (v1.9.0)
-├── dialog-style-isolation-guide.md       # Dialog style isolation using panelClass
-├── electron-removal-migration-guide.md   # Electron removal and migration guide
-├── window-boundary-service.md            # Window boundary service documentation
-└── README.md                             # This file
+├── features/              # Feature implementation documentation
+│   ├── ai-chat/          # AI Chat feature docs
+│   ├── console/          # Console-related docs
+│   └── template-settings/
+├── framework/            # Framework migration & architecture
+│   └── angular-21/       # Angular 21 Zoneless migration
+├── guides/               # Development standards & best practices
+│   ├── css/              # CSS coding standards
+│   └── dialog-style-isolation.md
+└── archive/              # Historical & deprecated docs
+    ├── bugs/             # Fixed bug reports
+    └── deprecated/       # Outdated documentation
 ```
 
 ---
 
 ## 📚 Documentation Index
 
-### Core Feature Documentation
+### 🎯 Features Documentation
 
 | Document | Description |
 |----------|-------------|
-| [ai-chat-complete-guide.md](./ai-chat-complete-guide.md) | ⭐ Complete AI Chat implementation guide |
-| [ai-profile-management.md](./ai-profile-management.md) | AI Profile / LLM Model Configuration management |
-| [console-devices-panel-implementation.md](./console-devices-panel-implementation.md) | Console devices panel (v1.9.0) |
-| [dialog-style-isolation-guide.md](./dialog-style-isolation-guide.md) | Dialog style isolation using panelClass |
-| [electron-removal-migration-guide.md](./electron-removal-migration-guide.md) | Electron removal and migration guide |
-| [window-boundary-service.md](./window-boundary-service.md) | Window boundary service |
+| [AI Chat Complete Guide](./features/ai-chat/complete-guide.md) | ⭐ Complete AI Chat implementation guide |
+| [AI Chat Optimization Todos](./features/ai-chat/optimization-todos.md) | AI Chat optimization tasks |
+| [AI Profile Management](./features/ai-chat/profile-management.md) | AI Profile / LLM Model Configuration management |
+| [Console Devices Panel](./features/console/devices-panel-implementation.md) | Console devices panel (v1.9.0) |
+| [Console Topology Highlight](./features/console/topology-highlight.md) | Console topology highlighting |
+| [VNC Console Implementation](./features/console/vnc-console-implementation.md) | VNC console implementation docs |
+
+---
+
+### 🏗️ Framework Documentation
+
+#### Angular 21 Migration
+
+| Document | Description |
+|----------|-------------|
+| [Migration Plan](./framework/angular-21/migration-plan.md) | ⭐ Angular 21 Zoneless phased migration plan |
+| [Component Tracker](./framework/angular-21/component-tracker.md) | Component migration progress tracking |
+| [Model Input Signals](./framework/angular-21/model-input-signals.md) | Signal input patterns guide |
+
+#### Zoneless Issues
+
+| Document | Description |
+|----------|-------------|
+| [Dynamic Component Loading](./framework/angular-21/zoneless-issues/dynamic-component-loading.md) | Zoneless dynamic component issues |
+| [Routing Issues](./framework/angular-21/zoneless-issues/routing-issues.md) | Zoneless routing issues |
+
+#### Known Issues
+
+| Document | Description |
+|----------|-------------|
+| [MatCheckbox FormsModule](./framework/angular-21/known-issues/mat-checkbox-forms-module.md) | Checkbox ngModel requirements |
+| [MatMenu Module](./framework/angular-21/known-issues/mat-menu-module.md) | Menu module requirements |
+
+#### Other Framework Docs
+
+| Document | Description |
+|----------|-------------|
+| [Web Console Resize Fix](./framework/web-console-resize-fix.md) | Web console resize issue fix |
+| [Project Map Context Menu](./framework/project-map-context-menu.md) | Context menu implementation |
+| [Custom Adapters](./framework/custom-adapters-implementation.md) | Custom adapters implementation |
+
+---
+
+### 📖 Development Guides
+
+#### CSS Standards
+
+| Document | Description |
+|----------|-------------|
+| [CSS Coding Standards](./guides/css/01-coding-standards.md) | ⭐ CSS coding standards (no !important, no ::ng-deep) |
+| [Material 3 Variables](./guides/css/02-material3-variables.md) | Material Design 3 CSS variables reference |
+| [Dialog Styles Guide](./guides/css/03-dialog-styles.md) | Dialog styling patterns |
+| [Icon Buttons Guide](./guides/css/icon-buttons-guide.md) | Material Design 3 icon buttons |
+
+#### General Guides
+
+| Document | Description |
+|----------|-------------|
+| [Dialog Style Isolation](./guides/dialog-style-isolation.md) | ⭐ Dialog style isolation using panelClass |
+| [Angular Material Usage](./guides/angular-material-usage.md) | Angular Material usage guidelines |
+| [Window Boundary Service](./guides/window-boundary-service.md) | Window boundary management |
+
+---
+
+### 🗄️ Archive
+
+#### Bug Fixes
+
+| Document | Description |
+|----------|-------------|
+| [AI Chat Theme Fix](./archive/bugs/2026-03-19-ai-chat-theme-fix.md) | Fixed menu theme switching issue |
+| [Console Position Fix](./archive/bugs/console-window-position-after-resize.md) | Console window position after resize |
+
+#### Deprecated
+
+| Document | Description |
+|----------|-------------|
+| [Dialog Max Width Issue](./archive/deprecated/dialog-max-width-issue.md) | Dialog max-width issue (resolved) |
+| [xterm CSS](./archive/deprecated/xterm-css-and-view-encapsulation.md) | xterm.js CSS (deprecated) |
+| [Configurator Migration](./archive/deprecated/configurator-migration-status.md) | Old configurator migration status |
 
 ---
 
@@ -40,72 +119,31 @@ docs/
 
 ### Featured Documentation
 
-- **AI Chat Feature**: [ai-chat-complete-guide.md](./ai-chat-complete-guide.md) - Complete AI Chat implementation guide
-- **AI Profile Management**: [ai-profile-management.md](./ai-profile-management.md) - LLM Model Configuration management
-- **Console Devices Panel**: [console-devices-panel-implementation.md](./console-devices-panel-implementation.md) - Multi-device console management
-- **Dialog Style Isolation**: [dialog-style-isolation-guide.md](./dialog-style-isolation-guide.md) - Using panelClass to prevent style pollution
-- **Window Boundary Service**: [window-boundary-service.md](./window-boundary-service.md) - Window boundary management
+- **AI Chat Feature**: [features/ai-chat/complete-guide.md](./features/ai-chat/complete-guide.md)
+- **Angular 21 Migration**: [framework/angular-21/migration-plan.md](./framework/angular-21/migration-plan.md)
+- **CSS Standards**: [guides/css/01-coding-standards.md](./guides/css/01-coding-standards.md)
+- **Dialog Style Isolation**: [guides/dialog-style-isolation.md](./guides/dialog-style-isolation.md)
 
 ### Getting Started
 
-1. **New to AI Chat?** Start with [ai-chat-complete-guide.md](./ai-chat-complete-guide.md)
-2. **AI Profile Management?** See [ai-profile-management.md](./ai-profile-management.md)
-3. **Console Management?** See [console-devices-panel-implementation.md](./console-devices-panel-implementation.md)
-4. **Dialog Styling?** Check [dialog-style-isolation-guide.md](./dialog-style-isolation-guide.md)
-5. **Service Integration?** Check [window-boundary-service.md](./window-boundary-service.md)
+1. **New to AI Chat?** Start with [features/ai-chat/complete-guide.md](./features/ai-chat/complete-guide.md)
+2. **Angular 21 Migration?** See [framework/angular-21/migration-plan.md](./framework/angular-21/migration-plan.md)
+3. **CSS Styling?** Check [guides/css/01-coding-standards.md](./guides/css/01-coding-standards.md)
+4. **Dialog Styling?** See [guides/dialog-style-isolation.md](./guides/dialog-style-isolation.md)
 
 ---
 
-## 📝 Recent Updates
+## 📝 Recent Changes
 
-### 2026-03-18
-- ✅ **Console Devices Panel v1.9.0**: Fix light theme and project map background issues
-  - Fix sidebar light theme not applying due to `isolation: isolate` blocking `:host-context()`
-  - Refactor sidebar theme implementation to use direct property binding (like header)
-  - Replace `:host-context(.lightTheme)` with `[ngClass]="{ lightTheme: isLightTheme }"`
-  - Add `@Input() isLightTheme` to `ConsoleDevicesPanelComponent`
-  - Remove `isolation: isolate` from `.console-area` to allow theme propagation
-  - Fix project map background always showing light color
-  - Remove fixed `body { background-color: #e8ecef }` from global styles
-  - Background color now controlled dynamically by `ThemeService` and `applyMapBackground()`
-- ✅ **Window Boundary Service Documentation**: Fixed documentation consistency with code implementation
-  - Added missing `resetConfig()` method documentation
-  - Updated `isValidSize()` method signature to use `unknown` type (matches actual implementation)
-  - Documented type conversion behavior for unknown inputs
-  - Verified service usage in 2 components: AI Chat and Console Wrapper
-
-### 2026-03-14
-- ✅ **Electron Removal**: Removed Electron desktop application support
-  - Application is now web-only (browser-based)
-  - Removed 5 Electron dependencies: electron, electron-builder, @sentry/electron, ngx-electron, ngx-childprocess
-  - Reduced package count from 1647 to 1430 (-13%)
-  - Fixed 11 Electron-related security vulnerabilities
-  - Simplified codebase and improved build performance
-  - Updated Console Devices Panel documentation (v1.8.0) to reflect web-only nature
-- ✅ **AI Profile Management**: New documentation for LLM Model Configuration management
-  - Complete feature overview and component structure
-  - API integration documentation for user and group endpoints
-  - Form validation rules (conditional API key validation)
-  - Provider presets (OpenRouter, DeepSeek, Custom)
-  - Custom field support
-  - Security considerations (API key encryption)
-  - Configuration inheritance model
-
-### 2026-03-13
-- ✅ **Dialog Style Isolation Guide**: New documentation for using panelClass to scope dialog styles
-  - Explains how to prevent `.mat-dialog-container` style pollution
-  - Provides complete example with `tool-details-dialog` component
-  - Includes theme-specific styling patterns
-
-### 2026-03-10
-- ✅ **Documentation Restructuring**: Flattened documentation structure
-  - Moved `ai-chat-complete-guide.md` to root docs directory
-  - Moved `window-boundary-service.md` to root docs directory
-  - Removed nested `ai-chat/` and `services/` subdirectories
-  - Simplified navigation and file organization
-- ✅ **AI Chat v1.0**: Complete AI Chat functionality with multi-session management
-- ✅ **Console Panel v1.8.0**: Enhanced device console management with window persistence
+### 2026-03-27
+- ✅ **Documentation Restructuring**: Complete docs reorganization
+  - Created new directory structure (features/, framework/, guides/, archive/)
+  - Moved all feature docs to `features/` (ai-chat/, console/)
+  - Moved all Angular 21 docs to `framework/angular-21/`
+  - Moved CSS standards to `guides/css/`
+  - Moved fixed bugs to `archive/bugs/`
+  - Updated README with correct file paths
 
 ---
 
-*Last Updated: 2026-03-18*
+*Last Updated: 2026-03-27*
