@@ -275,7 +275,7 @@ usageExpanded = false;
 
 ## Migration Status
 
-### Completed
+### Completed (Template Details Components)
 - [x] Docker Template Details (`docker-template-details`)
 - [x] Cloud Nodes Template Details (`cloud-nodes-template-details`)
 - [x] Ethernet Hubs Template Details (`ethernet-hubs-template-details`)
@@ -286,33 +286,34 @@ usageExpanded = false;
 - [x] VMware Template Details (`vmware-template-details`)
 - [x] VPCS Template Details (`vpcs-template-details`)
 
-### Pending Migration (preferences)
+### Completed (Display-Only Checkboxes)
+- [x] `project-map.component.html` - 8 checkboxes migrated to `[checked]` pattern (2026-03-27)
 
-The following components in `src/app/components/preferences/` still use `ngModel` and need to be migrated:
+### Pending Migration
 
-#### Add Template Dialogs
-- [x] `add-docker-template`
-- [x] `add-ios-template`
-- [x] `add-iou-template`
-- [x] `add-qemu-vm-template`
-- [x] `add-virtual-box-template`
-- [x] `add-vmware-template`
+For a complete inventory of remaining ngModel usage (40 files), see **[ngModel Migration Tracker](./ngmodel-migration-tracker.md)**.
 
-#### Preferences Pages
-- `dynamips-preferences`
-- `qemu-preferences`
-- `virtual-box-preferences`
-- `vmware-preferences`
-- `vpcs-preferences`
+#### Quick Reference
 
-#### Common Components
-- `custom-adapters-table`
-- `ports`
-- `symbols`
-- `udp-tunnels`
+| Category | Files | Priority |
+|----------|-------|----------|
+| **Search Inputs** | ~15 | Low (simple pattern) |
+| **Display Checkboxes** | ~8 | Low (use `[checked]`) |
+| **Form Inputs** | ~10 | Medium (use `model()` signals) |
+| **Complex Forms** | ~7 | High (consider Reactive Forms) |
 
-#### Other
-- `ios-template-details` (uses mixed approach with formGroup + standalone ngModel)
+#### Specific Components (from this document)
+
+**Note**: The following components were previously listed as pending but have been completed:
+- ✅ All Add Template Dialogs (marked complete above)
+- ✅ Template Details components (marked complete above)
+
+**Remaining work** should focus on:
+1. Preferences pages with form inputs
+2. Common components with complex ngModel usage
+3. Other components with two-way binding needs
+
+For detailed migration patterns and progress tracking, refer to the **[ngModel Migration Tracker](./ngmodel-migration-tracker.md)** document.
 
 ## Reference
 

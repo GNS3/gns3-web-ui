@@ -119,25 +119,25 @@
     <!-- Map Settings sub-menu -->
     <mat-menu #viewMenu="matMenu" [overlapTrigger]="false">
       <div class="options-item">
-        <mat-checkbox [ngModel]="isInterfaceLabelVisible" (change)="toggleShowInterfaceLabels($event.checked)">
+        <mat-checkbox [checked]="isInterfaceLabelVisible" (change)="toggleShowInterfaceLabels($event.checked)">
           Show interface labels </mat-checkbox
         ><br />
-        <mat-checkbox [ngModel]="isConsoleVisible" (change)="toggleShowConsole($event.checked)">
+        <mat-checkbox [checked]="isConsoleVisible" (change)="toggleShowConsole($event.checked)">
           Show console </mat-checkbox
         ><br />
-        <mat-checkbox [ngModel]="isTopologySummaryVisible" (change)="toggleShowTopologySummary($event.checked)">
+        <mat-checkbox [checked]="isTopologySummaryVisible" (change)="toggleShowTopologySummary($event.checked)">
           Show topology/controllers summary </mat-checkbox
         ><br />
-        <mat-checkbox [ngModel]="notificationsVisibility" (change)="toggleNotifications($event.checked)">
+        <mat-checkbox [checked]="notificationsVisibility" (change)="toggleNotifications($event.checked)">
           Show notifications </mat-checkbox
         ><br />
-        <mat-checkbox [ngModel]="layersVisibility" (change)="toggleLayers($event.checked)"> Show layers </mat-checkbox
+        <mat-checkbox [checked]="layersVisibility" (change)="toggleLayers($event.checked)"> Show layers </mat-checkbox
         ><br />
-        <mat-checkbox [ngModel]="gridVisibility" (change)="toggleGrid($event.checked)"> Show grid </mat-checkbox><br />
-        <mat-checkbox [ngModel]="project.snap_to_grid" (change)="toggleSnapToGrid($event.checked)">
+        <mat-checkbox [checked]="gridVisibility" (change)="toggleGrid($event.checked)"> Show grid </mat-checkbox><br />
+        <mat-checkbox [checked]="project.snap_to_grid" (change)="toggleSnapToGrid($event.checked)">
           Snap to grid </mat-checkbox
         ><br />
-        <mat-checkbox [ngModel]="symbolScaling" (change)="toggleSymbolScaling($event.checked)">
+        <mat-checkbox [checked]="symbolScaling" (change)="toggleSymbolScaling($event.checked)">
           Scale symbols </mat-checkbox
         ><br />
       </div>

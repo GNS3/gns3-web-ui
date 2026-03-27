@@ -152,9 +152,9 @@ User Input → ChatInputArea
 
 | Technology | Version/Library | Purpose |
 |------------|-----------------|---------|
-| Angular | 14.3.0 | Frontend framework |
+| Angular | 21.0.0 | Frontend framework (Zoneless) |
 | RxJS | 6.6.7 | Reactive programming & State management |
-| Material Design | - | UI components (MatDialog, MatSnackBar) |
+| Material Design | 21.0.0 | UI components (MatDialog, MatSnackBar) |
 | ngx-markdown | - | Markdown rendering |
 | ngx-json-viewer | - | JSON viewing |
 | SSE (Fetch API) | - | Server-sent events streaming |
@@ -970,10 +970,10 @@ this.themeService.getActualTheme() === 'light'
 |--------|---------|---------|
 | `ngx-markdown` | 14.0.1 | Markdown rendering |
 | `ngx-json-viewer` | 3.2.1 | JSON display |
-| `@angular/material` | 14.2.7 | UI components |
-| `@angular/cdk` | 14.2.7 | CDK features |
+| `@angular/material` | 21.0.0 | UI components |
+| `@angular/cdk` | 21.0.0 | CDK features |
 
 ---
 
 **Maintained By**: Development Team
-**Last Updated**: 2026-03-19
+**Last Updated**: 2026-03-27

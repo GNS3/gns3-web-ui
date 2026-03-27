@@ -1,7 +1,7 @@
 # Angular 21 Component Migration Tracking Report
 
 > Created: 2026-03-22
-> Updated: 2026-03-23
+> Updated: 2026-03-27
 > Analysis Tool: Angular CLI MCP - onpush_zoneless_migration
 > Project: gns3-web-ui
 > Angular Version: 21.0.0
@@ -678,5 +678,17 @@ export class ThemeService {
 6. **All services are Zoneless compatible**
 7. **Key state management services have migrated to Signals**
 8. **No services use NgZone or other patterns requiring migration**
+
+---
+
+## Change Log
+
+| Date | Action | Details |
+|------|--------|---------|
+| 2026-03-27 | ngModel Migration | Migrated 8 checkboxes in `project-map.component.html` from `[ngModel]` to `[checked]` |
+| 2026-03-27 | Documentation Update | Updated Angular version references across documentation (14.3.0 → 21.0.0) |
+| 2026-03-27 | Best Practices Update | Revised mat-checkbox guidance to recommend `[checked]` over `[ngModel]` for Zoneless |
+| 2026-03-23 | Zoneless Verification | Completed 100% Zoneless compatibility check for all components and services |
+| 2026-03-22 | Initial Analysis | Created component migration tracking document |
 
 ---

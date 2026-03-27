@@ -50,6 +50,7 @@ docs/
 | [Migration Plan](./framework/angular-21/migration-plan.md) | ⭐ Angular 21 Zoneless phased migration plan |
 | [Component Tracker](./framework/angular-21/component-tracker.md) | Component migration progress tracking |
 | [Model Input Signals](./framework/angular-21/model-input-signals.md) | Signal input patterns guide |
+| [ngModel Migration Tracker](./framework/angular-21/ngmodel-migration-tracker.md) | 🆙 ngModel to signals migration progress (40 files) |
 
 #### Zoneless Issues
 
@@ -136,6 +137,27 @@ docs/
 ## 📝 Recent Changes
 
 ### 2026-03-27
+
+- ✅ **Documentation**: Angular 21 Zoneless migration Phase 1 complete
+  - Updated migration plan status to reflect 100% component compatibility
+  - All 253 components verified Zoneless compatible
+  - Phase 2 (Syntax Optimization) in progress (~42% complete)
+
+- ✅ **Documentation**: ngModel migration tracker created
+  - Comprehensive inventory of 40 files using ngModel
+  - Migration patterns and progress tracking
+  - First migration completed: project-map.component.html (8 checkboxes)
+
+- ✅ **Documentation**: Updated mat-checkbox best practices
+  - Revised to recommend `[checked]` pattern for Zoneless
+  - Deprecated `[ngModel]` with FormsModule for display-only checkboxes
+  - Real-world example from GNS3 Web UI migration
+
+- ✅ **Documentation**: Version number corrections
+  - Updated AI Chat guide: Angular 14.3.0 → 21.0.0
+  - Updated Material Design version references to 21.0.0
+
+### 2026-03-26
 - ✅ **Documentation Restructuring**: Complete docs reorganization
   - Created new directory structure (features/, framework/, guides/, archive/)
   - Moved all feature docs to `features/` (ai-chat/, console/)

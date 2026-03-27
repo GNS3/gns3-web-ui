@@ -1,19 +1,21 @@
 # Angular 21 Zoneless Phased Migration Plan
 
 > Created: 2026-03-22
+> Last Updated: 2026-03-27
 > Project: gns3-web-ui
 > Total Components: 253
 > Migration Strategy: Phased incremental execution
+> **Phase 1 Status**: ✅ Complete - All components Zoneless compatible
 
 ---
 
 ## Execution Progress
 
-| Phase | Status | Progress |
-|-------|--------|----------|
-| Phase 1: Core Zoneless Migration | Pending | 0/253 components |
-| Phase 2: Syntax Optimization | Pending | 0/253 components |
-| Phase 3: Issue Fixes | Pending | TBD |
+| Phase | Status | Progress | Completion Date |
+|-------|--------|----------|-----------------|
+| Phase 1: Core Zoneless Migration | ✅ Complete | 253/253 components (100%) | 2026-03-23 |
+| Phase 2: Syntax Optimization | 🔄 In Progress | ~105/253 components (~42%) | Ongoing |
+| Phase 3: Issue Fixes | 🔄 In Progress | Active | Ongoing |
 
 ---
 
@@ -293,6 +295,39 @@ Migrate all components from `ChangeDetectionStrategy.Default` to `ChangeDetectio
 ---
 
 **✅ Component scanning completed!**
+
+---
+
+## Zoneless Issues and Solutions
+
+During the migration to Zoneless architecture, several specific issues were encountered and resolved. For detailed information on these issues and their solutions, see:
+
+### 📄 Zoneless Issue Documentation
+
+| Issue | Document | Description |
+|-------|----------|-------------|
+| **Dynamic Component Loading** | [dynamic-component-loading.md](./zoneless-issues/dynamic-component-loading.md) | `ViewContainerRef.createComponent` doesn't automatically trigger change detection in Zoneless mode |
+| **Routing Issues** | [routing-issues.md](./zoneless-issues/routing-issues.md) | Route parameter reading and navigation event handling in Zoneless mode |
+
+### Key Takeaways
+
+**Dynamic Component Loading**:
+- ✅ Must call `changeDetectorRef.detectChanges()` after `createComponent()`
+- ✅ Child components must call `markForCheck()` in async subscription callbacks
+- ✅ Affects: `project-map.component.ts`, `topology-summary.component.ts`, and others
+
+**Routing Issues**:
+- ✅ Use recursive route traversal instead of `route.children[0]`
+- ✅ Always call `markForCheck()` after navigation events
+- ✅ Fixed in: `default-layout.component.ts` and multiple other components
+
+### Related Documentation
+
+- [Component Tracker](./component-tracker.md) - Complete component migration status
+- [Model Input Signals](./model-input-signals.md) - Signal-based two-way binding patterns
+- [ngModel Migration Tracker](./ngmodel-migration-tracker.md) - ngModel to signals migration progress
+
+---
 
 
 
