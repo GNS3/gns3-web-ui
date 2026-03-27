@@ -104,10 +104,10 @@
 }
 
 .user-bubble {
-  background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-primary));
+  background: color-mix(in srgb, var(--mat-sys-primary) 85%, white);
   color: var(--mat-sys-on-primary);
   border-bottom-right-radius: 4px;
-  box-shadow: 0 2px 8px var(--mat-sys-primary);
+  box-shadow: none;
   position: relative;
   overflow: hidden;
 
@@ -218,7 +218,7 @@
   line-height: 1.5;
   word-wrap: break-word;
   white-space: pre-wrap;
-  font-size: 14px;
+  font-size: 16px;
   color: var(--mat-sys-on-surface);
 
   // Markdown elements
@@ -318,13 +318,13 @@
   border-radius: 4px;
   overflow-x: auto;
   margin: 4px 0;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .message-text pre code {
   background-color: transparent;
   padding: 0;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 .message-time {
@@ -388,7 +388,7 @@
   background: var(--mat-sys-primary-container);
   border-color: var(--mat-sys-primary-container);
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px var(--mat-sys-primary);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
 }
 
 .inline-tool-result {
@@ -399,7 +399,7 @@
   background: var(--mat-sys-tertiary-container);
   border-color: var(--mat-sys-tertiary);
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px var(--mat-sys-tertiary);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--mat-sys-tertiary) 30%, transparent);
 }
 
 .inline-tool-call .tool-icon {

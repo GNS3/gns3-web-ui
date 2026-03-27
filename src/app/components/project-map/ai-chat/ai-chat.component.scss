@@ -53,7 +53,7 @@
   &.minimized {
     border-radius: 50%;
     border: none;
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent), 0 0 15px var(--mat-sys-primary);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent), 0 0 8px var(--mat-sys-primary);
     backdrop-filter: none;
 
     &::before {
@@ -219,7 +219,7 @@
 
 .sidebar-title.clickable:hover .ai-logo {
   transform: scale(1.08);
-  box-shadow: 0 4px 15px var(--mat-sys-primary);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-primary) 40%, transparent);
 
   &::after {
     transform: translateX(100%);
@@ -352,7 +352,7 @@
 
     .header-icon {
       fill: var(--mat-sys-primary);
-      filter: drop-shadow(0 0 6px var(--mat-sys-primary));
+      filter: drop-shadow(0 0 3px var(--mat-sys-primary));
     }
   }
 
@@ -383,7 +383,7 @@
   user-select: none;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--mat-sys-surface), var(--mat-sys-surface));
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent), 0 0 20px var(--mat-sys-primary);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent), 0 0 10px var(--mat-sys-primary);
   transition: all 200ms ease;
   animation: bounceIn 200ms ease;
   position: relative;
@@ -405,7 +405,7 @@
 
   &:hover {
     transform: scale(1.15);
-    box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-surface) 60%, transparent), 0 0 30px var(--mat-sys-primary);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-surface) 60%, transparent), 0 0 15px var(--mat-sys-primary);
 
     &::before {
       background: radial-gradient(circle, var(--mat-sys-primary) 0%, transparent 70%);
