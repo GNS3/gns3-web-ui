@@ -419,74 +419,18 @@
 
 /* =============================================
 // Edit Project Dialog
+// Inherits from base-dialog-panel + configurator-dialog-panel
+// Only overrides width (700px) and max-height (600px)
 // ============================================= */
 .edit-project-dialog-panel {
-  --mat-dialog-container-max-width: 700px;
-
   mat-dialog-container,
   .mat-mdc-dialog-container {
     width: 700px;
     max-width: 700px;
   }
 
-  .mat-mdc-dialog-container {
-    .mat-mdc-dialog-surface {
-      border-radius: 16px;
-      box-shadow: 0 12px 40px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
-        0 4px 12px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
-    }
-  }
-
-  .mat-mdc-dialog-title {
-    font-size: 18px;
-    font-weight: 500;
-    color: var(--mat-sys-on-surface);
-    margin-bottom: 24px;
-    padding: 24px 24px 0 24px;
-  }
-
   .mat-mdc-dialog-content {
-    padding: 0;
     max-height: 600px;
-    overflow-y: auto;
-  }
-
-  .mat-mdc-dialog-actions {
-    padding: 16px 24px;
-    justify-content: flex-end;
-    gap: 8px;
-  }
-
-  .modal-form-container {
-    padding: 16px 24px;
-  }
-
-  form {
-    margin-top: 16px;
-  }
-
-  .form-field {
-    width: 100%;
-    margin-bottom: 16px;
-  }
-
-  mat-checkbox {
-    display: block;
-    margin-bottom: 12px;
-  }
-
-  table {
-    width: 100%;
-    margin-top: 16px;
-  }
-
-  th.mat-header-cell {
-    padding-bottom: 16px;
-    border: 0;
-  }
-
-  td.mat-cell {
-    padding-top: 16px;
   }
 }
 

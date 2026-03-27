@@ -1008,9 +1008,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   editProject() {
     const dialogRef = this.dialog.open(EditProjectDialogComponent, {
-      width: '600px',
       autoFocus: false,
       disableClose: true,
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'edit-project-dialog-panel'],
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;
