@@ -403,18 +403,6 @@
   }
 }
 
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 0.5;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: translate(-50%, -50%) scale(1.1);
-  }
-}
-
 // Maximized state
 .ai-chat-container.maximized {
   border-radius: 0;
@@ -430,21 +418,6 @@
   .sidebar-header,
   .collapsed-hint {
     cursor: default;
-  }
-}
-
-@keyframes bounceIn {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
   }
 }
 
