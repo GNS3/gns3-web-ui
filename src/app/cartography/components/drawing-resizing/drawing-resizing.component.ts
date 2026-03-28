@@ -8,6 +8,7 @@ import { DrawingsWidget } from '../../widgets/drawings';
 
 @Component({
   selector: 'app-drawing-resizing',
+  standalone: true,
   template: ` <ng-content></ng-content> `,
   styleUrl: './drawing-resizing.component.scss',
   imports: [],

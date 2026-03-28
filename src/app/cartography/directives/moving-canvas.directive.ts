@@ -5,7 +5,7 @@ import { MovingEventSource } from '../events/moving-event-source';
 import { Context } from '../models/context';
 
 @Directive({
-  standalone: false,
+  standalone: true,
   selector: '[movingCanvas]',
 })
 export class MovingCanvasDirective implements OnInit, OnDestroy {

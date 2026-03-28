@@ -33,6 +33,7 @@ import { Node } from '../../models/node';
 
 @Component({
   selector: 'app-text-editor',
+  standalone: true,
   templateUrl: './text-editor.component.html',
   styleUrl: './text-editor.component.scss',
   imports: [],

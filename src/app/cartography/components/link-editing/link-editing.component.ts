@@ -12,6 +12,7 @@ import { StyleTranslator } from '../../widgets/links/style-translator';
 
 @Component({
   selector: 'app-link-editing',
+  standalone: true,
   templateUrl: './link-editing.component.html',
   styleUrl: './link-editing.component.scss',
   imports: [],

@@ -21,6 +21,7 @@ import { NodesWidget } from '../../widgets/nodes';
 
 @Component({
   selector: 'app-draggable-selection',
+  standalone: true,
   templateUrl: './draggable-selection.component.html',
   styleUrl: './draggable-selection.component.scss',
   imports: [],

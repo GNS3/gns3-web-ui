@@ -41,9 +41,12 @@ import { SelectionControlComponent } from '../selection-control/selection-contro
 import { SelectionSelectComponent } from '../selection-select/selection-select.component';
 import { DraggableSelectionComponent } from '../draggable-selection/draggable-selection.component';
 import { LinkEditingComponent } from '../link-editing/link-editing.component';
+import { MovingCanvasDirective } from '../../directives/moving-canvas.directive';
+import { ZoomingCanvasDirective } from '../../directives/zooming-canvas.directive';
 
 @Component({
   selector: 'app-d3-map',
+  standalone: true,
   templateUrl: './d3-map.component.html',
   styleUrl: './d3-map.component.scss',
   imports: [
@@ -54,6 +57,8 @@ import { LinkEditingComponent } from '../link-editing/link-editing.component';
     SelectionSelectComponent,
     DraggableSelectionComponent,
     LinkEditingComponent,
+    MovingCanvasDirective,
+    ZoomingCanvasDirective,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

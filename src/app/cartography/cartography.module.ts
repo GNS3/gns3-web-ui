@@ -2,14 +2,8 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { D3MapComponent } from './components/d3-map/d3-map.component';
-import { DraggableSelectionComponent } from './components/draggable-selection/draggable-selection.component';
-import { LinkEditingComponent } from './components/link-editing/link-editing.component';
-import { DrawingAddingComponent } from './components/drawing-adding/drawing-adding.component';
-import { DrawingResizingComponent } from './components/drawing-resizing/drawing-resizing.component';
 import { SelectionControlComponent } from './components/selection-control/selection-control.component';
 import { SelectionSelectComponent } from './components/selection-select/selection-select.component';
-import { TextEditorComponent } from './components/text-editor/text-editor.component';
 import { DrawingToMapDrawingConverter } from './converters/map/drawing-to-map-drawing-converter';
 import { LabelToMapLabelConverter } from './converters/map/label-to-map-label-converter';
 import { LinkNodeToMapLinkNodeConverter } from './converters/map/link-node-to-map-link-node-converter';
@@ -33,8 +27,6 @@ import {
   MapNodesDataSource,
   MapSymbolsDataSource,
 } from './datasources/map-datasource';
-import { MovingCanvasDirective } from './directives/moving-canvas.directive';
-import { ZoomingCanvasDirective } from './directives/zooming-canvas.directive';
 import { DrawingsEventSource } from './events/drawings-event-source';
 import { LinksEventSource } from './events/links-event-source';
 import { MovingEventSource } from './events/moving-event-source';
@@ -65,16 +57,10 @@ import { SerialLinkWidget } from './widgets/links/serial-link';
     CommonModule,
     MatMenuModule,
     MatIconModule,
-    DrawingAddingComponent,
-    DrawingResizingComponent,
-    TextEditorComponent,
     SelectionControlComponent,
     SelectionSelectComponent,
-    DraggableSelectionComponent,
-    LinkEditingComponent,
-    D3MapComponent,
   ],
-  declarations: [MovingCanvasDirective, ZoomingCanvasDirective],
+  declarations: [],
   providers: [
     CssFixer,
     FontFixer,
@@ -122,6 +108,6 @@ import { SerialLinkWidget } from './widgets/links/serial-link';
     SerialLinkWidget,
     ...D3_MAP_IMPORTS,
   ],
-  exports: [D3MapComponent],
+  exports: [],
 })
 export class CartographyModule {}

@@ -6,6 +6,7 @@ import { Context } from '../../models/context';
 
 @Component({
   selector: 'app-drawing-adding',
+  standalone: true,
   templateUrl: './drawing-adding.component.html',
   styleUrl: './drawing-adding.component.scss',
   imports: [],
