@@ -92,6 +92,17 @@ g.node:hover {
   g.drawing-line-tool path {
     stroke: var(--mat-sys-on-surface);
   }
+
+  /* Pan workspace mode - show grab cursor */
+  &.pan-mode {
+    app-d3-map {
+      cursor: grab;
+
+      svg.map {
+        cursor: grab;
+      }
+    }
+  }
 }
 
 #project-titlebar {
