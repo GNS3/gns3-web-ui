@@ -243,6 +243,9 @@ export class LinkStyleEditorDialogComponent implements OnInit {
         this.link.link_style.link_type || LinkTypeCache.get(this.link.project_id, this.link.link_id)
       );
 
+      // Preserve existing control_offset when updating freeform link style
+      const existingControlOffset = this.link.link_style.control_offset;
+
       this.link.link_style.color = this.formGroup.controls['color'].value;
       this.link.link_style.width = this.formGroup.controls['width'].value;
 
@@ -253,6 +256,11 @@ export class LinkStyleEditorDialogComponent implements OnInit {
         this.formGroup.controls['bezierCurviness'].value
       );
       this.link.link_style.flowchart_roundness = StyleTranslator.normalizeFlowchartRoundness(this.formGroup.controls['flowchartRoundness'].value);
+
+      // Restore control_offset for freeform links
+      if (this.link.link_style.link_type === 'freeform') {
+        this.link.link_style.control_offset = existingControlOffset;
+      }
 
       const expectedLinkType = this.link.link_style.link_type;
       const expectedBezierCurviness = this.link.link_style.bezier_curviness;
@@ -282,6 +290,11 @@ export class LinkStyleEditorDialogComponent implements OnInit {
 
           if (link.link_style.flowchart_roundness === undefined && expectedFlowchartRoundness !== undefined) {
             link.link_style.flowchart_roundness = expectedFlowchartRoundness;
+          }
+
+          // Preserve control_offset if server didn't return it
+          if (link.link_style.control_offset === undefined && existingControlOffset !== undefined) {
+            link.link_style.control_offset = existingControlOffset;
           }
 
           LinkTypeCache.set(link.project_id, link.link_id, link.link_style.link_type);

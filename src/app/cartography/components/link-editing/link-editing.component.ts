@@ -29,18 +29,22 @@ export class LinkEditingComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     const svg = select(this.svg());
-    const ctrl = this.controller();
     this.linkEditedSubscription = this.linksEventSource.edited.subscribe((mapLink: MapLink) => {
       this.linksWidget.redrawLink(svg, mapLink);
 
       // Save control_offset to server if controller is available and link is freeform
+      const ctrl = this.controller();
       if (ctrl && mapLink.link_style?.control_offset !== undefined) {
         const link = this.linksDataSource.get(mapLink.id) as Link;
         if (link) {
           link.link_style = {
             ...mapLink.link_style,
           };
-          this.linkService.updateLinkStyle(ctrl, link).subscribe();
+          this.linkService.updateLinkStyle(ctrl, link).subscribe({
+            error: () => {
+              // Silent fail - control_offset is still persisted locally
+            },
+          });
         }
       }
     });
