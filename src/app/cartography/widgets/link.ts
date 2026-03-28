@@ -55,6 +55,11 @@ export class LinkWidget implements Widget {
       })
       .attr('class', 'capture-icon')
       .attr('transform', (link) => {
+        // For freeform links, use control_offset as the center position
+        // Icon size is 20x20, scaled to 10x10, so subtract 5 to get top-left corner
+        if (link.link_style?.link_type === 'freeform' && link.link_style?.control_offset) {
+          return `translate (${link.link_style.control_offset[0] - 5}, ${link.link_style.control_offset[1] - 5}) scale(0.5)`;
+        }
         return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${
           (link.source.y + link.target.y) / 2 + 24
         }) scale(0.5)`;
@@ -79,6 +84,11 @@ export class LinkWidget implements Widget {
       })
       .attr('class', 'filter-capture-icon')
       .attr('transform', (link) => {
+        // For freeform links, use control_offset as the center position
+        // Icon size is 20x20, scaled to 10x10, so subtract 5 to get top-left corner
+        if (link.link_style?.link_type === 'freeform' && link.link_style?.control_offset) {
+          return `translate (${link.link_style.control_offset[0] - 5}, ${link.link_style.control_offset[1] - 5}) scale(0.5)`;
+        }
         return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${
           (link.source.y + link.target.y) / 2 + 24
         }) scale(0.5)`;
@@ -231,6 +241,17 @@ export class LinkWidget implements Widget {
                 [controlX, controlY]
               );
               select(this).attr('d', newPath);
+
+              // Update capture icons position to follow the control point
+              const linkGroup = select(this.parentNode as Element);
+              const captureIcon = linkGroup.select<SVGGElement>('g.capture-icon');
+              if (!captureIcon.empty()) {
+                captureIcon.attr('transform', `translate (${controlX - 5}, ${controlY - 5}) scale(0.5)`);
+              }
+              const filterCaptureIcon = linkGroup.select<SVGGElement>('g.filter-capture-icon');
+              if (!filterCaptureIcon.empty()) {
+                filterCaptureIcon.attr('transform', `translate (${controlX - 5}, ${controlY - 5}) scale(0.5)`);
+              }
 
               // Store mouse position directly as control_offset
               if (!l.link_style) {
