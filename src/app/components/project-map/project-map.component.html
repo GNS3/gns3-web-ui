@@ -172,6 +172,7 @@
         matTooltipPosition="left"
         mat-icon-button
         class="selection-button menu-button"
+        [class.tool-active]="!tools.moving"
         [color]="tools.moving ? 'basic' : 'primary'"
         (click)="toggleMovingMode()"
       >
@@ -182,6 +183,7 @@
         matTooltipClass="custom-tooltip"
         matTooltipPosition="left"
         class="pan-button menu-button"
+        [class.tool-active]="tools.moving"
         mat-icon-button
         [color]="tools.moving ? 'primary' : 'basic'"
         (click)="toggleMovingMode()"

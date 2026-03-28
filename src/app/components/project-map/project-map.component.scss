@@ -237,6 +237,16 @@ g.node:hover {
     transform: scale(1.3);
   }
 
+  /* Active state for selection/pan tools - similar to AI minimized effect */
+  .menu-button.tool-active,
+  .selection-button.tool-active {
+    background-color: var(--mat-sys-secondary-container);
+
+    mat-icon {
+      color: var(--mat-sys-on-secondary-container);
+    }
+  }
+
   .selection-button {
     margin-bottom: 0;
   }
