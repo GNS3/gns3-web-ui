@@ -36,6 +36,7 @@ export class NodeWidget implements Widget {
     const node_body_merge = node_body
       .merge(node_body_enter)
       .classed('selected', (n: MapNode) => this.selectionManager.isSelected(n))
+      .classed('locked', (n: MapNode) => n.locked)
       .on('click', (event: any, node: MapNode) => {
         this.nodesEventSource.clicked.emit(new ClickedDataEvent<MapNode>(node, event.pageX, event.pageY));
       });
@@ -51,6 +52,21 @@ export class NodeWidget implements Widget {
         .attr('y', (n: MapNode) => n.height / 2 - 13)
         .attr('fill', 'red');
     }
+
+    // Add locked border rect
+    node_body_merge.select('.locked_border').remove();
+    node_body_merge
+      .filter((n: MapNode) => n.locked)
+      .append<SVGRectElement>('rect')
+      .attr('class', 'locked_border')
+      .attr('width', (n: MapNode) => n.width || 60)
+      .attr('height', (n: MapNode) => n.height || 60)
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('stroke', 'var(--mat-sys-outline)')
+      .attr('stroke-width', 2)
+      .attr('stroke-dasharray', '5, 3')
+      .attr('fill', 'none');
 
     node_body_merge.select('.layer_label').remove();
     if (this.mapSettingsService.isLayerNumberVisible) {
