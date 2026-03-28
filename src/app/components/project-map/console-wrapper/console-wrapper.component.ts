@@ -11,6 +11,7 @@ import {
   inject,
   input,
   viewChildren,
+  viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, UntypedFormControl } from '@angular/forms';
@@ -87,6 +88,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   selected = new UntypedFormControl(0);
 
   readonly webConsoleComponents = viewChildren(WebConsoleComponent);
+  readonly logConsoleComponent = viewChild(LogConsoleComponent);
 
   ngOnInit() {
     this.themeService.getActualTheme() === 'light'
@@ -426,6 +428,25 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
       // Use requestAnimationFrame to ensure DOM has updated before focusing
       this.focusTerminalAfterRender(index);
     }
+
+    // Auto-focus GNS3 console input when switching to GNS3 console tab (last tab)
+    if (index === this.nodes.length) {
+      this.focusGns3ConsoleInput();
+    }
+  }
+
+  /**
+   * Focus the GNS3 console command input
+   */
+  private focusGns3ConsoleInput(): void {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const logConsole = this.logConsoleComponent();
+        if (logConsole) {
+          logConsole.focusInput();
+        }
+      });
+    });
   }
 
   /**

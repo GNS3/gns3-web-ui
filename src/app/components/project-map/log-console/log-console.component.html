@@ -23,6 +23,7 @@
 <div [ngClass]="{ lightTheme: isLightThemeEnabled }" class="consoleInput">
   <mat-icon class="inputIcon">keyboard_arrow_right</mat-icon>
   <input
+    #commandInput
     [ngClass]="{ lightTheme: isLightThemeEnabled }"
     class="commandLine"
     autofocus

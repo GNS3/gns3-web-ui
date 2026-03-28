@@ -59,6 +59,17 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly project = input<Project>(undefined);
 
   readonly console = viewChild<ElementRef>('console');
+  readonly commandInput = viewChild<ElementRef>('commandInput');
+
+  /**
+   * Focus the command input field
+   */
+  focusInput(): void {
+    const input = this.commandInput();
+    if (input?.nativeElement) {
+      input.nativeElement.focus();
+    }
+  }
 
   private version = version;
   private nodeSubscription: Subscription;
