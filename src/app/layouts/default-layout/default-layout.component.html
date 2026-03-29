@@ -58,7 +58,7 @@
         <mat-icon>developer_board</mat-icon>
         <span>Controllers</span>
       </button>
-      <button mat-menu-item [routerLink]="['/controller', controllerId, 'projects']">
+      <button mat-menu-item [disabled]="!controllerId" [routerLink]="['/controller', controllerId, 'projects']">
         <mat-icon>work</mat-icon>
         <span>Projects</span>
       </button>
@@ -70,7 +70,7 @@
         <mat-icon>collections</mat-icon>
         <span>Image manager</span>
       </button>
-      <button mat-menu-item (click)="addNewTemplate()">
+      <button mat-menu-item [disabled]="!controllerId" (click)="addNewTemplate()">
         <mat-icon>control_point</mat-icon>
         <span>New template</span>
       </button>

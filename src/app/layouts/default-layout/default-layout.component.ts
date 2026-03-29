@@ -184,6 +184,11 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   }
 
   public addNewTemplate() {
+    if (!this.controller) {
+      this.toasterService.error('Please select a controller first');
+      return;
+    }
+
     const dialogRef = this.dialog.open(NewTemplateDialogComponent, {
       width: '800px',
       maxHeight: '800px',
