@@ -164,7 +164,7 @@ export class RoleManagementComponent implements OnInit {
     this.dialog
       .open(DeleteRoleDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
-        data: { roles: rolesToDelete }
+        data: { roles: rolesToDelete },
       })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
@@ -175,7 +175,8 @@ export class RoleManagementComponent implements OnInit {
               this.refresh();
             },
             (error) => {
-              this.toasterService.error(`An error occur while trying to delete role`);
+              const errorMessage = error?.error?.message || 'An error occurred while trying to delete role';
+              this.toasterService.error(errorMessage);
             }
           );
         }
