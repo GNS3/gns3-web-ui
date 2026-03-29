@@ -620,16 +620,8 @@ h2[mat-dialog-title] {
 
   h1[mat-dialog-title],
   h2[mat-dialog-title] {
-    display: flex;
-    align-items: center;
-    gap: 12px;
     color: var(--mat-sys-error);
-
-    &::before {
-      content: 'error';
-      font-family: 'Material Icons';
-      font-size: 24px;
-    }
+    font-weight: 500;
   }
 
   .confirm-button,
@@ -650,16 +642,8 @@ h2[mat-dialog-title] {
 
   h1[mat-dialog-title],
   h2[mat-dialog-title] {
-    display: flex;
-    align-items: center;
-    gap: 12px;
     color: var(--mat-sys-tertiary);
-
-    &::before {
-      content: 'warning';
-      font-family: 'Material Icons';
-      font-size: 24px;
-    }
+    font-weight: 500;
   }
 
   .confirm-button,
@@ -680,16 +664,8 @@ h2[mat-dialog-title] {
 
   h1[mat-dialog-title],
   h2[mat-dialog-title] {
-    display: flex;
-    align-items: center;
-    gap: 12px;
     color: var(--mat-sys-primary);
-
-    &::before {
-      content: 'help_outline';
-      font-family: 'Material Icons';
-      font-size: 24px;
-    }
+    font-weight: 500;
   }
 
   .confirm-button,
