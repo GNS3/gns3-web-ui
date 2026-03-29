@@ -958,12 +958,6 @@ h2[mat-dialog-title] {
 // Other Component Dialogs
 // ============================================= */
 
-// Delete Template Dialog
-.delete-template-dialog-panel {
-  // Styles handled by base-confirmation-dialog-panel
-  // Dialog uses responsive width and height
-}
-
 // Symbols Dialog - 400px
 .symbols-dialog-panel {
   --mat-dialog-container-max-width: 400px;
