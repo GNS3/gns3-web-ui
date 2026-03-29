@@ -135,7 +135,11 @@ export class AclManagementComponent implements OnInit {
 
   onDelete(ace: ACE) {
     this.dialog
-      .open(DeleteAceDialogComponent, { width: '500px', data: { aces: [ace] } })
+      .open(DeleteAceDialogComponent, {
+        width: '500px',
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+        data: { aces: [ace] }
+      })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
@@ -163,7 +167,11 @@ export class AclManagementComponent implements OnInit {
 
   deleteMultiple() {
     this.dialog
-      .open(DeleteAceDialogComponent, { width: '500px', data: { aces: this.selection.selected } })
+      .open(DeleteAceDialogComponent, {
+        width: '500px',
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+        data: { aces: this.selection.selected }
+      })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
