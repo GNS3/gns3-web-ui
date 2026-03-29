@@ -266,7 +266,29 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
    */
   toggleDefaultConfig(config: LLMModelConfigResponse): void {
     const configId = config.config_id;
-    const isCurrentlyDefault = this.isDefault(config);
+
+    // Check if there's already a pending operation on this config
+    if (this.settingDefaultConfigs.has(configId)) {
+      return; // Prevent duplicate operations
+    }
+
+    // Use the config's own is_default property to determine current state
+    // This is more reliable than checking the defaultConfig signal which may be stale
+    const isCurrentlyDefault = config.is_default;
+
+    // Store previous state for rollback on error
+    const previousDefaultConfig = this.defaultConfig;
+    const previousConfigs = [...this.configs];
+
+    // Optimistic update: update UI immediately
+    const updatedConfigs = previousConfigs.map(c => ({
+      ...c,
+      is_default: isCurrentlyDefault ? false : (c.config_id === configId)
+    }));
+    this.configs = updatedConfigs;
+    this.configs$.next(updatedConfigs);
+    this.defaultConfig = isCurrentlyDefault ? null : config;
+    this.defaultConfig$.next(isCurrentlyDefault ? null : config);
 
     // Add to setting default set (button-level loading state)
     this.settingDefaultConfigs.add(configId);
@@ -278,16 +300,22 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
-            // Reload all configs to get fresh data
-            this.loadConfigs();
-
             // Remove from setting default set
             this.settingDefaultConfigs.delete(configId);
             this.settingDefault$.next(new Set(this.settingDefaultConfigs));
 
             this.showSuccess('Default configuration removed');
+
+            // Still reload to ensure server state is in sync
+            this.loadConfigsWithoutLoading();
           },
           error: (error) => {
+            // Rollback on error
+            this.configs = previousConfigs;
+            this.configs$.next(previousConfigs);
+            this.defaultConfig = previousDefaultConfig;
+            this.defaultConfig$.next(previousDefaultConfig);
+
             // Remove from setting default set on error too
             this.settingDefaultConfigs.delete(configId);
             this.settingDefault$.next(new Set(this.settingDefaultConfigs));
@@ -305,16 +333,22 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
-            // Reload all configs to get fresh data
-            this.loadConfigs();
-
             // Remove from setting default set
             this.settingDefaultConfigs.delete(configId);
             this.settingDefault$.next(new Set(this.settingDefaultConfigs));
 
             this.showSuccess('Default configuration set successfully');
+
+            // Still reload to ensure server state is in sync
+            this.loadConfigsWithoutLoading();
           },
           error: (error) => {
+            // Rollback on error
+            this.configs = previousConfigs;
+            this.configs$.next(previousConfigs);
+            this.defaultConfig = previousDefaultConfig;
+            this.defaultConfig$.next(previousDefaultConfig);
+
             // Remove from setting default set on error too
             this.settingDefaultConfigs.delete(configId);
             this.settingDefault$.next(new Set(this.settingDefaultConfigs));
@@ -327,6 +361,26 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
           },
         });
     }
+  }
+
+  /**
+   * Load configurations without showing loading state (for background refresh)
+   */
+  private loadConfigsWithoutLoading(): void {
+    this.error$.next(null);
+
+    this.aiProfilesService
+      .getGroupConfigs(this.controller(), this.group().user_group_id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: LLMModelConfigListResponse) => {
+          this.configs$.next(response.configs);
+          this.defaultConfig$.next(response.default_config);
+        },
+        error: (error) => {
+          this.handleError(error, 'Failed to refresh configurations');
+        },
+      });
   }
 
   /**
