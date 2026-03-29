@@ -25,19 +25,15 @@ export class DialogConfigService {
     };
 
     // Configurator dialog - main config pages (800px, tabs, cards)
+    // Size defined in CSS: .configurator-dialog-panel (800px, 80vh)
     const configuratorConfig: DialogConfig = {
       panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
-      width: '800px',
-      maxWidth: '800px',
-      maxHeight: '80vh',
     };
 
     // Simple dialog - sub dialogs like Image Creator (500px)
+    // Size defined in CSS: .simple-dialog-panel (500px, 80vh)
     const simpleConfig: DialogConfig = {
       panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
-      width: '500px',
-      maxWidth: '500px',
-      maxHeight: '80vh',
     };
 
     // Change Symbol Dialog - inherits configurator
@@ -84,13 +80,13 @@ export class DialogConfigService {
     });
 
     // Custom Adapters Dialog
+    // Size defined in CSS: .custom-adapters-dialog-panel (1000px)
     this.configs.set('customAdapters', {
       panelClass: ['base-dialog-panel', 'custom-adapters-dialog-panel'],
-      width: '1000px',
-      maxWidth: '1000px',
     });
 
     // Edit Project Dialog
+    // Size defined in CSS: .edit-project-dialog-panel (700px, 600px)
     this.configs.set('editProject', {
       ...configuratorConfig,
       panelClass: [
@@ -98,17 +94,13 @@ export class DialogConfigService {
         'configurator-dialog-panel',
         'edit-project-dialog-panel',
       ],
-      width: '700px',
-      maxWidth: '700px',
-      maxHeight: '600px',
     });
 
     // Add ACE Dialog
+    // Size defined in CSS: .add-ace-dialog-panel (1000px)
     this.configs.set('addAce', {
       ...configuratorConfig,
       panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'add-ace-dialog-panel'],
-      width: '1000px',
-      maxWidth: '1000px',
     });
 
     // New Template Dialog
@@ -122,6 +114,7 @@ export class DialogConfigService {
     });
 
     // Nodes Menu Confirmation Dialog
+    // Size defined in CSS: .nodes-menu-confirmation-dialog-panel (500px, 200px)
     this.configs.set('nodesMenuConfirmation', {
       ...simpleConfig,
       panelClass: [
@@ -129,9 +122,6 @@ export class DialogConfigService {
         'simple-dialog-panel',
         'nodes-menu-confirmation-dialog-panel',
       ],
-      width: '500px',
-      maxWidth: '500px',
-      maxHeight: '200px',
     });
 
     // Start Capture Dialog - simple dialog (500px)
