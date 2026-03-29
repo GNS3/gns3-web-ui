@@ -1,0 +1,9 @@
+<h2 mat-dialog-title>AI Profiles - {{ data.user.username }}</h2>
+
+<mat-dialog-content>
+  <app-ai-profile-tab [controller]="data.controller" [user]="data.user"> </app-ai-profile-tab>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button (click)="close()">Close</button>
+</mat-dialog-actions>

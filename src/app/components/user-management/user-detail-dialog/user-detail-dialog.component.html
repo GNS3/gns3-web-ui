@@ -1,0 +1,132 @@
+<h2 mat-dialog-title>User {{ user.username }}</h2>
+
+<mat-dialog-content>
+  <mat-tab-group class="user-detail-dialog__tabs" (selectedIndexChange)="onTabChange($event)">
+    <mat-tab label="Details">
+      <div class="user-detail-dialog__tab-content">
+        <form [formGroup]="editUserForm" class="user-detail-dialog__form">
+          <mat-form-field appearance="fill" class="user-detail-dialog__field">
+            <mat-label>Username</mat-label>
+            <input matInput type="text" formControlName="username" />
+            @if (form.username?.touched && form.username?.errors && form.username?.errors.required) {
+            <mat-error>Username is required</mat-error>
+            } @if (form.username?.errors && form.username?.errors.pattern) {
+            <mat-error>Username is incorrect</mat-error>
+            } @if (form.username?.errors && form.username?.errors.userExists) {
+            <mat-error>User with this username exists</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="user-detail-dialog__field">
+            <mat-label>Full name</mat-label>
+            <input matInput type="text" formControlName="full_name" />
+          </mat-form-field>
+
+          <mat-form-field appearance="fill" class="user-detail-dialog__field">
+            <mat-label>Email</mat-label>
+            <input matInput type="text" formControlName="email" />
+            @if (form.email?.touched && form.email?.errors && form.email?.errors.required) {
+            <mat-error>Email is required</mat-error>
+            } @if (form.email?.errors && form.email?.errors.email) {
+            <mat-error>Email is invalid</mat-error>
+            } @if (form.email?.errors && form.email?.errors.emailExists) {
+            <mat-error>User with this email exists</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-checkbox formControlName="is_active">Is active</mat-checkbox>
+
+          <div class="user-detail-dialog__info-section">
+            <div class="user-detail-dialog__info-row">
+              <span class="user-detail-dialog__info-label">Is Superadmin:</span>
+              <mat-checkbox [checked]="user.is_superadmin" disabled></mat-checkbox>
+            </div>
+            <div class="user-detail-dialog__info-row">
+              <span class="user-detail-dialog__info-label">Creation date:</span>
+              <span>{{ user.created_at }}</span>
+            </div>
+            <div class="user-detail-dialog__info-row">
+              <span class="user-detail-dialog__info-label">Last update:</span>
+              <span>{{ user.updated_at }}</span>
+            </div>
+            <div class="user-detail-dialog__info-row">
+              <span class="user-detail-dialog__info-label">Last login:</span>
+              <span>{{ user.last_login }}</span>
+            </div>
+            <div class="user-detail-dialog__info-row">
+              <span class="user-detail-dialog__info-label">UUID:</span>
+              <span>{{ user.user_id }}</span>
+            </div>
+          </div>
+        </form>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Groups">
+      <div class="user-detail-dialog__tab-content">
+        <div class="user-detail-dialog__groups-list">
+          @if (!groupsLoaded) {
+          <p class="user-detail-dialog__loading">Loading...</p>
+          } @else if (groups.length === 0) {
+          <p class="user-detail-dialog__empty-message">User is not member of any group</p>
+          } @else {
+          <ul>
+            @for (group of groups; track group.user_group_id) {
+            <li>
+              <a
+                [routerLink]="['/controller', controller.id, 'management', 'groups', group.user_group_id]"
+                class="user-detail-dialog__group-link"
+                >{{ group.name }}</a
+              >
+            </li>
+            }
+          </ul>
+          }
+        </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="ACEs">
+      <div class="user-detail-dialog__tab-content">
+        @if (!acesLoaded) {
+        <p class="user-detail-dialog__loading">Loading...</p>
+        } @else if (aces.length === 0) {
+        <p class="user-detail-dialog__empty-message">No ACEs found for this user</p>
+        } @else {
+        <table mat-table [dataSource]="aceDatasource" class="user-detail-dialog__ace-table">
+          <ng-container matColumnDef="endpoint">
+            <th mat-header-cell *matHeaderCellDef>Endpoint</th>
+            <td mat-cell *matCellDef="let element">{{ element.endpoint_name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="role">
+            <th mat-header-cell *matHeaderCellDef>Role</th>
+            <td mat-cell *matCellDef="let element">{{ element.role_name }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="propagate">
+            <th mat-header-cell *matHeaderCellDef>Propagate</th>
+            <td mat-cell *matCellDef="let element">{{ element.propagate }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="allowed">
+            <th mat-header-cell *matHeaderCellDef>Allowed</th>
+            <td mat-cell *matCellDef="let element">{{ element.allowed }}</td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="aceDisplayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: aceDisplayedColumns"></tr>
+        </table>
+        }
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button (click)="onChangePassword()">Change Password</button>
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="onSaveChanges()" [disabled]="!editUserForm.valid">
+    Save changes
+  </button>
+</mat-dialog-actions>

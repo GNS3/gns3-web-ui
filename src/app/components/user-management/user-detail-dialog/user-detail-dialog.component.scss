@@ -1,0 +1,113 @@
+/**
+ * User Detail Dialog Styles
+ * Uses base-dialog-panel + configurator-dialog-panel styles from _dialogs.scss
+ * Only component-specific styles here
+ */
+
+.user-detail-dialog {
+  &__tabs {
+    margin-top: 16px;
+  }
+
+  &__tab-content {
+    padding: 16px 0;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    max-width: 500px;
+  }
+
+  &__field {
+    width: 100%;
+  }
+
+  &__info-section {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  &__info-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 8px 0;
+    font-size: 14px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__info-label {
+    font-weight: 500;
+    min-width: 120px;
+  }
+
+  &__groups-list {
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+
+  &__group-link {
+    color: var(--mat-sys-primary);
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__ace-table {
+    width: 100%;
+    background: var(--mat-sys-surface-container-low);
+    border-radius: 8px;
+    overflow: hidden;
+
+    .mat-header-row {
+      background: var(--mat-sys-surface-container);
+    }
+
+    mat-header-cell {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--mat-sys-on-surface-variant);
+      text-transform: uppercase;
+    }
+
+    mat-cell {
+      font-size: 14px;
+      color: var(--mat-sys-on-surface);
+    }
+
+    mat-row:hover {
+      background-color: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
+    }
+  }
+
+  &__empty-message {
+    color: var(--mat-sys-on-surface-variant);
+    font-style: italic;
+    text-align: center;
+    padding: 24px;
+  }
+
+  &__loading {
+    text-align: center;
+    padding: 24px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}

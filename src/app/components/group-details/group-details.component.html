@@ -57,9 +57,7 @@
           </div>
           @for (user of members() | membersFilter: searchMembers | paginator: pageEvent; track user.user_id) {
           <div>
-            <a [routerLink]="['/controller', controller.id, 'management', 'users', user.user_id]">
-              <div>{{ user.username }}</div>
-            </a>
+            <span class="clickable" (click)="openUserDetailDialog(user)">{{ user.username }}</span>
             <mat-icon class="clickable" (click)="openRemoveUserDialog(user)">delete</mat-icon>
           </div>
           }

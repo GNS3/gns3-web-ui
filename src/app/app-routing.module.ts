@@ -56,10 +56,7 @@ import { ControllerResolve } from '@resolvers/controller-resolve';
 import { UserManagementComponent } from '@components/user-management/user-management.component';
 import { LoggedUserComponent } from '@components/users/logged-user/logged-user.component';
 import { ImageManagerComponent } from '@components/image-manager/image-manager.component';
-import { UserDetailComponent } from '@components/user-management/user-detail/user-detail.component';
-import { UserDetailResolver } from '@resolvers/user-detail.resolver';
 import { ManagementComponent } from '@components/management/management.component';
-import { UserGroupsResolver } from '@resolvers/user-groups.resolver';
 import { GroupManagementComponent } from '@components/group-management/group-management.component';
 import { RoleManagementComponent } from '@components/role-management/role-management.component';
 import { GroupDetailsComponent } from '@components/group-details/group-details.component';
@@ -73,7 +70,6 @@ import { ResourcePoolsManagementComponent } from '@components/resource-pools-man
 import { ResourcePoolDetailsComponent } from '@components/resource-pool-details/resource-pool-details.component';
 import { ResourcePoolsResolver } from '@resolvers/resource-pools.resolver';
 import { GroupAcesResolver } from '@resolvers/group-ace.resolver.ts.resolver';
-import { UserAcesResolver } from '@resolvers/user-aces.resolver';
 
 const routes: Routes = [
   // Routes without DefaultLayout (clean pages)
@@ -98,17 +94,6 @@ const routes: Routes = [
       { path: 'controller/:controller_id/help', component: HelpComponent },
       { path: 'controller/:controller_id/settings', component: SettingsComponent },
       { path: 'controller/:controller_id/settings/console', component: ConsoleComponent },
-      {
-        path: 'controller/:controller_id/management/users/:user_id',
-        component: UserDetailComponent,
-        canActivate: [LoginGuard],
-        resolve: {
-          user: UserDetailResolver,
-          groups: UserGroupsResolver,
-          aces: UserAcesResolver,
-          controller: ControllerResolve,
-        },
-      },
       {
         path: 'controller/:controller_id/management/pools/:pool_id',
         component: ResourcePoolDetailsComponent,

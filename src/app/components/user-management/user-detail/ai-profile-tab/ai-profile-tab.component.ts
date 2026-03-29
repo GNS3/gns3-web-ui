@@ -76,6 +76,12 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
   constructor() {}
 
   ngOnInit(): void {
+    // Ensure inputs are available before loading
+    if (!this.controller() || !this.user()) {
+      console.error('AiProfileTabComponent: controller or user inputs are not set');
+      return;
+    }
+
     this.loadConfigs();
 
     // Subscribe to data changes

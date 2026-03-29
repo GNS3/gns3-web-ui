@@ -291,7 +291,6 @@ import { AddGroupDialogComponent } from '@components/group-management/add-group-
 import { DeleteGroupDialogComponent } from '@components/group-management/delete-group-dialog/delete-group-dialog.component';
 import { DeleteUserDialogComponent } from '@components/user-management/delete-user-dialog/delete-user-dialog.component';
 import { GroupDetailsComponent } from '@components/group-details/group-details.component';
-import { UserDetailComponent } from '@components/user-management/user-detail/user-detail.component';
 import { AddUserToGroupDialogComponent } from '@components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component';
 import { RemoveToGroupDialogComponent } from '@components/group-details/remove-to-group-dialog/remove-to-group-dialog.component';
 import { PaginatorPipe } from '@components/group-details/paginator.pipe';
@@ -417,7 +416,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     ChatInputAreaComponent,
     AclManagementComponent,
     GroupManagementComponent,
-    UserDetailComponent,
     AiProfileTabComponent,
     AiProfileDialogComponent,
     GroupDetailsComponent,

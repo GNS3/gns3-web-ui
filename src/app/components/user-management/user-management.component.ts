@@ -46,6 +46,8 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ControllerService } from '@services/controller.service';
 import { UserFilterPipe } from '@filters/user-filter.pipe';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { UserDetailDialogComponent, UserDetailDialogData } from '@components/user-management/user-detail-dialog/user-detail-dialog.component';
+import { AiProfileDialogComponent, AiProfileDialogData } from '@components/user-management/ai-profile-dialog/ai-profile-dialog.component';
 
 @Component({
   standalone: true,
@@ -82,7 +84,7 @@ export class UserManagementComponent implements OnInit {
 
   controller: Controller;
   dataSource = new MatTableDataSource<User>();
-  displayedColumns = ['select', 'username', 'full_name', 'email', 'is_active', 'last_login', 'updated_at'];
+  displayedColumns = ['select', 'username', 'full_name', 'email', 'is_active', 'last_login', 'updated_at', 'actions'];
   selection = new SelectionModel<User>(true, []);
   searchText = '';
 
@@ -197,5 +199,41 @@ export class UserManagementComponent implements OnInit {
           this.selection.clear();
         }
       });
+  }
+
+  openUserDetailDialog(user: User) {
+    // Re-fetch user data to ensure we have the latest
+    this.userService.get(this.controller, user.user_id).subscribe({
+      next: (userData: User) => {
+        const dialogData: UserDetailDialogData = {
+          user: userData,
+          controller: this.controller,
+        };
+
+        this.dialog.open(UserDetailDialogComponent, {
+          panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+          data: dialogData,
+          disableClose: false,
+        }).afterClosed().subscribe(() => {
+          this.refresh();
+        });
+      },
+      error: (error) => {
+        this.toasterService.error(`Cannot load user data: ${error}`);
+      }
+    });
+  }
+
+  openAiProfileDialog(user: User) {
+    const dialogData: AiProfileDialogData = {
+      user: user,
+      controller: this.controller,
+    };
+
+    this.dialog.open(AiProfileDialogComponent, {
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+      data: dialogData,
+      disableClose: false,
+    });
   }
 }

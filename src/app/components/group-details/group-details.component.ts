@@ -41,6 +41,7 @@ import { MatCardModule } from '@angular/material/card';
 import { GroupAiProfileTabComponent } from '@components/group-details/group-ai-profile-tab/group-ai-profile-tab.component';
 import { MembersFilterPipe } from '@components/group-details/members-filter.pipe';
 import { PaginatorPipe } from '@components/group-details/paginator.pipe';
+import { UserDetailDialogComponent, UserDetailDialogData } from '@components/user-management/user-detail-dialog/user-detail-dialog.component';
 
 @Component({
   selector: 'app-group-details',
@@ -169,6 +170,13 @@ export class GroupDetailsComponent implements OnInit {
   reloadMembers() {
     this.groupService.getGroupMember(this.controller, this.group().user_group_id).subscribe((members: User[]) => {
       this.members.set(members);
+    });
+  }
+
+  openUserDetailDialog(user: User) {
+    this.dialog.open(UserDetailDialogComponent, {
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+      data: { user, controller: this.controller } as UserDetailDialogData,
     });
   }
 }
