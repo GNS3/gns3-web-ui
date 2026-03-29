@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable } from 'rxjs';
 import { Compute } from '@models/compute';
-import { ComputeStatistics } from '@models/computeStatistics';
+import { ComputeStatistics, ControllerStatistics } from '@models/computeStatistics';
 import { Controller } from '@models/controller';
 import { HttpController } from './http-controller.service';
 
@@ -14,7 +14,7 @@ export class ComputeService {
     return this.httpController.get<Compute[]>(controller, '/computes') as Observable<Compute[]>;
   }
 
-  getStatistics(controller: Controller): Observable<ComputeStatistics[]> {
-    return this.httpController.get(controller, `/statistics`);
+  getStatistics(controller: Controller): Observable<ControllerStatistics> {
+    return this.httpController.get<ControllerStatistics>(controller, `/statistics`);
   }
 }

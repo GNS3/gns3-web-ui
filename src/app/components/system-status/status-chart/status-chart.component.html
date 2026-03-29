@@ -1,74 +1,166 @@
 <mat-card class="status-chart">
-  <div class="status-chart__gauges">
-    <app-progress-ring
-      [percent]="computeStatistics().statistics.cpu_usage_percent"
-      label="CPU usage"
-    ></app-progress-ring>
+  @if (computeStatistics() && projectStats()) {
+  <div class="status-chart__section">
+    <h3 class="status-chart__section-title">Overview</h3>
+    <div class="status-chart__gauges">
+      <app-progress-ring
+        [percent]="computeStatistics().statistics.cpu_usage_percent"
+        label="CPU usage"
+      ></app-progress-ring>
 
-    <app-progress-ring
-      [percent]="computeStatistics().statistics.disk_usage_percent"
-      label="Disk usage"
-    ></app-progress-ring>
+      @if (computeStatistics().statistics.disk_usage_percent !== undefined) {
+      <app-progress-ring
+        [percent]="computeStatistics().statistics.disk_usage_percent"
+        label="Disk usage"
+      ></app-progress-ring>
+      }
 
-    <app-progress-ring
-      [percent]="computeStatistics().statistics.memory_usage_percent"
-      label="Memory usage"
-    ></app-progress-ring>
+      <app-progress-ring
+        [percent]="computeStatistics().statistics.memory_usage_percent"
+        label="Memory usage"
+      ></app-progress-ring>
 
-    <app-progress-ring
-      [percent]="computeStatistics().statistics.swap_usage_percent"
-      label="SWAP usage"
-    ></app-progress-ring>
-  </div>
-
-  <div class="status-chart__gauges">
-    <app-progress-ring
-      [percent]="computeStatistics().statistics.load_average_percent[0]"
-      label="Load 1m"
-    ></app-progress-ring>
-
-    <app-progress-ring
-      [percent]="computeStatistics().statistics.load_average_percent[1]"
-      label="Load 5m"
-    ></app-progress-ring>
-
-    <app-progress-ring
-      [percent]="computeStatistics().statistics.load_average_percent[2]"
-      label="Load 15m"
-    ></app-progress-ring>
-
-    <div class="gauge gauge--empty"></div>
-  </div>
-
-  <div class="status-chart__chips">
-    <div class="status-chart__chip-row">
-      <span class="chip chip--memory">
-        <span class="chip__label">Memory total</span>
-        <span class="chip__value">{{ formatBytes(computeStatistics().statistics.memory_total) }}</span>
-      </span>
-      <span class="chip chip--memory">
-        <span class="chip__label">Memory used</span>
-        <span class="chip__value">{{ formatBytes(computeStatistics().statistics.memory_used) }}</span>
-      </span>
-      <span class="chip chip--memory">
-        <span class="chip__label">Memory free</span>
-        <span class="chip__value">{{ formatBytes(computeStatistics().statistics.memory_free) }}</span>
-      </span>
-    </div>
-
-    <div class="status-chart__chip-row">
-      <span class="chip chip--swap">
-        <span class="chip__label">Swap total</span>
-        <span class="chip__value">{{ formatBytes(computeStatistics().statistics.swap_total) }}</span>
-      </span>
-      <span class="chip chip--swap">
-        <span class="chip__label">Swap used</span>
-        <span class="chip__value">{{ formatBytes(computeStatistics().statistics.swap_used) }}</span>
-      </span>
-      <span class="chip chip--swap">
-        <span class="chip__label">Swap free</span>
-        <span class="chip__value">{{ formatBytes(computeStatistics().statistics.swap_free) }}</span>
-      </span>
+      <app-progress-ring
+        [percent]="computeStatistics().statistics.swap_usage_percent"
+        label="SWAP usage"
+      ></app-progress-ring>
     </div>
   </div>
+
+  <div class="status-chart__section">
+    <h3 class="status-chart__section-title">Projects & Nodes</h3>
+    <div class="status-chart__stats-grid">
+      <div class="stat-card">
+        <span class="stat-card__value">{{ projectStats().total }}</span>
+        <span class="stat-card__label">Total Projects</span>
+      </div>
+      <div class="stat-card stat-card--opened">
+        <span class="stat-card__value">{{ nodeStats().open_project_nodes }}</span>
+        <span class="stat-card__label">Open Project Nodes</span>
+      </div>
+      <div class="stat-card stat-card--closed">
+        <span class="stat-card__value">{{ nodeStats().closed_project_nodes }}</span>
+        <span class="stat-card__label">Closed Project Nodes</span>
+      </div>
+      <div class="stat-card stat-card--nodes">
+        <span class="stat-card__value">{{ nodeStats().total }}</span>
+        <span class="stat-card__label">Total Nodes</span>
+      </div>
+      <div class="stat-card stat-card--links">
+        <span class="stat-card__value">{{ linkStats().total }}</span>
+        <span class="stat-card__label">Total Links</span>
+      </div>
+      <div class="stat-card stat-card--capturing">
+        <span class="stat-card__value">{{ linkStats().capturing }}</span>
+        <span class="stat-card__label">Capturing</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="status-chart__section">
+    <h3 class="status-chart__section-title">Nodes by Type</h3>
+    <div class="status-chart__breakdown">
+      @for (entry of getNodeTypeEntries(); track entry[0]) {
+      <div class="breakdown-item">
+        <span class="breakdown-item__label">{{ entry[0] }}</span>
+        <span class="breakdown-item__value">{{ entry[1] }}</span>
+      </div>
+      } @empty {
+      <span class="status-chart__empty">No nodes</span>
+      }
+    </div>
+  </div>
+
+  @if (getNodeStatusEntries().length > 0) {
+  <div class="status-chart__section">
+    <h3 class="status-chart__section-title">Nodes by Status</h3>
+    <div class="status-chart__breakdown">
+      @for (entry of getNodeStatusEntries(); track entry[0]) {
+      <div class="breakdown-item">
+        <span class="breakdown-item__label">{{ entry[0] }}</span>
+        <span class="breakdown-item__value">{{ entry[1] }}</span>
+      </div>
+      }
+    </div>
+  </div>
+  }
+  } @else if (computeStatistics()) {
+  <div class="status-chart__section">
+    <h3 class="status-chart__section-title">Compute: {{ computeStatistics().compute_name }}</h3>
+    <div class="status-chart__gauges">
+      <app-progress-ring
+        [percent]="computeStatistics().statistics.cpu_usage_percent"
+        label="CPU usage"
+      ></app-progress-ring>
+
+      @if (computeStatistics().statistics.disk_usage_percent !== undefined) {
+      <app-progress-ring
+        [percent]="computeStatistics().statistics.disk_usage_percent"
+        label="Disk usage"
+      ></app-progress-ring>
+      }
+
+      <app-progress-ring
+        [percent]="computeStatistics().statistics.memory_usage_percent"
+        label="Memory usage"
+      ></app-progress-ring>
+
+      <app-progress-ring
+        [percent]="computeStatistics().statistics.swap_usage_percent"
+        label="SWAP usage"
+      ></app-progress-ring>
+    </div>
+
+    <div class="status-chart__gauges">
+      <app-progress-ring
+        [percent]="computeStatistics().statistics.load_average_percent[0]"
+        label="Load 1m"
+      ></app-progress-ring>
+
+      <app-progress-ring
+        [percent]="computeStatistics().statistics.load_average_percent[1]"
+        label="Load 5m"
+      ></app-progress-ring>
+
+      <app-progress-ring
+        [percent]="computeStatistics().statistics.load_average_percent[2]"
+        label="Load 15m"
+      ></app-progress-ring>
+
+      <div class="gauge gauge--empty"></div>
+    </div>
+
+    <div class="status-chart__chips">
+      <div class="status-chart__chip-row">
+        <span class="chip chip--memory">
+          <span class="chip__label">Memory total</span>
+          <span class="chip__value">{{ formatBytes(computeStatistics().statistics.memory_total) }}</span>
+        </span>
+        <span class="chip chip--memory">
+          <span class="chip__label">Memory used</span>
+          <span class="chip__value">{{ formatBytes(computeStatistics().statistics.memory_used) }}</span>
+        </span>
+        <span class="chip chip--memory">
+          <span class="chip__label">Memory free</span>
+          <span class="chip__value">{{ formatBytes(computeStatistics().statistics.memory_free) }}</span>
+        </span>
+      </div>
+
+      <div class="status-chart__chip-row">
+        <span class="chip chip--swap">
+          <span class="chip__label">Swap total</span>
+          <span class="chip__value">{{ formatBytes(computeStatistics().statistics.swap_total) }}</span>
+        </span>
+        <span class="chip chip--swap">
+          <span class="chip__label">Swap used</span>
+          <span class="chip__value">{{ formatBytes(computeStatistics().statistics.swap_used) }}</span>
+        </span>
+        <span class="chip chip--swap">
+          <span class="chip__label">Swap free</span>
+          <span class="chip__value">{{ formatBytes(computeStatistics().statistics.swap_free) }}</span>
+        </span>
+      </div>
+    </div>
+  </div>
+  }
 </mat-card>

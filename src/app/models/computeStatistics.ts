@@ -17,3 +17,29 @@ export interface ComputeStatistics {
   compute_name: string;
   statistics: Statistics;
 }
+
+export interface ProjectStats {
+  total: number;
+  open_project_nodes: number;
+  closed_project_nodes: number;
+}
+
+export interface NodeStats {
+  total: number;
+  open_project_nodes: number;
+  closed_project_nodes: number;
+  by_type: Record<string, number>;
+  by_status: Record<string, number>;
+}
+
+export interface LinkStats {
+  total: number;
+  capturing: number;
+}
+
+export interface ControllerStatistics {
+  computes: ComputeStatistics[];
+  projects: ProjectStats;
+  nodes: NodeStats;
+  links: LinkStats;
+}

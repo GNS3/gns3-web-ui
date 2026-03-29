@@ -44,6 +44,36 @@
 }
 
 /* =============================================
+// Section
+// ============================================= */
+.status-chart__section {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.status-chart__section-title {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--mat-sys-on-surface-variant);
+  margin-bottom: 16px;
+}
+
+.status-chart__empty {
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant);
+  font-style: italic;
+}
+
+/* =============================================
 // Chips Section
 // ============================================= */
 .status-chart__chips {
@@ -102,6 +132,100 @@
 }
 
 /* =============================================
+// Stats Grid (Projects & Nodes Overview)
+// ============================================= */
+.status-chart__stats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 12px;
+  border-radius: var(--mat-sys-corner-medium);
+  background: var(--mat-sys-surface-container-high);
+
+  &__value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--mat-sys-on-surface-variant);
+    margin-top: 4px;
+    text-align: center;
+  }
+
+  &--opened {
+    background: var(--mat-sys-primary-container);
+    .stat-card__value { color: var(--mat-sys-on-primary-container); }
+    .stat-card__label { color: var(--mat-sys-on-primary-container); opacity: 0.8; }
+  }
+
+  &--closed {
+    background: var(--mat-sys-surface-container-highest);
+  }
+
+  &--nodes {
+    background: var(--mat-sys-secondary-container);
+    .stat-card__value { color: var(--mat-sys-on-secondary-container); }
+    .stat-card__label { color: var(--mat-sys-on-secondary-container); opacity: 0.8; }
+  }
+
+  &--links {
+    background: var(--mat-sys-tertiary-container);
+    .stat-card__value { color: var(--mat-sys-on-tertiary-container); }
+    .stat-card__label { color: var(--mat-sys-on-tertiary-container); opacity: 0.8; }
+  }
+
+  &--capturing {
+    background: var(--mat-sys-error-container);
+    .stat-card__value { color: var(--mat-sys-on-error-container); }
+    .stat-card__label { color: var(--mat-sys-on-error-container); opacity: 0.8; }
+  }
+}
+
+/* =============================================
+// Breakdown (Nodes by Type/Status)
+// ============================================= */
+.status-chart__breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.breakdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--mat-sys-surface-container);
+  border-radius: var(--mat-sys-corner-small);
+  min-width: 100px;
+
+  &__label {
+    font-size: 13px;
+    color: var(--mat-sys-on-surface-variant);
+    text-transform: capitalize;
+  }
+
+  &__value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+    margin-left: auto;
+  }
+}
+
+/* =============================================
 // Responsive Design
 // ============================================= */
 @media (max-width: 768px) {
@@ -128,5 +252,14 @@
     flex-direction: row;
     justify-content: space-between;
     padding: 10px 16px;
+  }
+
+  .status-chart__stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .breakdown-item {
+    flex: 1 1 calc(50% - 8px);
+    min-width: 0;
   }
 }

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
-import { ComputeStatistics } from '@models/computeStatistics';
+import { ComputeStatistics, LinkStats, NodeStats, ProjectStats } from '@models/computeStatistics';
 import { ProgressRingComponent } from './progress-ring/progress-ring.component';
 
 @Component({
@@ -13,6 +13,9 @@ import { ProgressRingComponent } from './progress-ring/progress-ring.component';
 })
 export class StatusChartComponent {
   readonly computeStatistics = input<ComputeStatistics>(undefined);
+  readonly projectStats = input<ProjectStats>(undefined);
+  readonly nodeStats = input<NodeStats>(undefined);
+  readonly linkStats = input<LinkStats>(undefined);
 
   formatBytes(bytes: number, decimals = 2): string {
     if (bytes === 0) return '0 Bytes';
@@ -24,5 +27,17 @@ export class StatusChartComponent {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  }
+
+  getNodeTypeEntries(): [string, number][] {
+    const stats = this.nodeStats();
+    if (!stats) return [];
+    return Object.entries(stats.by_type);
+  }
+
+  getNodeStatusEntries(): [string, number][] {
+    const stats = this.nodeStats();
+    if (!stats) return [];
+    return Object.entries(stats.by_status);
   }
 }

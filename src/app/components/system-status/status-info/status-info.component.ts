@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ComputeStatistics } from '@models/computeStatistics';
+import { ComputeStatistics, LinkStats, NodeStats, ProjectStats } from '@models/computeStatistics';
 import { Controller } from '@models/controller';
 import { ComputeService } from '@services/compute.service';
 import { ControllerService } from '@services/controller.service';
@@ -23,6 +23,9 @@ export class StatusInfoComponent implements OnInit {
 
   public controllerId: string = '';
   public computeStatistics = signal<ComputeStatistics[]>([]);
+  public projectStats = signal<ProjectStats>({ total: 0, open_project_nodes: 0, closed_project_nodes: 0 });
+  public nodeStats = signal<NodeStats>({ total: 0, open_project_nodes: 0, closed_project_nodes: 0, by_type: {}, by_status: {} });
+  public linkStats = signal<LinkStats>({ total: 0, capturing: 0 });
   public connectionFailed: boolean;
 
   ngOnInit() {
@@ -32,15 +35,20 @@ export class StatusInfoComponent implements OnInit {
 
   getStatistics() {
     this.controllerService.get(Number(this.controllerId)).then((controller: Controller) => {
-      this.computeService.getStatistics(controller).subscribe((statistics: ComputeStatistics[]) => {
-        this.computeStatistics.set(statistics);
-        setTimeout(() => {
-          this.getStatistics();
-        }, 20000);
-      }),
-        (error) => {
+      this.computeService.getStatistics(controller).subscribe({
+        next: (statistics) => {
+          this.computeStatistics.set(statistics.computes);
+          this.projectStats.set(statistics.projects);
+          this.nodeStats.set(statistics.nodes);
+          this.linkStats.set(statistics.links);
+          setTimeout(() => {
+            this.getStatistics();
+          }, 20000);
+        },
+        error: () => {
           this.connectionFailed = true;
-        };
+        },
+      });
     });
   }
 }
