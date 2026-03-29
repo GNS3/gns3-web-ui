@@ -146,6 +146,7 @@ export class GroupDetailsComponent implements OnInit {
       .open<RemoveToGroupDialogComponent>(RemoveToGroupDialogComponent, {
         width: '500px',
         height: '200px',
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
         data: { name: user.username },
       })
       .afterClosed()
