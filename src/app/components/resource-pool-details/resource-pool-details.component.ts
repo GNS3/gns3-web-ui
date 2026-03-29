@@ -96,7 +96,10 @@ export class ResourcePoolDetailsComponent implements OnInit {
 
   deleteResource(resource: Resource) {
     this.dialog
-      .open(DeleteResourceConfirmationDialogComponent, { data: resource })
+      .open(DeleteResourceConfirmationDialogComponent, {
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+        data: resource
+      })
       .afterClosed()
       .subscribe((resource: Resource) => {
         if (resource) {
