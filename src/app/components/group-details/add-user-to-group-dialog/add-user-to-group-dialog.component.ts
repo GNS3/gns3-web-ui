@@ -10,7 +10,7 @@
  *
  * Author: Sylvain MATHIEU, Elise LEBEAU
  */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -18,6 +18,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { UserService } from '@services/user.service';
 import { Controller } from '@models/controller';
 import { BehaviorSubject, forkJoin, observable, Observable, timer } from 'rxjs';
@@ -31,7 +33,7 @@ import { ToasterService } from '@services/toaster.service';
   standalone: true,
   selector: 'app-add-user-to-group-dialog',
   templateUrl: './add-user-to-group-dialog.component.html',
-  styleUrls: ['./add-user-to-group-dialog.component.scss'],
+  styleUrl: './add-user-to-group-dialog.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -41,10 +43,12 @@ import { ToasterService } from '@services/toaster.service';
     MatInputModule,
     MatIconModule,
     MatProgressSpinnerModule,
+    MatButtonModule,
+    MatCheckboxModule,
   ],
 })
 export class AddUserToGroupDialogComponent implements OnInit {
-  private dialog = inject(MatDialogRef<AddUserToGroupDialogComponent>);
+  private dialogRef = inject(MatDialogRef<AddUserToGroupDialogComponent>);
   private userService = inject(UserService);
   private groupService = inject(GroupService);
   private toastService = inject(ToasterService);
@@ -55,6 +59,14 @@ export class AddUserToGroupDialogComponent implements OnInit {
 
   searchText: string;
   loading = false;
+
+  // Batch selection state
+  selectedUserIds = signal<Set<string>>(new Set());
+  selectedCount = computed(() => this.selectedUserIds().size);
+  allSelected = computed(() => {
+    const displayed = this.displayedUsers.value;
+    return displayed.length > 0 && displayed.every(user => this.selectedUserIds().has(user.user_id));
+  });
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { controller: Controller; group: Group }) {}
 
@@ -94,7 +106,13 @@ export class AddUserToGroupDialogComponent implements OnInit {
     this.groupService.addMemberToGroup(this.data.controller, this.data.group, user).subscribe(
       () => {
         this.toastService.success(`user ${user.username} was added`);
-        this.getUsers();
+        // Remove from displayed users and deselect
+        this.removeUserFromList(user);
+        this.selectedUserIds.update(set => {
+          const newSet = new Set(set);
+          newSet.delete(user.user_id);
+          return newSet;
+        });
         this.loading = false;
         this.cd.markForCheck();
       },
@@ -105,5 +123,77 @@ export class AddUserToGroupDialogComponent implements OnInit {
         this.cd.markForCheck();
       }
     );
+  }
+
+  toggleUserSelection(userId: string): void {
+    this.selectedUserIds.update(set => {
+      const newSet = new Set(set);
+      if (newSet.has(userId)) {
+        newSet.delete(userId);
+      } else {
+        newSet.add(userId);
+      }
+      return newSet;
+    });
+  }
+
+  isUserSelected(userId: string): boolean {
+    return this.selectedUserIds().has(userId);
+  }
+
+  toggleSelectAll(): void {
+    const displayed = this.displayedUsers.value;
+    const currentSet = this.selectedUserIds();
+
+    if (this.allSelected()) {
+      // Deselect all
+      this.selectedUserIds.set(new Set());
+    } else {
+      // Select all displayed
+      const newSet = new Set(currentSet);
+      displayed.forEach(user => newSet.add(user.user_id));
+      this.selectedUserIds.set(newSet);
+    }
+  }
+
+  addSelectedUsers(): void {
+    const selectedIds = this.selectedUserIds();
+    if (selectedIds.size === 0) {
+      this.toastService.warning('Please select at least one user');
+      return;
+    }
+
+    const usersToAdd = this.displayedUsers.value.filter(user => selectedIds.has(user.user_id));
+    this.loading = true;
+
+    // Batch add users
+    forkJoin(
+      usersToAdd.map(user =>
+        this.groupService.addMemberToGroup(this.data.controller, this.data.group, user)
+      )
+    ).subscribe({
+      next: () => {
+        this.toastService.success(`${usersToAdd.length} user(s) added to group`);
+        this.dialogRef.close(true);
+      },
+      error: (err) => {
+        console.log(err);
+        this.toastService.error('Error adding users to group');
+        this.loading = false;
+        this.cd.markForCheck();
+      }
+    });
+  }
+
+  onClose(): void {
+    this.dialogRef.close();
+  }
+
+  private removeUserFromList(user: User): void {
+    const currentUsers = this.users.value;
+    const currentDisplayed = this.displayedUsers.value;
+
+    this.users.next(currentUsers.filter(u => u.user_id !== user.user_id));
+    this.displayedUsers.next(currentDisplayed.filter(u => u.user_id !== user.user_id));
   }
 }

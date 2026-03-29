@@ -70,7 +70,7 @@
           </div>
 
           <div class="group-detail-dialog__members-list">
-            @if (members.length === 0) {
+            @if (members().length === 0) {
             <p class="group-detail-dialog__empty-message">No members in this group</p>
             } @else {
             <ul>

@@ -64,7 +64,7 @@ export class GroupDetailDialogComponent implements OnInit {
   group: Group;
   controller: Controller;
   editGroupForm: UntypedFormGroup;
-  members: User[] = [];
+  members = signal<User[]>([]);
   aces: ACEDetailed[] = [];
   aceDatasource = new MatTableDataSource<ACEDetailed>();
   aceDisplayedColumns = ['endpoint', 'role', 'propagate', 'allowed'];
@@ -72,8 +72,9 @@ export class GroupDetailDialogComponent implements OnInit {
 
   filteredMembers = computed(() => {
     const search = this.searchMembers.toLowerCase();
-    if (!search) return this.members;
-    return this.members.filter(m => m.username.toLowerCase().includes(search));
+    const members = this.members();
+    if (!search) return members;
+    return members.filter(m => m.username.toLowerCase().includes(search));
   });
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: GroupDetailDialogData) {
@@ -92,7 +93,8 @@ export class GroupDetailDialogComponent implements OnInit {
   loadMembers(): void {
     this.groupService.getGroupMember(this.controller, this.group.user_group_id).subscribe({
       next: (members: User[]) => {
-        this.members = members.sort((a: User, b: User) => a.username.toLowerCase().localeCompare(b.username.toLowerCase()));
+        this.members.set(members.sort((a: User, b: User) => a.username.toLowerCase().localeCompare(b.username.toLowerCase())));
+        // No need for markForCheck() with signals - they automatically trigger updates
       },
       error: (error) => {
         console.error('Failed to load members:', error);
@@ -143,18 +145,17 @@ export class GroupDetailDialogComponent implements OnInit {
 
   openAddUserDialog(): void {
     this.dialog.open(AddUserToGroupDialogComponent, {
-      width: '700px',
-      height: '500px',
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'add-user-to-group-dialog-panel'],
       data: { controller: this.controller, group: this.group },
-    }).afterClosed().subscribe(() => {
-      this.loadMembers();
+    }).afterClosed().subscribe((result: boolean) => {
+      if (result) {
+        this.loadMembers();
+      }
     });
   }
 
   openRemoveUserDialog(user: User): void {
     this.dialog.open(RemoveToGroupDialogComponent, {
-      width: '500px',
-      height: '200px',
       panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
       data: { name: user.username },
     }).afterClosed().subscribe((confirm: boolean) => {

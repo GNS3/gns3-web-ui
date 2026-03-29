@@ -1034,3 +1034,35 @@ h2[mat-dialog-title] {
     max-width: 1000px;
   }
 }
+
+// Add User To Group Dialog - 700px x 500px
+// Inherits from base-dialog-panel + simple-dialog-panel
+// Only overrides width (700px) and height (500px)
+.add-user-to-group-dialog-panel {
+  --mat-dialog-container-max-width: 700px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 700px;
+    max-width: 700px;
+    height: 500px;
+    max-height: 500px;
+
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .mat-mdc-dialog-content {
+    flex: 1;
+    overflow: hidden;
+    padding: 0; // Remove default padding, component handles spacing
+  }
+
+  // Hide default dialog actions since we have custom ones
+  .mat-dialog-actions {
+    display: none;
+  }
+}
