@@ -229,6 +229,7 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
   deleteConfig(config: LLMModelConfigResponse): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
       width: '400px',
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
       data: {
         title: 'Delete Configuration',
         message: `Are you sure you want to delete configuration "${config.name}"? This action cannot be undone.`,
