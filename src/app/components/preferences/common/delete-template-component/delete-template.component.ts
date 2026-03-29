@@ -22,7 +22,7 @@ export class DeleteTemplateComponent {
 
   deleteItem(templateName, templateId) {
     const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'delete-template-dialog-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
       data: {
         templateName: templateName,
       },
