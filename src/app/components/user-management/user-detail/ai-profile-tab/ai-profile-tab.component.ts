@@ -138,6 +138,33 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Extract and format the domain from base_url for display
+   * e.g., "https://openrouter.ai/api/v1" -> "openrouter.ai"
+   */
+  getProviderDisplay(config: LLMModelConfigWithSource): string {
+    const baseUrl = config.config.base_url;
+
+    if (!baseUrl) {
+      // Fallback to provider name if no base_url
+      return config.config.provider;
+    }
+
+    try {
+      // Remove protocol and path, extract hostname
+      const url = new URL(baseUrl);
+      const hostname = url.hostname;
+
+      // Remove common prefixes like "api." to make it cleaner
+      // e.g., "api.openai.com" -> "openai.com"
+      // e.g., "openrouter.ai" -> "openrouter.ai"
+      return hostname.replace(/^api\./, '');
+    } catch {
+      // If URL parsing fails, fallback to provider name
+      return config.config.provider;
+    }
+  }
+
+  /**
    * Check if config is default
    */
   isDefault(config: LLMModelConfigWithSource): boolean {

@@ -57,9 +57,9 @@
 
             <!-- Provider column -->
             <ng-container matColumnDef="provider">
-              <th mat-header-cell *matHeaderCellDef>Provider</th>
+              <th mat-header-cell *matHeaderCellDef>API Domain</th>
               <td mat-cell *matCellDef="let config">
-                <span class="provider-badge">{{ config.config.provider }}</span>
+                <span class="provider-badge">{{ getProviderDisplay(config) }}</span>
               </td>
             </ng-container>
 
