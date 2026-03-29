@@ -1,50 +1,200 @@
-.main {
-  display: flex;
-  gap: 24px;
+/**
+ * Role Detail Component Styles
+ * Uses Material theme variables and BEM naming convention
+ */
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--mat-sys-primary-container) 0%, var(--mat-sys-background) 100%);
+  min-height: 100vh;
 }
 
-.details {
-  width: 300px;
-  flex-shrink: 0;
+.role-detail {
+  padding: 20px 24px;
+  animation: fadeInSlideIn 0.4s ease-out;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  align-items: center;
+
+  /* =============================================
+  // Header
+  // ============================================= */
+  &__header {
+    margin-bottom: 24px;
+    width: 100%;
+    max-width: 1000px;
+  }
+
+  &__header-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__back-btn {
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    margin: 0;
+  }
+
+  /* =============================================
+  // Content
+  // ============================================= */
+  &__content {
+    width: 100%;
+    max-width: 1000px;
+  }
+
+  &__main {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    width: 100%;
+    max-width: 1000px;
+  }
+
+  /* =============================================
+  // Section & Card
+  // ============================================= */
+  &__section {
+    width: 100%;
+  }
+
+  &__card {
+    border-radius: 12px;
+
+    mat-card-header {
+      padding: 16px 16px 0;
+    }
+
+    mat-card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--mat-sys-on-surface);
+    }
+
+    mat-card-content {
+      padding: 16px;
+    }
+
+    mat-card-actions {
+      padding: 0 16px 16px;
+    }
+  }
+
+  /* =============================================
+  // Form
+  // ============================================= */
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  &__field {
+    width: 100%;
+  }
+
+  /* =============================================
+  // Readonly Display (for built-in roles)
+  // ============================================= */
+  &__readonly {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px;
+    background: var(--mat-sys-surface-container-low);
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+
+  &__readonly-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__readonly-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__readonly-value {
+    font-size: 14px;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-start;
+    padding-top: 8px;
+  }
+
+  /* =============================================
+  // Info Grid (Read-only info)
+  // ============================================= */
+  &__info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    padding-top: 16px;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &--full {
+      grid-column: 1 / -1;
+    }
+  }
+
+  &__info-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__info-value {
+    font-size: 14px;
+    color: var(--mat-sys-on-surface);
+
+    &--mono {
+      font-family: monospace;
+      font-size: 12px;
+    }
+  }
 }
 
-app-privilege {
-  flex: 1;
-  min-width: 0;
-}
-
-.clickable {
-  cursor: pointer;
-}
-
-.privilege {
-  display: flex;
-  flex-direction: row;
-  padding-left: 10px;
-  justify-content: space-between;
-}
-
-.permission {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  border: 1px solid;
-  padding: 5px;
-  border-radius: 5px;
-  font-family: monospace;
-}
-
-.header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding-bottom: 20px;
-  padding-left: 10px;
-}
-.header > div {
-  font-size: 2em;
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

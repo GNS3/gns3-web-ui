@@ -3,9 +3,7 @@ import {
   Component,
   EventEmitter,
   Input,
-  OnInit,
   Output,
-  inject,
   input,
   signal,
 } from '@angular/core';
@@ -13,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Privilege } from '@models/api/Privilege';
 import { PrivilegeChange } from '@components/role-management/role-detail/privilege/privilegeChange';
 import { IPrivilegesChange } from '@components/role-management/role-detail/privilege/IPrivilegesChange';
@@ -22,10 +21,10 @@ import { GroupPrivilegesPipe } from '@components/role-management/role-detail/pri
   selector: 'app-privilege',
   templateUrl: './privilege.component.html',
   styleUrl: './privilege.component.scss',
-  imports: [CommonModule, MatButtonModule, MatIconModule, MatCheckboxModule, GroupPrivilegesPipe],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatCheckboxModule, MatTooltipModule, GroupPrivilegesPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PrivilegeComponent implements OnInit {
+export class PrivilegeComponent {
   readonly disable = input(true);
   readonly privileges = input<Privilege[]>([]);
   @Input() set ownedPrivilege(privileges: Privilege[]) {
@@ -40,6 +39,7 @@ export class PrivilegeComponent implements OnInit {
   ownedPrivilegesList = signal<string[]>([]);
   changer = new PrivilegeChange([]);
   private editModeState = signal(false);
+  private collapsedState = signal(true);
 
   get editMode(): boolean {
     return this.editModeState();
@@ -50,9 +50,16 @@ export class PrivilegeComponent implements OnInit {
     }
     this.editModeState.set(state);
   }
-  constructor() {}
 
-  ngOnInit(): void {}
+  get collapsed(): boolean {
+    return this.collapsedState();
+  }
+
+  toggleCollapsed(): void {
+    this.collapsedState.set(!this.collapsedState());
+  }
+
+  constructor() {}
 
   onPrivilegeChange(checked: boolean, privilege: Privilege) {
     const id = privilege.privilege_id;

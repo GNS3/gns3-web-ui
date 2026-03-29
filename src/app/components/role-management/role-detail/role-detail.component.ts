@@ -12,14 +12,14 @@
  */
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { RoleService } from '@services/role.service';
 import { ActivatedRoute } from '@angular/router';
 import { Controller } from '@models/controller';
@@ -39,15 +39,14 @@ import { PrivilegeComponent } from '@components/role-management/role-detail/priv
   styleUrl: './role-detail.component.scss',
   imports: [
     CommonModule,
-    FormsModule,
     ReactiveFormsModule,
     RouterModule,
+    MatCardModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    MatCheckboxModule,
-    MatDividerModule,
+    MatTooltipModule,
     PrivilegeComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -71,9 +70,7 @@ export class RoleDetailComponent implements OnInit {
   });
   editRoleForm: FormGroup;
   $ownedPrivilegesId: Observable<Privilege[]> = this.$role.pipe(
-    map((role: Role) => {
-      return role.privileges;
-    })
+    map((role: Role) => role.privileges)
   );
 
   privileges: Observable<Privilege[]>;
@@ -96,23 +93,23 @@ export class RoleDetailComponent implements OnInit {
       this.roleService.getById(this.controller, this.roleId).subscribe((role: Role) => this.$role.next(role));
     });
   }
-  onUpdate() {
+
+  onUpdate(): void {
     const role = this.$role.value;
-    role.name = this.editRoleForm.get('rolename').value;
-    role.description = this.editRoleForm.get('description').value;
+    role.name = this.editRoleForm.get('rolename')?.value;
+    role.description = this.editRoleForm.get('description')?.value;
     this.roleService.update(this.controller, role).subscribe(
       () => {
-        this.toastService.success(`role: ${role.name} was updated`);
+        this.toastService.success(`Role ${role.name} was updated`);
         this.roleService.getById(this.controller, this.roleId).subscribe((role: Role) => this.$role.next(role));
       },
       (error: HttpErrorResponse) => {
-        this.toastService.error(`${error.message}
-        ${error.error.message}`);
+        this.toastService.error(`${error.message}\n${error.error.message}`);
       }
     );
   }
 
-  onPrivilegesUpdate(privileges: IPrivilegesChange) {
+  onPrivilegesUpdate(privileges: IPrivilegesChange): void {
     const tasks = [];
     for (const privilege of privileges.add) {
       tasks.push(this.roleService.setPrivileges(this.controller, this.roleId, privilege));
