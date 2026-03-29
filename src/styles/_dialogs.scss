@@ -626,7 +626,7 @@ h2[mat-dialog-title] {
     color: var(--mat-sys-error);
 
     &::before {
-      content: 'warning';
+      content: 'error';
       font-family: 'Material Icons';
       font-size: 24px;
     }
@@ -656,7 +656,7 @@ h2[mat-dialog-title] {
     color: var(--mat-sys-tertiary);
 
     &::before {
-      content: 'info';
+      content: 'warning';
       font-family: 'Material Icons';
       font-size: 24px;
     }
