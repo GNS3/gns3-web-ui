@@ -290,7 +290,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     this.isLocked = !this.isLocked;
     this.mapSettingsService.changeMapLockValue(this.isLocked);
     const dialogRef = this.dialog.open(ProjectMapLockConfirmationDialogComponent, {
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
       autoFocus: false,
       disableClose: true,
       data: { isAction: this.isLocked, actionType: this.isLocked == true ? 'Lock' : 'Unlock' },
