@@ -156,6 +156,7 @@ export class SymbolsComponent implements OnInit {
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width: '400px',
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
       data: dialogData,
     });
 
@@ -261,6 +262,7 @@ export class SymbolsComponent implements OnInit {
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width: '400px',
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
       data: dialogData,
     });
 
