@@ -1,0 +1,190 @@
+/**
+ * Group Detail Dialog Styles
+ * Uses base-dialog-panel + configurator-dialog-panel styles from _dialogs.scss
+ * Only component-specific styles here
+ */
+
+.group-detail-dialog {
+  &__content {
+    padding: 0;
+  }
+
+  &__section {
+    margin-bottom: 24px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  &__section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+    margin: 0 0 12px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--mat-sys-primary);
+    display: inline-block;
+
+    .group-detail-dialog__section-header & {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+  }
+
+  &__card {
+    margin-bottom: 16px;
+    border-radius: 12px;
+
+    mat-card-content {
+      padding-top: 16px;
+    }
+
+    mat-card-actions {
+      padding: 16px;
+      border-top: 1px solid var(--mat-sys-outline-variant);
+    }
+
+    &--muted {
+      background: var(--mat-sys-surface-container-low);
+    }
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__field {
+    width: 100%;
+    max-width: 400px;
+  }
+
+  &__checkbox {
+    display: flex;
+    align-items: center;
+  }
+
+  &__info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &--full {
+      grid-column: 1 / -1;
+    }
+  }
+
+  &__info-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__info-value {
+    font-size: 14px;
+    color: var(--mat-sys-on-surface);
+
+    &--mono {
+      font-family: monospace;
+      font-size: 12px;
+    }
+  }
+
+  &__search {
+    margin-bottom: 16px;
+  }
+
+  &__search-field {
+    width: 100%;
+  }
+
+  &__members-list {
+    background: var(--mat-sys-surface-container-low);
+    border-radius: 8px;
+    padding: 8px 0;
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+
+  &__member-name {
+    font-weight: 500;
+    color: var(--mat-sys-primary);
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  &__empty-message {
+    color: var(--mat-sys-on-surface-variant);
+    font-style: italic;
+    text-align: center;
+    padding: 24px;
+  }
+
+  &__ace-table {
+    width: 100%;
+    background: var(--mat-sys-surface-container-low);
+    border-radius: 8px;
+    overflow: hidden;
+
+    .mat-header-row {
+      background: var(--mat-sys-surface-container);
+    }
+
+    mat-header-cell {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--mat-sys-on-surface-variant);
+      text-transform: uppercase;
+    }
+
+    mat-cell {
+      font-size: 14px;
+      color: var(--mat-sys-on-surface);
+    }
+
+    mat-row:hover {
+      background-color: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
+    }
+  }
+}

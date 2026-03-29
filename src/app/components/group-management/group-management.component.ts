@@ -43,6 +43,9 @@ import { Group } from '@models/groups/group';
 import { AddGroupDialogComponent } from '@components/group-management/add-group-dialog/add-group-dialog.component';
 import { DeleteGroupDialogComponent } from '@components/group-management/delete-group-dialog/delete-group-dialog.component';
 import { GroupFilterPipe } from '@filters/group-filter.pipe';
+import { GroupDetailDialogComponent, GroupDetailDialogData } from '@components/group-management/group-detail-dialog/group-detail-dialog.component';
+import { AiProfileDialogComponent, AiProfileDialogData } from '@components/user-management/ai-profile-dialog/ai-profile-dialog.component';
+import { GroupAiProfileDialogComponent, GroupAiProfileDialogData } from '@components/group-management/group-detail-dialog/group-ai-profile-dialog/group-ai-profile-dialog.component';
 
 @Component({
   selector: 'app-group-management',
@@ -78,7 +81,7 @@ export class GroupManagementComponent implements OnInit {
   @ViewChildren('groupsPaginator') groupsPaginator: QueryList<MatPaginator>;
   @ViewChildren('groupsSort') groupsSort: QueryList<MatSort>;
 
-  readonly displayedColumns = signal(['select', 'name', 'created_at', 'updated_at', 'is_builtin']);
+  readonly displayedColumns = signal(['select', 'name', 'created_at', 'updated_at', 'is_builtin', 'actions']);
   selection = new SelectionModel<Group>(true, []);
   groups: Group[];
   dataSource = new MatTableDataSource<Group>();
@@ -169,5 +172,20 @@ export class GroupManagementComponent implements OnInit {
           );
         }
       });
+  }
+
+  openGroupDetailDialog(group: Group) {
+    this.dialog.open(GroupDetailDialogComponent, {
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+      data: { group, controller: this.controller } as GroupDetailDialogData,
+      maxWidth: '90vw',
+    });
+  }
+
+  openGroupAiProfileDialog(group: Group) {
+    this.dialog.open(GroupAiProfileDialogComponent, {
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+      data: { group, controller: this.controller } as GroupAiProfileDialogData,
+    });
   }
 }

@@ -59,17 +59,12 @@ import { ImageManagerComponent } from '@components/image-manager/image-manager.c
 import { ManagementComponent } from '@components/management/management.component';
 import { GroupManagementComponent } from '@components/group-management/group-management.component';
 import { RoleManagementComponent } from '@components/role-management/role-management.component';
-import { GroupDetailsComponent } from '@components/group-details/group-details.component';
-import { GroupMembersResolver } from '@resolvers/group-members.resolver';
-import { GroupResolver } from '@resolvers/group.resolver';
-import { GroupRoleResolver } from '@resolvers/group-role.resolver';
 import { RoleDetailComponent } from '@components/role-management/role-detail/role-detail.component';
 import { RoleDetailResolver } from '@resolvers/role-detail.resolver';
 import { AclManagementComponent } from '@components/acl-management/acl-management.component';
 import { ResourcePoolsManagementComponent } from '@components/resource-pools-management/resource-pools-management.component';
 import { ResourcePoolDetailsComponent } from '@components/resource-pool-details/resource-pool-details.component';
 import { ResourcePoolsResolver } from '@resolvers/resource-pools.resolver';
-import { GroupAcesResolver } from '@resolvers/group-ace.resolver.ts.resolver';
 
 const routes: Routes = [
   // Routes without DefaultLayout (clean pages)
@@ -327,16 +322,6 @@ const routes: Routes = [
             component: AclManagementComponent,
           },
         ],
-      },
-      {
-        path: 'controller/:controller_id/management/groups/:user_group_id',
-        component: GroupDetailsComponent,
-        resolve: {
-          members: GroupMembersResolver,
-          controller: ControllerResolve,
-          group: GroupResolver,
-          aces: GroupAcesResolver,
-        },
       },
       {
         path: 'controller/:controller_id/management/roles/:role_id',

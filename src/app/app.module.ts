@@ -290,11 +290,8 @@ import { GroupFilterPipe } from '@filters/group-filter.pipe';
 import { AddGroupDialogComponent } from '@components/group-management/add-group-dialog/add-group-dialog.component';
 import { DeleteGroupDialogComponent } from '@components/group-management/delete-group-dialog/delete-group-dialog.component';
 import { DeleteUserDialogComponent } from '@components/user-management/delete-user-dialog/delete-user-dialog.component';
-import { GroupDetailsComponent } from '@components/group-details/group-details.component';
 import { AddUserToGroupDialogComponent } from '@components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component';
 import { RemoveToGroupDialogComponent } from '@components/group-details/remove-to-group-dialog/remove-to-group-dialog.component';
-import { PaginatorPipe } from '@components/group-details/paginator.pipe';
-import { MembersFilterPipe } from '@components/group-details/members-filter.pipe';
 import { ManagementComponent } from '@components/management/management.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { RoleManagementComponent } from '@components/role-management/role-management.component';
@@ -305,7 +302,6 @@ import { RoleDetailComponent } from '@components/role-management/role-detail/rol
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MarkdownModule } from 'ngx-markdown';
-import { AddRoleToGroupComponent } from '@components/group-details/add-role-to-group/add-role-to-group.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ChangeUserPasswordComponent } from '@components/user-management/user-detail/change-user-password/change-user-password.component';
 import { MatMenuModule } from '@angular/material/menu';
@@ -418,7 +414,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     GroupManagementComponent,
     AiProfileTabComponent,
     AiProfileDialogComponent,
-    GroupDetailsComponent,
     GroupAiProfileTabComponent,
     ImageManagerComponent,
     ProjectsComponent,
@@ -441,8 +436,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     UserFilterPipe,
     RoleFilterPipe,
     ResourcePoolsFilterPipe,
-    PaginatorPipe,
-    MembersFilterPipe,
     TemplateFilter,
     ProjectsFilter,
     GroupPrivilegesPipe,
@@ -584,7 +577,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     DeleteAceDialogComponent,
     AddUserToGroupDialogComponent,
     AddAceDialogComponent,
-    AddRoleToGroupComponent,
     AutocompleteComponent,
     DeleteResourceConfirmationDialogComponent,
     SaveProjectDialogComponent,

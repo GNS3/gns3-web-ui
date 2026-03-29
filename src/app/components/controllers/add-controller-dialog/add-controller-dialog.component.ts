@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -32,8 +32,7 @@ export class AddControllerDialogComponent implements OnInit {
   private controllerService = inject(ControllerService);
   private toasterService = inject(ToasterService);
   private changeDetector = inject(ChangeDetectorRef);
-
-  @Inject(MAT_DIALOG_DATA) public data: any;
+  readonly data = inject(MAT_DIALOG_DATA);
 
   protocols = [
     { key: 'http:', name: 'HTTP' },

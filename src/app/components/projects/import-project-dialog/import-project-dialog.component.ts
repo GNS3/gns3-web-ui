@@ -3,7 +3,6 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
-  Inject,
   OnInit,
   inject,
 } from '@angular/core';
@@ -64,8 +63,7 @@ export class ImportProjectDialogComponent implements OnInit {
   private uploadServiceService = inject(UploadServiceService);
   private snackBar = inject(MatSnackBar);
   private cd = inject(ChangeDetectorRef);
-
-  @Inject(MAT_DIALOG_DATA) public data: any;
+  readonly data = inject(MAT_DIALOG_DATA);
 
   uploader: FileUploader;
   uploadProgress: number = 0;

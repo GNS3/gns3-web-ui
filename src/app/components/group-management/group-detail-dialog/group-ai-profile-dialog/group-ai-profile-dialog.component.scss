@@ -1,0 +1,10 @@
+/**
+ * Group AI Profile Dialog Styles
+ * Uses base-dialog-panel + configurator-dialog-panel styles from _dialogs.scss
+ */
+
+.group-ai-profile-dialog {
+  &__content {
+    padding: 16px 0;
+  }
+}

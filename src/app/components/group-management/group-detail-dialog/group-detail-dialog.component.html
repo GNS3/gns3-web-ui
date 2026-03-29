@@ -1,0 +1,133 @@
+<h2 mat-dialog-title>Group {{ group.name }}</h2>
+
+<mat-dialog-content>
+  <div class="group-detail-dialog__content">
+    <!-- Details Section -->
+    <section class="group-detail-dialog__section">
+      <h3 class="group-detail-dialog__section-title">Details</h3>
+
+      <!-- Editable Info Card -->
+      <mat-card class="group-detail-dialog__card">
+        <mat-card-content>
+          <form [formGroup]="editGroupForm" class="group-detail-dialog__form">
+            <mat-form-field appearance="fill" class="group-detail-dialog__field">
+              <mat-label>Group name</mat-label>
+              <input matInput type="text" formControlName="groupname" />
+            </mat-form-field>
+
+            <div class="group-detail-dialog__checkbox">
+              <mat-checkbox [checked]="group.is_builtin" disabled>Is built-in</mat-checkbox>
+            </div>
+          </form>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-raised-button color="primary" (click)="onUpdate()" [disabled]="!editGroupForm.valid || group.is_builtin">
+            Update Group
+          </button>
+        </mat-card-actions>
+      </mat-card>
+
+      <!-- Read-only Info Card -->
+      <mat-card class="group-detail-dialog__card group-detail-dialog__card--muted">
+        <mat-card-header>
+          <mat-card-title>Group Information</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div class="group-detail-dialog__info-grid">
+            <div class="group-detail-dialog__info-item">
+              <span class="group-detail-dialog__info-label">Creation date</span>
+              <span class="group-detail-dialog__info-value">{{ group.created_at }}</span>
+            </div>
+            <div class="group-detail-dialog__info-item">
+              <span class="group-detail-dialog__info-label">Last update</span>
+              <span class="group-detail-dialog__info-value">{{ group.updated_at }}</span>
+            </div>
+            <div class="group-detail-dialog__info-item group-detail-dialog__info-item--full">
+              <span class="group-detail-dialog__info-label">UUID</span>
+              <span class="group-detail-dialog__info-value group-detail-dialog__info-value--mono">{{ group.user_group_id }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </section>
+
+    <!-- Members Section -->
+    <section class="group-detail-dialog__section">
+      <div class="group-detail-dialog__section-header">
+        <h3 class="group-detail-dialog__section-title">Members</h3>
+        <button mat-icon-button matTooltip="Add user" (click)="openAddUserDialog()">
+          <mat-icon>person_add</mat-icon>
+        </button>
+      </div>
+
+      <mat-card class="group-detail-dialog__card">
+        <mat-card-content>
+          <div class="group-detail-dialog__search">
+            <mat-form-field appearance="fill" class="group-detail-dialog__search-field">
+              <mat-label>Filter members</mat-label>
+              <input matInput [(ngModel)]="searchMembers" />
+            </mat-form-field>
+          </div>
+
+          <div class="group-detail-dialog__members-list">
+            @if (members.length === 0) {
+            <p class="group-detail-dialog__empty-message">No members in this group</p>
+            } @else {
+            <ul>
+              @for (user of filteredMembers(); track user.user_id) {
+              <li>
+                <span class="group-detail-dialog__member-name" (click)="openUserDetailDialog(user)">{{ user.username }}</span>
+                <button mat-icon-button matTooltip="Remove user" (click)="openRemoveUserDialog(user)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </li>
+              }
+            </ul>
+            }
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </section>
+
+    <!-- ACEs Section -->
+    <section class="group-detail-dialog__section">
+      <h3 class="group-detail-dialog__section-title">ACEs</h3>
+      <mat-card class="group-detail-dialog__card">
+        <mat-card-content>
+          @if (aces.length === 0) {
+          <p class="group-detail-dialog__empty-message">No ACEs configured for this group</p>
+          } @else {
+          <table mat-table [dataSource]="aceDatasource" class="group-detail-dialog__ace-table">
+            <ng-container matColumnDef="endpoint">
+              <th mat-header-cell *matHeaderCellDef>Endpoint</th>
+              <td mat-cell *matCellDef="let element">{{ element.endpoint_name }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="role">
+              <th mat-header-cell *matHeaderCellDef>Role</th>
+              <td mat-cell *matCellDef="let element">{{ element.role_name }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="propagate">
+              <th mat-header-cell *matHeaderCellDef>Propagate</th>
+              <td mat-cell *matCellDef="let element">{{ element.propagate }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="allowed">
+              <th mat-header-cell *matHeaderCellDef>Allowed</th>
+              <td mat-cell *matCellDef="let element">{{ element.allowed }}</td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="aceDisplayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: aceDisplayedColumns"></tr>
+          </table>
+          }
+        </mat-card-content>
+      </mat-card>
+    </section>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button (click)="onClose()">Close</button>
+</mat-dialog-actions>

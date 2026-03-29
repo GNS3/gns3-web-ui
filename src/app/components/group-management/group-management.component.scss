@@ -154,6 +154,7 @@ mat-cell[mat-column='name'] {
   text-decoration: none;
   font-weight: 500;
   position: relative;
+  cursor: pointer;
 
   &::after {
     content: '';
