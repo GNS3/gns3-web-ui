@@ -155,7 +155,17 @@
 
       <!-- Model Type Selection -->
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>Model Type</mat-label>
+        <mat-label>
+          Model Type
+          <button
+            mat-icon-button
+            matTooltip="View model type documentation"
+            class="help-icon"
+            (click)="openModelTypeHelp()"
+          >
+            <mat-icon>help_outline</mat-icon>
+          </button>
+        </mat-label>
         <mat-select formControlName="model_type">
           @for (type of modelTypes; track type.value) {
           <mat-option [value]="type.value">
@@ -163,12 +173,6 @@
           </mat-option>
           }
         </mat-select>
-        <mat-hint>
-          <span class="warning-hint"
-            >Reserved field. Currently only 'text' model type is supported by the backend. Other options are for future
-            use.</span
-          >
-        </mat-hint>
       </mat-form-field>
 
       <!-- Provider Preset Selection -->

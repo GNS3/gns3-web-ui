@@ -18,6 +18,9 @@ import { MatOptionModule } from '@angular/material/core';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCardModule } from '@angular/material/card';
+
+import { ModelTypeHelpDialogComponent } from './model-type-help-dialog/model-type-help-dialog.component';
 
 import {
   LLMModelConfigResponse,
@@ -155,6 +158,7 @@ const STANDARD_FIELDS = [
     MatCheckboxModule,
     MatButtonModule,
     MatTooltipModule,
+    MatCardModule,
   ],
 })
 export class AiProfileDialogComponent implements OnInit {
@@ -546,6 +550,15 @@ export class AiProfileDialogComponent implements OnInit {
    */
   onCancel(): void {
     this.dialogRef.close();
+  }
+
+  /**
+   * Open model type help dialog
+   */
+  openModelTypeHelp(): void {
+    this.dialog.open(ModelTypeHelpDialogComponent, {
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+    });
   }
 
   /**

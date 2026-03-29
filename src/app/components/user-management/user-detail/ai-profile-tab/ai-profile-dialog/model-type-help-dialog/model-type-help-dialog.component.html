@@ -1,0 +1,92 @@
+<h2 mat-dialog-title>
+  <mat-icon>help_outline</mat-icon>
+  Model Type Documentation
+</h2>
+
+<mat-dialog-content class="help-content">
+  <div class="help-section">
+    <h3>Overview</h3>
+    <p>
+      The <strong>Model Type</strong> field specifies the category of AI model you are configuring. This field is reserved for
+      future use and helps the system understand how to handle different model capabilities.
+    </p>
+  </div>
+
+  <div class="help-section">
+    <h3>Current Status</h3>
+    <mat-card class="info-card">
+      <mat-card-content>
+        <p class="status-text">
+          <mat-icon class="status-icon">info</mat-icon>
+          Currently, only the <strong>text</strong> model type is fully supported by the backend. Other options are
+          reserved for future enhancements.
+        </p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <div class="help-section">
+    <h3>Available Model Types</h3>
+    <table class="types-table mat-elevation-z1">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>text</strong></td>
+          <td>Text generation models (e.g., GPT-4, Claude)</td>
+          <td><span class="status-badge supported">✓ Supported</span></td>
+        </tr>
+        <tr>
+          <td><strong>vision</strong></td>
+          <td>Image understanding models</td>
+          <td><span class="status-badge reserved">Reserved</span></td>
+        </tr>
+        <tr>
+          <td><strong>stt</strong></td>
+          <td>Speech-to-Text models</td>
+          <td><span class="status-badge reserved">Reserved</span></td>
+        </tr>
+        <tr>
+          <td><strong>tts</strong></td>
+          <td>Text-to-Speech models</td>
+          <td><span class="status-badge reserved">Reserved</span></td>
+        </tr>
+        <tr>
+          <td><strong>multimodal</strong></td>
+          <td>Multiple input types (text, image, audio)</td>
+          <td><span class="status-badge reserved">Reserved</span></td>
+        </tr>
+        <tr>
+          <td><strong>embedding</strong></td>
+          <td>Text embedding models</td>
+          <td><span class="status-badge reserved">Reserved</span></td>
+        </tr>
+        <tr>
+          <td><strong>reranking</strong></td>
+          <td>Reranking models</td>
+          <td><span class="status-badge reserved">Reserved</span></td>
+        </tr>
+        <tr>
+          <td><strong>other</strong></td>
+          <td>Other specialized model types</td>
+          <td><span class="status-badge reserved">Reserved</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="help-section">
+    <h3>Recommendation</h3>
+    <p>For now, always select <strong>text</strong> as the model type. The system will automatically handle other model
+    types when they become available in future updates.</p>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-raised-button color="primary" (click)="close()">Got it</button>
+</mat-dialog-actions>

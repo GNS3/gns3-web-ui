@@ -24,6 +24,26 @@
     }
   }
 
+  // Help icon in label
+  .help-icon {
+    display: inline-flex;
+    vertical-align: middle;
+    width: 18px;
+    height: 18px;
+    margin-left: 4px;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: var(--mat-sys-on-surface-variant);
+    }
+
+    &:hover mat-icon {
+      color: var(--mat-sys-primary);
+    }
+  }
+
   // Two-column row layout
   .row {
     display: flex;
