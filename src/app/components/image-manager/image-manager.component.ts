@@ -367,6 +367,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(DeleteAllImageFilesDialogComponent, {
       width: '550px',
       maxHeight: '650px',
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
       autoFocus: false,
       disableClose: true,
       data: {
