@@ -46,8 +46,14 @@ import { MatTableDataSource } from '@angular/material/table';
 import { ControllerService } from '@services/controller.service';
 import { UserFilterPipe } from '@filters/user-filter.pipe';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { UserDetailDialogComponent, UserDetailDialogData } from '@components/user-management/user-detail-dialog/user-detail-dialog.component';
-import { AiProfileDialogComponent, AiProfileDialogData } from '@components/user-management/ai-profile-dialog/ai-profile-dialog.component';
+import {
+  UserDetailDialogComponent,
+  UserDetailDialogData,
+} from '@components/user-management/user-detail-dialog/user-detail-dialog.component';
+import {
+  AiProfileDialogComponent,
+  AiProfileDialogData,
+} from '@components/user-management/ai-profile-dialog/ai-profile-dialog.component';
 
 @Component({
   standalone: true,
@@ -150,7 +156,7 @@ export class UserManagementComponent implements OnInit {
     this.dialog
       .open(DeleteUserDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
-        data: { users: [user] }
+        data: { users: [user] },
       })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
@@ -160,7 +166,8 @@ export class UserManagementComponent implements OnInit {
               this.refresh();
             },
             (error) => {
-              this.toasterService.error(`An error occur while trying to delete user ${user.username}`);
+              const errorMessage = error?.error?.message || `An error occurred while trying to delete user ${user.username}`;
+              this.toasterService.error(errorMessage);
             }
           );
         }
@@ -181,7 +188,7 @@ export class UserManagementComponent implements OnInit {
     this.dialog
       .open(DeleteUserDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
-        data: { users: this.selection.selected }
+        data: { users: this.selection.selected },
       })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
@@ -192,7 +199,8 @@ export class UserManagementComponent implements OnInit {
                 this.refresh();
               },
               (error) => {
-                this.toasterService.error(`An error occur while trying to delete user ${user.username}`);
+                const errorMessage = error?.error?.message || `An error occurred while trying to delete user ${user.username}`;
+                this.toasterService.error(errorMessage);
               }
             );
           });
@@ -210,17 +218,20 @@ export class UserManagementComponent implements OnInit {
           controller: this.controller,
         };
 
-        this.dialog.open(UserDetailDialogComponent, {
-          panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
-          data: dialogData,
-          disableClose: false,
-        }).afterClosed().subscribe(() => {
-          this.refresh();
-        });
+        this.dialog
+          .open(UserDetailDialogComponent, {
+            panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+            data: dialogData,
+            disableClose: false,
+          })
+          .afterClosed()
+          .subscribe(() => {
+            this.refresh();
+          });
       },
       error: (error) => {
         this.toasterService.error(`Cannot load user data: ${error}`);
-      }
+      },
     });
   }
 
