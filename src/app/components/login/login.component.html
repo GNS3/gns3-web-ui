@@ -41,7 +41,7 @@
         <!-- Username Field -->
         <mat-form-field class="login-card__form-field">
           <mat-icon matPrefix class="login-card__field-icon">person</mat-icon>
-          <input matInput formControlName="username" placeholder="Username" [autofocus]="!isRememberMeChecked()" />
+          <input #usernameInput matInput formControlName="username" placeholder="Username" />
           @if (loginForm.controls.username.hasError('required')) {
           <mat-error> Username is required </mat-error>
           }

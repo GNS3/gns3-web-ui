@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators, AbstractControl } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -55,6 +55,8 @@ export class LoginComponent implements OnInit {
   private controller: Controller;
   readonly returnUrl = signal('');
 
+  @ViewChild('usernameInput') usernameInput!: ElementRef<HTMLInputElement>;
+
   // Signals for state management
   public version = signal('');
   public isLoading = signal(false);
@@ -98,6 +100,13 @@ export class LoginComponent implements OnInit {
 
     // Load remember me data
     this.loadRememberMeData();
+
+    // Auto-focus username input after a short delay
+    setTimeout(() => {
+      if (this.usernameInput) {
+        this.usernameInput.nativeElement.focus();
+      }
+    }, 100);
   }
 
   private loadRememberMeData() {
