@@ -110,4 +110,20 @@ app-privilege {
   &__checkbox {
     margin-right: 8px;
   }
+
+  &__info-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-left: 4px;
+    color: var(--mat-sys-on-surface-variant);
+    cursor: help;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 1;
+      color: var(--mat-sys-primary);
+    }
+  }
 }

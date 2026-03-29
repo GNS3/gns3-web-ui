@@ -37,6 +37,13 @@
           >
             {{ privilegeVerb.verb }}
           </span>
+          @if (privilegeVerb.privilege.description) {
+          <mat-icon
+            class="privileges__info-icon"
+            [matTooltip]="privilegeVerb.privilege.description"
+            matTooltipPosition="right"
+          >info</mat-icon>
+          }
         </div>
         }
       </div>
