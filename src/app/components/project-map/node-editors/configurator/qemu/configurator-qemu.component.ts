@@ -91,7 +91,6 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
     autoFocus: false,
     panelClass: ['base-dialog-panel', 'qemu-configurator-dialog-panel'],
     disableClose: true,
-    panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
   };
   dialogRefQemuImageCreator;
 
