@@ -128,7 +128,10 @@ export class ResourcePoolsManagementComponent implements OnInit {
 
   onDelete(resourcePoolToDelete: ResourcePool[]) {
     this.dialog
-      .open(DeleteResourcePoolComponent, { width: '500px', height: '250px', data: { pools: resourcePoolToDelete } })
+      .open(DeleteResourcePoolComponent, {
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+        data: { pools: resourcePoolToDelete }
+      })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {

@@ -150,8 +150,6 @@ export class GroupManagementComponent implements OnInit {
   onDelete(groupsToDelete: Group[]) {
     this.dialog
       .open(DeleteGroupDialogComponent, {
-        width: '500px',
-        height: '250px',
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
         data: { groups: groupsToDelete }
       })

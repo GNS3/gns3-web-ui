@@ -163,8 +163,6 @@ export class RoleManagementComponent implements OnInit {
   onDelete(rolesToDelete: Role[]) {
     this.dialog
       .open(DeleteRoleDialogComponent, {
-        width: '500px',
-        height: '250px',
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
         data: { roles: rolesToDelete }
       })

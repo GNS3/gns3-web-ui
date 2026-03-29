@@ -136,7 +136,6 @@ export class AclManagementComponent implements OnInit {
   onDelete(ace: ACE) {
     this.dialog
       .open(DeleteAceDialogComponent, {
-        width: '500px',
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
         data: { aces: [ace] }
       })
@@ -168,7 +167,6 @@ export class AclManagementComponent implements OnInit {
   deleteMultiple() {
     this.dialog
       .open(DeleteAceDialogComponent, {
-        width: '500px',
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
         data: { aces: this.selection.selected }
       })
