@@ -23,8 +23,7 @@ export class EditConfigActionComponent {
 
   editConfig() {
     const dialogRef = this.dialog.open(ConfigEditorDialogComponent, {
-      width: '600px',
-      height: '500px',
+      panelClass: ['base-dialog-panel', 'edit-config-action-dialog-panel'],
       autoFocus: false,
       disableClose: false,
     });

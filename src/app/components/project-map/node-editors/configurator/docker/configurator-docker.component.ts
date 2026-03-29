@@ -81,7 +81,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   ];
   private conf = {
     autoFocus: false,
-    width: '800px',
+    panelClass: ['base-dialog-panel', 'docker-configurator-dialog-panel'],
     disableClose: true,
   };
   dialogRef;

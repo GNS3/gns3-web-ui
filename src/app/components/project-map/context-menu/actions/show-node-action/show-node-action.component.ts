@@ -21,8 +21,7 @@ export class ShowNodeActionComponent {
 
   showNode() {
     const dialogRef = this.dialog.open(InfoDialogComponent, {
-      width: '600px',
-      maxHeight: '600px',
+      panelClass: ['base-dialog-panel', 'show-node-action-dialog-panel'],
       autoFocus: false,
       disableClose: false,
     });

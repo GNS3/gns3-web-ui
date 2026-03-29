@@ -40,7 +40,7 @@ export class ImportConfigActionComponent {
     this.fileInput().nativeElement.value = '';
     if (this.node().node_type !== 'vpcs') {
       const dialogRef = this.dialog.open(ConfigDialogComponent, {
-        width: '500px',
+        panelClass: ['base-dialog-panel', 'import-config-action-dialog-panel'],
         autoFocus: false,
         disableClose: false,
       });

@@ -34,7 +34,7 @@ export class EditTextActionComponent implements OnInit {
 
   editText() {
     const dialogRef = this.dialog.open(TextEditorDialogComponent, {
-      width: '300px',
+      panelClass: ['base-dialog-panel', 'edit-text-action-dialog-panel'],
       autoFocus: false,
       disableClose: false,
     });

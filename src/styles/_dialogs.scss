@@ -834,6 +834,126 @@ h2[mat-dialog-title] {
   }
 }
 
+/* =============================================
+// Node Editor Dialogs
+// ============================================= */
+
+// QEMU Configurator - 500px
+.qemu-configurator-dialog-panel {
+  --mat-dialog-container-max-width: 500px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 500px;
+    max-width: 500px;
+  }
+}
+
+// Docker Configurator - 800px
+.docker-configurator-dialog-panel {
+  --mat-dialog-container-max-width: 800px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 800px;
+    max-width: 800px;
+  }
+}
+
+/* =============================================
+// Context Menu Action Dialogs
+// ============================================= */
+
+// Idle PC Action - 500px
+.idle-pc-action-dialog-panel {
+  --mat-dialog-container-max-width: 500px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 500px;
+    max-width: 500px;
+  }
+}
+
+// Export Config Action - 500px
+.export-config-action-dialog-panel {
+  --mat-dialog-container-max-width: 500px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 500px;
+    max-width: 500px;
+  }
+}
+
+// Import Config Action - 500px
+.import-config-action-dialog-panel {
+  --mat-dialog-container-max-width: 500px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 500px;
+    max-width: 500px;
+  }
+}
+
+// Show Node Action - 600px x 600px
+.show-node-action-dialog-panel {
+  --mat-dialog-container-max-width: 600px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 600px;
+    max-width: 600px;
+    max-height: 600px;
+  }
+
+  .mat-mdc-dialog-content {
+    max-height: calc(600px - 140px);
+    overflow-y: auto;
+  }
+}
+
+// Edit Text Action - 300px
+.edit-text-action-dialog-panel {
+  --mat-dialog-container-max-width: 300px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 300px;
+    max-width: 300px;
+  }
+}
+
+// Edit Config Action - 600px x 500px
+.edit-config-action-dialog-panel {
+  --mat-dialog-container-max-width: 600px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 600px;
+    max-width: 600px;
+    height: 500px;
+    max-height: 500px;
+  }
+
+  .mat-mdc-dialog-content {
+    max-height: calc(500px - 140px);
+    overflow-y: auto;
+  }
+}
+
+// Edit Style Action - 800px
+.edit-style-action-dialog-panel {
+  --mat-dialog-container-max-width: 800px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 800px;
+    max-width: 800px;
+  }
+}
+
 // Add ACE Dialog - 1000px
 .add-ace-dialog-panel {
   --mat-dialog-container-max-width: 1000px;

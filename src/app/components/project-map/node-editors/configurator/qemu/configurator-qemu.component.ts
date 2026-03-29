@@ -89,7 +89,7 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
 
   private conf = {
     autoFocus: false,
-    width: '500px',
+    panelClass: ['base-dialog-panel', 'qemu-configurator-dialog-panel'],
     disableClose: true,
     panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
   };
