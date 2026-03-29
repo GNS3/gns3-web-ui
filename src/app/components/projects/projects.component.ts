@@ -279,7 +279,7 @@ export class ProjectsComponent implements OnInit {
   }
   exportPortableProjectDialog() {
     const dialogRef = this.dialog.open(ExportPortableProjectComponent, {
-      panelClass: ['base-dialog-panel', 'export-portable-project-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
       autoFocus: false,
       disableClose: true,
       data: { controllerDetails: this.controller, projectDetails: this.project },

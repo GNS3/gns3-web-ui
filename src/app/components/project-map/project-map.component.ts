@@ -1067,8 +1067,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   exportPortableProjectDialog() {
     const dialogRef = this.dialog.open(ExportPortableProjectComponent, {
-      width: '700px',
-      maxHeight: '850px',
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
       autoFocus: false,
       disableClose: true,
       data: { controllerDetails: this.controller, projectDetails: this.project },
