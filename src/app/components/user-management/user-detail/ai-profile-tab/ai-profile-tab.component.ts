@@ -66,8 +66,8 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
   defaultConfig = signal<LLMModelConfigWithSource | null>(null);
   settingDefaultConfigs = new Set<string>();
 
-  // Table columns - now with model type column
-  displayedColumns: string[] = ['name', 'model_type', 'provider', 'model', 'context_limit', 'actions'];
+  // Table columns (model_type removed as only text type is supported)
+  displayedColumns: string[] = ['name', 'provider', 'model', 'context_limit', 'actions'];
 
   private aiProfilesService = inject(AiProfilesService);
   private dialog = inject(MatDialog);

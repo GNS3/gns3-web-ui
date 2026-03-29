@@ -66,8 +66,8 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
   defaultConfig: LLMModelConfigResponse | null = null;
   settingDefaultConfigs = new Set<string>();
 
-  // Table columns - now with model type column
-  readonly displayedColumns = signal(['name', 'model_type', 'provider', 'model', 'context_limit', 'actions']);
+  // Table columns (model_type removed as only text type is supported)
+  readonly displayedColumns = signal(['name', 'provider', 'model', 'context_limit', 'actions']);
 
   private aiProfilesService = inject(AiProfilesService);
   private dialog = inject(MatDialog);

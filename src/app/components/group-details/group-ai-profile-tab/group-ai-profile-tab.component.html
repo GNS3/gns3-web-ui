@@ -45,16 +45,6 @@
               </td>
             </ng-container>
 
-            <!-- Model Type column -->
-            <ng-container matColumnDef="model_type">
-              <th mat-header-cell *matHeaderCellDef>Type</th>
-              <td mat-cell *matCellDef="let config">
-                <span class="model-type-badge" [class]="'model-type-' + config.model_type">
-                  {{ config.model_type }}
-                </span>
-              </td>
-            </ng-container>
-
             <!-- Provider column -->
             <ng-container matColumnDef="provider">
               <th mat-header-cell *matHeaderCellDef>API Domain</th>
