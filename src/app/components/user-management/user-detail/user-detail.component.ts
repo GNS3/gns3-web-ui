@@ -149,8 +149,7 @@ export class UserDetailComponent implements OnInit {
 
   onChangePassword() {
     this.dialog.open<ChangeUserPasswordComponent>(ChangeUserPasswordComponent, {
-      width: '400px',
-      height: '300px',
+      panelClass: ['base-dialog-panel', 'change-user-password-dialog-panel'],
       data: { user: this.user, controller: this.controller },
     });
   }

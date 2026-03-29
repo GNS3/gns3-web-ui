@@ -136,7 +136,7 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
    */
   openCreateDialog(): void {
     const dialogRef = this.dialog.open(AiProfileDialogComponent, {
-      width: '700px',
+      panelClass: ['base-dialog-panel', 'ai-profile-dialog-panel'],
       data: {
         mode: 'create',
         config: null,
@@ -159,7 +159,7 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
    */
   openEditDialog(config: LLMModelConfigResponse): void {
     const dialogRef = this.dialog.open(AiProfileDialogComponent, {
-      width: '700px',
+      panelClass: ['base-dialog-panel', 'ai-profile-dialog-panel'],
       data: {
         mode: 'edit',
         config: { ...config },
@@ -228,7 +228,6 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
    */
   deleteConfig(config: LLMModelConfigResponse): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
       panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
       data: {
         title: 'Delete Configuration',

@@ -135,7 +135,7 @@ export class UserManagementComponent implements OnInit {
 
   addUser() {
     const dialogRef = this.dialog.open(AddUserDialogComponent, {
-      width: '400px',
+      panelClass: ['base-dialog-panel', 'add-user-dialog-panel'],
       autoFocus: false,
       disableClose: true,
     });

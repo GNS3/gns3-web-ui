@@ -794,3 +794,53 @@ h2[mat-dialog-title] {
     overflow-y: auto;
   }
 }
+
+/* =============================================
+// User/Role/Group Management Dialogs
+// ============================================= */
+
+// Add User Dialog - 400px
+.add-user-dialog-panel {
+  --mat-dialog-container-max-width: 400px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 400px;
+    max-width: 400px;
+  }
+}
+
+// Change User Password Dialog - 400px x 300px
+.change-user-password-dialog-panel {
+  --mat-dialog-container-max-width: 400px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 400px;
+    max-width: 400px;
+    height: 300px;
+    max-height: 300px;
+  }
+}
+
+// AI Profile Dialog - 700px
+.ai-profile-dialog-panel {
+  --mat-dialog-container-max-width: 700px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 700px;
+    max-width: 700px;
+  }
+}
+
+// Add ACE Dialog - 1000px
+.add-ace-dialog-panel {
+  --mat-dialog-container-max-width: 1000px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 1000px;
+    max-width: 1000px;
+  }
+}
