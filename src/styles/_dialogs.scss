@@ -810,7 +810,7 @@ h2[mat-dialog-title] {
   }
 }
 
-// Change User Password Dialog - 400px x 300px
+// Change User Password Dialog - 400px x 400px
 .change-user-password-dialog-panel {
   --mat-dialog-container-max-width: 400px;
 
@@ -818,8 +818,8 @@ h2[mat-dialog-title] {
   .mat-mdc-dialog-container {
     width: 400px;
     max-width: 400px;
-    height: 300px;
-    max-height: 300px;
+    height: 400px;
+    max-height: 400px;
   }
 }
 

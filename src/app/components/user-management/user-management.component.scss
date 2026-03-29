@@ -146,6 +146,17 @@ mat-cell[mat-column='username'] {
   font-weight: 500;
 }
 
+.user-management__username--clickable {
+  cursor: pointer;
+  color: var(--mat-sys-primary);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    color: color-mix(in srgb, var(--mat-sys-primary) 80%, black);
+    text-decoration: underline;
+  }
+}
+
 .user-management__link {
   transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-block;
