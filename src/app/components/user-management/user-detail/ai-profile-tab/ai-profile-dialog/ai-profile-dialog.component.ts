@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
   FormGroup,
+  FormArray,
   Validators,
   AbstractControl,
   ValidationErrors,
@@ -35,11 +36,6 @@ export interface ConfigDialogData {
   mode: 'create' | 'edit';
   config: LLMModelConfigResponse | LLMModelConfigWithSource | null;
   existingNames: string[];
-}
-
-export interface CustomField {
-  key: string;
-  value: string;
 }
 
 // Provider preset configuration
@@ -165,7 +161,7 @@ export class AiProfileDialogComponent implements OnInit {
   form: FormGroup;
   mode: 'create' | 'edit';
   existingNames: string[];
-  customFields: CustomField[] = [];
+  customFieldsArray: FormArray;
 
   // Mode switching
   configMode: 'basic' | 'custom' = 'basic';
@@ -253,9 +249,16 @@ export class AiProfileDialogComponent implements OnInit {
       });
 
       // Extract custom fields (non-standard fields from config object)
-      this.customFields = Object.entries(config.config)
-        .filter(([key]) => !STANDARD_FIELDS.includes(key) && key !== 'max_tokens')
-        .map(([key, value]) => ({ key, value: String(value) }));
+      const customFieldEntries = Object.entries(config.config)
+        .filter(([key]) => !STANDARD_FIELDS.includes(key) && key !== 'max_tokens');
+
+      // Clear existing and add custom fields to FormArray
+      while (this.customFieldsArray.length !== 0) {
+        this.customFieldsArray.removeAt(0);
+      }
+      customFieldEntries.forEach(([key, value]) => {
+        this.customFieldsArray.push(this.fb.group({ key: [key], value: [String(value)] }));
+      });
 
       // Try to find matching preset
       this.detectPresetFromConfig();
@@ -279,6 +282,8 @@ export class AiProfileDialogComponent implements OnInit {
   }
 
   private createForm(): FormGroup {
+    this.customFieldsArray = this.fb.array([]);
+
     return this.fb.group(
       {
         name: [
@@ -300,6 +305,7 @@ export class AiProfileDialogComponent implements OnInit {
         context_strategy: ['balanced'],
         copilot_mode: ['teaching_assistant'],
         is_default: [false],
+        customFields: this.customFieldsArray,
       },
       { validators: this.nameUniqueValidator.bind(this) }
     );
@@ -489,21 +495,21 @@ export class AiProfileDialogComponent implements OnInit {
    * Add a new custom field
    */
   addCustomField(): void {
-    this.customFields.push({ key: '', value: '' });
+    this.customFieldsArray.push(this.fb.group({ key: [''], value: [''] }));
   }
 
   /**
    * Remove a custom field
    */
   removeCustomField(index: number): void {
-    this.customFields.splice(index, 1);
+    this.customFieldsArray.removeAt(index);
   }
 
   /**
-   * Track by function for custom fields
+   * Get custom fields array for template
    */
-  trackByFn(index: number, item: CustomField): number {
-    return index;
+  getCustomFieldsControls() {
+    return this.customFieldsArray.controls;
   }
 
   /**
@@ -536,10 +542,12 @@ export class AiProfileDialogComponent implements OnInit {
       configData.api_key = value.api_key.trim();
     }
 
-    // Add custom fields
-    this.customFields.forEach((field) => {
-      if (field.key && field.key.trim() && field.value !== null && field.value !== undefined && field.value !== '') {
-        configData[field.key.trim()] = field.value;
+    // Add custom fields from FormArray
+    this.customFieldsArray.controls.forEach((control) => {
+      const key = control.get('key')?.value;
+      const fieldValue = control.get('value')?.value;
+      if (key && key.trim() && fieldValue !== null && fieldValue !== undefined && fieldValue !== '') {
+        configData[key.trim()] = fieldValue;
       }
     });
 

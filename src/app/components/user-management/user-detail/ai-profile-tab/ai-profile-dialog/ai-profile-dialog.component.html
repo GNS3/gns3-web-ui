@@ -308,18 +308,18 @@
           </button>
         </div>
 
-        @if (customFields.length > 0) {
-        <div class="custom-fields-list">
-          @for (field of customFields; track $index; let i = $index) {
-          <div class="custom-field-row">
+        @if (customFieldsArray.length > 0) {
+        <div class="custom-fields-list" [formGroup]="form" formArrayName="customFields">
+          @for (control of customFieldsArray.controls; track $index; let i = $index) {
+          <div class="custom-field-row" [formGroupName]="i">
             <mat-form-field appearance="outline" class="field-key">
               <mat-label>Key</mat-label>
-              <input matInput [(ngModel)]="field.key" [ngModelOptions]="{ standalone: true }" />
+              <input matInput formControlName="key" />
             </mat-form-field>
 
             <mat-form-field appearance="outline" class="field-value">
               <mat-label>Value</mat-label>
-              <input matInput [(ngModel)]="field.value" [ngModelOptions]="{ standalone: true }" />
+              <input matInput formControlName="value" />
             </mat-form-field>
 
             <button mat-icon-button (click)="removeCustomField(i)" color="warn" class="delete-btn">
