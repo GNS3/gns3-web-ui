@@ -824,6 +824,8 @@ h2[mat-dialog-title] {
 }
 
 // AI Profile Dialog - 700px
+// Inherits from base-dialog-panel
+// Similar to simple-dialog-panel but with 700px width
 .ai-profile-dialog-panel {
   --mat-dialog-container-max-width: 700px;
 
@@ -831,6 +833,16 @@ h2[mat-dialog-title] {
   .mat-mdc-dialog-container {
     width: 700px;
     max-width: 700px;
+    max-height: 80vh;
+
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+    }
+  }
+
+  /* Dialog content - with max-height for scroll */
+  .mat-mdc-dialog-content {
+    max-height: calc(80vh - 140px);
   }
 }
 

@@ -1,12 +1,17 @@
-.config-form {
-  min-width: 400px;
-  max-width: 700px;
+/**
+ * AI Profile Dialog Component Styles
+ * Inherits base and sizing from _dialogs.scss (.base-dialog-panel + .ai-profile-dialog-panel)
+ * This file only contains component-specific layout and styling
+ */
 
+.config-form {
+  // Form field layout
   .full-width {
     width: 100%;
     margin-bottom: 12px;
   }
 
+  // Section headers
   .section-header {
     margin-top: 16px;
     margin-bottom: 16px;
@@ -15,10 +20,11 @@
       margin: 0;
       font-size: 18px;
       font-weight: 600;
-      color: var(--mat-app-primary-color);
+      color: var(--mat-sys-primary);
     }
   }
 
+  // Two-column row layout
   .row {
     display: flex;
     gap: 12px;
@@ -37,39 +43,29 @@
     mat-checkbox {
       display: block;
     }
-
-    .mat-checkbox-layout {
-      display: block;
-    }
-
-    .checkbox-hint {
-      display: block;
-      margin-top: 8px;
-      margin-left: 28px;
-      font-size: 14px;
-      color: var(--mat-app-on-surface-variant-color);
-    }
   }
 
+  // Text hints
   .option-hint {
-    color: var(--mat-app-on-surface-variant-color);
+    color: var(--mat-sys-on-surface-variant);
     font-size: 14px;
   }
 
   .existing-key-hint {
-    color: var(--mat-app-primary-color);
+    color: var(--mat-sys-primary);
     font-size: 14px;
   }
 
   .warning-hint {
-    color: var(--mat-app-on-surface-variant-color);
+    color: var(--mat-sys-on-surface-variant);
     font-size: 14px;
   }
 
+  // Custom fields section
   .custom-fields-section {
     margin-top: 16px;
     padding-top: 16px;
-    border-top: 1px solid var(--mat-app-outline-variant-color);
+    border-top: 1px solid var(--mat-sys-outline-variant);
 
     .section-header {
       display: flex;
@@ -81,7 +77,7 @@
         margin: 0;
         font-size: 16px;
         font-weight: 500;
-        color: var(--mat-app-on-surface-color);
+        color: var(--mat-sys-on-surface);
       }
 
       button {
@@ -118,11 +114,11 @@
 
         &:hover::before {
           opacity: 1;
-          background-color: var(--mat-app-primary-container-color);
+          background-color: var(--mat-sys-primary-container);
         }
 
         &:hover mat-icon {
-          color: var(--mat-app-primary-color);
+          color: var(--mat-sys-primary);
           transform: scale(1.1);
         }
       }
@@ -134,7 +130,7 @@
       .reserved-field-hint {
         margin: 0;
         font-size: 14px;
-        color: var(--mat-app-on-surface-variant-color);
+        color: var(--mat-sys-on-surface-variant);
         font-style: italic;
       }
     }
@@ -194,7 +190,7 @@
 
           &.delete-btn:hover::before {
             opacity: 1;
-            background-color: var(--mat-app-error-container-color);
+            background-color: var(--mat-sys-error-container);
           }
 
           &:hover mat-icon {
@@ -210,7 +206,7 @@
       align-items: center;
       justify-content: center;
       padding: 24px;
-      color: var(--mat-app-on-surface-variant-color);
+      color: var(--mat-sys-on-surface-variant);
       text-align: center;
 
       .empty-icon {
@@ -268,46 +264,29 @@
         font-size: 20px;
         height: 20px;
         width: 20px;
-        color: var(--mat-app-on-surface-variant-color);
+        color: var(--mat-sys-on-surface-variant);
       }
 
       &:hover mat-icon {
-        color: var(--mat-app-primary-color);
+        color: var(--mat-sys-primary);
       }
     }
   }
 
   // Basic Mode
   .basic-mode {
-    .model-option {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.4;
-
-      .model-name {
-        font-weight: 500;
-        font-size: 14px;
-      }
-
-      .model-desc {
-        font-size: 14px;
-        color: var(--mat-app-on-surface-variant-color);
-        margin-top: 2px;
-      }
-    }
-
     .mode-info {
       display: flex;
       gap: 12px;
       padding: 12px;
       margin-top: 16px;
-      background: var(--mat-app-surface-container-color);
-      border: 1px solid var(--mat-app-outline-variant-color);
+      background: var(--mat-sys-surface-container);
+      border: 1px solid var(--mat-sys-outline-variant);
       border-radius: 8px;
 
       .info-icon {
         flex-shrink: 0;
-        color: var(--mat-app-on-surface-variant-color);
+        color: var(--mat-sys-on-surface-variant);
         font-size: 20px;
         height: 20px;
         width: 20px;
@@ -317,12 +296,12 @@
       p {
         margin: 0;
         font-size: 14px;
-        color: var(--mat-app-on-surface-variant-color);
+        color: var(--mat-sys-on-surface-variant);
         line-height: 1.5;
 
         strong {
           font-weight: 500;
-          color: var(--mat-app-on-surface-color);
+          color: var(--mat-sys-on-surface);
         }
       }
     }
