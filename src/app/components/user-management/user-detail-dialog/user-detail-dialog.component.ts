@@ -9,7 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatCardModule } from '@angular/material/card';
 import { Group } from '@models/groups/group';
 import { UserService } from '@services/user.service';
 import { ToasterService } from '@services/toaster.service';
@@ -46,7 +46,7 @@ export interface UserDetailDialogData {
     MatFormFieldModule,
     MatInputModule,
     MatCheckboxModule,
-    MatTabsModule,
+    MatCardModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -78,6 +78,8 @@ export class UserDetailDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
+    this.loadGroupsData();
+    this.loadAceData();
   }
 
   initForm() {
@@ -99,15 +101,6 @@ export class UserDetailDialogComponent implements OnInit {
 
   get form() {
     return this.editUserForm.controls;
-  }
-
-  onTabChange(index: number) {
-    // Tab 0 = Details, Tab 1 = Groups, Tab 2 = ACEs
-    if (index === 1 && !this.groupsLoaded) {
-      this.loadGroupsData();
-    } else if (index === 2 && !this.acesLoaded) {
-      this.loadAceData();
-    }
   }
 
   loadGroupsData() {
