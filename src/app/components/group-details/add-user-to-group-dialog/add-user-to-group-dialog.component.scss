@@ -98,22 +98,6 @@
   text-overflow: ellipsis;
 }
 
-.user-action {
-  flex-shrink: 0;
-}
-
-.add-button {
-  transition: transform 0.2s ease;
-
-  &:hover {
-    transform: scale(1.1);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-}
-
 /* =============================================
 // Empty State
 // ============================================= */

@@ -23,15 +23,6 @@
         <div class="user-name">{{ user.username }}</div>
         <div class="user-email">{{ user.email }}</div>
       </div>
-      <div class="user-action">
-        @if (!loading) {
-        <button mat-icon-button color="primary" (click)="addUser(user)" class="add-button" matTooltip="Add user">
-          <mat-icon>add_circle</mat-icon>
-        </button>
-        } @if (loading) {
-        <mat-spinner diameter="24"></mat-spinner>
-        }
-      </div>
     </div>
     }
 
