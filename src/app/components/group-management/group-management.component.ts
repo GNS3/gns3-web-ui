@@ -43,9 +43,18 @@ import { Group } from '@models/groups/group';
 import { AddGroupDialogComponent } from '@components/group-management/add-group-dialog/add-group-dialog.component';
 import { DeleteGroupDialogComponent } from '@components/group-management/delete-group-dialog/delete-group-dialog.component';
 import { GroupFilterPipe } from '@filters/group-filter.pipe';
-import { GroupDetailDialogComponent, GroupDetailDialogData } from '@components/group-management/group-detail-dialog/group-detail-dialog.component';
-import { AiProfileDialogComponent, AiProfileDialogData } from '@components/user-management/ai-profile-dialog/ai-profile-dialog.component';
-import { GroupAiProfileDialogComponent, GroupAiProfileDialogData } from '@components/group-management/group-detail-dialog/group-ai-profile-dialog/group-ai-profile-dialog.component';
+import {
+  GroupDetailDialogComponent,
+  GroupDetailDialogData,
+} from '@components/group-management/group-detail-dialog/group-detail-dialog.component';
+import {
+  AiProfileDialogComponent,
+  AiProfileDialogData,
+} from '@components/user-management/ai-profile-dialog/ai-profile-dialog.component';
+import {
+  GroupAiProfileDialogComponent,
+  GroupAiProfileDialogData,
+} from '@components/group-management/group-detail-dialog/group-ai-profile-dialog/group-ai-profile-dialog.component';
 
 @Component({
   selector: 'app-group-management',
@@ -154,7 +163,7 @@ export class GroupManagementComponent implements OnInit {
     this.dialog
       .open(DeleteGroupDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
-        data: { groups: groupsToDelete }
+        data: { groups: groupsToDelete },
       })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
@@ -167,7 +176,8 @@ export class GroupManagementComponent implements OnInit {
               this.refresh();
             },
             (error) => {
-              this.toasterService.error(`An error occur while trying to delete group`);
+              const errorMessage = error?.error?.message || 'An error occurred while trying to delete group';
+              this.toasterService.error(errorMessage);
             }
           );
         }
