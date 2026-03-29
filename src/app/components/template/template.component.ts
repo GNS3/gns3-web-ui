@@ -217,7 +217,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
 
   openDialog() {
     const dialogRef = this.dialog.open(TemplateListDialogComponent, {
-      width: '600px',
+      panelClass: ['base-dialog-panel', 'template-dialog-panel'],
       data: {
         controller: this.controller(),
         project: this.project(),

@@ -214,10 +214,9 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   createModal() {
     const dialogRef = this.dialog.open(AddControllerDialogComponent, {
-      width: '350px',
+      panelClass: ['base-dialog-panel', 'controller-small-dialog-panel', 'add-controller-dialog-panel'],
       autoFocus: false,
       disableClose: true,
-      panelClass: 'add-controller-dialog-panel',
     });
 
     dialogRef.afterClosed().subscribe((controller) => {
@@ -291,10 +290,9 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
 
   editController(controller: Controller) {
     const dialogRef = this.dialog.open(EditControllerDialogComponent, {
-      width: '400px',
+      panelClass: ['base-dialog-panel', 'controller-dialog-panel', 'edit-controller-dialog-panel'],
       autoFocus: false,
       disableClose: true,
-      panelClass: 'edit-controller-dialog-panel',
       data: { controller: controller },
     });
 

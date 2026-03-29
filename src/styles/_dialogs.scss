@@ -954,6 +954,77 @@ h2[mat-dialog-title] {
   }
 }
 
+/* =============================================
+// Other Component Dialogs
+// ============================================= */
+
+// Delete Template Dialog - 300px x 250px
+.delete-template-dialog-panel {
+  --mat-dialog-container-max-width: 300px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 300px;
+    max-width: 300px;
+    height: 250px;
+    max-height: 250px;
+  }
+}
+
+// Symbols Dialog - 400px
+.symbols-dialog-panel {
+  --mat-dialog-container-max-width: 400px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 400px;
+    max-width: 400px;
+  }
+}
+
+// Logged User Dialog - 500px
+.logged-user-dialog-panel {
+  --mat-dialog-container-max-width: 500px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 500px;
+    max-width: 500px;
+  }
+}
+
+// Template Dialog - 600px
+.template-dialog-panel {
+  --mat-dialog-container-max-width: 600px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 600px;
+    max-width: 600px;
+  }
+}
+
+// Controller Dialogs - 350px/400px
+.controller-dialog-panel {
+  --mat-dialog-container-max-width: 400px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 400px;
+    max-width: 400px;
+  }
+}
+
+.controller-small-dialog-panel {
+  --mat-dialog-container-max-width: 350px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 350px;
+    max-width: 350px;
+  }
+}
+
 // Add ACE Dialog - 1000px
 .add-ace-dialog-panel {
   --mat-dialog-container-max-width: 1000px;
