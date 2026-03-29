@@ -1,64 +1,224 @@
-.main {
-  display: flex;
-  justify-content: space-around;
-}
+/**
+ * Resource Pool Details Component Styles
+ * Uses Material theme variables and BEM naming convention
+ */
 
-.details {
-  width: 30vw;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.clickable {
-  cursor: pointer;
-}
-
-.privilege {
-  display: flex;
-  flex-direction: row;
-  padding-left: 10px;
-  justify-content: space-between;
-}
-
-.permission {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  border: 1px solid;
-  padding: 5px;
-  border-radius: 5px;
-  font-family: monospace;
-}
-
-.header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  padding-bottom: 20px;
-  padding-left: 10px;
-}
-.header > div {
-  font-size: 2em;
-}
-
-.resources {
-  display: flex;
-  flex-direction: column;
-}
-
-.ownedResources {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.addResource {
+:host {
+  display: block;
   width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--mat-sys-primary-container) 0%, var(--mat-sys-background) 100%);
+  min-height: 100vh;
+}
+
+.resource-pool-details {
+  padding: 20px 24px;
+  animation: fadeInSlideIn 0.4s ease-out;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+
+  /* =============================================
+  // Header
+  // ============================================= */
+  &__header {
+    margin-bottom: 24px;
+    width: 100%;
+    max-width: 1000px;
+  }
+
+  &__header-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__back-btn {
+    flex-shrink: 0;
+  }
+
+  &__title {
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    margin: 0;
+  }
+
+  /* =============================================
+  // Content
+  // ============================================= */
+  &__content {
+    width: 100%;
+    max-width: 1000px;
+    display: flex;
+    gap: 24px;
+
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+  }
+
+  /* =============================================
+  // Details Section
+  // ============================================= */
+  &__details {
+    width: 350px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 24px;
+    background: var(--mat-sys-surface);
+    border-radius: 12px;
+    border: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  &__form-field {
+    width: 100%;
+  }
+
+  &__info-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 8px 16px;
+  }
+
+  &__info-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+  }
+
+  &__info-value {
+    font-size: 14px;
+    color: var(--mat-sys-on-surface);
+    word-break: break-all;
+
+    &--mono {
+      font-family: monospace;
+      font-size: 12px;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-start;
+    padding-top: 8px;
+  }
+
+  /* =============================================
+  // Divider
+  // ============================================= */
+  &__divider {
+    width: 1px;
+    background: var(--mat-sys-outline-variant);
+    margin: 0 16px;
+
+    @media (max-width: 768px) {
+      display: none;
+    }
+  }
+
+  /* =============================================
+  // Resources Section
+  // ============================================= */
+  &__resources {
+    flex: 1;
+    min-width: 0;
+    padding: 24px;
+    background: var(--mat-sys-surface);
+    border-radius: 12px;
+    border: 1px solid var(--mat-sys-outline-variant);
+  }
+
+  &__resources-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+    margin: 0 0 16px 0;
+  }
+
+  /* =============================================
+  // Add Resource Form
+  // ============================================= */
+  &__add-form {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  &__add-input {
+    flex: 1;
+  }
+
+  &__add-button {
+    flex-shrink: 0;
+  }
+
+  /* =============================================
+  // Resource List
+  // ============================================= */
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: var(--mat-sys-surface-container-low);
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: var(--mat-sys-surface-container-high);
+    }
+  }
+
+  &__item-name {
+    font-size: 14px;
+    color: var(--mat-sys-on-surface);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__item-actions {
+    flex-shrink: 0;
+  }
+
+  /* =============================================
+  // Empty State
+  // ============================================= */
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 14px;
+    text-align: center;
+  }
+}
+
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

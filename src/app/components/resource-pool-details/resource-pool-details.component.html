@@ -1,66 +1,93 @@
-<div class="content">
-  <div class="default-header">
-    <div class="row align-items-center">
+<div class="resource-pool-details">
+  <div class="resource-pool-details__header">
+    <div class="resource-pool-details__header-content">
       <a
+        class="resource-pool-details__back-btn"
         mat-icon-button
-        matTooltip="back to resource pools management"
-        mattooltipclass="custom-tooltip"
+        matTooltip="Back to resource pools management"
         [routerLink]="['/controller', controller.id, 'management', 'pools']"
       >
-        <mat-icon aria-label="back to resource pools management">keyboard_arrow_left</mat-icon>
+        <mat-icon>keyboard_arrow_left</mat-icon>
       </a>
-      <h1 class="col">Resource pool {{ pool().name }}</h1>
+      <h1 class="resource-pool-details__title">Resource pool: {{ pool().name }}</h1>
     </div>
-    <div class="main">
-      <div class="details">
-        <div>
-          <mat-form-field>
-            <mat-label>Resource pool name:</mat-label>
-            <input matInput type="text" [(ngModel)]="pool().name" />
-          </mat-form-field>
+  </div>
+
+  <div class="resource-pool-details__content">
+    <div class="resource-pool-details__details">
+      <form [formGroup]="editPoolForm" (ngSubmit)="onUpdate()">
+        <mat-form-field class="resource-pool-details__form-field">
+          <mat-label>Resource pool name</mat-label>
+          <input matInput type="text" formControlName="poolname" />
+        </mat-form-field>
+
+        <div class="resource-pool-details__info-grid">
+          <span class="resource-pool-details__info-label">Creation date:</span>
+          <span class="resource-pool-details__info-value">{{ pool().created_at | date : 'medium' }}</span>
+
+          <span class="resource-pool-details__info-label">Last update:</span>
+          <span class="resource-pool-details__info-value">{{ pool().updated_at | date : 'medium' }}</span>
+
+          <span class="resource-pool-details__info-label">UUID:</span>
+          <span class="resource-pool-details__info-value resource-pool-details__info-value--mono">
+            {{ pool().resource_pool_id }}
+          </span>
         </div>
-        <div>creation date: {{ pool().created_at }}</div>
-        <div>last update date: {{ pool().updated_at }}</div>
-        <div>uuid: {{ pool().resource_pool_id }}</div>
-        <div mat-dialog-actions class="button-div">
-          <button mat-button (click)="onUpdate()" tabindex="2" mat-raised-button color="primary">
-            Update resource pool
-          </button>
+
+        <div class="resource-pool-details__actions">
+          <button mat-raised-button color="primary" type="submit">Update resource pool</button>
         </div>
+      </form>
+    </div>
+
+    <mat-divider class="resource-pool-details__divider" [vertical]="true"></mat-divider>
+
+    <div class="resource-pool-details__resources">
+      <h3 class="resource-pool-details__resources-title">Resources</h3>
+
+      <div class="resource-pool-details__add-form">
+        <mat-form-field class="resource-pool-details__add-input" appearance="outline">
+          <mat-label>Add project to resource pool</mat-label>
+          <input
+            matInput
+            type="text"
+            placeholder="Search project..."
+            [formControl]="addResourceFormControl"
+            [matAutocomplete]="auto"
+          />
+          <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+            @for (option of addResourceFilteredOptions | async; track option) {
+            <mat-option [value]="option">
+              {{ option }}
+            </mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+        <button
+          class="resource-pool-details__add-button"
+          mat-icon-button
+          color="primary"
+          (click)="addResource()"
+          matTooltip="Add project"
+        >
+          <mat-icon>add</mat-icon>
+        </button>
       </div>
-      <mat-divider [vertical]="true"></mat-divider>
-      <div class="resources">
-        <div class="addResource">
-          <div>
-            <input
-              type="text"
-              placeholder="add project to resource pool"
-              matInput
-              [formControl]="addResourceFormControl"
-              [matAutocomplete]="auto"
-            />
-            <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-              @for (option of addResourceFilteredOptions | async; track option) {
-              <mat-option [value]="option">
-                {{ option }}
-              </mat-option>
-              }
-            </mat-autocomplete>
-          </div>
-          <div>
-            <button mat-button>
-              <mat-icon (click)="addResource()">add</mat-icon>
+
+      <div class="resource-pool-details__list">
+        @for (resource of pool().resources; track resource.name) {
+        <div class="resource-pool-details__item">
+          <span class="resource-pool-details__item-name">{{ resource.name }}</span>
+          <div class="resource-pool-details__item-actions">
+            <button mat-icon-button color="warn" (click)="deleteResource(resource)" matTooltip="Delete resource">
+              <mat-icon>delete</mat-icon>
             </button>
           </div>
         </div>
-        @for (resource of pool().resources; track resource.name) {
-        <div class="ownedResources">
-          <div>{{ resource.name }}</div>
-          <div>
-            <button mat-button>
-              <mat-icon (click)="deleteResource(resource)">delete</mat-icon>
-            </button>
-          </div>
+        } @empty {
+        <div class="resource-pool-details__empty">
+          <mat-icon>folder_open</mat-icon>
+          <span>No resources in this pool</span>
         </div>
         }
       </div>
