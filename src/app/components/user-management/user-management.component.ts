@@ -146,7 +146,11 @@ export class UserManagementComponent implements OnInit {
 
   onDelete(user: User) {
     this.dialog
-      .open(DeleteUserDialogComponent, { width: '500px', data: { users: [user] } })
+      .open(DeleteUserDialogComponent, {
+        width: '500px',
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+        data: { users: [user] }
+      })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
@@ -174,7 +178,11 @@ export class UserManagementComponent implements OnInit {
 
   deleteMultiple() {
     this.dialog
-      .open(DeleteUserDialogComponent, { width: '500px', data: { users: this.selection.selected } })
+      .open(DeleteUserDialogComponent, {
+        width: '500px',
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+        data: { users: this.selection.selected }
+      })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
