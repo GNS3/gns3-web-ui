@@ -166,8 +166,13 @@
 
   &--opened {
     background: var(--mat-sys-primary-container);
-    .stat-card__value { color: var(--mat-sys-on-primary-container); }
-    .stat-card__label { color: var(--mat-sys-on-primary-container); opacity: 0.8; }
+    .stat-card__value {
+      color: var(--mat-sys-on-primary-container);
+    }
+    .stat-card__label {
+      color: var(--mat-sys-on-primary-container);
+      opacity: 0.8;
+    }
   }
 
   &--closed {
@@ -176,20 +181,35 @@
 
   &--nodes {
     background: var(--mat-sys-secondary-container);
-    .stat-card__value { color: var(--mat-sys-on-secondary-container); }
-    .stat-card__label { color: var(--mat-sys-on-secondary-container); opacity: 0.8; }
+    .stat-card__value {
+      color: var(--mat-sys-on-secondary-container);
+    }
+    .stat-card__label {
+      color: var(--mat-sys-on-secondary-container);
+      opacity: 0.8;
+    }
   }
 
   &--links {
     background: var(--mat-sys-tertiary-container);
-    .stat-card__value { color: var(--mat-sys-on-tertiary-container); }
-    .stat-card__label { color: var(--mat-sys-on-tertiary-container); opacity: 0.8; }
+    .stat-card__value {
+      color: var(--mat-sys-on-tertiary-container);
+    }
+    .stat-card__label {
+      color: var(--mat-sys-on-tertiary-container);
+      opacity: 0.8;
+    }
   }
 
   &--capturing {
     background: var(--mat-sys-error-container);
-    .stat-card__value { color: var(--mat-sys-on-error-container); }
-    .stat-card__label { color: var(--mat-sys-on-error-container); opacity: 0.8; }
+    .stat-card__value {
+      color: var(--mat-sys-on-error-container);
+    }
+    .stat-card__label {
+      color: var(--mat-sys-on-error-container);
+      opacity: 0.8;
+    }
   }
 }
 

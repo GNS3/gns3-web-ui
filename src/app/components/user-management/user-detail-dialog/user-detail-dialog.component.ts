@@ -114,7 +114,7 @@ export class UserDetailDialogComponent implements OnInit {
         console.error('Failed to load groups:', error);
         this.groupsLoaded = true;
         this.cd.markForCheck();
-      }
+      },
     });
   }
 
@@ -138,7 +138,7 @@ export class UserDetailDialogComponent implements OnInit {
             console.error('Failed to load ACEs:', error);
             this.acesLoaded = true;
             this.cd.markForCheck();
-          }
+          },
         });
       });
     });

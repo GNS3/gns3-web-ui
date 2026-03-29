@@ -24,7 +24,13 @@ export class StatusInfoComponent implements OnInit {
   public controllerId: string = '';
   public computeStatistics = signal<ComputeStatistics[]>([]);
   public projectStats = signal<ProjectStats>({ total: 0, open_project_nodes: 0, closed_project_nodes: 0 });
-  public nodeStats = signal<NodeStats>({ total: 0, open_project_nodes: 0, closed_project_nodes: 0, by_type: {}, by_status: {} });
+  public nodeStats = signal<NodeStats>({
+    total: 0,
+    open_project_nodes: 0,
+    closed_project_nodes: 0,
+    by_type: {},
+    by_status: {},
+  });
   public linkStats = signal<LinkStats>({ total: 0, capturing: 0 });
   public connectionFailed: boolean;
 

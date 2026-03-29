@@ -21,7 +21,12 @@
           </form>
         </mat-card-content>
         <mat-card-actions>
-          <button mat-raised-button color="primary" (click)="onUpdate()" [disabled]="!editGroupForm.valid || group.is_builtin">
+          <button
+            mat-raised-button
+            color="primary"
+            (click)="onUpdate()"
+            [disabled]="!editGroupForm.valid || group.is_builtin"
+          >
             Update Group
           </button>
         </mat-card-actions>
@@ -44,7 +49,9 @@
             </div>
             <div class="group-detail-dialog__info-item group-detail-dialog__info-item--full">
               <span class="group-detail-dialog__info-label">UUID</span>
-              <span class="group-detail-dialog__info-value group-detail-dialog__info-value--mono">{{ group.user_group_id }}</span>
+              <span class="group-detail-dialog__info-value group-detail-dialog__info-value--mono">{{
+                group.user_group_id
+              }}</span>
             </div>
           </div>
         </mat-card-content>
@@ -76,7 +83,9 @@
             <ul>
               @for (user of filteredMembers(); track user.user_id) {
               <li>
-                <span class="group-detail-dialog__member-name" (click)="openUserDetailDialog(user)">{{ user.username }}</span>
+                <span class="group-detail-dialog__member-name" (click)="openUserDetailDialog(user)">{{
+                  user.username
+                }}</span>
                 <button mat-icon-button matTooltip="Remove user" (click)="openRemoveUserDialog(user)">
                   <mat-icon>delete</mat-icon>
                 </button>

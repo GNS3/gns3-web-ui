@@ -10,7 +10,16 @@
  *
  * Author: Sylvain MATHIEU, Elise LEBEAU
  */
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject, signal, computed } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Inject,
+  OnInit,
+  inject,
+  signal,
+  computed,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -65,7 +74,7 @@ export class AddUserToGroupDialogComponent implements OnInit {
   selectedCount = computed(() => this.selectedUserIds().size);
   allSelected = computed(() => {
     const displayed = this.displayedUsers.value;
-    return displayed.length > 0 && displayed.every(user => this.selectedUserIds().has(user.user_id));
+    return displayed.length > 0 && displayed.every((user) => this.selectedUserIds().has(user.user_id));
   });
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { controller: Controller; group: Group }) {}
@@ -108,7 +117,7 @@ export class AddUserToGroupDialogComponent implements OnInit {
         this.toastService.success(`user ${user.username} was added`);
         // Remove from displayed users and deselect
         this.removeUserFromList(user);
-        this.selectedUserIds.update(set => {
+        this.selectedUserIds.update((set) => {
           const newSet = new Set(set);
           newSet.delete(user.user_id);
           return newSet;
@@ -126,7 +135,7 @@ export class AddUserToGroupDialogComponent implements OnInit {
   }
 
   toggleUserSelection(userId: string): void {
-    this.selectedUserIds.update(set => {
+    this.selectedUserIds.update((set) => {
       const newSet = new Set(set);
       if (newSet.has(userId)) {
         newSet.delete(userId);
@@ -151,7 +160,7 @@ export class AddUserToGroupDialogComponent implements OnInit {
     } else {
       // Select all displayed
       const newSet = new Set(currentSet);
-      displayed.forEach(user => newSet.add(user.user_id));
+      displayed.forEach((user) => newSet.add(user.user_id));
       this.selectedUserIds.set(newSet);
     }
   }
@@ -163,14 +172,12 @@ export class AddUserToGroupDialogComponent implements OnInit {
       return;
     }
 
-    const usersToAdd = this.displayedUsers.value.filter(user => selectedIds.has(user.user_id));
+    const usersToAdd = this.displayedUsers.value.filter((user) => selectedIds.has(user.user_id));
     this.loading = true;
 
     // Batch add users
     forkJoin(
-      usersToAdd.map(user =>
-        this.groupService.addMemberToGroup(this.data.controller, this.data.group, user)
-      )
+      usersToAdd.map((user) => this.groupService.addMemberToGroup(this.data.controller, this.data.group, user))
     ).subscribe({
       next: () => {
         this.toastService.success(`${usersToAdd.length} user(s) added to group`);
@@ -181,7 +188,7 @@ export class AddUserToGroupDialogComponent implements OnInit {
         this.toastService.error('Error adding users to group');
         this.loading = false;
         this.cd.markForCheck();
-      }
+      },
     });
   }
 
@@ -193,7 +200,7 @@ export class AddUserToGroupDialogComponent implements OnInit {
     const currentUsers = this.users.value;
     const currentDisplayed = this.displayedUsers.value;
 
-    this.users.next(currentUsers.filter(u => u.user_id !== user.user_id));
-    this.displayedUsers.next(currentDisplayed.filter(u => u.user_id !== user.user_id));
+    this.users.next(currentUsers.filter((u) => u.user_id !== user.user_id));
+    this.displayedUsers.next(currentDisplayed.filter((u) => u.user_id !== user.user_id));
   }
 }

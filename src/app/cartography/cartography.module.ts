@@ -53,13 +53,7 @@ import { EthernetLinkWidget } from './widgets/links/ethernet-link';
 import { SerialLinkWidget } from './widgets/links/serial-link';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    MatMenuModule,
-    MatIconModule,
-    SelectionControlComponent,
-    SelectionSelectComponent,
-  ],
+  imports: [CommonModule, MatMenuModule, MatIconModule, SelectionControlComponent, SelectionSelectComponent],
   declarations: [],
   providers: [
     CssFixer,

@@ -278,13 +278,13 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.mat-mdc-menu-p
 }
 
 /* Hidden links - reveal on hover with subtle outline */
-.ethernet_link[style*="stroke-opacity: 0"],
-.serial_link[style*="stroke-opacity: 0"] {
+.ethernet_link[style*='stroke-opacity: 0'],
+.serial_link[style*='stroke-opacity: 0'] {
   stroke-opacity: 0 !important;
 }
 
-.ethernet_link[style*="stroke-opacity: 0"]:hover,
-.serial_link[style*="stroke-opacity: 0"]:hover {
+.ethernet_link[style*='stroke-opacity: 0']:hover,
+.serial_link[style*='stroke-opacity: 0']:hover {
   stroke-opacity: 0.3 !important;
   stroke: var(--mat-sys-outline) !important;
 }
@@ -298,7 +298,7 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.mat-mdc-menu-p
 
 .curviness-anchor:hover {
   r: 10;
-  fill: #1976D2;
+  fill: #1976d2;
 }
 
 /* =============================================

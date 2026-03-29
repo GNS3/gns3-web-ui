@@ -17,13 +17,7 @@ export interface AiProfileDialogData {
   standalone: true,
   templateUrl: './ai-profile-dialog.component.html',
   styleUrl: './ai-profile-dialog.component.scss',
-  imports: [
-    CommonModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    AiProfileTabComponent,
-  ],
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, AiProfileTabComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AiProfileDialogComponent {

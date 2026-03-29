@@ -39,21 +39,13 @@ export class DialogConfigService {
     // Change Symbol Dialog - inherits configurator
     this.configs.set('changeSymbol', {
       ...configuratorConfig,
-      panelClass: [
-        'base-dialog-panel',
-        'configurator-dialog-panel',
-        'change-symbol-dialog-panel',
-      ],
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'change-symbol-dialog-panel'],
     });
 
     // Template Symbol Dialog - inherits configurator (same styling as change symbol)
     this.configs.set('templateSymbol', {
       ...configuratorConfig,
-      panelClass: [
-        'base-dialog-panel',
-        'configurator-dialog-panel',
-        'change-symbol-dialog-panel',
-      ],
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'change-symbol-dialog-panel'],
     });
 
     // Symbols Manager Dialog - inherits configurator (800px width)
@@ -89,11 +81,7 @@ export class DialogConfigService {
     // Size defined in CSS: .edit-project-dialog-panel (700px, 600px)
     this.configs.set('editProject', {
       ...configuratorConfig,
-      panelClass: [
-        'base-dialog-panel',
-        'configurator-dialog-panel',
-        'edit-project-dialog-panel',
-      ],
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'edit-project-dialog-panel'],
     });
 
     // Add ACE Dialog
@@ -106,22 +94,14 @@ export class DialogConfigService {
     // New Template Dialog
     this.configs.set('newTemplate', {
       ...configuratorConfig,
-      panelClass: [
-        'base-dialog-panel',
-        'configurator-dialog-panel',
-        'new-template-dialog-panel',
-      ],
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'new-template-dialog-panel'],
     });
 
     // Nodes Menu Confirmation Dialog
     // Size defined in CSS: .nodes-menu-confirmation-dialog-panel (500px, 200px)
     this.configs.set('nodesMenuConfirmation', {
       ...simpleConfig,
-      panelClass: [
-        'base-dialog-panel',
-        'simple-dialog-panel',
-        'nodes-menu-confirmation-dialog-panel',
-      ],
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'nodes-menu-confirmation-dialog-panel'],
     });
 
     // Start Capture Dialog - simple dialog (500px)

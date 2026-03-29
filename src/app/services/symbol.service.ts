@@ -115,9 +115,7 @@ export class SymbolService {
    * Get custom symbols (always fresh, no caching)
    */
   listCustomSymbols(controller: Controller): Observable<Symbol[]> {
-    return this.load(controller).pipe(
-      map((symbols) => symbols.filter((s) => !s.builtin))
-    );
+    return this.load(controller).pipe(map((symbols) => symbols.filter((s) => !s.builtin)));
   }
 
   raw(controller: Controller, symbol_id: string) {

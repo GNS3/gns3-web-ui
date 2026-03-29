@@ -18,14 +18,7 @@ import { environment } from 'environments/environment';
   selector: 'app-symbols-manager-dialog',
   templateUrl: './symbols-manager-dialog.component.html',
   styleUrls: ['./symbols-manager-dialog.component.scss'],
-  imports: [
-    CommonModule,
-    MatButtonModule,
-    MatIconModule,
-    MatDialogModule,
-    MatTabsModule,
-    MatTooltipModule,
-  ],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatDialogModule, MatTabsModule, MatTooltipModule],
 })
 export class SymbolsManagerDialogComponent {
   private dialogRef = inject(MatDialogRef<SymbolsManagerDialogComponent>);
@@ -112,9 +105,7 @@ export class SymbolsManagerDialogComponent {
   }
 
   deleteSelectedSymbols() {
-    const selectedSymbols = this.customSymbols().filter((s) =>
-      this.selectedForDeletion().has(s.symbol_id)
-    );
+    const selectedSymbols = this.customSymbols().filter((s) => this.selectedForDeletion().has(s.symbol_id));
 
     if (selectedSymbols.length === 0) {
       return;
@@ -167,7 +158,7 @@ export class SymbolsManagerDialogComponent {
             this.uploadStatus.set(`Failed to upload ${fileName}: ${error.message || 'Unknown error'}`);
             this.uploadSuccess.set(false);
             this.cd.markForCheck();
-          }
+          },
         });
       };
 
@@ -198,7 +189,7 @@ export class SymbolsManagerDialogComponent {
           this.uploadStatus.set(`Failed to upload ${fileName}: ${error.message || 'Unknown error'}`);
           this.uploadSuccess.set(false);
           this.cd.markForCheck();
-        }
+        },
       });
     }
     // Fallback: try as binary
@@ -221,7 +212,7 @@ export class SymbolsManagerDialogComponent {
           this.uploadStatus.set(`Failed to upload ${fileName}: ${error.message || 'Unknown error'}`);
           this.uploadSuccess.set(false);
           this.cd.markForCheck();
-        }
+        },
       });
     }
 

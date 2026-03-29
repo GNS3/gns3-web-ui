@@ -206,7 +206,7 @@ export class SymbolsComponent implements OnInit {
 
   toggleDeleteMode() {
     const wasDeleteMode = this.isDeleteMode();
-    this.isDeleteMode.update(value => !value);
+    this.isDeleteMode.update((value) => !value);
 
     if (!wasDeleteMode && this.isDeleteMode()) {
       // Entering delete mode: show only custom symbols
@@ -239,9 +239,7 @@ export class SymbolsComponent implements OnInit {
   }
 
   deleteSelectedSymbols() {
-    const selectedSymbols = this.filteredSymbols.filter((s) =>
-      this.selectedForDeletion().has(s.symbol_id)
-    );
+    const selectedSymbols = this.filteredSymbols.filter((s) => this.selectedForDeletion().has(s.symbol_id));
 
     if (selectedSymbols.length === 0) {
       return;

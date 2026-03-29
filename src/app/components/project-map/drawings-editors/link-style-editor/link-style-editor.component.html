@@ -16,7 +16,7 @@
       <mat-label>Line style</mat-label>
       <mat-select formControlName="type">
         @for (type of borderTypes; track type) {
-          <mat-option [value]="type">{{ type }}</mat-option>
+        <mat-option [value]="type">{{ type }}</mat-option>
         }
       </mat-select>
     </mat-form-field>
@@ -25,37 +25,35 @@
       <mat-label>Link type</mat-label>
       <mat-select formControlName="linkType">
         @for (linkType of linkTypes; track linkType) {
-          <mat-option [value]="linkType">{{ linkType }}</mat-option>
+        <mat-option [value]="linkType">{{ linkType }}</mat-option>
         }
       </mat-select>
     </mat-form-field>
 
     @if (isCurvinessSelected()) {
-      <mat-form-field class="form-field bezier-curviness-field">
-        <mat-label>Curviness</mat-label>
-        <input
-          matInput
-          formControlName="bezierCurviness"
-          type="number"
-          [min]="curvinessMin"
-          [max]="curvinessMax"
-          [step]="curvinessStep"
-        />
-      </mat-form-field>
-    }
-
-    @if (isFlowchartSelected()) {
-      <mat-form-field class="form-field flowchart-roundness-field">
-        <mat-label>Roundness</mat-label>
-        <input
-          matInput
-          formControlName="flowchartRoundness"
-          type="number"
-          [min]="flowchartRoundnessMin"
-          [max]="flowchartRoundnessMax"
-          [step]="flowchartRoundnessStep"
-        />
-      </mat-form-field>
+    <mat-form-field class="form-field bezier-curviness-field">
+      <mat-label>Curviness</mat-label>
+      <input
+        matInput
+        formControlName="bezierCurviness"
+        type="number"
+        [min]="curvinessMin"
+        [max]="curvinessMax"
+        [step]="curvinessStep"
+      />
+    </mat-form-field>
+    } @if (isFlowchartSelected()) {
+    <mat-form-field class="form-field flowchart-roundness-field">
+      <mat-label>Roundness</mat-label>
+      <input
+        matInput
+        formControlName="flowchartRoundness"
+        type="number"
+        [min]="flowchartRoundnessMin"
+        [max]="flowchartRoundnessMax"
+        [step]="flowchartRoundnessStep"
+      />
+    </mat-form-field>
     }
   </form>
 </div>

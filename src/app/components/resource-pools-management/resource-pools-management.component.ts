@@ -130,7 +130,7 @@ export class ResourcePoolsManagementComponent implements OnInit {
     this.dialog
       .open(DeleteResourcePoolComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
-        data: { pools: resourcePoolToDelete }
+        data: { pools: resourcePoolToDelete },
       })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {

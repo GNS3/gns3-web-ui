@@ -24,7 +24,10 @@ import { RoleService } from '@services/role.service';
 import { ToasterService } from '@services/toaster.service';
 import { AddUserToGroupDialogComponent } from '@components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component';
 import { RemoveToGroupDialogComponent } from '@components/group-details/remove-to-group-dialog/remove-to-group-dialog.component';
-import { UserDetailDialogComponent, UserDetailDialogData } from '@components/user-management/user-detail-dialog/user-detail-dialog.component';
+import {
+  UserDetailDialogComponent,
+  UserDetailDialogData,
+} from '@components/user-management/user-detail-dialog/user-detail-dialog.component';
 
 export interface GroupDetailDialogData {
   group: Group;
@@ -74,7 +77,7 @@ export class GroupDetailDialogComponent implements OnInit {
     const search = this.searchMembers.toLowerCase();
     const members = this.members();
     if (!search) return members;
-    return members.filter(m => m.username.toLowerCase().includes(search));
+    return members.filter((m) => m.username.toLowerCase().includes(search));
   });
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: GroupDetailDialogData) {
@@ -93,12 +96,14 @@ export class GroupDetailDialogComponent implements OnInit {
   loadMembers(): void {
     this.groupService.getGroupMember(this.controller, this.group.user_group_id).subscribe({
       next: (members: User[]) => {
-        this.members.set(members.sort((a: User, b: User) => a.username.toLowerCase().localeCompare(b.username.toLowerCase())));
+        this.members.set(
+          members.sort((a: User, b: User) => a.username.toLowerCase().localeCompare(b.username.toLowerCase()))
+        );
         // No need for markForCheck() with signals - they automatically trigger updates
       },
       error: (error) => {
         console.error('Failed to load members:', error);
-      }
+      },
     });
   }
 
@@ -108,7 +113,9 @@ export class GroupDetailDialogComponent implements OnInit {
         this.aclService.list(this.controller).subscribe({
           next: (allAces: ACE[]) => {
             // Filter ACEs for this group
-            const groupAces = allAces.filter((ace: ACE) => ace.ace_type === 'group' && ace.group_id === this.group.user_group_id);
+            const groupAces = allAces.filter(
+              (ace: ACE) => ace.ace_type === 'group' && ace.group_id === this.group.user_group_id
+            );
             this.aces = groupAces.map((ace: ACE) => {
               const endpoint = endps.filter((endp: Endpoint) => endp.endpoint === ace.path)[0];
               const role = roles.filter((r: Role) => r.role_id === ace.role_id)[0];
@@ -118,7 +125,7 @@ export class GroupDetailDialogComponent implements OnInit {
           },
           error: (error) => {
             console.error('Failed to load ACEs:', error);
-          }
+          },
         });
       });
     });
@@ -135,7 +142,7 @@ export class GroupDetailDialogComponent implements OnInit {
       },
       error: (error) => {
         this.toastService.error('Cannot update group: ' + error);
-      }
+      },
     });
   }
 
@@ -144,33 +151,39 @@ export class GroupDetailDialogComponent implements OnInit {
   }
 
   openAddUserDialog(): void {
-    this.dialog.open(AddUserToGroupDialogComponent, {
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'add-user-to-group-dialog-panel'],
-      data: { controller: this.controller, group: this.group },
-    }).afterClosed().subscribe((result: boolean) => {
-      if (result) {
-        this.loadMembers();
-      }
-    });
+    this.dialog
+      .open(AddUserToGroupDialogComponent, {
+        panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'add-user-to-group-dialog-panel'],
+        data: { controller: this.controller, group: this.group },
+      })
+      .afterClosed()
+      .subscribe((result: boolean) => {
+        if (result) {
+          this.loadMembers();
+        }
+      });
   }
 
   openRemoveUserDialog(user: User): void {
-    this.dialog.open(RemoveToGroupDialogComponent, {
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
-      data: { name: user.username },
-    }).afterClosed().subscribe((confirm: boolean) => {
-      if (confirm) {
-        this.groupService.removeUser(this.controller, this.group, user).subscribe({
-          next: () => {
-            this.toastService.success(`User ${user.username} was removed`);
-            this.loadMembers();
-          },
-          error: (error) => {
-            this.toastService.error(`Error while removing user: ${error}`);
-          }
-        });
-      }
-    });
+    this.dialog
+      .open(RemoveToGroupDialogComponent, {
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
+        data: { name: user.username },
+      })
+      .afterClosed()
+      .subscribe((confirm: boolean) => {
+        if (confirm) {
+          this.groupService.removeUser(this.controller, this.group, user).subscribe({
+            next: () => {
+              this.toastService.success(`User ${user.username} was removed`);
+              this.loadMembers();
+            },
+            error: (error) => {
+              this.toastService.error(`Error while removing user: ${error}`);
+            },
+          });
+        }
+      });
   }
 
   openUserDetailDialog(user: User): void {

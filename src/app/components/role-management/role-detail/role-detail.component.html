@@ -61,7 +61,9 @@
               </div>
               <div class="role-detail__info-item role-detail__info-item--full">
                 <span class="role-detail__info-label">UUID</span>
-                <span class="role-detail__info-value role-detail__info-value--mono">{{ ($role | async)?.role_id }}</span>
+                <span class="role-detail__info-value role-detail__info-value--mono">{{
+                  ($role | async)?.role_id
+                }}</span>
               </div>
               <div class="role-detail__info-item">
                 <span class="role-detail__info-label">Is built-in</span>

@@ -308,9 +308,9 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
     const previousConfigs = [...this.configs];
 
     // Optimistic update: update UI immediately
-    const updatedConfigs = previousConfigs.map(c => ({
+    const updatedConfigs = previousConfigs.map((c) => ({
       ...c,
-      is_default: isCurrentlyDefault ? false : (c.config_id === configId)
+      is_default: isCurrentlyDefault ? false : c.config_id === configId,
     }));
     this.configs = updatedConfigs;
     this.configs$.next(updatedConfigs);

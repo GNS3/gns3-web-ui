@@ -92,7 +92,11 @@
                 }
 
                 &:hover {
-                  background-color: color-mix(in srgb, var(--mat-sys-secondary) 12%, var(--mat-sys-secondary-container));
+                  background-color: color-mix(
+                    in srgb,
+                    var(--mat-sys-secondary) 12%,
+                    var(--mat-sys-secondary-container)
+                  );
                 }
               }
 

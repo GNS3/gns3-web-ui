@@ -69,9 +69,7 @@ export class RoleDetailComponent implements OnInit {
     created_at: '',
   });
   editRoleForm: FormGroup;
-  $ownedPrivilegesId: Observable<Privilege[]> = this.$role.pipe(
-    map((role: Role) => role.privileges)
-  );
+  $ownedPrivilegesId: Observable<Privilege[]> = this.$role.pipe(map((role: Role) => role.privileges));
 
   privileges: Observable<Privilege[]>;
   private roleId: string;

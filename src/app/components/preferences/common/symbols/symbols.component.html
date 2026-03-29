@@ -1,31 +1,31 @@
 <div class="menu">
   @if (!isDeleteMode()) {
-    <mat-radio-group aria-label="Select an option" class="radio-selection">
-      <mat-radio-button value="1" (click)="setFilter('all')" checked>All symbols</mat-radio-button>
-      <mat-radio-button value="2" (click)="setFilter('builtin')">Built-in symbols</mat-radio-button>
-      <mat-radio-button value="3" (click)="setFilter('custom')">Custom symbols</mat-radio-button>
-    </mat-radio-group>
-    <button mat-button (click)="openSymbolsManager()">
-      <mat-icon>settings</mat-icon>
-      Symbols Manager
-    </button>
+  <mat-radio-group aria-label="Select an option" class="radio-selection">
+    <mat-radio-button value="1" (click)="setFilter('all')" checked>All symbols</mat-radio-button>
+    <mat-radio-button value="2" (click)="setFilter('builtin')">Built-in symbols</mat-radio-button>
+    <mat-radio-button value="3" (click)="setFilter('custom')">Custom symbols</mat-radio-button>
+  </mat-radio-group>
+  <button mat-button (click)="openSymbolsManager()">
+    <mat-icon>settings</mat-icon>
+    Symbols Manager
+  </button>
   } @else {
-    <div class="delete-actions">
-      <button mat-button color="warn" (click)="deleteSelectedSymbols()" [disabled]="!hasSelectedSymbols()" mat-raised-button>
-        <mat-icon>delete</mat-icon>
-        Delete ({{ selectedForDeletion().size }})
-      </button>
-      <span class="selected-count">{{ selectedForDeletion().size }} selected</span>
-      <button mat-button (click)="selectAllVisible()" matTooltip="Select all custom symbols">
-        Select all
-      </button>
-      <button mat-button (click)="clearSelection()" matTooltip="Clear selection">
-        Clear
-      </button>
-      <button mat-button (click)="toggleDeleteMode()">
-        Cancel
-      </button>
-    </div>
+  <div class="delete-actions">
+    <button
+      mat-button
+      color="warn"
+      (click)="deleteSelectedSymbols()"
+      [disabled]="!hasSelectedSymbols()"
+      mat-raised-button
+    >
+      <mat-icon>delete</mat-icon>
+      Delete ({{ selectedForDeletion().size }})
+    </button>
+    <span class="selected-count">{{ selectedForDeletion().size }} selected</span>
+    <button mat-button (click)="selectAllVisible()" matTooltip="Select all custom symbols">Select all</button>
+    <button mat-button (click)="clearSelection()" matTooltip="Clear selection">Clear</button>
+    <button mat-button (click)="toggleDeleteMode()">Cancel</button>
+  </div>
   }
 </div>
 <form>
@@ -64,11 +64,15 @@
                 'delete-selected': isDeleteMode() && isSymbolSelected(symbol.symbol_id)
               }"
               class="button"
-              (click)="isDeleteMode() && canDeleteSymbol(symbol) ? toggleSelection(symbol.symbol_id) : setSelected(symbol.symbol_id)"
+              (click)="
+                isDeleteMode() && canDeleteSymbol(symbol)
+                  ? toggleSelection(symbol.symbol_id)
+                  : setSelected(symbol.symbol_id)
+              "
             >
               <img
                 lazyimg
-                [ngClass]="{ 'imageSelected': isSelected === symbol.symbol_id }"
+                [ngClass]="{ imageSelected: isSelected === symbol.symbol_id }"
                 class="image"
                 [src]="getImageSourceForTemplate(symbol.symbol_id)"
               />

@@ -5,26 +5,23 @@
       <ng-template matTabContent>
         <div class="add-symbol-section">
           <p class="instructions">Select an image file to upload as a new symbol.</p>
-          <p class="supported-formats">
-            <strong>Supported formats:</strong> SVG, PNG, JPG, JPEG, GIF
-          </p>
-          <p class="recommended-size">
-            <strong>Recommended size:</strong> 128×128 pixels (max 256×256)
-          </p>
+          <p class="supported-formats"><strong>Supported formats:</strong> SVG, PNG, JPG, JPEG, GIF</p>
+          <p class="recommended-size"><strong>Recommended size:</strong> 128×128 pixels (max 256×256)</p>
           <input
             type="file"
             accept=".svg,.svgz,.png,.jpg,.jpeg,.gif"
             class="non-visible"
             #file
-            (change)="uploadSymbolFile($event)" />
+            (change)="uploadSymbolFile($event)"
+          />
           <button mat-raised-button color="primary" (click)="file.click()">
             <mat-icon>add</mat-icon>
             Choose File to Upload
           </button>
           @if (uploadStatus()) {
-            <p class="upload-status" [class.success]="uploadSuccess()" [class.error]="!uploadSuccess()">
-              {{ uploadStatus() }}
-            </p>
+          <p class="upload-status" [class.success]="uploadSuccess()" [class.error]="!uploadSuccess()">
+            {{ uploadStatus() }}
+          </p>
           }
         </div>
       </ng-template>
@@ -35,37 +32,40 @@
           <div class="manage-header">
             <p class="instructions">Select custom symbols to delete:</p>
             <div class="delete-actions">
-              <button mat-button color="warn" (click)="deleteSelectedSymbols()" [disabled]="!hasSelectedSymbols()" mat-raised-button>
+              <button
+                mat-button
+                color="warn"
+                (click)="deleteSelectedSymbols()"
+                [disabled]="!hasSelectedSymbols()"
+                mat-raised-button
+              >
                 <mat-icon>delete</mat-icon>
                 Delete ({{ selectedForDeletion().size }})
               </button>
-              <button mat-button (click)="selectAllCustom()" matTooltip="Select all custom symbols">
-                Select all
-              </button>
-              <button mat-button (click)="clearSelection()" matTooltip="Clear selection">
-                Clear
-              </button>
+              <button mat-button (click)="selectAllCustom()" matTooltip="Select all custom symbols">Select all</button>
+              <button mat-button (click)="clearSelection()" matTooltip="Clear selection">Clear</button>
             </div>
           </div>
           @if (isLoading()) {
-            <div class="loading-message">Loading symbols...</div>
+          <div class="loading-message">Loading symbols...</div>
           } @else if (customSymbols().length === 0) {
-            <div class="empty-message">
-              <mat-icon>info</mat-icon>
-              <p>No custom symbols found. Upload symbols using the "Add Symbol" tab.</p>
-            </div>
+          <div class="empty-message">
+            <mat-icon>info</mat-icon>
+            <p>No custom symbols found. Upload symbols using the "Add Symbol" tab.</p>
+          </div>
           } @else {
-            <div class="symbols-grid">
-              @for (symbol of customSymbols(); track symbol.symbol_id) {
-                <div
-                  class="symbol-item"
-                  [class.selected]="isSymbolSelected(symbol.symbol_id)"
-                  (click)="toggleSelection(symbol.symbol_id)">
-                  <img [src]="getImageSource(symbol.symbol_id)" [alt]="symbol.symbol_id" />
-                  <span class="symbol-name">{{ symbol.symbol_id }}</span>
-                </div>
-              }
+          <div class="symbols-grid">
+            @for (symbol of customSymbols(); track symbol.symbol_id) {
+            <div
+              class="symbol-item"
+              [class.selected]="isSymbolSelected(symbol.symbol_id)"
+              (click)="toggleSelection(symbol.symbol_id)"
+            >
+              <img [src]="getImageSource(symbol.symbol_id)" [alt]="symbol.symbol_id" />
+              <span class="symbol-name">{{ symbol.symbol_id }}</span>
             </div>
+            }
+          </div>
           }
         </div>
       </ng-template>

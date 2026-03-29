@@ -50,7 +50,11 @@
     <ng-container matColumnDef="username">
       <mat-header-cell *matHeaderCellDef mat-sort-header>Username</mat-header-cell>
       <mat-cell *matCellDef="let row">
-        <span class="user-management__username user-management__username--clickable" (click)="openUserDetailDialog(row)">{{ row.username }}</span>
+        <span
+          class="user-management__username user-management__username--clickable"
+          (click)="openUserDetailDialog(row)"
+          >{{ row.username }}</span
+        >
       </mat-cell>
     </ng-container>
 

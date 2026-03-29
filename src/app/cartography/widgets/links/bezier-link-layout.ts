@@ -51,10 +51,7 @@ export class BezierLinkLayout {
 
   buildEndpointOrder(links: MapLink[]) {
     this.endpointOrder.clear();
-    const endpointsByNodeFace = new Map<
-      string,
-      Array<{ link: MapLink; endpointIndex: number; projection: number }>
-    >();
+    const endpointsByNodeFace = new Map<string, Array<{ link: MapLink; endpointIndex: number; projection: number }>>();
 
     links.forEach((link) => {
       if (!link.source || !link.target || !link.nodes || link.nodes.length < 2) {
@@ -66,8 +63,14 @@ export class BezierLinkLayout {
         return;
       }
 
-      const sourceCenter: [number, number] = [link.source.x + link.source.width / 2, link.source.y + link.source.height / 2];
-      const targetCenter: [number, number] = [link.target.x + link.target.width / 2, link.target.y + link.target.height / 2];
+      const sourceCenter: [number, number] = [
+        link.source.x + link.source.width / 2,
+        link.source.y + link.source.height / 2,
+      ];
+      const targetCenter: [number, number] = [
+        link.target.x + link.target.width / 2,
+        link.target.y + link.target.height / 2,
+      ];
 
       const sourceNodeId = link.nodes[0].nodeId || link.source.id;
       const targetNodeId = link.nodes[1].nodeId || link.target.id;
@@ -106,10 +109,7 @@ export class BezierLinkLayout {
 
       endpoints.forEach((endpoint, index) => {
         const endpointOrder = this.getFaceEndpointOrder(endpoints.length, index);
-        this.endpointOrder.set(
-          this.getEndpointOrderKey(endpoint.link.id, endpoint.endpointIndex),
-          endpointOrder
-        );
+        this.endpointOrder.set(this.getEndpointOrderKey(endpoint.link.id, endpoint.endpointIndex), endpointOrder);
       });
     });
   }
@@ -146,10 +146,8 @@ export class BezierLinkLayout {
     const orderSpacing = 6;
     const sourceEndpointOrder = this.getRenderEndpointOrder(link, 0);
     const targetEndpointOrder = this.getRenderEndpointOrder(link, 1);
-    const sourceOffset =
-      offsetMagnitude * normalizedSideDirection + sourceEndpointOrder * orderSpacing;
-    const targetOffset =
-      -offsetMagnitude * normalizedSideDirection + targetEndpointOrder * orderSpacing;
+    const sourceOffset = offsetMagnitude * normalizedSideDirection + sourceEndpointOrder * orderSpacing;
+    const targetOffset = -offsetMagnitude * normalizedSideDirection + targetEndpointOrder * orderSpacing;
 
     link.nodes[0].bezierRenderOffsetX = normalX * sourceOffset;
     link.nodes[0].bezierRenderOffsetY = normalY * sourceOffset;

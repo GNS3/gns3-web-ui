@@ -93,11 +93,16 @@ export class LinkTypeCache {
     LinkTypeCache.setNumberValue(LinkTypeCache.flowchartRoundnessKey(projectId, linkId), flowchartRoundness);
   }
 
-  static getStyleSnapshot(projectId?: string, linkId?: string): {
-    link_type?: string;
-    bezier_curviness?: number;
-    flowchart_roundness?: number;
-  } | undefined {
+  static getStyleSnapshot(
+    projectId?: string,
+    linkId?: string
+  ):
+    | {
+        link_type?: string;
+        bezier_curviness?: number;
+        flowchart_roundness?: number;
+      }
+    | undefined {
     const linkType = LinkTypeCache.get(projectId, linkId);
     const bezierCurviness = LinkTypeCache.getBezierCurviness(projectId, linkId);
     const flowchartRoundness = LinkTypeCache.getFlowchartRoundness(projectId, linkId);

@@ -146,14 +146,12 @@ export class HttpController {
   postBlob(controller: Controller, url: string, body: Blob): Observable<Blob> {
     const options: BlobOptions = {
       responseType: 'blob',
-      headers: {}
+      headers: {},
     };
     const intercepted = this.getOptionsForController<BlobOptions>(controller, url, options);
     this.requestsNotificationEmitter.emit(`POST ${intercepted.url}`);
 
-    return this.http
-      .post(intercepted.url, body, intercepted.options)
-      .pipe(catchError(this.errorHandler.handleError));
+    return this.http.post(intercepted.url, body, intercepted.options).pipe(catchError(this.errorHandler.handleError));
   }
 
   put<T>(controller: Controller, url: string, body: any, options?: JsonOptions): Observable<T> {

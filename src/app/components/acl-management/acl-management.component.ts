@@ -136,7 +136,7 @@ export class AclManagementComponent implements OnInit {
     this.dialog
       .open(DeleteAceDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
-        data: { aces: [ace] }
+        data: { aces: [ace] },
       })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
@@ -167,7 +167,7 @@ export class AclManagementComponent implements OnInit {
     this.dialog
       .open(DeleteAceDialogComponent, {
         panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
-        data: { aces: this.selection.selected }
+        data: { aces: this.selection.selected },
       })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {

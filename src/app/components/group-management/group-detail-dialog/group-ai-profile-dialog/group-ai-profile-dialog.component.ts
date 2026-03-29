@@ -17,13 +17,7 @@ export interface GroupAiProfileDialogData {
   standalone: true,
   templateUrl: './group-ai-profile-dialog.component.html',
   styleUrl: './group-ai-profile-dialog.component.scss',
-  imports: [
-    CommonModule,
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    GroupAiProfileTabComponent,
-  ],
+  imports: [CommonModule, MatDialogModule, MatButtonModule, MatIconModule, GroupAiProfileTabComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GroupAiProfileDialogComponent {

@@ -1,12 +1,15 @@
 <div class="privileges">
-  <div class="privileges__header" [class.privileges__header--clickable]="collapsed" (click)="collapsed && toggleCollapsed()">
+  <div
+    class="privileges__header"
+    [class.privileges__header--clickable]="collapsed"
+    (click)="collapsed && toggleCollapsed()"
+  >
     <h3 class="privileges__title">Privileges</h3>
     <div class="privileges__actions">
       <button mat-icon-button (click)="toggleCollapsed()" [matTooltip]="collapsed ? 'Expand' : 'Collapse'">
         <mat-icon>{{ collapsed ? 'expand_more' : 'expand_less' }}</mat-icon>
       </button>
-      @if (!disable()) {
-      @if (!editMode) {
+      @if (!disable()) { @if (!editMode) {
       <button mat-icon-button (click)="editMode = true" matTooltip="Edit privileges">
         <mat-icon>edit</mat-icon>
       </button>
@@ -19,8 +22,7 @@
 
   @if (!collapsed) {
   <div class="privileges__list">
-    @for (privilegeName of privileges() | groupPrivileges; track privilegeName.key) {
-    @if (editMode) {
+    @for (privilegeName of privileges() | groupPrivileges; track privilegeName.key) { @if (editMode) {
     <div class="privileges__group">
       <div class="privileges__key">{{ privilegeName.key }}:</div>
       <div class="privileges__values">
@@ -42,7 +44,8 @@
             class="privileges__info-icon"
             [matTooltip]="privilegeVerb.privilege.description"
             matTooltipPosition="right"
-          >info</mat-icon>
+            >info</mat-icon
+          >
           }
         </div>
         }
@@ -52,8 +55,8 @@
     <div class="privileges__group">
       <div class="privileges__key">{{ privilegeName.key }}:</div>
       <div class="privileges__values">
-        @for (privilegeVerb of privilegeName.values; track privilegeVerb.privilege.privilege_id) {
-        @if (ownedPrivilegesList().includes(privilegeVerb.privilege.privilege_id)) {
+        @for (privilegeVerb of privilegeName.values; track privilegeVerb.privilege.privilege_id) { @if
+        (ownedPrivilegesList().includes(privilegeVerb.privilege.privilege_id)) {
         <span class="privileges__verb">
           {{ privilegeVerb.verb }}
         </span>

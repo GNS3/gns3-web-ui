@@ -249,8 +249,9 @@ export class AiProfileDialogComponent implements OnInit {
       });
 
       // Extract custom fields (non-standard fields from config object)
-      const customFieldEntries = Object.entries(config.config)
-        .filter(([key]) => !STANDARD_FIELDS.includes(key) && key !== 'max_tokens');
+      const customFieldEntries = Object.entries(config.config).filter(
+        ([key]) => !STANDARD_FIELDS.includes(key) && key !== 'max_tokens'
+      );
 
       // Clear existing and add custom fields to FormArray
       while (this.customFieldsArray.length !== 0) {

@@ -37,16 +37,12 @@ export class InterfaceLabelWidget {
   }
 
   private getRenderedLabelX(labelNode: MapLinkNode) {
-    const renderOffsetX = this.selectionManager.isSelected(labelNode)
-      ? 0
-      : labelNode.bezierRenderOffsetX || 0;
+    const renderOffsetX = this.selectionManager.isSelected(labelNode) ? 0 : labelNode.bezierRenderOffsetX || 0;
     return labelNode.label.x + renderOffsetX;
   }
 
   private getRenderedLabelY(labelNode: MapLinkNode) {
-    const renderOffsetY = this.selectionManager.isSelected(labelNode)
-      ? 0
-      : labelNode.bezierRenderOffsetY || 0;
+    const renderOffsetY = this.selectionManager.isSelected(labelNode) ? 0 : labelNode.bezierRenderOffsetY || 0;
     return labelNode.label.y + renderOffsetY;
   }
 
