@@ -528,3 +528,173 @@ h2[mat-dialog-title] {
   font-size: 18px;
   font-weight: 500;
 }
+
+/* =============================================
+// Base Confirmation Dialog Panel
+// Unified confirmation dialog styles
+// ============================================= */
+.base-confirmation-dialog-panel {
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+      box-shadow: 0 12px 40px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
+        0 4px 12px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
+    }
+  }
+
+  /* Dialog title */
+  h1[mat-dialog-title],
+  h2[mat-dialog-title] {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    padding: 24px 24px 0 24px;
+    margin-bottom: 16px;
+  }
+
+  /* Dialog content */
+  .mat-mdc-dialog-content {
+    padding: 0 24px 24px 24px;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Dialog actions - unified button layout */
+  .mat-dialog-actions {
+    padding: 16px 24px 24px 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-bottom: 0;
+  }
+
+  /* Button styles - modern rounded design */
+  .mat-mdc-button {
+    border-radius: 20px;
+    padding: 8px 24px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Cancel button - outlined style */
+  .cancel-button,
+  button[mat-button] {
+    color: var(--mat-sys-on-surface-variant);
+    border: 1px solid var(--mat-sys-outline);
+    background: transparent;
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+      border-color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  /* Confirm button - filled style */
+  .confirm-button,
+  button.mat-mdc-raised-button {
+    box-shadow: 0 2px 6px color-mix(in srgb, currentColor 25%, transparent);
+
+    &:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px color-mix(in srgb, currentColor 35%, transparent);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+/* =============================================
+// Confirmation Danger Panel
+// For dangerous operations (delete, remove, etc.)
+// ============================================= */
+.confirmation-danger-panel {
+  .mat-mdc-dialog-surface {
+    border: 1px solid var(--mat-sys-error-container);
+  }
+
+  h1[mat-dialog-title],
+  h2[mat-dialog-title] {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--mat-sys-error);
+
+    &::before {
+      content: 'warning';
+      font-family: 'Material Icons';
+      font-size: 24px;
+    }
+  }
+
+  .confirm-button,
+  button.mat-mdc-raised-button {
+    background-color: var(--mat-sys-error);
+    color: var(--mat-sys-on-error);
+  }
+}
+
+/* =============================================
+// Confirmation Warning Panel
+// For warning operations (unlock, etc.)
+// ============================================= */
+.confirmation-warning-panel {
+  .mat-mdc-dialog-surface {
+    border: 1px solid var(--mat-sys-tertiary-container);
+  }
+
+  h1[mat-dialog-title],
+  h2[mat-dialog-title] {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--mat-sys-tertiary);
+
+    &::before {
+      content: 'info';
+      font-family: 'Material Icons';
+      font-size: 24px;
+    }
+  }
+
+  .confirm-button,
+  button.mat-mdc-raised-button {
+    background-color: var(--mat-sys-tertiary);
+    color: var(--mat-sys-on-tertiary);
+  }
+}
+
+/* =============================================
+// Confirmation Info Panel
+// For informational confirmations
+// ============================================= */
+.confirmation-info-panel {
+  .mat-mdc-dialog-surface {
+    border: 1px solid var(--mat-sys-primary-container);
+  }
+
+  h1[mat-dialog-title],
+  h2[mat-dialog-title] {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--mat-sys-primary);
+
+    &::before {
+      content: 'help_outline';
+      font-family: 'Material Icons';
+      font-size: 24px;
+    }
+  }
+
+  .confirm-button,
+  button.mat-mdc-raised-button {
+    background-color: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+  }
+}

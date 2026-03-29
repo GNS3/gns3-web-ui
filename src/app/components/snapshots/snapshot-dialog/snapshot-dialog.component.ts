@@ -94,7 +94,7 @@ export class SnapshotDialogComponent {
 
   restoreSnapshot(snapshot: Snapshot) {
     const dialogRef = this.dialog.open(QuestionDialogComponent, {
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
       data: {
         title: 'Restore snapshot',
         question: `Are you sure you want to restore snapshot "${snapshot.name}"? This will replace your current topology.`,
@@ -131,7 +131,7 @@ export class SnapshotDialogComponent {
 
   deleteSnapshot(snapshot: Snapshot) {
     const dialogRef = this.dialog.open(QuestionDialogComponent, {
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
       data: {
         title: 'Delete snapshot',
         question: `Are you sure you want to delete snapshot "${snapshot.name}"?`,

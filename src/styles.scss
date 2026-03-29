@@ -79,6 +79,34 @@ app-chat-message-list markdown li p {
 }
 
 /* =============================================
+// ToasterService Snackbar Styles
+// Material 3 themed notification styles
+// ============================================= */
+.snackabar-success {
+  .mat-mdc-snack-bar-surface {
+    background-color: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+    border-radius: 8px;
+  }
+}
+
+.snackabar-warning {
+  .mat-mdc-snack-bar-surface {
+    background-color: var(--mat-sys-tertiary);
+    color: var(--mat-sys-on-tertiary);
+    border-radius: 8px;
+  }
+}
+
+.snackabar-error {
+  .mat-mdc-snack-bar-surface {
+    background-color: var(--mat-sys-error);
+    color: var(--mat-sys-on-error);
+    border-radius: 8px;
+  }
+}
+
+/* =============================================
 // Form Field Styles
 // ============================================= */
 @-moz-document url-prefix() {

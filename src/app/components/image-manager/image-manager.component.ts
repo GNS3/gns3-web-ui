@@ -204,6 +204,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   deleteFile(path: string) {
     const dialogRef = this.dialog.open(QuestionDialogComponent, {
       width: '450px',
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
       data: { title: 'Delete image', question: 'Are you sure you want to delete this image?' },
     });
 
@@ -302,6 +303,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   installAllImages() {
     const dialogRef = this.dialog.open(QuestionDialogComponent, {
       width: '450px',
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-info-panel'],
       data: {
         title: 'Install all images',
         question: 'This will attempt to automatically create templates based on image checksums. Continue?',
@@ -325,6 +327,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   pruneImages() {
     const dialogRef = this.dialog.open(QuestionDialogComponent, {
       width: '450px',
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
       data: { title: 'Prune images', question: 'Delete all images not used by a template? This cannot be reverted.' },
     });
 

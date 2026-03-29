@@ -114,6 +114,7 @@ export class AddBlankProjectDialogComponent implements OnInit {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       width: '300px',
       height: '150px',
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
       data: {
         existingProject: existingProject,
       },
