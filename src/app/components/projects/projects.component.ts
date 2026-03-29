@@ -159,7 +159,7 @@ export class ProjectsComponent implements OnInit {
 
   duplicate(project: Project) {
     const dialogRef = this.dialog.open(ChooseNameDialogComponent, {
-      width: '400px',
+      panelClass: ['base-dialog-panel', 'choose-name-dialog-panel'],
       autoFocus: false,
       disableClose: true,
     });
@@ -187,10 +187,9 @@ export class ProjectsComponent implements OnInit {
 
   addBlankProject() {
     const dialogRef = this.dialog.open(AddBlankProjectDialogComponent, {
-      width: '400px',
+      panelClass: ['base-dialog-panel', 'add-blank-project-dialog-panel'],
       autoFocus: false,
       disableClose: true,
-      panelClass: 'add-controller-dialog-panel',
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;
@@ -199,10 +198,9 @@ export class ProjectsComponent implements OnInit {
   importProject() {
     let uuid: string = '';
     const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
-      width: '400px',
+      panelClass: ['base-dialog-panel', 'import-project-dialog-panel'],
       autoFocus: false,
       disableClose: true,
-      panelClass: 'add-controller-dialog-panel',
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;
@@ -231,11 +229,9 @@ export class ProjectsComponent implements OnInit {
 
   deleteAllFiles() {
     const dialogRef = this.dialog.open(ConfirmationDeleteAllProjectsComponent, {
-      width: '550px',
-      maxHeight: '650px',
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'delete-all-projects-dialog-panel'],
       autoFocus: false,
       disableClose: true,
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
       data: {
         controller: this.controller,
         deleteFilesPaths: this.selection.selected,
@@ -283,8 +279,7 @@ export class ProjectsComponent implements OnInit {
   }
   exportPortableProjectDialog() {
     const dialogRef = this.dialog.open(ExportPortableProjectComponent, {
-      width: '700px',
-      maxHeight: '850px',
+      panelClass: ['base-dialog-panel', 'export-portable-project-dialog-panel'],
       autoFocus: false,
       disableClose: true,
       data: { controllerDetails: this.controller, projectDetails: this.project },

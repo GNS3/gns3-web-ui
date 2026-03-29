@@ -203,8 +203,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
 
   deleteFile(path: string) {
     const dialogRef = this.dialog.open(QuestionDialogComponent, {
-      width: '450px',
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'question-dialog-panel'],
       data: { title: 'Delete image', question: 'Are you sure you want to delete this image?' },
     });
 
@@ -302,8 +301,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
 
   installAllImages() {
     const dialogRef = this.dialog.open(QuestionDialogComponent, {
-      width: '450px',
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-info-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-info-panel', 'question-dialog-panel'],
       data: {
         title: 'Install all images',
         question: 'This will attempt to automatically create templates based on image checksums. Continue?',
@@ -326,8 +324,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
 
   pruneImages() {
     const dialogRef = this.dialog.open(QuestionDialogComponent, {
-      width: '450px',
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'question-dialog-panel'],
       data: { title: 'Prune images', question: 'Delete all images not used by a template? This cannot be reverted.' },
     });
 
@@ -351,8 +348,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
 
   public addImageDialog() {
     const dialogRef = this.dialog.open(AddImageDialogComponent, {
-      width: '600px',
-      maxHeight: '550px',
+      panelClass: ['base-dialog-panel', 'add-image-dialog-panel'],
       autoFocus: false,
       data: this.controller,
     });
@@ -365,9 +361,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
 
   deleteAllFiles() {
     const dialogRef = this.dialog.open(DeleteAllImageFilesDialogComponent, {
-      width: '550px',
-      maxHeight: '650px',
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'delete-all-images-dialog-panel'],
       autoFocus: false,
       disableClose: true,
       data: {
