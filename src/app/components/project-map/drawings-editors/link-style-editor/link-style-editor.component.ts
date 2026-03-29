@@ -86,7 +86,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
         Validators.required,
         Validators.min(this.flowchartRoundnessMin),
         Validators.max(this.flowchartRoundnessMax),
-      ])
+      ]),
     });
   }
 
@@ -105,9 +105,9 @@ export class LinkStyleEditorDialogComponent implements OnInit {
 
     let type = this.borderTypes[1];
     if (
-      this.link.link_style?.type !== undefined
-      && this.link.link_style.type >= 0
-      && this.link.link_style.type < this.borderTypes.length
+      this.link.link_style?.type !== undefined &&
+      this.link.link_style.type >= 0 &&
+      this.link.link_style.type < this.borderTypes.length
     ) {
       type = this.borderTypes[this.link.link_style.type];
     }
@@ -156,10 +156,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
         ? selectedTypeDefaultCurviness
         : this.normalizeCurvinessByLinkType(selectedLinkType, rawCurviness);
 
-      this.formGroup.controls['bezierCurviness'].setValue(
-        nextCurviness,
-        { emitEvent: false }
-      );
+      this.formGroup.controls['bezierCurviness'].setValue(nextCurviness, { emitEvent: false });
 
       this.curvinessLinkTypeContext = selectedLinkType;
     });
@@ -255,11 +252,15 @@ export class LinkStyleEditorDialogComponent implements OnInit {
         this.link.link_style.link_type,
         this.formGroup.controls['bezierCurviness'].value
       );
-      this.link.link_style.flowchart_roundness = StyleTranslator.normalizeFlowchartRoundness(this.formGroup.controls['flowchartRoundness'].value);
+      this.link.link_style.flowchart_roundness = StyleTranslator.normalizeFlowchartRoundness(
+        this.formGroup.controls['flowchartRoundness'].value
+      );
 
-      // Restore control_offset for freeform links
+      // Restore control_offset for freeform links, clear it for other types
       if (this.link.link_style.link_type === 'freeform') {
         this.link.link_style.control_offset = existingControlOffset;
+      } else {
+        this.link.link_style.control_offset = undefined;
       }
 
       const expectedLinkType = this.link.link_style.link_type;
@@ -274,8 +275,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
           }
 
           const returnedLinkType = link.link_style.link_type;
-          const hasExplicitServerLinkType =
-            typeof returnedLinkType === 'string' && returnedLinkType.trim().length > 0;
+          const hasExplicitServerLinkType = typeof returnedLinkType === 'string' && returnedLinkType.trim().length > 0;
           const serverReturnedDifferentLinkType =
             hasExplicitServerLinkType &&
             this.normalizeLinkType(returnedLinkType) !== this.normalizeLinkType(expectedLinkType);
@@ -292,9 +292,11 @@ export class LinkStyleEditorDialogComponent implements OnInit {
             link.link_style.flowchart_roundness = expectedFlowchartRoundness;
           }
 
-          // Preserve control_offset if server didn't return it
+          // Preserve control_offset only for freeform links if server didn't return it
           if (link.link_style.control_offset === undefined && existingControlOffset !== undefined) {
-            link.link_style.control_offset = existingControlOffset;
+            if (link.link_style.link_type === 'freeform') {
+              link.link_style.control_offset = existingControlOffset;
+            }
           }
 
           LinkTypeCache.set(link.project_id, link.link_id, link.link_style.link_type);

@@ -37,13 +37,17 @@ export class EthernetLinkWidget implements Widget {
 
   private linktoEthernetLink(link: MapLink) {
     const normalizedLinkType = StyleTranslator.normalizeLinkType(link.link_style?.link_type);
-    const sourceCenter: [number, number] = [link.source.x + link.source.width / 2, link.source.y + link.source.height / 2];
-    const targetCenter: [number, number] = [link.target.x + link.target.width / 2, link.target.y + link.target.height / 2];
+    const sourceCenter: [number, number] = [
+      link.source.x + link.source.width / 2,
+      link.source.y + link.source.height / 2,
+    ];
+    const targetCenter: [number, number] = [
+      link.target.x + link.target.width / 2,
+      link.target.y + link.target.height / 2,
+    ];
     const sourceOrientation = StyleTranslator.getContinuousOrientation(sourceCenter, targetCenter);
     const targetOrientation = StyleTranslator.getContinuousOrientation(targetCenter, sourceCenter);
-    const bezierVariation = normalizedLinkType === 'bezier'
-      ? this.bezierLayout.getVariation(link)
-      : 0;
+    const bezierVariation = normalizedLinkType === 'bezier' ? this.bezierLayout.getVariation(link) : 0;
 
     const hasValidColor = typeof link.link_style?.color === 'string' && link.link_style.color.length > 0;
     const hasValidWidth =
@@ -86,13 +90,7 @@ export class EthernetLinkWidget implements Widget {
         targetOrientation
       );
 
-      this.bezierLayout.applyLabelRenderOffsets(
-        link,
-        sourcePoint,
-        targetPoint,
-        curveSideDirection,
-        majorAnchor
-      );
+      this.bezierLayout.applyLabelRenderOffsets(link, sourcePoint, targetPoint, curveSideDirection, majorAnchor);
     } else {
       this.bezierLayout.clearLabelRenderOffsets(link);
     }
@@ -121,10 +119,7 @@ export class EthernetLinkWidget implements Widget {
       return [];
     });
 
-    const link_enter = link
-      .enter()
-      .append<SVGPathElement>('path')
-      .attr('class', 'ethernet_link');
+    const link_enter = link.enter().append<SVGPathElement>('path').attr('class', 'ethernet_link');
 
     const link_merge = link.merge(link_enter);
 
@@ -156,8 +151,9 @@ export class EthernetLinkWidget implements Widget {
         return datum.style.type === 0 ? 'stroke' : null;
       })
       .attr('d', (ethernet) => {
-        // Use freeform bezier if link_type is freeform and has control_offset
-        if (ethernet.style.link_type === 'freeform' && ethernet.controlOffset) {
+        // Use freeform bezier if link_type is freeform OR if control_offset exists
+        // (control_offset is only set for freeform links when user drags to adjust curve)
+        if (ethernet.style.link_type === 'freeform' || ethernet.controlOffset) {
           return StyleTranslator.getFreeformBezierPath(
             ethernet.source,
             ethernet.target,

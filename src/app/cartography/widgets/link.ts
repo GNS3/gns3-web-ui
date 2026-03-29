@@ -58,7 +58,9 @@ export class LinkWidget implements Widget {
         // For freeform links, use control_offset as the center position
         // Icon size is 20x20, scaled to 10x10, so subtract 5 to get top-left corner
         if (link.link_style?.link_type === 'freeform' && link.link_style?.control_offset) {
-          return `translate (${link.link_style.control_offset[0] - 5}, ${link.link_style.control_offset[1] - 5}) scale(0.5)`;
+          return `translate (${link.link_style.control_offset[0] - 5}, ${
+            link.link_style.control_offset[1] - 5
+          }) scale(0.5)`;
         }
         return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${
           (link.source.y + link.target.y) / 2 + 24
@@ -87,7 +89,9 @@ export class LinkWidget implements Widget {
         // For freeform links, use control_offset as the center position
         // Icon size is 20x20, scaled to 10x10, so subtract 5 to get top-left corner
         if (link.link_style?.link_type === 'freeform' && link.link_style?.control_offset) {
-          return `translate (${link.link_style.control_offset[0] - 5}, ${link.link_style.control_offset[1] - 5}) scale(0.5)`;
+          return `translate (${link.link_style.control_offset[0] - 5}, ${
+            link.link_style.control_offset[1] - 5
+          }) scale(0.5)`;
         }
         return `translate (${(link.source.x + link.target.x) / 2 + 24}, ${
           (link.source.y + link.target.y) / 2 + 24
@@ -152,11 +156,12 @@ export class LinkWidget implements Widget {
       .select<SVGPathElement>('path')
       .classed('selected', (l: MapLink) => this.selectionManager.isSelected(l));
 
-    // Curviness drag: directly drag path to adjust bezier/statemachine/freeform curvature (Photoshop-like)
+    // Curviness drag: directly drag freeform path to adjust curve (Photoshop-like)
     const self = this;
-    link_body_merge.each(function(l: MapLink) {
+    link_body_merge.each(function (l: MapLink) {
       const linkType = StyleTranslator.normalizeLinkType(l.link_style?.link_type);
-      if (linkType !== 'bezier' && linkType !== 'statemachine' && linkType !== 'freeform') return;
+      // Only freeform links can be dragged to adjust curve; bezier/statemachine use fixed curviness
+      if (linkType !== 'freeform') return;
 
       const linkGroup = select(this);
       const path = linkGroup.select<SVGPathElement>('path');
@@ -167,15 +172,6 @@ export class LinkWidget implements Widget {
       const sourceCenterY = l.source.y + l.source.height / 2;
       const targetCenterX = l.target.x + l.target.width / 2;
       const targetCenterY = l.target.y + l.target.height / 2;
-
-      // Calculate perpendicular and tangent directions to the link
-      const dx = targetCenterX - sourceCenterX;
-      const dy = targetCenterY - sourceCenterY;
-      const length = Math.hypot(dx, dy) || 1;
-      const perpX = -dy / length;
-      const perpY = dx / length;
-      const tangentX = dx / length;
-      const tangentY = dy / length;
 
       // Midpoint of the link
       const midX = (sourceCenterX + targetCenterX) / 2;
@@ -191,15 +187,15 @@ export class LinkWidget implements Widget {
       // Add drag behavior to path
       path
         .attr('cursor', 'grab')
-        .on('mouseenter', function() {
+        .on('mouseenter', function () {
           select(this).attr('cursor', 'grab');
         })
-        .on('mouseleave', function() {
+        .on('mouseleave', function () {
           select(this).attr('cursor', 'default');
         })
         .call(
           drag<SVGPathElement, MapLink>()
-            .on('start', function(event: D3DragEvent<SVGPathElement, MapLink, MapLink>) {
+            .on('start', function (event: D3DragEvent<SVGPathElement, MapLink, MapLink>) {
               select(this).attr('cursor', 'grabbing');
               // Store initial position and current control offset
               dragState.startX = event.x;
@@ -211,7 +207,7 @@ export class LinkWidget implements Widget {
                 dragState.startOffset = [midX, midY];
               }
             })
-            .on('drag', function(event: D3DragEvent<SVGPathElement, MapLink, MapLink>, l: MapLink) {
+            .on('drag', function (event: D3DragEvent<SVGPathElement, MapLink, MapLink>, l: MapLink) {
               // D3 drag provides event.x/y in the path's coordinate system
               const mousePos: [number, number] = [event.x, event.y];
 
@@ -257,10 +253,9 @@ export class LinkWidget implements Widget {
               if (!l.link_style) {
                 l.link_style = {};
               }
-              l.link_style.link_type = 'freeform';
               l.link_style.control_offset = [controlX, controlY];
             })
-            .on('end', function(event: D3DragEvent<SVGPathElement, MapLink, MapLink>, l: MapLink) {
+            .on('end', function (event: D3DragEvent<SVGPathElement, MapLink, MapLink>) {
               select(this).attr('cursor', 'grab');
               // Emit edited event to persist changes
               self.linksEventSource.edited.next(l);
