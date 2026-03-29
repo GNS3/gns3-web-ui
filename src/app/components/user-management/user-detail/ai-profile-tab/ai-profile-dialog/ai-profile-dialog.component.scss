@@ -329,6 +329,38 @@
 
   // Custom Mode
   .custom-mode {
-    // Inherits all existing styles
+    .custom-mode-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: var(--mat-sys-surface-container);
+      border-radius: 8px;
+
+      h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--mat-sys-on-surface);
+      }
+
+      button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .help-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+
+        span {
+          font-size: 14px;
+          font-weight: 500;
+        }
+      }
+    }
   }
 }

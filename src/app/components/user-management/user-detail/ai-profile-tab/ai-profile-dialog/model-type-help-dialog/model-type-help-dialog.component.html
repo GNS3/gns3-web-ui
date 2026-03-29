@@ -1,89 +1,189 @@
 <h2 mat-dialog-title>
   <mat-icon>help_outline</mat-icon>
-  Model Type Documentation
+  Custom Mode Field Documentation
 </h2>
 
 <mat-dialog-content class="help-content">
+  <!-- Basic Configuration Section -->
   <div class="help-section">
-    <h3>Overview</h3>
-    <p>
-      The <strong>Model Type</strong> field specifies the category of AI model you are configuring. This field is reserved for
-      future use and helps the system understand how to handle different model capabilities.
-    </p>
+    <h3>Basic Configuration</h3>
+
+    <div class="field-item">
+      <h4>Configuration Name</h4>
+      <p>A unique identifier for this LLM model configuration.</p>
+      <ul>
+        <li><strong>Format:</strong> 1-100 characters</li>
+        <li><strong>Allowed characters:</strong> Letters, numbers, underscores, and hyphens</li>
+        <li><strong>Example:</strong> <code>gpt-4o-config</code>, <code>claude-3-5-sonnet</code></li>
+      </ul>
+    </div>
+
+    <div class="field-item">
+      <h4>Model Type</h4>
+      <p>The category of AI model you are configuring. This field is reserved for future use.</p>
+      <mat-card class="info-card">
+        <mat-card-content>
+          <p class="status-text">
+            <mat-icon class="status-icon">info</mat-icon>
+            Currently, only <strong>text</strong> model type is supported. Other options (vision, stt, tts, multimodal, embedding, reranking, other) are reserved for future enhancements.
+          </p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="field-item">
+      <h4>Select LLM Provider</h4>
+      <p>Choose a preset provider to auto-configure the connection settings.</p>
+      <ul>
+        <li><strong>OpenRouter:</strong> Access to multiple models through openrouter.ai</li>
+        <li><strong>DeepSeek:</strong> DeepSeek's official API endpoint</li>
+        <li><strong>Custom:</strong> Manually configure all settings</li>
+      </ul>
+      <p class="note">Presets automatically fill in the Base URL and default model list.</p>
+    </div>
+
+    <div class="field-item">
+      <h4>Model Name</h4>
+      <p>The specific model to use from the selected provider.</p>
+      <ul>
+        <li><strong>From preset:</strong> Select from a dropdown list of available models</li>
+        <li><strong>Custom:</strong> Enter any model name manually</li>
+      </ul>
+      <p><strong>Examples:</strong> <code>gpt-4o</code>, <code>claude-3-5-sonnet-20241022</code>, <code>deepseek-chat</code></p>
+    </div>
   </div>
 
+  <!-- API Configuration Section -->
   <div class="help-section">
-    <h3>Current Status</h3>
-    <mat-card class="info-card">
-      <mat-card-content>
-        <p class="status-text">
-          <mat-icon class="status-icon">info</mat-icon>
-          Currently, only the <strong>text</strong> model type is fully supported by the backend. Other options are
-          reserved for future enhancements.
-        </p>
-      </mat-card-content>
-    </mat-card>
+    <h3>API Configuration</h3>
+
+    <div class="field-item">
+      <h4>Model Provider</h4>
+      <p>The provider type for API communication.</p>
+      <p>Select the provider that matches your API endpoint. For OpenAI-compatible APIs, choose "OpenAI" and customize the Base URL.</p>
+    </div>
+
+    <div class="field-item">
+      <h4>Base URL</h4>
+      <p>The API endpoint URL for the provider.</p>
+      <ul>
+        <li><strong>Default:</strong> Leave empty to use the provider's default endpoint</li>
+        <li><strong>Custom:</strong> Enter a full URL (e.g., <code>https://api.openai.com/v1</code>)</li>
+      </ul>
+      <p class="note">This field is auto-filled when using presets.</p>
+    </div>
+
+    <div class="field-item">
+      <h4>API Key</h4>
+      <p>Your authentication key for accessing the API.</p>
+      <ul>
+        <li><strong>Create mode:</strong> Required field, minimum 10 characters</li>
+        <li><strong>Edit mode:</strong> Leave empty to keep existing key</li>
+      </ul>
+      <mat-card class="warning-card">
+        <mat-card-content>
+          <p class="status-text">
+            <mat-icon class="status-icon">lock</mat-icon>
+            API keys are encrypted on the server for security.
+          </p>
+        </mat-card-content>
+      </mat-card>
+    </div>
   </div>
 
+  <!-- Model Parameters Section -->
   <div class="help-section">
-    <h3>Available Model Types</h3>
-    <table class="types-table mat-elevation-z1">
-      <thead>
-        <tr>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><strong>text</strong></td>
-          <td>Text generation models (e.g., GPT-4, Claude)</td>
-          <td><span class="status-badge supported">✓ Supported</span></td>
-        </tr>
-        <tr>
-          <td><strong>vision</strong></td>
-          <td>Image understanding models</td>
-          <td><span class="status-badge reserved">Reserved</span></td>
-        </tr>
-        <tr>
-          <td><strong>stt</strong></td>
-          <td>Speech-to-Text models</td>
-          <td><span class="status-badge reserved">Reserved</span></td>
-        </tr>
-        <tr>
-          <td><strong>tts</strong></td>
-          <td>Text-to-Speech models</td>
-          <td><span class="status-badge reserved">Reserved</span></td>
-        </tr>
-        <tr>
-          <td><strong>multimodal</strong></td>
-          <td>Multiple input types (text, image, audio)</td>
-          <td><span class="status-badge reserved">Reserved</span></td>
-        </tr>
-        <tr>
-          <td><strong>embedding</strong></td>
-          <td>Text embedding models</td>
-          <td><span class="status-badge reserved">Reserved</span></td>
-        </tr>
-        <tr>
-          <td><strong>reranking</strong></td>
-          <td>Reranking models</td>
-          <td><span class="status-badge reserved">Reserved</span></td>
-        </tr>
-        <tr>
-          <td><strong>other</strong></td>
-          <td>Other specialized model types</td>
-          <td><span class="status-badge reserved">Reserved</span></td>
-        </tr>
-      </tbody>
-    </table>
+    <h3>Model Parameters</h3>
+
+    <div class="field-item">
+      <h4>Temperature</h4>
+      <p>Controls the randomness of the model's responses.</p>
+      <ul>
+        <li><strong>Range:</strong> 0.0 to 2.0</li>
+        <li><strong>Lower values (0.0-0.3):</strong> More focused, deterministic output</li>
+        <li><strong>Higher values (0.7-2.0):</strong> More creative, diverse output</li>
+        <li><strong>Recommended:</strong> 0.3 for technical tasks, 0.7 for creative tasks</li>
+      </ul>
+    </div>
+
+    <div class="field-item">
+      <h4>Context Limit</h4>
+      <p>The maximum context window size in thousands (K) of tokens.</p>
+      <ul>
+        <li><strong>Range:</strong> 1 to 10000</li>
+        <li><strong>Unit:</strong> K tokens (e.g., 128 = 128K tokens)</li>
+        <li><strong>Meaning:</strong> Maximum amount of text the model can consider</li>
+      </ul>
+      <p class="note">Different models have different context limits. Check your model's documentation.</p>
+    </div>
+
+    <div class="field-item">
+      <h4>Context Strategy</h4>
+      <p>Determines how aggressively the system uses the available context limit.</p>
+      <table class="strategy-table mat-elevation-z1">
+        <thead>
+          <tr>
+            <th>Strategy</th>
+            <th>Usage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Conservative</strong></td>
+            <td>60% of context limit (safer, more reserved)</td>
+          </tr>
+          <tr>
+            <td><strong>Balanced</strong></td>
+            <td>75% of context limit (recommended)</td>
+          </tr>
+          <tr>
+            <td><strong>Aggressive</strong></td>
+            <td>85% of context limit (maximizes capacity)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="field-item">
+      <h4>Copilot Mode</h4>
+      <p>Determines the AI assistant's operational permissions within GNS3.</p>
+      <table class="strategy-table mat-elevation-z1">
+        <thead>
+          <tr>
+            <th>Mode</th>
+            <th>Capabilities</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Teaching Assistant</strong></td>
+            <td>Diagnostics and suggestions only (read-only)</td>
+          </tr>
+          <tr>
+            <td><strong>Lab Automation Assistant</strong></td>
+            <td>Full configuration access (can modify settings)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
+  <!-- Advanced Parameters Section -->
   <div class="help-section">
-    <h3>Recommendation</h3>
-    <p>For now, always select <strong>text</strong> as the model type. The system will automatically handle other model
-    types when they become available in future updates.</p>
+    <h3>Advanced Parameters (Optional)</h3>
+    <p>Add custom parameters to pass additional options to the API.</p>
+    <ul>
+      <li><strong>Key:</strong> Parameter name (e.g., <code>max_tokens</code>)</li>
+      <li><strong>Value:</strong> Parameter value (e.g., <code>4096</code>)</li>
+    </ul>
+    <p class="note">This field is reserved for future use. Additional parameters may be supported in later versions.</p>
+  </div>
+
+  <!-- Default Configuration Section -->
+  <div class="help-section">
+    <h3>Default Configuration</h3>
+    <p>When enabled, this configuration will be used as the default for AI Chat and other AI-powered features.</p>
+    <p>Only one configuration can be set as default at a time.</p>
   </div>
 </mat-dialog-content>
 

@@ -554,9 +554,9 @@ export class AiProfileDialogComponent implements OnInit {
   }
 
   /**
-   * Open model type help dialog
+   * Open custom mode help dialog
    */
-  openModelTypeHelp(): void {
+  openCustomModeHelp(): void {
     this.dialog.open(ModelTypeHelpDialogComponent, {
       panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
     });

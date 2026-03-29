@@ -138,9 +138,18 @@
     <!-- Custom Mode -->
     @if (configMode === 'custom') {
     <div class="custom-mode">
+      <!-- Custom Mode Header with Help Button -->
+      <div class="custom-mode-header">
+        <h3>Custom Mode Configuration</h3>
+        <button mat-button (click)="openCustomModeHelp()">
+          <mat-icon class="help-icon">help_outline</mat-icon>
+          <span>Field Documentation</span>
+        </button>
+      </div>
+
       <!-- Basic Configuration Section -->
       <div class="section-header">
-        <h3>Basic Configuration</h3>
+        <h4>Basic Configuration</h4>
       </div>
 
       <!-- Configuration Name -->
@@ -150,26 +159,15 @@
         @if (hasError('name')) {
         <mat-error>{{ getErrorMessage('name') }}</mat-error>
         }
-        <mat-hint>1-100 characters, letters, numbers, underscores and hyphens only</mat-hint>
       </mat-form-field>
 
       <!-- Model Type Selection -->
       <mat-form-field appearance="outline" class="full-width">
-        <mat-label>
-          Model Type
-          <button
-            mat-icon-button
-            matTooltip="View model type documentation"
-            class="help-icon"
-            (click)="openModelTypeHelp()"
-          >
-            <mat-icon>help_outline</mat-icon>
-          </button>
-        </mat-label>
+        <mat-label>Model Type</mat-label>
         <mat-select formControlName="model_type">
           @for (type of modelTypes; track type.value) {
           <mat-option [value]="type.value">
-            {{ type.label }} <span class="option-hint">- {{ type.description }}</span>
+            {{ type.label }}
           </mat-option>
           }
         </mat-select>
@@ -185,7 +183,6 @@
           </mat-option>
           }
         </mat-select>
-        <mat-hint>Select a preset to auto-configure, or choose Custom for manual setup</mat-hint>
       </mat-form-field>
 
       <!-- Model Selection (when preset is selected and not custom) -->
@@ -200,7 +197,6 @@
           }
           <mat-option value="__custom__">Custom model name...</mat-option>
         </mat-select>
-        <mat-hint>Select a model from the list or choose Custom to enter manually</mat-hint>
       </mat-form-field>
       }
 
@@ -212,13 +208,12 @@
         @if (!form.get('model')?.value) {
         <mat-error>Model name is required</mat-error>
         }
-        <mat-hint>Enter your model name (e.g., gpt-4o, claude-3-5-sonnet-20241022)</mat-hint>
       </mat-form-field>
       }
 
-      <!-- Manual Configuration Section -->
+      <!-- API Configuration Section -->
       <div class="section-header">
-        <h3>API Configuration</h3>
+        <h4>API Configuration</h4>
       </div>
 
       <mat-form-field appearance="outline" class="full-width">
@@ -231,13 +226,11 @@
           }
         </mat-select>
         <mat-error>Provider is required</mat-error>
-        <mat-hint>For providers with OpenAI-compatible API, select "OpenAI" and customize the Base URL below</mat-hint>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
         <mat-label>Base URL</mat-label>
         <input matInput formControlName="base_url" placeholder="Auto-filled from preset" />
-        <mat-hint>API endpoint URL. Leave empty to use provider default.</mat-hint>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="full-width">
@@ -252,20 +245,11 @@
         @if (hasError('api_key')) {
         <mat-error>{{ getErrorMessage('api_key') }}</mat-error>
         }
-        <mat-hint>
-          @if (mode === 'edit') {
-          <span class="existing-key-hint"
-            >A saved API key exists for this configuration. Leave empty to keep it, or enter a new key to update.</span
-          >
-          } @if (mode === 'create') {
-          <span>API key will be encrypted on the server. Minimum length: 10 characters</span>
-          }
-        </mat-hint>
       </mat-form-field>
 
       <!-- Model Parameters Section -->
       <div class="section-header">
-        <h3>Model Parameters</h3>
+        <h4>Model Parameters</h4>
       </div>
 
       <div class="row">
@@ -275,7 +259,6 @@
           @if (hasError('temperature')) {
           <mat-error>{{ getErrorMessage('temperature') }}</mat-error>
           }
-          <mat-hint>0.0-2.0</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="half-width">
@@ -284,7 +267,6 @@
           @if (hasError('context_limit')) {
           <mat-error>{{ getErrorMessage('context_limit') }}</mat-error>
           }
-          <mat-hint>K tokens (e.g., 128 = 128K)</mat-hint>
         </mat-form-field>
       </div>
 
@@ -298,7 +280,6 @@
             </mat-option>
             }
           </mat-select>
-          <mat-hint>{{ getContextStrategyDescription() }}</mat-hint>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="half-width">
@@ -310,7 +291,6 @@
             </mat-option>
             }
           </mat-select>
-          <mat-hint>{{ getCopilotModeDescription() }}</mat-hint>
         </mat-form-field>
       </div>
 
@@ -319,19 +299,13 @@
         <mat-checkbox formControlName="is_default" color="primary"> Set as default configuration </mat-checkbox>
       </div>
 
-      <!-- Custom Fields Section -->
+      <!-- Advanced Parameters Section -->
       <div class="custom-fields-section">
         <div class="section-header">
-          <h3>Advanced Parameters (Optional)</h3>
+          <h4>Advanced Parameters (Optional)</h4>
           <button mat-icon-button (click)="addCustomField()">
             <mat-icon>add_circle</mat-icon>
           </button>
-        </div>
-
-        <div class="section-description">
-          <p class="reserved-field-hint">
-            Reserved field for future use. Additional parameters may be supported in later versions.
-          </p>
         </div>
 
         @if (customFields.length > 0) {
@@ -357,7 +331,7 @@
         } @else {
         <div class="empty-custom-fields">
           <mat-icon class="empty-icon">info</mat-icon>
-          <p>No custom fields. Click the + button to add advanced parameters like max_tokens, etc.</p>
+          <p>No custom fields</p>
         </div>
         }
       </div>
