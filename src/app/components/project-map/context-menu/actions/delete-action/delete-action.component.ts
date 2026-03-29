@@ -44,6 +44,7 @@ export class DeleteActionComponent implements OnInit {
   confirmDelete() {
     const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
       data: { message: 'Do you want to delete all selected objects?' },
+      panelClass: 'confirmation-bottom-sheet',
     });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {

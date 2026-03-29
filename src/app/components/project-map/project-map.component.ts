@@ -556,6 +556,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   deleteItems() {
     const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
       data: { message: 'Do you want to delete all selected objects?' },
+      panelClass: 'confirmation-bottom-sheet',
     });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
@@ -1104,6 +1105,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public closeProject() {
     const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
       data: { message: 'Do you want to close the project?' },
+      panelClass: 'confirmation-bottom-sheet',
     });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
@@ -1117,6 +1119,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public deleteProject() {
     const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
       data: { message: 'Do you want to delete the project?' },
+      panelClass: 'confirmation-bottom-sheet',
     });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {

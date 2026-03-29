@@ -17,6 +17,7 @@ export class ConsoleGuard implements CanDeactivate<CanComponentDeactivate> {
     if (this.consoleService.openConsoles > 0) {
       const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
         data: { message: 'Exiting the project will close open consoles, do you want to continue?' },
+        panelClass: 'confirmation-bottom-sheet',
       });
       return bottomSheetRef.afterDismissed();
     } else {
