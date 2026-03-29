@@ -54,7 +54,7 @@
       <td mat-cell *matCellDef="let element">
         <a
           class="resource-pools-management__link"
-          [routerLink]="['/controller', controller.id, 'management/pools', element.resource_pool_id]"
+          [routerLink]="['/controller', controller.id, 'management', 'pools', element.resource_pool_id]"
         >
           {{ element.name }}
         </a>
