@@ -19,23 +19,35 @@
   (click)="onConsoleActivate()"
   (focus)="onConsoleActivate()"
 >
-  <div class="resize-handle resize-handle-top" mwlResizeHandle [resizeEdges]="{ top: true }"></div>
-  <div class="resize-handle resize-handle-right" mwlResizeHandle [resizeEdges]="{ right: true }"></div>
-  <div class="resize-handle resize-handle-bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
-  <div class="resize-handle resize-handle-left" mwlResizeHandle [resizeEdges]="{ left: true }"></div>
+  <div
+    class="resize-handle resize-handle-top"
+    mwlResizeHandle
+    [resizeEdges]="{ top: true }"
+    [hidden]="isMinimized"
+  ></div>
+  <div
+    class="resize-handle resize-handle-right"
+    mwlResizeHandle
+    [resizeEdges]="{ right: true }"
+    [hidden]="isMinimized"
+  ></div>
+  <div
+    class="resize-handle resize-handle-bottom"
+    mwlResizeHandle
+    [resizeEdges]="{ bottom: true }"
+    [hidden]="isMinimized"
+  ></div>
+  <div
+    class="resize-handle resize-handle-left"
+    mwlResizeHandle
+    [resizeEdges]="{ left: true }"
+    [hidden]="isMinimized"
+  ></div>
 
-  <!-- Taskbar Icon Mode (shown when minimized) -->
-  <div class="taskbar-icon" [hidden]="!isMinimized" (mousedown)="toggleDragging(true)">
+  <!-- Taskbar Icon Mode (shown when minimized, click anywhere to restore) -->
+  <div class="taskbar-icon" [hidden]="!isMinimized" (click)="minimize(false)" title="Click to restore">
     <mat-icon class="taskbar-icon__icon">terminal</mat-icon>
     <span class="taskbar-icon__label">{{ getActiveTabName() }}</span>
-    <button
-      mat-icon-button
-      (mousedown)="$event.stopPropagation()"
-      (click)="minimize(false)"
-      class="taskbar-icon__restore"
-    >
-      <mat-icon>web_asset</mat-icon>
-    </button>
   </div>
 
   <!-- Normal Mode (hidden when minimized) -->

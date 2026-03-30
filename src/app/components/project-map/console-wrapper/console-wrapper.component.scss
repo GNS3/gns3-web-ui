@@ -58,11 +58,16 @@
   gap: 8px;
   padding: 8px 12px;
   height: 100%;
-  cursor: grab;
+  cursor: pointer;
   user-select: none;
+  transition: background-color 150ms var(--mat-sys-motion-easing-linear);
+
+  &:hover {
+    background: var(--mat-sys-hover-state-layer);
+  }
 
   &:active {
-    cursor: grabbing;
+    background: var(--mat-sys-focus-state-layer);
   }
 
   &__icon {
@@ -81,27 +86,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
-
-  &__restore {
-    width: 32px;
-    height: 32px;
-    flex-shrink: 0;
-
-    mat-icon {
-      font-size: 18px;
-      width: 18px;
-      height: 18px;
-      color: var(--mat-sys-on-surface-variant);
-    }
-
-    &:hover {
-      background-color: var(--mat-sys-hover-state-layer);
-
-      mat-icon {
-        color: var(--mat-sys-primary);
-      }
-    }
+    pointer-events: none;
   }
 }
 
