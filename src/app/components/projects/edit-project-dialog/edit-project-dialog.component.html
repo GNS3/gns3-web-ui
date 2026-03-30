@@ -4,24 +4,31 @@
   <mat-tab-group>
     <mat-tab label="General">
       <form [formGroup]="formGroup">
-        <mat-form-field class="form-field">
-          <input matInput formControlName="projectName" placeholder="Project name" type="text" />
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>Project name</mat-label>
+          <input matInput formControlName="projectName" placeholder="My Project" type="text" />
         </mat-form-field>
 
-        <mat-form-field class="form-field">
-          <input matInput formControlName="width" placeholder="Scene width (px)" type="number" />
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>Scene width</mat-label>
+          <input matInput formControlName="width" placeholder="1000" type="number" />
+          <span matTextSuffix>px</span>
         </mat-form-field>
 
-        <mat-form-field class="form-field">
-          <input matInput formControlName="height" placeholder="Scene height (px)" type="number" />
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>Scene height</mat-label>
+          <input matInput formControlName="height" placeholder="800" type="number" />
+          <span matTextSuffix>px</span>
         </mat-form-field>
 
-        <mat-form-field class="form-field">
-          <input matInput formControlName="nodeGridSize" placeholder="Node grid size" type="number" />
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>Node grid size</mat-label>
+          <input matInput formControlName="nodeGridSize" placeholder="25" type="number" />
         </mat-form-field>
 
-        <mat-form-field class="form-field">
-          <input matInput formControlName="drawingGridSize" placeholder="Drawing grid size" type="number" />
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>Drawing grid size</mat-label>
+          <input matInput formControlName="drawingGridSize" placeholder="25" type="number" />
         </mat-form-field>
       </form>
 
@@ -50,12 +57,14 @@
 
     <mat-tab label="Global variables">
       <form [formGroup]="variableFormGroup">
-        <mat-form-field class="form-field">
-          <input matInput formControlName="name" placeholder="Name" type="text" />
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" placeholder="VARIABLE_NAME" type="text" />
         </mat-form-field>
 
-        <mat-form-field class="form-field">
-          <input matInput formControlName="value" placeholder="Value" type="text" />
+        <mat-form-field appearance="fill" class="form-field">
+          <mat-label>Value</mat-label>
+          <input matInput formControlName="value" placeholder="variable_value" type="text" />
         </mat-form-field>
       </form>
       <button class="form-field" mat-button (click)="addVariable()" mat-raised-button color="primary">
