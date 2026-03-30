@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DIALOG_DATA } from '@angular/cdk/dialog';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -13,10 +13,8 @@ import { Resource } from '@models/resourcePools/Resource';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, MatDialogModule, MatButtonModule],
 })
-export class DeleteResourceConfirmationDialogComponent implements OnInit {
+export class DeleteResourceConfirmationDialogComponent {
   public dialogRef = inject(MatDialogRef<DeleteResourceConfirmationDialogComponent>);
 
   constructor(@Inject(DIALOG_DATA) public data: Resource) {}
-
-  ngOnInit(): void {}
 }

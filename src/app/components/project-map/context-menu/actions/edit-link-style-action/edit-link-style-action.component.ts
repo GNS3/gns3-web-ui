@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnChanges, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -14,17 +14,13 @@ import { DialogConfigService } from '@services/dialog-config.service';
   imports: [MatDialogModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EditLinkStyleActionComponent implements OnChanges {
+export class EditLinkStyleActionComponent {
   private dialog = inject(MatDialog);
   private dialogConfig = inject(DialogConfigService);
 
   readonly controller = input<Controller>(undefined);
   readonly project = input<Project>(undefined);
   readonly link = input<Link>(undefined);
-
-  constructor() {}
-
-  ngOnChanges() {}
 
   editStyle() {
     const dialogConfig = this.dialogConfig.openConfig('linkStyleEditor', {

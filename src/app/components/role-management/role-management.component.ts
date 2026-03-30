@@ -18,7 +18,7 @@ import {
   ViewChild,
   ViewChildren,
   inject,
-  signal,
+  signal, AfterViewInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -68,7 +68,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RoleManagementComponent implements OnInit {
+export class RoleManagementComponent implements OnInit, AfterViewInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private roleService = inject(RoleService);

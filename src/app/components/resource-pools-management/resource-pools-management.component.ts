@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChildren, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChildren, inject, signal, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Controller } from '@models/controller';
@@ -45,7 +45,7 @@ import { ResourcePoolsFilterPipe } from './resource-pools-filter.pipe';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ResourcePoolsManagementComponent implements OnInit {
+export class ResourcePoolsManagementComponent implements OnInit, AfterViewInit {
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private toasterService = inject(ToasterService);

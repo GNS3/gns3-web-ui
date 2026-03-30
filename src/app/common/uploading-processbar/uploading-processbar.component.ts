@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, Renderer2, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Inject, OnInit, Renderer2, inject, signal, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { MatSnackBarRef, MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
@@ -12,7 +12,7 @@ import { UploadServiceService } from './upload-service.service';
   imports: [MatButtonModule, MatProgressBarModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UploadingProcessbarComponent implements OnInit {
+export class UploadingProcessbarComponent implements OnInit, OnDestroy {
   private _snackRef = inject(MatSnackBarRef<UploadingProcessbarComponent>);
   private _US = inject(UploadServiceService);
 

@@ -8,7 +8,7 @@ import {
   Output,
   SimpleChange,
   inject,
-  input,
+  input, OnChanges,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
@@ -28,7 +28,7 @@ import { DrawingService } from '@services/drawing.service';
   imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DrawingAddedComponent implements OnInit, OnDestroy {
+export class DrawingAddedComponent implements OnInit, OnDestroy, OnChanges {
   readonly controller = input<Controller>(undefined);
   @Input() project: Project;
   @Input() selectedDrawing: string;

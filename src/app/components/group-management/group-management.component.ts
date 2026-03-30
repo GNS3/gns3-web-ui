@@ -18,7 +18,7 @@ import {
   ViewChild,
   ViewChildren,
   inject,
-  signal,
+  signal, AfterViewInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -78,7 +78,7 @@ import {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GroupManagementComponent implements OnInit {
+export class GroupManagementComponent implements OnInit, AfterViewInit {
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private toasterService = inject(ToasterService);

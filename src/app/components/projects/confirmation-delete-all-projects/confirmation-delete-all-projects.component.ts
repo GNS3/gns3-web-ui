@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,7 +15,7 @@ import { catchError } from 'rxjs/operators';
   imports: [CommonModule, MatDialogModule, MatButtonModule, MatProgressSpinnerModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ConfirmationDeleteAllProjectsComponent implements OnInit {
+export class ConfirmationDeleteAllProjectsComponent {
   public dialogRef = inject(MatDialogRef<ConfirmationDeleteAllProjectsComponent>);
   private projectService = inject(ProjectService);
   private toasterService = inject(ToasterService);
@@ -26,8 +26,6 @@ export class ConfirmationDeleteAllProjectsComponent implements OnInit {
   fileNotDeleted = signal<any[]>([]);
 
   constructor(@Inject(MAT_DIALOG_DATA) public deleteData: any) {}
-
-  ngOnInit(): void {}
 
   async deleteAll() {
     this.isDelete.set(true);

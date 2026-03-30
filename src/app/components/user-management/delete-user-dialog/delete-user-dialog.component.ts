@@ -10,7 +10,7 @@
  *
  * Author: Sylvain MATHIEU, Elise LEBEAU
  */
-import { ChangeDetectionStrategy, Component, Inject, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -25,12 +25,10 @@ import { UserService } from '@services/user.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, MatDialogModule, MatButtonModule],
 })
-export class DeleteUserDialogComponent implements OnInit {
+export class DeleteUserDialogComponent {
   private dialogRef = inject(MatDialogRef<DeleteUserDialogComponent>);
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { users: User[] }) {}
-
-  ngOnInit(): void {}
 
   onCancel() {
     this.dialogRef.close();

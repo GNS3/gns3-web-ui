@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -23,7 +23,7 @@ import { ToasterService } from '@services/toaster.service';
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DeleteActionComponent implements OnInit {
+export class DeleteActionComponent {
   private toasterService = inject(ToasterService);
   private nodesDataSource = inject(NodesDataSource);
   private drawingsDataSource = inject(DrawingsDataSource);
@@ -38,8 +38,6 @@ export class DeleteActionComponent implements OnInit {
   readonly nodes = input<Node[]>([]);
   readonly drawings = input<Drawing[]>([]);
   readonly links = input<Link[]>([]);
-
-  ngOnInit() {}
 
   confirmDelete() {
     const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {

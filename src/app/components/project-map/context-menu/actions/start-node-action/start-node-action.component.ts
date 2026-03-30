@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnChanges, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnChanges, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -13,15 +13,13 @@ import { ToasterService } from '@services/toaster.service';
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StartNodeActionComponent implements OnInit, OnChanges {
+export class StartNodeActionComponent implements OnChanges {
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
 
   readonly controller = input<Controller>(undefined);
   readonly nodes = input<Node[]>(undefined);
   isNodeWithStoppedStatus: boolean;
-
-  ngOnInit() {}
 
   ngOnChanges(changes) {
     if (changes.nodes) {

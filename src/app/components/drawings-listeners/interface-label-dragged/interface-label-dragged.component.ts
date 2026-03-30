@@ -15,7 +15,7 @@ import { LinkService } from '@services/link.service';
   imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InterfaceLabelDraggedComponent {
+export class InterfaceLabelDraggedComponent implements OnInit, OnDestroy {
   readonly controller = input<Controller>(undefined);
   private interfaceDragged: Subscription;
 

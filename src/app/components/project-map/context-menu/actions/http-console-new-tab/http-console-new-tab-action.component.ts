@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HttpConsoleNewTabActionComponent implements OnInit {
+export class HttpConsoleNewTabActionComponent {
   private nodeConsoleService = inject(NodeConsoleService);
   private vncConsoleService = inject(VncConsoleService);
   private toasterService = inject(ToasterService);
@@ -23,8 +23,6 @@ export class HttpConsoleNewTabActionComponent implements OnInit {
 
   readonly controller = input<Controller>(undefined);
   readonly nodes = input<Node[]>(undefined);
-
-  ngOnInit() {}
 
   openConsole() {
     let nodesToStart = '';

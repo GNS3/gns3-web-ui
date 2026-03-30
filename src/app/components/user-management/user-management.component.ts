@@ -19,7 +19,7 @@ import {
   ViewChildren,
   inject,
   signal,
-  computed,
+  computed, AfterViewInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -78,7 +78,7 @@ import {
     MatProgressSpinnerModule,
   ],
 })
-export class UserManagementComponent implements OnInit {
+export class UserManagementComponent implements OnInit, AfterViewInit {
   private route = inject(ActivatedRoute);
   private userService = inject(UserService);
   private progressService = inject(ProgressService);

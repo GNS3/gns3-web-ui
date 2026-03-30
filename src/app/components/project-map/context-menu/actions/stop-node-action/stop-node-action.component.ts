@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnChanges, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnChanges, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -12,14 +12,12 @@ import { NodeService } from '@services/node.service';
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StopNodeActionComponent implements OnInit, OnChanges {
+export class StopNodeActionComponent implements OnChanges {
   private nodeService = inject(NodeService);
 
   readonly controller = input<Controller>(undefined);
   readonly nodes = input<Node[]>(undefined);
   isNodeWithStartedStatus: boolean;
-
-  ngOnInit() {}
 
   ngOnChanges(changes) {
     if (changes.nodes) {

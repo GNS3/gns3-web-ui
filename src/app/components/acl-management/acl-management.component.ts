@@ -11,7 +11,7 @@
  * Author: Sylvain MATHIEU, Elise LEBEAU
  */
 
-import { ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChildren, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChildren, inject, signal, AfterViewInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -59,7 +59,7 @@ import { AceFilterPipe } from '@filters/ace-filter.pipe';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AclManagementComponent implements OnInit {
+export class AclManagementComponent implements OnInit, AfterViewInit {
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private toasterService = inject(ToasterService);

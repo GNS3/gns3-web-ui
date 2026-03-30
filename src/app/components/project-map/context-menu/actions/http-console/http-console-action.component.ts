@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -16,7 +16,7 @@ import { MapSettingsService } from '@services/mapsettings.service';
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HttpConsoleActionComponent implements OnInit {
+export class HttpConsoleActionComponent {
   private nodeConsoleService = inject(NodeConsoleService);
   private vncConsoleService = inject(VncConsoleService);
   private toasterService = inject(ToasterService);
@@ -26,8 +26,6 @@ export class HttpConsoleActionComponent implements OnInit {
 
   readonly controller = input<Controller>(undefined);
   readonly nodes = input<Node[]>(undefined);
-
-  ngOnInit() {}
 
   openConsole() {
     let nodesToStart = '';

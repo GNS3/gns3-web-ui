@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -16,7 +16,7 @@ import { NodeService } from '@services/node.service';
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MoveLayerUpActionComponent implements OnInit {
+export class MoveLayerUpActionComponent {
   private nodesDataSource = inject(NodesDataSource);
   private drawingsDataSource = inject(DrawingsDataSource);
   private nodeService = inject(NodeService);
@@ -25,8 +25,6 @@ export class MoveLayerUpActionComponent implements OnInit {
   readonly controller = input<Controller>(undefined);
   readonly nodes = input<Node[]>(undefined);
   readonly drawings = input<Drawing[]>(undefined);
-
-  ngOnInit() {}
 
   moveLayerUp() {
     this.nodes().forEach((node) => {

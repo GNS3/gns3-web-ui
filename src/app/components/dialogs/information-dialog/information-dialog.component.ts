@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 
@@ -9,11 +9,9 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [MatDialogModule, MatButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InformationDialogComponent implements OnInit {
+export class InformationDialogComponent {
   public dialogRef = inject(MatDialogRef<InformationDialogComponent>);
   public confirmationMessage: string;
-
-  ngOnInit() {}
 
   onNoClick(): void {
     this.dialogRef.close(false);

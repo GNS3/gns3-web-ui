@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -16,7 +16,7 @@ import { NodeService } from '@services/node.service';
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BringToFrontActionComponent implements OnInit {
+export class BringToFrontActionComponent {
   private nodesDataSource = inject(NodesDataSource);
   private drawingsDataSource = inject(DrawingsDataSource);
   private nodeService = inject(NodeService);
@@ -26,8 +26,6 @@ export class BringToFrontActionComponent implements OnInit {
   readonly controller = input<Controller>(undefined);
   readonly nodes = input<Node[]>([]);
   readonly drawings = input<Drawing[]>([]);
-
-  ngOnInit() {}
 
   bringToFront() {
     let maxZValueForNodes = Math.max(...this.nodes().map((n) => n.z));

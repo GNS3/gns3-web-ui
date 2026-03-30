@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -17,7 +17,7 @@ import { TextEditorDialogComponent } from '../../../drawings-editors/text-editor
   imports: [MatDialogModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EditTextActionComponent implements OnInit {
+export class EditTextActionComponent {
   private dialog = inject(MatDialog);
 
   readonly controller = input<Controller>(undefined);
@@ -27,10 +27,6 @@ export class EditTextActionComponent implements OnInit {
   readonly label = input<Label>(undefined);
   readonly link = input<Link>(undefined);
   readonly linkNode = input<LinkNode>(undefined);
-
-  constructor() {}
-
-  ngOnInit() {}
 
   editText() {
     const dialogRef = this.dialog.open(TextEditorDialogComponent, {

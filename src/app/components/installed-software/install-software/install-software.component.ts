@@ -4,7 +4,6 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnDestroy,
   OnInit,
   Output,
   signal,
@@ -19,7 +18,7 @@ import { MatButtonModule } from '@angular/material/button';
   imports: [CommonModule, MatButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InstallSoftwareComponent implements OnInit, OnDestroy, OnChanges {
+export class InstallSoftwareComponent implements OnInit, OnChanges {
   @Input('software')
   software: any;
 
@@ -35,8 +34,6 @@ export class InstallSoftwareComponent implements OnInit, OnDestroy, OnChanges {
   ngOnInit() {
     this.updateButton();
   }
-
-  ngOnDestroy() {}
 
   ngOnChanges() {
     this.updateButton();

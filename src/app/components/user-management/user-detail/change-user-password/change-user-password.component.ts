@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { User } from '@models/users/user';
@@ -18,7 +18,7 @@ import { matchingPassword } from '@components/user-management/ConfirmPasswordVal
   imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatButtonModule, MatFormFieldModule, MatInputModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChangeUserPasswordComponent implements OnInit {
+export class ChangeUserPasswordComponent {
   private dialogRef = inject(MatDialogRef<ChangeUserPasswordComponent>);
   private userService = inject(UserService);
   private toasterService = inject(ToasterService);
@@ -46,8 +46,6 @@ export class ChangeUserPasswordComponent implements OnInit {
   );
 
   constructor() {}
-
-  ngOnInit(): void {}
 
   get passwordForm() {
     return this.editPasswordForm.controls;

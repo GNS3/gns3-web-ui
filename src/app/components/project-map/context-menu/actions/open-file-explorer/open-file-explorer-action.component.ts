@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -11,11 +11,9 @@ import { Controller } from '@models/controller';
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OpenFileExplorerActionComponent implements OnInit {
+export class OpenFileExplorerActionComponent {
   readonly controller = input<Controller>(undefined);
   readonly node = input<Node>(undefined);
-
-  ngOnInit() {}
 
   open() {
     // Opening file explorer is not supported in web mode

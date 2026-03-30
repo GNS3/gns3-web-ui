@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, inject, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Inject, inject, signal, ChangeDetectionStrategy } from '@angular/core';
 import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -11,7 +11,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
   imports: [MatDialogModule, MatButtonModule, MatProgressSpinnerModule, MatProgressBarModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProgressDialogComponent implements OnInit {
+export class ProgressDialogComponent {
   public dialogRef = inject(MatDialogRef<ProgressDialogComponent>);
 
   public static CANCELLED: 'canceled';
@@ -23,6 +23,4 @@ export class ProgressDialogComponent implements OnInit {
   onCancelClick(): void {
     this.dialogRef.close(ProgressDialogComponent.CANCELLED);
   }
-
-  ngOnInit() {}
 }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -13,13 +13,11 @@ import { ChangeHostnameDialogComponent } from '../../../change-hostname-dialog/c
   imports: [MatButtonModule, MatIconModule, MatMenuModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChangeHostnameActionComponent implements OnInit {
+export class ChangeHostnameActionComponent {
   private dialog = inject(MatDialog);
 
   readonly controller = input<Controller>(undefined);
   readonly node = input<Node>(undefined);
-
-  ngOnInit() {}
 
   changeHostname() {
     const dialogRef = this.dialog.open(ChangeHostnameDialogComponent, {

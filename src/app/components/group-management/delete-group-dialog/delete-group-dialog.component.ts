@@ -10,7 +10,7 @@
  *
  * Author: Sylvain MATHIEU, Elise LEBEAU
  */
-import { ChangeDetectionStrategy, Component, Inject, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -24,12 +24,10 @@ import { Group } from '@models/groups/group';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, MatDialogModule, MatButtonModule],
 })
-export class DeleteGroupDialogComponent implements OnInit {
+export class DeleteGroupDialogComponent {
   private dialogRef = inject(MatDialogRef<DeleteGroupDialogComponent>);
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: { groups: Group[] }) {}
-
-  ngOnInit(): void {}
 
   onCancel() {
     this.dialogRef.close();
