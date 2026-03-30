@@ -6,6 +6,7 @@ import {
   OnDestroy,
   OnInit,
   ViewContainerRef,
+  computed,
   inject,
   viewChild,
   signal,
@@ -164,7 +165,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public ws: WebSocket;
   public isProjectMapMenuVisible: boolean = false;
   public isConsoleVisible: boolean = true;
-  public mapBgClass = signal<Record<string, boolean>>({});
   public isTopologySummaryVisible: boolean = true;
   public isInterfaceLabelVisible: boolean = false;
   public notificationsVisibility: boolean = false;
@@ -173,6 +173,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toolbarVisibility: boolean = true;
   public symbolScaling: boolean = true;
   public isAIChatVisible: boolean = false;
+  readonly mapBgClass = computed(() => ({ [`gns3-map-bg-${this.themeService.savedMapTheme}`]: true }));
   private instance: ComponentRef<TopologySummaryComponent>;
   // private instance: any
 
@@ -248,10 +249,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   // createMyComponent() {this.viewContainerRef.createComponent(MyComponent);}
 
   ngOnInit() {
-    // Read map background from localStorage
-    const mapTheme = localStorage.getItem('mapTheme') || 'auto';
-    this.mapBgClass.set({ [`gns3-map-bg-${mapTheme}`]: true });
-
     this.getSettings();
     this.progressService.activate();
 

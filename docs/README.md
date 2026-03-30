@@ -28,7 +28,8 @@ docs/
 │       └── migration-progress.md
 ├── guides/                      # Development standards & best practices
 │   ├── css/
-│   │   └── 02-material3-variables.md
+│   │   ├── 02-material3-variables.md
+│   │   └── map-backgrounds.md
 │   ├── dialog-style-isolation.md
 │   └── window-boundary-service.md
 ├── todo/                        # Optimization tasks
@@ -74,6 +75,7 @@ docs/
 |----------|-------------|
 | [Dialog Style Isolation](./guides/dialog-style-isolation.md) | ⭐ Dialog styling with panelClass |
 | [Material 3 Variables](./guides/css/02-material3-variables.md) | Material Design 3 CSS variables |
+| [Map Backgrounds](./guides/css/map-backgrounds.md) | Project map background & screenshot export |
 | [Window Boundary Service](./guides/window-boundary-service.md) | Window boundary management |
 
 ---
@@ -104,6 +106,7 @@ docs/
 - **Angular Zoneless**: [framework/angular-21/zoneless-guide.md](./framework/angular-21/zoneless-guide.md)
 - **Dialog Styling**: [guides/dialog-style-isolation.md](./guides/dialog-style-isolation.md)
 - **CSS Variables**: [guides/css/02-material3-variables.md](./guides/css/02-material3-variables.md)
+- **Map Backgrounds**: [guides/css/map-backgrounds.md](./guides/css/map-backgrounds.md)
 
 ### Getting Started
 
@@ -117,6 +120,12 @@ docs/
 ## Recent Changes
 
 ### 2026-03-30
+
+- ✅ **Map Backgrounds Guide**: Added comprehensive documentation
+  - CSS variable architecture and data flow diagrams
+  - Reactive pattern with computed signals
+  - Screenshot export implementation (background capture + embedded images)
+  - Common pitfalls and best practices
 
 - ✅ **Documentation Cleanup**: Consolidated guides directory
   - Archived duplicate docs (css-coding-standards, angular-material-usage, etc.)
