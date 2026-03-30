@@ -11,7 +11,7 @@ import { ControllersComponent } from './controllers.component';
 import { ControllerManagementService } from '@services/controller-management.service';
 import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MockedActivatedRoute } from '../snapshots/list-of-snapshots/list-of-snaphshots.component.spec';
+// import { MockedActivatedRoute } from '../snapshots/list-of-snapshots/list-of-snaphshots.component.spec';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ChangeDetectorRef, NO_ERRORS_SCHEMA } from '@angular/core';
 import { MockedRouter } from 'app/common/progress/progress.component.spec';
@@ -21,7 +21,7 @@ describe('ControllersComponent', () => {
   let component: ControllersComponent;
   let fixture: ComponentFixture<ControllersComponent>;
   let controllerMockedService: MockedControllerService;
-  let mockedActivatedRoute: MockedActivatedRoute;
+  // let mockedActivatedRoute: MockedActivatedRoute;
   let mockedRouter: MockedRouter;
   let mockedControllerManagementService: any;
 
@@ -35,7 +35,7 @@ describe('ControllersComponent', () => {
       .and.returnValue(of({ version: '3.0.0' }));
     controllerMockedService['delete'] = jasmine.createSpy('delete').and.returnValue(Promise.resolve());
 
-    mockedActivatedRoute = new MockedActivatedRoute();
+    // mockedActivatedRoute = new MockedActivatedRoute();
     mockedRouter = new MockedRouter();
 
     // Mock ControllerManagementService
@@ -64,7 +64,7 @@ describe('ControllersComponent', () => {
         ChangeDetectorRef,
         { provide: ControllerService, useValue: controllerMockedService },
         { provide: ControllerManagementService, useValue: mockedControllerManagementService },
-        { provide: ActivatedRoute, useValue: mockedActivatedRoute },
+        { provide: ActivatedRoute, useValue: {} },
         { provide: Router, useValue: mockedRouter },
       ],
       schemas: [NO_ERRORS_SCHEMA],

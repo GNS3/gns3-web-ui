@@ -8,7 +8,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ProjectService } from '@services/project.service';
-import { ANGULAR_MAP_DECLARATIONS } from '../../../cartography/angular-map.imports';
+// import { ANGULAR_MAP_DECLARATIONS } from '../../../cartography/angular-map.imports';
 import { D3MapComponent } from '../../../cartography/components/d3-map/d3-map.component';
 import { DrawingService } from '@services/drawing.service';
 import { MapSettingsService } from '@services/mapsettings.service';
@@ -59,7 +59,7 @@ describe('ProjectMapMenuComponent', () => {
         { provide: NodeService, useValue: mockedNodeService },
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
       ],
-      declarations: [ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
+      declarations: [ProjectMapMenuComponent, D3MapComponent/* , ...ANGULAR_MAP_DECLARATIONS */],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

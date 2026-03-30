@@ -169,29 +169,6 @@
                     "style": "scss"
                 }
             }
-        },
-        "gns3-web-ui-e2e": {
-            "root": "e2e",
-            "sourceRoot": "e2e",
-            "projectType": "application",
-            "architect": {
-                "e2e": {
-                    "builder": "@angular-devkit/build-angular:protractor",
-                    "options": {
-                        "protractorConfig": "./protractor.conf.js",
-                        "serveTarget": "gns3-web-ui:serve"
-                    }
-                },
-                "lint": {
-                    "builder": "@angular-eslint/builder:lint",
-                    "options": {
-                        "lintFilePatterns": [
-                            "e2e/**/*.ts",
-                            "e2e/**/*.html"
-                        ]
-                    }
-                }
-            }
         }
     },
     "schematics": {

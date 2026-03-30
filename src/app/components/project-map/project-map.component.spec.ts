@@ -12,7 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import {} from 'mousetrap';
 import { BehaviorSubject, of } from 'rxjs';
 import { Observable } from 'rxjs/Rx';
-import { ANGULAR_MAP_DECLARATIONS } from '../../cartography/angular-map.imports';
+// import { ANGULAR_MAP_DECLARATIONS } from '../../cartography/angular-map.imports';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
 import { MapLabelToLabelConverter } from '../../cartography/converters/map/map-label-to-label-converter';
@@ -325,7 +325,7 @@ xdescribe('ProjectMapComponent', () => {
         { provide: MatDialogRef, useValue: {} },
         { provide: MAT_DIALOG_DATA, useValue: {} },
       ],
-      declarations: [ProjectMapComponent, ProjectMapMenuComponent, D3MapComponent, ...ANGULAR_MAP_DECLARATIONS],
+      declarations: [ProjectMapComponent, ProjectMapMenuComponent, D3MapComponent/* , ...ANGULAR_MAP_DECLARATIONS */],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

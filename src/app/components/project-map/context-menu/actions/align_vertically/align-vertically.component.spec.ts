@@ -1,17 +1,17 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AlignVerticallyComponent } from './align-vertically.component';
+import { AlignVerticallyActionComponent } from './align-vertically.component';
 
-describe('AlignVerticallyComponent', () => {
-  let component: AlignVerticallyComponent;
-  let fixture: ComponentFixture<AlignVerticallyComponent>;
+describe('AlignVerticallyActionComponent', () => {
+  let component: AlignVerticallyActionComponent;
+  let fixture: ComponentFixture<AlignVerticallyActionComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
-      declarations: [AlignVerticallyComponent],
+      declarations: [AlignVerticallyActionComponent],
     });
-    fixture = TestBed.createComponent(AlignVerticallyComponent);
+    fixture = TestBed.createComponent(AlignVerticallyActionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,17 +1,17 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AlignHorizontallyComponent } from './align-horizontally.component';
+import { AlignHorizontallyActionComponent } from './align-horizontally.component';
 
-describe('AlignHorizontallyComponent', () => {
-  let component: AlignHorizontallyComponent;
-  let fixture: ComponentFixture<AlignHorizontallyComponent>;
+describe('AlignHorizontallyActionComponent', () => {
+  let component: AlignHorizontallyActionComponent;
+  let fixture: ComponentFixture<AlignHorizontallyActionComponent>;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
-      declarations: [AlignHorizontallyComponent],
+      declarations: [AlignHorizontallyActionComponent],
     });
-    fixture = TestBed.createComponent(AlignHorizontallyComponent);
+    fixture = TestBed.createComponent(AlignHorizontallyActionComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
