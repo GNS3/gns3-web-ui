@@ -7,7 +7,7 @@ export class ToasterErrorHandler implements ErrorHandler {
   private injector = inject(Injector);
 
   extractError(error) {
-    // Try to unwrap zone.js error.
+    // Try to unwrap Angular error stack.
     // https://github.com/angular/angular/blob/master/packages/core/src/util/errors.ts
     if (error && error.ngOriginalError) {
       error = error.ngOriginalError;

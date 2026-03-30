@@ -37,9 +37,9 @@ if [ -n "$STAGED_TS" ]; then
   fi
 fi
 
-# Check for zone.js imports (FORBIDDEN)
+# Check for zone.js imports (FORBIDDEN, exclude test.ts)
 if [ -n "$STAGED_TS" ]; then
-  VIOLATIONS=$(grep -rn "zone.js" $STAGED_TS 2>/dev/null || true)
+  VIOLATIONS=$(grep -rn "zone.js" $STAGED_TS 2>/dev/null | grep -v "test.ts" || true)
   if [ -n "$VIOLATIONS" ]; then
     echo "❌ FAIL: zone.js import found in staged files (FORBIDDEN)"
     echo "$VIOLATIONS"

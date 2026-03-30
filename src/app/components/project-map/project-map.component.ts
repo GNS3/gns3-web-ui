@@ -543,7 +543,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     Mousetrap.bind('del', (event: Event) => {
       event.preventDefault();
-      // Note: In zoneless mode, ngZone.run() is a no-op
+      // Note: In zoneless mode, explicit change detection is required
       this.deleteItems();
     });
   }

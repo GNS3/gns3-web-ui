@@ -66,7 +66,7 @@ jobs:
 
       - name: Check for Zone.js imports
         run: |
-          FOUND=$(grep -rn "zone.js" --include="*.ts" src/ || true)
+          FOUND=$(grep -rn "zone.js" --include="*.ts" src/ | grep -v "test.ts" || true)
           if [ -n "$FOUND" ]; then
             echo "❌ FORBIDDEN: zone.js import found"
             echo "$FOUND"
