@@ -1,8 +1,16 @@
 # Console Device Topology Highlight Feature
 
-## Overview
+## ⚠️ DEPRECATED
 
-This document describes the implementation of the console device topology highlight feature, which highlights the selected device and its connected links in the topology when a user selects a device from the Web Console.
+**Status**: ❌ **Deprecated** (2026-03-30)
+**Reason**: Feature did not work properly in Angular 17+ Zoneless environment. The topology highlight functionality was removed due to compatibility issues with the zoneless change detection model and D3.js integration.
+**Migration**: Feature removed, no replacement planned.
+
+---
+
+## Overview (Historical)
+
+This document describes the implementation of the console device topology highlight feature, which was designed to highlight the selected device and its connected links in the topology when a user selects a device from the Web Console.
 
 ## Feature Description
 

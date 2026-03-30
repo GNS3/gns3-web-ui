@@ -124,9 +124,6 @@ import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edit
   templateUrl: './project-map.component.html',
   styleUrls: ['./project-map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    '(window:keydown.escape)': 'onEscapeKey()',
-  },
   imports: [
     CommonModule,
     FormsModule,
@@ -187,8 +184,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   protected settings: Settings;
   private inReadOnlyMode = false;
-  private highlightedNodeId: string = null;
-
   readonly contextMenu = viewChild(ContextMenuComponent);
   readonly mapChild = viewChild(D3MapComponent);
   readonly projectMapMenuComponent = viewChild.required(ProjectMapMenuComponent);
@@ -1152,78 +1147,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;
     instance.project = this.project;
-  }
-
-  /**
-   * Handle device selection from console devices panel
-   * Highlights the selected node and its connected links in the topology
-   */
-  public onDeviceSelected(nodeId: string): void {
-    // Clear previous highlight first
-    this.clearConsoleHighlight();
-
-    this.highlightedNodeId = nodeId;
-
-    // Highlight the selected node
-    const nodeElement = d3.select(`g.node[node_id="${nodeId}"]`);
-    if (!nodeElement.empty()) {
-      nodeElement.classed('console-highlight', true);
-    }
-
-    // Highlight connected links and their connected nodes
-    d3.selectAll('g.link_body').each(function (link: any) {
-      if (link && (link.source?.id === nodeId || link.target?.id === nodeId)) {
-        d3.select(this).classed('console-highlight', true);
-
-        // Highlight the other node connected by this link
-        const otherNodeId = link.source?.id === nodeId ? link.target?.id : link.source?.id;
-        if (otherNodeId) {
-          const otherNodeElement = d3.select(`g.node[node_id="${otherNodeId}"]`);
-          if (!otherNodeElement.empty()) {
-            otherNodeElement.classed('console-highlight-connected', true);
-          }
-        }
-      }
-    });
-  }
-
-  /**
-   * Clear console device highlight
-   */
-  public clearConsoleHighlight(): void {
-    const nodeId = this.highlightedNodeId;
-    if (nodeId) {
-      // Remove highlight from selected node
-      const nodeElement = d3.select(`g.node[node_id="${nodeId}"]`);
-      if (!nodeElement.empty()) {
-        nodeElement.classed('console-highlight', false);
-      }
-
-      // Remove highlight from connected links and their nodes
-      d3.selectAll('g.link_body').each(function (link: any) {
-        if (link && (link.source?.id === nodeId || link.target?.id === nodeId)) {
-          d3.select(this).classed('console-highlight', false);
-
-          // Remove highlight from the other connected node
-          const otherNodeId = link.source?.id === nodeId ? link.target?.id : link.source?.id;
-          if (otherNodeId) {
-            const otherNodeElement = d3.select(`g.node[node_id="${otherNodeId}"]`);
-            if (!otherNodeElement.empty()) {
-              otherNodeElement.classed('console-highlight-connected', false);
-            }
-          }
-        }
-      });
-
-      this.highlightedNodeId = null;
-    }
-  }
-
-  /**
-   * Handle ESC key to clear highlight
-   */
-  onEscapeKey(): void {
-    this.clearConsoleHighlight();
   }
 
   public ngOnDestroy(): void {
