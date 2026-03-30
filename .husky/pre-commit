@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-echo "🔍 Running CLAUDE.md Standards Check..."
+echo "🔍 Running Standards check..."
 
 # Get list of staged files in src/ only
 STAGED_SCSS=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null | grep "^src/.*\.scss$" || true)
@@ -77,4 +77,4 @@ if [ -n "$STAGED_TS" ]; then
   fi
 fi
 
-echo "✅ CLAUDE.md Standards Check passed"
+echo "✅ Standards check passed"

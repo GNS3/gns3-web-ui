@@ -4,7 +4,7 @@
 
 set -e
 
-echo "🔍 Running CLAUDE.md Standards Check (All Files)..."
+echo "🔍 Running Standards check (All Files)..."
 echo ""
 
 FAILED=0

@@ -30,7 +30,7 @@ jobs:
 
   lint-check:
     runs-on: ubuntu-latest
-    name: CLAUDE.md Standards Check
+    name: Standards check
     steps:
       - uses: actions/checkout@v3
 
