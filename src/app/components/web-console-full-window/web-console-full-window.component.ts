@@ -41,19 +41,7 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
   private contextMenuCleanup: (() => void) | null = null;
   private socket: WebSocket | null = null;
 
-  public term: Terminal = new Terminal({
-    cursorBlink: true,
-    cursorStyle: 'block',
-    fontSize: 15,
-    fontFamily: 'courier-new, courier, monospace',
-    rightClickSelectsWord: true,
-    altClickMovesCursor: true,
-    scrollback: 1000,
-  });
-  public fitAddon: FitAddon = new FitAddon();
-
-  readonly terminal = viewChild<ElementRef>('terminal');
-
+  // Inject services first
   private consoleService = inject(NodeConsoleService);
   private controllerService = inject(ControllerService);
   private route = inject(ActivatedRoute);
@@ -63,6 +51,14 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
   private contextMenuService = inject(XtermContextMenuService);
   private cdr = inject(ChangeDetectorRef);
   private xtermService = inject(XtermService);
+
+  // Now can use xtermService for terminal initialization
+  public term: Terminal = new Terminal({
+    ...this.xtermService.getDefaultTerminalOptions(),
+  });
+  public fitAddon: FitAddon = new FitAddon();
+
+  readonly terminal = viewChild<ElementRef>('terminal');
 
   constructor() {}
 

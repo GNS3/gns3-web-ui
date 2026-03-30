@@ -35,16 +35,18 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   readonly project = input<Project>(undefined);
   readonly node = input<GNS3Node>(undefined);
 
+  // Inject services first
+  private consoleService = inject(NodeConsoleService);
+  private themeService = inject(ThemeService);
+  private cdr = inject(ChangeDetectorRef);
+  private contextMenuService = inject(XtermContextMenuService);
+  private xtermService = inject(XtermService);
+
+  // Now can use xtermService for terminal initialization
   public term: Terminal = new Terminal({
     cols: 100,
     rows: 32,
-    cursorBlink: true,
-    cursorStyle: 'block',
-    fontSize: 15,
-    fontFamily: 'courier-new, courier, monospace',
-    rightClickSelectsWord: true,
-    altClickMovesCursor: true,
-    scrollback: 1000,
+    ...this.xtermService.getDefaultTerminalOptions(),
   });
   public fitAddon: FitAddon = new FitAddon();
   private socket: WebSocket | null = null;
@@ -54,12 +56,6 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   readonly terminal = viewChild<ElementRef>('terminal');
-
-  private consoleService = inject(NodeConsoleService);
-  private themeService = inject(ThemeService);
-  private cdr = inject(ChangeDetectorRef);
-  private contextMenuService = inject(XtermContextMenuService);
-  private xtermService = inject(XtermService);
 
   constructor() {}
 
@@ -109,7 +105,6 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
 
     const attachAddon = new AttachAddon(this.socket);
     this.term.loadAddon(attachAddon);
-    this.term.options.cursorBlink = true;
     this.xtermService.initTerminal(this.term, this.fitAddon);
     this.fitAddon.fit();
     this.term.focus();
