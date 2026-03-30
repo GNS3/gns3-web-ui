@@ -87,7 +87,6 @@ export class StyleEditorDialogComponent implements OnInit {
       this.element.width = this.drawing.element.width;
       this.element.height = this.drawing.element.height;
       this.element.stroke = this.drawing.element.stroke;
-      console.log(this.drawing.element.stroke_dasharray, this.drawing.element.stroke_width);
       this.element.stroke_dasharray =
         this.drawing.element.stroke_dasharray == undefined && this.drawing.element.stroke_width == undefined
           ? ''

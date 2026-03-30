@@ -2,9 +2,9 @@
 
 <div class="modal-form-container">
   <mat-form-field class="form-field">
+    <mat-label>Fill color</mat-label>
     <input
       matInput
-      placeholder="Fill color"
       type="color"
       (ngModelChange)="changeTextColor($event)"
       [(ngModel)]="element.fill"
@@ -13,7 +13,8 @@
 
   <form [formGroup]="formGroup">
     <mat-form-field class="form-field">
-      <input formControlName="rotation" matInput placeholder="Rotation" type="text" />
+      <mat-label>Rotation</mat-label>
+      <input formControlName="rotation" matInput type="text" />
     </mat-form-field>
   </form>
 

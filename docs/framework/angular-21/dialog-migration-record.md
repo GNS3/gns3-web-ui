@@ -105,7 +105,7 @@
 | `show-node-action-dialog-panel` | 600px × 600px | InfoDialogComponent | Show Node |
 | `edit-text-action-dialog-panel` | 300px | TextEditorDialogComponent | Edit Text |
 | `edit-config-action-dialog-panel` | 600px × 500px | ConfigEditorDialogComponent | Edit Config |
-| `edit-style-action-dialog-panel` | 800px | StyleEditorDialogComponent | Edit Style |
+| `edit-style-action-dialog-panel` | 500px | StyleEditorDialogComponent | Edit Style |
 
 ---
 
@@ -173,6 +173,7 @@
 - simple-dialog-panel: 500px × 80vh
 - export-config-action-dialog-panel: 500px
 - import-config-action-dialog-panel: 500px
+- edit-style-action-dialog-panel: 500px
 
 ### 600px Series
 - edit-config-action-dialog-panel: 600px × 500px
@@ -187,7 +188,6 @@
 ### 800px Series
 - configurator-dialog-panel: 800px × 80vh
 - docker-configurator-dialog-panel: 800px
-- edit-style-action-dialog-panel: 800px
 
 ### 1000px Series
 - add-ace-dialog-panel: 1000px

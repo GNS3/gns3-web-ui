@@ -30,7 +30,7 @@ export class EditStyleActionComponent implements OnChanges {
 
   editStyle() {
     const dialogRef = this.dialog.open(StyleEditorDialogComponent, {
-      panelClass: ['base-dialog-panel', 'edit-style-action-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'edit-style-action-dialog-panel'],
       autoFocus: false,
       disableClose: false,
     });

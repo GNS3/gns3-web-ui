@@ -4,10 +4,10 @@
   <form [formGroup]="formGroup">
     @if (element.fill !== undefined) {
     <mat-form-field class="form-field">
+      <mat-label>Fill color</mat-label>
       <input
         matInput
         [ngModelOptions]="{ standalone: true }"
-        placeholder="Fill color"
         type="color"
         [(ngModel)]="element.fill"
       />
@@ -15,21 +15,22 @@
     }
 
     <mat-form-field class="form-field">
+      <mat-label>Border color</mat-label>
       <input
         matInput
         [ngModelOptions]="{ standalone: true }"
-        placeholder="Border color"
         type="color"
         [(ngModel)]="element.stroke"
       />
     </mat-form-field>
 
     <mat-form-field class="form-field">
-      <input matInput formControlName="borderWidth" placeholder="Border width" type="number" min="0" max="100" />
+      <mat-label>Border width</mat-label>
+      <input matInput formControlName="borderWidth" type="number" min="0" max="100" />
     </mat-form-field>
     <mat-form-field class="form-field">
+      <mat-label>Border style</mat-label>
       <mat-select
-        placeholder="Border style"
         [ngModelOptions]="{ standalone: true }"
         [(ngModel)]="element.stroke_dasharray"
       >
@@ -41,10 +42,10 @@
 
     @if (element.width !== undefined) {
     <mat-form-field class="form-field">
+      <mat-label>Width</mat-label>
       <input
         matInput
         [ngModelOptions]="{ standalone: true }"
-        placeholder="Width"
         min="0"
         type="number"
         [(ngModel)]="element.width"
@@ -52,10 +53,10 @@
     </mat-form-field>
     } @if (element.height !== undefined) {
     <mat-form-field class="form-field">
+      <mat-label>Height</mat-label>
       <input
         matInput
         [ngModelOptions]="{ standalone: true }"
-        placeholder="Height"
         min="0"
         type="number"
         [(ngModel)]="element.height"
@@ -63,10 +64,10 @@
     </mat-form-field>
     } @if (element.rx !== undefined) {
     <mat-form-field class="form-field">
+      <mat-label>Corner radius</mat-label>
       <input
         matInput
         [ngModelOptions]="{ standalone: true }"
-        placeholder="Corner radius"
         type="number"
         min="0"
         max="100"
@@ -76,7 +77,8 @@
     }
 
     <mat-form-field class="form-field">
-      <input matInput formControlName="rotation" placeholder="Rotation" type="number" />
+      <mat-label>Rotation</mat-label>
+      <input matInput formControlName="rotation" type="number" />
     </mat-form-field>
   </form>
 </div>

@@ -955,15 +955,10 @@ h2[mat-dialog-title] {
   }
 }
 
-// Edit Style Action - 800px
+// Edit Style Action - 500px
+// Inherits from base-dialog-panel + simple-dialog-panel
 .edit-style-action-dialog-panel {
-  --mat-dialog-container-max-width: 800px;
-
-  mat-dialog-container,
-  .mat-mdc-dialog-container {
-    width: 800px;
-    max-width: 800px;
-  }
+  --mat-dialog-container-max-width: 500px;
 }
 
 /* =============================================
