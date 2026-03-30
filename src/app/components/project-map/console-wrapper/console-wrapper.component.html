@@ -3,10 +3,10 @@
   #consoleWrapper
   class="consoleWrapper"
   [ngClass]="{
-    lightTheme: isLightThemeEnabled,
-    'console-active': isConsoleActive,
-    'is-minimized': isMinimized,
-    'is-dragging': isDragging
+    lightTheme: isLightThemeEnabled(),
+    'console-active': isConsoleActive(),
+    'is-minimized': isMinimized(),
+    'is-dragging': isDragging()
   }"
   mwlResizable
   [validateResize]="validate"
@@ -20,44 +20,38 @@
     class="resize-handle resize-handle-top"
     mwlResizeHandle
     [resizeEdges]="{ top: true }"
-    [hidden]="isMinimized"
+    [hidden]="isMinimized()"
   ></div>
   <div
     class="resize-handle resize-handle-right"
     mwlResizeHandle
     [resizeEdges]="{ right: true }"
-    [hidden]="isMinimized"
+    [hidden]="isMinimized()"
   ></div>
   <div
     class="resize-handle resize-handle-bottom"
     mwlResizeHandle
     [resizeEdges]="{ bottom: true }"
-    [hidden]="isMinimized"
+    [hidden]="isMinimized()"
   ></div>
   <div
     class="resize-handle resize-handle-left"
     mwlResizeHandle
     [resizeEdges]="{ left: true }"
-    [hidden]="isMinimized"
+    [hidden]="isMinimized()"
   ></div>
 
-  <!-- Taskbar Icon Mode (shown when minimized, click anywhere to restore) -->
-  <div class="taskbar-icon" [hidden]="!isMinimized" (click)="minimize(false)" title="Click to restore">
-    <mat-icon class="taskbar-icon__icon">terminal</mat-icon>
-    <span class="taskbar-icon__label">{{ getActiveTabName() }}</span>
-  </div>
-
-  <!-- Normal Mode (hidden when minimized) -->
-  <div class="console-content" [hidden]="isMinimized">
+  <!-- Console Content -->
+  <div class="console-content">
     <!-- Devices Panel -->
     <app-console-devices-panel
-      [isLightTheme]="isLightThemeEnabled"
+      [isLightTheme]="isLightThemeEnabled()"
       (deviceSelected)="onDeviceSelected($event)"
     ></app-console-devices-panel>
 
     <!-- Console Area -->
     <div class="console-area">
-      <div class="consoleHeader" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }">
+      <div class="consoleHeader" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled() }">
         <mat-tab-group
           class="console-wrapper__tabs"
           [selectedIndex]="selected.value"
@@ -82,7 +76,7 @@
         </mat-tab-group>
 
         <div class="console-header-actions">
-          @if (!isMaximized) {
+          @if (!isMaximized()) {
           <button
             mat-icon-button
             (mousedown)="$event.stopPropagation()"
@@ -91,7 +85,7 @@
           >
             <mat-icon>fullscreen</mat-icon>
           </button>
-          } @if (isMaximized) {
+          } @if (isMaximized()) {
           <button mat-icon-button (mousedown)="$event.stopPropagation()" (click)="toggleMaximize()" title="Restore">
             <mat-icon>fullscreen_exit</mat-icon>
           </button>
@@ -114,4 +108,10 @@
       }
     </div>
   </div>
+</div>
+
+<!-- Taskbar Icon (always visible, fixed in bottom-left corner) -->
+<div class="taskbar-icon" (click)="toggleMinimize()" [title]="isMinimized() ? 'Click to restore' : 'Click to minimize'">
+  <mat-icon class="taskbar-icon__icon">terminal</mat-icon>
+  <span class="taskbar-icon__label">{{ getActiveTabName() }}</span>
 </div>

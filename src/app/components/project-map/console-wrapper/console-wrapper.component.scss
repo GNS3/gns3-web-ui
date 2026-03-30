@@ -51,34 +51,34 @@
   }
 
   /* =============================================
-  // Taskbar Icon Mode (Minimized State)
+  // Minimized State - hide console window
   // ============================================= */
   &.is-minimized {
-    height: 48px !important;
-    width: 180px !important;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
-      0 0 0 1px var(--mat-sys-outline-variant);
-
-    &.console-active {
-      box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent),
-        0 0 0 2px var(--mat-sys-primary);
-    }
+    display: none;
   }
 }
 
 /* =============================================
-// Taskbar Icon Styles
+// Taskbar Icon Styles (always visible, fixed position)
 // ============================================= */
 .taskbar-icon {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 901; // Above console (900) but below AI Chat (1000) and context menu (10000)
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  height: 100%;
+  height: 48px;
+  width: 180px;
   cursor: pointer;
   user-select: none;
   transition: background-color 150ms var(--mat-sys-motion-easing-linear);
+  background: var(--mat-sys-surface);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
+    0 0 0 1px var(--mat-sys-outline-variant);
 
   &:hover {
     background: var(--mat-sys-hover-state-layer);
@@ -210,7 +210,7 @@
 .mat-tab-label.mat-tab-label-active {
   border-bottom: 2px solid var(--mat-sys-primary);
   box-sizing: border-box;
-  font-weight: 1200;
+  font-weight: 700;
 }
 
 .mat-ink-bar {

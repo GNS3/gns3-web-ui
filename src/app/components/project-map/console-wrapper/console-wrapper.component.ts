@@ -14,6 +14,8 @@ import {
   viewChild,
   ElementRef,
   Renderer2,
+  signal,
+  computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, UntypedFormControl } from '@angular/forms';
@@ -57,6 +59,11 @@ import { LogConsoleComponent } from '../log-console/log-console.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy {
+  // Constants for magic numbers
+  private readonly CONSOLE_HEADER_HEIGHT = 53;
+  private readonly DEFAULT_WIDTH = 848;
+  private readonly DEFAULT_HEIGHT = 600;
+
   private destroy$ = new Subject<void>();
   private themeSubscription: Subscription | null = null;
   readonly controller = input<Controller>(undefined);
@@ -68,16 +75,26 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   filters: string[] = ['all', 'errors', 'warnings', 'info', 'map updates', 'controller requests'];
   selectedFilter: string = 'all';
 
+  // Window state (public, but only modified internally)
   public style: WindowStyle = {};
   public styleInside: object = { height: `120px` };
-  public isDragging: boolean = false;
-  public isLightThemeEnabled: boolean = false;
-  public isMinimized: boolean = false;
-  public isMaximized: boolean = false;
-  public isConsoleActive: boolean = false;
 
-  public resizedWidth: number = 848;
-  public resizedHeight: number = 600;
+  // UI state using signals
+  private isDraggingSignal = signal(false);
+  private isMinimizedSignal = signal(false);
+  private isMaximizedSignal = signal(false);
+  private isConsoleActiveSignal = signal(false);
+  private isLightThemeEnabledSignal = signal(false);
+
+  // Public readonly access to signal values
+  public readonly isDragging = this.isDraggingSignal.asReadonly();
+  public readonly isMinimized = this.isMinimizedSignal.asReadonly();
+  public readonly isMaximized = this.isMaximizedSignal.asReadonly();
+  public readonly isConsoleActive = this.isConsoleActiveSignal.asReadonly();
+  public readonly isLightThemeEnabled = this.isLightThemeEnabledSignal.asReadonly();
+
+  public resizedWidth: number = this.DEFAULT_WIDTH;
+  public resizedHeight: number = this.DEFAULT_HEIGHT;
 
   private consoleService = inject(NodeConsoleService);
   private themeService = inject(ThemeService);
@@ -105,13 +122,11 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   readonly consoleWrapper = viewChild<ElementRef>('consoleWrapper');
 
   ngOnInit() {
-    this.themeService.getActualTheme() === 'light'
-      ? (this.isLightThemeEnabled = true)
-      : (this.isLightThemeEnabled = false);
+    this.isLightThemeEnabledSignal.set(this.themeService.getActualTheme() === 'light');
 
     // Subscribe to theme changes
     this.themeSubscription = this.themeService.themeChanged.subscribe(() => {
-      this.isLightThemeEnabled = this.themeService.getActualTheme() === 'light';
+      this.isLightThemeEnabledSignal.set(this.themeService.getActualTheme() === 'light');
       this.cdr.markForCheck();
     });
 
@@ -140,14 +155,14 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   minimize(value: boolean) {
-    this.isMinimized = value;
+    this.isMinimizedSignal.set(value);
     if (!value) {
       // Restore from minimized state - use saved pre-minimize position
       if (this.preMinimizeStyle) {
         const savedLeft = this.preMinimizeStyle.left || '80px';
         const savedBottom = this.preMinimizeStyle.bottom || '20px';
 
-        if (this.isMaximized) {
+        if (this.isMaximizedSignal()) {
           // Restore to maximized state
           const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
           const windowHeight = window.innerHeight;
@@ -172,8 +187,8 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
         this.preMinimizeStyle = null;
       } else {
         // No saved state, use defaults
-        const currentLeft = (this.style as WindowStyle).left || '80px';
-        const currentBottom = (this.style as WindowStyle).bottom || '20px';
+        const currentLeft = this.style.left || '80px';
+        const currentBottom = this.style.bottom || '20px';
 
         this.updateStyle({
           bottom: currentBottom,
@@ -182,23 +197,35 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
           height: `${this.resizedHeight}px`,
         });
       }
+
+      // Auto-focus to terminal after restoring window
+      const selectedIndex = this.selected.value;
+      if (selectedIndex < this.nodes.length) {
+        // Device console - focus xterm
+        this.focusTerminalAfterRender(selectedIndex);
+      } else if (selectedIndex === this.nodes.length) {
+        // GNS3 console - focus input
+        this.focusGns3ConsoleInput();
+      }
     } else {
       // Save current position before minimizing
       this.preMinimizeStyle = { ...this.style };
-
-      // Minimize to taskbar icon mode - compact width and height
-      this.updateStyle({ bottom: '20px', left: '20px', width: '180px', height: '48px' });
+      // Console will be hidden by CSS (display: none)
     }
   }
 
+  toggleMinimize() {
+    this.minimize(!this.isMinimizedSignal());
+  }
+
   toggleMaximize() {
-    this.isMaximized = !this.isMaximized;
-    if (this.isMaximized) {
-      // Maximize height only, keep width unchanged (848px)
+    this.isMaximizedSignal.set(!this.isMaximizedSignal());
+    if (this.isMaximizedSignal()) {
+      // Maximize height only, keep width unchanged
       const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
       const windowHeight = window.innerHeight;
       const newHeight = windowHeight - toolbarHeight - 20;
-      const currentLeft = (this.style as WindowStyle).left || '80px';
+      const currentLeft = this.style.left || '80px';
       this.updateStyle({
         bottom: '0px',
         left: currentLeft,
@@ -208,18 +235,18 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
       // Notify resize
       this.consoleService.consoleResized.next({
         width: this.resizedWidth,
-        height: newHeight - 53,
+        height: newHeight - this.CONSOLE_HEADER_HEIGHT,
       });
       // Also notify after a delay to ensure DOM has been updated
       setTimeout(() => {
         this.consoleService.consoleResized.next({
           width: this.resizedWidth,
-          height: newHeight - 53,
+          height: newHeight - this.CONSOLE_HEADER_HEIGHT,
         });
       }, 50);
     } else {
       // Restore to normal size
-      const currentLeft = (this.style as WindowStyle).left || '80px';
+      const currentLeft = this.style.left || '80px';
       this.updateStyle({
         bottom: '20px',
         left: currentLeft,
@@ -229,13 +256,13 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
       // Notify resize
       this.consoleService.consoleResized.next({
         width: this.resizedWidth,
-        height: this.resizedHeight - 53,
+        height: this.resizedHeight - this.CONSOLE_HEADER_HEIGHT,
       });
       // Also notify after a delay to ensure DOM has been updated
       setTimeout(() => {
         this.consoleService.consoleResized.next({
           width: this.resizedWidth,
-          height: this.resizedHeight - 53,
+          height: this.resizedHeight - this.CONSOLE_HEADER_HEIGHT,
         });
       }, 50);
     }
@@ -424,7 +451,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   @HostListener('window:keydown.alt.9', ['$event'])
   handleTabShortcut(event: KeyboardEvent): void {
     // Only handle shortcuts when console is active
-    if (!this.isConsoleActive) {
+    if (!this.isConsoleActiveSignal()) {
       return;
     }
 
@@ -450,7 +477,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   @HostListener('document:consoleTabShortcut', ['$event'])
   onXtermTabShortcut(event: CustomEvent): void {
     // Only handle shortcuts when console is active
-    if (!this.isConsoleActive) {
+    if (!this.isConsoleActiveSignal()) {
       return;
     }
 
@@ -465,7 +492,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
    * Mark console as active when clicked
    */
   onConsoleActivate(): void {
-    this.isConsoleActive = true;
+    this.isConsoleActiveSignal.set(true);
     this.cdr.markForCheck();
   }
 
@@ -477,9 +504,10 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     // Use setTimeout to ensure click event propagates first
     setTimeout(() => {
       const consoleElement = document.querySelector('.consoleWrapper');
-      if (consoleElement && !consoleElement.contains(event.target as any)) {
-        if (this.isConsoleActive) {
-          this.isConsoleActive = false;
+      const target = event.target as unknown as globalThis.Node;
+      if (consoleElement && !consoleElement.contains(target)) {
+        if (this.isConsoleActiveSignal()) {
+          this.isConsoleActiveSignal.set(false);
           this.consoleDeactivated.emit();
           this.cdr.markForCheck();
         }
@@ -538,11 +566,11 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     });
   }
 
-  enableScroll(e) {
+  enableScroll(e: Event): void {
     this.mapSettingsService.isScrollDisabled.next(false);
   }
 
-  disableScroll(e) {
+  disableScroll(e: Event): void {
     this.mapSettingsService.isScrollDisabled.next(true);
   }
 
@@ -553,15 +581,14 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   @HostListener('window:resize')
   onWindowResize(): void {
     // Skip if minimized
-    if (this.isMinimized) {
+    if (this.isMinimizedSignal()) {
       return;
     }
 
     // Re-constrain window position to stay within viewport
-    this.style = this.boundaryService.constrainWindowPosition(this.style as WindowStyle);
+    this.style = this.boundaryService.constrainWindowPosition(this.style);
   }
 
-  /**
   /**
    * Cleanup on component destroy
    */
@@ -576,18 +603,18 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     // Use requestAnimationFrame to ensure DOM is fully rendered
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        if (this.isMaximized) {
+        if (this.isMaximizedSignal()) {
           const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
           const windowHeight = window.innerHeight;
           const newHeight = windowHeight - toolbarHeight - 20;
           this.consoleService.consoleResized.next({
             width: this.resizedWidth,
-            height: newHeight - 53,
+            height: newHeight - this.CONSOLE_HEADER_HEIGHT,
           });
         } else {
           this.consoleService.consoleResized.next({
             width: this.resizedWidth,
-            height: this.resizedHeight - 53,
+            height: this.resizedHeight - this.CONSOLE_HEADER_HEIGHT,
           });
         }
       });
@@ -614,7 +641,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
         tap((e) => {
           // Prevent default and prepare for drag
           e.preventDefault();
-          this.isDragging = true;
+          this.isDraggingSignal.set(true);
           this.cdr.markForCheck(); // Trigger CD once for class update
 
           // Record starting positions
@@ -652,7 +679,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
 
         // Constrain to viewport (respecting toolbar)
         const width = this.resizedWidth;
-        const height = this.isMinimized ? 48 : this.resizedHeight;
+        const height = this.isMinimizedSignal() ? 48 : this.resizedHeight;
         const maxLeft = window.innerWidth - width;
         const topOffset = this.boundaryService.getConfigValue().topOffset || 0;
         const maxBottom = window.innerHeight - height - topOffset;
@@ -674,7 +701,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
    * Handle drag end - restore iframe pointer events and save state
    */
   private onDragEnd(): void {
-    this.isDragging = false;
+    this.isDraggingSignal.set(false);
     this.setIframePointerEvents('');
     this.cdr.markForCheck(); // Trigger CD once to remove is-dragging class
     this.saveWindowState();
@@ -712,12 +739,12 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
       const savedState = localStorage.getItem(STORAGE_KEY);
       if (savedState) {
         const state = JSON.parse(savedState);
-        this.resizedWidth = state.width || 848;
-        this.resizedHeight = state.height || 600;
-        this.isMaximized = state.isMaximized || false;
+        this.resizedWidth = state.width || this.DEFAULT_WIDTH;
+        this.resizedHeight = state.height || this.DEFAULT_HEIGHT;
+        this.isMaximizedSignal.set(state.isMaximized || false);
 
         // Apply window state
-        if (this.isMaximized) {
+        if (this.isMaximizedSignal()) {
           // Restore to maximized state
           const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
           const windowHeight = window.innerHeight;
@@ -739,11 +766,21 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
         }
       } else {
         // Default state
-        this.style = { bottom: '20px', left: '80px', width: '848px', height: '600px' };
+        this.style = {
+          bottom: '20px',
+          left: '80px',
+          width: `${this.DEFAULT_WIDTH}px`,
+          height: `${this.DEFAULT_HEIGHT}px`,
+        };
       }
     } catch (e) {
       // Error reading from localStorage, use defaults
-      this.style = { bottom: '20px', left: '80px', width: '848px', height: '600px' };
+      this.style = {
+        bottom: '20px',
+        left: '80px',
+        width: `${this.DEFAULT_WIDTH}px`,
+        height: `${this.DEFAULT_HEIGHT}px`,
+      };
     }
   }
 
@@ -756,9 +793,9 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
       const state = {
         width: this.resizedWidth,
         height: this.resizedHeight,
-        bottom: (this.style as WindowStyle).bottom,
-        left: (this.style as WindowStyle).left,
-        isMaximized: this.isMaximized,
+        bottom: this.style.bottom,
+        left: this.style.left,
+        isMaximized: this.isMaximizedSignal(),
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch (e) {
