@@ -4,7 +4,7 @@
   <mat-autocomplete
     #auto="matAutocomplete"
     [displayWith]="displayFn()"
-    (optionSelected)="onSelection.emit($event.option.value)"
+    (optionSelected)="selectionChange.emit($event.option.value)"
   >
     @for (elt of filteredData | async; track elt) {
     <mat-option [value]="elt">

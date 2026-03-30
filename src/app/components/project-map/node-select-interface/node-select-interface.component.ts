@@ -88,7 +88,7 @@ export class NodeSelectInterfaceComponent implements OnInit {
   }
 
   public chooseInterface(port: Port) {
-    this.onChooseInterface.emit({
+    this.chooseInterfaceChange.emit({
       node: this.node,
       port: port,
     });

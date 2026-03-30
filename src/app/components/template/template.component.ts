@@ -212,7 +212,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
       y: finalY,
     };
 
-    this.onNodeCreation.emit(nodeAddedEvent);
+    this.nodeCreationChange.emit(nodeAddedEvent);
   }
 
   openDialog() {
@@ -227,7 +227,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((nodeAddedEvent: NodeAddedEvent) => {
       if (nodeAddedEvent !== null) {
-        this.onNodeCreation.emit(nodeAddedEvent);
+        this.nodeCreationChange.emit(nodeAddedEvent);
       }
     });
   }
