@@ -404,7 +404,7 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.mat-mdc-menu-p
 // Settings Component Expansion Panel Styles
 // These styles target mat-expansion-panel inside .settings__card
 // Required here because Angular Material internals cannot be styled
-// via component-scoped styles without ::ng-deep
+// via component-scoped styles
 // ============================================= */
 .settings__card {
   .mat-expansion-panel {
