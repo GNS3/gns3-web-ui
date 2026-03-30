@@ -92,6 +92,9 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   private dragStartLeft = 0;
   private dragStartBottom = 0;
 
+  // Store pre-minimize state for position restoration
+  private preMinimizeStyle: WindowStyle | null = null;
+
   constructor() {}
 
   nodes: Node[] = [];
@@ -139,23 +142,39 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   minimize(value: boolean) {
     this.isMinimized = value;
     if (!value) {
-      // Restore from minimized state - preserve current left and bottom positions
-      const currentLeft = (this.style as WindowStyle).left || '80px';
-      const currentBottom = (this.style as WindowStyle).bottom || '20px';
+      // Restore from minimized state - use saved pre-minimize position
+      if (this.preMinimizeStyle) {
+        const savedLeft = this.preMinimizeStyle.left || '80px';
+        const savedBottom = this.preMinimizeStyle.bottom || '20px';
 
-      if (this.isMaximized) {
-        // Restore to maximized state
-        const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
-        const windowHeight = window.innerHeight;
-        const newHeight = windowHeight - toolbarHeight - 20;
-        this.updateStyle({
-          bottom: '0px',
-          left: currentLeft,
-          width: `${this.resizedWidth}px`,
-          height: `${newHeight}px`,
-        });
+        if (this.isMaximized) {
+          // Restore to maximized state
+          const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
+          const windowHeight = window.innerHeight;
+          const newHeight = windowHeight - toolbarHeight - 20;
+          this.updateStyle({
+            bottom: '0px',
+            left: savedLeft,
+            width: `${this.resizedWidth}px`,
+            height: `${newHeight}px`,
+          });
+        } else {
+          // Restore to normal state with saved position
+          this.updateStyle({
+            bottom: savedBottom,
+            left: savedLeft,
+            width: `${this.resizedWidth}px`,
+            height: `${this.resizedHeight}px`,
+          });
+        }
+
+        // Clear saved state after restoration
+        this.preMinimizeStyle = null;
       } else {
-        // Restore to normal state
+        // No saved state, use defaults
+        const currentLeft = (this.style as WindowStyle).left || '80px';
+        const currentBottom = (this.style as WindowStyle).bottom || '20px';
+
         this.updateStyle({
           bottom: currentBottom,
           left: currentLeft,
@@ -164,6 +183,9 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
         });
       }
     } else {
+      // Save current position before minimizing
+      this.preMinimizeStyle = { ...this.style };
+
       // Minimize to taskbar icon mode - compact width and height
       this.updateStyle({ bottom: '20px', left: '20px', width: '180px', height: '48px' });
     }
