@@ -140,11 +140,10 @@ export class MyComponent { }
 
 **Zoneless Change Detection Rules**:
 
-- **OnPush is MANDATORY** for all components (105/253 already migrated)
+- **OnPush is MANDATORY** for all components
 - **Zone.js is NOT used** - All change detection is explicit
 - **Async operations require `markForCheck()`** - No automatic detection
-- **100% Zoneless compatible** - All 324 components/services verified
-- Migration progress tracked in `docs/angular-21/component-migration-tracker.md`
+- Migration progress tracked in `docs/framework/angular-21/migration-progress.md`
 
 **Explicit Change Detection Pattern**:
 
@@ -576,8 +575,8 @@ Full documentation available in `/docs`:
 |----------|-------------|
 | `docs/README.md` | Documentation index |
 | `docs/ai-chat-complete-guide.md` | AI Chat feature implementation |
-| `docs/angular-21/phased-migration-plan.md` | Migration strategy |
-| `docs/angular-21/model-input-signals.md` | Signal input patterns |
+| `docs/framework/angular-21/zoneless-guide.md` | Zoneless patterns & known issues |
+| `docs/framework/angular-21/migration-progress.md` | ngModel migration progress |
 | `docs/angular21-CSS/01-css-coding-standards.md` | CSS coding standards |
 | `docs/angular21-CSS/02-material3-css-variables.md` | Material 3 variable reference |
 | `docs/dialog-style-isolation-guide.md` | Dialog styling guide |
