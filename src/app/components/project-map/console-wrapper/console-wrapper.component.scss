@@ -23,6 +23,7 @@
   border-radius: 4px;
   outline: none;
   transition: box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 900; // Ensure console stays above most content but below AI Chat (1000) and context menu (10000)
 
   // GPU acceleration hint for smooth dragging
   will-change: left, bottom;
