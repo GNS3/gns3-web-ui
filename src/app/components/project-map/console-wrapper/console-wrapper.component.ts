@@ -650,11 +650,12 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
         let newLeft = this.dragStartLeft + deltaX;
         let newBottom = this.dragStartBottom - deltaY;
 
-        // Constrain to viewport
+        // Constrain to viewport (respecting toolbar)
         const width = this.resizedWidth;
         const height = this.isMinimized ? 48 : this.resizedHeight;
         const maxLeft = window.innerWidth - width;
-        const maxBottom = window.innerHeight - height;
+        const topOffset = this.boundaryService.getConfigValue().topOffset || 0;
+        const maxBottom = window.innerHeight - height - topOffset;
 
         newLeft = Math.max(0, Math.min(maxLeft, newLeft));
         newBottom = Math.max(0, Math.min(maxBottom, newBottom));
