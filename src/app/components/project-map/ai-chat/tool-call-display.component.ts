@@ -12,20 +12,24 @@ import { ToolCall } from '@models/ai-chat.interface';
   imports: [MatIconModule, MatProgressSpinnerModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
+    @if (toolCall()?.function?.name) {
     <div
       class="inline-tool-call"
       (click)="onViewDetails()"
       [title]="getStatusText()"
-      *ngIf="toolCall()?.function?.name"
     >
       <mat-icon class="tool-icon">build</mat-icon>
       <span class="tool-name">{{ toolCall()?.function?.name }}</span>
       <span class="tool-status" [class.status-receiving]="isReceiving" [class.status-executing]="isExecuting()">
-        <mat-spinner *ngIf="isReceiving || isExecuting()" diameter="12"></mat-spinner>
-        <span *ngIf="!isReceiving && !isExecuting()" class="status-text">{{ getStatusText() }}</span>
+        @if (isReceiving || isExecuting()) {
+        <mat-spinner diameter="12"></mat-spinner>
+        } @else {
+        <span class="status-text">{{ getStatusText() }}</span>
+        }
       </span>
       <mat-icon class="expand-icon">open_in_new</mat-icon>
     </div>
+    }
   `,
   styles: [
     `

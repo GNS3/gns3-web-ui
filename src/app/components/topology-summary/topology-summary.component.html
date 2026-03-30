@@ -62,7 +62,7 @@
                 }
                 {{ node.name }}
               </div>
-              @if (node.console != null && node.console != undefined && node.console_type != 'none') {
+              @if (node.console !== null && node.console !== undefined && node.console_type !== 'none') {
               <div>{{ node.console_type }}://{{ node.console_host }}:{{ node.console }}</div>
               } @if (node.console === null || node.console === undefined || node.console_type === 'none') {
               <div>none</div>

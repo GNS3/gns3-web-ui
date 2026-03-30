@@ -66,7 +66,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
 
   readonly controller = input<Controller>(undefined);
   readonly project = input<Project>(undefined);
-  @Output() onNodeCreation = new EventEmitter<any>();
+  @Output() nodeCreationChange = new EventEmitter<any>();
   overlay;
   templates: Template[] = [];
   filteredTemplates: Template[] = [];

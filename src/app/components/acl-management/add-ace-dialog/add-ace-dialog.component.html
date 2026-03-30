@@ -56,7 +56,7 @@
       [eltType]="'Users'"
       [displayFn]="displayFnUser"
       [filterFn]="_filterUser"
-      (onSelection)="userSelection($event)"
+      (selectionChange)="userSelection($event)"
     >
     </app-autocomplete>
     } @if (form.type.value === 'group') {
@@ -65,7 +65,7 @@
       [eltType]="'Groups'"
       [displayFn]="displayFn"
       [filterFn]="_filter"
-      (onSelection)="groupSelection($event)"
+      (selectionChange)="groupSelection($event)"
     >
     </app-autocomplete>
     }
@@ -75,7 +75,7 @@
       [eltType]="'Roles'"
       [displayFn]="displayFn"
       [filterFn]="_filter"
-      (onSelection)="roleSelection($event)"
+      (selectionChange)="roleSelection($event)"
     >
     </app-autocomplete>
 

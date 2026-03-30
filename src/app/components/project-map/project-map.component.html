@@ -15,7 +15,7 @@
     <div class="project-titlebar-controls">
       @if (!readonly) {
       <div class="menu-button-group primary-controls">
-        <app-template [controller]="controller" [project]="project" (onNodeCreation)="onNodeCreation($event)">
+        <app-template [controller]="controller" [project]="project" (nodeCreationChange)="onNodeCreation($event)">
         </app-template>
         <button
           matTooltip="Add a link"

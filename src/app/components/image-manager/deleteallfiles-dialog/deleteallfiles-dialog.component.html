@@ -25,7 +25,7 @@
     <ul class="delete-files__list">
       @for (message of deleteFliesDetails; track $index; let i = $index) {
       <li class="delete-files__list-item" [class.delete-files__list-item--error]="message?.error?.message">
-        @if (message != null) {
+        @if (message !== null) {
         {{ i + 1 }}. {{ message?.error?.message }}
         }
       </li>

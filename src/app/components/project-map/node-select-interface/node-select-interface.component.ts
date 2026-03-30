@@ -26,7 +26,7 @@ import { Port } from '@models/port';
 })
 export class NodeSelectInterfaceComponent implements OnInit {
   readonly links = input<Link[]>(undefined);
-  @Output() onChooseInterface = new EventEmitter<any>();
+  @Output() chooseInterfaceChange = new EventEmitter<any>();
 
   readonly contextMenu = viewChild(MatMenuTrigger);
 

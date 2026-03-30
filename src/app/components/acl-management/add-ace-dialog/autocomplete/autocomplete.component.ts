@@ -24,7 +24,7 @@ export class AutocompleteComponent<T> implements OnChanges {
   readonly eltType = input<string>(undefined);
   readonly displayFn = input<(value: T) => string>(undefined);
   readonly filterFn = input<(value: string, data: T[]) => T[]>(undefined);
-  @Output() onSelection: EventEmitter<T> = new EventEmitter<T>();
+  @Output() selectionChange: EventEmitter<T> = new EventEmitter<T>();
 
   constructor() {}
 

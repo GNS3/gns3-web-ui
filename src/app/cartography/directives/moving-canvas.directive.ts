@@ -6,7 +6,7 @@ import { Context } from '../models/context';
 
 @Directive({
   standalone: true,
-  selector: '[movingCanvas]',
+  selector: '[appMovingCanvas]',
 })
 export class MovingCanvasDirective implements OnInit, OnDestroy {
   private mouseupListener: Function;

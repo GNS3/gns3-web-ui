@@ -5,7 +5,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Appliance } from '@models/appliance';
 
 @Component({
-  selector: 'appliance-info-dialog',
+  selector: 'app-appliance-info-dialog',
   templateUrl: 'appliance-info-dialog.component.html',
   imports: [MatDialogModule, MatButtonModule, MatProgressSpinnerModule],
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -7,7 +7,7 @@ import { Context } from '../models/context';
 
 @Directive({
   standalone: true,
-  selector: '[zoomingCanvas]',
+  selector: '[appZoomingCanvas]',
 })
 export class ZoomingCanvasDirective implements OnInit, OnDestroy {
   private wheelListener: Function;

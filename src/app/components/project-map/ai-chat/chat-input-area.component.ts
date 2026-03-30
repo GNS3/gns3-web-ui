@@ -50,10 +50,11 @@ import { OverlayContainer } from '@angular/cdk/overlay';
         ></textarea>
 
         <button class="send-button" (click)="sendMessage()" [disabled]="!canSend || disabled()" matRipple>
-          <mat-icon *ngIf="!disabled(); else loadingIcon">send</mat-icon>
-          <ng-template #loadingIcon>
-            <mat-icon class="loading-spinner">refresh</mat-icon>
-          </ng-template>
+          @if (!disabled()) {
+          <mat-icon>send</mat-icon>
+          } @else {
+          <mat-icon class="loading-spinner">refresh</mat-icon>
+          }
         </button>
 
         <!-- Model Selector Chip -->

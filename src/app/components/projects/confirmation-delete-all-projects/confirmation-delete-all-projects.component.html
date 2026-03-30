@@ -22,7 +22,7 @@
   <h5>Project can't be deleted because image used in one or more template.</h5>
   @for (message of deleteFliesDetails(); track $index; let i = $index) {
   <p [ngClass]="{ 'deleted-error-text': message?.error?.message }">
-    @if (message != null) {<span>{{ i + 1 }}. {{ message?.error?.message }}</span
+    @if (message !== null) {<span>{{ i + 1 }}. {{ message?.error?.message }}</span
     >}
   </p>
   } } @if (fileNotDeleted().length > 0) {
