@@ -173,7 +173,14 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toolbarVisibility: boolean = true;
   public symbolScaling: boolean = true;
   public isAIChatVisible: boolean = false;
-  readonly mapBgClass = computed(() => ({ [`gns3-map-bg-${this.themeService.savedMapTheme}`]: true }));
+  readonly mapBgClass = computed(() => {
+    const mapTheme = this.themeService.savedMapTheme;
+    if (mapTheme === 'auto') {
+      const themeType = this.themeService.isDarkMode() ? 'dark' : 'light';
+      return { [`gns3-map-bg-${themeType}`]: true };
+    }
+    return { [`gns3-map-bg-${mapTheme}`]: true };
+  });
   private instance: ComponentRef<TopologySummaryComponent>;
   // private instance: any
 

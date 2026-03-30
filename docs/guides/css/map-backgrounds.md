@@ -1,6 +1,6 @@
 # Map Backgrounds Guide
 
-**Last Updated**: 2026-03-30
+**Last Updated**: 2026-03-31
 **Status**: ✅ Active
 
 ---
@@ -11,9 +11,9 @@ GNS3 project map supports 9 background presets that define the visual appearance
 
 ### Available Presets
 
-| Category | Key | Visual Style | Example Colors |
-|----------|-----|--------------|----------------|
-| Auto | `auto` | Follows global theme | Light: #FAFAFA, Dark: #424242 |
+| Category | Key | Visual Style | Resolves To |
+|----------|-----|--------------|-------------|
+| Auto | `auto` | Follows global theme | Light → `.gns3-map-bg-light` (#FAFAFA)<br>Dark → `.gns3-map-bg-dark` (#424242) |
 | Light | `light-1` | Cyan Sky radial gradient | #B2EBF2 → #E0F7FA |
 | Light | `light-2` | Blue Sky radial gradient | #BBDEFB → #E3F2FD |
 | Light | `light-3` | Cloud Gray radial gradient | #F5F5F5 → #FAFAFA |
@@ -47,6 +47,16 @@ GNS3 project map supports 9 background presets that define the visual appearance
 │  .savedMapTheme │
 └────────┬────────┘
          │ computed signal tracks
+         ▼
+┌─────────────────────────────┐
+│  Component Logic             │
+│  ├─ if 'auto'               │
+│  │   └─ check isDarkMode()  │
+│  │       ├─ true  → 'dark'  │
+│  │       └─ false → 'light' │
+│  └─ else use saved value    │
+└────────┬─────────────────────┘
+         │ returns CSS class object
          ▼
 ┌─────────────────┐
 │  Component      │
@@ -212,22 +222,32 @@ SVG elements don't inherit parent backgrounds. When exporting:
 
 ### Auto Mode Special Case
 
-Auto mode uses `style.setProperty()` to set the CSS variable inline:
+Auto mode dynamically resolves to `.gns3-map-bg-light` or `.gns3-map-bg-dark` based on the current global theme:
 
 ```
-.gns3-map-bg-auto element
+savedMapTheme = 'auto'
          │
-         ▼ inline style
-style="--gns3-map-bg: var(--gns3-map-bg-dark)"
+         ▼ component checks isDarkMode()
          │
-         ▼ getComputedStyle() can't resolve
-Need ThemeService to determine current theme
+    ┌────┴────┐
+    │         │
+  true      false
+    │         │
+    ▼         ▼
+'dark'    'light'
+    │         │
+    └────┬────┘
+         ▼
+.gns3-map-bg-{themeType}
          │
-         ▼ returns actual color
-'#424242' or '#FAFAFA'
+         ▼ CSS class activates
+--gns3-map-bg: #424242 (dark) or #FAFAFA (light)
 ```
 
-**Why it matters:** `getComputedStyle()` returns `"var(--gns3-map-bg-dark)"` as a string, not the resolved color. The export logic needs to resolve this to the actual hex value.
+**Why it matters:**
+- Auto mode needs to track both `savedMapTheme` AND `isDarkMode()`
+- When global theme changes, auto background updates automatically
+- Export logic uses same `isDarkMode()` check for consistency
 
 ---
 
@@ -284,4 +304,4 @@ Need ThemeService to determine current theme
 
 ---
 
-**Last Updated**: 2026-03-30
+**Last Updated**: 2026-03-31
