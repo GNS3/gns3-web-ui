@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { D3MapComponent } from './d3-map.component';
 
 describe('D3MapComponent', () => {

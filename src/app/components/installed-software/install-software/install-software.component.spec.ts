@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { InstallSoftwareComponent } from './install-software.component';
 
 describe('InstallSoftwareComponent', () => {

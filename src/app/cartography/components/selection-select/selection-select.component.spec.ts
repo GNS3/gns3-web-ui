@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { SelectionManager } from 'app/cartography/managers/selection-manager';
 import { MapChangeDetectorRef } from 'app/cartography/services/map-change-detector-ref';
 import { SelectionSelectComponent } from './selection-select.component';

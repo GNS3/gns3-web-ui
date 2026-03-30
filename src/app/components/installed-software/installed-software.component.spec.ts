@@ -1,4 +1,5 @@
-import { ComponentFixture, TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { ExternalSoftwareDefinitionService } from 'app/services/external-software-definition.service';
 import { InstalledSoftwareService } from 'app/services/installed-software.service';

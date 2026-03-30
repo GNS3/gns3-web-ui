@@ -1,4 +1,5 @@
-import { inject, provideZonelessChangeDetection, TestBed } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { inject, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { MockedProgressService } from 'app/components/project-map/project-map.component.spec';
 import { ProgressDialogService } from './progress-dialog.service';

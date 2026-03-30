@@ -118,4 +118,4 @@ jobs:
           fi
 
       - name: Run Angular lint
-        run: yarn ng lint
+        run: yarn ng lint gns3-web-ui

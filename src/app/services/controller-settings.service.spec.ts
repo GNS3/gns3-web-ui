@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { inject, TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { inject, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { Controller } from '@models/controller';
 import { QemuSettings } from '@models/settings/qemu-settings';

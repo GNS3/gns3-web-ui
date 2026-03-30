@@ -1,4 +1,5 @@
-import { TestBed, provideZonelessChangeDetection } from '@angular/core/testing';
+import { provideZonelessChangeDetection } from '@angular/core';
+import { TestBed } from '@angular/core/testing';
 import { InstalledSoftwareService } from './installed-software.service';
 
 describe('InstalledSoftwareService', () => {
