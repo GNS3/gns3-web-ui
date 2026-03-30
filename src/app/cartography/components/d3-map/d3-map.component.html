@@ -11,7 +11,7 @@
       <path
         [attr.d]="'M ' + project().drawing_grid_size + ' 0 L 0 0 0 ' + project().drawing_grid_size"
         fill="none"
-        stroke="silver"
+        [attr.stroke]="'var(--gns3-grid-drawing-color)'"
         [attr.stroke-width]="gridVisibility()"
       />
     </pattern>
@@ -26,7 +26,7 @@
       <path
         [attr.d]="'M ' + project().grid_size + ' 0 L 0 0 0 ' + project().grid_size"
         fill="none"
-        stroke="DarkSlateGray"
+        [attr.stroke]="'var(--gns3-grid-node-color)'"
         [attr.stroke-width]="gridVisibility()"
       />
     </pattern>

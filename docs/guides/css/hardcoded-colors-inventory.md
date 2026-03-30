@@ -128,7 +128,43 @@ Check: link has custom color?
 
 ---
 
-### 1.6 Screenshot Export Fix ✅ Completed
+### 1.6 Grid Colors ✅ Completed
+
+**File**: `src/styles/_map.scss`, `src/app/cartography/components/d3-map/d3-map.component.html`
+
+**Problem**:
+Grid line colors were hardcoded in SVG template:
+- Drawing grid: `stroke="silver"` (#C0C0C0)
+- Node grid: `stroke="DarkSlateGray"` (#2F4F4F)
+
+These colors may not be visible on dark backgrounds.
+
+**Solution**:
+Added CSS variables in `.project-map`:
+
+```scss
+.project-map {
+  &--light-bg {
+    --gns3-grid-drawing-color: #C0C0C0;
+    --gns3-grid-node-color: #2F4F4F;
+  }
+
+  &--dark-bg {
+    --gns3-grid-drawing-color: #888888;
+    --gns3-grid-node-color: #B0B0B0;
+  }
+}
+```
+
+Template now uses CSS variables:
+```html
+[attr.stroke]="'var(--gns3-grid-drawing-color)'"
+[attr.stroke]="'var(--gns3-grid-node-color)'"
+```
+
+---
+
+### 1.7 Screenshot Export Fix ✅ Completed
 
 **File**: `src/app/components/project-map/project-map-menu/project-map-menu.component.ts`
 

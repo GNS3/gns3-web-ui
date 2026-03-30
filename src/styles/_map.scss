@@ -83,16 +83,23 @@ svg#map g.selection-line-tool path.selection {
   /* Default (light) colors */
   --gns3-canvas-label-color: #000000;
   --gns3-canvas-link-color: #000000;
+  --gns3-grid-drawing-color: #C0C0C0; // silver
+  --gns3-grid-node-color: #2F4F4F; // DarkSlateGray
 
-  /* Dark background colors */
+  /* Light background colors */
   &--light-bg {
     --gns3-canvas-label-color: #000000;
     --gns3-canvas-link-color: #000000;
+    --gns3-grid-drawing-color: #C0C0C0;
+    --gns3-grid-node-color: #2F4F4F;
   }
 
+  /* Dark background colors */
   &--dark-bg {
     --gns3-canvas-label-color: #FFFFFF;
     --gns3-canvas-link-color: #FFFFFF;
+    --gns3-grid-drawing-color: #888888;
+    --gns3-grid-node-color: #B0B0B0; // lighter for dark bg - more visible
   }
 }
 
