@@ -12,6 +12,8 @@ import {
   input,
   viewChildren,
   viewChild,
+  ElementRef,
+  Renderer2,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, UntypedFormControl } from '@angular/forms';
@@ -81,6 +83,11 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   private mapSettingsService = inject(MapSettingsService);
   private boundaryService = inject(WindowBoundaryService);
   private cdr = inject(ChangeDetectorRef);
+  private renderer = inject(Renderer2);
+
+  // For direct DOM manipulation during drag (performance)
+  private rafId: number | null = null;
+  private pendingStyle: WindowStyle | null = null;
 
   constructor() {}
 
@@ -89,6 +96,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
 
   readonly webConsoleComponents = viewChildren(WebConsoleComponent);
   readonly logConsoleComponent = viewChild(LogConsoleComponent);
+  readonly consoleWrapper = viewChild<ElementRef>('consoleWrapper');
 
   ngOnInit() {
     this.themeService.getActualTheme() === 'light'
@@ -256,8 +264,53 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   dragWidget(event: MouseEvent) {
-    // Use boundary service to constrain position
-    this.style = this.boundaryService.constrainDragPosition(this.style, event.movementX, event.movementY);
+    // Cancel any pending RAF
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+    }
+
+    // Calculate new style
+    this.pendingStyle = this.boundaryService.constrainDragPosition(this.style, event.movementX, event.movementY);
+
+    // Use RAF to throttle DOM updates (60fps max)
+    this.rafId = requestAnimationFrame(() => {
+      if (this.consoleWrapper && this.pendingStyle) {
+        this.applyStyleToElement(this.pendingStyle);
+        this.style = { ...this.pendingStyle }; // Update signal for other bindings
+        this.pendingStyle = null;
+        this.rafId = null;
+      }
+    });
+  }
+
+  /**
+   * Apply style directly to DOM element for better performance during drag
+   */
+  private applyStyleToElement(style: WindowStyle): void {
+    const element = this.consoleWrapper()?.nativeElement;
+    if (!element) return;
+
+    if (style.position) {
+      this.renderer.setStyle(element, 'position', style.position);
+    }
+    if (style.left) {
+      this.renderer.setStyle(element, 'left', style.left);
+    }
+    if (style.top) {
+      this.renderer.setStyle(element, 'top', style.top);
+    }
+    if (style.bottom) {
+      this.renderer.setStyle(element, 'bottom', style.bottom);
+    }
+    if (style.right) {
+      this.renderer.setStyle(element, 'right', style.right);
+    }
+    if (style.width) {
+      this.renderer.setStyle(element, 'width', style.width);
+    }
+    if (style.height) {
+      this.renderer.setStyle(element, 'height', style.height);
+    }
   }
 
   validate(event: ResizeEvent): boolean {
@@ -531,6 +584,12 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   ngOnDestroy(): void {
+    // Cleanup any pending RAF
+    if (this.rafId !== null) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+
     // Cleanup theme subscription
     if (this.themeSubscription) {
       this.themeSubscription.unsubscribe();
