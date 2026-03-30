@@ -164,7 +164,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public ws: WebSocket;
   public isProjectMapMenuVisible: boolean = false;
   public isConsoleVisible: boolean = true;
-  public mapBgClass = signal('');
+  public mapBgClass = signal<Record<string, boolean>>({});
   public isTopologySummaryVisible: boolean = true;
   public isInterfaceLabelVisible: boolean = false;
   public notificationsVisibility: boolean = false;
@@ -250,7 +250,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // Read map background from localStorage
     const mapTheme = localStorage.getItem('mapTheme') || 'auto';
-    this.mapBgClass.set(`gns3-map-bg-${mapTheme}`);
+    this.mapBgClass.set({ [`gns3-map-bg-${mapTheme}`]: true });
 
     this.getSettings();
     this.progressService.activate();
