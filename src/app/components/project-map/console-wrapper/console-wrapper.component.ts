@@ -145,24 +145,24 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
         const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
         const windowHeight = window.innerHeight;
         const newHeight = windowHeight - toolbarHeight - 20;
-        this.style = {
+        this.updateStyle({
           bottom: '0px',
           left: currentLeft,
           width: `${this.resizedWidth}px`,
           height: `${newHeight}px`,
-        };
+        });
       } else {
         // Restore to normal state
-        this.style = {
+        this.updateStyle({
           bottom: currentBottom,
           left: currentLeft,
           width: `${this.resizedWidth}px`,
           height: `${this.resizedHeight}px`,
-        };
+        });
       }
     } else {
       // Minimize to taskbar icon mode - compact width and height
-      this.style = { bottom: '20px', left: '20px', width: '180px', height: '48px' };
+      this.updateStyle({ bottom: '20px', left: '20px', width: '180px', height: '48px' });
     }
   }
 
@@ -174,12 +174,12 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
       const windowHeight = window.innerHeight;
       const newHeight = windowHeight - toolbarHeight - 20;
       const currentLeft = (this.style as WindowStyle).left || '80px';
-      this.style = {
+      this.updateStyle({
         bottom: '0px',
         left: currentLeft,
         width: `${this.resizedWidth}px`,
         height: `${newHeight}px`,
-      };
+      });
       // Notify resize
       this.consoleService.consoleResized.next({
         width: this.resizedWidth,
@@ -195,12 +195,12 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     } else {
       // Restore to normal size
       const currentLeft = (this.style as WindowStyle).left || '80px';
-      this.style = {
+      this.updateStyle({
         bottom: '20px',
         left: currentLeft,
         width: `${this.resizedWidth}px`,
         height: `${this.resizedHeight}px`,
-      };
+      });
       // Notify resize
       this.consoleService.consoleResized.next({
         width: this.resizedWidth,
@@ -276,7 +276,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     this.rafId = requestAnimationFrame(() => {
       if (this.consoleWrapper && this.pendingStyle) {
         this.applyStyleToElement(this.pendingStyle);
-        this.style = { ...this.pendingStyle }; // Update signal for other bindings
+        this.style = { ...this.pendingStyle }; // Keep state in sync (no binding)
         this.pendingStyle = null;
         this.rafId = null;
       }
@@ -313,6 +313,15 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     }
   }
 
+  /**
+   * Update style and apply to DOM (used outside of drag operations)
+   */
+  private updateStyle(newStyle: WindowStyle): void {
+    this.style = newStyle;
+    this.applyStyleToElement(newStyle);
+    this.cdr.markForCheck();
+  }
+
   validate(event: ResizeEvent): boolean {
     if (
       event.rectangle.width &&
@@ -341,21 +350,21 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     if (usesBottomPositioning) {
       // Convert top to bottom: bottom = window.innerHeight - top - height
       const bottom = window.innerHeight - constrained.top! - constrained.height;
-      this.style = {
+      this.updateStyle({
         position: 'fixed',
         left: `${constrained.left}px`,
         bottom: `${bottom}px`,
         width: `${constrained.width}px`,
         height: `${constrained.height}px`,
-      };
+      });
     } else {
-      this.style = {
+      this.updateStyle({
         position: 'fixed',
         left: `${constrained.left}px`,
         top: `${constrained.top}px`,
         width: `${constrained.width}px`,
         height: `${constrained.height}px`,
-      };
+      });
     }
 
     this.styleInside = {
@@ -561,6 +570,9 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
    * Cleanup on component destroy
    */
   ngAfterViewInit(): void {
+    // Apply initial styles to DOM (no ngStyle binding)
+    this.applyStyleToElement(this.style);
+
     // Notify xterm to resize after child components are initialized
     // Use requestAnimationFrame to ensure DOM is fully rendered
     requestAnimationFrame(() => {
