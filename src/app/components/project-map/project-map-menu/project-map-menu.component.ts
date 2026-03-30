@@ -149,6 +149,10 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       if (background) {
         svgClone.style.background = background;
       }
+
+      // Resolve CSS custom properties to actual colors for SVG export
+      const canvasColors = this.getCanvasColors(projectMap);
+      this.applyCanvasColors(svgClone, canvasColors.label, canvasColors.link);
     }
 
     // Process embedded images (node symbols) to inline SVG content
@@ -180,25 +184,61 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
 
   /**
    * Resolve the background of .project-map to an actual color/gradient string.
-   * - Auto mode: inline style contains the variable reference (var(--gns3-map-bg-dark/light))
-   *   which cannot be resolved by getComputedStyle, so we resolve it via ThemeService.
-   * - Named presets: CSS class resolves the variable; getComputedStyle().background
-   *   returns the fully resolved gradient/color string.
+   * Uses getComputedStyle to properly resolve CSS custom properties.
    */
   private resolveBackground(projectMap: HTMLElement): string | null {
-    // Auto mode: --gns3-map-bg is set via style.setProperty on the element
-    const inlineBg = projectMap.style.getPropertyValue('--gns3-map-bg');
-    if (inlineBg) {
-      // Resolve CSS variable to actual color via ThemeService
-      const isDark = this.themeService.isDarkMode();
-      return isDark ? '#424242' : '#FAFAFA';
-    }
+    const computedStyle = window.getComputedStyle(projectMap);
 
-    // Named preset: class-based CSS variable resolves to actual gradient/color
-    const computedBg = window.getComputedStyle(projectMap).background;
+    // Try to get resolved background color/gradient
+    const computedBg = computedStyle.background;
     if (computedBg && computedBg !== 'none') return computedBg;
 
+    // Fallback: check inline style for --gns3-map-bg variable
+    const inlineBg = projectMap.style.getPropertyValue('--gns3-map-bg');
+    if (inlineBg && inlineBg.startsWith('var(--')) {
+      // Extract variable name and resolve it
+      const varName = inlineBg.slice(4, -1); // Remove 'var(' and ')'
+      const resolved = computedStyle.getPropertyValue(varName).trim();
+      if (resolved) return resolved;
+    }
+
     return null;
+  }
+
+  /**
+   * Get resolved canvas colors from CSS custom properties.
+   * Uses getComputedStyle to properly resolve CSS variable values.
+   */
+  private getCanvasColors(element: HTMLElement): { label: string; link: string } {
+    const computedStyle = window.getComputedStyle(element);
+    const labelColor = computedStyle.getPropertyValue('--gns3-canvas-label-color').trim();
+    const linkColor = computedStyle.getPropertyValue('--gns3-canvas-link-color').trim();
+    return { label: labelColor, link: linkColor };
+  }
+
+  /**
+   * Apply resolved canvas colors to SVG elements.
+   * This ensures colors are preserved when SVG is cloned/exported.
+   */
+  private applyCanvasColors(svgClone: SVGElement, labelColor: string, linkColor: string): void {
+    // Apply label colors to text elements
+    const textElements = svgClone.querySelectorAll('text.label');
+    textElements.forEach((text) => {
+      const textEl = text as SVGTextElement;
+      textEl.setAttribute('fill', labelColor);
+    });
+
+    // Apply link colors to ethernet links (but preserve custom colors)
+    const linkElements = svgClone.querySelectorAll('path.ethernet_link');
+    linkElements.forEach((link) => {
+      const linkEl = link as SVGPathElement;
+      const currentStroke = linkEl.getAttribute('stroke');
+
+      // Only override if it's using the CSS variable (not a custom color)
+      if (!currentStroke || currentStroke.startsWith('var(--')) {
+        linkEl.setAttribute('stroke', linkColor);
+      }
+    });
   }
 
   private async processEmbeddedImages(svgClone: SVGElement): Promise<void> {

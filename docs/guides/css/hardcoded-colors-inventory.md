@@ -128,6 +128,49 @@ Check: link has custom color?
 
 ---
 
+### 1.6 Screenshot Export Fix ✅ Completed
+
+**File**: `src/app/components/project-map/project-map-menu/project-map-menu.component.ts`
+
+**Problem**:
+When exporting screenshots (PNG/SVG), CSS variables like `var(--gns3-canvas-link-color)` were not resolved because:
+- SVG was cloned without parent element context
+- CSS variables defined on `.project-map` don't cascade into cloned SVG
+
+**Solution**:
+Use `getComputedStyle` to resolve CSS custom properties to actual color values:
+
+```
+Screenshot Export
+       │
+       ▼
+Clone SVG element
+       │
+       ▼
+getComputedStyle(.project-map).getPropertyValue()
+├─ --gns3-canvas-label-color → #FFFFFF or #000000
+├─ --gns3-canvas-link-color  → #FFFFFF or #000000
+└─ --gns3-map-bg            → gradient or color
+       │
+       ▼
+Apply resolved colors to SVG elements
+├─ text.label    → setAttribute('fill', resolvedColor)
+├─ path.ethernet_link → setAttribute('stroke', resolvedColor)
+└─ SVG style.background → resolvedColor
+       │
+       ▼
+Export PNG/SVG with correct colors ✅
+```
+
+**Result**:
+- Labels render with correct color in screenshots ✅
+- Links render with correct color in screenshots ✅
+- Background renders with correct color in screenshots ✅
+- No hardcoded colors in TypeScript ✅
+- Uses CSS variables exclusively via getComputedStyle ✅
+
+---
+
 ## Priority 2: Cartography Widgets (Pending)
 
 ### 2.1 NodeWidget - Layer Labels
