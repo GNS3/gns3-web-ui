@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable, inject } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { select } from 'd3-selection';
 import { Draggable } from '../events/draggable';
 import { LabelContextMenu } from '../events/event-source';
@@ -10,11 +10,9 @@ import { MapLabel } from '../models/map/map-label';
 import { MapNode } from '../models/map/map-node';
 import { SVGSelection } from '../models/types';
 import { Widget } from './widget';
-import { ThemeService } from '@services/theme.service';
 
 @Injectable()
 export class LabelWidget implements Widget {
-  private themeService = inject(ThemeService);
   public onContextMenu = new EventEmitter<LabelContextMenu>();
   public draggable = new Draggable<SVGGElement, MapLabel>();
 
@@ -60,12 +58,11 @@ export class LabelWidget implements Widget {
   }
 
   /**
-   * Replace fill color in style string with theme-aware color
+   * Remove fill color from style string to let CSS variable take effect
    */
-  private applyThemeLabelColor(style: string): string {
-    const labelColor = this.themeService.getCanvasLabelColor();
-    // Replace existing fill color (handles variations like 'fill:#000', 'fill: #000000', etc.)
-    return style.replace(/fill:\s*[^;]+;?/gi, `fill: ${labelColor};`);
+  private removeInlineFillColor(style: string): string {
+    // Remove fill color to allow CSS to control it
+    return style.replace(/fill:\s*[^;]+;?/gi, '');
   }
 
   private drawLabel(view: SVGSelection) {
@@ -86,7 +83,7 @@ export class LabelWidget implements Widget {
       .attr('style', (label: MapLabel) => {
         let styles = this.cssFixer.fix(label.style);
         styles = this.fontFixer.fixStyles(styles);
-        styles = this.applyThemeLabelColor(styles);
+        styles = this.removeInlineFillColor(styles);
         return styles;
       })
       .text((label: MapLabel) => label.text)

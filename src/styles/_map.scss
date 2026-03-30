@@ -56,11 +56,6 @@
 .gns3-map-bg-dark-3 { --gns3-map-bg: var(--gns3-map-bg-dark-3); }
 .gns3-map-bg-dark-4 { --gns3-map-bg: var(--gns3-map-bg-dark-4); }
 
-/* Default auto fallback */
-.gns3-map-bg-auto {
-  --gns3-map-bg: var(--gns3-map-bg-auto);
-}
-
 /* Node/Link selection grayscale effect */
 svg#map g.selected {
   filter: grayscale(100%);
@@ -74,4 +69,43 @@ svg#map g.selection-line-tool path.selection {
   fill-opacity: 0.3;
   stroke-opacity: 0.7;
   stroke-width: 1;
+}
+
+/* =============================================
+// Canvas Element Colors
+// =============================================
+// Colors for text labels and links that adapt to
+// the canvas background (light vs dark).
+// Usage: .project-map--light-bg or .project-map--dark-bg
+// ============================================= */
+
+.project-map {
+  /* Default (light) colors */
+  --gns3-canvas-label-color: #000000;
+  --gns3-canvas-link-color: #000000;
+
+  /* Dark background colors */
+  &--light-bg {
+    --gns3-canvas-label-color: #000000;
+    --gns3-canvas-link-color: #000000;
+  }
+
+  &--dark-bg {
+    --gns3-canvas-label-color: #FFFFFF;
+    --gns3-canvas-link-color: #FFFFFF;
+  }
+}
+
+/* Node labels */
+svg#map text.label {
+  fill: var(--gns3-canvas-label-color);
+}
+
+/* Ethernet links */
+svg#map path.ethernet_link {
+  stroke: var(--gns3-canvas-link-color);
+}
+
+svg#map path.ethernet_link:hover {
+  stroke: var(--mat-sys-error);
 }

@@ -396,10 +396,6 @@ path.serial_link.selected {
   @extend .selection-error;
 }
 
-path.ethernet_link:hover {
-  stroke: var(--mat-sys-error);
-}
-
 .selected > .interface_label_border {
   stroke: var(--mat-sys-on-surface);
   fill: none;

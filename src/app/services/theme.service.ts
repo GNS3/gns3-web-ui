@@ -198,10 +198,19 @@ export class ThemeService {
    * Get the actual map theme (resolves 'auto' to current theme)
    */
   getActualMapTheme(): ThemeType {
-    if (this.currentMapTheme === 'auto') {
+    // Auto mode: follow global theme
+    if (this.savedMapTheme === 'auto') {
       return this.getThemeType();
     }
-    return this.currentMapTheme;
+
+    // Find the preset type from availableMapBackgrounds
+    const preset = this.availableMapBackgrounds.find((bg) => bg.key === this.savedMapTheme);
+    if (preset) {
+      return preset.type;
+    }
+
+    // Fallback to light
+    return 'light';
   }
 
   /**
@@ -342,6 +351,15 @@ export class ThemeService {
    * Returns a color that contrasts with the current map background
    */
   getCanvasLabelColor(): string {
+    const actualMapTheme = this.getActualMapTheme();
+    return actualMapTheme === 'dark' ? '#FFFFFF' : '#000000';
+  }
+
+  /**
+   * Get the appropriate link color for canvas links
+   * Returns a color that contrasts with the current map background
+   */
+  getCanvasLinkColor(): string {
     const actualMapTheme = this.getActualMapTheme();
     return actualMapTheme === 'dark' ? '#FFFFFF' : '#000000';
   }
