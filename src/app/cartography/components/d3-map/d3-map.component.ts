@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   ElementRef,
   HostListener,
   Input,
@@ -107,6 +108,17 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
 
   constructor() {
     this.parentNativeElement = this.element.nativeElement;
+
+    // Watch for project grid size changes
+    effect(
+      () => {
+        const project = this.project();
+        if (project && this.mapChangeDetectorRef.hasBeenDrawn) {
+          this.updateGrid();
+        }
+      },
+      { allowSignalWrites: true }
+    );
   }
 
   @Input('show-interface-labels')
@@ -163,6 +175,12 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
       this.createGraph(this.parentNativeElement);
     }
     this.context.size = this.getSize();
+
+    // Initialize grid offsets based on project settings
+    const project = this.project();
+    if (project) {
+      this.updateGrid();
+    }
 
     this.onChangesDetected = this.mapChangeDetectorRef.changesDetected.subscribe(() => {
       if (this.mapChangeDetectorRef.hasBeenDrawn) {
