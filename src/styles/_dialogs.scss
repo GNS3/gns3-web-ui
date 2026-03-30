@@ -1066,3 +1066,11 @@ h2[mat-dialog-title] {
     display: none;
   }
 }
+
+/* =============================================
+// AI Chat Session Menu Items
+// ============================================= */
+.session-action-menu .mat-mdc-menu-item {
+  display: flex;
+  align-items: center;
+}

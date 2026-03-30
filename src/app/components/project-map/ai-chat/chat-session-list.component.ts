@@ -412,11 +412,7 @@ import {
         flex-shrink: 0;
       }
 
-      /* Ensure menu items have proper alignment */
-      ::ng-deep .session-action-menu .mat-mdc-menu-item {
-        display: flex;
-        align-items: center;
-      }
+      /* Menu item alignment handled by global styles in _dialogs.scss */
     `,
   ],
 })

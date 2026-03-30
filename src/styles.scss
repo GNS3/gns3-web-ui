@@ -268,6 +268,7 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.mat-mdc-menu-p
 .ethernet_link,
 .serial_link {
   transition: stroke-width 150ms cubic-bezier(0.4, 0, 0.2, 1), stroke 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  stroke-opacity: 1;
 }
 
 .ethernet_link:hover,
@@ -275,19 +276,19 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.mat-mdc-menu-p
   stroke: var(--mat-sys-error);
   stroke-width: 4px;
   cursor: pointer;
-  stroke-opacity: 1 !important;
+  stroke-opacity: 1;
 }
 
-/* Hidden links - reveal on hover with subtle outline */
-.ethernet_link[style*='stroke-opacity: 0'],
-.serial_link[style*='stroke-opacity: 0'] {
-  stroke-opacity: 0 !important;
+/* Hidden links - use class instead of inline style */
+.ethernet_link.link_hidden,
+.serial_link.link_hidden {
+  stroke-opacity: 0;
 }
 
-.ethernet_link[style*='stroke-opacity: 0']:hover,
-.serial_link[style*='stroke-opacity: 0']:hover {
-  stroke-opacity: 0.3 !important;
-  stroke: var(--mat-sys-outline) !important;
+.ethernet_link.link_hidden:hover,
+.serial_link.link_hidden:hover {
+  stroke-opacity: 0.3;
+  stroke: var(--mat-sys-outline);
 }
 
 /* =============================================

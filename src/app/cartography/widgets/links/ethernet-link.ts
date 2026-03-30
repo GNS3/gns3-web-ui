@@ -144,9 +144,7 @@ export class EthernetLinkWidget implements Widget {
       .attr('stroke-dasharray', (datum) => {
         return StyleTranslator.getLinkStyle(datum.style);
       })
-      .attr('stroke-opacity', (datum) => {
-        return datum.style.type === 0 ? 0 : 1;
-      })
+      .classed('link_hidden', (datum) => datum.style.type === 0)
       .attr('pointer-events', (datum) => {
         return datum.style.type === 0 ? 'stroke' : null;
       })
