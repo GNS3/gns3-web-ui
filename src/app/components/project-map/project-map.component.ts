@@ -3,7 +3,6 @@ import {
   ChangeDetectorRef,
   Component,
   ComponentRef,
-  ElementRef,
   OnDestroy,
   OnInit,
   ViewContainerRef,
@@ -165,6 +164,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public ws: WebSocket;
   public isProjectMapMenuVisible: boolean = false;
   public isConsoleVisible: boolean = true;
+  public mapBgClass = signal('');
   public isTopologySummaryVisible: boolean = true;
   public isInterfaceLabelVisible: boolean = false;
   public notificationsVisibility: boolean = false;
@@ -189,7 +189,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   readonly mapChild = viewChild(D3MapComponent);
   readonly projectMapMenuComponent = viewChild.required(ProjectMapMenuComponent);
   readonly topologySummaryContainer = viewChild.required('topologySummaryContainer', { read: ViewContainerRef });
-  readonly projectMapElement = viewChild<ElementRef>('projectMap');
 
   private projectMapSubscription: Subscription = new Subscription();
 
@@ -249,9 +248,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   // createMyComponent() {this.viewContainerRef.createComponent(MyComponent);}
 
   ngOnInit() {
+    // Read map background from localStorage
+    const mapTheme = localStorage.getItem('mapTheme') || 'auto';
+    this.mapBgClass.set(`gns3-map-bg-${mapTheme}`);
+
     this.getSettings();
     this.progressService.activate();
-    this.updateMapBackground();
 
     if (this.controllerService.isServiceInitialized) {
       this.getData();
@@ -276,30 +278,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.notificationsVisibility = localStorage.getItem('notificationsVisibility') === 'true' ? true : false;
     this.layersVisibility = localStorage.getItem('layersVisibility') === 'true' ? true : false;
     this.gridVisibility = localStorage.getItem('gridVisibility') === 'true' ? true : false;
-  }
-
-  updateMapBackground() {
-    const el = this.projectMapElement()?.nativeElement;
-    if (!el) return;
-
-    const mapTheme = this.themeService.savedMapTheme;
-    const isDark = this.themeService.isDarkMode();
-
-    // Remove all background classes
-    el.classList.remove('gns3-map-bg-auto', 'gns3-map-bg-light', 'gns3-map-bg-dark');
-    el.classList.remove('gns3-map-bg-light-1', 'gns3-map-bg-light-2', 'gns3-map-bg-light-3', 'gns3-map-bg-light-4');
-    el.classList.remove('gns3-map-bg-dark-1', 'gns3-map-bg-dark-2', 'gns3-map-bg-dark-3', 'gns3-map-bg-dark-4');
-
-    if (mapTheme === 'auto') {
-      el.classList.add('gns3-map-bg-auto');
-      // Auto: directly set the CSS variable so computed style resolves correctly
-      el.style.setProperty(
-        '--gns3-map-bg',
-        isDark ? 'var(--gns3-map-bg-dark)' : 'var(--gns3-map-bg-light)'
-      );
-    } else {
-      el.classList.add(`gns3-map-bg-${mapTheme}`);
-    }
   }
 
   async lazyLoadTopologySummary() {
@@ -329,19 +307,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       this.drawingsDataSource.changes.subscribe((drawings: Drawing[]) => {
         this.drawings = drawings;
         this.mapChangeDetectorRef.detectChanges();
-      })
-    );
-
-    // Subscribe to theme changes to update map background
-    this.projectMapSubscription.add(
-      this.themeService.themeChanged.subscribe(() => {
-        this.updateMapBackground();
-      })
-    );
-
-    this.projectMapSubscription.add(
-      this.themeService.mapThemeChanged.subscribe(() => {
-        this.updateMapBackground();
       })
     );
 

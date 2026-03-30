@@ -1,5 +1,5 @@
 @if (project) {
-<div class="project-map" #projectMap [class.pan-mode]="tools.moving">
+<div class="project-map" #projectMap [class.pan-mode]="tools.moving" [class]="mapBgClass()">
   <!-- Project Titlebar -->
   <div id="project-titlebar">
     <button
