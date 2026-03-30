@@ -217,7 +217,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Apply resolved canvas colors to SVG elements.
+   * Apply resolved canvas colors to SVG elements as inline CSS.
    * This ensures colors are preserved when SVG is cloned/exported.
    */
   private applyCanvasColors(svgClone: SVGElement, labelColor: string, linkColor: string): void {
@@ -225,19 +225,23 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     const textElements = svgClone.querySelectorAll('text.label');
     textElements.forEach((text) => {
       const textEl = text as SVGTextElement;
-      textEl.setAttribute('fill', labelColor);
+      textEl.style.setProperty('fill', labelColor);
     });
 
-    // Apply link colors to ethernet links (but preserve custom colors)
+    // Apply link colors to ethernet links (preserve custom colors)
+    // D3.js sets stroke via attr() which creates SVG attribute (not inline style).
+    // Custom colors are hex values, default uses CSS variable var(--...).
     const linkElements = svgClone.querySelectorAll('path.ethernet_link');
     linkElements.forEach((link) => {
       const linkEl = link as SVGPathElement;
-      const currentStroke = linkEl.getAttribute('stroke');
+      const svgStroke = linkEl.getAttribute('stroke');
 
-      // Only override if it's using the CSS variable (not a custom color)
-      if (!currentStroke || currentStroke.startsWith('var(--')) {
-        linkEl.setAttribute('stroke', linkColor);
+      // If stroke is CSS variable (default), apply resolved color
+      // If stroke is a custom color (hex/rgb), preserve it - do nothing
+      if (!svgStroke || svgStroke.startsWith('var(--')) {
+        linkEl.style.setProperty('stroke', linkColor);
       }
+      // Custom colors are kept as-is
     });
   }
 

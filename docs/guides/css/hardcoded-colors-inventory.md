@@ -136,15 +136,16 @@ Check: link has custom color?
 When exporting screenshots (PNG/SVG), CSS variables like `var(--gns3-canvas-link-color)` were not resolved because:
 - SVG was cloned without parent element context
 - CSS variables defined on `.project-map` don't cascade into cloned SVG
+- CSS property `fill: var(--...)` in stylesheet overrides SVG attribute `fill="..."`
 
 **Solution**:
-Use `getComputedStyle` to resolve CSS custom properties to actual color values:
+Use `getComputedStyle` to resolve CSS custom properties, then apply as inline CSS (not SVG attribute):
 
 ```
 Screenshot Export
        │
        ▼
-Clone SVG element
+Clone SVG element (preserves CSS rules with var(--...))
        │
        ▼
 getComputedStyle(.project-map).getPropertyValue()
@@ -153,21 +154,24 @@ getComputedStyle(.project-map).getPropertyValue()
 └─ --gns3-map-bg            → gradient or color
        │
        ▼
-Apply resolved colors to SVG elements
-├─ text.label    → setAttribute('fill', resolvedColor)
-├─ path.ethernet_link → setAttribute('stroke', resolvedColor)
-└─ SVG style.background → resolvedColor
+Apply resolved colors as inline CSS (style.setProperty)
+├─ text.label    → style.setProperty('fill', resolvedColor)
+├─ path.ethernet_link → style.setProperty('stroke', resolvedColor)
+└─ SVG style.background → inline style
        │
        ▼
+Inline CSS overrides stylesheet rules ✅
 Export PNG/SVG with correct colors ✅
 ```
 
-**Result**:
-- Labels render with correct color in screenshots ✅
-- Links render with correct color in screenshots ✅
-- Background renders with correct color in screenshots ✅
-- No hardcoded colors in TypeScript ✅
-- Uses CSS variables exclusively via getComputedStyle ✅
+**Key Insight**:
+- SVG attribute `fill="..."` has lower priority than CSS property `fill: ...`
+- Must use `element.style.setProperty('fill', value)` to override CSS rules
+- D3.js uses `attr()` which sets SVG attribute, not inline style
+- Custom colors: `attr('stroke', '#FF0000')` → preserved
+- Default colors: `attr('stroke', 'var(--...)')` → resolved and applied
+- Colors still defined via CSS variables in `_map.scss` ✅
+- Screenshot code only resolves and re-applies, doesn't hardcode ✅
 
 ---
 
