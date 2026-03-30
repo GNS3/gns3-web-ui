@@ -20,8 +20,8 @@ export interface ComputeStatistics {
 
 export interface ProjectStats {
   total: number;
-  open_project_nodes: number;
-  closed_project_nodes: number;
+  opened: number;
+  closed: number;
 }
 
 export interface NodeStats {

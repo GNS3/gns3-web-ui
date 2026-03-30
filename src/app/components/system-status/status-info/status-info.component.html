@@ -1,9 +1,8 @@
-@if (!computeStatistics().length) {
+@if (!projectStats().total && !nodeStats().total && !linkStats().total && !computeStatistics().length) {
 <div>Statistics not loaded</div>
 }
 <div class="status-info__summary">
   <app-status-chart
-    [computeStatistics]="computeStatistics()[0]"
     [projectStats]="projectStats()"
     [nodeStats]="nodeStats()"
     [linkStats]="linkStats()"

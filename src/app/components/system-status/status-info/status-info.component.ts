@@ -23,7 +23,7 @@ export class StatusInfoComponent implements OnInit {
 
   public controllerId: string = '';
   public computeStatistics = signal<ComputeStatistics[]>([]);
-  public projectStats = signal<ProjectStats>({ total: 0, open_project_nodes: 0, closed_project_nodes: 0 });
+  public projectStats = signal<ProjectStats>({ total: 0, opened: 0, closed: 0 });
   public nodeStats = signal<NodeStats>({
     total: 0,
     open_project_nodes: 0,
