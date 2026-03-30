@@ -6,7 +6,7 @@
  * Note: Material table internal DOM (mat-row, mat-cell, etc.) requires
  * direct element selectors for visual effects (hover, zebra striping, row borders).
  * This is a known limitation of Angular Material's styling system.
- * These styles follow all other rules: no !important, Material variables, BEM naming.
+ * These styles follow all other rules: no forbidden CSS patterns, Material variables, BEM naming.
  */
 
 :host {

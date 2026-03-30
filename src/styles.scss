@@ -300,7 +300,7 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.mat-mdc-menu-p
 
 .curviness-anchor:hover {
   r: 10;
-  fill: #1976d2;
+  fill: var(--mat-sys-primary);
 }
 
 /* =============================================
