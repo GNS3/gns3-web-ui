@@ -3,6 +3,7 @@
 > Fix console window jumping to bottom when opened from sidebar after resize
 
 **Date**: 2026-03-19
+**Updated**: 2026-03-30
 **Component**: `ConsoleWrapperComponent`
 **Type**: Bug Fix
 **Severity**: Medium
@@ -70,24 +71,52 @@ onResizeEnd(event: ResizeEvent): void {
   if (usesBottomPositioning) {
     // Convert top to bottom: bottom = window.innerHeight - top - height
     const bottom = window.innerHeight - constrained.top! - constrained.height;
-    this.style = {
+    this.updateStyle({
       position: 'fixed',
       left: `${constrained.left}px`,
       bottom: `${bottom}px`,
       width: `${constrained.width}px`,
       height: `${constrained.height}px`,
-    };
+    });
   } else {
-    this.style = {
+    this.updateStyle({
       position: 'fixed',
       left: `${constrained.left}px`,
       top: `${constrained.top}px`,
       width: `${constrained.width}px`,
       height: `${constrained.height}px`,
-    };
+    });
   }
 
-  // ... rest of the method
+  // Update inner content area size
+  this.styleInside = {
+    height: `${constrained.height - this.CONSOLE_HEADER_HEIGHT}px`,
+    width: `${constrained.width}px`,
+  };
+
+  // Notify resize to xterm
+  this.consoleService.consoleResized.next({
+    width: constrained.width,
+    height: constrained.height - this.CONSOLE_HEADER_HEIGHT,
+  });
+
+  this.resizedWidth = constrained.width;
+  this.resizedHeight = constrained.height;
+
+  // Save window state to localStorage
+  this.saveWindowState();
+}
+```
+
+### Helper Method
+
+The component uses an `updateStyle()` helper method to apply styles:
+
+```typescript
+private updateStyle(newStyle: WindowStyle): void {
+  this.style = newStyle;
+  this.applyStyleToElement(newStyle);
+  this.cdr.markForCheck();
 }
 ```
 
@@ -126,6 +155,14 @@ Result: Console maintains visual position using bottom: 100px
 
 ## Technical Details
 
+### Constants Used
+
+```typescript
+private readonly CONSOLE_HEADER_HEIGHT = 53;
+private readonly DEFAULT_WIDTH = 848;
+private readonly DEFAULT_HEIGHT = 600;
+```
+
 ### CSS Positioning Modes
 
 **Bottom/Left Positioning** (default for console):
@@ -161,7 +198,9 @@ When `minimize(false)` tries to restore position:
 
 ### Files Modified
 - **Component**: `src/app/components/project-map/console-wrapper/console-wrapper.component.ts`
-  - Method: `onResizeEnd()` (lines 219-251)
+  - Method: `onResizeEnd()` (lines 359-408)
+  - Method: `updateStyle()` (lines 342-346)
+  - Method: `saveWindowState()` (lines 793-803)
 
 ### Related Services
 - **WindowBoundaryService**: `src/app/services/window-boundary.service.ts`
