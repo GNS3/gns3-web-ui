@@ -18,10 +18,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatMenuModule } from '@angular/material/menu';
 import { DrawingAddedComponent } from '../../drawings-listeners/drawing-added/drawing-added.component';
 import { NodeService } from '@services/node.service';
-import { select } from 'd3-selection';
 import { Subscription } from 'rxjs';
 import * as svg from 'save-svg-as-png';
-import downloadSvg from 'svg-crowbar';
 import { Drawing } from '../../../cartography/models/drawing';
 import { Node } from '../../../cartography/models/node';
 import { Controller } from '@models/controller';
@@ -140,55 +138,14 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   }
 
   private async saveImage(screenshotProperties: Screenshot) {
+    const originalSvg = document.getElementById('map');
+    const svgClone = originalSvg.cloneNode(true) as SVGElement;
+
+    // Process embedded images (node symbols) to inline SVG content
+    await this.processEmbeddedImages(svgClone);
+
     if (screenshotProperties.filetype === 'png') {
       try {
-        // Get the SVG element and clone it to avoid modifying the original
-        const originalSvg = document.getElementsByTagName('svg')[0];
-        const svgClone = originalSvg.cloneNode(true) as SVGElement;
-
-        // Process any embedded images
-        const images = Array.from(svgClone.getElementsByTagName('image'));
-
-        for (let i = 0; i < images.length; i++) {
-          const image = images[i];
-          const href = image.getAttribute('href') || image.getAttribute('xlink:href');
-          if (!href) continue;
-
-          try {
-            let svgContent: string;
-
-            // Check if it's a blob URL (cached custom symbols)
-            if (href.startsWith('blob:')) {
-              // Fetch the blob content directly
-              const response = await fetch(href);
-              const blob = await response.blob();
-              svgContent = await blob.text();
-            } else {
-              // Server-hosted symbol URL
-              const urlParts = href.split('/symbols/');
-              if (urlParts.length > 1) {
-                const symbolId = urlParts[urlParts.length - 1].replace('/raw', '');
-                const rawSvg = await this.symbolService.raw(this.controller(), symbolId).toPromise();
-                if (rawSvg) {
-                  svgContent = rawSvg.includes('-->') ? rawSvg.split('-->')[1].trim() : rawSvg.trim();
-                }
-              }
-            }
-
-            if (svgContent) {
-              // Parse the SVG content and import it
-              const parser = new DOMParser();
-              const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
-              const importedSvg = svgDoc.documentElement;
-              const importedNode = svgClone.ownerDocument.importNode(importedSvg, true);
-              image.parentNode.replaceChild(importedNode, image);
-            }
-          } catch (err) {
-            console.warn(`Failed to process embedded image: ${href}`, err);
-          }
-        }
-
-        // Save as PNG
         svg.saveSvgAsPng(svgClone, `${screenshotProperties.name}.png`);
       } catch (err) {
         console.error('Failed to save PNG:', err);
@@ -196,8 +153,82 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         throw err;
       }
     } else {
-      var svg_el = select('svg').attr('version', 1.1).attr('xmlns', 'http://www.w3.org/2000/svg').node();
-      downloadSvg(select('svg').node(), `${screenshotProperties.name}`);
+      // Serialize processed SVG and trigger download
+      const serializer = new XMLSerializer();
+      const svgStr = serializer.serializeToString(svgClone);
+      const blob = new Blob([svgStr], { type: 'image/svg+xml' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${screenshotProperties.name}.svg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  private async processEmbeddedImages(svgClone: SVGElement): Promise<void> {
+    const images = Array.from(svgClone.getElementsByTagName('image'));
+
+    for (let i = 0; i < images.length; i++) {
+      const image = images[i];
+      const href = image.getAttribute('href') || image.getAttribute('xlink:href');
+      if (!href) continue;
+
+      try {
+        let svgContent: string;
+
+        // Check if it's a blob URL (cached custom symbols)
+        if (href.startsWith('blob:')) {
+          // Fetch the blob content directly
+          const response = await fetch(href);
+          const blob = await response.blob();
+          svgContent = await blob.text();
+        } else {
+          // Server-hosted symbol URL
+          const urlParts = href.split('/symbols/');
+          if (urlParts.length > 1) {
+            const symbolId = urlParts[urlParts.length - 1].replace('/raw', '');
+            const rawSvg = await this.symbolService.raw(this.controller(), symbolId).toPromise();
+            if (rawSvg) {
+              svgContent = rawSvg.includes('-->') ? rawSvg.split('-->')[1].trim() : rawSvg.trim();
+            }
+          }
+        }
+
+        if (svgContent) {
+          // Parse the SVG content and import it
+          const parser = new DOMParser();
+          const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
+          const importedSvg = svgDoc.documentElement;
+          let importedNode = svgClone.ownerDocument.importNode(importedSvg, true) as unknown as SVGElement;
+
+          // Ensure the imported node is a proper SVG element with correct namespace
+          if (importedNode.nodeName !== 'svg') {
+            // Wrapped in a non-svg element (e.g., from parser), create svg manually
+            const svgWrapper = svgClone.ownerDocument.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svgWrapper.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+            // Copy all children
+            while (importedNode.firstChild) {
+              svgWrapper.appendChild(importedNode.firstChild);
+            }
+            importedNode = svgWrapper;
+          }
+
+          // Preserve viewport attributes from the original <image> element
+          const width = image.getAttribute('width');
+          const height = image.getAttribute('height');
+          importedNode.setAttribute('width', width || '60');
+          importedNode.setAttribute('height', height || '60');
+          importedNode.setAttribute('x', image.getAttribute('x') || '0');
+          importedNode.setAttribute('y', image.getAttribute('y') || '0');
+
+          image.parentNode.replaceChild(importedNode, image);
+        }
+      } catch (err) {
+        console.warn(`Failed to process embedded image: ${href}`, err);
+      }
     }
   }
 
