@@ -22,7 +22,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { Subject, Subscription } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, tap, switchMap, auditTime } from 'rxjs/operators';
+import { fromEvent, animationFrameScheduler } from 'rxjs';
 import { ResizeEvent, ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
 import { Node } from '../../../cartography/models/node';
 import { Project } from '@models/project';
@@ -69,8 +70,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
 
   public style: WindowStyle = {};
   public styleInside: object = { height: `120px` };
-  public isDraggingEnabled: boolean = false;
-  public isDragging: boolean = false; // For CSS class
+  public isDragging: boolean = false;
   public isLightThemeEnabled: boolean = false;
   public isMinimized: boolean = false;
   public isMaximized: boolean = false;
@@ -86,9 +86,11 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   private cdr = inject(ChangeDetectorRef);
   private renderer = inject(Renderer2);
 
-  // For direct DOM manipulation during drag (performance)
-  private rafId: number | null = null;
-  private pendingStyle: WindowStyle | null = null;
+  // Drag state (RxJS managed)
+  private dragStartX = 0;
+  private dragStartY = 0;
+  private dragStartLeft = 0;
+  private dragStartBottom = 0;
 
   constructor() {}
 
@@ -253,37 +255,6 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   removeTab(index: number) {
     this.nodes.splice(index, 1);
     this.consoleService.openConsoles--;
-  }
-
-  toggleDragging(value: boolean) {
-    const wasDragging = this.isDraggingEnabled;
-    this.isDraggingEnabled = value;
-    this.isDragging = value; // For CSS optimization
-    // Save window state after drag ends
-    if (wasDragging && !value) {
-      this.saveWindowState();
-    }
-    this.cdr.markForCheck();
-  }
-
-  dragWidget(event: MouseEvent) {
-    // Cancel any pending RAF
-    if (this.rafId !== null) {
-      cancelAnimationFrame(this.rafId);
-    }
-
-    // Calculate new style
-    this.pendingStyle = this.boundaryService.constrainDragPosition(this.style, event.movementX, event.movementY);
-
-    // Use RAF to throttle DOM updates (60fps max)
-    this.rafId = requestAnimationFrame(() => {
-      if (this.consoleWrapper && this.pendingStyle) {
-        this.applyStyleToElement(this.pendingStyle);
-        this.style = { ...this.pendingStyle }; // Keep state in sync (no binding)
-        this.pendingStyle = null;
-        this.rafId = null;
-      }
-    });
   }
 
   /**
@@ -576,6 +547,9 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     // Apply initial styles to DOM (no ngStyle binding)
     this.applyStyleToElement(this.style);
 
+    // Setup drag handling using RxJS (Zoneless best practice)
+    this.setupDragHandling();
+
     // Notify xterm to resize after child components are initialized
     // Use requestAnimationFrame to ensure DOM is fully rendered
     requestAnimationFrame(() => {
@@ -598,13 +572,104 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     });
   }
 
-  ngOnDestroy(): void {
-    // Cleanup any pending RAF
-    if (this.rafId !== null) {
-      cancelAnimationFrame(this.rafId);
-      this.rafId = null;
-    }
+  /**
+   * Setup drag handling using RxJS with animationFrameScheduler
+   * This is the Zoneless + Angular 17+ best practice
+   */
+  private setupDragHandling(): void {
+    const consoleElement = this.consoleWrapper()?.nativeElement;
+    if (!consoleElement) return;
 
+    const headerElement = consoleElement.querySelector('.consoleHeader') as HTMLElement;
+    if (!headerElement) return;
+
+    const mouseDown$ = fromEvent<MouseEvent>(headerElement, 'mousedown');
+    const mouseMove$ = fromEvent<MouseEvent>(document, 'mousemove');
+    const mouseUp$ = fromEvent<MouseEvent>(document, 'mouseup');
+
+    mouseDown$
+      .pipe(
+        tap((e) => {
+          // Prevent default and prepare for drag
+          e.preventDefault();
+          this.isDragging = true;
+          this.cdr.markForCheck(); // Trigger CD once for class update
+
+          // Record starting positions
+          this.dragStartX = e.clientX;
+          this.dragStartY = e.clientY;
+          this.dragStartLeft = Number(this.style.left?.split('px')[0]) || 0;
+          this.dragStartBottom = Number(this.style.bottom?.split('px')[0]) || 0;
+
+          // Disable iframe pointer events during drag
+          this.setIframePointerEvents('none');
+        }),
+        switchMap(() =>
+          mouseMove$.pipe(
+            // Use auditTime(0, animationFrameScheduler) for 60fps throttling
+            auditTime(0, animationFrameScheduler),
+            takeUntil(
+              mouseUp$.pipe(
+                tap(() => {
+                  this.onDragEnd();
+                })
+              )
+            )
+          )
+        ),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((e) => {
+        // Calculate movement delta
+        const deltaX = e.clientX - this.dragStartX;
+        const deltaY = e.clientY - this.dragStartY;
+
+        // Calculate new position
+        let newLeft = this.dragStartLeft + deltaX;
+        let newBottom = this.dragStartBottom - deltaY;
+
+        // Constrain to viewport
+        const width = this.resizedWidth;
+        const height = this.isMinimized ? 48 : this.resizedHeight;
+        const maxLeft = window.innerWidth - width;
+        const maxBottom = window.innerHeight - height;
+
+        newLeft = Math.max(0, Math.min(maxLeft, newLeft));
+        newBottom = Math.max(0, Math.min(maxBottom, newBottom));
+
+        // Apply directly to DOM (no CD trigger, pure performance)
+        this.renderer.setStyle(consoleElement, 'left', `${newLeft}px`);
+        this.renderer.setStyle(consoleElement, 'bottom', `${newBottom}px`);
+
+        // Keep state in sync for other operations (resize, minimize, etc)
+        this.style.left = `${newLeft}px`;
+        this.style.bottom = `${newBottom}px`;
+      });
+  }
+
+  /**
+   * Handle drag end - restore iframe pointer events and save state
+   */
+  private onDragEnd(): void {
+    this.isDragging = false;
+    this.setIframePointerEvents('');
+    this.cdr.markForCheck(); // Trigger CD once to remove is-dragging class
+    this.saveWindowState();
+  }
+
+  /**
+   * Set pointer events on iframes (to prevent event capture during drag)
+   */
+  private setIframePointerEvents(value: 'none' | ''): void {
+    const consoleElement = this.consoleWrapper()?.nativeElement;
+    if (!consoleElement) return;
+
+    consoleElement.querySelectorAll('iframe').forEach((iframe: HTMLElement) => {
+      this.renderer.setStyle(iframe, 'pointer-events', value);
+    });
+  }
+
+  ngOnDestroy(): void {
     // Cleanup theme subscription
     if (this.themeSubscription) {
       this.themeSubscription.unsubscribe();

@@ -22,8 +22,11 @@
   font-size: 12px;
   border-radius: 4px;
   outline: none;
-  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: left, bottom, width, height; // Hint browser for optimization
+  transition: box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  // GPU acceleration hint for smooth dragging
+  will-change: left, bottom;
+  contain: layout style; // Isolate from parent layout recalculations
 
   &.console-active {
     box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent), 0 0 0 1px var(--mat-sys-outline);
@@ -34,21 +37,16 @@
   }
 
   /* =============================================
-  // Dragging State - Optimize rendering
+  // Dragging State - GPU Accelerated
   // ============================================= */
   &.is-dragging {
     cursor: grabbing;
     user-select: none;
-    pointer-events: none; // Prevent interactions during drag
-    transition: none; // Disable transitions during drag
+    box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 40%, transparent);
+    transition: none; // Instant position updates during drag
 
-    // Hide heavy content during drag for better performance
-    .console-content,
-    .console-area,
-    app-web-console,
-    app-log-console {
-      visibility: hidden;
-    }
+    // Use will-change on transform for GPU layer promotion
+    will-change: left, bottom;
   }
 
   /* =============================================

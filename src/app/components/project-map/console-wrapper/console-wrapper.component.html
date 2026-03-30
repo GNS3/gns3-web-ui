@@ -1,7 +1,4 @@
-@if (isDraggingEnabled) {
-<div (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)"></div>
-}
-<!-- Option with resizing -->
+<!-- Console Wrapper with RxJS drag handling -->
 <div
   #consoleWrapper
   class="consoleWrapper"
@@ -14,7 +11,6 @@
   mwlResizable
   [validateResize]="validate"
   [enableGhostResize]="true"
-  (resizeStart)="toggleDragging(false)"
   (resizeEnd)="onResizeEnd($event)"
   tabindex="0"
   (click)="onConsoleActivate()"
@@ -64,7 +60,6 @@
       <div
         class="consoleHeader"
         [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-        (mousedown)="toggleDragging(true)"
       >
         <mat-tab-group
           class="console-wrapper__tabs"
