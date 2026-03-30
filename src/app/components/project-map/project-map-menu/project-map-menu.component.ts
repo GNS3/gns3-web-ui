@@ -141,6 +141,16 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     const originalSvg = document.getElementById('map');
     const svgClone = originalSvg.cloneNode(true) as SVGElement;
 
+    // Apply computed background from .project-map to the SVG clone
+    // This ensures the background is captured when exporting to PNG
+    const projectMap = document.querySelector('.project-map') as HTMLElement;
+    if (projectMap) {
+      const background = this.resolveBackground(projectMap);
+      if (background) {
+        svgClone.style.background = background;
+      }
+    }
+
     // Process embedded images (node symbols) to inline SVG content
     await this.processEmbeddedImages(svgClone);
 
@@ -166,6 +176,29 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     }
+  }
+
+  /**
+   * Resolve the background of .project-map to an actual color/gradient string.
+   * - Auto mode: inline style contains the variable reference (var(--gns3-map-bg-dark/light))
+   *   which cannot be resolved by getComputedStyle, so we resolve it via ThemeService.
+   * - Named presets: CSS class resolves the variable; getComputedStyle().background
+   *   returns the fully resolved gradient/color string.
+   */
+  private resolveBackground(projectMap: HTMLElement): string | null {
+    // Auto mode: --gns3-map-bg is set via style.setProperty on the element
+    const inlineBg = projectMap.style.getPropertyValue('--gns3-map-bg');
+    if (inlineBg) {
+      // Resolve CSS variable to actual color via ThemeService
+      const isDark = this.themeService.isDarkMode();
+      return isDark ? '#424242' : '#FAFAFA';
+    }
+
+    // Named preset: class-based CSS variable resolves to actual gradient/color
+    const computedBg = window.getComputedStyle(projectMap).background;
+    if (computedBg && computedBg !== 'none') return computedBg;
+
+    return null;
   }
 
   private async processEmbeddedImages(svgClone: SVGElement): Promise<void> {

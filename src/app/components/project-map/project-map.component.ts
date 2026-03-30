@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   ComponentRef,
+  ElementRef,
   OnDestroy,
   OnInit,
   ViewContainerRef,
@@ -188,6 +189,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   readonly mapChild = viewChild(D3MapComponent);
   readonly projectMapMenuComponent = viewChild.required(ProjectMapMenuComponent);
   readonly topologySummaryContainer = viewChild.required('topologySummaryContainer', { read: ViewContainerRef });
+  readonly projectMapElement = viewChild<ElementRef>('projectMap');
 
   private projectMapSubscription: Subscription = new Subscription();
 
@@ -277,16 +279,26 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   updateMapBackground() {
-    const mapTheme = this.themeService.savedMapTheme;
-    const backgrounds = this.themeService.availableMapBackgrounds;
-    const bgConfig = backgrounds.find((b) => b.key === mapTheme);
+    const el = this.projectMapElement()?.nativeElement;
+    if (!el) return;
 
-    if (bgConfig && bgConfig.background) {
-      document.documentElement.style.setProperty('--gns3-map-background', bgConfig.background);
+    const mapTheme = this.themeService.savedMapTheme;
+    const isDark = this.themeService.isDarkMode();
+
+    // Remove all background classes
+    el.classList.remove('gns3-map-bg-auto', 'gns3-map-bg-light', 'gns3-map-bg-dark');
+    el.classList.remove('gns3-map-bg-light-1', 'gns3-map-bg-light-2', 'gns3-map-bg-light-3', 'gns3-map-bg-light-4');
+    el.classList.remove('gns3-map-bg-dark-1', 'gns3-map-bg-dark-2', 'gns3-map-bg-dark-3', 'gns3-map-bg-dark-4');
+
+    if (mapTheme === 'auto') {
+      el.classList.add('gns3-map-bg-auto');
+      // Auto: directly set the CSS variable so computed style resolves correctly
+      el.style.setProperty(
+        '--gns3-map-bg',
+        isDark ? 'var(--gns3-map-bg-dark)' : 'var(--gns3-map-bg-light)'
+      );
     } else {
-      // Auto - follow global theme
-      const isDark = this.themeService.isDarkMode();
-      document.documentElement.style.setProperty('--gns3-map-background', isDark ? '#424242' : '#FAFAFA');
+      el.classList.add(`gns3-map-bg-${mapTheme}`);
     }
   }
 

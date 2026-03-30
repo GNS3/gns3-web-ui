@@ -7,6 +7,60 @@
 // selectors to avoid affecting other components.
 // ============================================= */
 
+/* =============================================
+// Map Background Presets
+// =============================================
+// Maps to availableMapBackgrounds in ThemeService.
+// Usage: add class .gns3-map-bg-{key} to .project-map.
+// The CSS variable --gns3-map-bg is used by .project-map.
+// ============================================= */
+
+:root {
+  // Default backgrounds (auto mode follows global theme)
+  --gns3-map-bg-auto: #FAFAFA; // light fallback
+  --gns3-map-bg-light: #FAFAFA;
+  --gns3-map-bg-dark: #424242;
+
+  // Light presets
+  --gns3-map-bg-light-1: radial-gradient(ellipse at 20% 20%, #B2EBF2 0%, #E0F7FA 70%);
+  --gns3-map-bg-light-2: radial-gradient(ellipse at 20% 20%, #BBDEFB 0%, #E3F2FD 70%);
+  --gns3-map-bg-light-3: radial-gradient(ellipse at 20% 20%, #F5F5F5 0%, #FAFAFA 70%);
+  --gns3-map-bg-light-4: radial-gradient(ellipse at 20% 20%, #E1BEE7 0%, #F3E5F5 70%);
+
+  // Dark presets
+  --gns3-map-bg-dark-1: linear-gradient(135deg, #006064 0%, #00838F 50%, #006064 100%);
+  --gns3-map-bg-dark-2: linear-gradient(135deg, #1565C0 0%, #1976D2 50%, #1565C0 100%);
+  --gns3-map-bg-dark-3: linear-gradient(135deg, #424242 0%, #616161 50%, #424242 100%);
+  --gns3-map-bg-dark-4: linear-gradient(135deg, #4A148C 0%, #6A1B9A 50%, #4A148C 100%);
+}
+
+/* Light theme backgrounds (auto resolves to these) */
+.gns3-map-bg-light {
+  --gns3-map-bg: var(--gns3-map-bg-light);
+}
+
+/* Dark theme backgrounds (auto resolves to these when global theme is dark) */
+.gns3-map-bg-dark {
+  --gns3-map-bg: var(--gns3-map-bg-dark);
+}
+
+/* Named light presets */
+.gns3-map-bg-light-1 { --gns3-map-bg: var(--gns3-map-bg-light-1); }
+.gns3-map-bg-light-2 { --gns3-map-bg: var(--gns3-map-bg-light-2); }
+.gns3-map-bg-light-3 { --gns3-map-bg: var(--gns3-map-bg-light-3); }
+.gns3-map-bg-light-4 { --gns3-map-bg: var(--gns3-map-bg-light-4); }
+
+/* Named dark presets */
+.gns3-map-bg-dark-1 { --gns3-map-bg: var(--gns3-map-bg-dark-1); }
+.gns3-map-bg-dark-2 { --gns3-map-bg: var(--gns3-map-bg-dark-2); }
+.gns3-map-bg-dark-3 { --gns3-map-bg: var(--gns3-map-bg-dark-3); }
+.gns3-map-bg-dark-4 { --gns3-map-bg: var(--gns3-map-bg-dark-4); }
+
+/* Default auto fallback */
+.gns3-map-bg-auto {
+  --gns3-map-bg: var(--gns3-map-bg-auto);
+}
+
 /* Node/Link selection grayscale effect */
 svg#map g.selected {
   filter: grayscale(100%);

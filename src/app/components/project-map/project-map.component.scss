@@ -73,7 +73,7 @@ g.node:hover {
 }
 
 .project-map {
-  background: var(--gns3-map-background, var(--mat-sys-surface));
+  background: var(--gns3-map-bg, var(--mat-sys-surface));
   min-height: 100vh;
   min-width: 100vw;
 
