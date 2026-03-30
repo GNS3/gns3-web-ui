@@ -87,65 +87,63 @@ export class WindowBoundaryService {
    */
   constrainDragPosition(currentStyle: WindowStyle, movementX: number, movementY: number): WindowStyle {
     const config = this.config$.value;
-    const width = Number(currentStyle.width?.split('px')[0]) || 0;
-    const height = Number(currentStyle.height?.split('px')[0]) || 0;
+    const width = this.parsePx(currentStyle.width);
+    const height = this.parsePx(currentStyle.height);
 
-    const result: WindowStyle = { ...currentStyle, position: 'fixed' };
+    const result: WindowStyle = { position: 'fixed' };
 
     // Handle horizontal position (prefer right, then left)
     if (currentStyle.right !== undefined) {
-      let right = Number(currentStyle.right.split('px')[0]) - movementX;
-
-      // For right positioning:
-      // - Larger right value moves window to the left
-      // - Smaller (negative) right value moves window to the right
-      // Right boundary: keep window within viewport (minRight is 0)
+      let right = this.parsePx(currentStyle.right) - movementX;
       const minRight = 0;
-      // Left boundary: keep window within viewport (maxRight is viewportWidth - windowWidth)
       const maxRight = window.innerWidth - width;
-
-      result.right = `${Math.max(minRight, Math.min(maxRight, right))}px`;
-      delete result.left;
+      right = Math.max(minRight, Math.min(maxRight, right));
+      result.right = `${right}px`;
     } else if (currentStyle.left !== undefined) {
-      let left = Number(currentStyle.left.split('px')[0]) + movementX;
-      // Constrain left boundary - keep window within viewport
+      let left = this.parsePx(currentStyle.left) + movementX;
       const maxLeft = window.innerWidth - width;
       const minLeft = 0;
-      result.left = `${Math.max(minLeft, Math.min(maxLeft, left))}px`;
-      delete result.right;
+      left = Math.max(minLeft, Math.min(maxLeft, left));
+      result.left = `${left}px`;
     }
 
     // Handle vertical position (prefer top, then bottom)
     if (currentStyle.top !== undefined) {
-      let top = Number(currentStyle.top.split('px')[0]) + movementY;
-      // Constrain top boundary - keep window within viewport
-      // Minimum top is topOffset (to keep below toolbar), or 0 if not set
+      let top = this.parsePx(currentStyle.top) + movementY;
       const minTop = config.topOffset || 0;
       const maxTop = window.innerHeight - height;
-      result.top = `${Math.max(minTop, Math.min(maxTop, top))}px`;
-      delete result.bottom;
+      top = Math.max(minTop, Math.min(maxTop, top));
+      result.top = `${top}px`;
     } else if (currentStyle.bottom !== undefined) {
-      let bottom = Number(currentStyle.bottom.split('px')[0]) - movementY;
-      // For bottom positioning:
-      // - Larger bottom value moves window upward
-      // - Smaller (negative) bottom value moves window downward
-      // Bottom boundary: keep window within viewport (minBottom is 0)
+      let bottom = this.parsePx(currentStyle.bottom) - movementY;
       const minBottom = 0;
-      // Top boundary: keep window within viewport, considering topOffset
-      // Window top = window.innerHeight - bottom - height >= topOffset
-      // So: bottom <= window.innerHeight - height - topOffset
       const maxBottom = window.innerHeight - height - (config.topOffset || 0);
-
-      result.bottom = `${Math.max(minBottom, Math.min(maxBottom, bottom))}px`;
-      delete result.top;
+      bottom = Math.max(minBottom, Math.min(maxBottom, bottom));
+      result.bottom = `${bottom}px`;
     }
 
     // Preserve width and height
-    if (currentStyle.width) result.width = currentStyle.width;
-    if (currentStyle.height) result.height = currentStyle.height;
+    result.width = currentStyle.width;
+    result.height = currentStyle.height;
 
     return result;
   }
+
+  /**
+   * Helper to parse pixel values from style strings
+   * Cached for performance
+   */
+  private parsePx(value: string | undefined): number {
+    if (!value) return 0;
+    const cached = this.parsePxCache.get(value);
+    if (cached !== undefined) return cached;
+    const parsed = Number(value.split('px')[0]) || 0;
+    this.parsePxCache.set(value, parsed);
+    return parsed;
+  }
+
+  // Cache for parsed pixel values to avoid repeated string operations
+  private parsePxCache = new Map<string, number>();
 
   /**
    * Check and constrain resized window size to ensure it does not exceed viewport boundaries

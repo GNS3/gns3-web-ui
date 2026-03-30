@@ -23,6 +23,7 @@
   border-radius: 4px;
   outline: none;
   transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: left, bottom, width, height; // Hint browser for optimization
 
   &.console-active {
     box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent), 0 0 0 1px var(--mat-sys-outline);
@@ -30,6 +31,24 @@
 
   &:focus {
     outline: none;
+  }
+
+  /* =============================================
+  // Dragging State - Optimize rendering
+  // ============================================= */
+  &.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+    pointer-events: none; // Prevent interactions during drag
+    transition: none; // Disable transitions during drag
+
+    // Hide heavy content during drag for better performance
+    .console-content,
+    .console-area,
+    app-web-console,
+    app-log-console {
+      visibility: hidden;
+    }
   }
 
   /* =============================================

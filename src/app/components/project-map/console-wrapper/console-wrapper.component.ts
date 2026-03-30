@@ -70,6 +70,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   public style: WindowStyle = {};
   public styleInside: object = { height: `120px` };
   public isDraggingEnabled: boolean = false;
+  public isDragging: boolean = false; // For CSS class
   public isLightThemeEnabled: boolean = false;
   public isMinimized: boolean = false;
   public isMaximized: boolean = false;
@@ -257,10 +258,12 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   toggleDragging(value: boolean) {
     const wasDragging = this.isDraggingEnabled;
     this.isDraggingEnabled = value;
+    this.isDragging = value; // For CSS optimization
     // Save window state after drag ends
     if (wasDragging && !value) {
       this.saveWindowState();
     }
+    this.cdr.markForCheck();
   }
 
   dragWidget(event: MouseEvent) {
