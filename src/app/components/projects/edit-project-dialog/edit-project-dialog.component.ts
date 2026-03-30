@@ -16,7 +16,7 @@ import {
   UntypedFormGroup,
   Validators,
 } from '@angular/forms';
-import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogRef, MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -31,6 +31,7 @@ import { ProjectService } from '@services/project.service';
 import { ToasterService } from '@services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
 import { ReadmeEditorComponent } from './readme-editor/readme-editor.component';
+import { DeleteConfirmationDialogComponent } from '../../preferences/common/delete-confirmation-dialog/delete-confirmation-dialog.component';
 
 @Component({
   standalone: true,
@@ -58,6 +59,7 @@ export class EditProjectDialogComponent implements OnInit {
   readonly editor = viewChild<ReadmeEditorComponent>('editor');
 
   private dialogRef = inject(MatDialogRef<EditProjectDialogComponent>);
+  private dialog = inject(MatDialog);
   private formBuilder = inject(UntypedFormBuilder);
   private projectService = inject(ProjectService);
   private toasterService = inject(ToasterService);
@@ -117,8 +119,16 @@ export class EditProjectDialogComponent implements OnInit {
   }
 
   deleteVariable(variable: ProjectVariable) {
-    this.variables = this.variables.filter((elem) => elem !== variable);
-    this.cd.markForCheck();
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+      data: { templateName: variable.name },
+      panelClass: 'base-dialog-panel',
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.variables = this.variables.filter((elem) => elem !== variable);
+        this.cd.markForCheck();
+      }
+    });
   }
 
   onNoClick() {
