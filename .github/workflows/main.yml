@@ -1,4 +1,5 @@
-name: Build
+name: Build & Lint
+
 on:
   push:
     branches:
@@ -26,3 +27,95 @@ jobs:
         run: yarn install --frozen-lockfile --immutable
       - name: Test
         run: yarn test
+
+  lint-check:
+    runs-on: ubuntu-latest
+    name: CLAUDE.md Standards Check
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check for ::ng-deep in SCSS
+        run: |
+          FOUND=$(grep -r "::ng-deep" --include="*.scss" src/ || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ FORBIDDEN: ::ng-deep found in SCSS files"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No ::ng-deep found"
+
+      - name: Check for !important in SCSS
+        run: |
+          FOUND=$(grep -rn "!important" --include="*.scss" src/ || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ FORBIDDEN: !important found in SCSS files"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No !important found"
+
+      - name: Check for ViewEncapsulation.None
+        run: |
+          FOUND=$(grep -rn "ViewEncapsulation.None" --include="*.ts" src/ || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ FORBIDDEN: ViewEncapsulation.None found"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No ViewEncapsulation.None found"
+
+      - name: Check for Zone.js imports
+        run: |
+          FOUND=$(grep -rn "zone.js" --include="*.ts" src/ || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ FORBIDDEN: zone.js import found"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No zone.js imports found"
+
+      - name: Check for NgZone usage
+        run: |
+          FOUND=$(grep -rn "NgZone" --include="*.ts" src/ || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ FORBIDDEN: NgZone found"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No NgZone found"
+
+      - name: Check for Zone.run usage
+        run: |
+          FOUND=$(grep -rn "Zone.run" --include="*.ts" src/ || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ FORBIDDEN: Zone.run found"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No Zone.run found"
+
+      - name: Check for ApplicationRef.tick usage
+        run: |
+          FOUND=$(grep -rn "ApplicationRef.tick" --include="*.ts" src/ || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ FORBIDDEN: ApplicationRef.tick found"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No ApplicationRef.tick found"
+
+      - name: Check for hardcoded colors in SCSS
+        run: |
+          # Allow hex colors in comments, but flag direct property usage
+          FOUND=$(grep -rnE "#[0-9A-Fa-f]{3,6};" --include="*.scss" src/ || true)
+          # Filter out common false positives (placeholders, comments)
+          FILTERED=$(echo "$FOUND" | grep -v "// " | grep -v "/\*" | grep -v "http" || true)
+          if [ -n "$FILTERED" ]; then
+            echo "⚠️  WARNING: Potential hardcoded colors found (use --mat-sys-* variables)"
+            echo "$FILTERED"
+          else
+            echo "✅ No obvious hardcoded colors found"
+          fi
+
+      - name: Run Angular lint
+        run: yarn ng lint
