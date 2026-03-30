@@ -1,452 +1,382 @@
 # AI Profile Management - Complete Guide
 
-> Complete documentation for LLM Model Configuration management in GNS3 Web UI
-
-**Version**: v1.2
-**Last Updated**: 2026-03-18
+**Version**: v1.3
+**Last Updated**: 2026-03-30
 **Status**: ✅ Implemented
-
----
-
-## Table of Contents
-
-1. [Overview](#1-overview)
-2. [Feature Description](#2-feature-description)
-3. [Component Structure](#3-component-structure)
-4. [API Integration](#4-api-integration)
-5. [Form Validation](#5-form-validation)
-6. [Provider Presets](#6-provider-presets)
-7. [Custom Fields](#7-custom-fields)
-8. [Advanced Implementation Details](#8-advanced-implementation-details)
-9. [Security Considerations](#9-security-considerations)
-10. [Changelog](#10-changelog)
-11. [Future Enhancements](#11-future-enhancements)
 
 ---
 
 ## 1. Overview
 
-### 1.1 Purpose
+The AI Profile Management feature allows users and groups to manage LLM (Large Language Model) configurations for GNS3's AI-powered features.
 
-The AI Profile Management feature allows users and groups to manage LLM (Large Language Model) configurations for use with GNS3's AI-powered features.
+### Key Features
 
-### 1.2 Key Features
-
-- ✅ User-level configuration management
-- ✅ Group-level configuration management
-- ✅ Configuration inheritance (users inherit from groups)
-- ✅ Default configuration selection
-- ✅ Provider presets (OpenRouter, DeepSeek, etc.)
-- ✅ Custom model support
-- ✅ API key encryption
-- ✅ Advanced custom parameters
+- User-level and group-level configuration management
+- Configuration inheritance (users inherit from groups)
+- Default configuration selection
+- Provider presets (OpenRouter, DeepSeek, Custom)
+- Custom model support with Basic/Custom mode
+- API key encryption (keys never exposed after creation)
+- Advanced custom parameters
 
 ---
 
-## 2. Feature Description
-
-### 2.1 Configuration Hierarchy
+## 2. Configuration Hierarchy
 
 ```
-Group Configurations
-    ↓ (inherited)
-User Configurations
-    ↓ (effective)
-Effective Configurations (user's own + inherited)
+┌─────────────────────────────────────────────────────────────┐
+│                    Configuration Hierarchy                     │
+├─────────────────────────────────────────────────────────────┤
+│                                                               │
+│   Group Configurations                                        │
+│       │                                                      │
+│       └── inherited ──► User Configurations                  │
+│                                   │                           │
+│                                   └── effective ──► Effective  │
+│                                              Configurations   │
+│                                                               │
+│   Source: 'group' ──► Badge: "Group: {name}" (read-only)     │
+│   Source: 'user'  ──► Editable                              │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### 2.2 Configuration Types
+### Configuration Types
 
-| Type | Description | Owner |
-|------|-------------|-------|
-| **User Config** | Created and owned by a specific user | User |
-| **Group Config** | Created and owned by a group | Group |
-| **Inherited Config** | Group config available to group members | Group |
+| Type | Owner | Editable | Description |
+|------|-------|----------|-------------|
+| User Config | User | Yes | User's own configurations |
+| Group Config | Group | No (for members) | Group's configurations |
+| Inherited Config | Group | No | Available to group members |
 
-### 2.3 Model Types
+### Model Types
 
-- `text` - Text generation models
-- `vision` - Image understanding models
-- `stt` - Speech-to-Text models
-- `tts` - Text-to-Speech models
-- `multimodal` - Multiple input types
-- `embedding` - Text embedding models
-- `reranking` - Reranking models
-- `other` - Other model types
+| Type | Label | Description |
+|------|-------|-------------|
+| `text` | Text | Text generation models |
+| `vision` | Vision | Image understanding models |
+| `stt` | STT | Speech-to-Text models |
+| `tts` | TTS | Text-to-Speech models |
+| `multimodal` | Multimodal | Multiple input types |
+| `embedding` | Embedding | Text embedding models |
+| `reranking` | Reranking | Reranking models |
+| `other` | Other | Other model types |
 
 ---
 
 ## 3. Component Structure
 
-### 3.1 File Locations
+### File Locations
 
 ```
 src/app/
 ├── components/
-│   ├── user-management/user-detail/
-│   │   └── ai-profile-tab/
-│   │       ├── ai-profile-tab.component.*         # User config list
-│   │       └── ai-profile-dialog/
-│   │           └── ai-profile-dialog.component.*   # Create/Edit dialog
-│   └── group-details/
-│       └── group-ai-profile-tab/
-│           ├── group-ai-profile-tab.component.*   # Group config list
-│           └── ai-profile-dialog/
-│               └── (shared with user)
+│   ├── user-management/user-detail/ai-profile-tab/
+│   │   ├── ai-profile-tab.component.*        # User config list
+│   │   └── ai-profile-dialog/
+│   │       └── ai-profile-dialog.component.* # Create/Edit dialog
+│   ├── group-management/group-detail-dialog/
+│   │   └── group-ai-profile-dialog/
+│   │       └── (reuses user dialog)         # Shared dialog
+│   └── group-details/group-ai-profile-tab/
+│       └── group-ai-profile-tab.component.* # Group config list
 ├── services/
-│   └── ai-profiles.service.ts                     # API service
-└── models/
-    └── ai-profile.ts                              # Data models
+│   └── ai-profiles.service.ts              # API service
+├── models/
+│   └── ai-profile.ts                       # Data models
+└── utils/
+    └── ai-profile.util.ts                  # Display helpers
 ```
 
-### 3.2 Components
+### Component Overview
 
-#### AiProfileTabComponent
-- **Location**: `src/app/components/user-management/user-detail/ai-profile-tab/`
-- **Purpose**: Display and manage user's LLM model configurations
-- **Features**:
-  - List all configurations (own + inherited from groups)
-  - Create new configuration
-  - Edit existing configuration
-  - Delete configuration
-  - Set/unset default configuration
-  - Visual indicators for inherited configs
-
-#### GroupAiProfileTabComponent
-- **Location**: `src/app/components/group-details/group-ai-profile-tab/`
-- **Purpose**: Display and manage group's LLM model configurations
-- **Features**: Same as user tab, but without inheritance
-
-#### AiProfileDialogComponent
-- **Location**: `src/app/components/user-management/user-detail/ai-profile-tab/ai-profile-dialog/`
-- **Purpose**: Create or edit LLM model configuration
-- **Features**:
-  - Provider presets with auto-configuration
-  - Custom model support
-  - Conditional validation (API key required for create, optional for edit)
-  - Advanced custom parameters
-  - Default configuration toggle
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| `AiProfileTabComponent` | User detail tab | Display/manage user's configs (own + inherited) |
+| `GroupAiProfileTabComponent` | Group detail tab | Display/manage group's configs |
+| `AiProfileDialogComponent` | Shared dialog | Create/Edit configuration form |
+| `AiProfilesService` | Services | API communication layer |
+| `ai-profile.util.ts` | Utils | `getModelDisplayName()`, `shortenModelName()` |
 
 ---
 
 ## 4. API Integration
 
-### 4.1 User Endpoints
+### User Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/v3/access/users/{user_id}/llm-model-configs` | Get effective configs (own + inherited) |
-| GET | `/v3/access/users/{user_id}/llm-model-configs/own` | Get own configs only |
-| GET | `/v3/access/users/{user_id}/llm-model-configs/default` | Get default config |
-| POST | `/v3/access/users/{user_id}/llm-model-configs` | Create new config |
-| PUT | `/v3/access/users/{user_id}/llm-model-configs/{config_id}` | Update config |
-| DELETE | `/v3/access/users/{user_id}/llm-model-configs/{config_id}` | Delete config |
-| PUT | `/v3/access/users/{user_id}/llm-model-configs/default/{config_id}` | Set as default |
-| PUT | `/v3/access/users/{user_id}/llm-model-configs/{config_id}` with `is_default: false` | Unset default |
+```
+GET    /access/users/{user_id}/llm-model-configs        # Effective configs (own + inherited)
+GET    /access/users/{user_id}/llm-model-configs/own     # Own configs only
+GET    /access/users/{user_id}/llm-model-configs/default # Default config
+POST   /access/users/{user_id}/llm-model-configs        # Create config
+PUT    /access/users/{user_id}/llm-model-configs/{id}   # Update config
+DELETE /access/users/{user_id}/llm-model-configs/{id}   # Delete config
+PUT    /access/users/{user_id}/llm-model-configs/default/{id}  # Set default
+```
 
-### 4.2 Group Endpoints
+### Group Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/v3/access/groups/{group_id}/llm-model-configs` | Get group configs |
-| GET | `/v3/access/groups/{group_id}/llm-model-configs/default` | Get default config |
-| POST | `/v3/access/groups/{group_id}/llm-model-configs` | Create new config |
-| PUT | `/v3/access/groups/{group_id}/llm-model-configs/{config_id}` | Update config |
-| DELETE | `/v3/access/groups/{group_id}/llm-model-configs/{config_id}` | Delete config |
-| PUT | `/v3/access/groups/{group_id}/llm-model-configs/default/{config_id}` | Set as default |
+```
+GET    /access/groups/{group_id}/llm-model-configs        # Group configs
+GET    /access/groups/{group_id}/llm-model-configs/default # Default config
+POST   /access/groups/{group_id}/llm-model-configs        # Create config
+PUT    /access/groups/{group_id}/llm-model-configs/{id}   # Update config
+DELETE /access/groups/{group_id}/llm-model-configs/{id}   # Delete config
+PUT    /access/groups/{group_id}/llm-model-configs/default/{id}  # Set default
+```
 
-### 4.3 API Response Format
+### Response Format
 
-```typescript
-interface LLMModelConfigResponse {
-  config_id: string;           // Configuration ID (UUID)
-  name: string;                // Configuration name
-  model_type: ModelType;       // Model type
-  config: {
-    provider: string;          // LLM provider
-    base_url: string;          // API base URL
-    model: string;             // Model name
-    temperature: number;       // Temperature (0.0-2.0)
-    context_limit: number;     // Context window limit in K tokens
-    api_key?: string;          // API key (null for security)
-    max_tokens?: number;       // Max tokens for generation
-    context_strategy?: ContextStrategy;
-    copilot_mode?: CopilotMode;
-    [key: string]: any;        // Custom fields
-  };
-  user_id: string | null;      // Owner user ID
-  group_id: string | null;     // Owner group ID
-  is_default: boolean;         // Default configuration flag
-  version: number;             // Optimistic locking version
-  created_at: string;          // Creation time
-  updated_at: string;          // Last update time
-}
+```
+LLMModelConfigResponse
+├── config_id: string          # UUID
+├── name: string               # Config name
+├── model_type: ModelType      # text | vision | stt | tts | multimodal | embedding | reranking | other
+├── config: {                  # Nested config object
+│   ├── provider: string       # openai | anthropic | deepseek | etc.
+│   ├── base_url: string      # API base URL
+│   ├── model: string          # Model name
+│   ├── temperature: number    # 0.0 - 2.0
+│   ├── context_limit: number  # Context window in K tokens
+│   ├── api_key?: string      # Hidden (null on response)
+│   ├── max_tokens?: number    # Max tokens for generation
+│   ├── context_strategy?:     # conservative | balanced | aggressive
+│   └── copilot_mode?:         # teaching_assistant | lab_automation_assistant
+│   }
+├── user_id: string | null    # Owner user ID
+├── group_id: string | null   # Owner group ID
+├── is_default: boolean        # Default flag
+├── version: number            # Optimistic locking
+├── source: 'user' | 'group'   # Only in inherited responses
+├── group_name: string | null # Only in inherited responses
+├── created_at: string
+└── updated_at: string
 ```
 
 ---
 
-## 5. Form Validation
+## 5. Dialog Modes
 
-### 5.1 Conditional Validation
+The configuration dialog supports two modes:
 
-**Create Mode**:
-- `api_key`: Required, min length 10 characters
-- All other fields as per their validators
+### Basic Mode (Recommended)
 
-**Edit Mode**:
-- `api_key`: Optional (empty = keep existing, new value = update)
-- All other fields as per their validators
+Select from preset providers with pre-configured models:
 
-### 5.2 Field Validators
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Provider Presets                                            │
+├─────────────────────────────────────────────────────────────┤
+│  ┌──────────────┐  ┌──────────────┐                        │
+│  │  OpenRouter  │  │   DeepSeek   │  ┌──────────────┐     │
+│  │     ▼        │  │      ▼       │  │    Custom    │     │
+│  └──────────────┘  └──────────────┘  └──────────────┘     │
+│                                                               │
+│  Model: [deepseek/deepseek-v3.2    ▼]  (dropdown)           │
+│  Temperature: 0.3   Context Limit: 128K                    │
+└─────────────────────────────────────────────────────────────┘
+```
 
-| Field | Validators |
-|-------|------------|
-| `name` | Required, 1-100 chars, alphanumeric with underscores/hyphens only |
-| `model_type` | Required |
-| `provider` | Required |
-| `model` | Required |
-| `api_key` | Required (create), Optional (edit), min 10 chars |
-| `base_url` | Optional |
-| `temperature` | Required, 0.0-2.0 |
-| `context_limit` | Required, 1-10000 |
-| `context_strategy` | Optional |
-| `copilot_mode` | Optional |
+### Custom Mode
 
-### 5.3 Name Uniqueness
+Manually configure provider and model:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  Supported Providers                                         │
+├─────────────────────────────────────────────────────────────┤
+│  openai | anthropic | google | aws | ollama | deepseek | xai│
+│                                                               │
+│  Provider: [OpenAI        ▼]  Base URL: [https://api...   ]  │
+│  Model:   [gpt-4o                                          ]  │
+│  Temperature: 0.7   Context Limit: 128K                      │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Provider Presets
+
+| Preset | Provider | Base URL | Models |
+|--------|----------|----------|--------|
+| OpenRouter | openai | `https://openrouter.ai/api/v1` | deepseek-v3.2, grok-3, claude-sonnet-4, glm-4.7, gpt-4o, gemini-2.5-flash |
+| DeepSeek | deepseek | `https://api.deepseek.com/v1` | deepseek-chat |
+| Custom | - | User defined | User defined |
+
+---
+
+## 6. Form Validation
+
+### Validation Rules
+
+| Field | Required | Constraints |
+|-------|----------|-------------|
+| `name` | Yes | 1-100 chars, alphanumeric with underscores/hyphens |
+| `model_type` | Yes | Must be a valid ModelType |
+| `provider` | Yes | Must be from supported list |
+| `model` | Yes | Non-empty string |
+| `api_key` | Create: Yes / Edit: No | Min 10 chars if provided |
+| `base_url` | No | Valid URL format |
+| `temperature` | Yes | 0.0 - 2.0 |
+| `context_limit` | Yes | 1 - 10000 (K tokens) |
+
+### Conditional Validation
+
+```
+Create Mode:
+  └── api_key: Required, min 10 characters
+
+Edit Mode:
+  └── api_key: Optional (empty = keep existing, new value = update)
+```
+
+### Name Uniqueness
 
 Configuration names must be unique within the same scope (user or group). The dialog validates this during creation and editing.
 
 ---
 
-## 6. Provider Presets
+## 7. Advanced Settings
 
-### 6.1 Available Presets
+### Context Strategy
 
-| Preset ID | Label | Provider | Base URL |
-|-----------|-------|----------|----------|
-| `custom` | Custom (User Defined) | openai | (user defined) |
-| `openrouter` | OpenRouter | openai | https://openrouter.ai/api/v1 |
-| `deepseek` | DeepSeek | deepseek | https://api.deepseek.com/v1 |
+Controls how the AI manages context window usage when approaching token limits.
 
-### 6.2 Preset Models
+| Strategy | Context Usage | Description |
+|----------|---------------|-------------|
+| `conservative` | 60% | Truncates earlier, safer for long conversations |
+| `balanced` | 75% | Default balance between context and safety |
+| `aggressive` | 85% | Maximizes context at risk of hitting limits |
 
-**OpenRouter**:
-- deepseek/deepseek-v3.2
-- x-ai/grok-3
-- anthropic/claude-sonnet-4
-- z-ai/glm-4.7
-- openai/gpt-4o
-- google/gemini-2.5-flash
+### Copilot Mode
 
-**DeepSeek**:
-- deepseek-chat
-- deepseek-coder
+Configures the AI assistant's operational mode in GNS3 AI Chat.
 
-### 6.3 Custom Model Support
+| Mode | Description |
+|------|-------------|
+| `teaching_assistant` | Diagnostics only - Provides guidance without making changes |
+| `lab_automation_assistant` | Full access - Can analyze and modify GNS3 configurations |
 
-Users can select "Custom model name..." from the preset dropdown to manually enter any model name.
+### Custom Fields
 
-### 6.4 Copilot Mode
+Users can add unlimited key-value pairs for provider-specific parameters. The following are intentionally hidden from custom fields:
 
-**Purpose**: Configure the AI assistant's operational mode in GNS3 AI Chat.
-
-**Available Modes**:
-
-| Mode | Value | Description |
-|------|-------|-------------|
-| **Teaching Assistant** | `teaching_assistant` | Diagnostics only - Provides guidance, analysis, and explanations without making configuration changes |
-| **Lab Automation** | `lab_automation_assistant` | Full configuration access - Can analyze, modify, and manage GNS3 project configurations |
-
-**Usage**:
-- Set when creating or editing a model configuration
-- Optional field (defaults to `teaching_assistant` if not specified)
-- Can be changed dynamically in AI Chat interface
-- Mode preference persists with the model configuration
-- Different models can have different copilot modes
-
-**UI Location**:
-- **AI Profile Dialog**: Dropdown selector in the configuration form
-- **AI Chat**: Model selector menu > Copilot Mode section (bottom)
-
-**Example**:
-```typescript
-{
-  copilot_mode: 'teaching_assistant'  // or 'lab_automation_assistant'
-}
-```
-
-### 6.5 Context Strategy
-
-**Purpose**: Configure how the AI manages context window usage when approaching token limits.
-
-**Available Strategies**:
-
-| Strategy | Value | Context Usage | Description |
-|----------|-------|---------------|-------------|
-| **Conservative** | `conservative` | 60% of limit | Truncates earlier, safer for long conversations |
-| **Balanced** | `balanced` | 75% of limit | Default balance between context length and safety |
-| **Aggressive** | `aggressive` | 85% of limit | Maximizes context at risk of hitting limits |
-
-**Usage**:
-- Optional field (defaults to `balanced` if not specified)
-- Determines when to start truncating message history
-- Helps prevent exceeding model's context window
-
----
-
-## 7. Custom Fields
-
-### 7.1 Purpose
-
-Custom fields allow users to add additional parameters not included in the standard form, such as:
-- `max_tokens` - Maximum tokens for generation
-- Provider-specific parameters
-- Experimental features
-
-### 7.2 Hidden Fields
-
-The following fields are intentionally hidden from the custom fields list to avoid confusion:
 - `max_tokens` - Standard optional parameter
 
-### 7.3 Custom Field Management
-
-Users can:
-- Add unlimited custom key-value pairs
-- Delete custom fields
-- Custom fields are sent directly in the API request
-
 ---
 
-## 8. Advanced Implementation Details
+## 8. Conflict Resolution
 
-### 8.1 Optimistic Locking
+### Optimistic Locking
 
-**Purpose**: Prevent concurrent modification conflicts when multiple users edit the same configuration.
+The `version` field in responses is used for optimistic locking to prevent concurrent modification conflicts.
 
-**Implementation**:
-- `UpdateLLMModelConfigRequest` includes an optional `expected_version` field
-- Server validates the version before applying updates
-- Returns `409 Conflict` if version mismatch occurs
-- Clients automatically refresh data and notify users
-
-**Usage**:
-```typescript
-// Include expected_version when updating
-const updateRequest: UpdateLLMModelConfigRequest = {
-  name: 'Updated Name',
-  expected_version: config.version  // Current version from fetch
-};
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    Update Flow with Versioning                │
+├─────────────────────────────────────────────────────────────┤
+│                                                               │
+│  1. Fetch config (version: 5)                                │
+│         │                                                    │
+│         ▼                                                    │
+│  2. User A edits ──► PUT /configs/123 {version: 5}         │
+│         │                                                    │
+│         ▼                                                    │
+│  3. User B edits ──► PUT /configs/123 {version: 5}         │
+│                        │                                     │
+│                        └── 409 Conflict!                     │
+│                                                               │
+│  4. Auto-refresh data, notify User B                       │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-### 8.2 Conflict Resolution
+### HTTP 409 Conflict Handling
 
-**HTTP 409 Conflict Handling**:
-
-**Scenarios**:
-- Concurrent edits to the same configuration
-- Version mismatch during update operations
-- Default configuration conflicts
-
-**Client Behavior**:
-1. Detect `409` status code in error response
-2. Automatically reload configuration list
-3. Display warning message: "Data has been modified by another user, auto-refreshed"
-4. User can retry operation with fresh data
-
-**Implementation Location**:
-- `AiProfileTabComponent.handleConflict()` (src/app/components/user-management/user-detail/ai-profile-tab/ai-profile-tab.component.ts)
-- `GroupAiProfileTabComponent.handleConflict()` (src/app/components/group-details/group-ai-profile-tab/group-ai-profile-tab.component.ts)
+When a version mismatch occurs:
+1. Server returns `409 Conflict`
+2. Client automatically reloads configuration list
+3. User sees: "Data has been modified by another user, auto-refreshed"
 
 ---
 
-## 9. Security Considerations
+## 9. Security
 
-### 9.1 API Key Handling
+### API Key Handling
 
-**Server Behavior**:
-- API keys are encrypted on the server
-- API responses return `api_key: null` for security
-- Existing keys are never exposed to the client
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     API Key Security                          │
+├─────────────────────────────────────────────────────────────┤
+│                                                               │
+│  Server:                                                      │
+│    ├── Keys encrypted on server                              │
+│    └── Responses return api_key: null                        │
+│                                                               │
+│  Client:                                                      │
+│    ├── Create: API key required                              │
+│    └── Edit: API key optional (empty = keep existing)        │
+│                                                               │
+│  ⚠️ Existing keys are NEVER exposed to the client           │
+└─────────────────────────────────────────────────────────────┘
+```
 
-**Client Behavior**:
-- Create mode: API key is required
-- Edit mode: API key is optional (empty = keep existing)
-- Clear visual indication when a key exists but is hidden
+### Configuration Inheritance
 
-### 9.2 Configuration Inheritance
-
-**User Access**:
 - Users can view and use inherited group configurations
 - Users cannot edit or delete inherited group configurations
-- Users can create their own configurations that override group configs
-
-**Group Access**:
-- Group admins manage group configurations
-- Group members inherit configurations automatically
 - Inherited configs are visually marked with a group badge
 
 ---
 
-## 10. Changelog
+## 10. Feature Summary
 
-### v1.2 (2026-03-18)
-
-**Code Cleanup**:
-- ✅ Removed all legacy API methods from `AiProfilesService`
-  - Removed `/profiles` endpoints (user and group)
-  - Removed legacy methods: `getProfiles`, `createProfile`, `updateProfile`, etc.
-- ✅ Removed legacy type definitions from `ai-profile.ts`
-  - Removed `AiProfile`, `AiProfilesResponse`, `CreateProfileRequest`, etc.
-- ✅ Cleaned up unused imports in component files
-- ✅ Updated documentation to remove legacy API references
-
-**Breaking Change**: Legacy `/profiles` API endpoints no longer supported in frontend code.
-
-### v1.1 (2026-03-18)
-
-**Documentation Updates**:
-- ✅ Added Section 8: Advanced Implementation Details
-- ✅ Documented optimistic locking mechanism with `expected_version`
-- ✅ Documented legacy API compatibility layer (later removed in v1.2)
-- ✅ Documented HTTP 409 conflict resolution handling
-- ✅ Updated table of contents and section numbering
-
-### v1.0 (2026-03-14)
-
-**Initial Release**:
-- ✅ User-level configuration management
-- ✅ Group-level configuration management
-- ✅ Configuration inheritance
-- ✅ Provider presets (OpenRouter, DeepSeek, Custom)
-- ✅ Custom model support
-- ✅ Conditional API key validation
-- ✅ Default configuration management
-- ✅ Custom field support
-- ✅ Visual indicators for inherited configs
-
-**Bug Fixes**:
-- ✅ API key not returned from server (handled as optional in edit mode)
-- ✅ max_tokens hidden from custom fields list
-- ✅ Tooltip removed from "Set as default" button
-
-**UI Improvements**:
-- ✅ Clear indication when existing API key is saved
-- ✅ Contextual help text for create vs edit modes
-- ✅ Group badge for inherited configurations
+| Feature | Description |
+|---------|-------------|
+| User Config Management | Create, edit, delete own configurations |
+| Group Config Management | Create, edit, delete group configurations |
+| Configuration Inheritance | Users see group configs with source badge |
+| Default Config | Set/unset default for quick access |
+| Provider Presets | OpenRouter, DeepSeek with pre-configured models |
+| Custom Mode | Manual provider configuration |
+| Form Validation | Client-side validation with error messages |
+| Name Uniqueness | Prevent duplicate names within scope |
+| Optimistic Locking | Prevent concurrent edit conflicts |
+| Custom Fields | Add provider-specific parameters |
+| Context Strategy | Control context window usage |
+| Copilot Mode | Teaching vs Lab Automation modes |
 
 ---
 
-## 11. Future Enhancements
+## 11. Changelog
 
-**Potential Features**:
-- [ ] Configuration templates
-- [ ] Configuration import/export
-- [ ] Configuration validation (test connection)
-- [ ] Usage statistics per configuration
-- [ ] Configuration versioning
-- [ ] Bulk operations
+### v1.3 (2026-03-30)
+
+**Documentation Updates**:
+- Removed code blocks, used text diagrams instead
+- Fixed API paths (removed `/v3` prefix)
+- Fixed DeepSeek models list
+- Added Custom Mode provider list
+- Added utility functions documentation
+- Simplified overall structure
+
+### v1.2 (2026-03-18)
+
+- Removed legacy `/profiles` API endpoints
+- Removed legacy type definitions
+- Code cleanup completed
+
+### v1.1 (2026-03-18)
+
+- Added Advanced Implementation Details section
+- Documented optimistic locking with `expected_version`
+- Documented HTTP 409 conflict resolution
+
+### v1.0 (2026-03-14)
+
+- Initial release with user/group configuration management
+- Provider presets, custom model support
+- Conditional API key validation
+- Default configuration management
 
 ---
 
 **Maintained By**: Development Team
-**Last Updated**: 2026-03-18 (v1.2)
+**Last Updated**: 2026-03-30 (v1.3)
