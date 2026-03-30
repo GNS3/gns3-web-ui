@@ -166,7 +166,8 @@ export class UserManagementComponent implements OnInit {
               this.refresh();
             },
             (error) => {
-              const errorMessage = error?.error?.message || `An error occurred while trying to delete user ${user.username}`;
+              const errorMessage =
+                error?.error?.message || `An error occurred while trying to delete user ${user.username}`;
               this.toasterService.error(errorMessage);
             }
           );
@@ -199,7 +200,8 @@ export class UserManagementComponent implements OnInit {
                 this.refresh();
               },
               (error) => {
-                const errorMessage = error?.error?.message || `An error occurred while trying to delete user ${user.username}`;
+                const errorMessage =
+                  error?.error?.message || `An error occurred while trying to delete user ${user.username}`;
                 this.toasterService.error(errorMessage);
               }
             );

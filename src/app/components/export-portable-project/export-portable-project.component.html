@@ -1,5 +1,9 @@
 @if (export_project_form) {
-<form class="export-portable-project__form" [formGroup]="export_project_form" (ngSubmit)="export_project_form.valid && exportPortableProject()">
+<form
+  class="export-portable-project__form"
+  [formGroup]="export_project_form"
+  (ngSubmit)="export_project_form.valid && exportPortableProject()"
+>
   <div class="export-portable-project__header">
     <h1 class="export-portable-project__title">Export Project</h1>
     <button mat-icon-button type="button" class="export-portable-project__close-btn" (click)="dialogRef.close()">
