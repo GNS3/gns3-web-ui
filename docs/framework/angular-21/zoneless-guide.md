@@ -1,45 +1,45 @@
-# Angular Zoneless 开发指南
+# Angular Zoneless Development Guide
 
-> 本项目基于 Angular 21 Zoneless 架构。Zone.js 已禁用，所有变更检测均为显式控制。
-
----
-
-## 核心要求
-
-| 规则 | 说明 |
-|------|------|
-| **OnPush** | 所有组件必须使用 `ChangeDetectionStrategy.OnPush` |
-| **Standalone** | 所有组件必须为 standalone（Angular 21 默认） |
-| **Signals** | 状态管理优先使用 signals |
-| **markForCheck** | 异步操作后必须调用 `cd.markForCheck()` |
+> This project uses Angular 21 Zoneless architecture. Zone.js is disabled, and all change detection is explicit.
 
 ---
 
-## 禁止的 API
+## Core Requirements
 
-| API | 替代方案 |
-|-----|---------|
-| `Zone.run()` | `effect()` 或直接状态更新 |
+| Rule | Description |
+|------|-------------|
+| **OnPush** | All components must use `ChangeDetectionStrategy.OnPush` |
+| **Standalone** | All components must be standalone (Angular 21 default) |
+| **Signals** | Prefer signals for state management |
+| **markForCheck** | Must call `cd.markForCheck()` after async operations |
+
+---
+
+## Forbidden APIs
+
+| API | Alternative |
+|-----|-------------|
+| `Zone.run()` | `effect()` or direct state updates |
 | `NgZone` | `ChangeDetectorRef.markForCheck()` |
-| `[(ngModel)]` | `model()` 信号 或 Reactive Forms |
+| `[(ngModel)]` | `model()` signals or Reactive Forms |
 | `ApplicationRef.tick()` | `cd.markForCheck()` |
 
 ---
 
-## 关键模式
+## Key Patterns
 
-### 1. Signal 输入
+### 1. Signal Inputs
 
 ```typescript
-// ✅ 使用 signal input
+// ✅ Use signal input
 readonly myValue = input<string>('');
 readonly count = input<number>(0);
 
-// ❌ 避免 setter
+// ❌ Avoid setter
 @Input() set value(v: string) { this._value.set(v); }
 ```
 
-### 2. Model 信号（双向绑定）
+### 2. Model Signals (Two-Way Binding)
 
 ```typescript
 // ✅ Text input
@@ -55,7 +55,7 @@ type = model('');
 <mat-select [value]="type()" (selectionChange)="type.set($event.value)">
 ```
 
-### 3. 异步操作后标记检查
+### 3. Mark Check After Async Operations
 
 ```typescript
 constructor(private cd: ChangeDetectorRef) {}
@@ -63,42 +63,42 @@ constructor(private cd: ChangeDetectorRef) {}
 ngOnInit() {
   this.http.get('/api/data').subscribe(data => {
     this.data.set(data);
-    this.cd.markForCheck();  // 必须调用
+    this.cd.markForCheck();  // Required
   });
 }
 ```
 
-### 4. 动态组件加载
+### 4. Dynamic Component Loading
 
 ```typescript
-// 创建组件后必须调用 detectChanges()
+// Must call detectChanges() after creating component
 this.instance = this.container.createComponent(MyComponent);
 this.instance.changeDetectorRef.detectChanges();
 ```
 
 ---
 
-## 参考链接
+## References
 
-- [Angular Zoneless 官方文档](https://angular.dev/guide/zoneless)
+- [Angular Zoneless Official Docs](https://angular.dev/guide/zoneless)
 - [Model Input Signals](https://angular.dev/tutorials/signals/6-two-way-binding-with-model-signals)
 - [ChangeDetectorRef](https://angular.dev/api/core/ChangeDetectorRef)
 
 ---
 
-## 已知问题
+## Known Issues
 
-### mat-checkbox 与 FormsModule
+### mat-checkbox with FormsModule
 
-在 Zoneless 模式下，显示用 checkbox 优先使用 `[checked]` 而非 `[ngModel]`：
+In Zoneless mode, prefer `[checked]` over `[ngModel]` for display-only checkboxes:
 
 ```html
-<!-- ✅ 推荐：显示用 checkbox -->
+<!-- ✅ Recommended: display-only checkbox -->
 <mat-checkbox [checked]="isVisible" (change)="toggle($event.checked)">
 
-<!-- ⚠️ 仅在需要双向绑定时使用 ngModel -->
+<!-- ⚠️ Only use ngModel when two-way binding is needed -->
 ```
 
-### 动态组件加载
+### Dynamic Component Loading
 
-`ViewContainerRef.createComponent` 在 Zoneless 模式下不会自动触发变更检测。创建组件后必须调用 `detectChanges()`。
+`ViewContainerRef.createComponent` does not automatically trigger change detection in Zoneless mode. Must call `detectChanges()` after creating a component.
