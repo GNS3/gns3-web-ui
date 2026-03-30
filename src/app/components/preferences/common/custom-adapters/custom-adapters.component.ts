@@ -20,13 +20,13 @@ export interface CustomAdaptersDialogData {
   networkTypes: NetworkType[];
   portNameFormat?: string;
   portSegmentSize?: number;
-  defaultAdapterType?: string; // 默认适配器类型（用于增量保存）
-  currentAdapters?: number; // 当前 adapters 数量
+  defaultAdapterType?: string; // Default adapter type (for incremental save)
+  currentAdapters?: number; // Current adapters count
 }
 
 export interface CustomAdaptersDialogResult {
   adapters: CustomAdapter[];
-  requiredAdapters?: number; // 需要的最小 adapters 数量
+  requiredAdapters?: number; // Minimum required adapters count
 }
 
 @Component({

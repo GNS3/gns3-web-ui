@@ -121,7 +121,7 @@ g.node:hover {
   z-index: 2;
   transition: background-color 200ms ease;
 
-  // 统一设置所有图标为白色
+  // Set all icons to white
   mat-icon {
     color: var(--mat-sys-on-primary);
   }
