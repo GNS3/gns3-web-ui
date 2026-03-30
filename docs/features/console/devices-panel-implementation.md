@@ -3,9 +3,9 @@
 ## Document Information
 
 **Created**: 2026-03-10
-**Updated**: 2026-03-30
+**Updated**: 2026-03-30 (updated 2026-03-30)
 **Status**: ✅ **Completed**
-**Version**: 2.0.0
+**Version**: 2.1.0
 **Author**: Development Team
 
 ---
@@ -27,6 +27,7 @@
   - Click to toggle minimize/restore
   - Shows active tab name
   - Fixed position (left: 20px, bottom: 20px)
+  - Size: 180px width × 48px height
   - z-index: 901 (above console window)
 
 - ✅ **Auto-Focus on Restore**: Automatically focus terminal when restoring from minimized
@@ -70,38 +71,12 @@
 - ✅ Fix DOM Node type conflict (`globalThis.Node`)
 
 **Signal Migration**:
-```typescript
-// Before: Public boolean properties
-public isDragging: boolean = false;
-public isMinimized: boolean = false;
-public isMaximized: boolean = false;
-public isConsoleActive: boolean = false;
-public isLightThemeEnabled: boolean = false;
-
-// After: Signals with readonly public access
-private isDraggingSignal = signal(false);
-private isMinimizedSignal = signal(false);
-private isMaximizedSignal = signal(false);
-private isConsoleActiveSignal = signal(false);
-private isLightThemeEnabledSignal = signal(false);
-
-public readonly isDragging = this.isDraggingSignal.asReadonly();
-public readonly isMinimized = this.isMinimizedSignal.asReadonly();
-public readonly isMaximized = this.isMaximizedSignal.asReadonly();
-public readonly isConsoleActive = this.isConsoleActiveSignal.asReadonly();
-public readonly isLightThemeEnabled = this.isLightThemeEnabledSignal.asReadonly();
-```
+- Converted boolean properties to signals: `private isDraggingSignal = signal(false)`
+- Public readonly access via `.asReadonly()` pattern
+- Template bindings updated to signal function calls: `isMinimized()` → `isMinimized()`
 
 **Template Updates**:
-```html
-<!-- Before: Property access (wrong for signals) -->
-[ngClass]="{ 'is-minimized': isMinimized }"
-[hidden]="isMinimized"
-
-<!-- After: Signal function calls (correct) -->
-[ngClass]="{ 'is-minimized': isMinimized() }"
-[hidden]="isMinimized()"
-```
+- All signal accesses require function call: `isMinimized` → `isMinimized()`
 
 **Z-Index Hierarchy**:
 - Page content: 1-10
@@ -139,6 +114,18 @@ public readonly isLightThemeEnabled = this.isLightThemeEnabledSignal.asReadonly(
 - **Boundary Constraints**: `topOffset` from `WindowBoundaryService` (64px desktop, 56px mobile)
 
 **Commit**: `d6a81498` - "refactor(console): migrate UI state to signals and add auto-focus on restore"
+
+### v2.1.0 (2026-03-30)
+
+**Documentation Update**: Align documentation with actual code implementation
+
+**Changes**:
+- ✅ Update status colors to use CSS variables (`--mat-sys-*`) instead of hardcoded hex values
+- ✅ Correct initial console position (`bottom: 40px`, not `20px`)
+- ✅ Update transition timings to match code (`100ms` instead of `0.2s`)
+- ✅ Update SCSS code samples to use correct MD3 variable names (`--mat-sys-*`)
+- ✅ Add taskbar icon dimensions (`180px × 48px`)
+- ✅ Simplify console activation box-shadow description to match actual implementation
 
 ### v1.9.0 (2026-03-18)
 
@@ -312,19 +299,21 @@ A sidebar displayed on the left side of the Console window showing all console-c
 - Click the panel header to toggle between collapsed and expanded states
 - Collapsed: Shows only the "devices" icon
 - Expanded: Shows full device list with names and status indicators
-- Smooth transition animation (0.2s)
+- Smooth transition animation (100ms)
 
 ### 2. Device Status Indicators
 
-Each device displays a colored status indicator dot:
+Each device displays a colored status indicator dot. Colors use Material Design 3 CSS variables for theme consistency:
 
-| Status | Color | Description |
-|--------|-------|-------------|
-| `started` | `#22c55e` (green) | Device is running and console can be opened |
-| `starting` | `#eab308` (yellow) | Device is starting up |
-| `stopped` | `#6b7280` (gray) | Device is stopped |
-| `suspended` | `#f97316` (orange) | Device is suspended |
-| `errored` | `#ef4444` (red) | Device has an error |
+| Status | CSS Variable | Description |
+|--------|---------------|-------------|
+| `started` | `--mat-sys-primary` | Device is running and console can be opened |
+| `starting` | `--mat-sys-tertiary` | Device is starting up |
+| `stopped` | `--mat-sys-outline` | Device is stopped |
+| `suspended` | `--mat-sys-secondary` | Device is suspended |
+| `errored` | `--mat-sys-error` | Device has an error |
+
+**Implementation Note**: Status colors use CSS variables (`var(--mat-sys-*)`) instead of hardcoded hex values to ensure proper theme adaptation and accessibility compliance per Material Design 3 guidelines.
 
 **Visual Representation**:
 ```
@@ -399,7 +388,7 @@ Clicking on any device in the sidebar:
 **Default Size**:
 - **Width**: 848px
 - **Height**: 600px
-- **Initial Position**: bottom: 20px, left: 80px
+- **Initial Position**: bottom: 40px, left: 80px
 
 **Window Features**:
 - Draggable by header
@@ -431,12 +420,10 @@ Clicking on any device in the sidebar:
 **Device Items**:
 - Background color change
 - 4px slide to the right
-- Cyan shadow effect
-- Smooth 200ms transition
+- Smooth 100ms transition
 
 **Console Window** (when activated):
-- 2px cyan ring (rgba(0, 151, 167, 0.6))
-- Enhanced outer glow
+- Subtle box-shadow enhancement using Material theme variables
 
 ---
 
@@ -480,185 +467,52 @@ ConsoleWrapperComponent.addTab()
 #### ConsoleDevicesPanelComponent
 
 **Responsibilities**:
-- Subscribe to `NodesDataSource.changes` for node list updates
-- Subscribe to `NodesDataSource.itemChanged` for individual node updates
-- Filter console-capable devices (exclude `none`, `vnc`, and `http` types)
+- Subscribe to `NodesDataSource.changes` and `itemChanged` for node updates
+- Filter console-capable devices (exclude `none`, `vnc`, `http` types)
 - Sort devices (running first, alphabetical)
-- Display device list with status colors
-- Emit `deviceSelected` event on device click
+- Emit `deviceSelected` event on click
 
-**Key Methods**:
-```typescript
-ngOnInit(): Subscribe to data source changes
-isDeviceStarted(node: Node): boolean: Check if node.status === 'started'
-getStatusColor(status: string): string: Return color for status
-getStatusLabel(status: string): string: Return human-readable label (Running, Stopped, etc.)
-onDeviceClick(node: Node): void: Emit deviceSelected event
-togglePanel(): void: Toggle panel collapse/expand state
-private sortNodes(): void: Sort by status and name
-```
+**Key Methods**: `ngOnInit()`, `isDeviceStarted()`, `getStatusColor()`, `togglePanel()`, `sortNodes()`
 
 #### ConsoleWrapperComponent (Enhancements)
 
-**New State**:
-```typescript
-isConsoleActive: boolean  // Tracks if console window is active for shortcuts
-```
+**New State**: Uses signals for `isDragging`, `isMinimized`, `isMaximized`, `isConsoleActive`, `isLightThemeEnabled`
 
 **New Methods**:
-```typescript
-onDeviceSelected(node: Node): void        // Handle device selection from sidebar
-handleTabShortcut(event: KeyboardEvent)   // Handle Alt+1-9 shortcuts
-onXtermTabShortcut(event: CustomEvent)    // Handle shortcuts from xterm
-onConsoleActivate(): void                 // Activate console on click/focus
-onDocumentClick(event: MouseEvent): void  // Deactivate on outside click
-switchToTab(index: number): void          // Switch tab and auto-focus xterm
-```
+- `onDeviceSelected()` - Handle device selection from sidebar
+- `handleTabShortcut()` / `onXtermTabShortcut()` - Alt+1-9 keyboard handling
+- `onConsoleActivate()` / `onDocumentClick()` - Console activation tracking
+- `switchToTab()` - Tab switching with auto-focus
+- `setupDragHandling()` - RxJS-based drag with `auditTime(animationFrameScheduler)`
 
-**Tab Management** (Enhanced):
-```typescript
-addTab(node: Node, selectAfterAdding: boolean): void {
-  // Skip VNC nodes - they use standalone popup windows, not embedded console
-  if (node.console_type === 'vnc') {
-    return;
-  }
-
-  // Check if node already exists in tabs
-  const existingIndex = this.nodes.findIndex(n => n.node_id === node.node_id);
-
-  if (existingIndex >= 0) {
-    // Switch to existing tab
-    this.selected.setValue(existingIndex);
-  } else {
-    // Create new tab
-    this.nodes.push(node);
-    this.selected.setValue(this.nodes.length - 1);
-    this.consoleService.openConsoles++;
-  }
-}
-```
+**Tab Management**: `addTab()` checks for duplicates, skips VNC nodes, creates/selects tabs
 
 #### WebConsoleComponent (Enhancement)
 
-**New Method**:
-```typescript
-focusTerminal(): void {
-  if (this.term) {
-    this.term.focus();
-  }
-}
-```
-
-**xterm Keyboard Interception**:
-```typescript
-this.term.attachCustomKeyEventHandler((key: KeyboardEvent) => {
-  // Intercept Alt+1-9 shortcuts
-  if (key.altKey && key.key >= '1' && key.key <= '9') {
-    const customEvent = new CustomEvent('consoleTabShortcut', {
-      detail: { key: key.key },
-      bubbles: true
-    });
-    this.term.element.dispatchEvent(customEvent);
-    return false; // Prevent xterm from handling
-  }
-  return true;
-});
-```
+- `focusTerminal()` - Focus xterm terminal
+- `attachCustomKeyEventHandler()` - Intercept Alt+1-9 for tab switching
 
 ---
 
 ## Styling
 
-### Device Panel Layout
+### Design Principles
 
-```scss
-.console-devices-panel {
-  display: flex;
-  flex-direction: column;
-  width: 200px;
-  height: 100%;
-  background-color: var(--mat-app-surface);
-  border-right: 1px solid var(--mat-app-outline-variant);
-  transition: width 0.2s ease;
+All styles follow Material Design 3 guidelines using CSS custom properties (`--mat-sys-*`) for theme consistency and accessibility.
 
-  &.collapsed {
-    width: 48px;
-  }
-}
+**Key Styling Files**:
+- `console-wrapper.component.scss` - Console window and taskbar icon styles
+- `console-devices-panel.component.scss` - Device sidebar panel styles
 
-.panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 48px;
-  padding: 0 12px;
-  border-bottom: 1px solid var(--mat-app-outline-variant);
-  background-color: var(--mat-app-surface-container);
-  flex-shrink: 0;
+**Key Design Decisions**:
 
-  &.clickable {
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  &:hover.clickable {
-    background-color: var(--mat-app-surface-container-high);
-  }
-}
-
-.panel-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
-  color: var(--mat-app-primary);
-  transition: transform 0.2s;
-}
-
-.header-title.clickable:hover .panel-icon {
-  transform: scale(1.08);
-}
-
-.device-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: 8px;
-  // Custom scrollbar (8px, cyan accent)
-}
-
-.device-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 12px;
-  margin-bottom: 4px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: var(--mat-app-surface-container-high);
-    transform: translateX(4px);
-    box-shadow: 0 2px 8px rgba(0, 151, 167, 0.2);
-  }
-
-  &.started {
-    border-left: 3px solid var(--mat-app-primary);
-  }
-}
-```
-
-### Console Activation State
-
-```scss
-.consoleWrapper {
-  &.console-active {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
-                0 6px 20px 0 rgba(0, 0, 0, 0.19),
-                0 0 0 2px rgba(0, 151, 167, 0.6),
-                0 0 12px rgba(0, 151, 167, 0.3);
-  }
-}
-```
+| Element | Styling Approach |
+|---------|------------------|
+| Colors | CSS variables (`--mat-sys-*`) for automatic theme adaptation |
+| Transitions | 100ms for micro-interactions, 150ms for taskbar |
+| Shadows | `color-mix()` with theme shadow color for depth |
+| GPU Acceleration | `will-change` and `contain:layout style` for drag performance |
+| Status Indicators | 4px circles using `--mat-sys-primary` (running) or `--mat-sys-outline` (stopped) |
 
 ---
 
@@ -817,8 +671,8 @@ ngOnDestroy(): void {
 - [x] xterm auto-focuses after shortcut
 
 #### Visual Feedback
-- [x] Cyan glow shows console is active
-- [x] Glow disappears when clicking outside
+- [x] Console active state shows shadow enhancement
+- [x] Active state disappears when clicking outside
 - [x] Device items have hover effects
 - [x] No jitter or white dots on hover
 
@@ -829,7 +683,7 @@ ngOnDestroy(): void {
 ### Issue: Keyboard shortcuts not working
 
 **Possible Causes**:
-1. Console window is not activated (no cyan glow)
+1. Console window is not activated (no visual highlight)
 2. Click outside console window deactivated it
 3. Browser tab is not focused
 
@@ -918,6 +772,6 @@ ngOnDestroy(): void {
 
 ---
 
-**Document Version**: 1.8.0
-**Last Updated**: 2026-03-14
+**Document Version**: 2.1.0
+**Last Updated**: 2026-03-30
 **Maintainer**: Development Team
