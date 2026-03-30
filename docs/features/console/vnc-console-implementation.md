@@ -1,8 +1,62 @@
 # VNC Console Complete Implementation Documentation
 
+## Document Information
+
+**Created**: 2024-01-15
+**Updated**: 2026-03-30
+**Status**: ✅ **Completed**
+**Version**: 1.1.0
+**Author**: Development Team
+
+---
+
+## Version History
+
+### v1.1.0 (2026-03-30)
+
+**Breaking Changes**:
+- ⚠️ **Electron Support Removed**: Desktop application support discontinued (since v1.8.0)
+- Application is now **web-only** (browser-based)
+
+**Documentation Updates**:
+- ✅ Mark Electron-related sections as deprecated
+- ✅ Update system architecture to reflect web-only nature
+- ✅ Remove Electron-specific build instructions
+- ✅ Clarify that VNC Console works through browser popup windows
+
+**Technical Notes**:
+- VNC Console functionality remains unchanged
+- Still uses `window.open()` to create standalone browser windows
+- noVNC library integration unchanged
+- All features (recording, screenshot, clipboard, etc.) work as before
+
+**Migration Impact**:
+- No code changes required for VNC Console
+- Users must access through web browser
+- Desktop application users must switch to web interface
+
+### v1.0.0 (2024-01-15)
+
+**Initial Release**:
+- Complete VNC Console implementation
+- noVNC library integration
+- Standalone window display
+- Screen recording (WebM format)
+- Screenshot functionality
+- Clipboard synchronization
+- Send special keys (Ctrl+Alt+Del, F1-F12, etc.)
+- Fullscreen mode
+- Scaling controls
+- Status display
+- Error handling
+
+---
+
 ## Overview
 
 The GNS3 Web UI VNC Console feature allows users to connect to VNC-type nodes through a web interface, providing a complete remote desktop control experience. This implementation uses the noVNC library and supports standalone window display, screen recording, screenshot, clipboard synchronization, and many other rich features.
+
+**⚠️ Important**: As of v1.8.0, this application is **web-only**. Electron desktop application support has been removed. VNC Console now works exclusively through browser popup windows.
 
 ## System Architecture
 
@@ -64,7 +118,7 @@ buildVncWebSocketUrl(controller: Controller, node: Node): string {
 - Follows GNS3 API path specification
 - Includes authentication token
 
-#### 1.2 Build Console Page URL (Electron Support)
+#### 1.2 Build Console Page URL
 
 ```typescript
 buildVncConsolePageUrl(controller: Controller, node: Node): string {
@@ -79,22 +133,19 @@ buildVncConsolePageUrl(controller: Controller, node: Node): string {
     autoconnect: '1'            // Auto-connect
   });
 
-  // ⭐ Key: Electron environment detection
-  if (this.electronService.isElectron()) {
-    // Electron packaged app: Use relative path
-    // From dist/index.html to dist/assets/vnc-console/index.html
-    return `assets/vnc-console/index.html?${params.toString()}`;
-  }
-
   // Web application: Use absolute path
   return `/assets/vnc-console/index.html?${params.toString()}`;
 }
 ```
 
 **Key Points**:
-- Detects runtime environment via `ElectronService.isElectron()`
-- Electron uses relative path, Web uses absolute path
-- Avoids `file://` protocol path resolution issues
+- ⚠️ **Electron support removed** (v1.8.0)
+- Now uses absolute path for web browser
+- Opens in new browser window via `window.open()`
+
+**Deprecated (v1.8.0)**:
+~~Electron packaged app detection~~
+~~Relative path for Electron environment~~
 
 #### 1.3 Open VNC Console
 
@@ -154,21 +205,29 @@ openVncConsole(controller: Controller, node: Node, inNewTab: boolean = false) {
 - New tab or popup window mode
 - Popup blocker detection
 
-### 2. ElectronService (Environment Detection)
+### 2. ~~ElectronService (Environment Detection)~~ ⚠️ **DEPRECATED (v1.8.0)**
 
-**File Location**: `src/app/services/electron.service.ts`
+**⚠️ Deprecated**: Electron desktop application support has been removed. This section is kept for historical reference only.
+
+~~**File Location**: `src/app/services/electron.service.ts`~~
 
 ```typescript
+// This code is no longer used
 isElectron(): boolean {
   // Check if running in Electron environment by testing window.electronAPI
   return !!(window && (window as any).electronAPI);
 }
 ```
 
-**Principle**:
-- Electron's preload.js injects `electronAPI` into the `window` object
-- This object doesn't exist in regular browsers
-- Provides a secure environment detection mechanism
+**Deprecated Functionality**:
+- ~~Electron's preload.js injects `electronAPI` into the `window` object~~
+- ~~Environment detection for desktop vs. web~~
+- ~~Different path resolution for Electron packaged apps~~
+
+**Current Implementation**:
+- Application is web-only
+- All VNC Consoles open in browser popup windows
+- No desktop environment detection needed
 
 ### 3. VNC Controller (Frontend Controller)
 
@@ -677,51 +736,24 @@ Displays connection errors, authentication failures, etc.
 
 ## Solved Issues
 
-### 1. Electron Packaged Application Path Issue
+### 1. ~~Electron Packaged Application Path Issue~~ ⚠️ **DEPRECATED (v1.8.0)**
 
-**Problem Description**:
+**⚠️ Deprecated**: Electron desktop application support has been removed. This issue is no longer applicable.
+
+**Historical Problem** (v1.0.0 - v1.7.0):
 - VNC console cannot open in Electron packaged application
 - Error Code: `ERR_FILE_NOT_FOUND`
-- Error Message:
-  ```
-  Failed to open VNC console: Failed to execute 'open' on 'Window':
-  Unable to open a window with invalid URL
-  'file:///tmp/.mount_GNS3%20Wn6zhMS/resources/app.asar/dist/assets/vnc-console/index.html?...'
-  ```
+- Absolute path `/assets/...` doesn't resolve in Electron's `file://` context
 
-**Root Cause**:
-- Web application uses absolute path `/assets/vnc-console/index.html` (relative to web root)
-- Electron packaged application uses `file://` protocol
-- Absolute path `/assets/...` doesn't resolve correctly in Electron's `file://` context
-- AppImage extracts to random temporary directory (e.g., `/tmp/.mount_GNS3xxx/`), path changes each run
+**Historical Solution** (No longer used):
+~~Electron environment detection with conditional path resolution~~
 
-**Solution**:
-```typescript
-// vnc-console.service.ts
-buildVncConsolePageUrl(controller: Controller, node: Node): string {
-  const params = new URLSearchParams({
-    ws_url: this.buildVncWebSocketUrl(controller, node),
-    node_name: node.name,
-    node_id: node.node_id,
-    project_id: node.project_id,
-    autoconnect: '1'
-  });
-
-  // ⭐ Key: Electron environment detection
-  if (this.electronService.isElectron()) {
-    // Electron: Use relative path
-    // From dist/index.html to dist/assets/vnc-console/index.html
-    return `assets/vnc-console/index.html?${params.toString()}`;
-  }
-
-  // Web: Use absolute path
-  return `/assets/vnc-console/index.html?${params.toString()}`;
-}
-```
-
-**Key Changes**:
-1. **Added ElectronService injection**: Detect Electron environment
-2. **Conditional path resolution**: Use different path strategies based on runtime environment
+**Current Status** (v1.8.0+):
+- ✅ **Issue Resolved**: Application is now web-only
+- ✅ All VNC Consoles open in browser popup windows
+- ✅ Uses consistent absolute path: `/assets/vnc-console/index.html`
+- ✅ No `file://` protocol complications
+- ✅ No environment detection needed
 
 **Alternative Approaches (Evaluated but not adopted)**:
 
@@ -1008,24 +1040,26 @@ ng build --configuration=production
 # VNC console will be copied to: dist/assets/vnc-console/
 ```
 
-### Electron Build
+### ~~Electron Build~~ ⚠️ **DEPRECATED (v1.8.0)**
 
-**Build Linux version**:
+**⚠️ Deprecated**: Electron desktop application support has been removed.
+
+~~**Build Linux version**~~:
 ```bash
-npm run build:electron && npx electron-builder -l
+~~npm run build:electron && npx electron-builder -l~~
 ```
 
-**Build Windows version** (requires wine on Linux):
+~~**Build Windows version**~~ (requires wine on Linux):
 ```bash
-npm run electron:build
+~~npm run electron:build~~
 ```
 
-**Build all platforms**:
+~~**Build all platforms**~~:
 ```bash
-npm run electron:build:all
+~~npm run electron:build:all~~
 ```
 
-**package.json script definitions**:
+**Historical package.json scripts** (No longer used):
 ```json
 {
   "scripts": {
@@ -1038,15 +1072,17 @@ npm run electron:build:all
 
 ### Known Warnings
 
-When running Electron AppImage, the following warnings may appear but do not affect functionality:
+~~**Electron AppImage Warnings**~~ (v1.8.0: No longer applicable):
+| ~~Warning~~ | ~~Description~~ |
+|-------------|-----------------|
+| ~~`Gtk-Message: Failed to load module "appmenu-gtk-module"`~~ | ~~System-level issue~~ |
+| ~~`LIBDBUSMENU-GLIB-WARNING`~~ | ~~Menu bar module issue~~ |
+| ~~`MESA-LOADER: failed to open dri`~~ | ~~Graphics driver permission issue~~ |
 
-| Warning | Description |
-|---------|-------------|
-| `Gtk-Message: Failed to load module "appmenu-gtk-module"` | System-level issue, can be ignored |
-| `LIBDBUSMENU-GLIB-WARNING` | Menu bar module issue |
-| `MESA-LOADER: failed to open dri` | Graphics driver permission issue (common in Docker/AppImage) |
-
-These warnings are due to sandbox environment or incomplete system libraries, and do not affect the core functionality of VNC Console.
+**Current Notes**:
+- Application is web-only
+- VNC Console runs in browser popup windows
+- No desktop application warnings
 
 ## Dependencies
 
@@ -1062,7 +1098,7 @@ These warnings are due to sandbox environment or incomplete system libraries, an
 
 ### Angular Services
 - **VncConsoleService**: VNC console management
-- **ElectronService**: Environment detection
+- ~~**ElectronService**: Environment detection~~ ⚠️ **Removed (v1.8.0)**
 - **ToasterService**: Notification alerts
 
 ## Related Files
