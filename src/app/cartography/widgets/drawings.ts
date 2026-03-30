@@ -136,7 +136,7 @@ export class DrawingsWidget implements Widget {
 
         this.redrawDrawing(view, datum);
       })
-      .on('end', (datum: MapDrawing) => {
+      .on('end', (event: any, datum: MapDrawing) => {
         document.body.style.cursor = 'initial';
         this.resizingFinished.emit(this.createResizingEvent(datum));
       });
@@ -198,7 +198,7 @@ export class DrawingsWidget implements Widget {
 
         this.redrawDrawing(view, datum);
       })
-      .on('end', (datum: MapDrawing) => {
+      .on('end', (event: any, datum: MapDrawing) => {
         document.body.style.cursor = 'initial';
         this.resizingFinished.emit(this.createResizingEvent(datum));
       });
@@ -264,7 +264,7 @@ export class DrawingsWidget implements Widget {
 
         this.redrawDrawing(view, datum);
       })
-      .on('end', (datum: MapDrawing) => {
+      .on('end', (event: any, datum: MapDrawing) => {
         document.body.style.cursor = 'initial';
         this.resizingFinished.emit(this.createResizingEvent(datum));
       });
@@ -324,7 +324,7 @@ export class DrawingsWidget implements Widget {
 
         this.redrawDrawing(view, datum);
       })
-      .on('end', (datum: MapDrawing) => {
+      .on('end', (event: any, datum: MapDrawing) => {
         document.body.style.cursor = 'initial';
         this.resizingFinished.emit(this.createResizingEvent(datum));
       });
@@ -341,7 +341,7 @@ export class DrawingsWidget implements Widget {
         (datum.element as LineElement).y2 += evt.dy;
         this.redrawDrawing(view, datum);
       })
-      .on('end', (datum: MapDrawing) => {
+      .on('end', (event: any, datum: MapDrawing) => {
         document.body.style.cursor = 'initial';
         this.resizingFinished.emit(this.createResizingEvent(datum));
       });
@@ -358,7 +358,7 @@ export class DrawingsWidget implements Widget {
         (datum.element as LineElement).y1 += evt.dy;
         this.redrawDrawing(view, datum);
       })
-      .on('end', (datum: MapDrawing) => {
+      .on('end', (event: any, datum: MapDrawing) => {
         document.body.style.cursor = 'initial';
         this.resizingFinished.emit(this.createResizingEvent(datum));
       });
