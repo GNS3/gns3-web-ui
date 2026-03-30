@@ -53,15 +53,30 @@ This document tracks all hardcoded colors in TypeScript files that violate the [
 
 **File**: `src/app/cartography/widgets/links/ethernet-link.ts`
 
-| Line | Code | Issue | Status |
-|------|------|-------|--------|
-| 30 | `color: '#000000'` | Default color kept as fallback | ✅ Completed |
+**Approach**:
+- Check if link has custom color in `link_style.color`
+- If custom color exists → Use SVG attribute with custom color
+- If no custom color → Use CSS variable via SVG attribute
+- Hover state always uses error color (overrides everything)
 
-**Changes**:
-- ✅ Removed `ThemeService` injection
-- ✅ Removed dynamic color logic
-- ✅ CSS now controls link color: `svg#map path.ethernet_link { stroke: var(--gns3-canvas-link-color); }`
-- ✅ Links with custom colors keep their custom color, others use CSS variable
+**Behavior Flow**:
+```
+Link Rendering
+     │
+     ▼
+Check: link has custom color?
+     │
+     ├─ Yes → SVG attribute: stroke="#custom_color"
+     │          Hover: stroke="var(--mat-sys-error)"
+     │
+     └─ No  → SVG attribute: stroke="var(--gns3-canvas-link-color)"
+              Hover: stroke="var(--mat-sys-error)"
+```
+
+**Result**:
+- Custom colors preserved ✅
+- Default colors use CSS variables ✅
+- Hover works for all links ✅
 
 ---
 
@@ -83,35 +98,33 @@ This document tracks all hardcoded colors in TypeScript files that violate the [
 
 **File**: `src/styles/_map.scss`
 
-```scss
-.project-map {
-  --gns3-canvas-label-color: #000000;
-  --gns3-canvas-link-color: #000000;
+**CSS Variables**:
+```
+.project-map--light-bg
+  └─ --gns3-canvas-label-color: #000000
+  └─ --gns3-canvas-link-color: #000000
 
-  &--light-bg {
-    --gns3-canvas-label-color: #000000;
-    --gns3-canvas-link-color: #000000;
-  }
-
-  &--dark-bg {
-    --gns3-canvas-label-color: #FFFFFF;
-    --gns3-canvas-link-color: #FFFFFF;
-  }
-}
-
-svg#map text.label {
-  fill: var(--gns3-canvas-label-color);
-}
-
-svg#map path.ethernet_link {
-  stroke: var(--gns3-canvas-link-color);
-}
+.project-map--dark-bg
+  └─ --gns3-canvas-label-color: #FFFFFF
+  └─ --gns3-canvas-link-color: #FFFFFF
 ```
 
-**Behavior**:
-- Light canvas backgrounds → Black labels and links
-- Dark canvas backgrounds → White labels and links
-- Auto mode → Follows global theme (light/dark)
+**Selectors**:
+- `svg#map text.label` → Uses `fill: var(--gns3-canvas-label-color)`
+- `svg#map path.ethernet_link:hover` → Uses `stroke: var(--mat-sys-error)`
+
+**Design Decision**:
+- No default CSS `stroke` for ethernet links (allows SVG attributes to work)
+- D3.js conditionally sets SVG attribute or CSS variable
+- Hover in CSS with high priority to override all states
+
+**Behavior Matrix**:
+| Canvas | Link Custom Color | Display Color | Hover Color |
+|--------|-------------------|---------------|-------------|
+| Light | No | Black (CSS var) | Red |
+| Light | Yes | Custom color | Red |
+| Dark | No | White (CSS var) | Red |
+| Dark | Yes | Custom color | Red |
 
 ---
 
@@ -270,23 +283,85 @@ All `.spec.ts` files are excluded from this inventory as test data with hardcode
 
 ### ✅ Phase 1: Canvas Colors (Completed)
 
-**Status**: ✅ Completed (2026-03-31)
+**Timeline**: 2026-03-31
 
-1. ✅ Fixed `ThemeService.getActualMapTheme()` - Detect light/dark presets correctly
-2. ✅ Added CSS variables to `_map.scss` for canvas elements
-3. ✅ Updated `ProjectMapComponent` to add light/dark bg classes
-4. ✅ Updated `LabelWidget` to remove inline fill colors
-5. ✅ Updated `EthernetLinkWidget` to use CSS variables
-6. ✅ Fixed auto mode to use light/dark classes instead of auto class
+**Workflow**:
+```
+┌─────────────────────────────────────────────────────────────┐
+│ 1. Fix ThemeService.getActualMapTheme()                     │
+│    └─ Detect preset types from availableMapBackgrounds    │
+├─────────────────────────────────────────────────────────────┤
+│ 2. Add CSS variables to _map.scss                          │
+│    ├─ Define --gns3-canvas-label-color                    │
+│    ├─ Define --gns3-canvas-link-color                      │
+│    └─ Add light/dark bg classes                            │
+├─────────────────────────────────────────────────────────────┤
+│ 3. Update ProjectMapComponent                               │
+│    ├─ Auto mode uses light/dark class (not auto class)      │
+│    └─ Add project-map--light-bg/--dark-bg classes          │
+├─────────────────────────────────────────────────────────────┤
+│ 4. Update LabelWidget                                       │
+│    └─ Remove inline fill colors (let CSS work)             │
+├─────────────────────────────────────────────────────────────┤
+│ 5. Update EthernetLinkWidget                                │
+│    ├─ Remove ThemeService dependency                        │
+│    ├─ Conditional logic: custom → SVG attr, default → CSS   │
+│    └─ Fix CSS priority conflict                             │
+└─────────────────────────────────────────────────────────────┘
+```
 
 **Result**:
-- Canvas element colors now fully controlled by CSS
-- No hardcoded colors in TS for labels and ethernet links
-- Auto mode correctly follows global theme
+- Canvas element colors fully controlled by CSS ✅
+- No hardcoded colors in TS for labels and ethernet links ✅
+- Auto mode correctly follows global theme ✅
+- Custom link colors preserved ✅
+- Hover state works for all elements ✅
 
 **Future Cleanup**:
 - Remove deprecated `getCanvasLabelColor()` and `getCanvasLinkColor()` methods
 - Remove `--gns3-map-bg-auto` CSS variable (no longer used)
+
+---
+
+### 1.6 CSS Priority Issue - Fixed ✅ Completed
+
+**The Problem**:
+
+CSS Priority Conflict between global and component styles:
+
+```
+Global Style (_map.scss)
+├─ Selector: svg#map path.ethernet_link
+├─ Priority: 112 (ID + 2 elements)
+└─ Rule: stroke = CSS variable
+
+Component Style (project-map.component.scss)
+├─ Selector: path.ethernet_link:hover
+├─ Priority: 21 (element + class + pseudo-class)
+└─ Rule: stroke = error color
+
+Result: 112 > 21, global style overrides hover ❌
+```
+
+**The Solution**:
+
+```
+Before Fix:
+├─ CSS sets stroke for all links
+├─ Hover state overridden
+└─ Custom colors don't work
+
+After Fix:
+├─ No default CSS stroke
+├─ D3.js conditionally sets SVG attribute:
+│   ├─ Custom color → SVG attr = custom
+│   └─ No custom → SVG attr = CSS variable
+├─ CSS hover state with high priority
+└─ All states work correctly ✅
+```
+
+**Key Insight**:
+Related styles should be co-located to avoid priority conflicts. Even without `::ng-deep` or `!important`, CSS priority issues can occur when styles are scattered across multiple files.
 
 ---
 

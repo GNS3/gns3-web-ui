@@ -136,6 +136,10 @@ export class EthernetLinkWidget implements Widget {
       })
       .attr('fill', 'none')
       .attr('stroke', (datum) => {
+        // Use CSS variable for default color, custom color if set
+        if (!datum.style.color || datum.style.color === this.defaultEthernetLinkStyle.color) {
+          return 'var(--gns3-canvas-link-color)';
+        }
         return datum.style.color;
       })
       .attr('stroke-width', (datum) => {

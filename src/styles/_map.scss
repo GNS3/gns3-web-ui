@@ -102,10 +102,6 @@ svg#map text.label {
 }
 
 /* Ethernet links */
-svg#map path.ethernet_link {
-  stroke: var(--gns3-canvas-link-color);
-}
-
 svg#map path.ethernet_link:hover {
   stroke: var(--mat-sys-error);
 }
