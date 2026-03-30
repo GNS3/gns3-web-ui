@@ -4674,10 +4674,10 @@ d3@^7.9.0:
     d3-transition "3"
     d3-zoom "3"
 
-dagre-d3-es@7.0.13, dagre-d3-es@7.0.14:
-  version "7.0.13"
-  resolved "https://registry.npmjs.org/dagre-d3-es/-/dagre-d3-es-7.0.13.tgz"
-  integrity sha512-efEhnxpSuwpYOKRm/L5KbqoZmNNukHa/Flty4Wp62JRvgH2ojwVgPgdYyr4twpieZnyRDdIH7PY2mopX26+j2Q==
+dagre-d3-es@7.0.14:
+  version "7.0.14"
+  resolved "https://registry.yarnpkg.com/dagre-d3-es/-/dagre-d3-es-7.0.14.tgz#1272276e26457cf3b97dac569f8f0531ec33c377"
+  integrity sha512-P4rFMVq9ESWqmOgK+dlXvOtLwYg0i7u0HBGJER0LZDJT2VHIPAMZ/riPxqJceWMStH5+E61QxFra9kIS3AqdMg==
   dependencies:
     d3 "^7.9.0"
     lodash-es "^4.17.21"
