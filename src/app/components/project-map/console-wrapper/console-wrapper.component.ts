@@ -153,8 +153,8 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
         };
       }
     } else {
-      // Minimize
-      this.style = { bottom: '20px', left: '20px', width: `${this.resizedWidth}px`, height: '56px' };
+      // Minimize to taskbar icon mode - compact width and height
+      this.style = { bottom: '20px', left: '20px', width: '180px', height: '48px' };
     }
   }
 
@@ -324,6 +324,22 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
 
   close() {
     this.closeConsole.emit(false);
+  }
+
+  /**
+   * Get the name of the currently active tab for taskbar display
+   */
+  getActiveTabName(): string {
+    const selectedIndex = this.selected.value;
+    if (selectedIndex < this.nodes.length) {
+      // Device console tab
+      const nodeName = this.nodes[selectedIndex].name;
+      // Truncate if too long for taskbar display
+      return nodeName.length > 12 ? nodeName.substring(0, 10) + '...' : nodeName;
+    } else {
+      // GNS3 console tab
+      return 'Console';
+    }
   }
 
   /**
