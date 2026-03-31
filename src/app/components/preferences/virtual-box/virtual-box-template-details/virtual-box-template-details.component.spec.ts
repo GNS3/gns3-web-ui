@@ -54,6 +54,7 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([]),
+        VirtualBoxTemplateDetailsComponent,
       ],
       providers: [
         provideZonelessChangeDetection(),
@@ -66,7 +67,6 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: VirtualBoxConfigurationService, useClass: VirtualBoxConfigurationService },
       ],
-      declarations: [VirtualBoxTemplateDetailsComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });
