@@ -2,13 +2,12 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { ComputeStatistics, LinkStats, NodeStats, ProjectStats } from '@models/computeStatistics';
-import { ProgressRingComponent } from './progress-ring/progress-ring.component';
 
 @Component({
   selector: 'app-status-chart',
   templateUrl: './status-chart.component.html',
   styleUrl: './status-chart.component.scss',
-  imports: [CommonModule, MatCardModule, ProgressRingComponent],
+  imports: [CommonModule, MatCardModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StatusChartComponent {
