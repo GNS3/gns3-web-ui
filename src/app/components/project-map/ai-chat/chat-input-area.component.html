@@ -1,0 +1,104 @@
+<div class="gns3-chat-input-area">
+  <div class="gns3-chat-input-area__input-wrapper">
+    <textarea
+      #messageInput
+      [placeholder]="placeholder()"
+      [disabled]="disabled()"
+      [(ngModel)]="message"
+      (keydown)="handleKeyDown($event)"
+      (input)="onInputChange()"
+      [rows]="1"
+      [maxLength]="maxLength()"
+      class="gns3-chat-input-area__textarea"
+      [style.height.px]="textareaHeight"
+    ></textarea>
+
+    <button class="gns3-chat-input-area__send-button" (click)="sendMessage()" [disabled]="!canSend || disabled()" matRipple>
+      @if (!disabled()) {
+      <mat-icon>send</mat-icon>
+      } @else {
+      <mat-icon class="gns3-chat-input-area__loading-spinner">refresh</mat-icon>
+      }
+    </button>
+
+    <!-- Model Selector Chip -->
+    <button
+      class="gns3-chat-input-area__model-chip"
+      #menuTrigger="matMenuTrigger"
+      [matMenuTriggerFor]="modelMenu"
+      (menuOpened)="ensureMenuTheme()"
+      [disabled]="disabled() || !modelConfigs() || modelConfigs().length === 0"
+      [title]="getFullModelDisplayName()"
+      matRipple
+    >
+      <mat-icon class="gns3-chat-input-area__chip-icon">psychology</mat-icon>
+      <span class="gns3-chat-input-area__chip-text">{{ getCurrentModelDisplayName() }}</span>
+      <mat-icon class="gns3-chat-input-area__chip-arrow">expand_more</mat-icon>
+    </button>
+  </div>
+
+  @if (showCharCount()) {
+  <div class="gns3-chat-input-area__input-footer">
+    <span class="gns3-chat-input-area__char-count" [class.gns3-chat-input-area__char-count--warning]="isNearLimit">{{ message.length }}</span>
+    <span class="gns3-chat-input-area__char-separator"> / </span>
+    <span class="gns3-chat-input-area__char-max">{{ maxLength() }}</span>
+  </div>
+  }
+</div>
+
+<!-- Model Selection Menu -->
+<mat-menu #modelMenu="matMenu" xPosition="before">
+  <div class="gns3-chat-input-area__model-menu-header">Select AI Model</div>
+  <mat-divider></mat-divider>
+  @for (config of modelConfigs(); track config.config_id) {
+  <button mat-menu-item (click)="selectModel(config)" [class.selected]="config.config_id === currentModelId()">
+    <mat-icon>{{ config.config_id === currentModelId() ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+    <span class="gns3-chat-input-area__model-name">{{ getModelDisplayName(config) }}</span>
+    @if (config.source === 'group') {
+    <span class="gns3-chat-input-area__model-source">Group</span>
+    }
+  </button>
+  } @if (!modelConfigs() || modelConfigs().length === 0) {
+  <mat-divider></mat-divider>
+  <button mat-menu-item disabled>
+    <mat-icon>error_outline</mat-icon>
+    <span>No models configured</span>
+  </button>
+  }
+
+  <!-- Copilot Mode Section -->
+  @if (modelConfigs() && modelConfigs().length > 0) {
+  <mat-divider></mat-divider>
+  <div class="gns3-chat-input-area__copilot-mode-section">
+    <div class="gns3-chat-input-area__copilot-mode-header">Copilot Mode</div>
+    <button
+      mat-menu-item
+      class="gns3-chat-input-area__copilot-mode-item"
+      (click)="selectCopilotMode('teaching_assistant')"
+      [class.selected]="currentCopilotMode() === 'teaching_assistant'"
+    >
+      <mat-icon>{{
+        currentCopilotMode() === 'teaching_assistant' ? 'check_circle' : 'radio_button_unchecked'
+      }}</mat-icon>
+      <div class="gns3-chat-input-area__mode-info">
+        <span class="gns3-chat-input-area__mode-name">Teaching Assistant</span>
+        <span class="gns3-chat-input-area__mode-description">Diagnostics only</span>
+      </div>
+    </button>
+    <button
+      mat-menu-item
+      class="gns3-chat-input-area__copilot-mode-item"
+      (click)="selectCopilotMode('lab_automation_assistant')"
+      [class.selected]="currentCopilotMode() === 'lab_automation_assistant'"
+    >
+      <mat-icon>{{
+        currentCopilotMode() === 'lab_automation_assistant' ? 'check_circle' : 'radio_button_unchecked'
+      }}</mat-icon>
+      <div class="gns3-chat-input-area__mode-info">
+        <span class="gns3-chat-input-area__mode-name">Lab Automation</span>
+        <span class="gns3-chat-input-area__mode-description">Full configuration access</span>
+      </div>
+    </button>
+  </div>
+  }
+</mat-menu>

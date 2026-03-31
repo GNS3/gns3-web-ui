@@ -1,0 +1,321 @@
+/**
+ * Chat Input Area Component Styles
+ * Using MD3 CSS variables and BEM naming convention
+ */
+
+.gns3-chat-input-area {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background: linear-gradient(to bottom, var(--mat-sys-background), var(--mat-sys-surface-container-low));
+  border-top: 1px solid var(--mat-sys-outline-variant);
+}
+
+.gns3-chat-input-area__input-wrapper {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.gns3-chat-input-area__textarea {
+  flex: 1;
+  min-width: 0;
+  min-height: 48px;
+  max-height: 200px;
+  padding: 12px 16px;
+  border: 2px solid var(--mat-sys-outline-variant);
+  border-radius: 24px;
+  background: linear-gradient(to bottom, var(--mat-sys-surface), var(--mat-sys-surface-container-low));
+  color: var(--mat-sys-on-surface);
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  overflow-y: auto;
+
+  &:focus {
+    border-color: var(--mat-sys-primary);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--mat-sys-primary) 10%, transparent);
+  }
+
+  &:hover {
+    border-color: var(--mat-sys-outline);
+  }
+
+  &::placeholder {
+    color: var(--mat-sys-on-surface-variant);
+    opacity: 0.6;
+  }
+
+  &:disabled {
+    background-color: var(--mat-sys-surface-container-high);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+// =============================================
+// Model Selector Chip
+// =============================================
+.gns3-chat-input-area__model-chip {
+  flex-shrink: 0;
+  height: 36px;
+  min-width: 100px;
+  max-width: 200px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-primary-container));
+  color: var(--mat-sys-on-primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
+  position: relative;
+  overflow: hidden;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--mat-sys-on-primary) 20%, transparent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 18px;
+  }
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 50%, transparent);
+    background: linear-gradient(135deg, var(--mat-sys-primary), color-mix(in srgb, var(--mat-sys-primary-container) 80%, black));
+    transform: translateY(-1px);
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 2px 6px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.gns3-chat-input-area__chip-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  color: var(--mat-sys-on-primary);
+  flex-shrink: 0;
+}
+
+.gns3-chat-input-area__chip-text {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--mat-sys-on-primary);
+  line-height: 1;
+}
+
+.gns3-chat-input-area__chip-arrow {
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  color: var(--mat-sys-on-primary);
+  flex-shrink: 0;
+}
+
+// =============================================
+// Send Button
+// =============================================
+.gns3-chat-input-area__send-button {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-tertiary));
+  color: var(--mat-sys-on-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-tertiary) 30%, transparent);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, color-mix(in srgb, var(--mat-sys-on-surface) 20%, transparent), transparent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: 50%;
+  }
+
+  &:hover:not(:disabled) {
+    transform: scale(1.15);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-tertiary) 50%, transparent);
+    background: linear-gradient(135deg, var(--mat-sys-tertiary), color-mix(in srgb, var(--mat-sys-tertiary) 80%, black));
+
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-tertiary) 30%, transparent);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    color: var(--mat-sys-on-primary);
+  }
+}
+
+.gns3-chat-input-area__loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// =============================================
+// Input Footer
+// =============================================
+.gns3-chat-input-area__input-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 8px;
+  padding: 0 4px;
+}
+
+.gns3-chat-input-area__char-count {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+  transition: color 0.2s ease;
+
+  &--warning {
+    color: var(--mat-sys-error);
+  }
+}
+
+.gns3-chat-input-area__char-separator,
+.gns3-chat-input-area__char-max {
+  font-size: 11px;
+  color: var(--mat-sys-on-surface-variant);
+  opacity: 0.7;
+  margin: 0 2px;
+}
+
+// =============================================
+// Model Menu Styles
+// =============================================
+.gns3-chat-input-area__model-menu-header {
+  padding: 12px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.gns3-chat-input-area__model-name {
+  flex: 1;
+  font-size: 14px;
+}
+
+.gns3-chat-input-area__model-source {
+  font-size: 11px;
+  color: var(--mat-sys-primary);
+  background: color-mix(in srgb, var(--mat-sys-primary) 10%, transparent);
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 8px;
+}
+
+.gns3-chat-input-area__model-menu-item {
+  &.selected {
+    background: color-mix(in srgb, var(--mat-sys-primary) 10%, transparent);
+  }
+}
+
+// =============================================
+// Copilot Mode Section Styles
+// =============================================
+.gns3-chat-input-area__copilot-mode-section {
+  padding: 0;
+}
+
+.gns3-chat-input-area__copilot-mode-header {
+  padding: 12px 16px 8px 16px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+  letter-spacing: 0.5px;
+}
+
+.gns3-chat-input-area__copilot-mode-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  min-height: 48px;
+
+  .mode-info {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.gns3-chat-input-area__mode-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
+
+.gns3-chat-input-area__mode-description {
+  font-size: 11px;
+  color: var(--mat-sys-on-surface-variant);
+  opacity: 0.8;
+  line-height: 1.2;
+  margin-top: 1px;
+}
