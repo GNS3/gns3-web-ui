@@ -52,6 +52,7 @@ describe('VpcsTemplateDetailsComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([]),
+        VpcsTemplateDetailsComponent,
       ],
       providers: [
         provideZonelessChangeDetection(),
@@ -64,7 +65,6 @@ describe('VpcsTemplateDetailsComponent', () => {
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: VpcsConfigurationService, useClass: VpcsConfigurationService },
       ],
-      declarations: [VpcsTemplateDetailsComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });
