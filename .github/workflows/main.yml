@@ -108,5 +108,35 @@ jobs:
         run: |
           .husky/check-hardcoded-colors.sh --ci
 
+      - name: Check for hooks modifications
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "Checking if .husky/ files were modified..."
+          HUSKY_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep "^\.\husky/" || true)
+
+          if [ -n "$HUSKY_FILES" ]; then
+            echo "⚠️  The following hook files were modified:"
+            echo "$HUSKY_FILES" | sed 's/^/  /'
+
+            # Check if PR has the 'hooks-update' label
+            HAS_LABEL=$(echo '${{ github.event.pull_request.labels.*.name }}' | grep -o 'hooks-update' || true)
+
+            if [ -z "$HAS_LABEL" ]; then
+              echo ""
+              echo "❌ ERROR: Modifying git hooks requires the 'hooks-update' label"
+              echo ""
+              echo "To proceed:"
+              echo "  1. Add the 'hooks-update' label to this PR"
+              echo "  2. Get approval from maintainers"
+              echo ""
+              exit 1
+            else
+              echo ""
+              echo "✅ PR has 'hooks-update' label - hooks modification allowed"
+            fi
+          else
+            echo "✅ No hook files modified"
+          fi
+
       - name: Run Angular lint
         run: yarn ng lint gns3-web-ui
