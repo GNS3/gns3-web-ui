@@ -70,6 +70,7 @@ describe('StartCaptureDialogComponent', () => {
     fixture = TestBed.createComponent(StartCaptureDialogComponent);
     component = fixture.componentInstance;
     component.link = { link_type: 'ethernet', nodes: [{ node_id: '1' }, { node_id: '2' }] } as Link;
+    fixture.detectChanges();
   });
 
   it('should create', () => {

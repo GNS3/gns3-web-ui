@@ -50,7 +50,7 @@ describe('ResourcePoolsManagementComponent', () => {
       providers: [
         provideZonelessChangeDetection(),
         { provide: ToasterService, useClass: FakeToastService },
-        { provide: ActivatedRoute, useClass: FakeActivatedRoute },
+        { provide: ActivatedRoute, useValue: new FakeActivatedRoute() },
         { provide: ResourcePoolsService, useClass: FakeResourcePoolService },
         { provide: MatDialog, useClass: FakeMatDialog },
         { provide: ControllerService, useClass: FakeControllerService },
