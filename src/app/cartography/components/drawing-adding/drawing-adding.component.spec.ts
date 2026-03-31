@@ -12,13 +12,12 @@ describe('DrawingAddingComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [NoopAnimationsModule],
+      imports: [DrawingAddingComponent, NoopAnimationsModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: DrawingsEventSource, useValue: drawingsEventSource },
         { provide: Context, useClass: Context },
       ],
-      declarations: [DrawingAddingComponent],
     }).compileComponents();
   });
 

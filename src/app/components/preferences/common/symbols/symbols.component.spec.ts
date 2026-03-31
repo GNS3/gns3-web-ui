@@ -31,6 +31,8 @@ describe('Symbols component', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        SymbolsComponent,
+        SearchFilter,
         HttpClientModule,
         MatIconModule,
         MatToolbarModule,
@@ -47,7 +49,6 @@ describe('Symbols component', () => {
           useValue: mockedSymbolsService,
         },
       ],
-      declarations: [SymbolsComponent, SearchFilter],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

@@ -8,7 +8,7 @@ describe('D3MapComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [D3MapComponent],
+      imports: [D3MapComponent],
       providers: [provideZonelessChangeDetection()],
     }).compileComponents();
   });

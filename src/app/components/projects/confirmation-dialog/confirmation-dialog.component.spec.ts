@@ -9,13 +9,12 @@ describe('ConfirmationDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [MatDialogModule],
+      imports: [ConfirmationDialogComponent, MatDialogModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: MatDialogRef, useValue: {} },
         { provide: MAT_DIALOG_DATA, useValue: {} },
       ],
-      declarations: [ConfirmationDialogComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ConfirmationDialogComponent);
