@@ -20,7 +20,7 @@ describe('TextEditorComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [NoopAnimationsModule],
+      imports: [NoopAnimationsModule, TextEditorComponent],
       providers: [
         provideZonelessChangeDetection(),
         { provide: DrawingsEventSource, useClass: DrawingsEventSource },
@@ -34,7 +34,6 @@ describe('TextEditorComponent', () => {
         { provide: SelectionManager, useClass: SelectionManager },
         { provide: FontFixer, useClass: FontFixer },
       ],
-      declarations: [TextEditorComponent],
     }).compileComponents();
   });
 

@@ -54,6 +54,7 @@ describe('VmwareTemplateDetailsComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([]),
+        VmwareTemplateDetailsComponent,
       ],
       providers: [
         provideZonelessChangeDetection(),
@@ -66,7 +67,6 @@ describe('VmwareTemplateDetailsComponent', () => {
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: VmwareConfigurationService, useClass: VmwareConfigurationService },
       ],
-      declarations: [VmwareTemplateDetailsComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });
