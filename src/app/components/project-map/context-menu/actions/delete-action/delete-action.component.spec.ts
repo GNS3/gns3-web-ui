@@ -29,7 +29,7 @@ describe('DeleteActionComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [MatIconModule, MatMenuModule, NoopAnimationsModule, MatBottomSheetModule],
+      imports: [DeleteActionComponent, MatIconModule, MatMenuModule, NoopAnimationsModule, MatBottomSheetModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: NodesDataSource, useClass: NodesDataSource },
@@ -40,7 +40,6 @@ describe('DeleteActionComponent', () => {
         { provide: LinkService, useValue: mockedLinkService },
         { provide: ToasterService, useValue: mockedToasterService },
       ],
-      declarations: [DeleteActionComponent],
     }).compileComponents();
   });
 
