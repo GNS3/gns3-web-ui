@@ -57,6 +57,7 @@ describe('ImageManagerComponent', () => {
         MatMenuModule,
         MatCheckboxModule,
         MatDialogModule,
+        ImageManagerComponent,
       ],
       providers: [
         provideZonelessChangeDetection(),
@@ -71,7 +72,6 @@ describe('ImageManagerComponent', () => {
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: ImageUploadSessionService, useValue: mockedImageUploadSessionService },
       ],
-      declarations: [ImageManagerComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

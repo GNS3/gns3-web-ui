@@ -1,5 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NodeService } from '@services/node.service';
 import { ReloadNodeActionComponent } from './reload-node-action.component';
 
 describe('ReloadNodeActionComponent', () => {
@@ -9,7 +10,10 @@ describe('ReloadNodeActionComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ReloadNodeActionComponent],
-      providers: [provideZonelessChangeDetection()],
+      providers: [
+        provideZonelessChangeDetection(),
+        { provide: NodeService, useValue: {} },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ReloadNodeActionComponent);

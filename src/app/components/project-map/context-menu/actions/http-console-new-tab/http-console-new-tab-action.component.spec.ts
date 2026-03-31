@@ -1,5 +1,9 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { NodeConsoleService } from '@services/node-console.service';
+import { VncConsoleService } from '@services/vnc-console.service';
+import { ToasterService } from '@services/toaster.service';
 import { HttpConsoleNewTabActionComponent } from './http-console-new-tab-action.component';
 
 describe('HttpConsoleNewTabActionComponent', () => {
@@ -8,7 +12,13 @@ describe('HttpConsoleNewTabActionComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
+      providers: [
+        provideZonelessChangeDetection(),
+        { provide: NodeConsoleService, useValue: {} },
+        { provide: VncConsoleService, useValue: {} },
+        { provide: ToasterService, useValue: {} },
+        { provide: Router, useValue: {} },
+      ],
       imports: [HttpConsoleNewTabActionComponent],
     }).compileComponents();
 
