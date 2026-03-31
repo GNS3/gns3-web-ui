@@ -45,6 +45,7 @@ describe('EthernetSwitchesTemplateDetailsComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        EthernetSwitchesTemplateDetailsComponent,
         FormsModule,
         ReactiveFormsModule,
         MatTableModule,
@@ -66,8 +67,7 @@ describe('EthernetSwitchesTemplateDetailsComponent', () => {
         { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: BuiltInTemplatesConfigurationService, useClass: BuiltInTemplatesConfigurationService },
-      ],
-      declarations: [EthernetSwitchesTemplateDetailsComponent],
+      ]
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

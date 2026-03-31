@@ -41,6 +41,7 @@ describe('AddImageDialogComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        AddImageDialogComponent,
         MatIconModule,
         MatToolbarModule,
         MatMenuModule,
@@ -57,8 +58,7 @@ describe('AddImageDialogComponent', () => {
         { provide: MatDialogRef, useValue: {} },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: ImageUploadSessionService, useValue: mockedImageUploadSessionService },
-      ],
-      declarations: [AddImageDialogComponent],
+      ]
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

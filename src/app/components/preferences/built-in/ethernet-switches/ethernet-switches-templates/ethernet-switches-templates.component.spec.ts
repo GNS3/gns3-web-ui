@@ -34,6 +34,7 @@ describe('EthernetSwitchesTemplatesComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        EthernetSwitchesTemplatesComponent,
         MatIconModule,
         MatToolbarModule,
         MatMenuModule,
@@ -50,8 +51,7 @@ describe('EthernetSwitchesTemplatesComponent', () => {
         },
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
-      ],
-      declarations: [EthernetSwitchesTemplatesComponent],
+      ]
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

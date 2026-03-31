@@ -125,9 +125,8 @@ describe('DraggableSelectionComponent', () => {
         { provide: GraphDataManager, useValue: mockedGraphDataManager },
         { provide: LinksEventSource, useValue: linksEventSourceStub },
         { provide: MapSettingsService, useClass: MapSettingsService },
-      ],
-      declarations: [DraggableSelectionComponent],
-    }).compileComponents();
+      ]
+      }).compileComponents();
   });
 
   beforeEach(() => {

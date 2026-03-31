@@ -8,7 +8,6 @@ describe('LoggedUserComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [LoggedUserComponent],
       providers: [provideZonelessChangeDetection()],
     }).compileComponents();
   });

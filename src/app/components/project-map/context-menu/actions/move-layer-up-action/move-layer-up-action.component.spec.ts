@@ -8,9 +8,8 @@ describe('MoveLayerUpActionComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-      declarations: [MoveLayerUpActionComponent],
-    }).compileComponents();
+      providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
     fixture = TestBed.createComponent(MoveLayerUpActionComponent);
     component = fixture.componentInstance;

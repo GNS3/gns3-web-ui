@@ -9,14 +9,15 @@ describe('ConfigDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [MatDialogModule],
+      imports: [
+        ConfigDialogComponent,
+        MatDialogModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: MatDialogRef, useValue: {} },
         { provide: MAT_DIALOG_DATA, useValue: {} },
-      ],
-      declarations: [ConfigDialogComponent],
-    }).compileComponents();
+      ]
+      }).compileComponents();
 
     fixture = TestBed.createComponent(ConfigDialogComponent);
     component = fixture.componentInstance;

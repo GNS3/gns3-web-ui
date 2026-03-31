@@ -31,7 +31,9 @@ describe('DeleteAllImageFilesDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule],
+      imports: [
+        DeleteAllImageFilesDialogComponent,
+        MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: ControllerService, useValue: mockedControllerService },
@@ -39,8 +41,7 @@ describe('DeleteAllImageFilesDialogComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: MatDialogRef, useValue: {} },
         { provide: ToasterService, useValue: mockedToasterService },
-      ],
-      declarations: [DeleteAllImageFilesDialogComponent],
+      ]
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

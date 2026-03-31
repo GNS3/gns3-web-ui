@@ -8,9 +8,8 @@ describe('DeleteGroupDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-      declarations: [DeleteGroupDialogComponent],
-    });
+      providers: [provideZonelessChangeDetection()]
+      });
     fixture = TestBed.createComponent(DeleteGroupDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

@@ -27,9 +27,8 @@ describe('DrawingResizedComponent', () => {
         { provide: DrawingsDataSource, useValue: mockedDrawingsDataSource },
         { provide: DrawingsEventSource, useValue: mockedDrawingsEventSource },
         { provide: MapDrawingToSvgConverter, useValue: mockedMapDrawingToSvgConverter },
-      ],
-      declarations: [DrawingResizedComponent],
-    }).compileComponents();
+      ]
+      }).compileComponents();
   });
 
   beforeEach(() => {

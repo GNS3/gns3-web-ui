@@ -8,9 +8,8 @@ describe('PageNotFoundComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-      declarations: [PageNotFoundComponent],
-    });
+      providers: [provideZonelessChangeDetection()]
+      });
     fixture = TestBed.createComponent(PageNotFoundComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

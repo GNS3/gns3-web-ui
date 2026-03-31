@@ -48,6 +48,7 @@ describe('QemuVmTemplateDetailsComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        QemuVmTemplateDetailsComponent,
         FormsModule,
         ReactiveFormsModule,
         MatTableModule,
@@ -67,8 +68,7 @@ describe('QemuVmTemplateDetailsComponent', () => {
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: QemuConfigurationService, useClass: QemuConfigurationService },
         { provide: AbstractControlDirective, useExisting: UntypedFormControl, useMulti: true },
-      ],
-      declarations: [QemuVmTemplateDetailsComponent],
+      ]
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

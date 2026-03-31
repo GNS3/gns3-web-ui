@@ -8,7 +8,6 @@ describe('DeleteUserDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DeleteUserDialogComponent],
       providers: [provideZonelessChangeDetection()],
     }).compileComponents();
   });

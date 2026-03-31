@@ -8,9 +8,8 @@ describe('ImportApplianceComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-      declarations: [ImportApplianceComponent],
-    }).compileComponents();
+      providers: [provideZonelessChangeDetection()]
+      }).compileComponents();
 
     fixture = TestBed.createComponent(ImportApplianceComponent);
     component = fixture.componentInstance;

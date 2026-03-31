@@ -16,9 +16,8 @@ describe('WebConsoleComponent', () => {
         { provide: NodeConsoleService, useValue: {} },
         { provide: ThemeService, useValue: { getActualTheme: () => 'dark' } },
         { provide: XtermContextMenuService, useValue: { attachContextMenu: () => () => {} } },
-      ],
-      declarations: [WebConsoleComponent],
-    }).compileComponents();
+      ]
+      }).compileComponents();
 
     fixture = TestBed.createComponent(WebConsoleComponent);
     component = fixture.componentInstance;

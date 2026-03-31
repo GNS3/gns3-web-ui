@@ -74,6 +74,7 @@ describe('ImportProjectDialogComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        ImportProjectDialogComponent,
         MatTableModule,
         MatTooltipModule,
         MatIconModule,
@@ -94,9 +95,8 @@ describe('ImportProjectDialogComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: [] },
         { provide: ProjectService, useClass: MockedProjectService },
         { provide: ToasterService, useValue: mockedToasterService },
-      ],
-      declarations: [ImportProjectDialogComponent],
-    }).compileComponents();
+      ]
+      }).compileComponents();
 
     controller = new Controller();
     controller.host = 'localhost';
