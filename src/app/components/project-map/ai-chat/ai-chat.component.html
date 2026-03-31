@@ -1,12 +1,12 @@
 @if (isDraggingEnabled && !isMaximized && !isMinimized) {
-<div class="drag-overlay" (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)"></div>
+<div class="gns3-ai-chat__drag-overlay" (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)"></div>
 }
 
 <!-- AI Chat Container -->
 <div
-  class="ai-chat-container"
-  [class.maximized]="isMaximized"
-  [class.minimized]="isMinimized"
+  class="gns3-ai-chat"
+  [class.gns3-ai-chat--maximized]="isMaximized"
+  [class.gns3-ai-chat--minimized]="isMinimized"
   [ngStyle]="style"
   mwlResizable
   [validateResize]="validate"
@@ -24,16 +24,16 @@
   <!-- Normal/Maximized state -->
   @if (!isMinimized) {
   <!-- Session sidebar -->
-  <div class="chat-sidebar" [class.collapsed]="sidebarCollapsed">
-    <div class="sidebar-header">
+  <div class="gns3-ai-chat__sidebar" [class.gns3-ai-chat__sidebar--collapsed]="sidebarCollapsed">
+    <div class="gns3-ai-chat__sidebar-header">
       <h3
-        class="sidebar-title"
+        class="gns3-ai-chat__sidebar-title"
         (mousedown)="$event.stopPropagation()"
         (click)="toggleSidebar()"
-        [class.clickable]="true"
+        [class.gns3-ai-chat__sidebar-title--clickable]="true"
         title="Click to toggle sidebar"
       >
-        <span class="ai-logo">AI</span>
+        <span class="gns3-ai-chat__logo">AI</span>
         @if (!sidebarCollapsed) {
         <span class="sidebar-text">Assistant</span>
         }
@@ -42,13 +42,13 @@
 
     <!-- New chat button for collapsed state -->
     @if (sidebarCollapsed) {
-    <div class="sidebar-content">
-      <button class="collapsed-new-chat-btn" mat-icon-button (click)="onSessionCreated()">
+    <div class="gns3-ai-chat__sidebar-content">
+      <button class="gns3-ai-chat__new-chat-btn" mat-icon-button (click)="onSessionCreated()">
         <mat-icon>add</mat-icon>
       </button>
     </div>
     } @if (!sidebarCollapsed) {
-    <div class="sidebar-content">
+    <div class="gns3-ai-chat__sidebar-content">
       <app-chat-session-list
         [sessions]="sessions"
         [currentSessionId]="currentSessionId"
@@ -67,20 +67,20 @@
   </div>
 
   <!-- Chat main area -->
-  <div class="chat-main">
+  <div class="gns3-ai-chat__main">
     <!-- Chat header -->
-    <div class="chat-header" (mousedown)="!isMaximized && toggleDragging(true)">
-      <div class="chat-title">
+    <div class="gns3-ai-chat__header" (mousedown)="!isMaximized && toggleDragging(true)">
+      <div class="gns3-ai-chat__title">
         <span>{{ currentSessionTitle }}</span>
       </div>
-      <div class="header-actions">
+      <div class="gns3-ai-chat__header-actions">
         <button
           mat-icon-button
           (mousedown)="$event.stopPropagation()"
           (click)="$event.stopPropagation(); minimizeChat()"
           class="minimize-button"
         >
-          <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+          <svg class="gns3-ai-chat__header-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
             <path d="M19 13H5v-2h14v2z" />
           </svg>
         </button>
@@ -90,7 +90,7 @@
           (click)="$event.stopPropagation(); maximizeChat()"
           class="maximize-button"
         >
-          <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+          <svg class="gns3-ai-chat__header-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
             @if (!isMaximized) {
             <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
             } @if (isMaximized) {
@@ -104,7 +104,7 @@
           (click)="$event.stopPropagation(); closeChat()"
           class="close-button"
         >
-          <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+          <svg class="gns3-ai-chat__header-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
             <path
               d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
             />
@@ -114,7 +114,7 @@
     </div>
 
     <!-- Messages list -->
-    <div class="chat-messages">
+    <div class="gns3-ai-chat__messages">
       <app-chat-message-list
         [messages]="currentMessages"
         [isStreaming]="isStreaming"
@@ -125,7 +125,7 @@
     </div>
 
     <!-- Input area -->
-    <div class="chat-input">
+    <div class="gns3-ai-chat__input">
       <app-chat-input-area
         [disabled]="isStreaming"
         [modelConfigs]="modelConfigs"
