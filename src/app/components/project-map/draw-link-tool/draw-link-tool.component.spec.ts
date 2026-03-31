@@ -21,7 +21,7 @@ describe('DrawLinkToolComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DrawLinkToolComponent, NodeSelectInterfaceComponent],
+      imports: [DrawLinkToolComponent, NodeSelectInterfaceComponent],
       providers: [
         provideZonelessChangeDetection(),
         DrawingLineWidget,

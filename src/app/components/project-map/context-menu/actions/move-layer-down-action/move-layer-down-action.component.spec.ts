@@ -9,9 +9,8 @@ describe('MoveLayerDownActionComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [MoveLayerDownActionComponent, MatTableModule],
       providers: [provideZonelessChangeDetection()],
-      declarations: [MoveLayerDownActionComponent],
-      imports: [MatTableModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(MoveLayerDownActionComponent);

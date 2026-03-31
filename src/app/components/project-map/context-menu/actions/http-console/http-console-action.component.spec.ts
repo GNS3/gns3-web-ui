@@ -9,7 +9,7 @@ describe('HttpConsoleActionComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
-      declarations: [HttpConsoleActionComponent],
+      imports: [HttpConsoleActionComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(HttpConsoleActionComponent);

@@ -36,6 +36,7 @@ describe('TopologySummaryComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        TopologySummaryComponent,
         MatTableModule,
         MatTooltipModule,
         MatIconModule,
@@ -51,7 +52,6 @@ describe('TopologySummaryComponent', () => {
         { provide: ComputeService, useValue: mockedComputeService },
         { provide: LinksDataSource, useValue: mockedLinksDataSource },
       ],
-      declarations: [TopologySummaryComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

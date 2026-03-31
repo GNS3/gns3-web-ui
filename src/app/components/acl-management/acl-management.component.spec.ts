@@ -28,7 +28,7 @@ describe('AclManagementComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      
+      imports: [AclManagementComponent],
       providers: [
         provideZonelessChangeDetection(),
         { provide: ToasterService, useClass: FakeToastService },

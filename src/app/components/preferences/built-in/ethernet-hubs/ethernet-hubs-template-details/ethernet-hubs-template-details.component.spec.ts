@@ -44,6 +44,7 @@ describe('EthernetHubsTemplateDetailsComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        EthernetHubsTemplateDetailsComponent,
         FormsModule,
         ReactiveFormsModule,
         MatTableModule,
@@ -66,7 +67,6 @@ describe('EthernetHubsTemplateDetailsComponent', () => {
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: BuiltInTemplatesConfigurationService, useClass: BuiltInTemplatesConfigurationService },
       ],
-      declarations: [EthernetHubsTemplateDetailsComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

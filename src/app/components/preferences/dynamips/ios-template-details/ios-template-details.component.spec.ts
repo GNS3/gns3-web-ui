@@ -46,6 +46,7 @@ describe('IosTemplateDetailsComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        IosTemplateDetailsComponent,
         FormsModule,
         ReactiveFormsModule,
         MatIconModule,
@@ -68,7 +69,6 @@ describe('IosTemplateDetailsComponent', () => {
         { provide: ProgressService, useValue: mockedProgressService },
         { provide: IosConfigurationService, useClass: IosConfigurationService },
       ],
-      declarations: [IosTemplateDetailsComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

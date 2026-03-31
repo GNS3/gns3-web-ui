@@ -68,6 +68,7 @@ describe('AddBlankProjectDialogComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        AddBlankProjectDialogComponent,
         MatDialogModule,
         MatFormFieldModule,
         MatInputModule,
@@ -84,7 +85,6 @@ describe('AddBlankProjectDialogComponent', () => {
         { provide: ToasterService, useValue: toaster },
         { provide: Router, useValue: router },
       ],
-      declarations: [AddBlankProjectDialogComponent],
     }).compileComponents();
 
     controller = new Controller();

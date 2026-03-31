@@ -10,8 +10,7 @@ describe('PrivilegeComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [PrivilegeComponent],
-      declarations: [GroupPrivilegesPipe],
+      imports: [PrivilegeComponent, GroupPrivilegesPipe],
       providers: [provideZonelessChangeDetection()],
     }).compileComponents();
 

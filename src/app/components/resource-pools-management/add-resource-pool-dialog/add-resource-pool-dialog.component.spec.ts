@@ -37,8 +37,7 @@ describe('AddResourcePoolDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [AddResourcePoolDialogComponent],
-      imports: [MatFormFieldModule],
+      imports: [AddResourcePoolDialogComponent, MatFormFieldModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: ToasterService, useClass: FakeToastService },

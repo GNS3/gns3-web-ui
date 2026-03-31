@@ -11,6 +11,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { of } from 'rxjs';
 import { Controller } from '@models/controller';
 import { VmwareTemplate } from '@models/templates/vmware-template';
+import { TemplateService } from '@services/template.service';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
 import { ControllerService } from '@services/controller.service';
 import { MockedControllerService } from '@services/controller.service.spec';
 import { VmwareService } from '@services/vmware.service';
@@ -20,6 +23,12 @@ import { VmwareTemplatesComponent } from './vmware-templates.component';
 export class MockedVmwareService {
   public getTemplates(controller: Controller) {
     return of([{} as VmwareTemplate]);
+  }
+}
+
+class MockedTemplateService {
+  deleteTemplate(controller: Controller, templateId: string) {
+    return of({});
   }
 }
 
@@ -51,6 +60,8 @@ describe('VmwareTemplatesComponent', () => {
         },
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: VmwareService, useValue: mockedVmwareService },
+        { provide: TemplateService, useClass: MockedTemplateService },
+        { provide: ToasterService, useValue: new MockedToasterService() },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

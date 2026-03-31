@@ -44,6 +44,7 @@ describe('AddVmwareTemplateComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        AddVmwareTemplateComponent,
         FormsModule,
         ReactiveFormsModule,
         MatIconModule,
@@ -64,7 +65,6 @@ describe('AddVmwareTemplateComponent', () => {
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: TemplateMocksService, useClass: TemplateMocksService },
       ],
-      declarations: [AddVmwareTemplateComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

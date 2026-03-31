@@ -8,9 +8,9 @@ describe('LoginComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [LoginComponent],
       providers: [provideZonelessChangeDetection()],
-      declarations: [LoginComponent],
-    });
+    }).compileComponents();
     fixture = TestBed.createComponent(LoginComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

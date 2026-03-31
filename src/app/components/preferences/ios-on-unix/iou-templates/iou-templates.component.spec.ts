@@ -34,6 +34,7 @@ describe('IouTemplatesComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        IouTemplatesComponent,
         MatIconModule,
         MatToolbarModule,
         MatMenuModule,
@@ -48,7 +49,6 @@ describe('IouTemplatesComponent', () => {
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: IouService, useValue: mockedIouService },
       ],
-      declarations: [IouTemplatesComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

@@ -9,7 +9,7 @@ describe('PortsComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
-      declarations: [PortsComponent],
+      imports: [PortsComponent],
     });
     fixture = TestBed.createComponent(PortsComponent);
     component = fixture.componentInstance;

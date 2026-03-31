@@ -16,8 +16,7 @@ describe('DeleteResourceConfirmationDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DeleteResourceConfirmationDialogComponent],
-      imports: [MatButtonModule],
+      imports: [DeleteResourceConfirmationDialogComponent, MatButtonModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: DIALOG_DATA, useValue: {} },

@@ -43,6 +43,7 @@ describe('DockerTemplateDetailsComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        DockerTemplateDetailsComponent,
         FormsModule,
         ReactiveFormsModule,
         MatIconModule,
@@ -64,7 +65,6 @@ describe('DockerTemplateDetailsComponent', () => {
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: DockerConfigurationService, useClass: DockerConfigurationService },
       ],
-      declarations: [DockerTemplateDetailsComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

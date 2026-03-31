@@ -34,6 +34,7 @@ describe('IosTemplatesComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        IosTemplatesComponent,
         MatIconModule,
         MatToolbarModule,
         MatMenuModule,
@@ -51,7 +52,6 @@ describe('IosTemplatesComponent', () => {
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: IosService, useValue: mockedIosService },
       ],
-      declarations: [IosTemplatesComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

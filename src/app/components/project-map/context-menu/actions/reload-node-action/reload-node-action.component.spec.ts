@@ -8,8 +8,9 @@ describe('ReloadNodeActionComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()]
-      }).compileComponents();
+      imports: [ReloadNodeActionComponent],
+      providers: [provideZonelessChangeDetection()],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ReloadNodeActionComponent);
     component = fixture.componentInstance;

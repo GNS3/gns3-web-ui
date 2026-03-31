@@ -8,9 +8,9 @@ describe('ManagementComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [ManagementComponent],
       providers: [provideZonelessChangeDetection()],
-      
-    });
+    }).compileComponents();
     fixture = TestBed.createComponent(ManagementComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

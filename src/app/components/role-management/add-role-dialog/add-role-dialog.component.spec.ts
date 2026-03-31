@@ -9,13 +9,12 @@ describe('AddRoleDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [MatDialogModule],
+      imports: [AddRoleDialogComponent, MatDialogModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: MatDialogRef, useValue: {} },
         { provide: MAT_DIALOG_DATA, useValue: {} },
       ],
-      declarations: [AddRoleDialogComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(AddRoleDialogComponent);

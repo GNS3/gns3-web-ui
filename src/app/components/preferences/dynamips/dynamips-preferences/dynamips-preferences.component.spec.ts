@@ -30,6 +30,7 @@ describe('DynamipsPreferencesComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        DynamipsPreferencesComponent,
         HttpClientModule,
         MatIconModule,
         MatToolbarModule,
@@ -49,7 +50,6 @@ describe('DynamipsPreferencesComponent', () => {
         { provide: ControllerSettingsService, useValue: mockedControllerSettingsService },
         { provide: ToasterService, useValue: mockedToasterService },
       ],
-      declarations: [DynamipsPreferencesComponent],
       schemas: [NO_ERRORS_SCHEMA, CUSTOM_ELEMENTS_SCHEMA],
     }).compileComponents();
   });
