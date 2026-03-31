@@ -56,6 +56,10 @@
             <mat-icon class="computes__stat-icon">storage</mat-icon>
             {{ formatPercent(compute.memory_usage_percent) }}
           </span>
+          <span class="computes__stat">
+            <mat-icon class="computes__stat-icon">disc_full</mat-icon>
+            {{ formatPercent(compute.disk_usage_percent) }}
+          </span>
           } @else {
           <span class="computes__stat computes__stat--offline">Offline</span>
           }
