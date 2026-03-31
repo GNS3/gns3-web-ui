@@ -16,13 +16,14 @@ describe('ContextMenuComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [MatMenuModule, BrowserModule],
+      imports: [
+    ContextMenuComponent,MatMenuModule, BrowserModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: ChangeDetectorRef },
         { provide: ProjectService, useClass: MockedProjectService },
       ],
-      declarations: [ContextMenuComponent],
+      
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

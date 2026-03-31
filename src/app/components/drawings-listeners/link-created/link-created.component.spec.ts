@@ -42,7 +42,7 @@ describe('LinkCreatedComponent', () => {
         { provide: MapNodeToNodeConverter, useValue: mockedMapNodeToNodeConverter },
         { provide: MapPortToPortConverter, useClass: MapPortToPortConverter },
       ],
-      declarations: [LinkCreatedComponent],
+      
     }).compileComponents();
   });
 

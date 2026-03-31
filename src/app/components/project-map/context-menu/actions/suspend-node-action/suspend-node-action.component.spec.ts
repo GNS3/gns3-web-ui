@@ -9,7 +9,7 @@ describe('SuspendNodeActionComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
-      declarations: [SuspendNodeActionComponent],
+      
     }).compileComponents();
 
     fixture = TestBed.createComponent(SuspendNodeActionComponent);

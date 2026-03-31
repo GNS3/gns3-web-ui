@@ -17,6 +17,7 @@ describe('NodesMenuConfirmationDialogComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+    NodesMenuConfirmationDialogComponent,
         MatIconModule,
         MatToolbarModule,
         MatMenuModule,
@@ -30,7 +31,7 @@ describe('NodesMenuConfirmationDialogComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: MatDialogRef, useValue: {} },
       ],
-      declarations: [NodesMenuConfirmationDialogComponent],
+      
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

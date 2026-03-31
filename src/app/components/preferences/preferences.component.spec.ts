@@ -40,6 +40,7 @@ describe('PreferencesComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+    PreferencesComponent,
         MatIconModule,
         MatToolbarModule,
         MatMenuModule,
@@ -55,7 +56,7 @@ describe('PreferencesComponent', () => {
           useValue: activatedRoute,
         },
       ],
-      declarations: [PreferencesComponent],
+      
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

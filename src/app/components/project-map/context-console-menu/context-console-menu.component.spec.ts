@@ -33,7 +33,7 @@ describe('ContextConsoleMenuComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [MatMenuModule, BrowserModule, MatSnackBarModule],
+      imports: [MatMenuModule, BrowserModule, MatSnackBarModule, ContextConsoleMenuComponent, ConsoleDeviceActionComponent, ConsoleDeviceActionBrowserComponent],
       providers: [
         provideZonelessChangeDetection(),
         { provide: ChangeDetectorRef },
@@ -46,7 +46,6 @@ describe('ContextConsoleMenuComponent', () => {
         ToasterService,
         MapSettingsService,
       ],
-      declarations: [ContextConsoleMenuComponent, ConsoleDeviceActionComponent, ConsoleDeviceActionBrowserComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 

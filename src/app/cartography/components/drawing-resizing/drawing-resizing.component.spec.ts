@@ -32,13 +32,14 @@ describe('DrawingResizingComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [NoopAnimationsModule],
+      imports: [
+    DrawingResizingComponent,NoopAnimationsModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: DrawingsWidget, useValue: drawingsWidgetMock },
         { provide: DrawingsEventSource, useValue: drawingsEventSource },
       ],
-      declarations: [DrawingResizingComponent],
+      
     }).compileComponents();
   });
 

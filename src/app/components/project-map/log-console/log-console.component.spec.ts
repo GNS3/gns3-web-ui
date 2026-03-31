@@ -47,7 +47,8 @@ describe('LogConsoleComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule, MatMenuModule, BrowserModule, MatSnackBarModule],
+      imports: [
+    LogConsoleComponent,HttpClientTestingModule, RouterTestingModule, MatMenuModule, BrowserModule, MatSnackBarModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: ProjectWebServiceHandler, useValue: mockedProjectWebServiceHandler },
@@ -62,7 +63,7 @@ describe('LogConsoleComponent', () => {
         ProtocolHandlerService,
         MapSettingsService,
       ],
-      declarations: [LogConsoleComponent],
+      
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 

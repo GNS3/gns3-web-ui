@@ -34,7 +34,7 @@ describe('NodeLabelDraggedComponent', () => {
         { provide: NodesEventSource, useValue: mockedNodesEventSource },
         { provide: MapLabelToLabelConverter, useValue: mapLabelToLabelConverter },
       ],
-      declarations: [NodeLabelDraggedComponent],
+      
     }).compileComponents();
   });
 

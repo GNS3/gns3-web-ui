@@ -39,8 +39,9 @@ describe('ResourcePoolDetailsComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ResourcePoolDetailsComponent],
-      imports: [MatAutocompleteModule, MatFormFieldModule, MatIconModule, MatDividerModule],
+      
+      imports: [
+    ResourcePoolDetailsComponent,MatAutocompleteModule, MatFormFieldModule, MatIconModule, MatDividerModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: ToasterService, useClass: FakeToastService },

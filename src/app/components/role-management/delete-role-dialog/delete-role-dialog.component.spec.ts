@@ -9,13 +9,14 @@ describe('DeleteRoleDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [MatDialogModule],
+      imports: [
+    DeleteRoleDialogComponent,MatDialogModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: MatDialogRef, useValue: {} },
         { provide: MAT_DIALOG_DATA, useValue: {} },
       ],
-      declarations: [DeleteRoleDialogComponent],
+      
     }).compileComponents();
 
     fixture = TestBed.createComponent(DeleteRoleDialogComponent);

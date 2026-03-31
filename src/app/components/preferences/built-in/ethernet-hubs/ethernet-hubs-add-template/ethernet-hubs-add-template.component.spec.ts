@@ -42,6 +42,7 @@ describe('EthernetHubsAddTemplateComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+    EthernetHubsAddTemplateComponent,
         FormsModule,
         ReactiveFormsModule,
         MatIconModule,
@@ -66,7 +67,7 @@ describe('EthernetHubsAddTemplateComponent', () => {
         { provide: ComputeService, useValue: mockedComputeService },
         { provide: TemplateMocksService, useClass: TemplateMocksService },
       ],
-      declarations: [EthernetHubsAddTemplateComponent],
+      
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

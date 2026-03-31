@@ -9,7 +9,7 @@ describe('NodeSelectInterfaceComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
-      declarations: [NodeSelectInterfaceComponent],
+      
     }).compileComponents();
   });
 

@@ -44,6 +44,7 @@ describe('CloudNodesTemplateDetailsComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+    CloudNodesTemplateDetailsComponent,
         FormsModule,
         ReactiveFormsModule,
         MatTableModule,
@@ -66,7 +67,7 @@ describe('CloudNodesTemplateDetailsComponent', () => {
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: BuiltInTemplatesConfigurationService, useClass: BuiltInTemplatesConfigurationService },
       ],
-      declarations: [CloudNodesTemplateDetailsComponent],
+      
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

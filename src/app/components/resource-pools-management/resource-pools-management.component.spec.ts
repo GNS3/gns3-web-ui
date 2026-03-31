@@ -45,7 +45,7 @@ describe('ResourcePoolsManagementComponent', () => {
         { provide: MatDialog, useClass: FakeMatDialog },
         { provide: ControllerService, useClass: FakeControllerService },
       ],
-      declarations: [ResourcePoolsManagementComponent],
+      
     }).compileComponents();
 
     fixture = TestBed.createComponent(ResourcePoolsManagementComponent);

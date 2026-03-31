@@ -36,6 +36,7 @@ describe('SettingsComponent', () => {
 
     TestBed.configureTestingModule({
       imports: [
+    SettingsComponent,
         MatExpansionModule,
         MatCheckboxModule,
         FormsModule,
@@ -52,7 +53,7 @@ describe('SettingsComponent', () => {
         { provide: MapSettingsService, useValue: mapSettingsService },
         { provide: UpdatesService, useValue: updatesService },
       ],
-      declarations: [SettingsComponent],
+      
     }).compileComponents();
 
     settingsService = TestBed.inject(SettingsService);

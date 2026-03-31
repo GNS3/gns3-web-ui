@@ -26,6 +26,7 @@ describe('PacketFiltersDialogComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+    PacketFiltersDialogComponent,
         MatDialogModule,
         FormsModule,
         ReactiveFormsModule,
@@ -42,7 +43,7 @@ describe('PacketFiltersDialogComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: [] },
         { provide: LinkService, useValue: mockedLinkService },
       ],
-      declarations: [PacketFiltersDialogComponent],
+      
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

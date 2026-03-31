@@ -34,6 +34,7 @@ describe('QemuTemplatesComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+    QemuVmTemplatesComponent,
         MatIconModule,
         MatToolbarModule,
         MatMenuModule,
@@ -51,7 +52,7 @@ describe('QemuTemplatesComponent', () => {
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: QemuService, useValue: mockedQemuService },
       ],
-      declarations: [QemuVmTemplatesComponent],
+      
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

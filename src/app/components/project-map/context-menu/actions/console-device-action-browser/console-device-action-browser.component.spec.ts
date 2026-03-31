@@ -9,7 +9,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
-      declarations: [ConsoleDeviceActionBrowserComponent],
+      
     }).compileComponents();
 
     fixture = TestBed.createComponent(ConsoleDeviceActionBrowserComponent);

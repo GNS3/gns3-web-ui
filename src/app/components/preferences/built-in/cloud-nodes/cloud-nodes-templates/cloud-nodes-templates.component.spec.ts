@@ -34,6 +34,7 @@ describe('CloudNodesTemplatesComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+    CloudNodesTemplatesComponent,
         MatIconModule,
         MatToolbarModule,
         MatMenuModule,
@@ -51,7 +52,7 @@ describe('CloudNodesTemplatesComponent', () => {
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
       ],
-      declarations: [CloudNodesTemplatesComponent],
+      
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

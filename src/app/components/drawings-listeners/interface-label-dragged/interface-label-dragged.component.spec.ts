@@ -27,7 +27,7 @@ describe('InterfaceLabelDraggedComponent', () => {
         { provide: LinksDataSource, useValue: mockedLinksDataSource },
         { provide: LinksEventSource, useValue: mockedLinksEventSource },
       ],
-      declarations: [InterfaceLabelDraggedComponent],
+      
     }).compileComponents();
   });
 

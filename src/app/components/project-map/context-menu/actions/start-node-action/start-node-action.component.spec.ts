@@ -16,8 +16,9 @@ describe('StartNodeActionComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [StartNodeActionComponent],
-      imports: [MatProgressSpinnerModule],
+      
+      imports: [
+    StartNodeActionComponent,MatProgressSpinnerModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: NodeService, useValue: mockedNodeService },

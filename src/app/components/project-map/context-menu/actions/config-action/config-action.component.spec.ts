@@ -9,7 +9,7 @@ describe('ConfigActionComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
-      declarations: [ConfigActionComponent],
+      
     }).compileComponents();
 
     fixture = TestBed.createComponent(ConfigActionComponent);

@@ -42,6 +42,7 @@ describe('CloudNodesAddTemplateComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+    CloudNodesAddTemplateComponent,
         FormsModule,
         ReactiveFormsModule,
         MatIconModule,
@@ -63,7 +64,7 @@ describe('CloudNodesAddTemplateComponent', () => {
         { provide: ComputeService, useValue: mockedComputeService },
         { provide: TemplateMocksService, useClass: TemplateMocksService },
       ],
-      declarations: [CloudNodesAddTemplateComponent],
+      
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

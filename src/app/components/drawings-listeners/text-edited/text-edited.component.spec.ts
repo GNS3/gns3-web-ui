@@ -26,7 +26,7 @@ describe('TextEditedComponent', () => {
         { provide: DrawingsEventSource, useValue: mockedDrawingsEventSource },
         { provide: MapDrawingToSvgConverter, useClass: MapDrawingToSvgConverter },
       ],
-      declarations: [TextEditedComponent],
+      
     }).compileComponents();
   });
 

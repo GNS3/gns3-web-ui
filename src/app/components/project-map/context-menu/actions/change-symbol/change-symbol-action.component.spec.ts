@@ -9,7 +9,7 @@ describe('ChangeSymbolActionComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
-      declarations: [ChangeSymbolActionComponent],
+      
     }).compileComponents();
 
     fixture = TestBed.createComponent(ChangeSymbolActionComponent);

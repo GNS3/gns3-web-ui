@@ -18,6 +18,7 @@ describe('ProjectMapLockConfirmationDialogComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+    ProjectMapLockConfirmationDialogComponent,
         MatButtonModule,
         MatIconModule,
         MatToolbarModule,
@@ -32,7 +33,7 @@ describe('ProjectMapLockConfirmationDialogComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: MatDialogRef, useValue: {} },
       ],
-      declarations: [ProjectMapLockConfirmationDialogComponent],
+      
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

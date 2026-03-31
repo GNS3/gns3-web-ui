@@ -14,8 +14,9 @@ describe('DeleteAceDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DeleteAceDialogComponent],
-      imports: [MatDialogModule, MatButtonModule],
+      
+      imports: [
+    DeleteAceDialogComponent,MatDialogModule, MatButtonModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: MatDialogRef, useClass: FakeMatDialogRef },

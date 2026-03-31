@@ -23,14 +23,14 @@ describe('ZoomingCanvasDirective', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [NoopAnimationsModule],
+      imports: [NoopAnimationsModule, ZoomingCanvasDirective],
       providers: [
         provideZonelessChangeDetection(),
         { provide: MovingEventSource, useValue: movingEventSource },
         { provide: Context, useClass: Context },
         { provide: MapScaleService, useClass: MapScaleService },
       ],
-      declarations: [DummyComponent, ZoomingCanvasDirective],
+      declarations: [DummyComponent],
     }).compileComponents();
   });
 

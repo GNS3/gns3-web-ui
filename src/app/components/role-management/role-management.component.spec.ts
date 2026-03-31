@@ -8,7 +8,7 @@ describe('RoleManagementComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [RoleManagementComponent],
+      
       providers: [provideZonelessChangeDetection()],
     }).compileComponents();
   });

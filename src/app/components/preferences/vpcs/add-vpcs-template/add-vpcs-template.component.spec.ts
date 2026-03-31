@@ -47,6 +47,7 @@ describe('AddVpcsTemplateComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+    AddVpcsTemplateComponent,
         FormsModule,
         ReactiveFormsModule,
         MatIconModule,
@@ -68,7 +69,7 @@ describe('AddVpcsTemplateComponent', () => {
         { provide: ComputeService, useValue: mockedComputeService },
         { provide: TemplateMocksService, useClass: TemplateMocksService },
       ],
-      declarations: [AddVpcsTemplateComponent],
+      
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

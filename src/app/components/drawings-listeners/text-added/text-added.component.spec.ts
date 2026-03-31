@@ -40,7 +40,7 @@ describe('TextAddedComponent', () => {
         { provide: MapDrawingToSvgConverter, useClass: MapDrawingToSvgConverter },
         { provide: Context, useClass: Context },
       ],
-      declarations: [TextAddedComponent],
+      
     }).compileComponents();
   });
 

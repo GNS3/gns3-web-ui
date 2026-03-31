@@ -12,7 +12,7 @@ describe('StopNodeActionComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [StopNodeActionComponent],
+      
       providers: [provideZonelessChangeDetection(), { provide: NodeService, useValue: mockedNodeService }],
     }).compileComponents();
   });

@@ -9,7 +9,7 @@ describe('ManagementComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
-      declarations: [ManagementComponent],
+      
     });
     fixture = TestBed.createComponent(ManagementComponent);
     component = fixture.componentInstance;

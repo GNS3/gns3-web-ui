@@ -26,9 +26,10 @@ describe('ProgressComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule, MatProgressSpinnerModule, MatIconModule],
+      imports: [
+    ProgressComponent,RouterTestingModule, MatProgressSpinnerModule, MatIconModule],
       providers: [provideZonelessChangeDetection(), ProgressService, { provide: Router, useValue: router }],
-      declarations: [ProgressComponent],
+      
     }).compileComponents();
 
     progressService = TestBed.inject(ProgressService);

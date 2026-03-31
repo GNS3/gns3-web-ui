@@ -37,6 +37,7 @@ describe('StartCaptureDialogComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+    StartCaptureDialogComponent,
         MatDialogModule,
         FormsModule,
         ReactiveFormsModule,
@@ -59,7 +60,7 @@ describe('StartCaptureDialogComponent', () => {
         { provide: ControllerService, useValue: {} },
         ProtocolHandlerService,
       ],
-      declarations: [StartCaptureDialogComponent],
+      
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
     protocolHandlerService = TestBed.inject(ProtocolHandlerService);

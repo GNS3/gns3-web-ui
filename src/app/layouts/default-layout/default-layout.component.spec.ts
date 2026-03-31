@@ -38,8 +38,9 @@ describe('DefaultLayoutComponent', () => {
     controllerManagementService.controllerStatusChanged = new Subject<ControllerStateEvent>();
 
     TestBed.configureTestingModule({
-      declarations: [DefaultLayoutComponent, ProgressComponent],
       imports: [
+        DefaultLayoutComponent,
+        ProgressComponent,
         MatIconModule,
         MatMenuModule,
         MatDialogModule,

@@ -46,6 +46,8 @@ describe('ProjectMapMenuComponent', () => {
         MatCheckboxModule,
         CommonModule,
         NoopAnimationsModule,
+        ProjectMapMenuComponent,
+        D3MapComponent,
       ],
       providers: [
         provideZonelessChangeDetection(),
@@ -59,7 +61,6 @@ describe('ProjectMapMenuComponent', () => {
         { provide: NodeService, useValue: mockedNodeService },
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
       ],
-      declarations: [ProjectMapMenuComponent, D3MapComponent/* , ...ANGULAR_MAP_DECLARATIONS */],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

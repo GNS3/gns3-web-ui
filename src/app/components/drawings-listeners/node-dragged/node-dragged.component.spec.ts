@@ -25,7 +25,7 @@ describe('NodeDraggedComponent', () => {
         { provide: NodeService, useValue: mockedNodeService },
         { provide: NodesEventSource, useValue: mockedNodesEventSource },
       ],
-      declarations: [NodeDraggedComponent],
+      
     }).compileComponents();
   });
 

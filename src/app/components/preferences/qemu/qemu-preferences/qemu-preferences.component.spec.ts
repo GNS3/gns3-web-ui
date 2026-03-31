@@ -31,6 +31,7 @@ describe('QemuPreferencesComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+    QemuPreferencesComponent,
         HttpClientModule,
         MatIconModule,
         MatToolbarModule,
@@ -50,7 +51,7 @@ describe('QemuPreferencesComponent', () => {
         { provide: ControllerSettingsService, useValue: mockedControllerSettingsService },
         { provide: ToasterService, useValue: mockedToasterService },
       ],
-      declarations: [QemuPreferencesComponent],
+      
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

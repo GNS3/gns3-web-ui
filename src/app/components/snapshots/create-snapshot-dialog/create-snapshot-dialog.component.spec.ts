@@ -33,8 +33,9 @@ describe('CreateSnapshotDialogComponent', () => {
   let mockedNodesDataSource: MockedNodesDataSource;
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [CreateSnapshotDialogComponent],
+      
       imports: [
+    CreateSnapshotDialogComponent,
         MatIconModule,
         MatToolbarModule,
         MatMenuModule,
