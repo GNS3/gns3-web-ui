@@ -26,6 +26,7 @@ describe('GeneralPreferencesComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([]),
+        GeneralPreferencesComponent,
       ],
       providers: [
         provideZonelessChangeDetection(),
@@ -34,7 +35,6 @@ describe('GeneralPreferencesComponent', () => {
           useValue: activatedRoute,
         },
       ],
-      declarations: [GeneralPreferencesComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

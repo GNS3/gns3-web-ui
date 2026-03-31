@@ -3,6 +3,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ControllerService } from '@services/controller.service';
 import { ControllerDatabase } from '@services/controller.database';
+import { HttpController } from '@services/http-controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { DirectLinkComponent } from './direct-link.component';
 
@@ -16,6 +17,7 @@ describe('DirectLinkComponent', () => {
         provideZonelessChangeDetection(),
         ControllerService,
         ControllerDatabase,
+        HttpController,
         { provide: ActivatedRoute, useValue: {} },
         { provide: Router, useValue: {} },
         { provide: ToasterService, useValue: {} },
