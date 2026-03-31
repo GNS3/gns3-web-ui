@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
@@ -12,10 +12,12 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { Subscription } from 'rxjs';
 import { Controller } from '@models/controller';
 import { Compute, ComputeCreate, ComputeUpdate } from '@models/compute';
 import { ComputeService } from '@services/compute.service';
 import { ControllerService } from '@services/controller.service';
+import { NotificationService } from '@services/notification.service';
 import { ToasterService } from '@services/toaster.service';
 import { DeleteConfirmationDialogComponent } from '@components/preferences/common/delete-confirmation-dialog/delete-confirmation-dialog.component';
 
@@ -40,10 +42,11 @@ import { DeleteConfirmationDialogComponent } from '@components/preferences/commo
     ReactiveFormsModule,
   ],
 })
-export class ComputesComponent implements OnInit {
+export class ComputesComponent implements OnInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private computeService = inject(ComputeService);
+  private notificationService = inject(NotificationService);
   private toasterService = inject(ToasterService);
   private dialog = inject(MatDialog);
   private cd = inject(ChangeDetectorRef);
@@ -52,9 +55,14 @@ export class ComputesComponent implements OnInit {
   computes = signal<Compute[]>([]);
   displayedColumns = ['status', 'name', 'host', 'connected', 'cpu', 'memory', 'disk', 'actions'];
   loading = signal(true);
+  private subscription = new Subscription();
 
   ngOnInit() {
     this.loadControllerAndComputes();
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 
   loadControllerAndComputes() {
@@ -63,7 +71,41 @@ export class ComputesComponent implements OnInit {
       this.controller = controller;
       this.cd.markForCheck();
       this.loadComputes();
+      this.connectToGlobalNotifications();
     });
+  }
+
+  connectToGlobalNotifications() {
+    // Connect to global WebSocket
+    this.notificationService.connectToComputeNotifications(this.controller);
+
+    // Subscribe to compute notifications
+    this.subscription.add(
+      this.notificationService.computeNotificationEmitter.subscribe((notification) => {
+        this.handleComputeNotification(notification);
+      })
+    );
+  }
+
+  handleComputeNotification(notification: { action: string; event: Compute }) {
+    switch (notification.action) {
+      case 'compute.created':
+        this.computes.update((computes) => [...computes, notification.event]);
+        this.toasterService.success(`Compute "${notification.event.name}" added`);
+        break;
+      case 'compute.updated':
+        this.computes.update((computes) =>
+          computes.map((c) => (c.compute_id === notification.event.compute_id ? notification.event : c))
+        );
+        break;
+      case 'compute.deleted':
+        this.computes.update((computes) =>
+          computes.filter((c) => c.compute_id !== notification.event.compute_id)
+        );
+        this.toasterService.success(`Compute "${notification.event.name}" deleted`);
+        break;
+    }
+    this.cd.markForCheck();
   }
 
   loadComputes() {
