@@ -13,6 +13,7 @@ import { Controller } from '@models/controller';
 import { QemuTemplate } from '@models/templates/qemu-template';
 import { QemuService } from '@services/qemu.service';
 import { ControllerService } from '@services/controller.service';
+import { TemplateService } from '@services/template.service';
 import { MockedControllerService } from '@services/controller.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { QemuVmTemplatesComponent } from './qemu-vm-templates.component';
@@ -51,6 +52,7 @@ describe('QemuTemplatesComponent', () => {
         },
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: QemuService, useValue: mockedQemuService },
+        { provide: TemplateService, useValue: {} },
       ],
       
       schemas: [NO_ERRORS_SCHEMA],

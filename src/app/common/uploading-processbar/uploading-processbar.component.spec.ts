@@ -14,8 +14,8 @@ describe('UploadingProcessbarComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [UploadingProcessbarComponent],
-      imports: [MatSnackBarModule, MatProgressBarModule, MatButtonModule],
+      declarations: [],
+      imports: [MatSnackBarModule, MatProgressBarModule, MatButtonModule, UploadingProcessbarComponent],
       providers: [
         provideZonelessChangeDetection(),
         { provide: MAT_SNACK_BAR_DATA, useValue: {} },
