@@ -1,5 +1,8 @@
-import { provideZonelessChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection, ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
+import { NodeService } from '@services/node.service';
+import { MockedNodesDataSource, MockedNodeService } from '../../../project-map.component.spec';
 import { AlignHorizontallyActionComponent } from './align-horizontally.component';
 
 describe('AlignHorizontallyActionComponent', () => {
@@ -8,8 +11,13 @@ describe('AlignHorizontallyActionComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-      declarations: [AlignHorizontallyActionComponent],
+      providers: [
+        provideZonelessChangeDetection(),
+        ChangeDetectorRef,
+        { provide: NodesDataSource, useValue: new MockedNodesDataSource() },
+        { provide: NodeService, useValue: new MockedNodeService() },
+      ],
+      imports: [AlignHorizontallyActionComponent],
     });
     fixture = TestBed.createComponent(AlignHorizontallyActionComponent);
     component = fixture.componentInstance;

@@ -52,6 +52,7 @@ describe('IouTemplateDetailsComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([]),
+        IouTemplateDetailsComponent,
       ],
       providers: [
         provideZonelessChangeDetection(),
@@ -61,7 +62,6 @@ describe('IouTemplateDetailsComponent', () => {
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: IouConfigurationService, useClass: IouConfigurationService },
       ],
-      declarations: [IouTemplateDetailsComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });
