@@ -1,6 +1,5 @@
 <div class="gns3-chat-message-list" #messageContainer [class.gns3-chat-message-list--auto-scroll]="autoScroll()">
-  <div class="gns3-chat-message-list__messages-container">
-    @for (message of messages(); track message.id) {
+  @for (message of messages(); track message.id) {
     <!-- User message -->
     @if (message.role === 'user') {
     <div class="gns3-chat-message-list__message gns3-chat-message-list__message--user">
@@ -82,9 +81,9 @@
       </div>
     </div>
     }
-    @end for
+  @end for
 
-    <!-- Empty state -->
+  <!-- Empty state -->
   @if (messages().length === 0) {
   <div class="gns3-chat-message-list__empty-state">
     <div class="gns3-chat-message-list__empty-content">
