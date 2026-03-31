@@ -270,6 +270,7 @@ readonly value = input<string>('');
 - [ ] No `!important` in SCSS
 - [ ] No `::ng-deep` in SCSS
 - [ ] No `ViewEncapsulation.None`
+- [ ] No hardcoded colors (auto-checked, see `.husky/check-hardcoded-colors.sh`)
 - [ ] Material theme variables (`--mat-sys-*`) used
 - [ ] Dialog styles in `src/styles/_dialogs.scss`
 
@@ -281,6 +282,17 @@ readonly value = input<string>('');
 ### Code Quality
 - [ ] `yarn prettier:write` formatted
 - [ ] No TypeScript/lint errors
+
+---
+
+## Hardcoded Color Protection
+
+**Multi-layer protection system** prevents code quality bypass:
+- **Pre-commit**: Auto-checks for hardcoded colors + warns on `.husky/` modifications
+- **CI**: Requires `hooks-update` label for hook changes
+- **Script Integrity**: SHA256 checksum verification
+
+**Documentation**: [docs/guides/css/hardcoded-color-protection.md](docs/guides/css/hardcoded-color-protection.md)
 
 ---
 
