@@ -22,13 +22,13 @@ describe('MovingCanvasDirective', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [NoopAnimationsModule],
+      imports: [MovingCanvasDirective, NoopAnimationsModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: MovingEventSource, useValue: movingEventSource },
         { provide: Context, useClass: Context },
       ],
-      declarations: [DummyComponent, MovingCanvasDirective],
+      declarations: [DummyComponent],
     }).compileComponents();
   });
 

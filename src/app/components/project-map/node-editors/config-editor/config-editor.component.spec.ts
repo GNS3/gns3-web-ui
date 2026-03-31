@@ -30,6 +30,7 @@ describe('ConfigEditorDialogComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        ConfigEditorDialogComponent,
         MatDialogModule,
         MatFormFieldModule,
         NoopAnimationsModule,
@@ -44,7 +45,6 @@ describe('ConfigEditorDialogComponent', () => {
         { provide: NodeService, useValue: mockedNodeService },
         { provide: ToasterService, useValue: toaster },
       ],
-      declarations: [ConfigEditorDialogComponent],
     }).compileComponents();
 
     controller = new Controller();

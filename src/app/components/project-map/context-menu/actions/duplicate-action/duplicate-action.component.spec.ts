@@ -24,7 +24,7 @@ describe('DuplicateActionComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [MatIconModule, MatMenuModule, NoopAnimationsModule],
+      imports: [DuplicateActionComponent, MatIconModule, MatMenuModule, NoopAnimationsModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: NodesDataSource, useClass: NodesDataSource },
@@ -33,7 +33,6 @@ describe('DuplicateActionComponent', () => {
         { provide: DrawingService, useValue: mockedDrawingService },
         { provide: ToasterService, useValue: mockedToasterService },
       ],
-      declarations: [DuplicateActionComponent],
     }).compileComponents();
   });
 

@@ -24,8 +24,9 @@ describe('TemplateListDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [TemplateListDialogComponent, TemplateFilter],
       imports: [
+        TemplateListDialogComponent,
+        TemplateFilter,
         ReactiveFormsModule,
         FormsModule,
         RouterTestingModule,
