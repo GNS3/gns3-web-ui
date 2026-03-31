@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   padding: 16px;
-  background: linear-gradient(to bottom, var(--mat-sys-background), var(--mat-sys-surface-container-low));
+  background: transparent;
   border-top: 1px solid var(--mat-sys-outline-variant);
 }
 
@@ -26,7 +26,7 @@
   padding: 12px 16px;
   border: 2px solid var(--mat-sys-outline-variant);
   border-radius: 24px;
-  background: linear-gradient(to bottom, var(--mat-sys-surface), var(--mat-sys-surface-container-low));
+  background: transparent;
   color: var(--mat-sys-on-surface);
   font-family: inherit;
   font-size: 14px;
@@ -39,6 +39,7 @@
 
   &:focus {
     border-color: var(--mat-sys-primary);
+    background: var(--mat-sys-surface-container-low);
     box-shadow: 0 0 0 4px color-mix(in srgb, var(--mat-sys-primary) 10%, transparent);
   }
 
