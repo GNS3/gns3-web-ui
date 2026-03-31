@@ -4,7 +4,7 @@ import { MatTableModule } from '@angular/material/table';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
 import { NodeService } from '@services/node.service';
-import { MockedNodesDataSource, MockedNodeService } from '../../../project-map.component.spec';
+import { MockedNodesDataSource, MockedNodeService, MockedDrawingsDataSource } from '../../../project-map.component.spec';
 import { MoveLayerDownActionComponent } from './move-layer-down-action.component';
 
 describe('MoveLayerDownActionComponent', () => {
