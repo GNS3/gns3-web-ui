@@ -177,10 +177,15 @@ export class IosTemplateDetailsComponent implements OnInit {
   generateBaseMAC() {
     // Generate a random MAC address in format xxxx.xxxx.xxxx
     const hexChars = '0123456789abcdef';
+    const randomBytes = new Uint8Array(6);
+    crypto.getRandomValues(randomBytes);
     let mac = '';
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 4; j++) {
-        mac += hexChars[Math.floor(Math.random() * 16)];
+        const byteIndex = i * 2 + Math.floor(j / 2);
+        const nibbleIndex = j % 2;
+        const nibble = (randomBytes[byteIndex] >> (nibbleIndex * 4)) & 0x0f;
+        mac += hexChars[nibble];
       }
       if (i < 2) {
         mac += '.';
