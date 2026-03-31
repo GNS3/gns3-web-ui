@@ -1,0 +1,74 @@
+/**
+ * Tool Call Display Component Styles
+ * Using MD3 CSS variables and BEM naming convention
+ */
+
+.gns3-tool-call-display__tool-call {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  margin: 8px 0;
+  background: var(--mat-sys-surface-container-low);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-left: 3px solid var(--mat-sys-primary);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  font-size: 13px;
+
+  &:hover {
+    background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
+    border-color: var(--mat-sys-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px color-mix(in srgb, var(--mat-sys-primary) 15%, transparent);
+
+    .gns3-tool-call-display__expand-icon {
+      opacity: 1;
+    }
+  }
+}
+
+.gns3-tool-call-display__tool-icon {
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  color: var(--mat-sys-primary);
+}
+
+.gns3-tool-call-display__tool-name {
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
+
+.gns3-tool-call-display__tool-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--mat-sys-on-surface-variant);
+
+  &--receiving {
+    color: var(--mat-sys-tertiary);
+  }
+
+  &--executing {
+    color: var(--mat-sys-secondary);
+  }
+}
+
+.gns3-tool-call-display__status-text {
+  font-size: 11px;
+}
+
+.gns3-tool-call-display__expand-icon {
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant);
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
