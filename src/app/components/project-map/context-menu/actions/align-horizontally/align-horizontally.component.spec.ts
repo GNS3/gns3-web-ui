@@ -1,6 +1,6 @@
 import { provideZonelessChangeDetection, ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
+import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { NodeService } from '@services/node.service';
 import { MockedNodesDataSource, MockedNodeService } from '../../../project-map.component.spec';
 import { AlignHorizontallyActionComponent } from './align-horizontally.component';
