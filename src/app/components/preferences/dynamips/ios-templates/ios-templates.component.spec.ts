@@ -12,6 +12,9 @@ import { of } from 'rxjs';
 import { Controller } from '@models/controller';
 import { IosTemplate } from '@models/templates/ios-template';
 import { IosService } from '@services/ios.service';
+import { TemplateService } from '@services/template.service';
+import { ToasterService } from '@services/toaster.service';
+import { MockedToasterService } from '@services/toaster.service.spec';
 import { ControllerService } from '@services/controller.service';
 import { MockedControllerService } from '@services/controller.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
@@ -20,6 +23,12 @@ import { IosTemplatesComponent } from './ios-templates.component';
 export class MockedIosService {
   public getTemplates(controller: Controller) {
     return of([{} as IosTemplate]);
+  }
+}
+
+class MockedTemplateService {
+  deleteTemplate(controller: Controller, templateId: string) {
+    return of({});
   }
 }
 
@@ -51,6 +60,8 @@ describe('IosTemplatesComponent', () => {
         },
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: IosService, useValue: mockedIosService },
+        { provide: TemplateService, useClass: MockedTemplateService },
+        { provide: ToasterService, useValue: new MockedToasterService() },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
