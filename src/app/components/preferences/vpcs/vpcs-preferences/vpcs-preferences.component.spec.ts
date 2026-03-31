@@ -30,6 +30,7 @@ describe('VpcsPreferencesComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([]),
+        VpcsPreferencesComponent,
       ],
       providers: [
         provideZonelessChangeDetection(),
@@ -39,7 +40,6 @@ describe('VpcsPreferencesComponent', () => {
         },
         { provide: ControllerService, useValue: mockedControllerService },
       ],
-      declarations: [VpcsPreferencesComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

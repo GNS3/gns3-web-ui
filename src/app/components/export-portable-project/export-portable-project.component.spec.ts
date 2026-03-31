@@ -21,8 +21,8 @@ describe('ExportPortableProjectComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ExportPortableProjectComponent],
       imports: [
+        ExportPortableProjectComponent,
         MatDialogModule,
         ReactiveFormsModule,
         FormsModule,

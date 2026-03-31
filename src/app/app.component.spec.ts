@@ -16,8 +16,9 @@ describe('AppComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [AppComponent],
-      imports: [RouterTestingModule, MatIconModule, HttpClientTestingModule, AppTestingModule],
+      
+      imports: [
+    AppComponent,RouterTestingModule, MatIconModule, HttpClientTestingModule, AppTestingModule],
       providers: [provideZonelessChangeDetection(), SettingsService, ProgressService],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

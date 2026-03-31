@@ -47,8 +47,8 @@ describe('ControllersComponent', () => {
     };
 
     TestBed.configureTestingModule({
-      declarations: [ControllersComponent],
       imports: [
+        ControllersComponent,
         MatDialogModule,
         RouterTestingModule,
         MatBottomSheetModule,

@@ -15,8 +15,7 @@ describe('InstalledSoftwareComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [InstalledSoftwareComponent],
-      imports: [CommonModule, MatTableModule, AppTestingModule],
+      imports: [CommonModule, MatTableModule, AppTestingModule, InstalledSoftwareComponent],
       providers: [
         provideZonelessChangeDetection(),
         InstalledSoftwareService,

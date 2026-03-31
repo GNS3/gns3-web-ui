@@ -9,7 +9,7 @@ describe('DirectLinkComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
-      declarations: [DirectLinkComponent],
+      imports: [DirectLinkComponent],
     });
     fixture = TestBed.createComponent(DirectLinkComponent);
     component = fixture.componentInstance;
