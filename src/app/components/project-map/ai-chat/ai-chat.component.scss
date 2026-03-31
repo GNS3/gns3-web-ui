@@ -299,10 +299,10 @@
 }
 
 .gns3-ai-chat__input {
-  border-top: 1px solid var(--mat-sys-outline-variant);
+  border-top: 1px solid transparent;
   flex-shrink: 0;
   position: relative;
-  transition: border-color 200ms ease;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
 
   &:focus-within {
     border-top-color: var(--mat-sys-primary);
