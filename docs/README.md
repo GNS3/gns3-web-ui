@@ -2,7 +2,7 @@
 
 > Complete documentation index for GNS3 Web UI project
 
-**Last Updated**: 2026-03-30
+**Last Updated**: 2026-03-31
 
 ---
 
@@ -29,6 +29,8 @@ docs/
 ├── guides/                      # Development standards & best practices
 │   ├── css/
 │   │   ├── 02-material3-variables.md
+│   │   ├── hardcoded-colors-inventory.md
+│   │   ├── hardcoded-color-protection.md
 │   │   └── map-backgrounds.md
 │   ├── dialog-style-isolation.md
 │   └── window-boundary-service.md
@@ -75,6 +77,8 @@ docs/
 |----------|-------------|
 | [Dialog Style Isolation](./guides/dialog-style-isolation.md) | ⭐ Dialog styling with panelClass |
 | [Material 3 Variables](./guides/css/02-material3-variables.md) | Material Design 3 CSS variables |
+| [Hardcoded Color Inventory](./guides/css/hardcoded-colors-inventory.md) | All hardcoded color violations in codebase |
+| [Hardcoded Color Protection](./guides/css/hardcoded-color-protection.md) | ⭐ Multi-layer protection mechanism for code quality |
 | [Map Backgrounds](./guides/css/map-backgrounds.md) | Project map background & screenshot export |
 | [Window Boundary Service](./guides/window-boundary-service.md) | Window boundary management |
 
@@ -106,6 +110,7 @@ docs/
 - **Angular Zoneless**: [framework/angular-21/zoneless-guide.md](./framework/angular-21/zoneless-guide.md)
 - **Dialog Styling**: [guides/dialog-style-isolation.md](./guides/dialog-style-isolation.md)
 - **CSS Variables**: [guides/css/02-material3-variables.md](./guides/css/02-material3-variables.md)
+- **Color Protection**: [guides/css/hardcoded-color-protection.md](./guides/css/hardcoded-color-protection.md) ⭐
 - **Map Backgrounds**: [guides/css/map-backgrounds.md](./guides/css/map-backgrounds.md)
 
 ### Getting Started
@@ -114,10 +119,25 @@ docs/
 2. **AI Chat Feature?** See [features/ai-chat/ai-chat-guide.md](./features/ai-chat/ai-chat-guide.md)
 3. **Angular Zoneless?** See [framework/angular-21/zoneless-guide.md](./framework/angular-21/zoneless-guide.md)
 4. **Dialog Styling?** See [guides/dialog-style-isolation.md](./guides/dialog-style-isolation.md)
+5. **Code Quality?** See [guides/css/hardcoded-color-protection.md](./guides/css/hardcoded-color-protection.md)
 
 ---
 
 ## Recent Changes
+
+### 2026-03-31
+
+- ✅ **Hardcoded Color Protection**: Added comprehensive protection mechanism
+  - Multi-layer security: SHA256 self-check, pre-commit warning, CI label check
+  - Configuration separated to JSON file for maintainability
+  - Prevents AI and developers from bypassing code quality standards
+  - Documentation: [guides/css/hardcoded-color-protection.md](./guides/css/hardcoded-color-protection.md)
+
+- ✅ **AI Chat CSS Standards**: Complete refactoring of AI Chat components
+  - Fixed 27 hardcoded color violations across 6 components
+  - Applied BEM naming convention with `gns3-` prefix
+  - Extracted inline templates and styles to separate files
+  - All components now use Material Design 3 CSS variables
 
 ### 2026-03-30
 
@@ -146,4 +166,4 @@ docs/
 
 ---
 
-*Last Updated: 2026-03-30*
+*Last Updated: 2026-03-31*
