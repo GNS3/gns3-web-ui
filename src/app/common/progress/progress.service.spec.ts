@@ -10,7 +10,7 @@ describe('ProgressService', () => {
       providers: [provideZonelessChangeDetection(), ProgressService],
     });
 
-    progressService = TestBed.get(ProgressService);
+    progressService = TestBed.inject(ProgressService);
 
     spyOn(progressService.state, 'next');
   });

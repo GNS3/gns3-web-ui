@@ -23,10 +23,10 @@ describe('SnapshotService', () => {
       providers: [provideZonelessChangeDetection(), HttpController, HttpClient, SnapshotService],
     });
 
-    httpClient = TestBed.get(HttpClient);
-    httpTestingController = TestBed.get(HttpTestingController);
-    httpController = TestBed.get(HttpController);
-    service = TestBed.get(SnapshotService);
+    httpClient = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    httpController = TestBed.inject(HttpController);
+    service = TestBed.inject(SnapshotService);
     controller = getTestController();
   });
 

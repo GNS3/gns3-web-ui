@@ -2,7 +2,7 @@ import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
-import { Observable } from 'rxjs/Rx';
+import { Observable, of, throwError } from 'rxjs';
 import { Controller } from '@models/controller';
 import { Version } from '@models/version';
 import { ControllerDatabase } from '@services/controller.database';
@@ -126,20 +126,20 @@ xdescribe('ControllerDiscoveryComponent', () => {
     });
 
     it('should get first controller from discovered and with no added before', fakeAsync(() => {
-      expect(component.discoveredController).toBeUndefined();
+      expect(component.discoveredController()).toBeUndefined();
       component.discoverFirstAvailableController();
       tick();
-      expect(component.discoveredController.host).toEqual('199.111.111.1');
-      expect(component.discoveredController.port).toEqual(3333);
+      expect(component.discoveredController().host).toEqual('199.111.111.1');
+      expect(component.discoveredController().port).toEqual(3333);
     }));
 
     it('should get first controller from discovered and with already added', fakeAsync(() => {
       mockedControllerService.controllers.push(controller);
 
-      expect(component.discoveredController).toBeUndefined();
+      expect(component.discoveredController()).toBeUndefined();
       component.discoverFirstAvailableController();
       tick();
-      expect(component.discoveredController).toBeUndefined();
+      expect(component.discoveredController()).toBeUndefined();
     }));
   });
 
@@ -148,14 +148,14 @@ xdescribe('ControllerDiscoveryComponent', () => {
     beforeEach(() => {
       controller = new Controller();
       (controller.host = '199.111.111.1'), (controller.port = 3333);
-      component.discoveredController = controller;
+      component.discoveredController.set(controller);
     });
 
     describe('accept', () => {
       it('should add new controller', fakeAsync(() => {
         component.accept(controller);
         tick();
-        expect(component.discoveredController).toBeNull();
+        expect(component.discoveredController()).toBeNull();
         expect(mockedControllerService.controllers[0].host).toEqual('199.111.111.1');
         expect(mockedControllerService.controllers[0].name).toEqual('199.111.111.1');
         expect(mockedControllerService.controllers[0].location).toEqual('remote');
@@ -166,7 +166,7 @@ xdescribe('ControllerDiscoveryComponent', () => {
       it('should reject controller', fakeAsync(() => {
         component.ignore(controller);
         tick();
-        expect(component.discoveredController).toBeNull();
+        expect(component.discoveredController()).toBeNull();
       }));
     });
   });

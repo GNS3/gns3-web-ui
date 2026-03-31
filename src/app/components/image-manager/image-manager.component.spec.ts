@@ -28,11 +28,11 @@ import { Subject } from 'rxjs';
 
 export class MockedImageManagerService {
   public getImages(controller: Controller) {
-    return of();
+    return of([] as Image[]);
   }
 
   public deleteFile(controller: Controller, image_path) {
-    return of();
+    return of(true);
   }
 }
 
@@ -97,7 +97,7 @@ describe('ImageManagerComponent', () => {
     mockDialogRef.afterClosed.and.returnValue(of(true));
     spyOn(component['dialog'], 'open').and.returnValue(mockDialogRef);
     spyOn(mockedImageManagerService, 'getImages').and.returnValue(of([] as Image[]));
-    spyOn(mockedImageManagerService, 'deleteFile').and.returnValue(of({} as Image));
+    spyOn(mockedImageManagerService, 'deleteFile').and.returnValue(of(true));
     component.controller = { authToken: 'test' } as any;
     component.deleteFile('image_path');
     expect(mockedImageManagerService.deleteFile).toHaveBeenCalled();

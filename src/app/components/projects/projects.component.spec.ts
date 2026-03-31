@@ -62,11 +62,7 @@ xdescribe('ProjectsComponent', () => {
       ],
       declarations: [ProjectsComponent, ChooseNameDialogComponent, ProjectsFilter],
       schemas: [NO_ERRORS_SCHEMA],
-    })
-      .overrideModule(BrowserDynamicTestingModule, {
-        set: { entryComponents: [ChooseNameDialogComponent] },
-      })
-      .compileComponents();
+    }).compileComponents();
 
     controllerService = TestBed.inject(ControllerService);
     settingsService = TestBed.inject(SettingsService);

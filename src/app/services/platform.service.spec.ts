@@ -13,7 +13,7 @@ describe('PlatformService', () => {
   });
 
   beforeEach(() => {
-    service = TestBed.get(PlatformService);
+    service = TestBed.inject(PlatformService);
   });
 
   it('should be created', () => {

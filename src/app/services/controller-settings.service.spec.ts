@@ -27,7 +27,7 @@ describe('ControllerSettingsService', () => {
       providers: [provideZonelessChangeDetection(), HttpController, ControllerSettingsService],
     });
 
-    httpController = TestBed.get(HttpController);
+    httpController = TestBed.inject(HttpController);
   });
 
   it('should be created', inject([ControllerSettingsService], (service: ControllerSettingsService) => {

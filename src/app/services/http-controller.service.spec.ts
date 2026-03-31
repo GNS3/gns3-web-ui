@@ -64,9 +64,9 @@ describe('HttpController', () => {
       providers: [provideZonelessChangeDetection(), HttpController],
     });
 
-    httpClient = TestBed.get(HttpClient);
-    httpTestingController = TestBed.get(HttpTestingController);
-    service = TestBed.get(HttpController);
+    httpClient = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    service = TestBed.inject(HttpController);
 
     controller = getTestController();
   });

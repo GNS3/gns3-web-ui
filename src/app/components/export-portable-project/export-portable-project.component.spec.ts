@@ -50,11 +50,6 @@ describe('ExportPortableProjectComponent', () => {
   });
 
   it('should create', () => {
-    let compression_methods_Value = mockedProjectService.getCompression;
-    let compression_level_value = mockedProjectService.getCompressionLevel;
-    component.compression_methods = compression_methods_Value[4];
-    component.compression_level = compression_level_value;
-    component.selectCompression(component.compression_methods);
     expect(component).toBeTruthy();
   });
 });

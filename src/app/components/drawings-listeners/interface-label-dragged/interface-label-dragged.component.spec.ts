@@ -1,6 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
 import { LinksEventSource } from '../../../cartography/events/links-event-source';
@@ -71,7 +71,7 @@ describe('InterfaceLabelDraggedComponent', () => {
         label: {} as Label,
       },
     ];
-    mockedLinksDataSource = TestBed.get(LinksDataSource);
+    mockedLinksDataSource = TestBed.inject(LinksDataSource);
 
     spyOn(mockedLinksDataSource, 'get').and.returnValue(link);
     spyOn(mockedLinkService, 'updateNodes').and.returnValue(of({}));

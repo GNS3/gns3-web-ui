@@ -21,7 +21,7 @@ describe('ToasterErrorHandler', () => {
     });
 
     handler = TestBed.inject(ToasterErrorHandler);
-    toasterService = TestBed.get(ToasterService);
+    toasterService = TestBed.inject(ToasterService) as unknown as MockedToasterService;
     settingsService = TestBed.inject(SettingsService);
   });
 

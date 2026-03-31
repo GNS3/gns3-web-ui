@@ -116,7 +116,7 @@ describe('LogConsoleComponent', () => {
 
   it('should call node service when start all entered', () => {
     spyOn(component, 'showMessage');
-    spyOn(mockedNodeService, 'startAll').and.returnValue(of({}));
+    spyOn(mockedNodeService, 'startAll').and.returnValue(of(null));
     component.command = 'start all';
 
     component.handleCommand();
@@ -127,7 +127,7 @@ describe('LogConsoleComponent', () => {
 
   it('should call node service when stop all entered', () => {
     spyOn(component, 'showMessage');
-    spyOn(mockedNodeService, 'stopAll').and.returnValue(of({}));
+    spyOn(mockedNodeService, 'stopAll').and.returnValue(of(null));
     component.command = 'stop all';
 
     component.handleCommand();
@@ -138,7 +138,7 @@ describe('LogConsoleComponent', () => {
 
   it('should call node service when suspend all entered', () => {
     spyOn(component, 'showMessage');
-    spyOn(mockedNodeService, 'suspendAll').and.returnValue(of({}));
+    spyOn(mockedNodeService, 'suspendAll').and.returnValue(of(null));
     component.command = 'suspend all';
 
     component.handleCommand();
@@ -149,7 +149,7 @@ describe('LogConsoleComponent', () => {
 
   it('should call node service when reload all entered', () => {
     spyOn(component, 'showMessage');
-    spyOn(mockedNodeService, 'reloadAll').and.returnValue(of({}));
+    spyOn(mockedNodeService, 'reloadAll').and.returnValue(of(null));
     component.command = 'reload all';
 
     component.handleCommand();
@@ -160,7 +160,7 @@ describe('LogConsoleComponent', () => {
 
   it('should call node service when start node entered', () => {
     spyOn(component, 'showMessage');
-    spyOn(mockedNodeService, 'start').and.returnValue(of({}));
+    spyOn(mockedNodeService, 'start').and.returnValue(of(null));
     component.command = 'start testNode';
 
     component.handleCommand();
@@ -171,7 +171,7 @@ describe('LogConsoleComponent', () => {
 
   it('should call node service when stop node entered', () => {
     spyOn(component, 'showMessage');
-    spyOn(mockedNodeService, 'stop').and.returnValue(of({}));
+    spyOn(mockedNodeService, 'stop').and.returnValue(of(null));
     component.command = 'stop testNode';
 
     component.handleCommand();
@@ -182,7 +182,7 @@ describe('LogConsoleComponent', () => {
 
   it('should call node service when suspend node entered', () => {
     spyOn(component, 'showMessage');
-    spyOn(mockedNodeService, 'suspend').and.returnValue(of({}));
+    spyOn(mockedNodeService, 'suspend').and.returnValue(of(null));
     component.command = 'suspend testNode';
 
     component.handleCommand();
@@ -193,7 +193,7 @@ describe('LogConsoleComponent', () => {
 
   it('should call node service when reload node entered', () => {
     spyOn(component, 'showMessage');
-    spyOn(mockedNodeService, 'reload').and.returnValue(of({}));
+    spyOn(mockedNodeService, 'reload').and.returnValue(of(null));
     component.command = 'reload testNode';
 
     component.handleCommand();

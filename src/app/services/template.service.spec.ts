@@ -19,9 +19,9 @@ describe('TemplateService', () => {
       providers: [provideZonelessChangeDetection(), TemplateService, HttpController, HttpClient],
     });
 
-    httpClient = TestBed.get(HttpClient);
-    httpTestingController = TestBed.get(HttpTestingController);
-    service = TestBed.get(TemplateService);
+    httpClient = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    service = TestBed.inject(TemplateService);
   });
 
   afterEach(() => {

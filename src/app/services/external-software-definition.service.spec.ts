@@ -37,7 +37,7 @@ describe('ExternalSoftwareDefinitionService', () => {
   );
 
   beforeEach(() => {
-    service = TestBed.get(ExternalSoftwareDefinitionService);
+    service = TestBed.inject(ExternalSoftwareDefinitionService);
   });
 
   it('should be created', () => {

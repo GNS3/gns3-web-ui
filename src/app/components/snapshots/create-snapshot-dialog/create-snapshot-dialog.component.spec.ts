@@ -12,11 +12,18 @@ import { MockedNodesDataSource } from 'app/components/project-map/project-map.co
 import { SnapshotService } from 'app/services/snapshot.service';
 import { ToasterService } from 'app/services/toaster.service';
 import { MockedToasterService } from 'app/services/toaster.service.spec';
-import { MockedSnapshotService } from '../list-of-snapshots/list-of-snaphshots.component.spec';
 import { CreateSnapshotDialogComponent } from './create-snapshot-dialog.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { of } from 'rxjs';
+import { Controller } from '@models/controller';
+
+class MockedSnapshotService {
+  create(controller: Controller, project_id: string, snapshot: any) {
+    return of(null);
+  }
+}
 
 describe('CreateSnapshotDialogComponent', () => {
   let component: CreateSnapshotDialogComponent;

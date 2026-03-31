@@ -55,7 +55,7 @@ describe('SettingsComponent', () => {
       declarations: [SettingsComponent],
     }).compileComponents();
 
-    settingsService = TestBed.get(SettingsService);
+    settingsService = TestBed.inject(SettingsService);
   });
 
   beforeEach(() => {

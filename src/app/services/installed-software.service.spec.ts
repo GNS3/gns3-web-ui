@@ -10,7 +10,7 @@ describe('InstalledSoftwareService', () => {
   );
 
   it('should be created', () => {
-    const service: InstalledSoftwareService = TestBed.get(InstalledSoftwareService);
+    const service: InstalledSoftwareService = TestBed.inject(InstalledSoftwareService);
     expect(service).toBeTruthy();
   });
 });

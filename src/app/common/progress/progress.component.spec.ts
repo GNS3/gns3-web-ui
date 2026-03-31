@@ -31,8 +31,7 @@ describe('ProgressComponent', () => {
       declarations: [ProgressComponent],
     }).compileComponents();
 
-    progressService = TestBed.get(ProgressService);
-    router = TestBed.get(Router);
+    progressService = TestBed.inject(ProgressService);
   });
 
   beforeEach(() => {
@@ -43,30 +42,30 @@ describe('ProgressComponent', () => {
 
   it('should create and be invisible', () => {
     expect(component).toBeTruthy();
-    expect(component.visible).toEqual(false);
+    expect(component.visible()).toEqual(false);
   });
 
   it('should change visibility when activated', () => {
     progressService.activate();
-    expect(component.visible).toEqual(true);
+    expect(component.visible()).toEqual(true);
   });
 
   it('should change visibility when deactivated', () => {
-    component.visible = true;
+    component.visible.set(true);
 
     progressService.deactivate();
-    expect(component.visible).toEqual(false);
+    expect(component.visible()).toEqual(false);
   });
 
   it('should set error state when error defined', () => {
     const error = { error: 'test' };
     progressService.setError(error);
-    expect(component.error).toEqual(error.error);
+    expect(component.error()).toEqual(error.error);
   });
 
   it('should clear error when changes route', () => {
     const error = new Error('test');
-    component.error = error;
+    component.error.set(error);
 
     spyOn(progressService, 'clear');
 

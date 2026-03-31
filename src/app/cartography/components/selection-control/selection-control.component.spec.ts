@@ -46,7 +46,7 @@ describe('SelectionControlComponent', () => {
     selectionEventSource = new SelectionEventSource();
     manager = new SelectionManager();
 
-    component = new SelectionControlComponent(selectionEventSource, graphData, inRectangleHelper, manager);
+    component = new SelectionControlComponent();
     component.ngOnInit();
   });
 

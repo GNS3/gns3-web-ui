@@ -23,9 +23,9 @@ describe('ImageManagerService', () => {
       providers: [provideZonelessChangeDetection(), HttpController, ImageManagerService],
     });
 
-    httpClient = TestBed.get(HttpClient);
-    httpTestingController = TestBed.get(HttpTestingController);
-    httpController = TestBed.get(HttpController);
+    httpClient = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    httpController = TestBed.inject(HttpController);
     controller = getTestController();
     // service = TestBed.inject(ImageManagerService);
   });

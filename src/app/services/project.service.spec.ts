@@ -81,11 +81,11 @@ describe('ProjectService', () => {
       ],
     });
 
-    httpClient = TestBed.get(HttpClient);
-    httpTestingController = TestBed.get(HttpTestingController);
-    httpController = TestBed.get(HttpController);
-    service = TestBed.get(ProjectService);
-    settingsService = TestBed.get(SettingsService);
+    httpClient = TestBed.inject(HttpClient);
+    httpTestingController = TestBed.inject(HttpTestingController);
+    httpController = TestBed.inject(HttpController);
+    service = TestBed.inject(ProjectService);
+    settingsService = TestBed.inject(SettingsService);
 
     controller = getTestController();
   });

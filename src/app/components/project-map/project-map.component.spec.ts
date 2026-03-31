@@ -10,8 +10,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute, Router } from '@angular/router';
 import {} from 'mousetrap';
-import { BehaviorSubject, of } from 'rxjs';
-import { Observable } from 'rxjs/Rx';
+import { BehaviorSubject, Observable, of } from 'rxjs';
 // import { ANGULAR_MAP_DECLARATIONS } from '../../cartography/angular-map.imports';
 import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
 import { MapDrawingToDrawingConverter } from '../../cartography/converters/map/map-drawing-to-drawing-converter';
@@ -62,7 +61,15 @@ import { SettingsService } from '@services/settings.service';
 import { ToasterService } from '@services/toaster.service';
 import { MockedToasterService } from '@services/toaster.service.spec';
 import { ToolsService } from '@services/tools.service';
-import { MockedActivatedRoute } from '../snapshots/list-of-snapshots/list-of-snaphshots.component.spec';
+
+export class MockedActivatedRoute {
+  get() {
+    return {
+      queryParams: of({}),
+      params: of({}),
+    };
+  }
+}
 import { NodeCreatedLabelStylesFixer } from './helpers/node-created-label-styles-fixer';
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { ProjectMapComponent } from './project-map.component';
@@ -91,39 +98,39 @@ export class MockedNodeService {
   }
 
   delete(controller: Controller, node: Node) {
-    return of();
+    return of(null);
   }
 
   startAll(controller: Controller, project: Project) {
-    return of();
+    return of(null);
   }
 
   stopAll(controller: Controller, project: Project) {
-    return of();
+    return of(null);
   }
 
   suspendAll(controller: Controller, project: Project) {
-    return of();
+    return of(null);
   }
 
   reloadAll(controller: Controller, project: Project) {
-    return of();
+    return of(null);
   }
 
   start(controller: Controller, node: Node) {
-    return of();
+    return of(null);
   }
 
   stop(controller: Controller, node: Node) {
-    return of();
+    return of(null);
   }
 
   suspend(controller: Controller, node: Node) {
-    return of();
+    return of(null);
   }
 
   reload(controller: Controller, node: Node) {
-    return of();
+    return of(null);
   }
 
   duplicate(controller: Controller, node: Node) {
@@ -333,13 +340,10 @@ xdescribe('ProjectMapComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(ProjectMapComponent);
     component = fixture.componentInstance;
-    component.projectMapMenuComponent = {
-      resetDrawToolChoice() {},
-    } as ProjectMapMenuComponent;
 
     component.ws = {
       OPEN: 0,
-    } as WebSocket;
+    } as unknown as WebSocket;
   });
 
   afterEach(() => {
@@ -355,10 +359,10 @@ xdescribe('ProjectMapComponent', () => {
     document.getElementsByClassName = jasmine.createSpy('HTML element').and.callFake(() => {
       return [dummyElement];
     });
-    spyOn(component.projectMapMenuComponent, 'resetDrawToolChoice').and.returnValue();
+    spyOn(component.projectMapMenuComponent(), 'resetDrawToolChoice').and.returnValue();
 
     component.hideMenu();
 
-    expect(component.projectMapMenuComponent.resetDrawToolChoice).toHaveBeenCalled();
+    expect(component.projectMapMenuComponent().resetDrawToolChoice).toHaveBeenCalled();
   });
 });

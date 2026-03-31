@@ -90,7 +90,7 @@ describe('DefaultLayoutComponent', () => {
   });
 
   it('should show error when controller management service throw event', () => {
-    const toaster: MockedToasterService = TestBed.get(ToasterService);
+    const toaster: MockedToasterService = TestBed.inject(ToasterService) as unknown as MockedToasterService;
     controllerManagementService.controllerStatusChanged.next({
       status: 'errored',
       message: 'Message',
@@ -100,7 +100,7 @@ describe('DefaultLayoutComponent', () => {
 
   it('should not show error when controller management service throw event', () => {
     component.ngOnDestroy();
-    const toaster: MockedToasterService = TestBed.get(ToasterService);
+    const toaster: MockedToasterService = TestBed.inject(ToasterService) as unknown as MockedToasterService;
     controllerManagementService.controllerStatusChanged.next({
       status: 'errored',
       message: 'Message',
