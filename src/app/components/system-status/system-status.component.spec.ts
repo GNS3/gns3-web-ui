@@ -1,5 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
 import { SystemStatusComponent } from './system-status.component';
 
 describe('SystemStatusComponent', () => {
@@ -9,7 +10,19 @@ describe('SystemStatusComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [SystemStatusComponent],
-      providers: [provideZonelessChangeDetection()],
+      providers: [
+        provideZonelessChangeDetection(),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              paramMap: {
+                get: (key: string) => null
+              }
+            }
+          }
+        },
+      ],
     }).compileComponents();
   });
 

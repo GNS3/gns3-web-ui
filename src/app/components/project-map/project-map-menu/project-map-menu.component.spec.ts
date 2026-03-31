@@ -60,6 +60,7 @@ describe('ProjectMapMenuComponent', () => {
         { provide: SymbolService, useValue: mockedSymbolService },
         { provide: NodeService, useValue: mockedNodeService },
         { provide: NodesDataSource, useValue: mockedNodesDataSource },
+        { provide: ToasterService, useValue: {} },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

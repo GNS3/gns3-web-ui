@@ -24,7 +24,7 @@ describe('ConsoleWrapperComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ConsoleWrapperComponent],
+      declarations: [],
       imports: [
         CommonModule,
         RouterTestingModule,
@@ -32,6 +32,7 @@ describe('ConsoleWrapperComponent', () => {
         MatTabsModule,
         MatIconModule,
         BrowserAnimationsModule,
+        ConsoleWrapperComponent,
       ],
       providers: [
         provideZonelessChangeDetection(),

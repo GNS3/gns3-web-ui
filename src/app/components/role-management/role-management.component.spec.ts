@@ -1,5 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
 import { RoleManagementComponent } from './role-management.component';
 
 describe('RoleManagementComponent', () => {
@@ -8,8 +9,20 @@ describe('RoleManagementComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      
-      providers: [provideZonelessChangeDetection()],
+      imports: [RoleManagementComponent],
+      providers: [
+        provideZonelessChangeDetection(),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              paramMap: {
+                get: (key: string) => null
+              }
+            }
+          }
+        },
+      ],
     }).compileComponents();
   });
 
