@@ -8,9 +8,9 @@ describe('RemoveToGroupDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [RemoveToGroupDialogComponent],
       providers: [provideZonelessChangeDetection()],
-      
-    });
+    }).compileComponents();
     fixture = TestBed.createComponent(RemoveToGroupDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

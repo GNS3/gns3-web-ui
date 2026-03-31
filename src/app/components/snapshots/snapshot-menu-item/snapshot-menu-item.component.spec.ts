@@ -18,8 +18,8 @@ describe('SnapshotMenuItemComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [SnapshotMenuItemComponent],
       imports: [
+        SnapshotMenuItemComponent,
         MatDialogModule,
         MatIconModule,
         HttpClientTestingModule,
