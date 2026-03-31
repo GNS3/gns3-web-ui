@@ -4,7 +4,7 @@ import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { UserService } from '@services/user.service';
-import { ProgressService } from '@services/progress.service';
+import { ProgressService } from 'app/common/progress/progress.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
 import { UserManagementComponent } from './user-management.component';
