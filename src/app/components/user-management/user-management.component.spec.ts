@@ -1,5 +1,12 @@
-import { provideZonelessChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection, ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { Location } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { UserService } from '@services/user.service';
+import { ProgressService } from '@services/progress.service';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 import { UserManagementComponent } from './user-management.component';
 
 describe('UserManagementComponent', () => {
@@ -8,8 +15,18 @@ describe('UserManagementComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [UserManagementComponent],
-      providers: [provideZonelessChangeDetection()],
+      imports: [UserManagementComponent],
+      providers: [
+        provideZonelessChangeDetection(),
+        ChangeDetectorRef,
+        { provide: ActivatedRoute, useValue: {} },
+        { provide: UserService, useValue: {} },
+        { provide: ProgressService, useValue: {} },
+        { provide: ControllerService, useValue: {} },
+        { provide: MatDialog, useValue: {} },
+        { provide: ToasterService, useValue: {} },
+        { provide: Location, useValue: {} },
+      ],
     }).compileComponents();
   });
 
