@@ -110,15 +110,12 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     this.parentNativeElement = this.element.nativeElement;
 
     // Watch for project grid size changes
-    effect(
-      () => {
-        const project = this.project();
-        if (project && this.mapChangeDetectorRef.hasBeenDrawn) {
-          this.updateGrid();
-        }
-      },
-      { allowSignalWrites: true }
-    );
+    effect(() => {
+      const project = this.project();
+      if (project && this.mapChangeDetectorRef.hasBeenDrawn) {
+        this.updateGrid();
+      }
+    });
   }
 
   @Input('show-interface-labels')
