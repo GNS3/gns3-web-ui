@@ -23,12 +23,10 @@ ALLOWED_VARIABLES=(
   "--gns3-grid-node-color"
 )
 
-# Patterns to always exclude (CSS masks, comments, gradients, etc.)
+# Patterns to always exclude (comments, color-mix function)
 EXCLUDE_PATTERNS=(
   "// "
   "/\*"
-  "linear-gradient(#fff"
-  "mask:"
   "in srgb"
 )
 
@@ -51,16 +49,11 @@ check_file() {
     done
     [ "$should_exclude" = true ] && continue
 
-    # Check if line is a gradient (allowed)
-    if echo "$content" | grep -qE "(radial-gradient|linear-gradient)"; then
-      continue
-    fi
-
-    # Check if line contains an allowed variable definition
+    # Check if line contains an allowed variable definition (including gradients)
     local is_allowed_var=false
     for var in "${ALLOWED_VARIABLES[@]}"; do
-      # Match: --gns3-xxx: #color
-      if echo "$content" | grep -qE -- "${var}:[[:space:]]*#[0-9A-Fa-f]{3,6}"; then
+      # Match: --gns3-xxx: (any content including colors)
+      if echo "$content" | grep -qE -- "${var}:"; then
         is_allowed_var=true
         break
       fi
