@@ -1,12 +1,18 @@
+import { TestBed } from '@angular/core/testing';
 import { Label } from '../../../cartography/models/label';
 import { Node } from '../../../cartography/models/node';
 import { NodeCreatedLabelStylesFixer } from './node-created-label-styles-fixer';
+import { ThemeService } from '@services/theme.service';
 
 describe('NodeCreatedLabelStylesFixer', () => {
   let fixer: NodeCreatedLabelStylesFixer;
   let calculator;
 
   beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [ThemeService],
+    });
+
     calculator = {
       calculate: (text, styles) => {
         return {
@@ -16,7 +22,9 @@ describe('NodeCreatedLabelStylesFixer', () => {
       },
     };
 
-    fixer = new NodeCreatedLabelStylesFixer(calculator);
+    fixer = TestBed.runInInjectionContext(() => {
+      return new NodeCreatedLabelStylesFixer(calculator);
+    });
   });
 
   it('should fix label styles and position', () => {

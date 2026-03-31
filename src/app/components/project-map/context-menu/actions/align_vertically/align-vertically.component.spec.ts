@@ -1,5 +1,7 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
+import { MockedNodesDataSource } from '../../../project-map.component.spec';
 import { AlignVerticallyActionComponent } from './align-vertically.component';
 
 describe('AlignVerticallyActionComponent', () => {
@@ -8,7 +10,10 @@ describe('AlignVerticallyActionComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
+      providers: [
+        provideZonelessChangeDetection(),
+        { provide: NodesDataSource, useValue: new MockedNodesDataSource() },
+      ],
       imports: [AlignVerticallyActionComponent],
     });
     fixture = TestBed.createComponent(AlignVerticallyActionComponent);
