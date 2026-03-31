@@ -19,7 +19,16 @@ describe('UserManagementComponent', () => {
       providers: [
         provideZonelessChangeDetection(),
         ChangeDetectorRef,
-        { provide: ActivatedRoute, useValue: {} },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              paramMap: {
+              get: (key: string) => null
+              }
+            }
+          }
+        },
         { provide: UserService, useValue: {} },
         { provide: ProgressService, useValue: {} },
         { provide: ControllerService, useValue: {} },
