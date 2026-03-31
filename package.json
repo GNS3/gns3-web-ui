@@ -96,7 +96,7 @@
     "@sentry/cli": "^2.0.4",
     "@types/jasmine": "^4.0.3",
     "@types/jasminewd2": "^2.0.10",
-    "@types/node": "^17.0.31",
+    "@types/node": "24",
     "@typescript-eslint/eslint-plugin": "^8.57.2",
     "@typescript-eslint/parser": "^8.57.2",
     "@typescript-eslint/utils": "^8.57.2",
