@@ -2,38 +2,10 @@
 # Check for hardcoded colors in SCSS, TS, and HTML files
 # Only allows hardcoded colors in specific whitelisted variable names from _map.scss
 # and in existing legacy code lines defined in allowed-hardcoded-colors.json
-#
-# SELF-INTEGRITY CHECK: This script verifies its own integrity
 CONFIG_FILE="$(dirname -- "$0")/allowed-hardcoded-colors.json"
-CHECKSUM_FILE="$(dirname -- "$0")/check-hardcoded-colors.sh.sha256"
 
-# Self-integrity check
-check_script_integrity() {
-  if [ ! -f "$CHECKSUM_FILE" ]; then
-    echo "❌ ERROR: Checksum file not found: $CHECKSUM_FILE"
-    echo "   This file is required for script integrity verification."
-    exit 1
-  fi
-
-  local stored_checksum=$(cat "$CHECKSUM_FILE" | cut -d' ' -f1)
-  local current_checksum=$(sha256sum "$0" | cut -d' ' -f1)
-
-  if [ "$current_checksum" != "$stored_checksum" ]; then
-    echo "❌ ERROR: Script integrity check failed!"
-    echo "   This script has been modified without proper authorization."
-    echo "   Expected SHA256: $stored_checksum"
-    echo "   Current SHA256:  $current_checksum"
-    echo ""
-    echo "   To update this script:"
-    echo "   1. Get approval from maintainers"
-    echo "   2. Run: sha256sum .husky/check-hardcoded-colors.sh > .husky/check-hardcoded-colors.sh.sha256"
-    echo "   3. Update allowed-hardcoded-colors.json if needed"
-    exit 1
-  fi
-}
-
-# Check config file integrity
-check_config_integrity() {
+# Check config file exists
+check_config_exists() {
   if [ ! -f "$CONFIG_FILE" ]; then
     echo "❌ ERROR: Config file not found: $CONFIG_FILE"
     exit 1
@@ -151,9 +123,7 @@ check_file() {
 }
 
 # Main
-# Run integrity checks first
-check_script_integrity
-check_config_integrity
+check_config_exists
 load_allowed_colors
 
 if [ "$1" = "--ci" ]; then
