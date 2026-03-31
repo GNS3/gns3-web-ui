@@ -1,0 +1,64 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Edit Compute' : 'Add Compute' }}</h2>
+<form [formGroup]="computeForm">
+  <div mat-dialog-content>
+    <mat-form-field appearance="fill" class="full-width-field">
+      <mat-label>Name (optional)</mat-label>
+      <input matInput tabindex="1" formControlName="name" placeholder="My Compute" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width-field">
+      <mat-label>Protocol</mat-label>
+      <mat-select formControlName="protocol">
+        @for (protocol of protocols; track protocol.key) {
+        <mat-option [value]="protocol.key">{{ protocol.name }}</mat-option>
+        }
+      </mat-select>
+      @if (computeForm.get('protocol').hasError('required')) {
+      <mat-error>You must select a protocol</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width-field">
+      <mat-label>Host</mat-label>
+      <input matInput tabindex="1" formControlName="host" placeholder="192.168.1.100" />
+      @if (computeForm.get('host').hasError('required')) {
+      <mat-error>You must enter a host</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width-field">
+      <mat-label>Port</mat-label>
+      <input matInput type="number" tabindex="1" formControlName="port" placeholder="3080" />
+      @if (computeForm.get('port').hasError('required')) {
+      <mat-error>You must enter a port</mat-error>
+      }
+      @if (computeForm.get('port').hasError('min') || computeForm.get('port').hasError('max')) {
+      <mat-error>Port must be between 1 and 65535</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width-field">
+      <mat-label>User</mat-label>
+      <input matInput tabindex="1" formControlName="user" placeholder="gns3" />
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width-field">
+      <mat-label>Password</mat-label>
+      <input matInput type="password" tabindex="1" formControlName="password" placeholder="gns3" />
+    </mat-form-field>
+  </div>
+
+  <div mat-dialog-actions align="end">
+    <button mat-button (click)="onCancelClick()" tabindex="-1" color="accent">Cancel</button>
+    <button
+      mat-button
+      (click)="onSaveClick()"
+      tabindex="2"
+      mat-raised-button
+      color="primary"
+      [disabled]="computeForm.invalid"
+    >
+      {{ isEditMode ? 'Update' : 'Add' }}
+    </button>
+  </div>
+</form>

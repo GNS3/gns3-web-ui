@@ -1,0 +1,215 @@
+/**
+ * GNS3 Computes Component Styles
+ * BEM naming applied, Material theme variables used
+ * Design language unified with Preferences pages
+ */
+
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--mat-sys-primary-container) 0%, var(--mat-sys-background) 100%);
+  min-height: 100vh;
+}
+
+/* =============================================
+// Header
+// ============================================= */
+.computes__header {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 20px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: fadeInSlideIn 0.4s ease-out;
+}
+
+.computes__back-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  color: var(--mat-sys-on-surface);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+  }
+}
+
+.computes__title {
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin: 0;
+  padding-bottom: 8px;
+}
+
+.computes__add-btn {
+  margin-left: auto;
+  color: var(--mat-sys-primary);
+}
+
+/* =============================================
+// Content
+// ============================================= */
+.computes__content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px 20px;
+  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+}
+
+/* =============================================
+// Loading & Empty
+// ============================================= */
+.computes__loading,
+.computes__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--mat-sys-on-surface-variant);
+  background: var(--mat-sys-surface);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+}
+
+.computes__empty-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+/* =============================================
+// List
+// ============================================= */
+.computes__list {
+  background: var(--mat-sys-surface);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+}
+
+.computes__list-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 5%, transparent);
+  }
+}
+
+.computes__list-icon {
+  flex-shrink: 0;
+}
+
+.computes__list-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.computes__list-name {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.computes__list-host {
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.computes__list-stats {
+  display: flex;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.computes__stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface);
+
+  &--offline {
+    color: var(--mat-sys-on-surface-variant);
+    font-style: italic;
+  }
+}
+
+.computes__stat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.computes__menu-btn {
+  flex-shrink: 0;
+}
+
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 768px) {
+  .computes__header {
+    padding: 24px 16px 12px;
+    gap: 12px;
+  }
+
+  .computes__back-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .computes__title {
+    font-size: 24px;
+  }
+
+  .computes__content {
+    padding: 0 16px 16px;
+  }
+
+  .computes__list-item {
+    padding: 14px 16px;
+  }
+
+  .computes__list-stats {
+    display: none;
+  }
+}

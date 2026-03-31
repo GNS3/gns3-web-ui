@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { BundledControllerFinderComponent } from '@components/bundled-controller-finder/bundled-controller-finder.component';
+import { ComputesComponent } from '@components/computes/computes.component';
 import { DirectLinkComponent } from '@components/direct-link/direct-link.component';
 import { HelpComponent } from '@components/help/help.component';
 import { InstalledSoftwareComponent } from '@components/installed-software/installed-software.component';
@@ -108,6 +109,11 @@ const routes: Routes = [
       },
       { path: 'controller/:controller_id/preferences', component: PreferencesComponent, canActivate: [LoginGuard] },
       // { path: 'controller/:controller_id/preferences/general', component: GeneralPreferencesComponent },
+      {
+        path: 'controller/:controller_id/computes',
+        component: ComputesComponent,
+        canActivate: [LoginGuard],
+      },
       {
         path: 'controller/:controller_id/preferences/builtin',
         component: BuiltInPreferencesComponent,

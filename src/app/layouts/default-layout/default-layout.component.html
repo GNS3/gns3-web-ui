@@ -66,6 +66,10 @@
         <mat-icon>settings_applications</mat-icon>
         <span>Template preferences</span>
       </button>
+      <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'computes']">
+        <mat-icon>cloud</mat-icon>
+        <span>Computes</span>
+      </button>
       <button mat-menu-item [disabled]="!controllerId" [routerLink]="['controller', controllerId, 'image-manager']">
         <mat-icon>collections</mat-icon>
         <span>Image manager</span>
