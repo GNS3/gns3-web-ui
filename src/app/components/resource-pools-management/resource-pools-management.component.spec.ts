@@ -23,6 +23,16 @@ class FakeActivatedRoute {
       }
     }
   };
+  parent = {
+    snapshot: {
+      paramMap: {
+        get: (key: string) => {
+          if (key === 'controller_id') return '1';
+          return null;
+        }
+      }
+    }
+  };
 }
 
 class FakeResourcePoolService {
