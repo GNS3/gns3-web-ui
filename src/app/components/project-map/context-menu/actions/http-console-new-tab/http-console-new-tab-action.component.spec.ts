@@ -1,7 +1,7 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { NodeConsoleService } from '@services/node-console.service';
+import { NodeConsoleService } from '@services/nodeConsole.service';
 import { VncConsoleService } from '@services/vnc-console.service';
 import { ToasterService } from '@services/toaster.service';
 import { HttpConsoleNewTabActionComponent } from './http-console-new-tab-action.component';

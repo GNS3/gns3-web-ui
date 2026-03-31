@@ -1,10 +1,10 @@
 import { provideZonelessChangeDetection, ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
-import { NodeConsoleService } from '@services/node-console.service';
+import { NodeConsoleService } from '@services/nodeConsole.service';
 import { VncConsoleService } from '@services/vnc-console.service';
 import { ToasterService } from '@services/toaster.service';
-import { MapSettingsService } from '@services/mapSettings.service';
+import { MapSettingsService } from '@services/mapsettings.service';
 import { HttpConsoleActionComponent } from './http-console-action.component';
 
 describe('HttpConsoleActionComponent', () => {
