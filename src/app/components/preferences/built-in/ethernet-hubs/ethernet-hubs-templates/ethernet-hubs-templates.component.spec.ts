@@ -41,6 +41,7 @@ describe('EthernetHubsTemplatesComponent', () => {
         CommonModule,
         NoopAnimationsModule,
         RouterTestingModule.withRoutes([]),
+        EthernetHubsTemplatesComponent,
       ],
       providers: [
         provideZonelessChangeDetection(),
@@ -51,7 +52,6 @@ describe('EthernetHubsTemplatesComponent', () => {
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
       ],
-      declarations: [EthernetHubsTemplatesComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });
