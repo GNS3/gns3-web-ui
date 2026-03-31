@@ -138,5 +138,8 @@ jobs:
             echo "✅ No hook files modified"
           fi
 
+      - name: Install JS dependencies
+        run: yarn install --frozen-lockfile --immutable
+
       - name: Run Angular lint
         run: yarn ng lint gns3-web-ui
