@@ -478,11 +478,10 @@
   }
 }
 
-.gns3-chat-message-list__empty-icon {
+.gns3-chat-message-list__empty-logo {
   width: 48px;
   height: 48px;
-  font-size: 48px;
-  color: var(--mat-sys-primary);
+  object-fit: contain;
 }
 
 .gns3-chat-message-list__empty-title {
