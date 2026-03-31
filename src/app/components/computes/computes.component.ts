@@ -107,26 +107,35 @@ export class ComputesComponent implements OnInit {
   }
 
   openEditDialog(compute: Compute) {
-    const dialogRef = this.dialog.open(AddComputeDialogComponent, {
-      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
-      autoFocus: false,
-      disableClose: true,
-      data: { controller: this.controller, compute },
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.computeService.updateCompute(this.controller, compute.compute_id, result).subscribe({
-          next: () => {
-            this.toasterService.success('Compute updated successfully');
-            this.loadComputes();
-          },
-          error: (error) => {
-            this.toasterService.error('Failed to update compute: ' + error);
-            this.cd.markForCheck();
-          },
+    // First fetch full compute details from server
+    this.computeService.getCompute(this.controller, compute.compute_id).subscribe({
+      next: (fullCompute) => {
+        const dialogRef = this.dialog.open(AddComputeDialogComponent, {
+          panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
+          autoFocus: false,
+          disableClose: true,
+          data: { controller: this.controller, compute: fullCompute },
         });
-      }
+
+        dialogRef.afterClosed().subscribe((result) => {
+          if (result) {
+            this.computeService.updateCompute(this.controller, compute.compute_id, result).subscribe({
+              next: () => {
+                this.toasterService.success('Compute updated successfully');
+                this.loadComputes();
+              },
+              error: (error) => {
+                this.toasterService.error('Failed to update compute: ' + error);
+                this.cd.markForCheck();
+              },
+            });
+          }
+        });
+      },
+      error: (error) => {
+        this.toasterService.error('Failed to load compute details: ' + error);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -160,7 +169,20 @@ export class ComputesComponent implements OnInit {
     this.computeService.connectCompute(this.controller, compute.compute_id).subscribe({
       next: () => {
         this.toasterService.success('Connection request sent');
-        this.loadComputes();
+        // Refresh the specific compute to get updated status
+        this.computeService.getCompute(this.controller, compute.compute_id).subscribe({
+          next: (updatedCompute) => {
+            const computes = this.computes().map((c) =>
+              c.compute_id === updatedCompute.compute_id ? updatedCompute : c
+            );
+            this.computes.set(computes);
+            this.cd.markForCheck();
+          },
+          error: () => {
+            // Fallback to full reload
+            this.loadComputes();
+          },
+        });
       },
       error: (error) => {
         this.toasterService.error('Failed to connect compute: ' + error);
@@ -246,9 +268,13 @@ export class AddComputeDialogComponent {
       host: formValue.host!,
       port: formValue.port!,
       user: formValue.user || undefined,
-      password: formValue.password || undefined,
       name: formValue.name || undefined,
     };
+
+    // Only include password if user entered a password (empty/null causes 500 error)
+    if (formValue.password && formValue.password.trim() !== '') {
+      computeData.password = formValue.password;
+    }
 
     this.dialogRef.close(computeData);
   }
