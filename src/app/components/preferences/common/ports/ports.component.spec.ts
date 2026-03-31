@@ -1,5 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
 import { PortsComponent } from './ports.component';
 
 describe('PortsComponent', () => {
@@ -8,7 +9,10 @@ describe('PortsComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
+      providers: [
+        provideZonelessChangeDetection(),
+        { provide: BuiltInTemplatesConfigurationService, useValue: {} },
+      ],
       imports: [PortsComponent],
     });
     fixture = TestBed.createComponent(PortsComponent);

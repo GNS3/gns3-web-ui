@@ -6,7 +6,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTableModule } from '@angular/material/table';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ToasterService } from '@services/toaster.service';
 import { CustomAdaptersTableComponent } from '../custom-adapters-table/custom-adapters-table.component';
 import { CustomAdaptersComponent } from './custom-adapters.component';
 
@@ -26,7 +28,12 @@ describe('Custom adapters component', () => {
         CommonModule,
         NoopAnimationsModule,
       ],
-      providers: [provideZonelessChangeDetection()],
+      providers: [
+        provideZonelessChangeDetection(),
+        { provide: MatDialogRef, useValue: {} },
+        { provide: MAT_DIALOG_DATA, useValue: {} },
+        { provide: ToasterService, useValue: {} },
+      ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

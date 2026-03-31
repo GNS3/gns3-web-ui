@@ -1,5 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute } from '@angular/router';
 import { PageNotFoundComponent } from './page-not-found.component';
 
 describe('PageNotFoundComponent', () => {
@@ -8,8 +9,21 @@ describe('PageNotFoundComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()]
-      });
+      imports: [PageNotFoundComponent],
+      providers: [
+        provideZonelessChangeDetection(),
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              paramMap: {
+                get: (key: string) => null
+              }
+            }
+          }
+        },
+      ],
+    });
     fixture = TestBed.createComponent(PageNotFoundComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

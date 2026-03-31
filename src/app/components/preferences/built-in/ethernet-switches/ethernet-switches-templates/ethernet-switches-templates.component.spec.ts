@@ -12,6 +12,7 @@ import { of } from 'rxjs';
 import { Controller } from '@models/controller';
 import { EthernetSwitchTemplate } from '@models/templates/ethernet-switch-template';
 import { BuiltInTemplatesService } from '@services/built-in-templates.service';
+import { TemplateService } from '@services/template.service';
 import { ControllerService } from '@services/controller.service';
 import { MockedControllerService } from '@services/controller.service.spec';
 import { MockedActivatedRoute } from '../../../preferences.component.spec';
@@ -51,6 +52,7 @@ describe('EthernetSwitchesTemplatesComponent', () => {
         },
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
+        { provide: TemplateService, useValue: {} },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
