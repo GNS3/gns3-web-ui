@@ -27,7 +27,13 @@ class FakeResourcePoolService {
 
 class FakeMatDialogRef {}
 
-class FakeUntypedFormBuilder {}
+class FakeUntypedFormBuilder {
+  group(config: any): any {
+    return {
+      controls: {}
+    };
+  }
+}
 
 class FakePoolNameValidator {}
 
