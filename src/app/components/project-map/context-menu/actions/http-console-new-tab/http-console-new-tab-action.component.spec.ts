@@ -9,7 +9,7 @@ describe('HttpConsoleNewTabActionComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
-      declarations: [HttpConsoleNewTabActionComponent],
+      imports: [HttpConsoleNewTabActionComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(HttpConsoleNewTabActionComponent);

@@ -9,13 +9,12 @@ describe('IdlePCDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [MatDialogModule],
+      imports: [MatDialogModule, IdlePCDialogComponent],
       providers: [
         provideZonelessChangeDetection(),
         { provide: MatDialogRef, useValue: {} },
         { provide: MAT_DIALOG_DATA, useValue: {} },
       ],
-      declarations: [IdlePCDialogComponent],
     }).compileComponents();
 
     fixture = TestBed.createComponent(IdlePCDialogComponent);
