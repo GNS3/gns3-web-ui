@@ -23,6 +23,7 @@ describe('VirtualBoxPreferencesComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        VirtualBoxPreferencesComponent,
         MatIconModule,
         MatToolbarModule,
         MatMenuModule,
@@ -39,7 +40,6 @@ describe('VirtualBoxPreferencesComponent', () => {
         },
         { provide: ControllerService, useValue: mockedControllerService },
       ],
-      declarations: [VirtualBoxPreferencesComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

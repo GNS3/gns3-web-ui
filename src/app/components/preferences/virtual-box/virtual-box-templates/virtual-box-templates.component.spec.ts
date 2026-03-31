@@ -34,6 +34,7 @@ describe('VirtualBoxTemplatesComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        VirtualBoxTemplatesComponent,
         MatIconModule,
         MatToolbarModule,
         MatMenuModule,
@@ -51,7 +52,6 @@ describe('VirtualBoxTemplatesComponent', () => {
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: VirtualBoxService, useValue: mockedVirtualBoxService },
       ],
-      declarations: [VirtualBoxTemplatesComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

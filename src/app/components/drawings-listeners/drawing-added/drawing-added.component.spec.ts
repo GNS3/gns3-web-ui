@@ -30,6 +30,7 @@ describe('DrawingAddedComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [DrawingAddedComponent],
       providers: [
         provideZonelessChangeDetection(),
         { provide: DrawingService, useValue: mockedDrawingService },
@@ -38,7 +39,6 @@ describe('DrawingAddedComponent', () => {
         { provide: DefaultDrawingsFactory, useValue: mockedDrawingsFactory },
         { provide: MapDrawingToSvgConverter, useClass: MapDrawingToSvgConverter },
       ],
-      declarations: [DrawingAddedComponent],
     }).compileComponents();
   });
 

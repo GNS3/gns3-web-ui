@@ -9,7 +9,7 @@ describe('GroupManagementComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
-      declarations: [GroupManagementComponent],
+      imports: [GroupManagementComponent],
     });
     fixture = TestBed.createComponent(GroupManagementComponent);
     component = fixture.componentInstance;

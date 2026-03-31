@@ -17,6 +17,7 @@ describe('Custom adapters component', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        CustomAdaptersComponent,
         MatTableModule,
         MatIconModule,
         MatToolbarModule,
@@ -26,7 +27,6 @@ describe('Custom adapters component', () => {
         NoopAnimationsModule,
       ],
       providers: [provideZonelessChangeDetection()],
-      declarations: [CustomAdaptersComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });
