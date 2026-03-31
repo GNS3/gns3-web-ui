@@ -20,7 +20,9 @@ import { map } from 'rxjs/operators';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { Template } from '@models/template';
+import { Compute } from '@models/compute';
 import { TemplateService } from '@services/template.service';
+import { ComputeService } from '@services/compute.service';
 import { ToasterService } from '@services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
 import { TemplateFilter } from '@filters/templateFilter.pipe';
@@ -47,6 +49,7 @@ import { TemplateFilter } from '@filters/templateFilter.pipe';
 export class TemplateListDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<TemplateListDialogComponent>);
   private templateService = inject(TemplateService);
+  private computeService = inject(ComputeService);
   private formBuilder = inject(UntypedFormBuilder);
   private toasterService = inject(ToasterService);
   private nonNegativeValidator = inject(NonNegativeValidator);
@@ -74,7 +77,7 @@ export class TemplateListDialogComponent implements OnInit {
   selectedTemplate: Template;
   searchText: string = '';
 
-  nodeControllers: string[] = ['local', 'vm'];
+  nodeControllers: { display: string; value: string }[] = [{ display: 'local', value: 'local' }];
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
     this.controller = data['controller'];
@@ -96,10 +99,37 @@ export class TemplateListDialogComponent implements OnInit {
       this.templates = listOfTemplates;
       this.cd.markForCheck();
     });
+
+    // Load computes list for node controller selection
+    this.computeService.getComputes(this.controller).subscribe({
+      next: (computes: Compute[]) => {
+        // Add remote computes to nodeControllers (skip 'local' as it's already included)
+        const remoteComputes = computes
+          .filter((c) => c.compute_id !== 'local')
+          .map((c) => {
+            const shortId = c.compute_id.slice(-8);
+            return {
+              display: `${c.name || c.compute_id} (${shortId})`,
+              value: c.compute_id, // Full UUID as actual value
+            };
+          });
+        this.nodeControllers = [{ display: 'local', value: 'local' }, ...remoteComputes];
+        this.cd.markForCheck();
+      },
+      error: () => {
+        // Fallback to local only if fails
+        this.nodeControllers = [{ display: 'local', value: 'local' }];
+        this.cd.markForCheck();
+      },
+    });
   }
 
   onNoClick(): void {
     this.dialogRef.close();
+  }
+
+  compareControllers(a: string, b: string): boolean {
+    return a === b;
   }
 
   filterTemplates(event) {

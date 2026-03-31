@@ -68,13 +68,19 @@
     </mat-form-field>
   </form>
   @if (selectedTemplate) {
-  <mat-select placeholder="Choose controller for node" [(value)]="selectedTemplate.compute_id">
-    @for (type of nodeControllers; track type) {
-    <mat-option [value]="type">
-      {{ type }}
-    </mat-option>
-    }
-  </mat-select>
+  <mat-form-field class="form-field compute-select">
+    <mat-select
+      placeholder="Choose controller for node"
+      [(value)]="selectedTemplate.compute_id"
+      [compareWith]="compareControllers"
+    >
+      @for (controller of nodeControllers; track controller.value) {
+      <mat-option [value]="controller.value">
+        {{ controller.display }}
+      </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
   }
 
   <div class="title-container">
