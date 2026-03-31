@@ -1,9 +1,9 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatTableModule } from '@angular/material/table';
-import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
 import { NodeService } from '@services/node.service';
-import { MockedNodesDataSource, MockedNodeService } from '../../../project-map.component.spec';
+import { MockedNodesDataSource, MockedNodeService } from '../../../../project-map.component.spec';
 import { MoveLayerDownActionComponent } from './move-layer-down-action.component';
 
 describe('MoveLayerDownActionComponent', () => {
