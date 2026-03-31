@@ -3,6 +3,26 @@
 
 echo "🔍 Running Standards check..."
 
+# Check if .husky/ files are being modified (PROTECTED)
+STAGED_HUSKY=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null | grep "^\.\husky/" || true)
+if [ -n "$STAGED_HUSKY" ]; then
+  echo ""
+  echo "⚠️  ⚠️  ⚠️  WARNING ⚠️  ⚠️  ⚠️"
+  echo "You are modifying git hooks and quality check scripts!"
+  echo ""
+  echo "These files protect code quality standards:"
+  echo "$STAGED_HUSKY" | sed 's/^/  - /'
+  echo ""
+  echo "These changes require:"
+  echo "  1. Team lead approval"
+  echo "  2. Update SCRIPT_SHA256 if modifying check-hardcoded-colors.sh"
+  echo "  3. Update allowed-hardcoded-colors.json if adding/removing allowed colors"
+  echo ""
+  echo "If this is intentional, press Enter to continue."
+  echo "Press Ctrl+C to cancel."
+  read -r
+fi
+
 # Get list of staged files in src/ only
 STAGED_SCSS=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null | grep "^src/.*\.scss$" || true)
 STAGED_TS=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null | grep "^src/.*\.ts$" || true)

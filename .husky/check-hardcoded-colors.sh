@@ -1,7 +1,59 @@
 #!/usr/bin/env bash
 # Check for hardcoded colors in SCSS, TS, and HTML files
 # Only allows hardcoded colors in specific whitelisted variable names from _map.scss
-# and in existing legacy code lines (to prevent new violations)
+# and in existing legacy code lines defined in allowed-hardcoded-colors.json
+#
+# SELF-INTEGRITY CHECK: This script verifies its own integrity
+CONFIG_FILE="$(dirname -- "$0")/allowed-hardcoded-colors.json"
+CHECKSUM_FILE="$(dirname -- "$0")/check-hardcoded-colors.sh.sha256"
+
+# Self-integrity check
+check_script_integrity() {
+  if [ ! -f "$CHECKSUM_FILE" ]; then
+    echo "❌ ERROR: Checksum file not found: $CHECKSUM_FILE"
+    echo "   This file is required for script integrity verification."
+    exit 1
+  fi
+
+  local stored_checksum=$(cat "$CHECKSUM_FILE" | cut -d' ' -f1)
+  local current_checksum=$(sha256sum "$0" | cut -d' ' -f1)
+
+  if [ "$current_checksum" != "$stored_checksum" ]; then
+    echo "❌ ERROR: Script integrity check failed!"
+    echo "   This script has been modified without proper authorization."
+    echo "   Expected SHA256: $stored_checksum"
+    echo "   Current SHA256:  $current_checksum"
+    echo ""
+    echo "   To update this script:"
+    echo "   1. Get approval from maintainers"
+    echo "   2. Run: sha256sum .husky/check-hardcoded-colors.sh > .husky/check-hardcoded-colors.sh.sha256"
+    echo "   3. Update allowed-hardcoded-colors.json if needed"
+    exit 1
+  fi
+}
+
+# Check config file integrity
+check_config_integrity() {
+  if [ ! -f "$CONFIG_FILE" ]; then
+    echo "❌ ERROR: Config file not found: $CONFIG_FILE"
+    exit 1
+  fi
+
+  # Check if config file is valid JSON
+  if ! jq empty "$CONFIG_FILE" 2>/dev/null; then
+    echo "❌ ERROR: Config file is not valid JSON: $CONFIG_FILE"
+    exit 1
+  fi
+}
+
+# Load allowed colors from config
+load_allowed_colors() {
+  ALLOWED_PATTERNS=()
+
+  while IFS='|' read -r file pattern; do
+    ALLOWED_PATTERNS+=("$file|$pattern")
+  done < <(jq -r '.allowed_colors[] | "\(.file)|\(.patterns[])"' "$CONFIG_FILE")
+}
 
 # Whitelist of variable names that are allowed to use hardcoded colors
 # (extracted from src/styles/_map.scss)
@@ -24,35 +76,6 @@ ALLOWED_VARIABLES=(
   "--gns3-grid-node-color"
 )
 
-# Existing legacy code lines that are allowed to have hardcoded colors
-# Format: "file_path|exact_line_content_with_color"
-# These are graphics rendering code (D3.js, factories) that use hardcoded colors
-EXISTING_VIOLATIONS=(
-  "src/app/cartography/components/text-editor/text-editor.component.ts|: '#000000'"
-  "src/app/cartography/components/text-editor/text-editor.component.ts|this.renderer.setStyle(temporaryTextElement.nativeElement, 'color', '#000000');"
-  "src/app/cartography/helpers/drawings-factory/ellipse-element-factory.ts|ellipseElement.fill = '#ffffff';"
-  "src/app/cartography/helpers/drawings-factory/ellipse-element-factory.ts|ellipseElement.stroke = '#000000';"
-  "src/app/cartography/helpers/drawings-factory/line-element-factory.ts|lineElement.stroke = '#000000';"
-  "src/app/cartography/helpers/drawings-factory/rectangle-element-factory.ts|rectElement.fill = '#ffffff';"
-  "src/app/cartography/helpers/drawings-factory/rectangle-element-factory.ts|rectElement.stroke = '#000000';"
-  "src/app/cartography/helpers/drawings-factory/text-element-factory.ts|textElement.fill = '#000000';"
-  "src/app/cartography/helpers/font-bbox-calculator.ts|element.setAttribute('fill', '#00000');"
-  "src/app/cartography/widgets/links/ethernet-link.ts|color: '#000000',"
-  "src/app/cartography/widgets/links/serial-link.ts|color: '#800000',"
-  "src/app/cartography/widgets/interface-status.ts|LABEL_BACKGROUND_COLOR = '#E2E8FF'"
-  "src/app/cartography/widgets/interface-status.ts|.attr('fill', '#111111')"
-  "src/app/cartography/widgets/interface-status.ts|.attr('fill', '#2ecc71')"
-  "src/app/cartography/widgets/interface-status.ts|.attr('fill', '#FFFF00')"
-  "src/app/cartography/widgets/interface-status.ts|return '#2ecc71'"
-  "src/app/cartography/widgets/interface-status.ts|return '#FFFF00'"
-  "src/app/cartography/widgets/drawing-line.ts|.attr('stroke', '#000')"
-  "src/app/cartography/widgets/drawing.ts|.attr('fill', \`#ffffff\`)"
-  "src/app/cartography/widgets/node.ts|.attr('fill', \`#ffffff\`)"
-  "src/app/components/project-map/drawings-editors/style-editor/style-editor.component.ts|stroke = this.element.stroke ?? '#000000'"
-  "src/app/components/project-map/drawings-editors/text-editor/text-editor.component.ts|: '#000000'"
-  "src/app/components/project-map/drawings-editors/link-style-editor/link-style-editor.component.ts|link.link_type === 'serial' ? '#800000' : '#000000'"
-)
-
 # Patterns to always exclude (comments, color-mix function, false positives)
 EXCLUDE_PATTERNS=(
   "// "
@@ -62,16 +85,16 @@ EXCLUDE_PATTERNS=(
   "#acesPaginator" # HTML template ID, not a color
 )
 
-# Check if a violation is in the existing legacy list
-is_existing_violation() {
+# Check if a violation is in the allowed list
+is_allowed_violation() {
   local file="$1"
   local content="$2"
 
-  for existing in "${EXISTING_VIOLATIONS[@]}"; do
-    IFS='|' read -r ex_file ex_content <<< "$existing"
-    if [ "$file" = "$ex_file" ]; then
-      # Check if the existing content pattern is in the current line
-      if echo "$content" | grep -qF "$ex_content"; then
+  for allowed in "${ALLOWED_PATTERNS[@]}"; do
+    IFS='|' read -r allowed_file allowed_pattern <<< "$allowed"
+    if [ "$file" = "$allowed_file" ]; then
+      # Check if the allowed pattern is in the current line
+      if echo "$content" | grep -qF "$allowed_pattern"; then
         return 0  # Found match
       fi
     fi
@@ -110,13 +133,13 @@ check_file() {
       done
     fi
 
-    # If not an allowed variable, check if it's an existing violation
+    # If not an allowed variable, check if it's in the allowed violations list
     if [ "$is_allowed_var" = false ]; then
       # Extract colors from the line
       local colors=$(echo "$content" | grep -oE '#[0-9A-Fa-f]{3,6}|rgba?\([^)]+\)' | sort -u)
       while IFS= read -r color; do
-        # Check if this file + line content is in the existing violations list
-        if ! is_existing_violation "$file" "$content"; then
+        # Check if this file + line content is in the allowed list
+        if ! is_allowed_violation "$file" "$content"; then
           violations="$violations$file:$line_num: $color\n"
           violations="$violations  Line: $content\n"
         fi
@@ -128,6 +151,11 @@ check_file() {
 }
 
 # Main
+# Run integrity checks first
+check_script_integrity
+check_config_integrity
+load_allowed_colors
+
 if [ "$1" = "--ci" ]; then
   # CI mode: check all files, fail on violations
   echo "🔍 Checking for hardcoded colors..."
@@ -151,7 +179,8 @@ if [ "$1" = "--ci" ]; then
     done
     echo ""
     echo "📝 Styles should be in .scss files, NOT in .ts or .html files!"
-    echo "⚠️  Existing legacy hardcoded colors are allowed, but new ones are not."
+    echo "⚠️  Existing legacy hardcoded colors are defined in:"
+    echo "   .husky/allowed-hardcoded-colors.json"
     exit 1
   else
     echo "✅ No hardcoded colors found"
@@ -177,7 +206,8 @@ else
     echo "   Please use --mat-sys-* or var(--gns3-*) CSS variables instead"
     echo -e "$all_violations"
     echo "💡 Styles should be in .scss files, NOT in .ts or .html files!"
-    echo "⚠️  Existing legacy hardcoded colors are allowed, but new ones are not."
+    echo "⚠️  Existing legacy hardcoded colors are defined in:"
+    echo "   .husky/allowed-hardcoded-colors.json"
     echo "💡 If intentional, use 'git commit --no-verify' to bypass"
   fi
   exit 0
