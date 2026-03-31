@@ -77,4 +77,9 @@ if [ -n "$STAGED_TS" ]; then
   fi
 fi
 
+# Check for hardcoded colors in SCSS (WARNING)
+if [ -n "$STAGED_SCSS" ]; then
+  . "$(dirname -- "$0")/check-hardcoded-colors.sh"
+fi
+
 echo "✅ Standards check passed"

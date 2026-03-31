@@ -106,16 +106,7 @@ jobs:
 
       - name: Check for hardcoded colors in SCSS
         run: |
-          # Allow hex colors in comments, but flag direct property usage
-          FOUND=$(grep -rnE "#[0-9A-Fa-f]{3,6};" --include="*.scss" src/ || true)
-          # Filter out common false positives (placeholders, comments)
-          FILTERED=$(echo "$FOUND" | grep -v "// " | grep -v "/\*" | grep -v "http" || true)
-          if [ -n "$FILTERED" ]; then
-            echo "⚠️  WARNING: Potential hardcoded colors found (use --mat-sys-* variables)"
-            echo "$FILTERED"
-          else
-            echo "✅ No obvious hardcoded colors found"
-          fi
+          .husky/check-hardcoded-colors.sh --ci
 
       - name: Run Angular lint
         run: yarn ng lint gns3-web-ui
