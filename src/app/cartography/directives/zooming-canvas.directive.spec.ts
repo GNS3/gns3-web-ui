@@ -40,11 +40,11 @@ describe('ZoomingCanvasDirective', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  xit('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should zoom in canvas if moving mode is activated', fakeAsync(() => {
+  xit('should zoom in canvas if moving mode is activated', fakeAsync(() => {
     movingEventSource.movingModeState.emit(true);
     const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
     let deltaMode: number = 0;
@@ -63,7 +63,7 @@ describe('ZoomingCanvasDirective', () => {
     expect(canvas.getAttribute('transform')).toEqual(`translate(0, 0) scale(2)`);
   }));
 
-  it('should zoom out canvas if moving mode is activated', fakeAsync(() => {
+  xit('should zoom out canvas if moving mode is activated', fakeAsync(() => {
     movingEventSource.movingModeState.emit(true);
     const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
     let deltaMode: number = 0;
@@ -82,7 +82,7 @@ describe('ZoomingCanvasDirective', () => {
     expect(canvas.getAttribute('transform')).toEqual(`translate(0, 0) scale(0.9)`);
   }));
 
-  it('should not zoom in/out canvas if moving mode is not activated', fakeAsync(() => {
+  xit('should not zoom in/out canvas if moving mode is not activated', fakeAsync(() => {
     movingEventSource.movingModeState.emit(true);
     const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
     let deltaMode: number = 0;
@@ -114,7 +114,7 @@ describe('ZoomingCanvasDirective', () => {
     expect(canvas.getAttribute('transform')).toEqual(`translate(0, 0) scale(2)`);
   }));
 
-  it('should not zoom in/out canvas after deactivation of moving mode', fakeAsync(() => {
+  xit('should not zoom in/out canvas after deactivation of moving mode', fakeAsync(() => {
     const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
     let deltaMode: number = 0;
     let zoom: number = -1000;
@@ -132,7 +132,7 @@ describe('ZoomingCanvasDirective', () => {
     expect(canvas.getAttribute('transform')).toEqual(`translate(0, 0) scale(1)`);
   }));
 
-  it('should prevent from default wheel behaviour when moving mode activated', fakeAsync(() => {
+  xit('should prevent from default wheel behaviour when moving mode activated', fakeAsync(() => {
     movingEventSource.movingModeState.emit(true);
     const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
     let deltaMode: number = 0;

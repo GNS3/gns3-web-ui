@@ -44,12 +44,12 @@ xdescribe('ControllerDiscoveryComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  xit('should create', () => {
     expect(component).toBeTruthy();
   });
 
   describe('isAvailable', () => {
-    it('should return controller object when controller is available', () => {
+    xit('should return controller object when controller is available', () => {
       const version = new Version();
       version.version = '2.1.8';
 
@@ -67,7 +67,7 @@ xdescribe('ControllerDiscoveryComponent', () => {
       expect(getVersionSpy).toHaveBeenCalledWith(controller);
     });
 
-    it('should throw error once controller is not available', () => {
+    xit('should throw error once controller is not available', () => {
       const controller = new Controller();
       controller.host = '127.0.0.1';
       controller.port = 3080;
@@ -91,7 +91,7 @@ xdescribe('ControllerDiscoveryComponent', () => {
   });
 
   describe('discovery', () => {
-    it('should discovery all controllers available', (done) => {
+    xit('should discovery all controllers available', (done) => {
       const version = new Version();
       version.version = '2.1.8';
 
@@ -125,7 +125,7 @@ xdescribe('ControllerDiscoveryComponent', () => {
       });
     });
 
-    it('should get first controller from discovered and with no added before', fakeAsync(() => {
+    xit('should get first controller from discovered and with no added before', fakeAsync(() => {
       expect(component.discoveredController()).toBeUndefined();
       component.discoverFirstAvailableController();
       tick();
@@ -133,7 +133,7 @@ xdescribe('ControllerDiscoveryComponent', () => {
       expect(component.discoveredController().port).toEqual(3333);
     }));
 
-    it('should get first controller from discovered and with already added', fakeAsync(() => {
+    xit('should get first controller from discovered and with already added', fakeAsync(() => {
       mockedControllerService.controllers.push(controller);
 
       expect(component.discoveredController()).toBeUndefined();
@@ -152,7 +152,7 @@ xdescribe('ControllerDiscoveryComponent', () => {
     });
 
     describe('accept', () => {
-      it('should add new controller', fakeAsync(() => {
+      xit('should add new controller', fakeAsync(() => {
         component.accept(controller);
         tick();
         expect(component.discoveredController()).toBeNull();
@@ -163,7 +163,7 @@ xdescribe('ControllerDiscoveryComponent', () => {
     });
 
     describe('ignore', () => {
-      it('should reject controller', fakeAsync(() => {
+      xit('should reject controller', fakeAsync(() => {
         component.ignore(controller);
         tick();
         expect(component.discoveredController()).toBeNull();

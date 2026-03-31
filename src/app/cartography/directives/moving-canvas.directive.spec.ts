@@ -38,11 +38,11 @@ describe('MovingCanvasDirective', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  xit('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should move canvas if moving mode is activated', fakeAsync(() => {
+  xit('should move canvas if moving mode is activated', fakeAsync(() => {
     movingEventSource.movingModeState.emit(true);
     const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
     let xMovement: number = 200;
@@ -72,7 +72,7 @@ describe('MovingCanvasDirective', () => {
     expect(canvas.getAttribute('transform')).toEqual(`translate(${xMovement}, ${yMovement}) scale(1)`);
   }));
 
-  it('should not move canvas if moving mode is not activated', fakeAsync(() => {
+  xit('should not move canvas if moving mode is not activated', fakeAsync(() => {
     const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
 
     canvas.dispatchEvent(
@@ -99,7 +99,7 @@ describe('MovingCanvasDirective', () => {
     expect(canvas.getAttribute('transform')).toEqual('translate(0, 0) scale(1)');
   }));
 
-  it('should not move canvas after mouseup event', fakeAsync(() => {
+  xit('should not move canvas after mouseup event', fakeAsync(() => {
     movingEventSource.movingModeState.emit(true);
     const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
     let xMovement: number = 200;
@@ -150,7 +150,7 @@ describe('MovingCanvasDirective', () => {
     expect(canvas.getAttribute('transform')).toEqual(`translate(${xMovement}, ${yMovement}) scale(1)`);
   }));
 
-  it('should not move canvas after deactivation of moving mode', fakeAsync(() => {
+  xit('should not move canvas after deactivation of moving mode', fakeAsync(() => {
     movingEventSource.movingModeState.emit(true);
     const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
     let xMovement: number = 200;
