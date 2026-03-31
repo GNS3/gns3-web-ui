@@ -12,6 +12,7 @@ import { of } from 'rxjs';
 import { Controller } from '@models/controller';
 import { IouTemplate } from '@models/templates/iou-template';
 import { IouService } from '@services/iou.service';
+import { TemplateService } from '@services/template.service';
 import { ControllerService } from '@services/controller.service';
 import { MockedControllerService } from '@services/controller.service.spec';
 import { MockedActivatedRoute } from '../../preferences.component.spec';
@@ -48,6 +49,7 @@ describe('IouTemplatesComponent', () => {
         { provide: ActivatedRoute, useValue: activatedRoute },
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: IouService, useValue: mockedIouService },
+        { provide: TemplateService, useValue: {} },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();

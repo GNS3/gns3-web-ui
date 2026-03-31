@@ -6,6 +6,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
+import { VersionService } from '@services/version.service';
 import { MockedControllerService } from 'app/services/controller.service.spec';
 import { ControllersComponent } from './controllers.component';
 import { ControllerManagementService } from '@services/controller-management.service';
@@ -68,6 +69,7 @@ describe('ControllersComponent', () => {
         { provide: ControllerManagementService, useValue: mockedControllerManagementService },
         { provide: ActivatedRoute, useValue: {} },
         { provide: Router, useValue: mockedRouter },
+        { provide: VersionService, useValue: {} },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
