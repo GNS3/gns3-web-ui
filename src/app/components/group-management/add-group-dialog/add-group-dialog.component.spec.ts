@@ -9,7 +9,7 @@ describe('AddGroupDialogComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
-      declarations: [AddGroupDialogComponent],
+      imports: [AddGroupDialogComponent],
     });
     fixture = TestBed.createComponent(AddGroupDialogComponent);
     component = fixture.componentInstance;

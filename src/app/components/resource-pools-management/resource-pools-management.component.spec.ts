@@ -14,6 +14,15 @@ class FakeToastService {}
 
 class FakeActivatedRoute {
   data = of({ controller: {}, pool: {} });
+  snapshot = {
+    paramMap: {
+      get: (key: string) => {
+        if (key === 'controller_id') return '1';
+        if (key === 'pool_id') return '1';
+        return null;
+      }
+    }
+  };
 }
 
 class FakeResourcePoolService {
@@ -37,6 +46,7 @@ describe('ResourcePoolsManagementComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [ResourcePoolsManagementComponent],
       providers: [
         provideZonelessChangeDetection(),
         { provide: ToasterService, useClass: FakeToastService },
@@ -45,7 +55,7 @@ describe('ResourcePoolsManagementComponent', () => {
         { provide: MatDialog, useClass: FakeMatDialog },
         { provide: ControllerService, useClass: FakeControllerService },
       ],
-      
+
     }).compileComponents();
 
     fixture = TestBed.createComponent(ResourcePoolsManagementComponent);

@@ -1,4 +1,5 @@
 import { Selection } from 'd3-selection';
+import { TestBed } from '@angular/core/testing';
 import { CssFixer } from '../helpers/css-fixer';
 import { FontFixer } from '../helpers/font-fixer';
 import { MapSettingsManager } from '../managers/map-settings-manager';
@@ -9,6 +10,7 @@ import { MapLinkNode } from '../models/map/map-link-node';
 import { MapNode } from '../models/map/map-node';
 import { TestSVGCanvas } from '../testing';
 import { InterfaceLabelWidget } from './interface-label';
+import { ThemeService } from '@services/theme.service';
 
 describe('InterfaceLabelsWidget', () => {
   let svg: TestSVGCanvas;
@@ -18,6 +20,10 @@ describe('InterfaceLabelsWidget', () => {
   let mapSettings: MapSettingsManager;
 
   beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [ThemeService],
+    });
+
     svg = new TestSVGCanvas();
 
     const node_1 = new MapNode();
@@ -62,7 +68,9 @@ describe('InterfaceLabelsWidget', () => {
     linksSelection.exit().remove();
 
     mapSettings = new MapSettingsManager();
-    widget = new InterfaceLabelWidget(new CssFixer(), new FontFixer(), new SelectionManager(), mapSettings);
+    widget = TestBed.runInInjectionContext(() => {
+      return new InterfaceLabelWidget(new CssFixer(), new FontFixer(), new SelectionManager(), mapSettings);
+    });
   });
 
   afterEach(() => {

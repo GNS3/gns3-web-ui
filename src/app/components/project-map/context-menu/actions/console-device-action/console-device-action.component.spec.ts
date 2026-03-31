@@ -37,8 +37,7 @@ describe('ConsoleDeviceActionComponent', () => {
         { provide: ToasterService, useValue: mockedToaster },
         { provide: NodeService, useValue: mockedNodeService },
       ],
-      imports: [MatIconModule],
-      declarations: [ConsoleDeviceActionComponent],
+      imports: [MatIconModule, ConsoleDeviceActionComponent],
     }).compileComponents();
 
     settingsService = TestBed.inject(SettingsService);

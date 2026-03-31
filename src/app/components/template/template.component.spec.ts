@@ -23,7 +23,6 @@ describe('TemplateComponent', () => {
   let mockedSymbolService: MockedSymbolService;
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [TemplateComponent],
       imports: [
         BrowserAnimationsModule,
         MatDialogModule,
@@ -33,6 +32,7 @@ describe('TemplateComponent', () => {
         MatSelectModule,
         FormsModule,
         ReactiveFormsModule,
+        TemplateComponent,
       ],
       providers: [
         provideZonelessChangeDetection(),

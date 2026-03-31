@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection } from '@angular/core';
+import { NO_ERRORS_SCHEMA, provideZonelessChangeDetection, ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,13 +13,22 @@ import { Controller } from '@models/controller';
 import { CloudTemplate } from '@models/templates/cloud-template';
 import { BuiltInTemplatesService } from '@services/built-in-templates.service';
 import { ControllerService } from '@services/controller.service';
+import { TemplateService } from '@services/template.service';
+import { ToasterService } from '@services/toaster.service';
 import { MockedControllerService } from '@services/controller.service.spec';
+import { MockedToasterService } from '@services/toaster.service.spec';
 import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { CloudNodesTemplatesComponent } from './cloud-nodes-templates.component';
 
 export class MockedBuiltInTemplatesService {
   public getTemplates(controller: Controller) {
     return of([{} as CloudTemplate]);
+  }
+}
+
+class MockedTemplateService {
+  deleteTemplate(controller: Controller, templateId: string) {
+    return of({});
   }
 }
 
@@ -45,14 +54,17 @@ describe('CloudNodesTemplatesComponent', () => {
       ],
       providers: [
         provideZonelessChangeDetection(),
+        ChangeDetectorRef,
         {
           provide: ActivatedRoute,
           useValue: activatedRoute,
         },
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
+        { provide: TemplateService, useClass: MockedTemplateService },
+        { provide: ToasterService, useValue: new MockedToasterService() },
       ],
-      
+
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

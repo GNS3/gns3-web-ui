@@ -16,6 +16,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { ChangeDetectorRef, NO_ERRORS_SCHEMA } from '@angular/core';
 import { MockedRouter } from 'app/common/progress/progress.component.spec';
 import { of } from 'rxjs';
+import { ThemeService } from '@services/theme.service';
 
 describe('ControllersComponent', () => {
   let component: ControllersComponent;
@@ -62,6 +63,7 @@ describe('ControllersComponent', () => {
         ControllerDatabase,
         MatBottomSheet,
         ChangeDetectorRef,
+        ThemeService,
         { provide: ControllerService, useValue: controllerMockedService },
         { provide: ControllerManagementService, useValue: mockedControllerManagementService },
         { provide: ActivatedRoute, useValue: {} },
