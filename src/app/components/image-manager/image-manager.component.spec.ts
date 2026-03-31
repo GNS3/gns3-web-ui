@@ -10,6 +10,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { ImageManagerService } from 'app/services/image-manager.service';
 import { ControllerService } from 'app/services/controller.service';
 import { MockedControllerService } from 'app/services/controller.service.spec';
+import { ControllerDatabase } from '@services/controller.database';
 import { of } from 'rxjs';
 import { Controller } from '@models/controller';
 
@@ -71,6 +72,7 @@ describe('ImageManagerComponent', () => {
         { provide: VersionService, useValue: mockedVersionService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: ImageUploadSessionService, useValue: mockedImageUploadSessionService },
+        { provide: ControllerDatabase, useValue: {} },
       ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
