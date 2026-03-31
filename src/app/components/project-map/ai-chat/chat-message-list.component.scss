@@ -115,28 +115,10 @@
   position: relative;
 
   &--user {
-    background: color-mix(in srgb, var(--mat-sys-primary) 60%, white);
-    color: var(--mat-sys-on-primary);
+    background: color-mix(in srgb, var(--mat-sys-primary) 15%, white);
+    color: var(--mat-sys-on-surface);
     border-bottom-right-radius: 4px;
     box-shadow: none;
-    position: relative;
-    overflow: hidden;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, currentColor, transparent);
-      opacity: 0.1;
-      transition: left 300ms ease;
-    }
-
-    &:hover::before {
-      left: 100%;
-    }
   }
 
   &--assistant {
