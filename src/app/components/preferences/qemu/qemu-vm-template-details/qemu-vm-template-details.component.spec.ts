@@ -68,7 +68,7 @@ describe('QemuVmTemplateDetailsComponent', () => {
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: QemuConfigurationService, useClass: QemuConfigurationService },
         { provide: AbstractControlDirective, useExisting: UntypedFormControl, useMulti: true },
-      ]
+      ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

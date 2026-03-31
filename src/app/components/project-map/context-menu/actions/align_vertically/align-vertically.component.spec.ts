@@ -9,7 +9,7 @@ describe('AlignVerticallyActionComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection()],
-      declarations: [AlignVerticallyActionComponent],
+      imports: [AlignVerticallyActionComponent],
     });
     fixture = TestBed.createComponent(AlignVerticallyActionComponent);
     component = fixture.componentInstance;

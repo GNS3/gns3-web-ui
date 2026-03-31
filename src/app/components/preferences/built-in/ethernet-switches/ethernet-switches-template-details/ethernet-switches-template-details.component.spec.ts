@@ -67,7 +67,7 @@ describe('EthernetSwitchesTemplateDetailsComponent', () => {
         { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: BuiltInTemplatesConfigurationService, useClass: BuiltInTemplatesConfigurationService },
-      ]
+      ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

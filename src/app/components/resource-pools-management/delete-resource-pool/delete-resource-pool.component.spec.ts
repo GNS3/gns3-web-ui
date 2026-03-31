@@ -12,7 +12,7 @@ describe('DeleteResourcePoolComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [DeleteResourcePoolComponent],
+      imports: [DeleteResourcePoolComponent],
       providers: [
         provideZonelessChangeDetection(),
         { provide: MatDialogRef, useClass: FakeMatDialogRef },

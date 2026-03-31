@@ -15,8 +15,8 @@ describe('ProgressDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ProgressDialogComponent],
       imports: [
+        ProgressDialogComponent,
         MatIconModule,
         MatToolbarModule,
         MatMenuModule,

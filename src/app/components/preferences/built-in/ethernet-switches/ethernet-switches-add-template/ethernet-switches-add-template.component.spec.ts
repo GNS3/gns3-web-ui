@@ -69,7 +69,7 @@ describe('EthernetSwitchesAddTemplateComponent', () => {
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: ComputeService, useValue: mockedComputeService },
         { provide: TemplateMocksService, useClass: TemplateMocksService },
-      ]
+      ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

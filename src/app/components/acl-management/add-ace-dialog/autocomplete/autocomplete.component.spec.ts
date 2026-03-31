@@ -15,7 +15,7 @@ describe('AutocompleteComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()]
+      providers: [provideZonelessChangeDetection()],
       imports: [
         AutocompleteComponent,
         CommonModule,

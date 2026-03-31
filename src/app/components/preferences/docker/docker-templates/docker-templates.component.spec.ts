@@ -34,6 +34,7 @@ describe('DockerTemplatesComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        DockerTemplatesComponent,
         MatIconModule,
         MatToolbarModule,
         MatMenuModule,
@@ -48,7 +49,6 @@ describe('DockerTemplatesComponent', () => {
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: DockerService, useValue: mockedDockerService },
       ],
-      declarations: [DockerTemplatesComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

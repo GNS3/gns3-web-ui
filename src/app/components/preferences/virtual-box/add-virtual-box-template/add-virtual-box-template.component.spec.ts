@@ -43,6 +43,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        AddVirtualBoxTemplateComponent,
         FormsModule,
         ReactiveFormsModule,
         MatIconModule,
@@ -63,7 +64,6 @@ describe('AddVirtualBoxTemplateComponent', () => {
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: TemplateMocksService, useClass: TemplateMocksService },
       ],
-      declarations: [AddVirtualBoxTemplateComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

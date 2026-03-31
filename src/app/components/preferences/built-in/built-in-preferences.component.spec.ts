@@ -19,6 +19,7 @@ describe('BuiltInPreferencesComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [
+        BuiltInPreferencesComponent,
         MatIconModule,
         MatToolbarModule,
         MatMenuModule,
@@ -34,7 +35,6 @@ describe('BuiltInPreferencesComponent', () => {
           useValue: activatedRoute,
         },
       ],
-      declarations: [BuiltInPreferencesComponent],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

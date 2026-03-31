@@ -58,7 +58,7 @@ describe('AddImageDialogComponent', () => {
         { provide: MatDialogRef, useValue: {} },
         { provide: ToasterService, useValue: mockedToasterService },
         { provide: ImageUploadSessionService, useValue: mockedImageUploadSessionService },
-      ]
+      ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

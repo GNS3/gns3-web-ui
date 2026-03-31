@@ -34,8 +34,9 @@ describe('AddAceDialogComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [AddAceDialogComponent, AutocompleteComponent],
       imports: [
+        AddAceDialogComponent,
+        AutocompleteComponent,
         CommonModule,
         ReactiveFormsModule,
         BrowserAnimationsModule,

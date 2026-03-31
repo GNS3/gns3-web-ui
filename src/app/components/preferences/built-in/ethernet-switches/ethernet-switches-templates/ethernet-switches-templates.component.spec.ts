@@ -51,7 +51,7 @@ describe('EthernetSwitchesTemplatesComponent', () => {
         },
         { provide: ControllerService, useValue: mockedControllerService },
         { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
-      ]
+      ],
       schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
   });

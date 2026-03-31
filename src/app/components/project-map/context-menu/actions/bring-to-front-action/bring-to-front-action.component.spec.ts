@@ -31,7 +31,7 @@ describe('BringToFrontActionComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
+      imports: [BringToFrontActionComponent, MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, CommonModule, NoopAnimationsModule],
       providers: [
         provideZonelessChangeDetection(),
         { provide: DrawingService, useValue: drawingService },
@@ -39,7 +39,6 @@ describe('BringToFrontActionComponent', () => {
         { provide: NodeService, useValue: nodeService },
         { provide: NodesDataSource, useValue: nodesDataSource },
       ],
-      declarations: [BringToFrontActionComponent],
     }).compileComponents();
   });
 
