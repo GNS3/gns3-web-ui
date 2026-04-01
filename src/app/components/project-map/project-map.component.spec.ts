@@ -355,14 +355,14 @@ xdescribe('ProjectMapComponent', () => {
   });
 
   it('should hide draw tools when hide menu is called', () => {
-    var dummyElement = document.createElement('map');
-    document.getElementsByClassName = vi.fn('HTML element').and.callFake(() => {
-      return [dummyElement];
-    });
+    const dummyElement = { style: { cursor: '' } };
+    const originalGetElementsByClassName = document.getElementsByClassName;
+    document.getElementsByClassName = vi.fn().mockReturnValue([dummyElement]);
     spyOn(component.projectMapMenuComponent(), 'resetDrawToolChoice').and.returnValue();
 
     component.hideMenu();
 
     expect(component.projectMapMenuComponent().resetDrawToolChoice).toHaveBeenCalled();
+    document.getElementsByClassName = originalGetElementsByClassName;
   });
 });

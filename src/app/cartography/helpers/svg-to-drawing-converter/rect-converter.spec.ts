@@ -7,18 +7,31 @@ describe('RectConverter', () => {
     rectConverter = new RectConverter();
   });
 
-  it('should parse attributes', () => {
-    const element = document.createElement('rect');
-    element.setAttribute('fill', '#ffffff');
-    element.setAttribute('fill-opacity', '0.7');
-    element.setAttribute('stroke', '#000000');
-    element.setAttribute('stroke-width', '2');
-    element.setAttribute('stroke-dasharray', '5,25,25');
+  const createMockElement = (attrs: Record<string, string>): Element => {
+    const mockElement = {
+      attributes: {
+        getNamedItem: (name: string) => {
+          const value = attrs[name];
+          return value !== undefined ? { value } : null;
+        },
+      },
+    } as unknown as Element;
+    return mockElement;
+  };
 
-    element.setAttribute('width', '100px');
-    element.setAttribute('height', '200px');
-    element.setAttribute('rx', '0');
-    element.setAttribute('ry', '0');
+  it('should parse attributes', () => {
+    const attrs = {
+      'fill': '#ffffff',
+      'fill-opacity': '0.7',
+      'stroke': '#000000',
+      'stroke-width': '2',
+      'stroke-dasharray': '5,25,25',
+      'width': '100px',
+      'height': '200px',
+      'rx': '0',
+      'ry': '0',
+    };
+    const element = createMockElement(attrs);
 
     const drawing = rectConverter.convert(element);
     expect(drawing.fill).toEqual('#ffffff');
@@ -32,7 +45,7 @@ describe('RectConverter', () => {
   });
 
   it('should parse with no attributes', () => {
-    const element = document.createElement('rect');
+    const element = createMockElement({});
 
     const drawing = rectConverter.convert(element);
     expect(drawing.fill).toBeUndefined();

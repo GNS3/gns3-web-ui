@@ -27,27 +27,25 @@ describe('ControllerError', () => {
 });
 
 describe('ControllerErrorHandler', () => {
-  it('should handle HttpErrorResponse with status 0', (done) => {
+  it('should handle HttpErrorResponse with status 0', () => {
     const error = new HttpErrorResponse({ status: 0 });
 
     const handler = new ControllerErrorHandler();
     const result = handler.handleError(error);
 
-    result.subscribe(null, (err) => {
+    return result.subscribe(null, (err) => {
       expect(err.message).toEqual('Controller is unreachable');
-      done();
     });
   });
 
-  it('should not handle HttpErrorResponse with status!=0', (done) => {
+  it('should not handle HttpErrorResponse with status!=0', () => {
     const error = new HttpErrorResponse({ status: 499 });
 
     const handler = new ControllerErrorHandler();
     const result = handler.handleError(error);
 
-    result.subscribe(null, (err) => {
+    return result.subscribe(null, (err) => {
       expect(err.message).toEqual('Http failure response for (unknown url): 499 undefined');
-      done();
     });
   });
 });

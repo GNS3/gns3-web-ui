@@ -7,15 +7,29 @@ describe('TextConverter', () => {
     textConverter = new TextConverter();
   });
 
+  const createMockElement = (attrs: Record<string, string>, text: string = ''): Element => {
+    const mockElement = {
+      textContent: text,
+      attributes: {
+        getNamedItem: (name: string) => {
+          const value = attrs[name];
+          return value !== undefined ? { value } : null;
+        },
+      },
+    } as unknown as Element;
+    return mockElement;
+  };
+
   it('should parse attributes', () => {
-    const element = document.createElement('text');
-    element.innerText = 'Text';
-    element.setAttribute('fill', '#00000');
-    element.setAttribute('fill-opacity', '1.0');
-    element.setAttribute('font-family', 'TypeWriter');
-    element.setAttribute('font-size', '10.0');
-    element.setAttribute('font-weight', 'bold');
-    element.setAttribute('text-decoration', 'line-through');
+    const attrs = {
+      'fill': '#00000',
+      'fill-opacity': '1.0',
+      'font-family': 'TypeWriter',
+      'font-size': '10.0',
+      'font-weight': 'bold',
+      'text-decoration': 'line-through',
+    };
+    const element = createMockElement(attrs, 'Text');
 
     const drawing = textConverter.convert(element);
     expect(drawing.text).toEqual('Text');
@@ -28,7 +42,7 @@ describe('TextConverter', () => {
   });
 
   it('should parse with no attributes', () => {
-    const element = document.createElement('text');
+    const element = createMockElement({});
 
     const drawing = textConverter.convert(element);
     expect(drawing.text).toEqual('');

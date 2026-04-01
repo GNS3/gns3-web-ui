@@ -132,7 +132,18 @@ describe('DraggableSelectionComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(DraggableSelectionComponent);
     component = fixture.componentInstance;
-    component.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    component.svg = {
+      createElementNS: (ns: string, tag: string) => ({
+        appendChild: () => {},
+        removeChild: () => {},
+        getAttribute: () => null,
+        setAttribute: () => {},
+        querySelectorAll: () => [],
+        addEventListener: () => {},
+        removeEventListener: () => {},
+      }),
+      ownerDocument: {},
+    } as any;
     fixture.detectChanges();
   });
 
