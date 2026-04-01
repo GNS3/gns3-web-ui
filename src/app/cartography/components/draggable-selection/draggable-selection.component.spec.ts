@@ -156,20 +156,25 @@ describe('DraggableSelectionComponent', () => {
       node.y = 2;
     });
 
-    xit('should select node when started dragging', fakeAsync(() => {
+    xit('should select node when started dragging', async () => {
+      vi.useFakeTimers();
       nodesWidgetStub.draggable.start.emit(new DraggableStart<MapNode>(node));
-      tick();
+      vi.advanceTimersByTime(0);
       expect(selectionManagerStub.getSelected().length).toEqual(1);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should ignore node when started dragging and node is in selection', fakeAsync(() => {
+    xit('should ignore node when started dragging and node is in selection', async () => {
+      vi.useFakeTimers();
       selectionManagerStub.setSelected([node]);
       nodesWidgetStub.draggable.start.emit(new DraggableStart<MapNode>(node));
-      tick();
+      vi.advanceTimersByTime(0);
       expect(selectionManagerStub.getSelected().length).toEqual(1);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should update node position when dragging', fakeAsync(() => {
+    xit('should update node position when dragging', async () => {
+      vi.useFakeTimers();
       spyOn(nodesWidgetStub, 'updateNodePosition');
       selectionManagerStub.setSelected([node]);
 
@@ -178,13 +183,15 @@ describe('DraggableSelectionComponent', () => {
       dragEvent.dy = 20;
 
       nodesWidgetStub.draggable.drag.emit(dragEvent);
-      tick();
+      vi.advanceTimersByTime(0);
       expect(nodesWidgetStub.updateNodePosition).toHaveBeenCalledWith(select(fixture.componentInstance.svg), node);
       expect(node.x).toEqual(11);
       expect(node.y).toEqual(22);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should redraw related links target when dragging node', fakeAsync(() => {
+    xit('should redraw related links target when dragging node', async () => {
+      vi.useFakeTimers();
       spyOn(nodesWidgetStub, 'redrawNode');
       spyOn(linksWidgetStub, 'redrawLink');
       const link = new MapLink();
@@ -193,11 +200,13 @@ describe('DraggableSelectionComponent', () => {
       selectionManagerStub.setSelected([node]);
       nodesWidgetStub.draggable.drag.emit(new DraggableDrag<MapNode>(node));
 
-      tick();
+      vi.advanceTimersByTime(0);
       expect(linksWidgetStub.redrawLink).toHaveBeenCalledWith(select(fixture.componentInstance.svg), link);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should redraw related links source when dragging node', fakeAsync(() => {
+    xit('should redraw related links source when dragging node', async () => {
+      vi.useFakeTimers();
       spyOn(nodesWidgetStub, 'redrawNode');
       spyOn(linksWidgetStub, 'redrawLink');
       const link = new MapLink();
@@ -206,11 +215,13 @@ describe('DraggableSelectionComponent', () => {
       selectionManagerStub.setSelected([node]);
       nodesWidgetStub.draggable.drag.emit(new DraggableDrag<MapNode>(node));
 
-      tick();
+      vi.advanceTimersByTime(0);
       expect(linksWidgetStub.redrawLink).toHaveBeenCalledWith(select(fixture.componentInstance.svg), link);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should emit event when node stopped dragging', fakeAsync(() => {
+    xit('should emit event when node stopped dragging', async () => {
+      vi.useFakeTimers();
       const nodesEventSourceStub = fixture.debugElement.injector.get(NodesEventSource);
       const spyDragged = spyOn(nodesEventSourceStub.dragged, 'emit');
 
@@ -220,12 +231,13 @@ describe('DraggableSelectionComponent', () => {
       dragEvent.dy = 20;
 
       nodesWidgetStub.draggable.end.emit(dragEvent);
-      tick();
+      vi.advanceTimersByTime(0);
       expect(nodesEventSourceStub.dragged.emit).toHaveBeenCalled();
       expect(spyDragged.calls.mostRecent().args[0].datum).toEqual(node);
       expect(spyDragged.calls.mostRecent().args[0].dx).toEqual(10);
       expect(spyDragged.calls.mostRecent().args[0].dy).toEqual(20);
-    }));
+      vi.useRealTimers();
+    });
   });
 
   describe('drawings dragging', () => {
@@ -242,20 +254,25 @@ describe('DraggableSelectionComponent', () => {
       drawing.y = 2;
     });
 
-    xit('should select drawing when started dragging', fakeAsync(() => {
+    xit('should select drawing when started dragging', async () => {
+      vi.useFakeTimers();
       drawingsWidgetStub.draggable.start.emit(new DraggableStart<MapDrawing>(drawing));
-      tick();
+      vi.advanceTimersByTime(0);
       expect(selectionManagerStub.getSelected().length).toEqual(1);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should ignore drawing when started dragging and node is in selection', fakeAsync(() => {
+    xit('should ignore drawing when started dragging and node is in selection', async () => {
+      vi.useFakeTimers();
       selectionManagerStub.setSelected([drawing]);
       drawingsWidgetStub.draggable.start.emit(new DraggableStart<MapDrawing>(drawing));
-      tick();
+      vi.advanceTimersByTime(0);
       expect(selectionManagerStub.getSelected().length).toEqual(1);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should update drawing position when dragging', fakeAsync(() => {
+    xit('should update drawing position when dragging', async () => {
+      vi.useFakeTimers();
       spyOn(drawingsWidgetStub, 'redrawDrawing');
       selectionManagerStub.setSelected([drawing]);
 
@@ -264,13 +281,15 @@ describe('DraggableSelectionComponent', () => {
       dragEvent.dy = 20;
 
       drawingsWidgetStub.draggable.drag.emit(dragEvent);
-      tick();
+      vi.advanceTimersByTime(0);
       expect(drawingsWidgetStub.redrawDrawing).toHaveBeenCalledWith(select(fixture.componentInstance.svg), drawing);
       expect(drawing.x).toEqual(11);
       expect(drawing.y).toEqual(22);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should emit event when drawing stopped dragging', fakeAsync(() => {
+    xit('should emit event when drawing stopped dragging', async () => {
+      vi.useFakeTimers();
       const drawingsEventSourceStub = fixture.debugElement.injector.get(DrawingsEventSource);
       const spyDragged = spyOn(drawingsEventSourceStub.dragged, 'emit');
 
@@ -280,12 +299,13 @@ describe('DraggableSelectionComponent', () => {
       dragEvent.dy = 20;
 
       drawingsWidgetStub.draggable.end.emit(dragEvent);
-      tick();
+      vi.advanceTimersByTime(0);
       expect(drawingsEventSourceStub.dragged.emit).toHaveBeenCalled();
       expect(spyDragged.calls.mostRecent().args[0].datum).toEqual(drawing);
       expect(spyDragged.calls.mostRecent().args[0].dx).toEqual(10);
       expect(spyDragged.calls.mostRecent().args[0].dy).toEqual(20);
-    }));
+      vi.useRealTimers();
+    });
   });
 
   describe('labels dragging', () => {
@@ -302,20 +322,25 @@ describe('DraggableSelectionComponent', () => {
       label.y = 2;
     });
 
-    xit('should select label when started dragging', fakeAsync(() => {
+    xit('should select label when started dragging', async () => {
+      vi.useFakeTimers();
       labelWidgetStub.draggable.start.emit(new DraggableStart<MapLabel>(label));
-      tick();
+      vi.advanceTimersByTime(0);
       expect(selectionManagerStub.getSelected().length).toEqual(1);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should ignore label when started dragging and node is in selection', fakeAsync(() => {
+    xit('should ignore label when started dragging and node is in selection', async () => {
+      vi.useFakeTimers();
       selectionManagerStub.setSelected([label]);
       labelWidgetStub.draggable.start.emit(new DraggableStart<MapLabel>(label));
-      tick();
+      vi.advanceTimersByTime(0);
       expect(selectionManagerStub.getSelected().length).toEqual(1);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should update label position when dragging', fakeAsync(() => {
+    xit('should update label position when dragging', async () => {
+      vi.useFakeTimers();
       spyOn(labelWidgetStub, 'redrawLabel');
       selectionManagerStub.setSelected([label]);
       const node = new MapNode();
@@ -330,13 +355,15 @@ describe('DraggableSelectionComponent', () => {
       dragEvent.dy = 20;
 
       labelWidgetStub.draggable.drag.emit(dragEvent);
-      tick();
+      vi.advanceTimersByTime(0);
       expect(labelWidgetStub.redrawLabel).toHaveBeenCalledWith(select(fixture.componentInstance.svg), label);
       expect(label.x).toEqual(11);
       expect(label.y).toEqual(22);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should not update label position when dragging and parent is selected', fakeAsync(() => {
+    xit('should not update label position when dragging and parent is selected', async () => {
+      vi.useFakeTimers();
       spyOn(labelWidgetStub, 'redrawLabel');
       const node = new MapNode();
       node.id = 'nodeid';
@@ -351,13 +378,15 @@ describe('DraggableSelectionComponent', () => {
       dragEvent.dy = 20;
 
       labelWidgetStub.draggable.drag.emit(dragEvent);
-      tick();
+      vi.advanceTimersByTime(0);
       expect(labelWidgetStub.redrawLabel).not.toHaveBeenCalled();
       expect(label.x).toEqual(1);
       expect(label.y).toEqual(2);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should emit event when label stopped dragging', fakeAsync(() => {
+    xit('should emit event when label stopped dragging', async () => {
+      vi.useFakeTimers();
       const nodesEventSourceStub = fixture.debugElement.injector.get(NodesEventSource);
       const spyDragged = spyOn(nodesEventSourceStub.labelDragged, 'emit');
 
@@ -367,14 +396,16 @@ describe('DraggableSelectionComponent', () => {
       dragEvent.dy = 20;
 
       labelWidgetStub.draggable.end.emit(dragEvent);
-      tick();
+      vi.advanceTimersByTime(0);
       expect(nodesEventSourceStub.labelDragged.emit).toHaveBeenCalled();
       expect(spyDragged.calls.mostRecent().args[0].datum).toEqual(label);
       expect(spyDragged.calls.mostRecent().args[0].dx).toEqual(10);
       expect(spyDragged.calls.mostRecent().args[0].dy).toEqual(20);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should not emit event when label stopped dragging and parent node is selected', fakeAsync(() => {
+    xit('should not emit event when label stopped dragging and parent node is selected', async () => {
+      vi.useFakeTimers();
       const nodesEventSourceStub = fixture.debugElement.injector.get(NodesEventSource);
       spyOn(nodesEventSourceStub.labelDragged, 'emit');
       const node = new MapNode();
@@ -387,9 +418,10 @@ describe('DraggableSelectionComponent', () => {
       dragEvent.dy = 20;
 
       labelWidgetStub.draggable.end.emit(dragEvent);
-      tick();
+      vi.advanceTimersByTime(0);
       expect(nodesEventSourceStub.labelDragged.emit).not.toHaveBeenCalled();
-    }));
+      vi.useRealTimers();
+    });
   });
 
   describe('interfaces labels dragging', () => {
@@ -409,20 +441,25 @@ describe('DraggableSelectionComponent', () => {
       linkNode.id = 'linknodeid';
     });
 
-    xit('should select interface label when started dragging', fakeAsync(() => {
+    xit('should select interface label when started dragging', async () => {
+      vi.useFakeTimers();
       interfaceLabelWidgetStub.draggable.start.emit(new DraggableStart<MapLinkNode>(linkNode));
-      tick();
+      vi.advanceTimersByTime(0);
       expect(selectionManagerStub.getSelected().length).toEqual(1);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should ignore interface label when started dragging and node is in selection', fakeAsync(() => {
+    xit('should ignore interface label when started dragging and node is in selection', async () => {
+      vi.useFakeTimers();
       selectionManagerStub.setSelected([linkNode]);
       interfaceLabelWidgetStub.draggable.start.emit(new DraggableStart<MapLinkNode>(linkNode));
-      tick();
+      vi.advanceTimersByTime(0);
       expect(selectionManagerStub.getSelected().length).toEqual(1);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should update interface label position when dragging first node', fakeAsync(() => {
+    xit('should update interface label position when dragging first node', async () => {
+      vi.useFakeTimers();
       spyOn(linksWidgetStub, 'redrawLink');
       selectionManagerStub.setSelected([linkNode]);
       const node = new MapNode();
@@ -445,13 +482,15 @@ describe('DraggableSelectionComponent', () => {
       dragEvent.dy = 20;
 
       interfaceLabelWidgetStub.draggable.drag.emit(dragEvent);
-      tick();
+      vi.advanceTimersByTime(0);
       expect(linksWidgetStub.redrawLink).toHaveBeenCalledWith(select(fixture.componentInstance.svg), link);
       expect(linkNode.label.x).toEqual(11);
       expect(linkNode.label.y).toEqual(22);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should update interface label position when dragging second node', fakeAsync(() => {
+    xit('should update interface label position when dragging second node', async () => {
+      vi.useFakeTimers();
       spyOn(linksWidgetStub, 'redrawLink');
       selectionManagerStub.setSelected([linkNode]);
       const node = new MapNode();
@@ -474,13 +513,15 @@ describe('DraggableSelectionComponent', () => {
       dragEvent.dy = 20;
 
       interfaceLabelWidgetStub.draggable.drag.emit(dragEvent);
-      tick();
+      vi.advanceTimersByTime(0);
       expect(linksWidgetStub.redrawLink).toHaveBeenCalledWith(select(fixture.componentInstance.svg), link);
       expect(linkNode.label.x).toEqual(11);
       expect(linkNode.label.y).toEqual(22);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should not update interface label position when dragging and parent node is selected', fakeAsync(() => {
+    xit('should not update interface label position when dragging and parent node is selected', async () => {
+      vi.useFakeTimers();
       spyOn(linksWidgetStub, 'redrawLink');
       const node = new MapNode();
       node.id = 'nodeid';
@@ -504,13 +545,15 @@ describe('DraggableSelectionComponent', () => {
       dragEvent.dy = 20;
 
       interfaceLabelWidgetStub.draggable.drag.emit(dragEvent);
-      tick();
+      vi.advanceTimersByTime(0);
       expect(linksWidgetStub.redrawLink).not.toHaveBeenCalled();
       expect(linkNode.label.x).toEqual(1);
       expect(linkNode.label.y).toEqual(2);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should emit event when interface label stopped dragging', fakeAsync(() => {
+    xit('should emit event when interface label stopped dragging', async () => {
+      vi.useFakeTimers();
       const linksEventSourceStub = fixture.debugElement.injector.get(LinksEventSource);
       const spyDragged = spyOn(linksEventSourceStub.interfaceDragged, 'emit');
 
@@ -520,14 +563,16 @@ describe('DraggableSelectionComponent', () => {
       dragEvent.dy = 20;
 
       interfaceLabelWidgetStub.draggable.end.emit(dragEvent);
-      tick();
+      vi.advanceTimersByTime(0);
       expect(linksEventSourceStub.interfaceDragged.emit).toHaveBeenCalled();
       expect(spyDragged.calls.mostRecent().args[0].datum).toEqual(linkNode);
       expect(spyDragged.calls.mostRecent().args[0].dx).toEqual(10);
       expect(spyDragged.calls.mostRecent().args[0].dy).toEqual(20);
-    }));
+      vi.useRealTimers();
+    });
 
-    xit('should not emit event when interface label stopped dragging and parent node is selected', fakeAsync(() => {
+    xit('should not emit event when interface label stopped dragging and parent node is selected', async () => {
+      vi.useFakeTimers();
       const linksEventSourceStub = fixture.debugElement.injector.get(LinksEventSource);
       spyOn(linksEventSourceStub.interfaceDragged, 'emit');
 
@@ -541,8 +586,9 @@ describe('DraggableSelectionComponent', () => {
       dragEvent.dy = 20;
 
       interfaceLabelWidgetStub.draggable.end.emit(dragEvent);
-      tick();
+      vi.advanceTimersByTime(0);
       expect(linksEventSourceStub.interfaceDragged.emit).not.toHaveBeenCalled();
-    }));
+      vi.useRealTimers();
+    });
   });
 });

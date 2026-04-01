@@ -58,17 +58,21 @@ describe('SelectionControlComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  xit('node should be selected', fakeAsync(() => {
+  xit('node should be selected', async () => {
+    vi.useFakeTimers();
     selectionEventSource.selected.next(new Rectangle(100, 100, 100, 100));
-    tick();
+    vi.advanceTimersByTime(0);
     expect(manager.getSelected().length).toEqual(1);
-  }));
+    vi.useRealTimers();
+  });
 
-  xit('node should be selected and deselected', fakeAsync(() => {
+  xit('node should be selected and deselected', async () => {
+    vi.useFakeTimers();
     selectionEventSource.selected.next(new Rectangle(100, 100, 100, 100));
-    tick();
+    vi.advanceTimersByTime(0);
     selectionEventSource.selected.next(new Rectangle(350, 350, 100, 100));
-    tick();
+    vi.advanceTimersByTime(0);
     expect(manager.getSelected().length).toEqual(0);
-  }));
+    vi.useRealTimers();
+  });
 });

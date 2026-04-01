@@ -41,17 +41,17 @@ describe('BundledControllerFinderComponent', () => {
     fixture.detectChanges();
   });
 
-  xit('should create and redirect to controller', fakeAsync(() => {
+  xit('should create and redirect to controller', async () => {
+    vi.useFakeTimers();
     const controller = new Controller();
     controller.id = 99;
     controllerServiceMock.getLocalController.and.returnValue(Promise.resolve(controller));
     expect(component).toBeTruthy();
-    tick(101);
+    vi.advanceTimersByTime(101);
     fixture.detectChanges();
-    fixture.whenStable().then(() => {
-      expect(controllerServiceMock.getLocalController).toHaveBeenCalledWith('vps3.gns3.net', 3000);
-      expect(router.navigate).toHaveBeenCalledWith(['/controller', 99, 'projects']);
-    });
-    service = TestBed.inject(ControllerService);
-  }));
+    await fixture.whenStable();
+    expect(controllerServiceMock.getLocalController).toHaveBeenCalledWith('vps3.gns3.net', 3000);
+    expect(router.navigate).toHaveBeenCalledWith(['/controller', 99, 'projects']);
+    vi.useRealTimers();
+  });
 });
