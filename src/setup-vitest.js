@@ -23,8 +23,7 @@ TestBed.initTestEnvironment(
 // Make TestBed available globally for convenience
 globalThis.TestBed = TestBed;
 
-// Provide DOCUMENT token globally for all tests
-// This is needed for TestComponentRenderer in Angular 21 zoneless
+// Configure TestBed to provide DOCUMENT globally
 beforeEach(() => {
   TestBed.configureTestingModule({
     providers: [

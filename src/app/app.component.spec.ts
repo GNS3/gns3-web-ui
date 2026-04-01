@@ -1,9 +1,10 @@
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+import { MatIconModule, MatIconRegistry } from '@angular/material/icon';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { DOCUMENT, DomSanitizer } from '@angular/common';
 import { AppComponent } from './app.component';
 import { ProgressService } from './common/progress/progress.service';
 import { SettingsService } from '@services/settings.service';
@@ -15,20 +16,34 @@ describe('AppComponent', () => {
   let settingsService: SettingsService;
 
   beforeEach(() => {
+    const mockDomSanitizer = {
+      bypassSecurityTrustResourceUrl: (url: string) => url as any
+    };
+
+    const mockIconRegistry = {
+      addSvgIcon: () => {}
+    };
+
     TestBed.configureTestingModule({
-      
+
       imports: [
     AppComponent,RouterTestingModule, MatIconModule, HttpClientTestingModule, AppTestingModule],
-      providers: [provideZonelessChangeDetection(), SettingsService, ProgressService],
+      providers: [
+        provideZonelessChangeDetection(),
+        SettingsService,
+        ProgressService,
+        { provide: DOCUMENT, useValue: document },
+        { provide: DomSanitizer, useValue: mockDomSanitizer },
+        { provide: MatIconRegistry, useValue: mockIconRegistry }
+      ],
       schemas: [NO_ERRORS_SCHEMA],
-    }).compileComponents();
-
-    settingsService = TestBed.inject(SettingsService);
+    });
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
+    settingsService = TestBed.inject(SettingsService);
     fixture.detectChanges();
   });
 
