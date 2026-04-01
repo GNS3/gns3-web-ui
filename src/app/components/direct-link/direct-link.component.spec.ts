@@ -1,6 +1,6 @@
 import { provideZonelessChangeDetection } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ControllerService } from '@services/controller.service';
 import { ControllerDatabase } from '@services/controller.database';
 import { HttpController } from '@services/http-controller.service';
@@ -13,16 +13,25 @@ describe('DirectLinkComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
+      imports: [DirectLinkComponent, RouterModule.forRoot([])],
       providers: [
         provideZonelessChangeDetection(),
         ControllerService,
         ControllerDatabase,
         HttpController,
-        { provide: ActivatedRoute, useValue: {} },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              paramMap: {
+                get: (key: string) => null
+              }
+            }
+          }
+        },
         { provide: Router, useValue: {} },
         { provide: ToasterService, useValue: {} },
       ],
-      imports: [DirectLinkComponent],
     });
     fixture = TestBed.createComponent(DirectLinkComponent);
     component = fixture.componentInstance;
