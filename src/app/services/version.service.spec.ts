@@ -1,3 +1,4 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 import { VersionService } from './version.service';
 import { Controller } from '@models/controller';
@@ -20,7 +21,7 @@ describe('VersionService', () => {
 
   it('should get version from controller', async () => {
     const mockController: Controller = {
-      id: 'test-controller',
+      id: 1,
       name: 'Test Controller',
       host: 'localhost',
       port: 3080,
@@ -28,8 +29,7 @@ describe('VersionService', () => {
     };
 
     const mockVersion: Version = {
-      local_version: '3.1.0',
-      latest_version: '3.1.0',
+      version: '3.1.0',
     };
 
     httpControllerSpy.get.mockReturnValue(of(mockVersion));
@@ -44,7 +44,7 @@ describe('VersionService', () => {
 
   it('should handle errors when getting version', async () => {
     const mockController: Controller = {
-      id: 'test-controller',
+      id: 1,
       name: 'Test Controller',
       host: 'localhost',
       port: 3080,
