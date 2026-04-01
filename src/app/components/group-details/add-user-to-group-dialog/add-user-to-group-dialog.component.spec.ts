@@ -1,6 +1,6 @@
 import { provideZonelessChangeDetection, ChangeDetectorRef } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { UserService } from '@services/user.service';
 import { GroupService } from '@services/group.service';
 import { ToasterService } from '@services/toaster.service';
@@ -16,6 +16,7 @@ describe('AddUserToGroupDialogComponent', () => {
         provideZonelessChangeDetection(),
         ChangeDetectorRef,
         { provide: MatDialogRef, useValue: {} },
+        { provide: MAT_DIALOG_DATA, useValue: {} },
         { provide: UserService, useValue: {} },
         { provide: GroupService, useValue: {} },
         { provide: ToasterService, useValue: {} },
