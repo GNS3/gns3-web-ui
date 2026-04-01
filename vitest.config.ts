@@ -22,6 +22,9 @@ export default defineConfig({
       '@models': resolve(__dirname, './src/app/models'),
       '@utils': resolve(__dirname, './src/app/utils'),
       'environments/environment': resolve(__dirname, './src/environments/environment.ts'),
+      // Support for app/* imports (Angular style)
+      'app': resolve(__dirname, './src/app'),
+      'app/*': resolve(__dirname, './src/app/*'),
     },
     coverage: {
       provider: 'v8',

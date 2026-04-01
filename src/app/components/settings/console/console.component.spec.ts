@@ -43,8 +43,8 @@ describe('ConsoleComponent', () => {
         MatCardModule,
         MatInputModule,
         NoopAnimationsModule,
+        ConsoleComponent,
       ],
-      declarations: [ConsoleComponent],
     }).compileComponents();
   });
 

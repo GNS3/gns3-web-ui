@@ -23,7 +23,14 @@ describe('ConfirmationDeleteAllProjectsComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [MatIconModule, MatToolbarModule, MatMenuModule, MatCheckboxModule, MatDialogModule],
+      imports: [
+        MatIconModule,
+        MatToolbarModule,
+        MatMenuModule,
+        MatCheckboxModule,
+        MatDialogModule,
+        ConfirmationDeleteAllProjectsComponent
+      ],
       providers: [
         provideZonelessChangeDetection(),
         { provide: ControllerService, useValue: mockedControllerService },
@@ -32,7 +39,6 @@ describe('ConfirmationDeleteAllProjectsComponent', () => {
         { provide: MatDialogRef, useValue: {} },
         { provide: ToasterService, useValue: mockedToasterService },
       ],
-      declarations: [ConfirmationDeleteAllProjectsComponent],
     }).compileComponents();
   });
 

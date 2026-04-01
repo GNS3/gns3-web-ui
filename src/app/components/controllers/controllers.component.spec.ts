@@ -32,9 +32,9 @@ describe('ControllersComponent', () => {
     // Add missing properties that the component expects
     controllerMockedService['isServiceInitialized'] = true;
     controllerMockedService['serviceInitialized'] = of(true);
-    controllerMockedService['checkControllerVersion'] = jasmine
-      .createSpy('checkControllerVersion')
-      .and.returnValue(of({ version: '3.0.0' }));
+    controllerMockedService['checkControllerVersion'] = vi
+      .fn('checkControllerVersion')
+      .mockReturnValue(of({ version: '3.0.0' }));
     controllerMockedService['delete'] = vi.fn('delete').and.returnValue(Promise.resolve());
 
     // mockedActivatedRoute = new MockedActivatedRoute();
