@@ -1,5 +1,5 @@
 import { Component, provideZonelessChangeDetection } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MapScaleService } from '@services/mapScale.service';
 import { MovingEventSource } from '../events/moving-event-source';
@@ -44,7 +44,7 @@ describe('ZoomingCanvasDirective', () => {
     expect(component).toBeTruthy();
   });
 
-  xit('should zoom in canvas if moving mode is activated', fakeAsync(() => {
+  xit('should zoom in canvas if moving mode is activated', () => {
     movingEventSource.movingModeState.emit(true);
     const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
     let deltaMode: number = 0;
@@ -58,12 +58,11 @@ describe('ZoomingCanvasDirective', () => {
         deltaY: zoom,
       })
     );
-    tick();
 
     expect(canvas.getAttribute('transform')).toEqual(`translate(0, 0) scale(2)`);
-  }));
+  });
 
-  xit('should zoom out canvas if moving mode is activated', fakeAsync(() => {
+  xit('should zoom out canvas if moving mode is activated', () => {
     movingEventSource.movingModeState.emit(true);
     const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
     let deltaMode: number = 0;
@@ -77,12 +76,11 @@ describe('ZoomingCanvasDirective', () => {
         deltaY: zoom,
       })
     );
-    tick();
 
     expect(canvas.getAttribute('transform')).toEqual(`translate(0, 0) scale(0.9)`);
-  }));
+  });
 
-  xit('should not zoom in/out canvas if moving mode is not activated', fakeAsync(() => {
+  xit('should not zoom in/out canvas if moving mode is not activated', () => {
     movingEventSource.movingModeState.emit(true);
     const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
     let deltaMode: number = 0;
@@ -96,7 +94,6 @@ describe('ZoomingCanvasDirective', () => {
         deltaY: zoom,
       })
     );
-    tick();
 
     expect(canvas.getAttribute('transform')).toEqual(`translate(0, 0) scale(2)`);
 
@@ -109,12 +106,11 @@ describe('ZoomingCanvasDirective', () => {
         deltaY: zoom,
       })
     );
-    tick();
 
     expect(canvas.getAttribute('transform')).toEqual(`translate(0, 0) scale(2)`);
-  }));
+  });
 
-  xit('should not zoom in/out canvas after deactivation of moving mode', fakeAsync(() => {
+  xit('should not zoom in/out canvas after deactivation of moving mode', () => {
     const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
     let deltaMode: number = 0;
     let zoom: number = -1000;
@@ -127,12 +123,11 @@ describe('ZoomingCanvasDirective', () => {
         deltaY: zoom,
       })
     );
-    tick();
 
     expect(canvas.getAttribute('transform')).toEqual(`translate(0, 0) scale(1)`);
-  }));
+  });
 
-  xit('should prevent from default wheel behaviour when moving mode activated', fakeAsync(() => {
+  xit('should prevent from default wheel behaviour when moving mode activated', () => {
     movingEventSource.movingModeState.emit(true);
     const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
     let deltaMode: number = 0;
@@ -146,8 +141,7 @@ describe('ZoomingCanvasDirective', () => {
     spyOn(event, 'preventDefault');
 
     canvas.dispatchEvent(event);
-    tick();
 
     expect(event.preventDefault).toHaveBeenCalled();
-  }));
+  });
 });

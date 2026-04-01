@@ -1,7 +1,7 @@
 import { ApiInformationService, IPathDict } from '@services/ApiInformation/api-information.service';
 import { HttpClient } from '@angular/common/http';
 import { provideZonelessChangeDetection } from '@angular/core';
-import { fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { EMPTY, Observable, of, ReplaySubject } from 'rxjs';
 import { Controller } from '@models/controller';
 import { getTestController } from '@services/testing';

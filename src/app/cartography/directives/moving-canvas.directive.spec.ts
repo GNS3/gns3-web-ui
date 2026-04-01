@@ -1,5 +1,5 @@
 import { Component, provideZonelessChangeDetection } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MovingEventSource } from '../events/moving-event-source';
 import { Context } from '../models/context';
@@ -42,7 +42,7 @@ describe('MovingCanvasDirective', () => {
     expect(component).toBeTruthy();
   });
 
-  xit('should move canvas if moving mode is activated', fakeAsync(() => {
+  xit('should move canvas if moving mode is activated', () => {
     movingEventSource.movingModeState.emit(true);
     const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
     let xMovement: number = 200;
@@ -58,7 +58,6 @@ describe('MovingCanvasDirective', () => {
         view: window,
       })
     );
-    tick();
     canvas.dispatchEvent(
       new MouseEvent('mousemove', {
         bubbles: true,
@@ -67,12 +66,11 @@ describe('MovingCanvasDirective', () => {
         movementY: yMovement,
       } as MouseEventInit)
     );
-    tick();
 
     expect(canvas.getAttribute('transform')).toEqual(`translate(${xMovement}, ${yMovement}) scale(1)`);
-  }));
+  });
 
-  xit('should not move canvas if moving mode is not activated', fakeAsync(() => {
+  xit('should not move canvas if moving mode is not activated', () => {
     const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
 
     canvas.dispatchEvent(
@@ -85,7 +83,6 @@ describe('MovingCanvasDirective', () => {
         view: window,
       })
     );
-    tick();
     canvas.dispatchEvent(
       new MouseEvent('mousemove', {
         bubbles: true,
@@ -94,12 +91,11 @@ describe('MovingCanvasDirective', () => {
         movementY: 1000,
       } as MouseEventInit)
     );
-    tick();
 
     expect(canvas.getAttribute('transform')).toEqual('translate(0, 0) scale(1)');
-  }));
+  });
 
-  xit('should not move canvas after mouseup event', fakeAsync(() => {
+  xit('should not move canvas after mouseup event', () => {
     movingEventSource.movingModeState.emit(true);
     const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
     let xMovement: number = 200;
@@ -115,7 +111,6 @@ describe('MovingCanvasDirective', () => {
         view: window,
       })
     );
-    tick();
     canvas.dispatchEvent(
       new MouseEvent('mousemove', {
         bubbles: true,
@@ -124,7 +119,6 @@ describe('MovingCanvasDirective', () => {
         movementY: yMovement,
       } as MouseEventInit)
     );
-    tick();
 
     expect(canvas.getAttribute('transform')).toEqual(`translate(${xMovement}, ${yMovement}) scale(1)`);
 
@@ -136,7 +130,6 @@ describe('MovingCanvasDirective', () => {
         movementY: 1000,
       } as MouseEventInit)
     );
-    tick();
     canvas.dispatchEvent(
       new MouseEvent('mousemove', {
         bubbles: true,
@@ -145,12 +138,11 @@ describe('MovingCanvasDirective', () => {
         movementY: yMovement,
       } as MouseEventInit)
     );
-    tick();
 
     expect(canvas.getAttribute('transform')).toEqual(`translate(${xMovement}, ${yMovement}) scale(1)`);
-  }));
+  });
 
-  xit('should not move canvas after deactivation of moving mode', fakeAsync(() => {
+  xit('should not move canvas after deactivation of moving mode', () => {
     movingEventSource.movingModeState.emit(true);
     const canvas: HTMLElement = fixture.debugElement.nativeElement.querySelector('.canvas');
     let xMovement: number = 200;
@@ -166,7 +158,6 @@ describe('MovingCanvasDirective', () => {
         view: window,
       })
     );
-    tick();
     canvas.dispatchEvent(
       new MouseEvent('mousemove', {
         bubbles: true,
@@ -175,7 +166,6 @@ describe('MovingCanvasDirective', () => {
         movementY: yMovement,
       } as MouseEventInit)
     );
-    tick();
 
     expect(canvas.getAttribute('transform')).toEqual(`translate(${xMovement}, ${yMovement}) scale(1)`);
 
@@ -188,8 +178,7 @@ describe('MovingCanvasDirective', () => {
         movementY: 1000,
       } as MouseEventInit)
     );
-    tick();
 
     expect(canvas.getAttribute('transform')).toEqual(`translate(${xMovement}, ${yMovement}) scale(1)`);
-  }));
+  });
 });
