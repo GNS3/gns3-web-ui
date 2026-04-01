@@ -13,7 +13,7 @@
       "@utils/*": ["app/utils/*"]
     },
     "types": [
-      "jest",
+      "vitest/globals",
       "node"
     ]
   },
