@@ -41,6 +41,14 @@ export default defineConfig({
     },
     testTimeout: 10000,
     setupFiles: ['./src/setup-vitest.js'],
+    server: {
+      deps: {
+        inline: [
+          '@angular/common',
+          '@angular/compiler',
+        ],
+      },
+    },
   },
 });
 
