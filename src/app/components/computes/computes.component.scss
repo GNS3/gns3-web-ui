@@ -61,6 +61,35 @@
 }
 
 /* =============================================
+// Info Banner
+// ============================================= */
+.computes__info {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  margin-bottom: 20px;
+  background: var(--mat-sys-primary-container);
+  border-radius: 12px;
+  border-left: 4px solid var(--mat-sys-primary);
+  animation: fadeInSlideIn 0.4s ease-out 0.15s both;
+}
+
+.computes__info-icon {
+  color: var(--mat-sys-on-primary-container);
+  flex-shrink: 0;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+}
+
+.computes__info-text {
+  margin: 0;
+  font-size: 14px;
+  color: var(--mat-sys-on-primary-container);
+  line-height: 1.5;
+}
+
+/* =============================================
 // Loading & Empty
 // ============================================= */
 .computes__loading,

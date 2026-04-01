@@ -24,6 +24,12 @@
   </header>
 
   <main class="computes__content">
+    <div class="computes__info">
+      <mat-icon class="computes__info-icon">info</mat-icon>
+      <p class="computes__info-text">
+        Once configured and connected, the backend maintains the connection to Compute nodes automatically. This page is used to add/delete/update node configurations and view node status.
+      </p>
+    </div>
     @if (loading()) {
     <div class="computes__loading">Loading...</div>
     } @if (!loading() && !computes().length) {
