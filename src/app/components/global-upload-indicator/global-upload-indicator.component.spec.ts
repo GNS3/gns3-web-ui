@@ -9,6 +9,4 @@ describe('GlobalUploadIndicatorComponent', () => {
   it('should have correct component name', () => {
     expect(GlobalUploadIndicatorComponent.name).toBe('GlobalUploadIndicatorComponent');
   });
-
-  // Note: May require BackgroundUploadService
 });
