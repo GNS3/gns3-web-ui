@@ -26,6 +26,14 @@ describe('VersionService', () => {
       host: 'localhost',
       port: 3080,
       protocol: 'http:',
+      authToken: '',
+      location: 'local',
+      path: '',
+      ubridge_path: '',
+      status: 'stopped',
+      username: '',
+      password: '',
+      tokenExpired: false,
     };
 
     const mockVersion: Version = {
@@ -49,6 +57,14 @@ describe('VersionService', () => {
       host: 'localhost',
       port: 3080,
       protocol: 'http:',
+      authToken: '',
+      location: 'local',
+      path: '',
+      ubridge_path: '',
+      status: 'stopped',
+      username: '',
+      password: '',
+      tokenExpired: false,
     };
 
     const error = new Error('Network error');
