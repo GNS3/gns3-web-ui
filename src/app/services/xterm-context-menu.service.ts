@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { Terminal } from 'xterm';
+import { Terminal } from '@xterm/xterm';
 import { ToasterService } from './toaster.service';
 
 /**

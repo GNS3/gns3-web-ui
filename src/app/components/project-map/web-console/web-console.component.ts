@@ -11,9 +11,9 @@ import {
   viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Terminal } from 'xterm';
-import { AttachAddon } from 'xterm-addon-attach';
-import { FitAddon } from 'xterm-addon-fit';
+import { Terminal } from '@xterm/xterm';
+import { AttachAddon } from '@xterm/addon-attach';
+import { FitAddon } from '@xterm/addon-fit';
 import { Subject, takeUntil } from 'rxjs';
 import { Node as GNS3Node } from '../../../cartography/models/node';
 import { Project } from '@models/project';

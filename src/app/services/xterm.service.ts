@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Terminal } from 'xterm';
-import { FitAddon } from 'xterm-addon-fit';
+import { Terminal } from '@xterm/xterm';
+import { FitAddon } from '@xterm/addon-fit';
 import { ThemeService } from '@services/theme.service';
 import { ChangeDetectorRef } from '@angular/core';
 
