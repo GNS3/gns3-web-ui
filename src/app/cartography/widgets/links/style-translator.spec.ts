@@ -322,10 +322,10 @@ describe('StyleTranslator', () => {
     });
 
     expect(basePath).not.toEqual(variedPath);
-    expect(basePath.startsWith('M10,20')).toBeTrue();
-    expect(basePath.endsWith('110,20')).toBeTrue();
-    expect(variedPath.startsWith('M10,20')).toBeTrue();
-    expect(variedPath.endsWith('110,20')).toBeTrue();
+    expect(basePath.startsWith('M10,20')).toBe(true);
+    expect(basePath.endsWith('110,20')).toBe(true);
+    expect(variedPath.startsWith('M10,20')).toBe(true);
+    expect(variedPath.endsWith('110,20')).toBe(true);
   });
 
   it('should return solid dash style for Qt SolidLine type', () => {

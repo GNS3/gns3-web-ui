@@ -47,7 +47,7 @@ xdescribe('AddQemuVmTemplateComponent', () => {
   let mockedToasterService = new MockedToasterService();
   let activatedRoute = new MockedActivatedRoute().get();
   let router = {
-    navigate: jasmine.createSpy('navigate'),
+    navigate: vi.fn('navigate'),
   };
 
   beforeEach(() => {

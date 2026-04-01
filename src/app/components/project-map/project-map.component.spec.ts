@@ -356,7 +356,7 @@ xdescribe('ProjectMapComponent', () => {
 
   it('should hide draw tools when hide menu is called', () => {
     var dummyElement = document.createElement('map');
-    document.getElementsByClassName = jasmine.createSpy('HTML element').and.callFake(() => {
+    document.getElementsByClassName = vi.fn('HTML element').and.callFake(() => {
       return [dummyElement];
     });
     spyOn(component.projectMapMenuComponent(), 'resetDrawToolChoice').and.returnValue();

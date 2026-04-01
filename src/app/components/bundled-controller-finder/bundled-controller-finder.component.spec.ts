@@ -16,14 +16,14 @@ describe('BundledControllerFinderComponent', () => {
   let router: any;
   let service: ControllerService;
   let progressService: MockedProgressService = new MockedProgressService();
-  let controllerServiceMock: jasmine.SpyObj<ControllerService>;
+  let controllerServiceMock: { getLocalController: jest.Mock };
 
   beforeEach(() => {
     router = {
-      navigate: jasmine.createSpy('navigate'),
+      navigate: vi.fn('navigate'),
     };
 
-    controllerServiceMock = jasmine.createSpyObj<ControllerService>(['getLocalController']);
+    controllerServiceMock = { getLocalController: vi.fn() };
 
     TestBed.configureTestingModule({
       providers: [

@@ -35,17 +35,17 @@ describe('ControllersComponent', () => {
     controllerMockedService['checkControllerVersion'] = jasmine
       .createSpy('checkControllerVersion')
       .and.returnValue(of({ version: '3.0.0' }));
-    controllerMockedService['delete'] = jasmine.createSpy('delete').and.returnValue(Promise.resolve());
+    controllerMockedService['delete'] = vi.fn('delete').and.returnValue(Promise.resolve());
 
     // mockedActivatedRoute = new MockedActivatedRoute();
     mockedRouter = new MockedRouter();
 
     // Mock ControllerManagementService
     mockedControllerManagementService = {
-      getRunningControllers: jasmine.createSpy('getRunningControllers').and.returnValue([]),
+      getRunningControllers: vi.fn('getRunningControllers').and.returnValue([]),
       controllerStatusChanged: of({}),
-      start: jasmine.createSpy('start').and.returnValue(Promise.resolve()),
-      stop: jasmine.createSpy('stop').and.returnValue(Promise.resolve()),
+      start: vi.fn('start').and.returnValue(Promise.resolve()),
+      stop: vi.fn('stop').and.returnValue(Promise.resolve()),
     };
 
     TestBed.configureTestingModule({
@@ -81,7 +81,7 @@ describe('ControllersComponent', () => {
 
     // Initialize the sort property before detectChanges to prevent undefined error
     component.sort = {
-      sort: jasmine.createSpy('sort'),
+      sort: vi.fn('sort'),
       sortChange: of({}),
       direction: '',
       disableClear: false,

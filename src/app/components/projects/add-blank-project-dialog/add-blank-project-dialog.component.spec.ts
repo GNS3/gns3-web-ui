@@ -56,13 +56,13 @@ describe('AddBlankProjectDialogComponent', () => {
   let fixture: ComponentFixture<AddBlankProjectDialogComponent>;
   let controller: Controller;
   let router = {
-    navigate: jasmine.createSpy('navigate'),
+    navigate: vi.fn('navigate'),
   };
   let toaster = {
-    success: jasmine.createSpy('success'),
+    success: vi.fn('success'),
   };
   let dialogRef = {
-    close: jasmine.createSpy('close'),
+    close: vi.fn('close'),
   };
 
   beforeEach(() => {

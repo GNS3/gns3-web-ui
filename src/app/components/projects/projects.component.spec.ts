@@ -103,7 +103,7 @@ xdescribe('ProjectsComponent', () => {
   });
 
   it('should call list on refresh', () => {
-    mockedProjectService.list = jasmine.createSpy().and.returnValue(of([]));
+    mockedProjectService.list = vi.fn().and.returnValue(of([]));
 
     component.refresh();
 

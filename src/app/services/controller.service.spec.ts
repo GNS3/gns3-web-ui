@@ -1,7 +1,10 @@
+import { Subject, of } from 'rxjs';
 import { Controller } from '@models/controller';
 
 export class MockedControllerService {
   public controllers: Controller[] = [];
+  public isServiceInitialized = true;
+  public serviceInitialized = of(true);
 
   public create(controller: Controller) {
     return new Promise((resolve, reject) => {

@@ -33,9 +33,9 @@ describe('AddImageDialogComponent', () => {
   let mockedToasterService = new MockedToasterService();
   let mockedImageUploadSessionService = {
     cancelRequests$: new Subject(),
-    emit: jasmine.createSpy('emit'),
-    registerCancelHandler: jasmine.createSpy('registerCancelHandler'),
-    unregisterCancelHandler: jasmine.createSpy('unregisterCancelHandler'),
+    emit: vi.fn('emit'),
+    registerCancelHandler: vi.fn('registerCancelHandler'),
+    unregisterCancelHandler: vi.fn('unregisterCancelHandler'),
   };
 
   beforeEach(() => {

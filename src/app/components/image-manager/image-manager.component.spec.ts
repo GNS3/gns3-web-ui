@@ -95,8 +95,7 @@ describe('ImageManagerComponent', () => {
   });
 
   it('should delete image', () => {
-    const mockDialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
-    mockDialogRef.afterClosed.and.returnValue(of(true));
+    const mockDialogRef = { afterClosed: vi.fn().mockReturnValue(of(true)) };
     spyOn(component['dialog'], 'open').and.returnValue(mockDialogRef);
     spyOn(mockedImageManagerService, 'getImages').and.returnValue(of([] as Image[]));
     spyOn(mockedImageManagerService, 'deleteFile').and.returnValue(of(true));

@@ -10,15 +10,15 @@ import { IGenericApiObject } from '@services/ApiInformation/IGenericApiObject';
 
 describe('ApiInformationService', () => {
   let apiService: ApiInformationService;
-  let httpClientSpy: jasmine.SpyObj<HttpClient>;
+  let httpClientSpy: { get: jest.Mock };
   let controller: Controller;
 
   beforeEach(() => {
-    const spy = jasmine.createSpyObj('HttpClient', ['get']);
+    const spy = { get: vi.fn() };
     TestBed.configureTestingModule({
       providers: [provideZonelessChangeDetection(), ApiInformationService, { provide: HttpClient, useValue: spy }],
     });
-    httpClientSpy = TestBed.inject(HttpClient) as jasmine.SpyObj<HttpClient>;
+    httpClientSpy = TestBed.inject(HttpClient) as { get: jest.Mock };
     httpClientSpy.get.and.returnValue(EMPTY);
     apiService = TestBed.inject(ApiInformationService);
     controller = getTestController();

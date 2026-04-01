@@ -20,10 +20,10 @@ describe('ConfigEditorDialogComponent', () => {
   let controller: Controller;
   let node: Node;
   let toaster = {
-    success: jasmine.createSpy('success'),
+    success: vi.fn('success'),
   };
   let dialogRef = {
-    close: jasmine.createSpy('close'),
+    close: vi.fn('close'),
   };
   let mockedNodeService: MockedNodeService = new MockedNodeService();
 

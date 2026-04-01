@@ -3,7 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { ExternalSoftwareDefinitionService } from './external-software-definition.service';
 import { PlatformService } from './platform.service';
 
-import Spy = jasmine.Spy;
+import Spy = jest.Mock;
 
 class PlatformServiceMock {
   platform: string;

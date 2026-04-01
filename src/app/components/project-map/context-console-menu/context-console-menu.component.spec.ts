@@ -25,7 +25,7 @@ describe('ContextConsoleMenuComponent', () => {
   let toasterService: ToasterService;
   let router = {
     url: '',
-    navigate: jasmine.createSpy('navigate'),
+    navigate: vi.fn('navigate'),
   };
   let node = {
     status: 'started',

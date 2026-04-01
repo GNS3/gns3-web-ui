@@ -13,16 +13,15 @@
       "@utils/*": ["app/utils/*"]
     },
     "types": [
-      "jasmine",
+      "jest",
       "node"
     ]
   },
-  "files": [
-    "test.ts",
-    "polyfills.ts"
-  ],
   "include": [
     "**/*.spec.ts",
     "**/*.d.ts"
+  ],
+  "files": [
+    "polyfills.ts"
   ]
 }

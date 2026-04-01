@@ -31,7 +31,7 @@ describe('StartCaptureDialogComponent', () => {
   let protocolHandlerService: ProtocolHandlerService;
 
   let dialogRef = {
-    close: jasmine.createSpy('close'),
+    close: vi.fn('close'),
   };
 
   beforeEach(() => {

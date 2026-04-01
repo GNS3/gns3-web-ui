@@ -68,7 +68,7 @@ describe('ImportProjectDialogComponent', () => {
   let mockedToasterService = new MockedToasterService();
 
   let dialogRef = {
-    close: jasmine.createSpy('close'),
+    close: vi.fn('close'),
   };
 
   beforeEach(() => {

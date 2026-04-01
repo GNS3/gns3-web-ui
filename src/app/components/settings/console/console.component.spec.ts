@@ -24,7 +24,7 @@ describe('ConsoleComponent', () => {
     };
 
     router = {
-      navigate: jasmine.createSpy('navigate'),
+      navigate: vi.fn('navigate'),
     };
 
     toaster = new MockedToasterService();

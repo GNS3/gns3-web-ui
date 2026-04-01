@@ -20,7 +20,7 @@ describe('PacketFiltersDialogComponent', () => {
 
   let mockedLinkService = new MockedLinkService();
   let dialogRef = {
-    close: jasmine.createSpy('close'),
+    close: vi.fn('close'),
   };
 
   beforeEach(() => {
