@@ -125,22 +125,20 @@ xdescribe('ControllerDiscoveryComponent', () => {
       });
     });
 
-    xit('should get first controller from discovered and with no added before', fakeAsync(() => {
+    xit('should get first controller from discovered and with no added before', () => {
       expect(component.discoveredController()).toBeUndefined();
       component.discoverFirstAvailableController();
-      tick();
       expect(component.discoveredController().host).toEqual('199.111.111.1');
       expect(component.discoveredController().port).toEqual(3333);
-    }));
+    });
 
-    xit('should get first controller from discovered and with already added', fakeAsync(() => {
+    xit('should get first controller from discovered and with already added', () => {
       mockedControllerService.controllers.push(controller);
 
       expect(component.discoveredController()).toBeUndefined();
       component.discoverFirstAvailableController();
-      tick();
       expect(component.discoveredController()).toBeUndefined();
-    }));
+    });
   });
 
   describe('accepting and ignoring found controller', () => {
@@ -152,22 +150,20 @@ xdescribe('ControllerDiscoveryComponent', () => {
     });
 
     describe('accept', () => {
-      xit('should add new controller', fakeAsync(() => {
+      xit('should add new controller', () => {
         component.accept(controller);
-        tick();
         expect(component.discoveredController()).toBeNull();
         expect(mockedControllerService.controllers[0].host).toEqual('199.111.111.1');
         expect(mockedControllerService.controllers[0].name).toEqual('199.111.111.1');
         expect(mockedControllerService.controllers[0].location).toEqual('remote');
-      }));
+      });
     });
 
     describe('ignore', () => {
-      xit('should reject controller', fakeAsync(() => {
+      xit('should reject controller', () => {
         component.ignore(controller);
-        tick();
         expect(component.discoveredController()).toBeNull();
-      }));
+      });
     });
   });
 });

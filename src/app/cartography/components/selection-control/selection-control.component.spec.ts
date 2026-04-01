@@ -1,5 +1,5 @@
 import { provideZonelessChangeDetection } from '@angular/core';
-import { fakeAsync, tick, TestBed } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { instance, mock, when } from 'ts-mockito';
 import { SelectionEventSource } from '../../events/selection-event-source';
 import { InRectangleHelper } from '../../helpers/in-rectangle-helper';

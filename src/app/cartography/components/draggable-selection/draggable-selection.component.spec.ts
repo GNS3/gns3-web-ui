@@ -1,5 +1,5 @@
 import { EventEmitter, provideZonelessChangeDetection } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { select } from 'd3-selection';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { DraggableDrag, DraggableEnd, DraggableStart } from '../../events/draggable';

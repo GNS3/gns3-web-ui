@@ -25,7 +25,7 @@ describe('ApiInformationService', () => {
   });
 
   describe('ApiInformationService.getPath() tests', () => {
-    xit('Should return array of 2', fakeAsync(() => {
+    xit('Should return array of 2', () => {
       let res: IPathDict[];
       const mockData: ReplaySubject<IPathDict[]> = new ReplaySubject<IPathDict[]>(1);
       const mockGetPath: IPathDict[] = [
@@ -47,13 +47,13 @@ describe('ApiInformationService', () => {
       apiService.getPath('/projects/{project_id}').subscribe((data) => {
         res = data;
       });
-      tick();
+      
       expect(res.length).toBe(2);
       expect(res).toContain(mockGetPath[0]);
       expect(res).toContain(mockGetPath[1]);
     }));
 
-    xit('Should return empty array if ApiInformationService.data does not have info about nodes', fakeAsync(() => {
+    xit('Should return empty array if ApiInformationService.data does not have info about nodes', () => {
       let res: IPathDict[];
       const mockIPathDict: IPathDict[] = [
         {
@@ -76,11 +76,11 @@ describe('ApiInformationService', () => {
       apiService.getPath('/nodes').subscribe((data) => {
         res = data;
       });
-      tick();
+      
       expect(res.length).toBe(0);
     }));
 
-    xit('Should return array of 1 ', fakeAsync(() => {
+    xit('Should return array of 1 ', () => {
       let res: IPathDict[];
       const mockData: ReplaySubject<IPathDict[]> = new ReplaySubject<IPathDict[]>(1);
       const mockGetPath: IPathDict[] = [
@@ -108,14 +108,14 @@ describe('ApiInformationService', () => {
       apiService.getPath('/projects/tralala/nodes/bidule').subscribe((data) => {
         res = data;
       });
-      tick();
+      
       expect(res.length).toBe(1);
       expect(res).toContain(mockGetPath[2]);
     }));
   });
 
   describe('ApiInformationService.getPathNextElement tests ', () => {
-    xit('Should return next path elements possible', fakeAsync(() => {
+    xit('Should return next path elements possible', () => {
       let res: string[];
       const mockGetPath: IPathDict[] = [
         {
@@ -135,12 +135,12 @@ describe('ApiInformationService', () => {
       apiService.getPathNextElement(['projects', '{project_id}']).subscribe((data) => {
         res = data;
       });
-      tick();
+      
       expect(res.length).toBe(1);
       expect(res).toContain('nodes');
     }));
 
-    xit('Should return no next path elements for /projects/{project_id}/nodes', fakeAsync(() => {
+    xit('Should return no next path elements for /projects/{project_id}/nodes', () => {
       let res: string[];
       const mockGetPath: IPathDict[] = [
         {
@@ -160,24 +160,24 @@ describe('ApiInformationService', () => {
       apiService.getPathNextElement(['projects', '{project_id}', 'nodes']).subscribe((data) => {
         res = data;
       });
-      tick();
+      
       expect(res.length).toBe(0);
     }));
 
-    xit('Should return no next path elements for /templates', fakeAsync(() => {
+    xit('Should return no next path elements for /templates', () => {
       let res: string[];
       const mockGetPath: IPathDict[] = [];
       spyOn(apiService, 'getPath').and.returnValue(of(mockGetPath));
       apiService.getPathNextElement(['templates']).subscribe((data) => {
         res = data;
       });
-      tick();
+      
       expect(res.length).toBe(0);
     }));
   });
 
   describe('ApiInformationService.getKeysForPath tests ', () => {
-    xit('Should return key/value pairs for path /projects/tralala/nodes/bidule', fakeAsync(() => {
+    xit('Should return key/value pairs for path /projects/tralala/nodes/bidule', () => {
       let res: { key: string; value: string }[];
       const mockGetPath: IPathDict[] = [
         {
@@ -197,13 +197,13 @@ describe('ApiInformationService', () => {
       apiService.getKeysForPath('/projects/tralala/nodes/bidule').subscribe((data) => {
         res = data;
       });
-      tick();
+      
       expect(res.length).toBe(2);
       expect(res).toContain({ key: '{project_id}', value: 'tralala' });
       expect(res).toContain({ key: '{node_id}', value: 'bidule' });
     }));
 
-    xit('Should return no key/value pairs for path /projects', fakeAsync(() => {
+    xit('Should return no key/value pairs for path /projects', () => {
       let res: { key: string; value: string }[];
       const mockGetPath: IPathDict[] = [
         {
@@ -223,31 +223,31 @@ describe('ApiInformationService', () => {
       apiService.getKeysForPath('/projects').subscribe((data) => {
         res = data;
       });
-      tick();
+      
       expect(res.length).toBe(0);
     }));
 
-    xit('Should return no key/value pairs for path /projects/tralala if no data available', fakeAsync(() => {
+    xit('Should return no key/value pairs for path /projects/tralala if no data available', () => {
       let res: { key: string; value: string }[];
       const mockGetPath: IPathDict[] = [];
       spyOn(apiService, 'getPath').and.returnValue(of(mockGetPath));
       apiService.getKeysForPath('/projects').subscribe((data) => {
         res = data;
       });
-      tick();
+      
       expect(res.length).toBe(0);
     }));
   });
 
   describe('ApiInformationService.getListByObjectId tests', () => {
-    xit('Should', fakeAsync(() => {
+    xit('Should', () => {
       let res: IGenericApiObject[];
       const mockGetCache: IGenericApiObject[] = [{ id: 'id-tralala', name: 'tralala-project' }];
       spyOn(apiService['cache'], 'get').and.returnValue(mockGetCache);
       apiService.getListByObjectId(controller, '{project_id}', 'id-tralala').subscribe((data) => {
         res = data;
       });
-      tick();
+      
       expect(res.length).toBe(1);
       expect(res).toContain(mockGetCache[0]);
     }));
