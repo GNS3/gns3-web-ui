@@ -9,7 +9,7 @@
             "projectType": "application",
             "architect": {
                 "build": {
-                    "builder": "@angular-devkit/build-angular:browser",
+                    "builder": "@angular/build:application",
                     "options": {
                         "allowedCommonJsDependencies": [
                             "rxjs",
@@ -38,7 +38,7 @@
                         ],
                         "outputPath": "dist",
                         "index": "src/index.html",
-                        "main": "src/main.ts",
+                        "browser": "src/main.ts",
                         "tsConfig": "src/tsconfig.app.json",
                         "assets": [
                             "src/assets",
@@ -64,15 +64,18 @@
                             ]
                         },
                         "scripts": [],
-                        "vendorChunk": true,
                         "extractLicenses": false,
-                        "buildOptimizer": true,
                         "sourceMap": true,
                         "optimization": false,
-                        "namedChunks": true,
-                        "aot": true
+                        "namedChunks": true
                     },
                     "configurations": {
+                        "development": {
+                            "optimization": false,
+                            "sourceMap": true,
+                            "extractLicenses": false,
+                            "namedChunks": true
+                        },
                         "production": {
                             "budgets": [{
                                 "type": "anyComponentStyle",
@@ -87,8 +90,6 @@
                             },
                             "namedChunks": false,
                             "extractLicenses": true,
-                            "vendorChunk": false,
-                            "buildOptimizer": true,
                             "fileReplacements": [{
                                 "replace": "src/environments/environment.ts",
                                 "with": "src/environments/environment.prod.ts"
@@ -104,8 +105,6 @@
                             "sourceMap": false,
                             "namedChunks": false,
                             "extractLicenses": true,
-                            "vendorChunk": false,
-                            "buildOptimizer": true,
                             "fileReplacements": [{
                                 "replace": "src/environments/environment.ts",
                                 "with": "src/environments/environment.github.prod.ts"
@@ -114,7 +113,7 @@
                     }
                 },
                 "serve": {
-                    "builder": "@angular-devkit/build-angular:dev-server",
+                    "builder": "@angular/build:dev-server",
                     "options": {
                         "buildTarget": "gns3-web-ui:build"
                     },

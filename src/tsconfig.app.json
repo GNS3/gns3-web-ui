@@ -18,5 +18,11 @@
   ],
   "include": [
     "../src/**/*"
+  ],
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.backup.ts",
+    "**/*.bak"
   ]
 }

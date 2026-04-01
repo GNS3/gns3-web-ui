@@ -13,15 +13,11 @@
       "@utils/*": ["app/utils/*"]
     },
     "types": [
-      "vitest/globals",
       "node"
     ]
   },
   "include": [
     "**/*.spec.ts",
     "**/*.d.ts"
-  ],
-  "files": [
-    "polyfills.ts"
   ]
 }
