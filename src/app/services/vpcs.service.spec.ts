@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { VpcsService } from './vpcs.service';
 import { HttpController } from './http-controller.service';
-import { Observable, of } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { Controller } from '@models/controller';
 import { VpcsTemplate } from '@models/templates/vpcs-template';
 
@@ -51,12 +51,37 @@ describe('VpcsService', () => {
       expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/templates');
     });
 
-    it('should return Observable of VpcsTemplate array', () => {
+    it('should return Observable that emits VpcsTemplate array', async () => {
+      const mockTemplates: VpcsTemplate[] = [
+        { template_id: 'vpcs-1', name: 'VPCS 1' } as VpcsTemplate,
+        { template_id: 'vpcs-2', name: 'VPCS 2' } as VpcsTemplate,
+      ];
+      mockHttpController.get.mockReturnValue(of(mockTemplates));
+
+      const templates = await new Promise<VpcsTemplate[]>((resolve) => {
+        service.getTemplates(mockController).subscribe((t) => resolve(t));
+      });
+      expect(templates).toEqual(mockTemplates);
+    });
+
+    it('should return Observable that emits empty array when no templates', async () => {
       mockHttpController.get.mockReturnValue(of([]));
 
-      const result = service.getTemplates(mockController);
+      const templates = await new Promise<VpcsTemplate[]>((resolve) => {
+        service.getTemplates(mockController).subscribe((t) => resolve(t));
+      });
+      expect(templates).toEqual([]);
+    });
 
-      expect(result).toBeInstanceOf(Observable);
+    it('should return Observable that emits error when httpController.get fails', () => {
+      const error = new Error('Network error');
+      mockHttpController.get.mockReturnValue(throwError(() => error));
+
+      service.getTemplates(mockController).subscribe({
+        error: (err) => {
+          expect(err).toBe(error);
+        },
+      });
     });
   });
 
@@ -70,13 +95,25 @@ describe('VpcsService', () => {
       expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/templates/vpcs-1');
     });
 
-    it('should return Observable of VpcsTemplate', () => {
-      const mockTemplate: VpcsTemplate = { template_id: 'vpcs-1' } as VpcsTemplate;
+    it('should return Observable that emits the template', async () => {
+      const mockTemplate: VpcsTemplate = { template_id: 'vpcs-1', name: 'VPCS 1' } as VpcsTemplate;
       mockHttpController.get.mockReturnValue(of(mockTemplate));
 
-      const result = service.getTemplate(mockController, 'vpcs-1');
+      const template = await new Promise<VpcsTemplate>((resolve) => {
+        service.getTemplate(mockController, 'vpcs-1').subscribe((t) => resolve(t));
+      });
+      expect(template).toEqual(mockTemplate);
+    });
 
-      expect(result).toBeInstanceOf(Observable);
+    it('should return Observable that emits error when httpController.get fails', () => {
+      const error = new Error('Not found');
+      mockHttpController.get.mockReturnValue(throwError(() => error));
+
+      service.getTemplate(mockController, 'vpcs-1').subscribe({
+        error: (err) => {
+          expect(err).toBe(error);
+        },
+      });
     });
   });
 
@@ -90,13 +127,25 @@ describe('VpcsService', () => {
       expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/templates', mockTemplate);
     });
 
-    it('should return Observable of VpcsTemplate', () => {
-      const mockTemplate: VpcsTemplate = { name: 'New VPCS' } as VpcsTemplate;
+    it('should return Observable that emits the created template', async () => {
+      const mockTemplate: VpcsTemplate = { template_id: 'vpcs-new', name: 'New VPCS' } as VpcsTemplate;
       mockHttpController.post.mockReturnValue(of(mockTemplate));
 
-      const result = service.addTemplate(mockController, mockTemplate);
+      const template = await new Promise<VpcsTemplate>((resolve) => {
+        service.addTemplate(mockController, mockTemplate).subscribe((t) => resolve(t));
+      });
+      expect(template).toEqual(mockTemplate);
+    });
 
-      expect(result).toBeInstanceOf(Observable);
+    it('should return Observable that emits error when httpController.post fails', () => {
+      const error = new Error('Creation failed');
+      mockHttpController.post.mockReturnValue(throwError(() => error));
+
+      service.addTemplate(mockController, { name: 'New VPCS' } as VpcsTemplate).subscribe({
+        error: (err) => {
+          expect(err).toBe(error);
+        },
+      });
     });
   });
 
@@ -114,13 +163,25 @@ describe('VpcsService', () => {
       );
     });
 
-    it('should return Observable of VpcsTemplate', () => {
+    it('should return Observable that emits the updated template', async () => {
       const mockTemplate: VpcsTemplate = { template_id: 'vpcs-1', name: 'Updated VPCS' } as VpcsTemplate;
       mockHttpController.put.mockReturnValue(of(mockTemplate));
 
-      const result = service.saveTemplate(mockController, mockTemplate);
+      const template = await new Promise<VpcsTemplate>((resolve) => {
+        service.saveTemplate(mockController, mockTemplate).subscribe((t) => resolve(t));
+      });
+      expect(template).toEqual(mockTemplate);
+    });
 
-      expect(result).toBeInstanceOf(Observable);
+    it('should return Observable that emits error when httpController.put fails', () => {
+      const error = new Error('Update failed');
+      mockHttpController.put.mockReturnValue(throwError(() => error));
+
+      service.saveTemplate(mockController, { template_id: 'vpcs-1', name: 'Updated' } as VpcsTemplate).subscribe({
+        error: (err) => {
+          expect(err).toBe(error);
+        },
+      });
     });
   });
 });
