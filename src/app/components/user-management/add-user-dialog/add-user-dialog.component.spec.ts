@@ -209,6 +209,10 @@ describe('AddUserDialogComponent', () => {
   describe('onAddClick', () => {
     beforeEach(() => {
       component.ngOnInit();
+      // Clear async validators to avoid timing issues in tests
+      component.addUserForm.get('username')?.clearAsyncValidators();
+      component.addUserForm.get('email')?.clearAsyncValidators();
+      component.addUserForm.updateValueAndValidity();
     });
 
     it('should not call userService.add when form is invalid', () => {
