@@ -11,7 +11,7 @@
 ## 📊 总体进度
 
 ```
-进度: 17/71 (24%)
+进度: 33/71 (46%)
 █████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 ```
 
@@ -64,7 +64,23 @@
 | 14 | template.service.ts | 21 行 | 16 | ✅ 完成 | 588cad51 |
 | 15 | compute.service.ts | 27 行 | 27 | ✅ 完成 | 01fb3cea |
 | 16 | role.service.ts | 57 行 | 26 | ✅ 完成 | 待提交 |
-| 17 | node.service.ts | 156 行 | 42 | ✅ 完成 | 待提交 |
+| 17 | node.service.ts | 156 行 | 42 | ✅ 完成 | 326621dd |
+| 18 | updates.service.ts | 11 行 | 6 | ✅ 完成 | 待提交 |
+| 19 | version.service.ts | 13 行 | 6 | ✅ 完成 | 待提交 |
+| 20 | privilege.service.ts | 15 行 | 6 | ✅ 完成 | 待提交 |
+| 21 | installed-software.service.ts | 17 行 | 8 | ✅ 完成 | 待提交 |
+| 22 | packet-capture.service.ts | 18 行 | 12 | ✅ 完成 | 待提交 |
+| 23 | iou-configuration.service.ts | 20 行 | 12 | ✅ 完成 | 待提交 |
+| 24 | vpcs-configuration.service.ts | 20 行 | 12 | ✅ 完成 | 待提交 |
+| 25 | platform.service.ts | 18 行 | 8 | ✅ 完成 | 待提交 |
+| 26 | docker-configuration.service.ts | 45 行 | 17 | ✅ 完成 | 待提交 |
+| 27 | vpcs.service.ts | 30 行 | 10 | ✅ 完成 | 待提交 |
+| 28 | ios-configuration.service.ts | 187 行 | 34 | ✅ 完成 | 待提交 |
+| 29 | ios.service.ts | 44 行 | 16 | ✅ 完成 | 待提交 |
+| 30 | iou.service.ts | 40 行 | 14 | ✅ 完成 | 待提交 |
+| 31 | docker.service.ts | 46 行 | 12 | ✅ 完成 | 待提交 |
+| 32 | built-in-templates.service.ts | 29 行 | 10 | ✅ 完成 | 待提交 |
+| 33 | built-in-templates-configuration.service.ts | 36 行 | 17 | ✅ 完成 | 待提交 |
 
 ### 📅 待测试
 
