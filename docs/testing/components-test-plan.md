@@ -2,14 +2,14 @@
 
 > **Last Updated**: 2026-04-02
 > **Total Components**: 231 (`.component.ts` files)
-> **Completed**: 89
-> **Remaining**: 142
+> **Completed**: 99
+> **Remaining**: 132
 
 This document tracks the progress of creating unit test files (`.spec.ts`) for all Angular components in the project.
 
 ## Progress Summary
 
-- [ ] 89 / 231 components completed (38.5%)
+- [ ] 99 / 231 components completed (42.9%)
 
 ---
 
@@ -303,17 +303,17 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 - [ ] web-console/web-console.component.ts
 
 ### projects (10 components)
-- [ ] add-blank-project-dialog/add-blank-project-dialog.component.ts
-- [ ] choose-name-dialog/choose-name-dialog.component.ts
-- [ ] confirmation-bottomsheet/confirmation-bottomsheet.component.ts
-- [ ] confirmation-delete-all-projects/confirmation-delete-all-projects.component.ts
-- [ ] confirmation-dialog/confirmation-dialog.component.ts
-- [ ] edit-project-dialog/edit-project-dialog.component.ts
-- [ ] edit-project-dialog/readme-editor/readme-editor.component.ts
-- [ ] import-project-dialog/import-project-dialog.component.ts
-- [ ] navigation-dialog/navigation-dialog.component.ts
+- [x] add-blank-project-dialog/add-blank-project-dialog.component.ts
+- [x] choose-name-dialog/choose-name-dialog.component.ts
+- [x] confirmation-bottomsheet/confirmation-bottomsheet.component.ts
+- [x] confirmation-delete-all-projects/confirmation-delete-all-projects.component.ts
+- [x] confirmation-dialog/confirmation-dialog.component.ts
+- [x] edit-project-dialog/edit-project-dialog.component.ts
+- [x] edit-project-dialog/readme-editor/readme-editor.component.ts
+- [x] import-project-dialog/import-project-dialog.component.ts
+- [x] navigation-dialog/navigation-dialog.component.ts
 - [x] projects.component.ts
-- [ ] save-project-dialog/save-project-dialog.component.ts
+- [x] save-project-dialog/save-project-dialog.component.ts
 
 ### resource-pool-details (2 components)
 - [x] delete-resource-confirmation-dialog/delete-resource-confirmation-dialog.component.ts
@@ -376,6 +376,7 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 
 | Date | Commit | Components | Tests |
 |------|--------|------------|-------|
+| 2026-04-02 | 6311afda | Projects (10 components) | 45 |
 | 2026-04-02 | d8f708b5 | Controllers (3 components) | 21 |
 | 2026-04-02 | 1260f9b6 | Drawings-listeners (9 components) | 27 |
 | 2026-04-02 | 37953117 | WebConsoleFullWindowComponent | 4 |
@@ -421,5 +422,5 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 | 2026-04-02 | e2578113 | ControllerManagementService | 28 |
 
 **Service tests completed**: 12 services, 527 tests
-**Component tests completed**: 45 components, 324 tests
-**Total**: 2319 tests passing
+**Component tests completed**: 55 components, 369 tests
+**Total**: 2364 tests passing
