@@ -19,14 +19,16 @@ describe('VirtualBoxConfigurationService', () => {
   });
 
   describe('getConsoleTypes', () => {
-    it('should return telnet and none', () => {
+    it('should return telnet and none with correct length', () => {
       const result = service.getConsoleTypes();
-      expect(result).toContain('telnet');
-      expect(result).toContain('none');
+      expect(result).toEqual(['telnet', 'none']);
+      expect(result).toHaveLength(2);
     });
 
-    it('should return 2 console types', () => {
-      expect(service.getConsoleTypes()).toHaveLength(2);
+    it('should not return null or undefined', () => {
+      const result = service.getConsoleTypes();
+      expect(result).not.toBeNull();
+      expect(result).toBeInstanceOf(Array);
     });
   });
 
@@ -37,15 +39,25 @@ describe('VirtualBoxConfigurationService', () => {
     });
 
     it('should include power_off option', () => {
-      expect(service.getOnCloseoptions()).toContainEqual(['Power off the VM', 'power_off']);
+      const result = service.getOnCloseoptions();
+      expect(result).toContainEqual(['Power off the VM', 'power_off']);
     });
 
     it('should include shutdown_signal option', () => {
-      expect(service.getOnCloseoptions()).toContainEqual(['Send the shutdown signal (ACPI)', 'shutdown_signal']);
+      const result = service.getOnCloseoptions();
+      expect(result).toContainEqual(['Send the shutdown signal (ACPI)', 'shutdown_signal']);
     });
 
     it('should include save_vm_state option', () => {
-      expect(service.getOnCloseoptions()).toContainEqual(['Save the VM state', 'save_vm_state']);
+      const result = service.getOnCloseoptions();
+      expect(result).toContainEqual(['Save the VM state', 'save_vm_state']);
+    });
+
+    it('should not be affected by mutation', () => {
+      const result = service.getOnCloseoptions();
+      result.pop();
+      const secondCall = service.getOnCloseoptions();
+      expect(secondCall).toHaveLength(3);
     });
   });
 
@@ -56,11 +68,34 @@ describe('VirtualBoxConfigurationService', () => {
     });
 
     it('should include Default category', () => {
-      expect(service.getCategories()).toContainEqual(['Default', 'guest']);
+      const result = service.getCategories();
+      expect(result).toContainEqual(['Default', 'guest']);
     });
 
     it('should include Routers category', () => {
-      expect(service.getCategories()).toContainEqual(['Routers', 'router']);
+      const result = service.getCategories();
+      expect(result).toContainEqual(['Routers', 'router']);
+    });
+
+    it('should include Switches category', () => {
+      const result = service.getCategories();
+      expect(result).toContainEqual(['Switches', 'switch']);
+    });
+
+    it('should include End devices category', () => {
+      const result = service.getCategories();
+      expect(result).toContainEqual(['End devices', 'guest']);
+    });
+
+    it('should include Security devices category', () => {
+      const result = service.getCategories();
+      expect(result).toContainEqual(['Security devices', 'firewall']);
+    });
+
+    it('should not return null or undefined', () => {
+      const result = service.getCategories();
+      expect(result).not.toBeNull();
+      expect(result).toBeInstanceOf(Array);
     });
   });
 
@@ -70,19 +105,35 @@ describe('VirtualBoxConfigurationService', () => {
       expect(result).toHaveLength(6);
     });
 
-    it('should include PCnet network types', () => {
+    it('should include PCnet-PCI II network type', () => {
       const result = service.getNetworkTypes();
-      expect(result.some((n) => n.includes('PCnet'))).toBe(true);
+      expect(result).toContain('PCnet-PCI II (Am79C970A)');
+    });
+
+    it('should include PCNet-FAST III network type', () => {
+      const result = service.getNetworkTypes();
+      expect(result).toContain('PCNet-FAST III (Am79C973)');
     });
 
     it('should include Intel PRO/1000 network types', () => {
       const result = service.getNetworkTypes();
-      expect(result.some((n) => n.includes('Intel PRO/1000'))).toBe(true);
+      expect(result.filter((n) => n.includes('Intel PRO/1000'))).toHaveLength(3);
     });
 
     it('should include virtio network type', () => {
       const result = service.getNetworkTypes();
       expect(result.some((n) => n.includes('virtio'))).toBe(true);
+    });
+
+    it('should include paravirtualized network type description', () => {
+      const result = service.getNetworkTypes();
+      expect(result).toContain('Paravirtualized Network (virtio-net)');
+    });
+
+    it('should not return null or undefined', () => {
+      const result = service.getNetworkTypes();
+      expect(result).not.toBeNull();
+      expect(result).toBeInstanceOf(Array);
     });
   });
 });
