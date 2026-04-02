@@ -11,12 +11,10 @@ describe('ProtocolHandlerService', () => {
   let mockLoginService: any;
 
   beforeEach(() => {
-    // Mock ToasterService
     mockToasterService = {
       error: vi.fn(),
     };
 
-    // Mock DeviceDetectorService
     mockDeviceService = {
       getDeviceInfo: vi.fn(() => ({
         browser: 'Chrome',
@@ -25,17 +23,46 @@ describe('ProtocolHandlerService', () => {
       })),
     };
 
-    // Mock LoginService
-    mockLoginService = {
-      // Add necessary methods
-    };
+    mockLoginService = {};
 
-    // Mock console.log
     console.log = vi.fn();
 
-    // Mock location.assign
     vi.stubGlobal('location', {
       assign: vi.fn(),
+    });
+
+    vi.stubGlobal('document', {
+      createElement: vi.fn((tagName: string) => {
+        const element = {
+          tagName: tagName.toUpperCase(),
+          id: '',
+          src: '',
+          style: { display: '' },
+          appendChild: vi.fn(),
+          querySelector: vi.fn(),
+          parentNode: null,
+          removeChild: vi.fn(),
+        } as unknown as Element;
+
+        if (tagName.toLowerCase() === 'iframe') {
+          Object.defineProperty(element, 'contentWindow', {
+            value: {
+              location: {
+                href: '',
+                set href(val: string) { (element as HTMLIFrameElement & { _href: string })._href = val; },
+                get href() { return (element as HTMLIFrameElement & { _href: string })._href; },
+              },
+            },
+            configurable: true,
+          });
+        }
+        return element as Element;
+      }),
+      querySelector: vi.fn(),
+      body: {
+        appendChild: vi.fn(),
+        querySelector: vi.fn(),
+      },
     });
 
     service = new ProtocolHandlerService(
@@ -46,101 +73,114 @@ describe('ProtocolHandlerService', () => {
   });
 
   describe('Service Creation', () => {
-    it('should create the service', () => {
+    it('should be instantiable with dependencies', () => {
       expect(service).toBeTruthy();
-    });
-
-    it('should be instance of ProtocolHandlerService', () => {
       expect(service).toBeInstanceOf(ProtocolHandlerService);
-    });
-
-    it('should have required dependencies', () => {
-      expect(service).toBeTruthy();
     });
   });
 
   describe('createHiddenIframe', () => {
     let mockTarget: Element;
+    let createElementSpy: ReturnType<typeof vi.fn>;
 
     beforeEach(() => {
-      // Create a mock target element
-      mockTarget = document.createElement('div');
-      document.body.appendChild(mockTarget);
-    });
+      createElementSpy = vi.fn((tagName: string) => {
+        const element = {
+          tagName: tagName.toUpperCase(),
+          id: '',
+          src: '',
+          style: { display: '' },
+          appendChild: vi.fn(),
+          parentNode: null,
+          removeChild: vi.fn(),
+          querySelector: vi.fn(),
+        };
+        if (tagName.toLowerCase() === 'iframe') {
+          Object.defineProperty(element, 'contentWindow', {
+            value: { location: { href: '', set href(val: string) {} } },
+            configurable: true,
+          });
+        }
+        return element;
+      });
 
-    afterEach(() => {
-      // Clean up
-      if (mockTarget && mockTarget.parentNode) {
-        mockTarget.parentNode.removeChild(mockTarget);
-      }
+      mockTarget = {
+        appendChild: vi.fn(),
+        querySelector: vi.fn(),
+        tagName: 'DIV',
+      } as unknown as Element;
+
+      vi.stubGlobal('document', {
+        createElement: createElementSpy,
+        querySelector: vi.fn(),
+        body: { appendChild: vi.fn() },
+      });
     });
 
     it('should create an iframe element', () => {
       const iframe = service.createHiddenIframe(mockTarget, 'about:blank');
 
+      expect(createElementSpy).toHaveBeenCalledWith('iframe');
       expect(iframe).toBeTruthy();
-      expect(iframe.tagName).toBe('IFRAME');
     });
 
     it('should set iframe src correctly', () => {
       const testUri = 'gns3://test';
       const iframe = service.createHiddenIframe(mockTarget, testUri);
 
-      expect(iframe.src).toBe(testUri);
+      expect((iframe as HTMLIFrameElement).src).toBe(testUri);
     });
 
     it('should set iframe id to hiddenIframe', () => {
       const iframe = service.createHiddenIframe(mockTarget, 'about:blank');
 
-      expect(iframe.id).toBe('hiddenIframe');
+      expect((iframe as HTMLIFrameElement).id).toBe('hiddenIframe');
     });
 
     it('should set iframe display to none', () => {
       const iframe = service.createHiddenIframe(mockTarget, 'about:blank');
 
-      expect(iframe.style.display).toBe('none');
+      expect((iframe as HTMLIFrameElement).style.display).toBe('none');
     });
 
     it('should append iframe to target element', () => {
       service.createHiddenIframe(mockTarget, 'about:blank');
 
-      expect(mockTarget.querySelector('#hiddenIframe')).toBeTruthy();
+      expect(mockTarget.appendChild).toHaveBeenCalled();
     });
 
     it('should return the created iframe', () => {
       const iframe = service.createHiddenIframe(mockTarget, 'about:blank');
 
-      expect(iframe).toBeInstanceOf(HTMLIFrameElement);
+      expect(iframe.tagName).toBe('IFRAME');
     });
   });
 
   describe('openUriUsingFirefox', () => {
-    let mockIframe: HTMLIFrameElement;
+    let mockIframe: any;
+    let createElementSpy: ReturnType<typeof vi.fn>;
 
     beforeEach(() => {
-      // Create a mock iframe
-      mockIframe = document.createElement('iframe');
-      mockIframe.id = 'hiddenIframe';
-      mockIframe.style.display = 'none';
-      document.body.appendChild(mockIframe);
-
-      // Mock contentWindow
-      Object.defineProperty(mockIframe, 'contentWindow', {
-        value: {
+      mockIframe = {
+        id: 'hiddenIframe',
+        style: { display: 'none' },
+        contentWindow: {
           location: {
             href: '',
+            set href(val: string) { mockIframe.contentWindow.location._href = val; },
+            get href() { return mockIframe.contentWindow.location._href; },
+            _href: '',
           },
         },
-        writable: true,
-      });
-    });
+      };
 
-    afterEach(() => {
-      // Clean up
-      const existingIframe = document.querySelector('#hiddenIframe');
-      if (existingIframe && existingIframe.parentNode) {
-        existingIframe.parentNode.removeChild(existingIframe);
-      }
+      createElementSpy = vi.fn(() => mockIframe);
+
+      vi.stubGlobal('document', {
+        createElement: createElementSpy,
+        querySelector: vi.fn(() => mockIframe),
+        body: { appendChild: vi.fn() },
+      });
     });
 
     it('should find existing iframe', () => {
@@ -152,17 +192,11 @@ describe('ProtocolHandlerService', () => {
     });
 
     it('should create new iframe if none exists', () => {
-      // Remove existing iframe
-      const existingIframe = document.querySelector('#hiddenIframe');
-      if (existingIframe && existingIframe.parentNode) {
-        existingIframe.parentNode.removeChild(existingIframe);
-      }
-
-      const appendChildSpy = vi.spyOn(document.body, 'appendChild');
+      vi.spyOn(document, 'querySelector').mockReturnValueOnce(null);
 
       service.openUriUsingFirefox('gns3://test');
 
-      expect(appendChildSpy).toHaveBeenCalled();
+      expect(createElementSpy).toHaveBeenCalledWith('iframe');
     });
 
     it('should set iframe location href', () => {
@@ -170,14 +204,11 @@ describe('ProtocolHandlerService', () => {
 
       service.openUriUsingFirefox(testUri);
 
-      const iframe = document.querySelector('#hiddenIframe') as HTMLIFrameElement;
-      expect(iframe?.contentWindow?.location?.href).toBe(testUri);
+      expect(mockIframe.contentWindow.location.href).toBe(testUri);
     });
 
     it('should show error toast for unknown protocol error', () => {
-      // Mock iframe to throw error
-      const iframe = document.querySelector('#hiddenIframe') as HTMLIFrameElement;
-      Object.defineProperty(iframe.contentWindow.location, 'href', {
+      Object.defineProperty(mockIframe.contentWindow.location, 'href', {
         set: () => {
           throw { name: 'NS_ERROR_UNKNOWN_PROTOCOL' };
         },
@@ -189,9 +220,7 @@ describe('ProtocolHandlerService', () => {
     });
 
     it('should not show error for other exceptions', () => {
-      // Mock iframe to throw different error
-      const iframe = document.querySelector('#hiddenIframe') as HTMLIFrameElement;
-      Object.defineProperty(iframe.contentWindow.location, 'href', {
+      Object.defineProperty(mockIframe.contentWindow.location, 'href', {
         set: () => {
           throw { name: 'OTHER_ERROR' };
         },
@@ -204,7 +233,7 @@ describe('ProtocolHandlerService', () => {
   });
 
   describe('open', () => {
-    it('should log the launch message', async () => {
+    it('should log the launch message with browser and URI', async () => {
       await service.open('gns3://test');
 
       expect(console.log).toHaveBeenCalledWith(
@@ -218,18 +247,7 @@ describe('ProtocolHandlerService', () => {
       expect(mockDeviceService.getDeviceInfo).toHaveBeenCalled();
     });
 
-    it('should use location.assign for non-Firefox browsers', async () => {
-      mockDeviceService.getDeviceInfo = vi.fn(() => ({
-        browser: 'Chrome',
-        os: 'Windows',
-      }));
-
-      await service.open('gns3://test');
-
-      expect(location.assign).toHaveBeenCalledWith('gns3://test');
-    });
-
-    it('should use openUriUsingFirefox for Firefox', async () => {
+    it('should use openUriUsingFirefox for Firefox browser', async () => {
       mockDeviceService.getDeviceInfo = vi.fn(() => ({
         browser: 'Firefox',
         os: 'Linux',
@@ -242,66 +260,7 @@ describe('ProtocolHandlerService', () => {
       expect(openUriUsingFirefoxSpy).toHaveBeenCalledWith('gns3://test');
     });
 
-    it('should not call location.assign for Firefox', async () => {
-      mockDeviceService.getDeviceInfo = vi.fn(() => ({
-        browser: 'Firefox',
-        os: 'Linux',
-      }));
-
-      const locationAssignSpy = vi.spyOn(location, 'assign');
-
-      await service.open('gns3://test');
-
-      expect(locationAssignSpy).not.toHaveBeenCalled();
-    });
-  });
-
-  describe('Edge Cases', () => {
-    it('should handle empty URI', async () => {
-      await expect(service.open('')).resolves.toBeUndefined();
-    });
-
-    it('should handle URI with special characters', async () => {
-      const specialUri = 'gns3://test?param=value&other=123';
-
-      await expect(service.open(specialUri)).resolves.toBeUndefined();
-    });
-
-    it('should handle very long URIs', async () => {
-      const longUri = 'gns3://test?' + 'param=' + 'x'.repeat(1000);
-
-      await expect(service.open(longUri)).resolves.toBeUndefined();
-    });
-
-    it('should handle different browsers', async () => {
-      const browsers = ['Chrome', 'Safari', 'Edge', 'Opera'];
-
-      for (const browser of browsers) {
-        mockDeviceService.getDeviceInfo = vi.fn(() => ({
-          browser,
-          os: 'Windows',
-        }));
-
-        await expect(service.open('gns3://test')).resolves.toBeUndefined();
-      }
-    });
-  });
-
-  describe('Browser Detection', () => {
-    it('should handle Firefox browser', async () => {
-      mockDeviceService.getDeviceInfo = vi.fn(() => ({
-        browser: 'Firefox',
-        os: 'Linux',
-      }));
-
-      const spy = vi.spyOn(service, 'openUriUsingFirefox');
-
-      await service.open('gns3://test');
-
-      expect(spy).toHaveBeenCalled();
-    });
-
-    it('should handle Chrome browser', async () => {
+    it('should use location.assign for Chrome browser', async () => {
       mockDeviceService.getDeviceInfo = vi.fn(() => ({
         browser: 'Chrome',
         os: 'Windows',
@@ -311,21 +270,52 @@ describe('ProtocolHandlerService', () => {
 
       expect(location.assign).toHaveBeenCalledWith('gns3://test');
     });
+  });
 
-    it('should handle MSIE browser', async () => {
+  describe('Edge Cases', () => {
+    it.each([
+      ['empty string', ''],
+      ['special characters', 'gns3://test?param=value&other=123'],
+      ['very long URI', 'gns3://test?' + 'param=' + 'x'.repeat(1000)],
+    ])('should pass URI with %s to location.assign', async (desc, uri) => {
+      await service.open(uri);
+      expect(location.assign).toHaveBeenCalledWith(uri);
+    });
+
+    it.each(['Chrome', 'Safari', 'Edge', 'Opera'])('should not throw for browser %s', async (browser) => {
+      mockDeviceService.getDeviceInfo = vi.fn(() => ({ browser, os: 'Windows' }));
+      await expect(service.open('gns3://test')).resolves.toBeUndefined();
+    });
+  });
+
+  describe('Browser Detection', () => {
+    it('should use openUriUsingFirefox for Firefox', async () => {
       mockDeviceService.getDeviceInfo = vi.fn(() => ({
-        browser: 'MSIE',
-        os: 'Windows',
+        browser: 'Firefox',
+        os: 'Linux',
+      }));
+
+      const spy = vi.spyOn(service, 'openUriUsingFirefox');
+
+      await service.open('gns3://test');
+
+      expect(spy).toHaveBeenCalledWith('gns3://test');
+    });
+
+    it('should not call location.assign for Firefox', async () => {
+      mockDeviceService.getDeviceInfo = vi.fn(() => ({
+        browser: 'Firefox',
+        os: 'Linux',
       }));
 
       await service.open('gns3://test');
 
-      expect(location.assign).toHaveBeenCalledWith('gns3://test');
+      expect(location.assign).not.toHaveBeenCalled();
     });
 
-    it('should handle Edge browser', async () => {
+    it.each(['Chrome', 'MSIE', 'Edge', 'Opera'])('should use location.assign for %s', async (browser) => {
       mockDeviceService.getDeviceInfo = vi.fn(() => ({
-        browser: 'Edge',
+        browser,
         os: 'Windows',
       }));
 
