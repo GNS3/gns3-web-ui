@@ -1,4 +1,56 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+
+// Mock document globally before Angular modules are loaded
+const mockBody = {
+  appendChild: vi.fn(),
+  removeChild: vi.fn(),
+  querySelector: vi.fn(),
+  querySelectorAll: vi.fn().mockReturnValue([]),
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+  dispatchEvent: vi.fn(),
+};
+
+vi.stubGlobal('document', {
+  execCommand: vi.fn().mockReturnValue(true),
+  createElement: vi.fn().mockImplementation((tagName: string) => {
+    if (tagName === 'style') {
+      return {
+        setAttribute: vi.fn(),
+        remove: vi.fn(),
+        style: {},
+      };
+    }
+    return {
+      style: {},
+      focus: vi.fn(),
+      select: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      setAttribute: vi.fn(),
+    };
+  }),
+  body: mockBody,
+  head: {
+    appendChild: vi.fn(),
+    removeChild: vi.fn(),
+  },
+  querySelector: vi.fn(),
+  querySelectorAll: vi.fn().mockReturnValue([]),
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+});
+
+vi.stubGlobal('window', {
+  matchMedia: vi.fn().mockReturnValue({
+    matches: false,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  }),
+  addEventListener: vi.fn(),
+  removeEventListener: vi.fn(),
+});
+
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LoggedUserComponent } from './logged-user.component';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -75,22 +127,6 @@ describe('LoggedUserComponent', () => {
         },
       },
     } as any as ActivatedRoute;
-
-    // Mock document.execCommand for copyToken
-    vi.stubGlobal('document', {
-      execCommand: vi.fn(),
-      createElement: vi.fn().mockReturnValue({
-        style: {},
-        appendChild: vi.fn(),
-        focus: vi.fn(),
-        select: vi.fn(),
-        remove: vi.fn(),
-      }),
-      body: {
-        appendChild: vi.fn(),
-        removeChild: vi.fn(),
-      },
-    });
 
     await TestBed.configureTestingModule({
       imports: [
