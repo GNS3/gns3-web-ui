@@ -194,8 +194,8 @@ describe('ChangeUserPasswordComponent', () => {
     });
 
     it('should show error toast on update failure', () => {
-      const error = 'Update failed';
-      mockUserService.update.mockReturnValue(throwError(() => new Error(error)));
+      const error = new Error('Update failed');
+      mockUserService.update.mockReturnValue(throwError(() => error));
 
       component.onPasswordSave();
 
@@ -248,7 +248,7 @@ describe('ChangeUserPasswordComponent', () => {
       fixture.detectChanges();
 
       expect(component.editPasswordForm.valid).toBe(false);
-      expect(component.editPasswordForm.errors).toEqual({ confirmPasswordMatch: true });
+      expect(component.editPasswordForm.get('confirmPassword').errors).toEqual({ confirmPasswordMatch: true });
     });
 
     it('should pass validation when passwords match', () => {
