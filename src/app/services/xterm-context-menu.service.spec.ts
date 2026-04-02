@@ -6,19 +6,23 @@ import { Terminal } from '@xterm/xterm';
 
 describe('XtermContextMenuService', () => {
   let service: XtermContextMenuService;
-  let mockToaster: ToasterService;
+  let mockToaster: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn>; warning: ReturnType<typeof vi.fn> };
   let mockTerminal: Terminal;
   let mockTerminalElement: HTMLElement;
+  let mockBody: { appendChild: ReturnType<typeof vi.fn>; removeChild: ReturnType<typeof vi.fn> };
+  let createdElements: any[];
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    createdElements = [];
 
     // Mock ToasterService
     mockToaster = {
       success: vi.fn(),
       error: vi.fn(),
       warning: vi.fn(),
-    } as any as ToasterService;
+    };
 
     // Mock Terminal
     mockTerminal = {
@@ -40,26 +44,49 @@ describe('XtermContextMenuService', () => {
       },
     } as any as HTMLElement;
 
-    // Mock document methods
-    const mockBody = {
-      appendChild: vi.fn(),
+    // Track created elements
+    mockBody = {
+      appendChild: vi.fn((el) => {
+        el.parentNode = mockBody;
+        createdElements.push(el);
+      }),
       removeChild: vi.fn(),
     };
 
+    // Document event listeners storage
+    const documentEventListeners: Record<string, Function[]> = {};
+
+    // Mock document methods
     vi.stubGlobal('document', {
       body: mockBody,
+      addEventListener: vi.fn((event: string, handler: Function) => {
+        if (!documentEventListeners[event]) documentEventListeners[event] = [];
+        documentEventListeners[event].push(handler);
+      }),
+      removeEventListener: vi.fn((event: string, handler: Function) => {
+        if (documentEventListeners[event]) {
+          documentEventListeners[event] = documentEventListeners[event].filter(h => h !== handler);
+        }
+      }),
       createElement: vi.fn((tagName: string) => {
         if (tagName === 'div') {
           const attrs: Record<string, string> = {};
           const eventListeners: Record<string, Function[]> = {};
           const mockElement = {
             className: '',
-            style: {},
+            style: { left: '', top: '' },
             textContent: '',
+            children: [],
+            parentNode: null,
             setAttribute: vi.fn((key: string, value: string) => { attrs[key] = value; }),
             getAttribute: vi.fn((key: string) => attrs[key]),
-            appendChild: vi.fn(),
-            remove: vi.fn(),
+            appendChild: vi.fn((child: any) => {
+              mockElement.children.push(child);
+              child.parentNode = mockElement;
+            }),
+            remove: vi.fn(() => {
+              mockElement.parentNode = null;
+            }),
             contains: vi.fn(() => false),
             addEventListener: vi.fn((event: string, handler: Function) => {
               if (!eventListeners[event]) eventListeners[event] = [];
@@ -73,7 +100,12 @@ describe('XtermContextMenuService', () => {
               }
               return true;
             }),
-            click: vi.fn(),
+            click: vi.fn(() => {
+              const handlers = eventListeners['click'];
+              if (handlers) {
+                handlers.forEach((h: Function) => h(new MouseEvent('click')));
+              }
+            }),
           };
           return mockElement;
         }
@@ -81,18 +113,24 @@ describe('XtermContextMenuService', () => {
       }),
     });
 
-    vi.stubGlobal('MutationObserver', vi.fn().mockImplementation(() => ({
-      observe: vi.fn(),
-      disconnect: vi.fn(),
-    })));
+    vi.stubGlobal('MutationObserver', class {
+      observe = vi.fn();
+      disconnect = vi.fn();
+    });
 
-    vi.stubGlobal('setTimeout', vi.fn((cb: Function) => cb()));
+    vi.stubGlobal('setTimeout', vi.fn((cb: Function) => { cb(); return 0; }));
 
     vi.stubGlobal('navigator', {
       clipboard: {
-        writeText: vi.fn().mockResolvedValue(undefined),
-        readText: vi.fn().mockResolvedValue('test paste text'),
+        writeText: vi.fn((text: string) => Promise.resolve()),
+        readText: vi.fn(() => Promise.resolve('test paste text')),
       },
+    });
+
+    // Mock window dimensions
+    vi.stubGlobal('window', {
+      innerWidth: 1920,
+      innerHeight: 1080,
     });
 
     TestBed.configureTestingModule({
@@ -118,14 +156,15 @@ describe('XtermContextMenuService', () => {
       expect(service).toBeInstanceOf(XtermContextMenuService);
     });
 
-    it('should be providedIn root', () => {
-      expect(service).toBeTruthy();
+    it('should inject ToasterService', () => {
+      expect((service as any).toaster).toBeDefined();
+      expect((service as any).toaster).toBe(mockToaster);
     });
   });
 
   describe('attachContextMenu', () => {
     it('should add contextmenu event listener to terminal element', () => {
-      const cleanup = service.attachContextMenu(mockTerminal, mockTerminalElement);
+      service.attachContextMenu(mockTerminal, mockTerminalElement);
 
       expect(mockTerminalElement.addEventListener).toHaveBeenCalledWith(
         'contextmenu',
@@ -141,15 +180,21 @@ describe('XtermContextMenuService', () => {
 
     it('cleanup function should remove event listener', () => {
       const cleanup = service.attachContextMenu(mockTerminal, mockTerminalElement);
+
+      // Find the handler that was registered
+      const calls = (mockTerminalElement.addEventListener as any).mock.calls;
+      const contextmenuCall = calls.find((call: any[]) => call[0] === 'contextmenu');
+      const registeredHandler = contextmenuCall ? contextmenuCall[1] : null;
+
       cleanup();
 
       expect(mockTerminalElement.removeEventListener).toHaveBeenCalledWith(
         'contextmenu',
-        expect.any(Function)
+        registeredHandler
       );
     });
 
-    it('should handle multiple attach calls', () => {
+    it('should handle multiple attach calls with separate handlers', () => {
       const cleanup1 = service.attachContextMenu(mockTerminal, mockTerminalElement);
       const cleanup2 = service.attachContextMenu(mockTerminal, mockTerminalElement);
 
@@ -160,441 +205,609 @@ describe('XtermContextMenuService', () => {
     });
   });
 
-  describe('Clipboard Operations', () => {
-    it('should have ToasterService injected', () => {
-      expect((service as any).toaster).toBeDefined();
+  describe('showContextMenu (via contextmenu event)', () => {
+    function triggerContextMenu(clientX: number, clientY: number) {
+      // Find and call the contextmenu handler
+      const calls = (mockTerminalElement.addEventListener as any).mock.calls;
+      const contextmenuCall = calls.find((call: any[]) => call[0] === 'contextmenu');
+      if (contextmenuCall) {
+        const handler = contextmenuCall[1];
+        const event = new MouseEvent('contextmenu', { clientX, clientY });
+        handler(event);
+      }
+    }
+
+    beforeEach(() => {
+      service.attachContextMenu(mockTerminal, mockTerminalElement);
     });
 
-    it('should call toaster.success on successful copy', async () => {
-      const menuItem = document.createElement('div');
+    it('should create context menu on contextmenu event', () => {
+      triggerContextMenu(100, 200);
 
-      // Set up mock with non-empty selection
-      (mockTerminal.getSelection as any).mockReturnValue('selected text');
-
-      // Simulate copy click handler
-      const copyHandler = async () => {
-        try {
-          const selection = mockTerminal.getSelection();
-          if (selection) {
-            await navigator.clipboard.writeText(selection);
-            mockToaster.success('Copied to clipboard');
-            mockTerminal.clearSelection();
-          }
-        } catch (e) {
-          mockToaster.error('Failed to copy');
-        }
-      };
-
-      await copyHandler();
-
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith('selected text');
-      expect(mockToaster.success).toHaveBeenCalledWith('Copied to clipboard');
+      expect(document.createElement).toHaveBeenCalledWith('div');
+      expect(mockBody.appendChild).toHaveBeenCalled();
     });
 
-    it('should call toaster.error on clipboard permission denied', async () => {
-      const permissionError = new Error('Clipboard permission denied');
-      permissionError.name = 'NotAllowedError';
-      (navigator.clipboard.writeText as any).mockRejectedValueOnce(permissionError);
-      (mockTerminal.getSelection as any).mockReturnValue('selected text');
+    it('should set menu position based on mouse coordinates', () => {
+      triggerContextMenu(100, 200);
 
-      const copyHandler = async () => {
-        try {
-          const selection = mockTerminal.getSelection();
-          if (selection) {
-            await navigator.clipboard.writeText(selection);
-          }
-        } catch (e: any) {
-          if (e.name === 'NotAllowedError') {
-            mockToaster.error('Clipboard permission denied. Please allow clipboard access.');
-          } else {
-            mockToaster.error('Failed to copy. Please try again.');
-          }
-        }
-      };
-
-      await copyHandler();
-
-      expect(mockToaster.error).toHaveBeenCalledWith('Clipboard permission denied. Please allow clipboard access.');
+      const menu = createdElements[0];
+      expect(menu.style.left).toBe('100px');
+      expect(menu.style.top).toBe('200px');
     });
 
-    it('should call toaster.warning when clipboard is empty on paste', async () => {
-      (navigator.clipboard.readText as any).mockResolvedValueOnce('');
+    it('should adjust position to prevent horizontal overflow', () => {
+      triggerContextMenu(1850, 200);
 
-      const pasteHandler = async () => {
-        try {
-          const text = await navigator.clipboard.readText();
-          if (text) {
-            mockTerminal.paste(text);
-          } else {
-            mockToaster.warning('Nothing to paste. Clipboard is empty.');
-          }
-        } catch (e) {
-          mockToaster.error('Failed to paste');
-        }
-      };
-
-      await pasteHandler();
-
-      expect(mockToaster.warning).toHaveBeenCalledWith('Nothing to paste. Clipboard is empty.');
+      const menu = createdElements[0];
+      expect(menu.style.left).toBe('1730px'); // 1920 - 180 - 10
     });
 
-    it('should paste text from clipboard', async () => {
-      (navigator.clipboard.readText as any).mockResolvedValueOnce('pasted content');
+    it('should adjust position to prevent vertical overflow', () => {
+      triggerContextMenu(100, 1000);
 
-      const pasteHandler = async () => {
-        try {
-          const text = await navigator.clipboard.readText();
-          if (text) {
-            mockTerminal.paste(text);
-          }
-        } catch (e) {
-          mockToaster.error('Failed to paste');
-        }
-      };
+      const menu = createdElements[0];
+      // 1000 + 120 = 1120 > 1080, so top = 1080 - 120 - 10 = 950
+      expect(menu.style.top).toBe('950px');
+    });
 
-      await pasteHandler();
+    it('should ensure minimum position of 10', () => {
+      triggerContextMenu(-100, -100);
 
-      expect(mockTerminal.paste).toHaveBeenCalledWith('pasted content');
+      const menu = createdElements[0];
+      expect(menu.style.left).toBe('10px');
+      expect(menu.style.top).toBe('10px');
+    });
+
+    it('should remove existing menu before showing new one', () => {
+      // Show first menu
+      triggerContextMenu(100, 200);
+
+      const firstMenu = createdElements[0];
+
+      // Show second menu
+      triggerContextMenu(300, 400);
+
+      expect(firstMenu.remove).toHaveBeenCalled();
     });
   });
 
-  describe('Terminal Operations', () => {
-    it('should call terminal.selectAll on Select All action', () => {
-      const selectAllHandler = () => {
-        try {
-          mockTerminal.selectAll();
-        } catch (e) {
-          console.error('Error selecting all:', e);
-        }
-      };
+  describe('Menu Items', () => {
+    function triggerContextMenu(clientX: number, clientY: number) {
+      const calls = (mockTerminalElement.addEventListener as any).mock.calls;
+      const contextmenuCall = calls.find((call: any[]) => call[0] === 'contextmenu');
+      if (contextmenuCall) {
+        const handler = contextmenuCall[1];
+        const event = new MouseEvent('contextmenu', { clientX, clientY });
+        handler(event);
+      }
+    }
 
-      selectAllHandler();
+    beforeEach(() => {
+      service.attachContextMenu(mockTerminal, mockTerminalElement);
+    });
+
+    function getMenuItems() {
+      const menu = createdElements[0];
+      if (!menu) return [];
+      return menu.children.filter((child: any) =>
+        child.getAttribute?.('role') === 'menuitem'
+      );
+    }
+
+    it('should always show Paste menu item', () => {
+      (mockTerminal.hasSelection as any).mockReturnValue(false);
+      (mockTerminal.getSelection as any).mockReturnValue('');
+
+      triggerContextMenu(100, 200);
+
+      const menuItems = getMenuItems();
+      const pasteItem = menuItems.find((item: any) => item.textContent === 'Paste');
+      expect(pasteItem).toBeDefined();
+    });
+
+    it('should always show Select All menu item', () => {
+      (mockTerminal.hasSelection as any).mockReturnValue(false);
+
+      triggerContextMenu(100, 200);
+
+      const menuItems = getMenuItems();
+      const selectAllItem = menuItems.find((item: any) => item.textContent === 'Select All');
+      expect(selectAllItem).toBeDefined();
+    });
+
+    it('should show Copy menu item only when selection exists', () => {
+      (mockTerminal.hasSelection as any).mockReturnValue(true);
+      (mockTerminal.getSelection as any).mockReturnValue('selected text');
+
+      triggerContextMenu(100, 200);
+
+      const menuItems = getMenuItems();
+      const copyItem = menuItems.find((item: any) => item.textContent === 'Copy');
+      expect(copyItem).toBeDefined();
+    });
+
+    it('should not show Copy menu item when no selection', () => {
+      (mockTerminal.hasSelection as any).mockReturnValue(false);
+      (mockTerminal.getSelection as any).mockReturnValue('');
+
+      triggerContextMenu(100, 200);
+
+      const menuItems = getMenuItems();
+      const copyItem = menuItems.find((item: any) => item.textContent === 'Copy');
+      expect(copyItem).toBeUndefined();
+    });
+
+    it('should show Clear Selection menu item only when selection exists', () => {
+      (mockTerminal.hasSelection as any).mockReturnValue(true);
+      (mockTerminal.getSelection as any).mockReturnValue('selected text');
+
+      triggerContextMenu(100, 200);
+
+      const menuItems = getMenuItems();
+      const clearSelectionItem = menuItems.find((item: any) => item.textContent === 'Clear Selection');
+      expect(clearSelectionItem).toBeDefined();
+    });
+
+    it('should not show Clear Selection menu item when no selection', () => {
+      (mockTerminal.hasSelection as any).mockReturnValue(false);
+      (mockTerminal.getSelection as any).mockReturnValue('');
+
+      triggerContextMenu(100, 200);
+
+      const menuItems = getMenuItems();
+      const clearSelectionItem = menuItems.find((item: any) => item.textContent === 'Clear Selection');
+      expect(clearSelectionItem).toBeUndefined();
+    });
+
+    it('should add separator before Select All', () => {
+      (mockTerminal.hasSelection as any).mockReturnValue(false);
+
+      triggerContextMenu(100, 200);
+
+      const menu = createdElements[0];
+      const separator = menu.children.find((child: any) =>
+        child.className === 'xterm-context-menu-separator'
+      );
+      expect(separator).toBeDefined();
+    });
+  });
+
+  describe('Copy Action', () => {
+    function triggerContextMenu(clientX: number, clientY: number) {
+      const calls = (mockTerminalElement.addEventListener as any).mock.calls;
+      const contextmenuCall = calls.find((call: any[]) => call[0] === 'contextmenu');
+      if (contextmenuCall) {
+        const handler = contextmenuCall[1];
+        const event = new MouseEvent('contextmenu', { clientX, clientY });
+        handler(event);
+      }
+    }
+
+    beforeEach(() => {
+      service.attachContextMenu(mockTerminal, mockTerminalElement);
+    });
+
+    function getMenuItems() {
+      const menu = createdElements[0];
+      if (!menu) return [];
+      return menu.children.filter((child: any) =>
+        child.getAttribute?.('role') === 'menuitem'
+      );
+    }
+
+    it('should copy selected text to clipboard on Copy click', async () => {
+      (mockTerminal.hasSelection as any).mockReturnValue(true);
+      (mockTerminal.getSelection as any).mockReturnValue('selected text');
+
+      triggerContextMenu(100, 200);
+
+      const menuItems = getMenuItems();
+      const copyItem = menuItems.find((item: any) => item.textContent === 'Copy');
+
+      // Click copy item
+      copyItem.click();
+
+      // Wait for async clipboard operation
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith('selected text');
+      expect(mockToaster.success).toHaveBeenCalledWith('Copied to clipboard');
+      expect(mockTerminal.clearSelection).toHaveBeenCalled();
+    });
+  });
+
+  describe('Paste Action', () => {
+    function triggerContextMenu(clientX: number, clientY: number) {
+      const calls = (mockTerminalElement.addEventListener as any).mock.calls;
+      const contextmenuCall = calls.find((call: any[]) => call[0] === 'contextmenu');
+      if (contextmenuCall) {
+        const handler = contextmenuCall[1];
+        const event = new MouseEvent('contextmenu', { clientX, clientY });
+        handler(event);
+      }
+    }
+
+    beforeEach(() => {
+      service.attachContextMenu(mockTerminal, mockTerminalElement);
+    });
+
+    function getMenuItems() {
+      const menu = createdElements[0];
+      if (!menu) return [];
+      return menu.children.filter((child: any) =>
+        child.getAttribute?.('role') === 'menuitem'
+      );
+    }
+
+    it('should paste text from clipboard on Paste click', async () => {
+      (navigator.clipboard.readText as any).mockResolvedValueOnce('pasted content');
+
+      triggerContextMenu(100, 200);
+
+      const menuItems = getMenuItems();
+      const pasteItem = menuItems.find((item: any) => item.textContent === 'Paste');
+
+      pasteItem.click();
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(mockTerminal.paste).toHaveBeenCalledWith('pasted content');
+    });
+
+    it('should show warning when clipboard is empty', async () => {
+      // Override clipboard mock for this test
+      const originalReadText = navigator.clipboard.readText;
+      (navigator.clipboard.readText as any) = vi.fn(() => Promise.resolve(''));
+
+      triggerContextMenu(100, 200);
+
+      const menuItems = getMenuItems();
+      const pasteItem = menuItems.find((item: any) => item.textContent === 'Paste');
+
+      pasteItem.click();
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(mockToaster.warning).toHaveBeenCalledWith('Nothing to paste. Clipboard is empty.');
+      expect(mockTerminal.paste).not.toHaveBeenCalled();
+
+      // Restore original
+      (navigator.clipboard.readText as any) = originalReadText;
+    });
+  });
+
+  describe('Select All Action', () => {
+    function triggerContextMenu(clientX: number, clientY: number) {
+      const calls = (mockTerminalElement.addEventListener as any).mock.calls;
+      const contextmenuCall = calls.find((call: any[]) => call[0] === 'contextmenu');
+      if (contextmenuCall) {
+        const handler = contextmenuCall[1];
+        const event = new MouseEvent('contextmenu', { clientX, clientY });
+        handler(event);
+      }
+    }
+
+    beforeEach(() => {
+      service.attachContextMenu(mockTerminal, mockTerminalElement);
+    });
+
+    function getMenuItems() {
+      const menu = createdElements[0];
+      if (!menu) return [];
+      return menu.children.filter((child: any) =>
+        child.getAttribute?.('role') === 'menuitem'
+      );
+    }
+
+    it('should call terminal.selectAll on Select All click', () => {
+      triggerContextMenu(100, 200);
+
+      const menuItems = getMenuItems();
+      const selectAllItem = menuItems.find((item: any) => item.textContent === 'Select All');
+
+      selectAllItem.click();
+
+      expect(mockTerminal.selectAll).toHaveBeenCalled();
+    });
+  });
+
+  describe('Clear Selection Action', () => {
+    function triggerContextMenu(clientX: number, clientY: number) {
+      const calls = (mockTerminalElement.addEventListener as any).mock.calls;
+      const contextmenuCall = calls.find((call: any[]) => call[0] === 'contextmenu');
+      if (contextmenuCall) {
+        const handler = contextmenuCall[1];
+        const event = new MouseEvent('contextmenu', { clientX, clientY });
+        handler(event);
+      }
+    }
+
+    beforeEach(() => {
+      service.attachContextMenu(mockTerminal, mockTerminalElement);
+    });
+
+    function getMenuItems() {
+      const menu = createdElements[0];
+      if (!menu) return [];
+      return menu.children.filter((child: any) =>
+        child.getAttribute?.('role') === 'menuitem'
+      );
+    }
+
+    it('should call terminal.clearSelection on Clear Selection click', () => {
+      (mockTerminal.hasSelection as any).mockReturnValue(true);
+      (mockTerminal.getSelection as any).mockReturnValue('selected text');
+
+      triggerContextMenu(100, 200);
+
+      const menuItems = getMenuItems();
+      const clearSelectionItem = menuItems.find((item: any) => item.textContent === 'Clear Selection');
+
+      clearSelectionItem.click();
+
+      expect(mockTerminal.clearSelection).toHaveBeenCalled();
+    });
+  });
+
+  describe('Menu Item Keyboard Support', () => {
+    function triggerContextMenu(clientX: number, clientY: number) {
+      const calls = (mockTerminalElement.addEventListener as any).mock.calls;
+      const contextmenuCall = calls.find((call: any[]) => call[0] === 'contextmenu');
+      if (contextmenuCall) {
+        const handler = contextmenuCall[1];
+        const event = new MouseEvent('contextmenu', { clientX, clientY });
+        handler(event);
+      }
+    }
+
+    beforeEach(() => {
+      service.attachContextMenu(mockTerminal, mockTerminalElement);
+    });
+
+    function getMenuItems() {
+      const menu = createdElements[0];
+      if (!menu) return [];
+      return menu.children.filter((child: any) =>
+        child.getAttribute?.('role') === 'menuitem'
+      );
+    }
+
+    it('should trigger click handler on Enter key', () => {
+      triggerContextMenu(100, 200);
+
+      const menuItems = getMenuItems();
+      const selectAllItem = menuItems.find((item: any) => item.textContent === 'Select All');
+
+      const keydownEvent = new KeyboardEvent('keydown', { key: 'Enter' });
+      selectAllItem.dispatchEvent(keydownEvent);
 
       expect(mockTerminal.selectAll).toHaveBeenCalled();
     });
 
-    it('should call terminal.clearSelection on Clear Selection action', () => {
-      const clearSelectionHandler = () => {
-        try {
-          mockTerminal.clearSelection();
-        } catch (e) {
-          console.error('Error clearing selection:', e);
-        }
-      };
+    it('should trigger click handler on Space key', () => {
+      triggerContextMenu(100, 200);
 
-      clearSelectionHandler();
+      const menuItems = getMenuItems();
+      const selectAllItem = menuItems.find((item: any) => item.textContent === 'Select All');
 
-      expect(mockTerminal.clearSelection).toHaveBeenCalled();
-    });
+      const keydownEvent = new KeyboardEvent('keydown', { key: ' ' });
+      selectAllItem.dispatchEvent(keydownEvent);
 
-    it('should call terminal.focus after cleanup', () => {
-      const focusHandler = () => {
-        mockTerminal.focus();
-      };
-
-      focusHandler();
-
-      expect(mockTerminal.focus).toHaveBeenCalled();
+      expect(mockTerminal.selectAll).toHaveBeenCalled();
     });
   });
 
-  describe('Selection Detection', () => {
-    it('should use hasSelection if available', () => {
-      const terminalWithHasSelection = {
-        hasSelection: vi.fn(() => true),
-        getSelection: vi.fn(() => ''),
-      };
-
-      let hasSelection = false;
-      if (typeof terminalWithHasSelection.hasSelection === 'function') {
-        hasSelection = terminalWithHasSelection.hasSelection();
+  describe('Menu Dismissal', () => {
+    function triggerContextMenu(clientX: number, clientY: number) {
+      const calls = (mockTerminalElement.addEventListener as any).mock.calls;
+      const contextmenuCall = calls.find((call: any[]) => call[0] === 'contextmenu');
+      if (contextmenuCall) {
+        const handler = contextmenuCall[1];
+        const event = new MouseEvent('contextmenu', { clientX, clientY });
+        handler(event);
       }
+    }
 
-      expect(hasSelection).toBe(true);
-      expect(terminalWithHasSelection.hasSelection).toHaveBeenCalled();
+    beforeEach(() => {
+      service.attachContextMenu(mockTerminal, mockTerminalElement);
+    });
+
+    function getMenuItems() {
+      const menu = createdElements[0];
+      if (!menu) return [];
+      return menu.children.filter((child: any) =>
+        child.getAttribute?.('role') === 'menuitem'
+      );
+    }
+
+    it('should dismiss menu after Copy action', async () => {
+      (mockTerminal.hasSelection as any).mockReturnValue(true);
+      (mockTerminal.getSelection as any).mockReturnValue('selected text');
+
+      triggerContextMenu(100, 200);
+
+      const menu = createdElements[0];
+      const menuItems = getMenuItems();
+      const copyItem = menuItems.find((item: any) => item.textContent === 'Copy');
+
+      copyItem.click();
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(menu.remove).toHaveBeenCalled();
+    });
+
+    it('should dismiss menu after Paste action', async () => {
+      triggerContextMenu(100, 200);
+
+      const menu = createdElements[0];
+      const menuItems = getMenuItems();
+      const pasteItem = menuItems.find((item: any) => item.textContent === 'Paste');
+
+      pasteItem.click();
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(menu.remove).toHaveBeenCalled();
+    });
+
+    it('should dismiss menu after Select All action', () => {
+      triggerContextMenu(100, 200);
+
+      const menu = createdElements[0];
+      const menuItems = getMenuItems();
+      const selectAllItem = menuItems.find((item: any) => item.textContent === 'Select All');
+
+      selectAllItem.click();
+
+      expect(menu.remove).toHaveBeenCalled();
+    });
+  });
+
+  describe('hasSelection Detection', () => {
+    function triggerContextMenuWithTerminal(terminal: Terminal, clientX: number, clientY: number) {
+      service.attachContextMenu(terminal, mockTerminalElement);
+      const calls = (mockTerminalElement.addEventListener as any).mock.calls;
+      const contextmenuCall = calls.find((call: any[]) => call[0] === 'contextmenu');
+      if (contextmenuCall) {
+        const handler = contextmenuCall[1];
+        const event = new MouseEvent('contextmenu', { clientX, clientY });
+        handler(event);
+      }
+    }
+
+    function getMenuItems() {
+      const menu = createdElements[0];
+      if (!menu) return [];
+      return menu.children.filter((child: any) =>
+        child.getAttribute?.('role') === 'menuitem'
+      );
+    }
+
+    it('should use hasSelection method when available (xterm.js 5.0+)', () => {
+      (mockTerminal.hasSelection as any).mockReturnValue(true);
+
+      triggerContextMenuWithTerminal(mockTerminal, 100, 200);
+
+      expect(mockTerminal.hasSelection).toHaveBeenCalled();
+
+      const menuItems = getMenuItems();
+      const copyItem = menuItems.find((item: any) => item.textContent === 'Copy');
+      expect(copyItem).toBeDefined();
     });
 
     it('should fallback to getSelection when hasSelection is not available', () => {
-      const terminalWithGetSelectionOnly = {
-        getSelection: vi.fn(() => 'some selected text'),
-      };
+      // Create terminal without hasSelection method
+      const terminalWithoutHasSelection = {
+        getSelection: vi.fn(() => 'some text'),
+        clearSelection: vi.fn(),
+        selectAll: vi.fn(),
+        paste: vi.fn(),
+        focus: vi.fn(),
+      } as any as Terminal;
 
-      let hasSelection = false;
-      if (typeof (terminalWithGetSelectionOnly as any).hasSelection === 'function') {
-        hasSelection = (terminalWithGetSelectionOnly as any).hasSelection();
-      } else {
-        const selection = terminalWithGetSelectionOnly.getSelection();
-        hasSelection = selection != null && selection.trim().length > 0;
-      }
+      triggerContextMenuWithTerminal(terminalWithoutHasSelection, 100, 200);
 
-      expect(hasSelection).toBe(true);
+      const menuItems = getMenuItems();
+      const copyItem = menuItems.find((item: any) => item.textContent === 'Copy');
+      expect(copyItem).toBeDefined();
     });
 
-    it('should handle null selection gracefully', () => {
+    it('should handle null selection from getSelection', () => {
       const terminalWithNullSelection = {
         getSelection: vi.fn(() => null),
-      };
+      } as any as Terminal;
 
-      let hasSelection = false;
-      if (typeof (terminalWithNullSelection as any).hasSelection === 'function') {
-        hasSelection = (terminalWithNullSelection as any).hasSelection();
-      } else {
-        const selection = terminalWithNullSelection.getSelection();
-        hasSelection = selection != null && selection.trim().length > 0;
-      }
+      triggerContextMenuWithTerminal(terminalWithNullSelection, 100, 200);
 
-      expect(hasSelection).toBe(false);
+      const menuItems = getMenuItems();
+      const copyItem = menuItems.find((item: any) => item.textContent === 'Copy');
+      expect(copyItem).toBeUndefined();
     });
 
     it('should treat empty string selection as no selection', () => {
-      const terminalWithEmptySelection = {
-        getSelection: vi.fn(() => ''),
-      };
+      (mockTerminal.getSelection as any).mockReturnValue('');
 
-      let hasSelection = false;
-      if (typeof (terminalWithEmptySelection as any).hasSelection === 'function') {
-        hasSelection = (terminalWithEmptySelection as any).hasSelection();
-      } else {
-        const selection = terminalWithEmptySelection.getSelection();
-        hasSelection = selection != null && selection.trim().length > 0;
-      }
+      triggerContextMenuWithTerminal(mockTerminal, 100, 200);
 
-      expect(hasSelection).toBe(false);
+      const menuItems = getMenuItems();
+      const copyItem = menuItems.find((item: any) => item.textContent === 'Copy');
+      expect(copyItem).toBeUndefined();
     });
   });
 
-  describe('Menu Item Creation', () => {
-    it('should create menu item with proper attributes', () => {
-      const item = document.createElement('div');
-
-      item.className = 'xterm-context-menu-item';
-      item.textContent = 'Copy';
-      item.setAttribute('role', 'menuitem');
-      item.setAttribute('tabindex', '0');
-      item.setAttribute('data-shortcut', 'Ctrl+Shift+C');
-
-      expect(item.className).toBe('xterm-context-menu-item');
-      expect(item.textContent).toBe('Copy');
-      expect(item.getAttribute('role')).toBe('menuitem');
-      expect(item.getAttribute('tabindex')).toBe('0');
-      expect(item.getAttribute('data-shortcut')).toBe('Ctrl+Shift+C');
-    });
-
-    it('should handle menu item keyboard events', () => {
-      const item = document.createElement('div');
-      const clickHandler = vi.fn();
-      item.addEventListener('click', clickHandler);
-
-      // Manually trigger keydown handler logic to test
-      const keydownHandler = (e: KeyboardEvent) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          clickHandler();
-        }
-      };
-
-      // Simulate Enter key press
-      const enterEvent = new KeyboardEvent('keydown', { key: 'Enter' });
-      keydownHandler(enterEvent);
-
-      expect(clickHandler).toHaveBeenCalled();
-    });
-  });
-
-  describe('Menu Cleanup', () => {
-    it('should setup click outside listener', () => {
-      const menu = document.createElement('div');
-      const outsideElement = document.createElement('div');
-
-      let dismissed = false;
-      const removeMenu = (e: MouseEvent) => {
-        if (!menu.contains(e.target as Node)) {
-          dismissed = true;
-          menu.remove();
-        }
-      };
-
-      // Simulate click outside - use Object.defineProperty to set target
-      const event = new MouseEvent('click');
-      Object.defineProperty(event, 'target', { value: outsideElement });
-
-      removeMenu(event);
-
-      expect(dismissed).toBe(true);
-    });
-
-    it('should setup Escape key listener', () => {
-      let dismissed = false;
-      const menu = document.createElement('div');
-
-      const handleEscape = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') {
-          e.preventDefault();
-          dismissed = true;
-          menu.remove();
-        }
-      };
-
-      const event = new KeyboardEvent('keydown', { key: 'Escape' });
-      handleEscape(event);
-
-      expect(dismissed).toBe(true);
-    });
-
-    it('should prevent multiple cleanup calls', () => {
-      let cleanupCallCount = 0;
-      let dismissed = false;
-
-      const cleanup = () => {
-        if (dismissed) return;
-        dismissed = true;
-        cleanupCallCount++;
-      };
-
-      cleanup();
-      cleanup();
-      cleanup();
-
-      expect(cleanupCallCount).toBe(1);
-    });
-  });
-
-  describe('Menu Positioning', () => {
-    it('should adjust position to prevent horizontal overflow', () => {
-      const event = { clientX: 1900, clientY: 500 } as MouseEvent;
-      let left = event.clientX;
-      let top = event.clientY;
-
-      const estimatedWidth = 180;
-      const estimatedHeight = 120;
-
-      if (left + estimatedWidth > window.innerWidth) {
-        left = window.innerWidth - estimatedWidth - 10;
+  describe('Menu Item Attributes', () => {
+    function triggerContextMenu(clientX: number, clientY: number) {
+      const calls = (mockTerminalElement.addEventListener as any).mock.calls;
+      const contextmenuCall = calls.find((call: any[]) => call[0] === 'contextmenu');
+      if (contextmenuCall) {
+        const handler = contextmenuCall[1];
+        const event = new MouseEvent('contextmenu', { clientX, clientY });
+        handler(event);
       }
+    }
 
-      if (top + estimatedHeight > window.innerHeight) {
-        top = window.innerHeight - estimatedHeight - 10;
-      }
-
-      left = Math.max(10, left);
-      top = Math.max(10, top);
-
-      expect(left).toBeLessThan(window.innerWidth);
-      expect(top).toBeLessThan(window.innerHeight);
+    beforeEach(() => {
+      service.attachContextMenu(mockTerminal, mockTerminalElement);
     });
 
-    it('should adjust position to prevent vertical overflow', () => {
-      const event = { clientX: 500, clientY: 1000 } as MouseEvent;
-      let left = event.clientX;
-      let top = event.clientY;
+    function getMenuItems() {
+      const menu = createdElements[0];
+      if (!menu) return [];
+      return menu.children.filter((child: any) =>
+        child.getAttribute?.('role') === 'menuitem'
+      );
+    }
 
-      const estimatedWidth = 180;
-      const estimatedHeight = 120;
+    it('should set role=menuitem on all menu items', () => {
+      triggerContextMenu(100, 200);
 
-      if (left + estimatedWidth > window.innerWidth) {
-        left = window.innerWidth - estimatedWidth - 10;
-      }
+      const menuItems = getMenuItems();
 
-      if (top + estimatedHeight > window.innerHeight) {
-        top = window.innerHeight - estimatedHeight - 10;
-      }
-
-      left = Math.max(10, left);
-      top = Math.max(10, top);
-
-      expect(top).toBeLessThan(window.innerHeight);
+      menuItems.forEach((item: any) => {
+        expect(item.getAttribute('role')).toBe('menuitem');
+      });
     });
 
-    it('should ensure minimum position of 10', () => {
-      const event = { clientX: -100, clientY: -100 } as MouseEvent;
-      let left = event.clientX;
-      let top = event.clientY;
+    it('should set tabindex=0 on all menu items', () => {
+      triggerContextMenu(100, 200);
 
-      left = Math.max(10, left);
-      top = Math.max(10, top);
+      const menuItems = getMenuItems();
 
-      expect(left).toBe(10);
-      expect(top).toBe(10);
-    });
-  });
-
-  describe('Error Handling', () => {
-    it('should handle clipboard API errors gracefully', async () => {
-      const error = new Error('Clipboard API not available');
-      (navigator.clipboard.writeText as any).mockRejectedValueOnce(error);
-
-      const copyHandler = async () => {
-        try {
-          await navigator.clipboard.writeText('test');
-        } catch (e) {
-          mockToaster.error('Failed to copy. Please try again.');
-        }
-      };
-
-      await copyHandler();
-
-      expect(mockToaster.error).toHaveBeenCalled();
+      menuItems.forEach((item: any) => {
+        expect(item.getAttribute('tabindex')).toBe('0');
+      });
     });
 
-    it('should handle terminal selection errors', () => {
-      const errorTerminal = {
-        getSelection: vi.fn(() => {
-          throw new Error('Selection error');
-        }),
-      };
+    it('should set data-shortcut on Copy item', () => {
+      (mockTerminal.hasSelection as any).mockReturnValue(true);
+      (mockTerminal.getSelection as any).mockReturnValue('selected text');
 
-      expect(() => errorTerminal.getSelection()).toThrow();
-    });
-  });
+      triggerContextMenu(100, 200);
 
-  describe('Menu Item Visibility', () => {
-    it('should show Copy only when hasSelection is true', () => {
-      const hasSelection = true;
-      let showCopyItem = false;
+      const menuItems = getMenuItems();
+      const copyItem = menuItems.find((item: any) => item.textContent === 'Copy');
 
-      if (hasSelection) {
-        showCopyItem = true;
-      }
-
-      expect(showCopyItem).toBe(true);
+      expect(copyItem.getAttribute('data-shortcut')).toBe('Ctrl+Shift+C');
     });
 
-    it('should not show Copy when hasSelection is false', () => {
-      const hasSelection = false;
-      let showCopyItem = false;
+    it('should set data-shortcut on Paste item', () => {
+      triggerContextMenu(100, 200);
 
-      if (hasSelection) {
-        showCopyItem = true;
-      }
+      const menuItems = getMenuItems();
+      const pasteItem = menuItems.find((item: any) => item.textContent === 'Paste');
 
-      expect(showCopyItem).toBe(false);
+      expect(pasteItem.getAttribute('data-shortcut')).toBe('Ctrl+Shift+V');
     });
 
-    it('should show Clear Selection only when hasSelection is true', () => {
-      const hasSelection = true;
-      let showClearSelectionItem = false;
+    it('should not set data-shortcut on Select All item', () => {
+      triggerContextMenu(100, 200);
 
-      if (hasSelection) {
-        showClearSelectionItem = true;
-      }
+      const menuItems = getMenuItems();
+      const selectAllItem = menuItems.find((item: any) => item.textContent === 'Select All');
 
-      expect(showClearSelectionItem).toBe(true);
-    });
-
-    it('should always show Paste menu item', () => {
-      // Paste is always shown regardless of selection state
-      const hasSelection = false;
-      let showPasteItem = true; // Always true in actual implementation
-
-      expect(showPasteItem).toBe(true);
-    });
-
-    it('should always show Select All menu item', () => {
-      // Select All is always shown regardless of selection state
-      const hasSelection = false;
-      let showSelectAllItem = true; // Always true in actual implementation
-
-      expect(showSelectAllItem).toBe(true);
+      expect(selectAllItem.getAttribute('data-shortcut')).toBeFalsy();
     });
   });
 });
