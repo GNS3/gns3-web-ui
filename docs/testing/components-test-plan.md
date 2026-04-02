@@ -2,30 +2,30 @@
 
 > **Last Updated**: 2026-04-02
 > **Total Components**: 231 (`.component.ts` files)
-> **Completed**: 14
-> **Remaining**: 217
+> **Completed**: 39
+> **Remaining**: 192
 
 This document tracks the progress of creating unit test files (`.spec.ts`) for all Angular components in the project.
 
 ## Progress Summary
 
-- [ ] 14 / 231 components completed (6.1%)
+- [ ] 39 / 231 components completed (16.9%)
 
 ---
 
 ## Component Inventory by Directory
 
 ### acl-management (4 components)
-- [ ] acl-management.component.ts
-- [ ] add-ace-dialog/add-ace-dialog.component.ts
-- [ ] add-ace-dialog/autocomplete/autocomplete.component.ts
-- [ ] delete-ace-dialog/delete-ace-dialog.component.ts
+- [x] acl-management.component.ts
+- [x] add-ace-dialog/add-ace-dialog.component.ts
+- [x] add-ace-dialog/autocomplete/autocomplete.component.ts
+- [x] delete-ace-dialog/delete-ace-dialog.component.ts
 
 ### adbutler (1 component)
 - [x] adbutler.component.ts
 
 ### bundled-controller-finder (1 component)
-- [ ] bundled-controller-finder.component.ts
+- [x] bundled-controller-finder.component.ts
 
 ### computes (1 component)
 - [x] computes.component.ts
@@ -62,28 +62,28 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 - [x] global-upload-indicator.component.ts
 
 ### group-details (3 components)
-- [ ] add-user-to-group-dialog/add-user-to-group-dialog.component.ts
-- [ ] group-ai-profile-tab/group-ai-profile-tab.component.ts
-- [ ] remove-to-group-dialog/remove-to-group-dialog.component.ts
+- [x] add-user-to-group-dialog/add-user-to-group-dialog.component.ts
+- [x] group-ai-profile-tab/group-ai-profile-tab.component.ts
+- [x] remove-to-group-dialog/remove-to-group-dialog.component.ts
 
-### group-management (4 components)
-- [ ] add-group-dialog/add-group-dialog.component.ts
-- [ ] delete-group-dialog/delete-group-dialog.component.ts
-- [ ] group-detail-dialog/group-ai-profile-dialog/group-ai-profile-dialog.component.ts
-- [ ] group-detail-dialog/group-detail-dialog.component.ts
-- [ ] group-management.component.ts
+### group-management (5 components)
+- [x] add-group-dialog/add-group-dialog.component.ts
+- [x] delete-group-dialog/delete-group-dialog.component.ts
+- [x] group-detail-dialog/group-ai-profile-dialog/group-ai-profile-dialog.component.ts
+- [x] group-detail-dialog/group-detail-dialog.component.ts
+- [x] group-management.component.ts
 
 ### help (1 component)
 - [x] help.component.ts
 
 ### image-manager (3 components)
-- [ ] add-image-dialog/add-image-dialog.component.ts
-- [ ] deleteallfiles-dialog/deleteallfiles-dialog.component.ts
-- [ ] image-manager.component.ts
+- [x] add-image-dialog/add-image-dialog.component.ts
+- [x] deleteallfiles-dialog/deleteallfiles-dialog.component.ts
+- [x] image-manager.component.ts
 
 ### installed-software (2 components)
-- [ ] install-software/install-software.component.ts
-- [ ] installed-software.component.ts
+- [x] install-software/install-software.component.ts
+- [x] installed-software.component.ts
 
 ### login (1 component)
 - [x] login.component.ts
@@ -324,12 +324,12 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 - [ ] delete-resource-pool/delete-resource-pool.component.ts
 - [ ] resource-pools-management.component.ts
 
-### role-management (6 components)
-- [ ] add-role-dialog/add-role-dialog.component.ts
-- [ ] delete-role-dialog/delete-role-dialog.component.ts
-- [ ] role-detail/privilege/privilege.component.ts
-- [ ] role-detail/role-detail.component.ts
-- [ ] role-management.component.ts
+### role-management (5 components)
+- [x] add-role-dialog/add-role-dialog.component.ts
+- [x] delete-role-dialog/delete-role-dialog.component.ts
+- [x] role-detail/privilege/privilege.component.ts
+- [x] role-detail/role-detail.component.ts
+- [x] role-management.component.ts
 
 ### settings (2 components)
 - [ ] console/console.component.ts
