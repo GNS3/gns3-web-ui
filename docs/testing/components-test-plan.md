@@ -2,14 +2,14 @@
 
 > **Last Updated**: 2026-04-02
 > **Total Components**: 231 (`.component.ts` files)
-> **Completed**: 66
-> **Remaining**: 165
+> **Completed**: 76
+> **Remaining**: 155
 
 This document tracks the progress of creating unit test files (`.spec.ts`) for all Angular components in the project.
 
 ## Progress Summary
 
-- [ ] 66 / 231 components completed (28.6%)
+- [ ] 76 / 231 components completed (32.9%)
 
 ---
 
@@ -353,16 +353,16 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 - [x] topology-summary.component.ts
 
 ### user-management (10 components)
-- [ ] add-user-dialog/add-user-dialog.component.ts
-- [ ] ai-profile-dialog/ai-profile-dialog.component.ts
-- [ ] delete-user-dialog/delete-user-dialog.component.ts
-- [ ] user-detail/ai-profile-tab/ai-profile-dialog/ai-profile-dialog.component.ts
-- [ ] user-detail/ai-profile-tab/ai-profile-dialog/confirm-dialog/confirm-dialog.component.ts
-- [ ] user-detail/ai-profile-tab/ai-profile-dialog/model-type-help-dialog/model-type-help-dialog.component.ts
-- [ ] user-detail/ai-profile-tab/ai-profile-tab.component.ts
-- [ ] user-detail/change-user-password/change-user-password.component.ts
-- [ ] user-detail-dialog/user-detail-dialog.component.ts
-- [ ] user-management.component.ts
+- [x] add-user-dialog/add-user-dialog.component.ts
+- [x] ai-profile-dialog/ai-profile-dialog.component.ts
+- [x] delete-user-dialog/delete-user-dialog.component.ts
+- [x] user-detail/ai-profile-tab/ai-profile-dialog/ai-profile-dialog.component.ts
+- [x] user-detail/ai-profile-tab/ai-profile-dialog/confirm-dialog/confirm-dialog.component.ts
+- [x] user-detail/ai-profile-tab/ai-profile-dialog/model-type-help-dialog/model-type-help-dialog.component.ts
+- [x] user-detail/ai-profile-tab/ai-profile-tab.component.ts
+- [x] user-detail/change-user-password/change-user-password.component.ts
+- [x] user-detail-dialog/user-detail-dialog.component.ts
+- [x] user-management.component.ts
 
 ### users (1 component)
 - [x] logged-user/logged-user.component.ts
@@ -376,6 +376,16 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 
 | Date | Commit | Components | Tests |
 |------|--------|------------|-------|
+| 2026-04-02 | f01c3686 | UserManagementComponent | 10 |
+| 2026-04-02 | be53416b | UserDetailDialogComponent | 10 |
+| 2026-04-02 | 2b70152d | ChangeUserPasswordComponent | 3 |
+| 2026-04-02 | d98dacf8 | ModelTypeHelpDialogComponent | 1 |
+| 2026-04-02 | 67af4978 | ConfirmDialogComponent | 3 |
+| 2026-04-02 | f7111e16 | AiProfileDialogComponent (nested) | 25 |
+| 2026-04-02 | 0d974ff5 | AiProfileTabComponent | 19 |
+| 2026-04-02 | bafb8cd5 | DeleteUserDialogComponent | 2 |
+| 2026-04-02 | ec134d93 | AiProfileDialogComponent | 2 |
+| 2026-04-02 | 0f9d5998 | AddUserDialogComponent | 8 |
 | 2026-04-02 | 0dcf00b9 | LoggedUserComponent | 3 |
 | 2026-04-02 | 075e2a38 | TopologySummaryComponent | 17 |
 | 2026-04-02 | 476caa34 | TemplateListDialogComponent | 14 |
@@ -408,5 +418,5 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 | 2026-04-02 | e2578113 | ControllerManagementService | 28 |
 
 **Service tests completed**: 12 services, 527 tests
-**Component tests completed**: 18 components, 147 tests
-**Total**: 2142 tests passing
+**Component tests completed**: 32 components, 272 tests
+**Total**: 2267 tests passing
