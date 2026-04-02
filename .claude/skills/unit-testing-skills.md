@@ -1,6 +1,14 @@
 ---
 name: unit-testing
 description: Comprehensive unit testing skills for Angular components and services using Vitest. Covers AAA pattern, mocking, branch coverage, RxJS testing, and clean testing practices.
+trigger:
+  - test
+  - testing
+  - unit test
+  - spec
+  - vitest
+  - jasmine
+  - karma
 ---
 
 # Unit Testing Skills
