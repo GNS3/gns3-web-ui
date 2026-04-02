@@ -2,14 +2,14 @@
 
 > **Last Updated**: 2026-04-02
 > **Total Components**: 231 (`.component.ts` files)
-> **Completed**: 155
-> **Remaining**: 76
+> **Completed**: 159
+> **Remaining**: 72
 
 This document tracks the progress of creating unit test files (`.spec.ts`) for all Angular components in the project.
 
 ## Progress Summary
 
-- [ ] 155 / 231 components completed (67.1%)
+- [ ] 159 / 231 components completed (68.8%)
 
 ---
 
@@ -271,11 +271,11 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 - [x] node-editors/configurator/ethernet_hub/configurator-ethernet-hub.component.ts
 - [x] node-editors/configurator/ethernet-switch/configurator-ethernet-switch.component.ts
 - [x] node-editors/configurator/ios/configurator-ios.component.ts
-- [ ] node-editors/configurator/iou/configurator-iou.component.ts
-- [ ] node-editors/configurator/nat/configurator-nat.component.ts
-- [ ] node-editors/configurator/qemu/configurator-qemu.component.ts
+- [x] node-editors/configurator/iou/configurator-iou.component.ts
+- [x] node-editors/configurator/nat/configurator-nat.component.ts
+- [x] node-editors/configurator/qemu/configurator-qemu.component.ts
 - [ ] node-editors/configurator/qemu/qemu-image-creator/qemu-image-creator.component.ts
-- [ ] node-editors/configurator/switch/configurator-switch.component.ts
+- [x] node-editors/configurator/switch/configurator-switch.component.ts
 - [ ] node-editors/configurator/virtualbox/configurator-virtualbox.component.ts
 - [ ] node-editors/configurator/vmware/configurator-vmware.component.ts
 - [ ] node-editors/configurator/vpcs/configurator-vpcs.component.ts
