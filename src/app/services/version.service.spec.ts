@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { VersionService } from './version.service';
 import { HttpController } from './http-controller.service';
-import { Observable, of } from 'rxjs';
+import { of, throwError } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { Controller } from '@models/controller';
 import { Version } from '@models/version';
 
@@ -39,7 +40,7 @@ describe('VersionService', () => {
   });
 
   describe('get', () => {
-    it('should call httpController.get with correct endpoint', () => {
+    it('should call httpController.get with correct endpoint and controller', () => {
       const mockVersion: Version = { version: '3.1.0' } as Version;
       mockHttpController.get.mockReturnValue(of(mockVersion));
 
@@ -48,32 +49,44 @@ describe('VersionService', () => {
       expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/version');
     });
 
-    it('should return Observable of Version', () => {
-      const mockVersion: Version = { version: '3.0.0' } as Version;
-      mockHttpController.get.mockReturnValue(of(mockVersion));
-
-      const result = service.get(mockController);
-
-      expect(result).toBeInstanceOf(Observable);
-    });
-
-    it('should handle version response', async () => {
+    it('should return Version with correct version string', async () => {
       const mockVersion: Version = { version: '3.1.0' } as Version;
       mockHttpController.get.mockReturnValue(of(mockVersion));
 
-      const result = await new Promise((resolve) => {
-        service.get(mockController).subscribe((data) => resolve(data));
-      });
+      const result = await firstValueFrom(service.get(mockController));
 
-      expect(result).toEqual(mockVersion);
+      expect(result.version).toBe('3.1.0');
     });
 
-    it('should pass controller to httpController.get', () => {
+    it('should propagate error from httpController.get', async () => {
+      const error = new Error('Network error');
+      mockHttpController.get.mockReturnValue(throwError(() => error));
+
+      await expect(firstValueFrom(service.get(mockController))).rejects.toThrow('Network error');
+    });
+
+    it('should handle version response with empty object', async () => {
       mockHttpController.get.mockReturnValue(of({}));
 
-      service.get(mockController);
+      const result = await firstValueFrom(service.get(mockController));
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/version');
+      expect(result).toEqual({});
+    });
+
+    it('should handle version response with different version formats', async () => {
+      const testCases = [
+        { version: '3.0.0' },
+        { version: '2.5.1' },
+        { version: '1.0.0-beta' },
+      ];
+
+      for (const mockVersion of testCases) {
+        mockHttpController.get.mockReturnValue(of(mockVersion));
+
+        const result = await firstValueFrom(service.get(mockController));
+
+        expect(result.version).toBe(mockVersion.version);
+      }
     });
   });
 });
