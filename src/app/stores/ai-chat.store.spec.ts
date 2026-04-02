@@ -39,6 +39,29 @@ describe('AiChatStore', () => {
     },
   });
 
+  // Helper function to create mock sessions
+  const createMockSession = (
+    threadId: string,
+    title: string,
+    partial?: Partial<ChatSession>
+  ): ChatSession => ({
+    id: 1,
+    thread_id: threadId,
+    user_id: 'user-123',
+    project_id: 'project-123',
+    title: title,
+    message_count: 0,
+    llm_calls_count: 0,
+    input_tokens: 0,
+    output_tokens: 0,
+    total_tokens: 0,
+    last_message_at: new Date().toISOString(),
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    pinned: false,
+    ...partial,
+  });
+
   // Mock localStorage
   const localStorageMock = (() => {
     let store: Record<string, string> = {};
@@ -86,22 +109,9 @@ describe('AiChatStore', () => {
     });
 
     it('should clear messages and sessions when setting new project ID', () => {
-      store.setSessions([{
-        id: 1,
-        thread_id: 'session-1',
-        user_id: 'user-123',
-        project_id: 'project-123',
-        title: 'Session 1',
-        message_count: 0,
-        llm_calls_count: 0,
-        input_tokens: 0,
-        output_tokens: 0,
-        total_tokens: 0,
-        last_message_at: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        pinned: false,
-      }]);
+      store.setSessions([
+        createMockSession('session-1', 'Session 1'),
+      ]);
       store.setMessages('session-1', [createMockMessage('user', 'Hello')]);
 
       store.setCurrentProjectId('project-new');
@@ -144,23 +154,6 @@ describe('AiChatStore', () => {
   /* ==================== Sessions State ==================== */
 
   describe('Sessions Management', () => {
-    const createMockSession = (threadId: string, title: string): ChatSession => ({
-      id: 1,
-      thread_id: threadId,
-      user_id: 'user-123',
-      project_id: 'project-123',
-      title: title,
-      message_count: 0,
-      llm_calls_count: 0,
-      input_tokens: 0,
-      output_tokens: 0,
-      total_tokens: 0,
-      last_message_at: new Date().toISOString(),
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      pinned: false,
-    });
-
     it('should set and get sessions', async () => {
       const sessions: ChatSession[] = [
         createMockSession('session-1', 'Session 1'),
@@ -234,26 +227,26 @@ describe('AiChatStore', () => {
       expect(store.getMessagesValue('session-1')).toEqual([]);
     });
 
-    it('should reset current session when deleting current session', () => {
-      const session1 = createMockSession('session-1', 'Session 1');
+    it.each([
+      ['session-1', 'session-1', true, 'deleting current session'],
+      ['session-1', 'session-2', false, 'deleting different session'],
+    ])(
+      'should reset current session when %s',
+      (currentSession: string, sessionToDelete: string, shouldReset: boolean, _description: string) => {
+        const session1 = createMockSession('session-1', 'Session 1');
+        const session2 = createMockSession('session-2', 'Session 2');
 
-      store.setSessions([session1]);
-      store.setCurrentSessionId('session-1');
-      store.deleteSession('session-1');
+        store.setSessions([session1, session2]);
+        store.setCurrentSessionId(currentSession);
+        store.deleteSession(sessionToDelete);
 
-      expect(store.getCurrentSessionIdValue()).toBeNull();
-    });
-
-    it('should not reset current session when deleting other session', () => {
-      const session1 = createMockSession('session-1', 'Session 1');
-      const session2 = createMockSession('session-2', 'Session 2');
-
-      store.setSessions([session1, session2]);
-      store.setCurrentSessionId('session-1');
-      store.deleteSession('session-2');
-
-      expect(store.getCurrentSessionIdValue()).toBe('session-1');
-    });
+        if (shouldReset) {
+          expect(store.getCurrentSessionIdValue()).toBeNull();
+        } else {
+          expect(store.getCurrentSessionIdValue()).toBe(currentSession);
+        }
+      }
+    );
   });
 
   /* ==================== Messages State ==================== */
@@ -495,42 +488,28 @@ describe('AiChatStore', () => {
       expect(values.length).toBeGreaterThan(1);
     });
 
-    it('should open panel', () => {
-      store.openPanel();
-
-      expect(store.getPanelStateValue().isOpen).toBe(true);
+    it.each([
+      ['openPanel', { isOpen: true }, 'opens panel'],
+      ['closePanel', { isOpen: false }, 'closes panel'],
+      ['maximizePanel', { isMaximized: true, isMinimized: false }, 'maximizes panel'],
+      ['minimizePanel', { isMaximized: false, isMinimized: true }, 'minimizes panel'],
+    ])('should %s', (method: keyof AiChatStore, expectedState: any, _description: string) => {
+      (store[method] as () => void)();
+      expect(store.getPanelStateValue()).toMatchObject(expectedState);
     });
 
-    it('should close panel', () => {
-      store.openPanel();
-      store.closePanel();
-
-      expect(store.getPanelStateValue().isOpen).toBe(false);
-    });
-
-    it('should maximize panel', () => {
-      store.maximizePanel();
-
-      const state = store.getPanelStateValue();
-      expect(state.isMaximized).toBe(true);
-      expect(state.isMinimized).toBe(false);
-    });
-
-    it('should minimize panel', () => {
-      store.minimizePanel();
-
-      const state = store.getPanelStateValue();
-      expect(state.isMaximized).toBe(false);
-      expect(state.isMinimized).toBe(true);
-    });
-
-    it('should restore panel', () => {
+    it('should restore panel from maximized or minimized state', () => {
+      // Test restore from maximized
       store.maximizePanel();
       store.restorePanel();
+      expect(store.getPanelStateValue().isMaximized).toBe(false);
+      expect(store.getPanelStateValue().isMinimized).toBe(false);
 
-      const state = store.getPanelStateValue();
-      expect(state.isMaximized).toBe(false);
-      expect(state.isMinimized).toBe(false);
+      // Test restore from minimized
+      store.minimizePanel();
+      store.restorePanel();
+      expect(store.getPanelStateValue().isMaximized).toBe(false);
+      expect(store.getPanelStateValue().isMinimized).toBe(false);
     });
 
     it('should update panel position', () => {
@@ -642,22 +621,7 @@ describe('AiChatStore', () => {
       // Setup some state
       store.setCurrentProjectId('project-123');
       store.setCurrentSessionId('session-123');
-      store.setSessions([{
-        id: 1,
-        thread_id: 'session-1',
-        user_id: 'user-123',
-        project_id: 'project-123',
-        title: 'Session 1',
-        message_count: 0,
-        llm_calls_count: 0,
-        input_tokens: 0,
-        output_tokens: 0,
-        total_tokens: 0,
-        last_message_at: new Date().toISOString(),
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        pinned: false,
-      }]);
+      store.setSessions([createMockSession('session-1', 'Session 1')]);
       store.setMessages('session-1', [createMockMessage('user', 'Hello')]);
       store.setStreamingState(true);
       store.addOrUpdateToolCall(createMockToolCall('tool-1', 'search', {}));
@@ -718,11 +682,12 @@ describe('AiChatStore', () => {
     });
 
     it('should handle multiple rapid state updates', () => {
+      const rapidStore = new AiChatStore(); // Isolated instance
       for (let i = 0; i < 100; i++) {
-        store.setStreamingState(i % 2 === 0);
+        rapidStore.setStreamingState(i % 2 === 0);
       }
 
-      expect(store.getStreamingStateValue()).toBe(false);
+      expect(rapidStore.getStreamingStateValue()).toBe(false);
     });
   });
 });
