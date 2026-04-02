@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { MapSettingsService } from './mapsettings.service';
 
 describe('MapSettingsService', () => {
@@ -19,6 +19,10 @@ describe('MapSettingsService', () => {
     });
 
     service = new MapSettingsService();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   describe('Service Creation', () => {
@@ -78,26 +82,40 @@ describe('MapSettingsService', () => {
 
     it('should emit on symbolScalingSubject', () => {
       let emittedValue: boolean | undefined;
-      service.symbolScalingSubject.subscribe((value) => {
+      const subscription = service.symbolScalingSubject.subscribe((value) => {
         emittedValue = value;
       });
 
       service.setSymbolScaling(true);
 
       expect(emittedValue).toBe(true);
+      subscription.unsubscribe();
     });
   });
 
   describe('changeMapLockValue', () => {
-    it('should emit on isMapLocked subject', () => {
+    it('should emit true on isMapLocked subject', () => {
       let emittedValue: boolean | undefined;
-      service.isMapLocked.subscribe((value) => {
+      const subscription = service.isMapLocked.subscribe((value) => {
         emittedValue = value;
       });
 
       service.changeMapLockValue(true);
 
       expect(emittedValue).toBe(true);
+      subscription.unsubscribe();
+    });
+
+    it('should emit false on isMapLocked subject', () => {
+      let emittedValue: boolean | undefined;
+      const subscription = service.isMapLocked.subscribe((value) => {
+        emittedValue = value;
+      });
+
+      service.changeMapLockValue(false);
+
+      expect(emittedValue).toBe(false);
+      subscription.unsubscribe();
     });
   });
 
@@ -192,13 +210,14 @@ describe('MapSettingsService', () => {
 
     it('should emit values', () => {
       let emittedValue: boolean | undefined;
-      service.mapRenderedEmitter.subscribe((value) => {
+      const subscription = service.mapRenderedEmitter.subscribe((value) => {
         emittedValue = value;
       });
 
       service.mapRenderedEmitter.emit(true);
 
       expect(emittedValue).toBe(true);
+      subscription.unsubscribe();
     });
   });
 
@@ -209,13 +228,77 @@ describe('MapSettingsService', () => {
 
     it('should emit values', () => {
       let emittedValue: boolean | undefined;
-      service.isScrollDisabled.subscribe((value) => {
+      const subscription = service.isScrollDisabled.subscribe((value) => {
         emittedValue = value;
       });
 
       service.isScrollDisabled.next(true);
 
       expect(emittedValue).toBe(true);
+      subscription.unsubscribe();
+    });
+  });
+
+  describe('logConsoleSubject', () => {
+    it('should be a Subject', () => {
+      expect(service.logConsoleSubject).toBeDefined();
+    });
+
+    it('should emit values', () => {
+      let emittedValue: boolean | undefined;
+      const subscription = service.logConsoleSubject.subscribe((value) => {
+        emittedValue = value;
+      });
+
+      service.logConsoleSubject.next(true);
+
+      expect(emittedValue).toBe(true);
+      subscription.unsubscribe();
+    });
+  });
+
+  describe('Constructor - localStorage initialization', () => {
+    it('should initialize isLayerNumberVisible from localStorage when set to true', () => {
+      mockLocalStorage['layersVisibility'] = 'true';
+      const serviceWithStorage = new MapSettingsService();
+
+      expect(serviceWithStorage.isLayerNumberVisible).toBe(true);
+    });
+
+    it('should initialize isLayerNumberVisible from localStorage when set to false', () => {
+      mockLocalStorage['layersVisibility'] = 'false';
+      const serviceWithStorage = new MapSettingsService();
+
+      expect(serviceWithStorage.isLayerNumberVisible).toBe(false);
+    });
+
+    it('should initialize openConsolesInWidget from localStorage when set to true', () => {
+      mockLocalStorage['openConsolesInWidget'] = 'true';
+      const serviceWithStorage = new MapSettingsService();
+
+      expect(serviceWithStorage.openConsolesInWidget).toBe(true);
+    });
+
+    it('should initialize openReadme from localStorage when set to true', () => {
+      mockLocalStorage['openReadme'] = 'true';
+      const serviceWithStorage = new MapSettingsService();
+
+      expect(serviceWithStorage.openReadme).toBe(true);
+    });
+
+    it('should default openReadme to false when not set', () => {
+      const serviceWithStorage = new MapSettingsService();
+
+      expect(serviceWithStorage.openReadme).toBe(false);
+    });
+  });
+
+  describe('getSymbolScaling edge cases', () => {
+    it('should return false when localStorage contains invalid value', () => {
+      mockLocalStorage['symbolScaling'] = 'invalid';
+      const serviceWithStorage = new MapSettingsService();
+
+      expect(serviceWithStorage.getSymbolScaling()).toBe(false);
     });
   });
 });
