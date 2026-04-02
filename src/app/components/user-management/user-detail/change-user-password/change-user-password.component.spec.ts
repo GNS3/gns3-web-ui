@@ -177,10 +177,11 @@ describe('ChangeUserPasswordComponent', () => {
 
     it('should reset form after successful update', () => {
       mockUserService.update.mockReturnValue(of(mockUser));
+      const resetSpy = vi.spyOn(component.editPasswordForm, 'reset');
 
       component.onPasswordSave();
 
-      expect(component.editPasswordForm.reset).toHaveBeenCalledTimes(1);
+      expect(resetSpy).toHaveBeenCalledTimes(1);
     });
 
     it('should close dialog with true on successful update', () => {
@@ -212,10 +213,11 @@ describe('ChangeUserPasswordComponent', () => {
 
     it('should not reset form on update failure', () => {
       mockUserService.update.mockReturnValue(throwError(() => new Error('failed')));
+      const resetSpy = vi.spyOn(component.editPasswordForm, 'reset');
 
       component.onPasswordSave();
 
-      expect(component.editPasswordForm.reset).not.toHaveBeenCalled();
+      expect(resetSpy).not.toHaveBeenCalled();
     });
   });
 
