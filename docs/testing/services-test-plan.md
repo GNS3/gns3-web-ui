@@ -11,14 +11,14 @@
 ## 📊 总体进度
 
 ```
-进度: 11/71 (15%)
-████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+进度: 12/71 (17%)
+█████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 ```
 
 | 阶段 | 已完成 | 总计 | 进度 |
 |------|--------|------|------|
 | 🟢 简单服务 (9-50行) | 5 | 35 | 14% |
-| 🟡 中等服务 (50-150行) | 6 | 23 | 26% |
+| 🟡 中等服务 (50-150行) | 7 | 23 | 30% |
 | 🔴 复杂服务 (>150行) | 0 | 13 | 0% |
 
 ---
@@ -59,13 +59,14 @@
 | 9 | notification.service.ts | 81 行 | 43 | ✅ 完成 | 70b0d1bf |
 | 10 | link.service.ts | 133 行 | 47 | ✅ 完成 | 33bb2e41 |
 | 11 | drawing.service.ts | 148 行 | 51 | ✅ 完成 | fc20f663 |
-| 12 | symbol.service.ts | 155 行 | 60 | ✅ 完成 | 待提交 |
+| 12 | symbol.service.ts | 155 行 | 60 | ✅ 完成 | 52716a07 |
+| 13 | project.service.ts | 168 行 | 65 | ✅ 完成 | 待提交 |
 
 ### 🚧 进行中
 
 | # | 服务名 | 文件大小 | 测试数 | 状态 |
 |---|--------|----------|--------|------|
-| 13 | project.service.ts | 168 行 | - | ⏳ 下一个 |
+| 14 | template.service.ts | 208 行 | - | ⏳ 下一个 |
 
 ### 📅 待测试
 
@@ -113,7 +114,7 @@
 
 ---
 
-**最后更新**: 2026-04-02 12:43
+**最后更新**: 2026-04-02 12:45
 **维护者**: Claude Code Assistant
 
 ---
@@ -142,6 +143,31 @@
   - getSymbolFromTemplate 方法 (4个测试)
   - 缓存管理 (2个测试)
   - 边界情况 (5个测试)
+- **提交**: 待提交
+
+### ✅ project.service.ts (2026-04-02)
+- **测试数**: 65
+- **覆盖率**: 100%
+- **测试内容**:
+  - 服务创建 (5个测试)
+  - projectListUpdated 方法 (1个测试)
+  - projectUpdateLockIcon 方法 (1个测试)
+  - getReadmeFile 方法 (2个测试)
+  - postReadmeFile 方法 (2个测试)
+  - get 方法 (2个测试)
+  - open 方法 (2个测试)
+  - close 方法 (3个测试)
+  - list 方法 (3个测试)
+  - nodes/links/drawings 方法 (6个测试)
+  - add/update/delete 方法 (5个测试)
+  - getUploadPath/getExportPath 方法 (3个测试)
+  - export/getStatistics/duplicate 方法 (6个测试)
+  - isReadOnly 方法 (3个测试)
+  - getCompression/getCompressionLevel 方法 (3个测试)
+  - getexportPortableProjectPath 方法 (3个测试)
+  - getProjectStatus 方法 (2个测试)
+  - URL 构建 (1个测试)
+  - 边界情况 (6个测试)
 - **提交**: 待提交
 
 ### ✅ drawing.service.ts (2026-04-02)
