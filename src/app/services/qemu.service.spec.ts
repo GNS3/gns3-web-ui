@@ -165,9 +165,9 @@ describe('QemuService', () => {
 
   describe('getImagePath', () => {
     it.each([
-      ['qemu.img', 'http://localhost:3080/3.0.0/images/upload/qemu.img'],
-      ['image.bin', 'http://localhost:3080/3.0.0/images/upload/image.bin'],
-      ['path/to/file.qcow2', 'http://localhost:3080/3.0.0/images/upload/path/to/file.qcow2'],
+      ['qemu.img', 'http://localhost:3080/v3/images/upload/qemu.img'],
+      ['image.bin', 'http://localhost:3080/v3/images/upload/image.bin'],
+      ['path/to/file.qcow2', 'http://localhost:3080/v3/images/upload/path/to/file.qcow2'],
     ])('should return correct URL for image: %s', (filename, expected) => {
       expect(service.getImagePath(mockController, filename)).toBe(expected);
     });

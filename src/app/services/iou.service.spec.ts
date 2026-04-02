@@ -134,17 +134,17 @@ describe('IouService', () => {
   describe('getImagePath', () => {
     it('should return correct URL for image', () => {
       const result = service.getImagePath(mockController, 'iou.bin');
-      expect(result).toBe('http://localhost:3080/3.0.0/images/upload/iou.bin');
+      expect(result).toBe('http://localhost:3080/v3/images/upload/iou.bin');
     });
 
     it('should include version in path', () => {
       const result = service.getImagePath(mockController, 'image.bin');
-      expect(result).toContain('/3.0.0/');
+      expect(result).toContain('/v3/');
     });
 
     it.each([
-      { protocol: 'http:' as const, host: 'localhost', port: 3080, expected: 'http://localhost:3080/3.0.0/images/upload/test.bin' },
-      { protocol: 'https:' as const, host: '192.168.1.1', port: 443, expected: 'https://192.168.1.1:443/3.0.0/images/upload/test.bin' },
+      { protocol: 'http:' as const, host: 'localhost', port: 3080, expected: 'http://localhost:3080/v3/images/upload/test.bin' },
+      { protocol: 'https:' as const, host: '192.168.1.1', port: 443, expected: 'https://192.168.1.1:443/v3/images/upload/test.bin' },
     ])('should handle different controller configs: $protocol $host:$port', ({ protocol, host, port, expected }) => {
       const controller = { ...mockController, protocol, host, port };
       const result = service.getImagePath(controller, 'test.bin');

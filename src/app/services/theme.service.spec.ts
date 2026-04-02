@@ -412,14 +412,13 @@ describe('ThemeService', () => {
     });
 
     it('should emit resolved theme type when mapTheme is not auto', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      service.setMapTheme('dark-1' as any);
       let emittedTheme: string | undefined;
       service.mapThemeChanged.subscribe((theme) => {
         emittedTheme = theme;
       });
 
-      service.setTheme('deeppurple-amber');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      service.setMapTheme('dark-1' as any);
 
       // Should emit 'dark' because dark-1 is a dark background preset
       expect(emittedTheme).toBe('dark');

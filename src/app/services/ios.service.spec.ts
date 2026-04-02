@@ -114,13 +114,13 @@ describe('IosService', () => {
       const result = service.getImagePath(controller, 'test.bin');
 
       expect(result).toContain(`${protocol}//${host}:${port}`);
-      expect(result).toContain('/3.0.0/');
+      expect(result).toContain('/v3/');
     });
 
     it('should include version in path', () => {
       const result = service.getImagePath(mockController, 'image.bin');
 
-      expect(result).toContain('/3.0.0/');
+      expect(result).toContain('/v3/');
     });
   });
 

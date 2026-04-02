@@ -162,21 +162,21 @@ describe('NodeConsoleService', () => {
     it('should return ws URL for http protocol', () => {
       const url = service.getUrl(mockController, mockNode);
 
-      expect(url).toMatch(/^ws:\/\/localhost:3080\/3\.0\.0\/projects\/project-1\/nodes\/node-1\/console\/ws\?token=test-token$/);
+      expect(url).toMatch(/^ws:\/\/localhost:3080\/v3\/projects\/project-1\/nodes\/node-1\/console\/ws\?token=test-token$/);
     });
 
     it('should return wss URL for https protocol', () => {
       const httpsController = { ...mockController, protocol: 'https:' as any };
       const url = service.getUrl(httpsController, mockNode);
 
-      expect(url).toMatch(/^wss:\/\/localhost:3080\/3\.0\.0\/projects\/project-1\/nodes\/node-1\/console\/ws\?token=test-token$/);
+      expect(url).toMatch(/^wss:\/\/localhost:3080\/v3\/projects\/project-1\/nodes\/node-1\/console\/ws\?token=test-token$/);
     });
 
     it('should return ws URL for unknown protocol', () => {
       const unknownController = { ...mockController, protocol: 'ftp:' as any };
       const url = service.getUrl(unknownController, mockNode);
 
-      expect(url).toMatch(/^ws:\/\/localhost:3080\/3\.0\.0\/projects\/project-1\/nodes\/node-1\/console\/ws\?token=test-token$/);
+      expect(url).toMatch(/^ws:\/\/localhost:3080\/v3\/projects\/project-1\/nodes\/node-1\/console\/ws\?token=test-token$/);
     });
   });
 

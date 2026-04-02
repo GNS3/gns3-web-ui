@@ -562,7 +562,7 @@ describe('ProjectService', () => {
     it('should construct correct upload URL', () => {
       const result = service.getUploadPath(mockController, 'uuid-123', 'My Project');
 
-      expect(result).toBe('http://localhost:3080/v2/projects/uuid-123/import?name=My Project');
+      expect(result).toBe('http://localhost:3080/v3/projects/uuid-123/import?name=My Project');
     });
 
     it('should handle special characters in project name', () => {
@@ -584,7 +584,7 @@ describe('ProjectService', () => {
     it('should construct correct export URL', () => {
       const result = service.getExportPath(mockController, mockProject);
 
-      expect(result).toBe('http://localhost:3080/v2/projects/project-123/export');
+      expect(result).toBe('http://localhost:3080/v3/projects/project-123/export');
     });
 
     it('should include project_id in URL', () => {

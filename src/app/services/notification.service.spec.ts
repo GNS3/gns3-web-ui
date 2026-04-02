@@ -5,7 +5,7 @@ import { Controller } from '@models/controller';
 // Mock environment
 vi.mock('environments/environment', () => ({
   environment: {
-    current_version: 'v2',
+    current_version: 'v3',
   },
 }));
 
@@ -75,8 +75,8 @@ describe('NotificationService', () => {
 
   describe('notificationsPath', () => {
     it.each([
-      { protocol: 'http:', expected: 'ws://localhost:3080/v2/notifications/ws?token=test-token-123' },
-      { protocol: 'https:', expected: 'wss://localhost:3080/v2/notifications/ws?token=test-token-123' },
+      { protocol: 'http:', expected: 'ws://localhost:3080/v3/notifications/ws?token=test-token-123' },
+      { protocol: 'https:', expected: 'wss://localhost:3080/v3/notifications/ws?token=test-token-123' },
     ])('should build $expected protocol URL for $protocol controller', ({ protocol, expected }) => {
       const controller = { ...mockController, protocol: protocol as any };
       expect(service.notificationsPath(controller)).toBe(expected);
@@ -100,14 +100,14 @@ describe('NotificationService', () => {
 
     it('should include current version in URL path', () => {
       const result = service.notificationsPath(mockController);
-      expect(result).toContain('/v2/notifications/ws');
+      expect(result).toContain('/v3/notifications/ws');
     });
   });
 
   describe('projectNotificationsPath', () => {
     it.each([
-      { protocol: 'http:', expected: 'ws://localhost:3080/v2/projects/project-123/notifications/ws?token=test-token-123' },
-      { protocol: 'https:', expected: 'wss://localhost:3080/v2/projects/project-456/notifications/ws?token=test-token-123' },
+      { protocol: 'http:', expected: 'ws://localhost:3080/v3/projects/project-123/notifications/ws?token=test-token-123' },
+      { protocol: 'https:', expected: 'wss://localhost:3080/v3/projects/project-456/notifications/ws?token=test-token-123' },
     ])('should build $expected protocol URL for $protocol controller', ({ protocol, expected }) => {
       const controller = { ...mockController, protocol: protocol as any };
       const projectId = protocol === 'http:' ? 'project-123' : 'project-456';
@@ -127,7 +127,7 @@ describe('NotificationService', () => {
 
     it('should include all required components in URL', () => {
       const result = service.projectNotificationsPath(mockController, 'proj-1');
-      expect(result).toMatch(/^wss?:\/\/[^\/]+\/v2\/projects\/[^\/]+\/notifications\/ws\?token=.+$/);
+      expect(result).toMatch(/^wss?:\/\/[^\/]+\/v3\/projects\/[^\/]+\/notifications\/ws\?token=.+$/);
     });
   });
 
@@ -160,7 +160,7 @@ describe('NotificationService', () => {
 
       expect(MockWebSocket.instances).toHaveLength(1);
       expect(MockWebSocket.instances[0].url).toBe(
-        'ws://localhost:3080/v2/notifications/ws?token=test-token-123'
+        'ws://localhost:3080/v3/notifications/ws?token=test-token-123'
       );
     });
 
@@ -378,12 +378,12 @@ describe('NotificationService', () => {
 
     it('should maintain URL structure for notifications', () => {
       const result = service.notificationsPath(mockController);
-      expect(result).toMatch(/^wss?:\/\/[^\/]+\/v2\/notifications\/ws\?token=.+$/);
+      expect(result).toMatch(/^wss?:\/\/[^\/]+\/v3\/notifications\/ws\?token=.+$/);
     });
 
     it('should maintain URL structure for project notifications', () => {
       const result = service.projectNotificationsPath(mockController, 'proj-1');
-      expect(result).toMatch(/^wss?:\/\/[^\/]+\/v2\/projects\/[^\/]+\/notifications\/ws\?token=.+$/);
+      expect(result).toMatch(/^wss?:\/\/[^\/]+\/v3\/projects\/[^\/]+\/notifications\/ws\?token=.+$/);
     });
   });
 });
