@@ -56,6 +56,7 @@ describe('ThemeService', () => {
     });
 
     it('should be providedIn root', () => {
+      // providedIn root is set via @Injectable decorator, verified by TestBed injection
       expect(service).toBeTruthy();
     });
   });
@@ -133,8 +134,13 @@ describe('ThemeService', () => {
 
   describe('getThemeType', () => {
     it('should return light for light themes', () => {
-      const themeType = service.getThemeType();
-      expect(themeType === 'light' || themeType === 'dark').toBe(true);
+      service.setTheme('deeppurple-amber');
+      expect(service.getThemeType()).toBe('light');
+    });
+
+    it('should return dark for dark themes', () => {
+      service.setTheme('pink-bluegrey');
+      expect(service.getThemeType()).toBe('dark');
     });
   });
 
@@ -150,11 +156,14 @@ describe('ThemeService', () => {
     });
 
     it('should return dark when savedMapTheme is dark-1', () => {
+      // MapBackgroundKey values work at runtime despite MapThemeType type
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       service.setMapTheme('dark-1' as any);
       expect(service.getActualMapTheme()).toBe('dark');
     });
 
     it('should return light when savedMapTheme is light-1', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       service.setMapTheme('light-1' as any);
       expect(service.getActualMapTheme()).toBe('light');
     });
@@ -187,8 +196,7 @@ describe('ThemeService', () => {
 
       service.setTheme(currentTheme);
 
-      // Should not emit if theme doesn't change
-      // (may emit once due to implementation)
+      expect(emitCount).toBe(0);
     });
 
     it('should apply theme class to document', () => {
@@ -260,6 +268,7 @@ describe('ThemeService', () => {
     });
 
     it('should set map theme to dark-1', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       service.setMapTheme('dark-1' as any);
 
       expect((service as any).savedMapTheme).toBe('dark-1');
@@ -277,6 +286,7 @@ describe('ThemeService', () => {
         emittedTheme = theme;
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       service.setMapTheme('dark-1' as any);
 
       expect(emittedTheme).toBe('dark');
@@ -299,6 +309,7 @@ describe('ThemeService', () => {
     });
 
     it('should not restore invalid theme', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       localStorage.setItem('theme', 'invalid-theme' as any);
 
       const currentTheme = service.getCurrentTheme();
@@ -369,16 +380,62 @@ describe('ThemeService', () => {
 
       subscription.unsubscribe();
     });
+
+    it('should emit false when light mode is enabled', async () => {
+      let receivedValue: boolean | undefined;
+
+      const subscription = service.darkMode$.subscribe((isDark) => {
+        receivedValue = isDark;
+      });
+
+      service.setDarkMode(false);
+
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      expect(receivedValue).toBe(false);
+
+      subscription.unsubscribe();
+    });
+  });
+
+  describe('mapThemeChanged emission', () => {
+    it('should emit when mapTheme is auto and global theme changes', () => {
+      service.setMapTheme('auto');
+      let emittedTheme: string | undefined;
+      service.mapThemeChanged.subscribe((theme) => {
+        emittedTheme = theme;
+      });
+
+      service.setTheme('purple-green');
+
+      expect(emittedTheme).toBe('purple-green');
+    });
+
+    it('should emit resolved theme type when mapTheme is not auto', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      service.setMapTheme('dark-1' as any);
+      let emittedTheme: string | undefined;
+      service.mapThemeChanged.subscribe((theme) => {
+        emittedTheme = theme;
+      });
+
+      service.setTheme('deeppurple-amber');
+
+      // Should emit 'dark' because dark-1 is a dark background preset
+      expect(emittedTheme).toBe('dark');
+    });
   });
 
   describe('Canvas Label and Link Colors', () => {
     it('should return white color for dark-1 map theme', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       service.setMapTheme('dark-1' as any);
       expect(service.getCanvasLabelColor()).toBe('#FFFFFF');
       expect(service.getCanvasLinkColor()).toBe('#FFFFFF');
     });
 
     it('should return black color for light-1 map theme', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       service.setMapTheme('light-1' as any);
       expect(service.getCanvasLabelColor()).toBe('#000000');
       expect(service.getCanvasLinkColor()).toBe('#000000');
@@ -403,9 +460,18 @@ describe('ThemeService', () => {
     it('should load theme from localStorage on init', () => {
       localStorage.setItem('theme', 'purple-green');
 
-      // Create new service instance
-      const newService = new ThemeService(mockDocument, 'deeppurple-amber');
-      // Note: This test may not work as expected due to how localStorage mock is set up
+      // Reconfigure TestBed to simulate fresh service init with saved theme
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        providers: [
+          ThemeService,
+          { provide: DOCUMENT, useValue: mockDocument },
+          { provide: DEFAULT_THEME_TOKEN, useValue: 'deeppurple-amber' as PrebuiltTheme },
+        ],
+      });
+
+      const newService = TestBed.inject(ThemeService);
+      expect(newService.getCurrentTheme()).toBe('purple-green');
     });
   });
 
