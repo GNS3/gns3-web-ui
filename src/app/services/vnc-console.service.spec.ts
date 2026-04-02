@@ -82,6 +82,13 @@ describe('VncConsoleService', () => {
 
       expect(url).toContain('/v3/');
     });
+
+    it('should handle null authToken', () => {
+      const controllerWithNullToken = { ...mockController, authToken: null as any };
+      const url = service.buildVncWebSocketUrl(controllerWithNullToken, mockNode);
+
+      expect(url).toContain('token=null');
+    });
   });
 
   describe('buildVncConsolePageUrl', () => {
@@ -91,44 +98,21 @@ describe('VncConsoleService', () => {
       expect(url).toContain('/assets/vnc-console/index.html?');
     });
 
-    it('should include ws_url parameter', () => {
+    it.each([
+      { param: 'ws_url=', expected: 'ws%3A%2F%2F' },
+      { param: 'node_name=', expected: 'Test+VNC+Node' },
+      { param: 'node_id=', expected: 'node-1' },
+      { param: 'project_id=', expected: 'project-1' },
+      { param: 'autoconnect=', expected: '1' },
+    ])('should include $param parameter', ({ param, expected }) => {
       const url = service.buildVncConsolePageUrl(mockController, mockNode);
 
-      expect(url).toContain('ws_url=');
-      expect(url).toContain('ws%3A%2F%2F');
-    });
-
-    it('should include node_name parameter', () => {
-      const url = service.buildVncConsolePageUrl(mockController, mockNode);
-
-      expect(url).toContain('node_name=Test+VNC+Node');
-    });
-
-    it('should include node_id parameter', () => {
-      const url = service.buildVncConsolePageUrl(mockController, mockNode);
-
-      expect(url).toContain('node_id=node-1');
-    });
-
-    it('should include project_id parameter', () => {
-      const url = service.buildVncConsolePageUrl(mockController, mockNode);
-
-      expect(url).toContain('project_id=project-1');
-    });
-
-    it('should include autoconnect parameter', () => {
-      const url = service.buildVncConsolePageUrl(mockController, mockNode);
-
-      expect(url).toContain('autoconnect=1');
+      expect(url).toContain(param);
+      expect(url).toContain(expected);
     });
   });
 
   describe('openVncConsole', () => {
-    beforeEach(() => {
-      mockNode.status = 'started';
-      mockNode.console_type = 'vnc';
-    });
-
     it('should open console for started vnc node', () => {
       service.openVncConsole(mockController, mockNode, false);
 
@@ -143,7 +127,7 @@ describe('VncConsoleService', () => {
 
       expect(window.open).not.toHaveBeenCalled();
       expect(mockToasterService.error).toHaveBeenCalledWith(
-        'Node must be started before opening console'
+        'Node must be started before opening console',
       );
     });
 
@@ -154,17 +138,14 @@ describe('VncConsoleService', () => {
 
       expect(window.open).not.toHaveBeenCalled();
       expect(mockToasterService.error).toHaveBeenCalledWith(
-        'Node console type is telnet, not vnc'
+        'Node console type is telnet, not vnc',
       );
     });
 
     it('should open in new tab when inNewTab is true', () => {
       service.openVncConsole(mockController, mockNode, true);
 
-      expect(window.open).toHaveBeenCalledWith(
-        expect.any(String),
-        '_blank'
-      );
+      expect(window.open).toHaveBeenCalledWith(expect.any(String), '_blank');
     });
 
     it('should open in popup window with default size when inNewTab is false', () => {
@@ -173,12 +154,12 @@ describe('VncConsoleService', () => {
       expect(window.open).toHaveBeenCalledWith(
         expect.any(String),
         'VNC-Test VNC Node',
-        expect.stringContaining('width=1034')
+        expect.stringContaining('width=1034'),
       );
       expect(window.open).toHaveBeenCalledWith(
         expect.any(String),
         'VNC-Test VNC Node',
-        expect.stringContaining('height=778')
+        expect.stringContaining('height=778'),
       );
     });
 
@@ -192,13 +173,33 @@ describe('VncConsoleService', () => {
       expect(window.open).toHaveBeenCalledWith(
         expect.any(String),
         'VNC-Test VNC Node',
-        expect.stringContaining('width=1290')
+        expect.stringContaining('width=1290'),
       );
       expect(window.open).toHaveBeenCalledWith(
         expect.any(String),
         'VNC-Test VNC Node',
-        expect.stringContaining('height=730')
+        expect.stringContaining('height=730'),
       );
+    });
+
+    it('should handle null properties gracefully', () => {
+      mockNode.properties = null;
+
+      service.openVncConsole(mockController, mockNode, false);
+
+      expect(window.open).toHaveBeenCalled();
+      expect(mockToasterService.error).not.toHaveBeenCalled();
+    });
+
+    it('should handle invalid resolution format in properties', () => {
+      mockNode.properties = {
+        console_resolution: 'invalid',
+      } as any;
+
+      service.openVncConsole(mockController, mockNode, false);
+
+      expect(window.open).toHaveBeenCalled();
+      expect(mockToasterService.error).not.toHaveBeenCalled();
     });
 
     it('should show error when popup is blocked', () => {
@@ -207,7 +208,7 @@ describe('VncConsoleService', () => {
       service.openVncConsole(mockController, mockNode, false);
 
       expect(mockToasterService.error).toHaveBeenCalledWith(
-        'Popup was blocked. Please allow popups for this site.'
+        'Popup was blocked. Please allow popups for this site.',
       );
     });
 
@@ -219,7 +220,7 @@ describe('VncConsoleService', () => {
       service.openVncConsole(mockController, mockNode, false);
 
       expect(mockToasterService.error).toHaveBeenCalledWith(
-        'Failed to open VNC console: Test error'
+        'Failed to open VNC console: Test error',
       );
     });
   });
