@@ -2,14 +2,14 @@
 
 > **Last Updated**: 2026-04-02
 > **Total Components**: 231 (`.component.ts` files)
-> **Completed**: 57
-> **Remaining**: 174
+> **Completed**: 59
+> **Remaining**: 172
 
 This document tracks the progress of creating unit test files (`.spec.ts`) for all Angular components in the project.
 
 ## Progress Summary
 
-- [ ] 57 / 231 components completed (24.7%)
+- [ ] 59 / 231 components completed (25.5%)
 
 ---
 
@@ -316,8 +316,8 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 - [ ] save-project-dialog/save-project-dialog.component.ts
 
 ### resource-pool-details (2 components)
-- [ ] delete-resource-confirmation-dialog/delete-resource-confirmation-dialog.component.ts
-- [ ] resource-pool-details.component.ts
+- [x] delete-resource-confirmation-dialog/delete-resource-confirmation-dialog.component.ts
+- [x] resource-pool-details.component.ts
 
 ### resource-pools-management (3 components)
 - [ ] add-resource-pool-dialog/add-resource-pool-dialog.component.ts
