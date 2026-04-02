@@ -11,7 +11,7 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
-    "types": ["jasmine", "jest", "mocha", "node"],
+    "types": ["node"],
     "typeRoots": [
       "node_modules/@types",
       "src/types"

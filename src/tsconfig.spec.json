@@ -3,7 +3,6 @@
   "compilerOptions": {
     "outDir": "../out-tsc/spec",
     "baseUrl": "./",
-    "target": "es2020",
     "paths": {
       "@components/*": ["app/components/*"],
       "@services/*": ["app/services/*"],
@@ -12,12 +11,11 @@
       "@models/*": ["app/models/*"],
       "@utils/*": ["app/utils/*"]
     },
-    "types": [
-      "node"
-    ]
+    "types": ["node"]
   },
   "include": [
     "**/*.spec.ts",
-    "**/*.d.ts"
+    "**/*.d.ts",
+    "test-setup.ts"
   ]
 }
