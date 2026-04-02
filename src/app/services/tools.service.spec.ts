@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { ToolsService } from './tools.service';
-import { Subject } from 'rxjs';
+import { firstValueFrom, Subject, filter } from 'rxjs';
 
 describe('ToolsService', () => {
   let service: ToolsService;
@@ -15,14 +15,6 @@ describe('ToolsService', () => {
     });
 
     it('should initialize all tool subjects', () => {
-      expect(service.isSelectionToolActivated).toBeDefined();
-      expect(service.isMovingToolActivated).toBeDefined();
-      expect(service.isTextEditingToolActivated).toBeDefined();
-      expect(service.isTextAddingToolActivated).toBeDefined();
-      expect(service.isDrawLinkToolActivated).toBeDefined();
-    });
-
-    it('should have all subjects as instances of Subject', () => {
       expect(service.isSelectionToolActivated).toBeInstanceOf(Subject);
       expect(service.isMovingToolActivated).toBeInstanceOf(Subject);
       expect(service.isTextEditingToolActivated).toBeInstanceOf(Subject);
@@ -32,193 +24,127 @@ describe('ToolsService', () => {
   });
 
   describe('Selection Tool', () => {
-    it('should activate selection tool', async () => {
-      const resultPromise = new Promise<boolean>((resolve) => {
-        service.isSelectionToolActivated.subscribe((value) => {
-          resolve(value);
-        });
-      });
-
+    it('should activate selection tool when passed true', async () => {
+      const resultPromise = firstValueFrom(
+        service.isSelectionToolActivated.pipe(filter((v) => v === true))
+      );
       service.selectionToolActivation(true);
-
-      const result = await resultPromise;
-      expect(result).toBe(true);
+      await expect(resultPromise).resolves.toBe(true);
     });
 
-    it('should deactivate selection tool', async () => {
-      const resultPromise = new Promise<boolean>((resolve) => {
-        service.isSelectionToolActivated.subscribe((value) => {
-          resolve(value);
-        });
-      });
-
+    it('should deactivate selection tool when passed false', async () => {
+      const resultPromise = firstValueFrom(
+        service.isSelectionToolActivated.pipe(filter((v) => v === false))
+      );
       service.selectionToolActivation(false);
-
-      const result = await resultPromise;
-      expect(result).toBe(false);
+      await expect(resultPromise).resolves.toBe(false);
     });
 
-    it('should emit multiple selection tool states', async () => {
+    it('should emit multiple selection tool states in order', async () => {
       const values: boolean[] = [];
-
-      const resultPromise = new Promise<void>((resolve) => {
-        service.isSelectionToolActivated.subscribe((value) => {
-          values.push(value);
-          if (values.length === 2) {
-            resolve();
-          }
-        });
+      const subscription = service.isSelectionToolActivated.subscribe((value) => {
+        values.push(value);
       });
 
       service.selectionToolActivation(true);
       service.selectionToolActivation(false);
+      service.selectionToolActivation(true);
+      service.selectionToolActivation(false);
 
-      await resultPromise;
-      expect(values).toEqual([true, false]);
+      subscription.unsubscribe();
+      expect(values).toEqual([true, false, true, false]);
     });
   });
 
   describe('Moving Tool', () => {
-    it('should activate moving tool', async () => {
-      const resultPromise = new Promise<boolean>((resolve) => {
-        service.isMovingToolActivated.subscribe((value) => {
-          resolve(value);
-        });
-      });
-
+    it('should activate moving tool when passed true', async () => {
+      const resultPromise = firstValueFrom(
+        service.isMovingToolActivated.pipe(filter((v) => v === true))
+      );
       service.movingToolActivation(true);
-
-      const result = await resultPromise;
-      expect(result).toBe(true);
+      await expect(resultPromise).resolves.toBe(true);
     });
 
-    it('should deactivate moving tool', async () => {
-      const resultPromise = new Promise<boolean>((resolve) => {
-        service.isMovingToolActivated.subscribe((value) => {
-          resolve(value);
-        });
-      });
-
+    it('should deactivate moving tool when passed false', async () => {
+      const resultPromise = firstValueFrom(
+        service.isMovingToolActivated.pipe(filter((v) => v === false))
+      );
       service.movingToolActivation(false);
-
-      const result = await resultPromise;
-      expect(result).toBe(false);
+      await expect(resultPromise).resolves.toBe(false);
     });
 
-    it('should emit multiple moving tool states', async () => {
+    it('should emit multiple moving tool states in order', async () => {
       const values: boolean[] = [];
-
-      const resultPromise = new Promise<void>((resolve) => {
-        service.isMovingToolActivated.subscribe((value) => {
-          values.push(value);
-          if (values.length === 3) {
-            resolve();
-          }
-        });
+      const subscription = service.isMovingToolActivated.subscribe((value) => {
+        values.push(value);
       });
 
       service.movingToolActivation(true);
       service.movingToolActivation(false);
       service.movingToolActivation(true);
 
-      await resultPromise;
+      subscription.unsubscribe();
       expect(values).toEqual([true, false, true]);
     });
   });
 
   describe('Text Editing Tool', () => {
-    it('should activate text editing tool', async () => {
-      const resultPromise = new Promise<boolean>((resolve) => {
-        service.isTextEditingToolActivated.subscribe((value) => {
-          resolve(value);
-        });
-      });
-
+    it('should activate text editing tool when passed true', async () => {
+      const resultPromise = firstValueFrom(
+        service.isTextEditingToolActivated.pipe(filter((v) => v === true))
+      );
       service.textEditingToolActivation(true);
-
-      const result = await resultPromise;
-      expect(result).toBe(true);
+      await expect(resultPromise).resolves.toBe(true);
     });
 
-    it('should deactivate text editing tool', async () => {
-      const resultPromise = new Promise<boolean>((resolve) => {
-        service.isTextEditingToolActivated.subscribe((value) => {
-          resolve(value);
-        });
-      });
-
+    it('should deactivate text editing tool when passed false', async () => {
+      const resultPromise = firstValueFrom(
+        service.isTextEditingToolActivated.pipe(filter((v) => v === false))
+      );
       service.textEditingToolActivation(false);
-
-      const result = await resultPromise;
-      expect(result).toBe(false);
+      await expect(resultPromise).resolves.toBe(false);
     });
   });
 
   describe('Text Adding Tool', () => {
-    it('should activate text adding tool', async () => {
-      const resultPromise = new Promise<boolean>((resolve) => {
-        service.isTextAddingToolActivated.subscribe((value) => {
-          resolve(value);
-        });
-      });
-
+    it('should activate text adding tool when passed true', async () => {
+      const resultPromise = firstValueFrom(
+        service.isTextAddingToolActivated.pipe(filter((v) => v === true))
+      );
       service.textAddingToolActivation(true);
-
-      const result = await resultPromise;
-      expect(result).toBe(true);
+      await expect(resultPromise).resolves.toBe(true);
     });
 
-    it('should deactivate text adding tool', async () => {
-      const resultPromise = new Promise<boolean>((resolve) => {
-        service.isTextAddingToolActivated.subscribe((value) => {
-          resolve(value);
-        });
-      });
-
+    it('should deactivate text adding tool when passed false', async () => {
+      const resultPromise = firstValueFrom(
+        service.isTextAddingToolActivated.pipe(filter((v) => v === false))
+      );
       service.textAddingToolActivation(false);
-
-      const result = await resultPromise;
-      expect(result).toBe(false);
+      await expect(resultPromise).resolves.toBe(false);
     });
   });
 
   describe('Draw Link Tool', () => {
-    it('should activate draw link tool', async () => {
-      const resultPromise = new Promise<boolean>((resolve) => {
-        service.isDrawLinkToolActivated.subscribe((value) => {
-          resolve(value);
-        });
-      });
-
+    it('should activate draw link tool when passed true', async () => {
+      const resultPromise = firstValueFrom(
+        service.isDrawLinkToolActivated.pipe(filter((v) => v === true))
+      );
       service.drawLinkToolActivation(true);
-
-      const result = await resultPromise;
-      expect(result).toBe(true);
+      await expect(resultPromise).resolves.toBe(true);
     });
 
-    it('should deactivate draw link tool', async () => {
-      const resultPromise = new Promise<boolean>((resolve) => {
-        service.isDrawLinkToolActivated.subscribe((value) => {
-          resolve(value);
-        });
-      });
-
+    it('should deactivate draw link tool when passed false', async () => {
+      const resultPromise = firstValueFrom(
+        service.isDrawLinkToolActivated.pipe(filter((v) => v === false))
+      );
       service.drawLinkToolActivation(false);
-
-      const result = await resultPromise;
-      expect(result).toBe(false);
+      await expect(resultPromise).resolves.toBe(false);
     });
 
     it('should toggle draw link tool state', async () => {
       const values: boolean[] = [];
-
-      const resultPromise = new Promise<void>((resolve) => {
-        service.isDrawLinkToolActivated.subscribe((value) => {
-          values.push(value);
-          if (values.length === 4) {
-            resolve();
-          }
-        });
+      const subscription = service.isDrawLinkToolActivated.subscribe((value) => {
+        values.push(value);
       });
 
       service.drawLinkToolActivation(true);
@@ -226,7 +152,7 @@ describe('ToolsService', () => {
       service.drawLinkToolActivation(true);
       service.drawLinkToolActivation(false);
 
-      await resultPromise;
+      subscription.unsubscribe();
       expect(values).toEqual([true, false, true, false]);
     });
   });
@@ -237,55 +163,68 @@ describe('ToolsService', () => {
       let movingCount = 0;
       let drawLinkCount = 0;
 
-      service.isSelectionToolActivated.subscribe(() => selectionCount++);
-      service.isMovingToolActivated.subscribe(() => movingCount++);
-      service.isDrawLinkToolActivated.subscribe(() => drawLinkCount++);
+      const sub1 = service.isSelectionToolActivated.subscribe(() => selectionCount++);
+      const sub2 = service.isMovingToolActivated.subscribe(() => movingCount++);
+      const sub3 = service.isDrawLinkToolActivated.subscribe(() => drawLinkCount++);
 
       service.selectionToolActivation(true);
       service.movingToolActivation(true);
       service.drawLinkToolActivation(true);
 
-      // Wait for all subscriptions to process
-      await new Promise(resolve => setTimeout(resolve, 10));
-
       expect(selectionCount).toBe(1);
       expect(movingCount).toBe(1);
       expect(drawLinkCount).toBe(1);
+
+      sub1.unsubscribe();
+      sub2.unsubscribe();
+      sub3.unsubscribe();
     });
   });
 
   describe('Edge Cases', () => {
     it('should handle rapid activation changes', async () => {
       const values: boolean[] = [];
-
-      service.isSelectionToolActivated.subscribe((value) => {
+      const subscription = service.isSelectionToolActivated.subscribe((value) => {
         values.push(value);
       });
 
-      // Rapidly toggle 10 times
       for (let i = 0; i < 10; i++) {
         service.selectionToolActivation(i % 2 === 0);
       }
 
-      // Wait for all emissions to process
-      await new Promise(resolve => setTimeout(resolve, 10));
-
       expect(values.length).toBe(10);
       expect(values[values.length - 1]).toBe(false);
+
+      subscription.unsubscribe();
     });
 
-    it('should handle undefined boolean conversion', async () => {
-      const resultPromise = new Promise<any>((resolve) => {
-        service.isSelectionToolActivated.subscribe((value) => {
-          resolve(value);
-        });
+    it('should pass through undefined boolean conversion', async () => {
+      const resultPromise = firstValueFrom(
+        service.isSelectionToolActivated.pipe(filter((v) => v === undefined))
+      );
+      service.selectionToolActivation(undefined as unknown as boolean);
+      await expect(resultPromise).resolves.toBeUndefined();
+    });
+
+    it('should pass through null boolean conversion', async () => {
+      const resultPromise = firstValueFrom(
+        service.isSelectionToolActivated.pipe(filter((v) => v === null))
+      );
+      service.selectionToolActivation(null as unknown as boolean);
+      await expect(resultPromise).resolves.toBeNull();
+    });
+
+    it('should handle string conversion to boolean', async () => {
+      const values: (string | boolean | null | undefined)[] = [];
+      const subscription = service.isSelectionToolActivated.subscribe((value) => {
+        values.push(value);
       });
 
-      service.selectionToolActivation(undefined as any);
+      service.selectionToolActivation('truthy' as unknown as boolean);
+      service.selectionToolActivation('' as unknown as boolean);
 
-      const result = await resultPromise;
-      // Subject passes through undefined as-is
-      expect(result).toBeUndefined();
+      subscription.unsubscribe();
+      expect(values).toEqual(['truthy', '']);
     });
   });
 });
