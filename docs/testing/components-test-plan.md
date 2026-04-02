@@ -2,14 +2,14 @@
 
 > **Last Updated**: 2026-04-02
 > **Total Components**: 231 (`.component.ts` files)
-> **Completed**: 54
-> **Remaining**: 177
+> **Completed**: 57
+> **Remaining**: 174
 
 This document tracks the progress of creating unit test files (`.spec.ts`) for all Angular components in the project.
 
 ## Progress Summary
 
-- [ ] 54 / 231 components completed (23.4%)
+- [ ] 57 / 231 components completed (24.7%)
 
 ---
 
@@ -341,9 +341,9 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 - [x] snapshot-menu-item/snapshot-menu-item.component.ts
 
 ### system-status (3 components)
-- [ ] status-chart/status-chart.component.ts
-- [ ] status-info/status-info.component.ts
-- [ ] system-status.component.ts
+- [x] status-chart/status-chart.component.ts
+- [x] status-info/status-info.component.ts
+- [x] system-status.component.ts
 
 ### template (2 components)
 - [ ] template.component.ts
