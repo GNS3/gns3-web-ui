@@ -1,13 +1,21 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { PlatformService } from './platform.service';
 
 describe('PlatformService', () => {
   let service: PlatformService;
-  let originalPlatform: string;
+  let originalPlatform: string | undefined;
 
   beforeEach(() => {
-    originalPlatform = Object.getOwnPropertyDescriptor(navigator, 'platform')?.toString() || '';
+    originalPlatform = Object.getOwnPropertyDescriptor(navigator, 'platform')?.value;
     service = new PlatformService();
+  });
+
+  afterEach(() => {
+    Object.defineProperty(navigator, 'platform', {
+      value: originalPlatform,
+      writable: true,
+      configurable: true,
+    });
   });
 
   describe('Service Creation', () => {
@@ -21,68 +29,60 @@ describe('PlatformService', () => {
   });
 
   describe('isWindows', () => {
-    it('should return true for Windows platform', () => {
-      Object.defineProperty(navigator, 'platform', {
-        value: 'Win32',
-        writable: true,
-      });
-
-      const result = new PlatformService().isWindows();
-      expect(result).toBe(true);
+    it.each([
+      { platform: 'Win32', expected: true },
+      { platform: 'Windows', expected: true },
+      { platform: 'Win64', expected: true },
+    ])('should return $expected for platform $platform', ({ platform, expected }) => {
+      Object.defineProperty(navigator, 'platform', { value: platform, writable: true });
+      expect(service.isWindows()).toBe(expected);
     });
 
-    it('should return false for non-Windows platform', () => {
-      Object.defineProperty(navigator, 'platform', {
-        value: 'Macintosh',
-        writable: true,
-      });
-
-      const result = new PlatformService().isWindows();
-      expect(result).toBe(false);
+    it.each([
+      { platform: 'Macintosh', expected: false },
+      { platform: 'Linux x86_64', expected: false },
+      { platform: '', expected: false },
+    ])('should return $expected for non-Windows platform $platform', ({ platform, expected }) => {
+      Object.defineProperty(navigator, 'platform', { value: platform, writable: true });
+      expect(service.isWindows()).toBe(expected);
     });
   });
 
   describe('isLinux', () => {
-    it('should return true for Linux platform', () => {
-      Object.defineProperty(navigator, 'platform', {
-        value: 'Linux x86_64',
-        writable: true,
-      });
-
-      const result = new PlatformService().isLinux();
-      expect(result).toBe(true);
+    it.each([
+      { platform: 'Linux x86_64', expected: true },
+      { platform: 'Linux', expected: true },
+    ])('should return $expected for platform $platform', ({ platform, expected }) => {
+      Object.defineProperty(navigator, 'platform', { value: platform, writable: true });
+      expect(service.isLinux()).toBe(expected);
     });
 
-    it('should return false for non-Linux platform', () => {
-      Object.defineProperty(navigator, 'platform', {
-        value: 'Win32',
-        writable: true,
-      });
-
-      const result = new PlatformService().isLinux();
-      expect(result).toBe(false);
+    it.each([
+      { platform: 'Win32', expected: false },
+      { platform: 'Macintosh', expected: false },
+      { platform: '', expected: false },
+    ])('should return $expected for non-Linux platform $platform', ({ platform, expected }) => {
+      Object.defineProperty(navigator, 'platform', { value: platform, writable: true });
+      expect(service.isLinux()).toBe(expected);
     });
   });
 
   describe('isDarwin', () => {
-    it('should return true for Mac platform', () => {
-      Object.defineProperty(navigator, 'platform', {
-        value: 'Macintosh',
-        writable: true,
-      });
-
-      const result = new PlatformService().isDarwin();
-      expect(result).toBe(true);
+    it.each([
+      { platform: 'Macintosh', expected: true },
+      { platform: 'MacOS', expected: true },
+    ])('should return $expected for platform $platform', ({ platform, expected }) => {
+      Object.defineProperty(navigator, 'platform', { value: platform, writable: true });
+      expect(service.isDarwin()).toBe(expected);
     });
 
-    it('should return false for non-Mac platform', () => {
-      Object.defineProperty(navigator, 'platform', {
-        value: 'Linux',
-        writable: true,
-      });
-
-      const result = new PlatformService().isDarwin();
-      expect(result).toBe(false);
+    it.each([
+      { platform: 'Win32', expected: false },
+      { platform: 'Linux x86_64', expected: false },
+      { platform: '', expected: false },
+    ])('should return $expected for non-Mac platform $platform', ({ platform, expected }) => {
+      Object.defineProperty(navigator, 'platform', { value: platform, writable: true });
+      expect(service.isDarwin()).toBe(expected);
     });
   });
 });
