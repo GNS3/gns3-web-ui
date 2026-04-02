@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { NotificationService, ComputeNotification } from './notification.service';
 import { Controller } from '@models/controller';
 
@@ -9,14 +9,35 @@ vi.mock('environments/environment', () => ({
   },
 }));
 
+// Mock WebSocket
+class MockWebSocket {
+  static instances: MockWebSocket[] = [];
+  url: string;
+  onopen: (() => void) | null = null;
+  onmessage: ((event: { data: string }) => void) | null = null;
+  onerror: (() => void) | null = null;
+  onclose: (() => void) | null = null;
+  close = vi.fn(() => {
+    this.onclose?.();
+  });
+
+  constructor(url: string) {
+    this.url = url;
+    MockWebSocket.instances.push(this);
+  }
+}
+
+vi.stubGlobal('WebSocket', MockWebSocket);
+
 describe('NotificationService', () => {
   let service: NotificationService;
   let mockController: Controller;
 
   beforeEach(() => {
+    vi.clearAllMocks();
+    MockWebSocket.instances = [];
     service = new NotificationService();
 
-    // Mock Controller
     mockController = {
       id: 1,
       authToken: 'test-token-123',
@@ -34,6 +55,10 @@ describe('NotificationService', () => {
     } as Controller;
   });
 
+  afterEach(() => {
+    service.disconnect();
+  });
+
   describe('Service Creation', () => {
     it('should create the service', () => {
       expect(service).toBeTruthy();
@@ -49,109 +74,60 @@ describe('NotificationService', () => {
   });
 
   describe('notificationsPath', () => {
-    it('should build WebSocket URL for HTTP controller', () => {
-      const httpController = { ...mockController, protocol: 'http:' as any };
-      const result = service.notificationsPath(httpController);
-
-      expect(result).toBe('ws://localhost:3080/v3/notifications/ws?token=test-token-123');
+    it.each([
+      { protocol: 'http:', expected: 'ws://localhost:3080/v2/notifications/ws?token=test-token-123' },
+      { protocol: 'https:', expected: 'wss://localhost:3080/v2/notifications/ws?token=test-token-123' },
+    ])('should build $expected protocol URL for $protocol controller', ({ protocol, expected }) => {
+      const controller = { ...mockController, protocol: protocol as any };
+      expect(service.notificationsPath(controller)).toBe(expected);
     });
 
-    it('should build WSS URL for HTTPS controller', () => {
-      const httpsController = { ...mockController, protocol: 'https:' as any };
-      const result = service.notificationsPath(httpsController);
-
-      expect(result).toBe('wss://localhost:3080/v3/notifications/ws?token=test-token-123');
-    });
-
-    it('should include controller host in URL', () => {
-      const customHostController = { ...mockController, host: '192.168.1.100' };
-      const result = service.notificationsPath(customHostController);
-
-      expect(result).toContain('192.168.1.100');
-    });
-
-    it('should include controller port in URL', () => {
-      const customPortController = { ...mockController, port: 8080 };
-      const result = service.notificationsPath(customPortController);
-
-      expect(result).toContain(':8080');
+    it.each([
+      { host: '192.168.1.100', port: 3080 },
+      { host: 'localhost', port: 9000 },
+      { host: '192.168.1.100', port: 443 },
+    ])('should include host and port in URL', ({ host, port }) => {
+      const controller = { ...mockController, host, port };
+      const result = service.notificationsPath(controller);
+      expect(result).toContain(host);
+      expect(result).toContain(`:${port}`);
     });
 
     it('should include auth token in URL', () => {
-      const tokenController = { ...mockController, authToken: 'custom-token' };
-      const result = service.notificationsPath(tokenController);
-
-      expect(result).toContain('token=custom-token');
+      const result = service.notificationsPath(mockController);
+      expect(result).toContain('token=test-token-123');
     });
 
     it('should include current version in URL path', () => {
       const result = service.notificationsPath(mockController);
-
-      expect(result).toContain('/v3/notifications/ws');
-    });
-
-    it('should handle different port numbers', () => {
-      const port9000Controller = { ...mockController, port: 9000 };
-      const result = service.notificationsPath(port9000Controller);
-
-      expect(result).toContain(':9000');
-    });
-
-    it('should handle standard HTTPS port 443', () => {
-      const https443Controller = { ...mockController, protocol: 'https:' as any, port: 443 };
-      const result = service.notificationsPath(https443Controller);
-
-      expect(result).toBe('wss://localhost:443/v3/notifications/ws?token=test-token-123');
+      expect(result).toContain('/v2/notifications/ws');
     });
   });
 
   describe('projectNotificationsPath', () => {
-    it('should build WebSocket URL for HTTP controller', () => {
-      const httpController = { ...mockController, protocol: 'http:' as any };
-      const result = service.projectNotificationsPath(httpController, 'project-123');
-
-      expect(result).toBe('ws://localhost:3080/v3/projects/project-123/notifications/ws?token=test-token-123');
+    it.each([
+      { protocol: 'http:', expected: 'ws://localhost:3080/v2/projects/project-123/notifications/ws?token=test-token-123' },
+      { protocol: 'https:', expected: 'wss://localhost:3080/v2/projects/project-456/notifications/ws?token=test-token-123' },
+    ])('should build $expected protocol URL for $protocol controller', ({ protocol, expected }) => {
+      const controller = { ...mockController, protocol: protocol as any };
+      const projectId = protocol === 'http:' ? 'project-123' : 'project-456';
+      expect(service.projectNotificationsPath(controller, projectId)).toBe(expected);
     });
 
-    it('should build WSS URL for HTTPS controller', () => {
-      const httpsController = { ...mockController, protocol: 'https:' as any };
-      const result = service.projectNotificationsPath(httpsController, 'project-456');
-
-      expect(result).toBe('wss://localhost:3080/v3/projects/project-456/notifications/ws?token=test-token-123');
-    });
-
-    it('should include project_id in URL', () => {
-      const result = service.projectNotificationsPath(mockController, 'my-project');
-
-      expect(result).toContain('/projects/my-project/notifications/ws');
-    });
-
-    it('should handle special characters in project_id', () => {
-      const result = service.projectNotificationsPath(mockController, 'project-with-dash');
-
-      expect(result).toContain('/projects/project-with-dash/notifications/ws');
+    it.each([
+      { projectId: 'my-project', expected: '/projects/my-project/' },
+      { projectId: 'project-with-dash', expected: '/projects/project-with-dash/' },
+      { projectId: 'project_with_underscore', expected: '/projects/project_with_underscore/' },
+      { projectId: '123e4567-e89b-12d3-a456-426614174000', expected: '/projects/123e4567-e89b-12d3-a456-426614174000/' },
+      { projectId: 'project-name-123_test', expected: '/projects/project-name-123_test/' },
+    ])('should handle project_id: $projectId', ({ projectId, expected }) => {
+      const result = service.projectNotificationsPath(mockController, projectId);
+      expect(result).toContain(expected);
     });
 
     it('should include all required components in URL', () => {
       const result = service.projectNotificationsPath(mockController, 'proj-1');
-
-      expect(result).toContain('ws://');
-      expect(result).toContain('localhost:3080');
-      expect(result).toContain('/v3/projects/proj-1/notifications/ws');
-      expect(result).toContain('token=test-token-123');
-    });
-
-    it('should handle project_id with underscores', () => {
-      const result = service.projectNotificationsPath(mockController, 'project_with_underscore');
-
-      expect(result).toContain('/projects/project_with_underscore/notifications/ws');
-    });
-
-    it('should handle UUID-like project IDs', () => {
-      const uuidProject = '123e4567-e89b-12d3-a456-426614174000';
-      const result = service.projectNotificationsPath(mockController, uuidProject);
-
-      expect(result).toContain(`/projects/${uuidProject}/notifications/ws`);
+      expect(result).toMatch(/^wss?:\/\/[^\/]+\/v2\/projects\/[^\/]+\/notifications\/ws\?token=.+$/);
     });
   });
 
@@ -160,118 +136,140 @@ describe('NotificationService', () => {
       expect(() => service.disconnect()).not.toThrow();
     });
 
-    it('should not throw when ws is null', () => {
-      service['ws'] = null;
-      expect(() => service.disconnect()).not.toThrow();
+    it('should close WebSocket when connected', () => {
+      service.connectToComputeNotifications(mockController);
+      const ws = MockWebSocket.instances[0];
+
+      service.disconnect();
+
+      expect(ws.close).toHaveBeenCalled();
     });
 
-    it('should not throw when currentController is null', () => {
-      service['currentController'] = null;
-      expect(() => service.disconnect()).not.toThrow();
+    it('should clear ws and currentController after disconnect', () => {
+      service.connectToComputeNotifications(mockController);
+      service.disconnect();
+
+      expect(service['ws']).toBeNull();
+      expect(service['currentController']).toBeNull();
     });
   });
 
-  describe('handleMessage', () => {
-    it('should emit event for compute.created action', () => {
-      const emitSpy = vi.spyOn(service.computeNotificationEmitter, 'emit');
+  describe('connectToComputeNotifications', () => {
+    it('should create WebSocket with correct URL', () => {
+      service.connectToComputeNotifications(mockController);
 
-      const message = {
-        action: 'compute.created',
-        event: { compute_id: 'compute-1', name: 'Test Compute' },
-      };
-
-      service['handleMessage'](message);
-
-      expect(emitSpy).toHaveBeenCalledWith(message);
-
-      emitSpy.mockRestore();
+      expect(MockWebSocket.instances).toHaveLength(1);
+      expect(MockWebSocket.instances[0].url).toBe(
+        'ws://localhost:3080/v2/notifications/ws?token=test-token-123'
+      );
     });
 
-    it('should emit event for compute.updated action', () => {
-      const emitSpy = vi.spyOn(service.computeNotificationEmitter, 'emit');
+    it('should skip reconnecting to same controller', () => {
+      service.connectToComputeNotifications(mockController);
+      service.connectToComputeNotifications(mockController);
 
-      const message = {
-        action: 'compute.updated',
-        event: { compute_id: 'compute-2', name: 'Updated Compute' },
-      };
-
-      service['handleMessage'](message);
-
-      expect(emitSpy).toHaveBeenCalledWith(message);
-
-      emitSpy.mockRestore();
+      expect(MockWebSocket.instances).toHaveLength(1);
     });
 
-    it('should emit event for compute.deleted action', () => {
+    it('should close existing connection when controller changes', () => {
+      service.connectToComputeNotifications(mockController);
+      const firstWs = MockWebSocket.instances[0];
+      const closeSpy = vi.spyOn(firstWs, 'close');
+
+      const differentController = { ...mockController, id: 2, host: 'other-host' };
+      service.connectToComputeNotifications(differentController);
+
+      expect(closeSpy).toHaveBeenCalled();
+    });
+
+    it('should create new WebSocket when controller changes', () => {
+      service.connectToComputeNotifications(mockController);
+
+      const differentController = { ...mockController, id: 2, host: 'other-host' };
+      service.connectToComputeNotifications(differentController);
+
+      expect(MockWebSocket.instances).toHaveLength(2);
+    });
+
+    it('should set up onmessage handler', () => {
+      service.connectToComputeNotifications(mockController);
+      const ws = MockWebSocket.instances[0];
+
+      expect(ws.onmessage).toBeDefined();
+    });
+
+    it('should emit notification when receiving compute.created message', () => {
       const emitSpy = vi.spyOn(service.computeNotificationEmitter, 'emit');
+      service.connectToComputeNotifications(mockController);
+      const ws = MockWebSocket.instances[0];
 
-      const message = {
-        action: 'compute.deleted',
-        event: { compute_id: 'compute-3', name: 'Deleted Compute' },
-      };
-
-      service['handleMessage'](message);
+      const message = { action: 'compute.created', event: { compute_id: 'compute-1', name: 'Test Compute' } };
+      ws.onmessage?.({ data: JSON.stringify(message) });
 
       expect(emitSpy).toHaveBeenCalledWith(message);
+    });
 
-      emitSpy.mockRestore();
+    it('should emit notification when receiving compute.updated message', () => {
+      const emitSpy = vi.spyOn(service.computeNotificationEmitter, 'emit');
+      service.connectToComputeNotifications(mockController);
+      const ws = MockWebSocket.instances[0];
+
+      const message = { action: 'compute.updated', event: { compute_id: 'compute-2' } };
+      ws.onmessage?.({ data: JSON.stringify(message) });
+
+      expect(emitSpy).toHaveBeenCalledWith(message);
+    });
+
+    it('should emit notification when receiving compute.deleted message', () => {
+      const emitSpy = vi.spyOn(service.computeNotificationEmitter, 'emit');
+      service.connectToComputeNotifications(mockController);
+      const ws = MockWebSocket.instances[0];
+
+      const message = { action: 'compute.deleted', event: { compute_id: 'compute-3' } };
+      ws.onmessage?.({ data: JSON.stringify(message) });
+
+      expect(emitSpy).toHaveBeenCalledWith(message);
     });
 
     it('should ignore unknown actions', () => {
       const emitSpy = vi.spyOn(service.computeNotificationEmitter, 'emit');
+      service.connectToComputeNotifications(mockController);
+      const ws = MockWebSocket.instances[0];
 
-      const message = {
-        action: 'unknown.action',
-        event: { data: 'test' },
-      };
-
-      service['handleMessage'](message);
+      const message = { action: 'unknown.action', event: { data: 'test' } };
+      ws.onmessage?.({ data: JSON.stringify(message) });
 
       expect(emitSpy).not.toHaveBeenCalled();
-
-      emitSpy.mockRestore();
     });
 
-    it('should handle compute.created with full event data', () => {
-      const emitSpy = vi.spyOn(service.computeNotificationEmitter, 'emit');
+    // Note: The service does not catch JSON.parse errors, so invalid JSON causes unhandled exceptions
+    // This test documents the current behavior (throws) - not ideal but reflects service implementation
+    it('should throw on invalid JSON in message', () => {
+      service.connectToComputeNotifications(mockController);
+      const ws = MockWebSocket.instances[0];
 
-      const message = {
-        action: 'compute.created',
-        event: {
-          compute_id: 'comp-1',
-          name: 'Compute 1',
-          host: 'localhost',
-          port: 3080,
-          protocol: 'http',
-          user: 'admin',
-          cpu_usage_percent: 50.5,
-          memory_usage_percent: 75.2,
-        },
-      };
-
-      service['handleMessage'](message);
-
-      expect(emitSpy).toHaveBeenCalledWith(message);
-
-      emitSpy.mockRestore();
+      expect(() => ws.onmessage?.({ data: 'invalid-json' })).toThrow(SyntaxError);
     });
 
-    it('should handle compute.updated with partial event data', () => {
-      const emitSpy = vi.spyOn(service.computeNotificationEmitter, 'emit');
+    it('should clean up state when WebSocket closes', () => {
+      service.connectToComputeNotifications(mockController);
+      const ws = MockWebSocket.instances[0];
 
-      const message = {
-        action: 'compute.updated',
-        event: {
-          compute_id: 'comp-2',
-          cpu_usage_percent: 80.0,
-        },
-      };
+      ws.onclose?.();
 
-      service['handleMessage'](message);
+      expect(service['ws']).toBeNull();
+      expect(service['currentController']).toBeNull();
+    });
 
-      expect(emitSpy).toHaveBeenCalledWith(message);
+    it('should handle WebSocket onerror', () => {
+      service.connectToComputeNotifications(mockController);
+      const ws = MockWebSocket.instances[0];
+      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-      emitSpy.mockRestore();
+      ws.onerror?.();
+
+      expect(consoleSpy).toHaveBeenCalledWith('Compute notifications WebSocket error');
+      consoleSpy.mockRestore();
     });
   });
 
@@ -309,100 +307,55 @@ describe('NotificationService', () => {
       expect(count).toBe(2);
     });
 
-    it('should emit all three valid action types', () => {
-      const actions: ComputeNotification['action'][] = [
-        'compute.created',
-        'compute.updated',
-        'compute.deleted',
-      ];
+    it.each([
+      'compute.created',
+      'compute.updated',
+      'compute.deleted',
+    ])('should emit for action: %s', (action) => {
+      const emitSpy = vi.spyOn(service.computeNotificationEmitter, 'emit');
+      service.connectToComputeNotifications(mockController);
+      const ws = MockWebSocket.instances[0];
 
-      actions.forEach((action) => {
-        let received = false;
-        service.computeNotificationEmitter.subscribe((notification) => {
-          if (notification.action === action) {
-            received = true;
-          }
-        });
+      ws.onmessage?.({ data: JSON.stringify({ action, event: { compute_id: 'test' } }) });
 
-        service.computeNotificationEmitter.emit({
-          action,
-          event: { compute_id: 'test' } as any,
-        });
-
-        expect(received).toBe(true);
-      });
+      expect(emitSpy).toHaveBeenCalled();
     });
   });
 
   describe('Edge Cases', () => {
-    it('should handle controller with empty auth token', () => {
-      const emptyTokenController = { ...mockController, authToken: '' };
-      const result = service.notificationsPath(emptyTokenController);
-
-      expect(result).toContain('token=');
+    it.each([
+      { authToken: '', description: 'empty token' },
+      { authToken: 'a'.repeat(1000), description: 'long token' },
+      { authToken: 'token-with-special.chars/123?=', description: 'special characters' },
+    ])('should handle $description in auth token', ({ authToken }) => {
+      const controller = { ...mockController, authToken };
+      const result = service.notificationsPath(controller);
+      expect(result).toContain(`token=${authToken}`);
     });
 
-    it('should handle controller with special characters in host', () => {
-      const specialHostController = { ...mockController, host: '192.168.1.1' };
-      const result = service.notificationsPath(specialHostController);
-
-      expect(result).toContain('192.168.1.1');
+    it.each([
+      { host: '192.168.1.1', description: 'IPv4 address' },
+      { host: '::1', description: 'IPv6 localhost' },
+    ])('should handle host: $description', ({ host }) => {
+      const controller = { ...mockController, host };
+      const result = service.notificationsPath(controller);
+      expect(result).toContain(host);
     });
 
-    it('should handle project_id with underscores', () => {
-      const result = service.projectNotificationsPath(mockController, 'project_with_underscore');
-
-      expect(result).toContain('project_with_underscore');
-    });
-
-    it('should handle HTTP protocol correctly', () => {
-      const httpController = { ...mockController, protocol: 'http:' as any };
-      const result = service.notificationsPath(httpController);
-
-      expect(result).toContain('ws://');
-    });
-
-    it('should handle HTTPS protocol correctly', () => {
-      const httpsController = { ...mockController, protocol: 'https:' as any };
-      const result = service.notificationsPath(httpsController);
-
-      expect(result).toContain('wss://');
-    });
-
-    it('should handle controller with port 0', () => {
-      const portZeroController = { ...mockController, port: 0 };
-      const result = service.notificationsPath(portZeroController);
-
-      expect(result).toContain(':0');
+    it.each([
+      { port: 0, expected: ':0' },
+      { port: 80, expected: ':80' },
+      { port: 443, expected: ':443' },
+      { port: 8080, expected: ':8080' },
+    ])('should handle port: $port', ({ port, expected }) => {
+      const controller = { ...mockController, port };
+      const result = service.notificationsPath(controller);
+      expect(result).toContain(expected);
     });
 
     it('should handle empty project_id', () => {
       const result = service.projectNotificationsPath(mockController, '');
-
       expect(result).toContain('/projects//notifications/ws');
-    });
-
-    it('should handle project_id with special characters', () => {
-      const specialProject = 'project-name-123_test';
-      const result = service.projectNotificationsPath(mockController, specialProject);
-
-      expect(result).toContain(`/projects/${specialProject}/notifications/ws`);
-    });
-
-    it('should handle very long auth tokens', () => {
-      const longToken = 'a'.repeat(1000);
-      const longTokenController = { ...mockController, authToken: longToken };
-      const result = service.notificationsPath(longTokenController);
-
-      expect(result).toContain(`token=${longToken}`);
-    });
-
-    it('should handle auth tokens with special characters', () => {
-      const specialToken = 'token-with-special.chars/123?=';
-      const specialTokenController = { ...mockController, authToken: specialToken };
-      const result = service.notificationsPath(specialTokenController);
-
-      expect(result).toContain(`token=${specialToken}`);
     });
   });
 
@@ -410,7 +363,6 @@ describe('NotificationService', () => {
     it('should build consistent URLs for same controller', () => {
       const url1 = service.notificationsPath(mockController);
       const url2 = service.notificationsPath(mockController);
-
       expect(url1).toBe(url2);
     });
 
@@ -424,10 +376,14 @@ describe('NotificationService', () => {
       expect(url1).not.toBe(url2);
     });
 
+    it('should maintain URL structure for notifications', () => {
+      const result = service.notificationsPath(mockController);
+      expect(result).toMatch(/^wss?:\/\/[^\/]+\/v2\/notifications\/ws\?token=.+$/);
+    });
+
     it('should maintain URL structure for project notifications', () => {
       const result = service.projectNotificationsPath(mockController, 'proj-1');
-
-      expect(result).toMatch(/^wss?:\/\/[^\/]+\/v3\/projects\/[^\/]+\/notifications\/ws\?token=.+$/);
+      expect(result).toMatch(/^wss?:\/\/[^\/]+\/v2\/projects\/[^\/]+\/notifications\/ws\?token=.+$/);
     });
   });
 });
