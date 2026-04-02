@@ -19,68 +19,60 @@ describe('VpcsConfigurationService', () => {
   });
 
   describe('getConsoleTypes', () => {
-    it('should return telnet and none console types', () => {
-      const result = service.getConsoleTypes();
-
-      expect(result).toContain('telnet');
-      expect(result).toContain('none');
+    it('should return exactly telnet and none', () => {
+      expect(service.getConsoleTypes()).toEqual(['telnet', 'none']);
     });
 
     it('should return array with exactly 2 console types', () => {
-      const result = service.getConsoleTypes();
+      expect(service.getConsoleTypes()).toHaveLength(2);
+    });
 
-      expect(result).toHaveLength(2);
+    it('should return independent array on each call', () => {
+      const result1 = service.getConsoleTypes();
+      const result2 = service.getConsoleTypes();
+      expect(result1).not.toBe(result2);
     });
   });
 
   describe('getCategories', () => {
-    it('should return categories array', () => {
+    it('should return array of category name and type pairs', () => {
       const result = service.getCategories();
-
       expect(result).toBeInstanceOf(Array);
+      expect(result.every(Array.isArray)).toBe(true);
     });
 
-    it('should return 5 categories', () => {
-      const result = service.getCategories();
-
-      expect(result).toHaveLength(5);
+    it('should return exactly 5 categories in correct order', () => {
+      expect(service.getCategories()).toEqual([
+        ['Default', 'guest'],
+        ['Routers', 'router'],
+        ['Switches', 'switch'],
+        ['End devices', 'guest'],
+        ['Security devices', 'firewall'],
+      ]);
     });
 
-    it('should include Default category with guest', () => {
-      const result = service.getCategories();
-
-      expect(result).toContainEqual(['Default', 'guest']);
+    it.each([
+      ['Default', 'guest'],
+      ['Routers', 'router'],
+      ['Switches', 'switch'],
+      ['End devices', 'guest'],
+      ['Security devices', 'firewall'],
+    ])('should include $0 category with $1', (name, value) => {
+      expect(service.getCategories()).toContainEqual([name, value]);
     });
 
-    it('should include Routers category with router', () => {
-      const result = service.getCategories();
-
-      expect(result).toContainEqual(['Routers', 'router']);
-    });
-
-    it('should include Switches category with switch', () => {
-      const result = service.getCategories();
-
-      expect(result).toContainEqual(['Switches', 'switch']);
-    });
-
-    it('should include End devices category with guest', () => {
-      const result = service.getCategories();
-
-      expect(result).toContainEqual(['End devices', 'guest']);
-    });
-
-    it('should include Security devices category with firewall', () => {
-      const result = service.getCategories();
-
-      expect(result).toContainEqual(['Security devices', 'firewall']);
-    });
-
-    it('should return independent array each call', () => {
+    it('should return independent array on each call', () => {
       const result1 = service.getCategories();
       const result2 = service.getCategories();
-
       expect(result1).not.toBe(result2);
+    });
+
+    it('should have valid category types', () => {
+      const result = service.getCategories();
+      const validTypes = ['guest', 'router', 'switch', 'firewall'];
+      result.forEach((category) => {
+        expect(validTypes).toContain(category[1]);
+      });
     });
   });
 });
