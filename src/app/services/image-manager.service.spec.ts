@@ -76,7 +76,7 @@ describe('ImageManagerService', () => {
     it('should include version in path', () => {
       const result = service.getImagePath(mockController, false, 'image.img');
 
-      expect(result).toContain('/3.0.0/');
+      expect(result).toContain('/v3/');
     });
 
     it('should include install_appliances parameter when true', () => {

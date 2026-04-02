@@ -240,7 +240,7 @@ describe('ComputeService', () => {
       const mockStats: ControllerStatistics = {
         cpu_usage_percent: 50.5,
         memory_usage_percent: 75.2,
-      } as ControllerStatistics;
+      } as unknown as ControllerStatistics;
 
       mockHttpController.get.mockReturnValue(of(mockStats));
 

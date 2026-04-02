@@ -493,7 +493,7 @@ describe('InfoService', () => {
         { name: 'eth0', link_type: null as any },
         { name: 'eth1', link_type: undefined as any },
       ];
-      const nodeWithIssuePorts = { ...mockNode, ports: portsWithIssues };
+      const nodeWithIssuePorts = { ...mockNode, ports: portsWithIssues } as unknown as Node;
       const result = service.getInfoAboutNode(nodeWithIssuePorts, mockController);
 
       // Should include port info even with null/undefined link_type

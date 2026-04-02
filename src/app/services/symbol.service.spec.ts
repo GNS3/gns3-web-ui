@@ -36,13 +36,13 @@ describe('SymbolService', () => {
       id: 1,
       authToken: '',
       name: 'Test Controller',
-      location: 'local',
+      location: 'local' as any,
       host: 'localhost',
       port: 3080,
       path: '',
       ubridge_path: '',
-      status: 'running',
-      protocol: 'http:',
+      status: 'running' as any,
+      protocol: 'http:' as any,
       username: '',
       password: '',
       tokenExpired: false,
@@ -55,19 +55,19 @@ describe('SymbolService', () => {
         filename: 'router.svg',
         name: 'Router',
         builtin: true,
-      } as Symbol,
+      } as unknown as Symbol,
       {
         symbol_id: 'sym-2',
         filename: 'switch.svg',
         name: 'Switch',
         builtin: true,
-      } as Symbol,
+      } as unknown as Symbol,
       {
         symbol_id: 'sym-3',
         filename: 'custom.svg',
         name: 'Custom',
         builtin: false,
-      } as Symbol,
+      } as unknown as Symbol,
     ];
 
     service = new SymbolService(mockHttpController);
@@ -110,7 +110,7 @@ describe('SymbolService', () => {
     });
 
     it('should find symbol with correct properties', () => {
-      const result = service.get('sym-2');
+      const result = service.get('sym-2') as any;
       expect(result?.symbol_id).toBe('sym-2');
       expect(result?.filename).toBe('switch.svg');
       expect(result?.name).toBe('Switch');
@@ -579,11 +579,11 @@ describe('SymbolService', () => {
 
       const result = service.getSymbolFromTemplate(mockController, template);
 
-      expect(result).toBe('http://localhost:3080/v2/symbols/router.svg/raw');
+      expect(result).toBe('http://localhost:3080/v3/symbols/router.svg/raw');
     });
 
     it('should construct correct URL for https controller', () => {
-      const httpsController = { ...mockController, protocol: 'https:' };
+      const httpsController = { ...mockController, protocol: 'https:' as any };
       const template: Template = {
         template_id: 'tmpl-2',
         name: 'Test Template',
@@ -593,7 +593,7 @@ describe('SymbolService', () => {
 
       const result = service.getSymbolFromTemplate(httpsController, template);
 
-      expect(result).toBe('https://localhost:3080/v2/symbols/switch.svg/raw');
+      expect(result).toBe('https://localhost:3080/v3/symbols/switch.svg/raw');
     });
 
     it('should include controller port in URL', () => {
@@ -607,7 +607,7 @@ describe('SymbolService', () => {
 
       const result = service.getSymbolFromTemplate(customPortController, template);
 
-      expect(result).toBe('http://localhost:8080/v2/symbols/custom.svg/raw');
+      expect(result).toBe('http://localhost:8080/v3/symbols/custom.svg/raw');
     });
 
     it('should handle symbol with special characters', () => {

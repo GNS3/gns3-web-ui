@@ -95,7 +95,7 @@ describe('ApplianceService', () => {
     it('should include version in path', () => {
       const result = service.getUploadPath(mockController, 'image.bin');
 
-      expect(result).toContain('/3.0.0/');
+      expect(result).toContain('/v3/');
     });
   });
 

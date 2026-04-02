@@ -166,7 +166,7 @@ describe('NodeConsoleService', () => {
     });
 
     it('should return wss URL for https protocol', () => {
-      const httpsController = { ...mockController, protocol: 'https:' };
+      const httpsController = { ...mockController, protocol: 'https:' as any };
       const url = service.getUrl(httpsController, mockNode);
 
       expect(url).toContain('wss://');

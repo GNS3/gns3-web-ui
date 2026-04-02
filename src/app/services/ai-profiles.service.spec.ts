@@ -90,7 +90,7 @@ describe('AiProfilesService', () => {
   describe('createConfig', () => {
     it('should call httpController.post with config', () => {
       mockHttpController.post.mockReturnValue(of({}));
-      const config = { model: 'test' };
+      const config = { name: 'test', model_type: 'openai', provider: 'openai', base_url: 'https://api.openai.com', api_key: 'test' } as any;
 
       service.createConfig(mockController, 'user-1', config);
 
@@ -187,7 +187,7 @@ describe('AiProfilesService', () => {
   describe('createGroupConfig', () => {
     it('should call httpController.post with group config', () => {
       mockHttpController.post.mockReturnValue(of({}));
-      const config = { model: 'test' };
+      const config = { model: 'test' } as any;
 
       service.createGroupConfig(mockController, 'group-1', config);
 

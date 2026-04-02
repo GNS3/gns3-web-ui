@@ -36,8 +36,8 @@ describe('VncConsoleService', () => {
       location: 'local',
       host: 'localhost',
       port: 3080,
-      protocol: 'http:',
-      status: 'running',
+      protocol: 'http:' as any,
+      status: 'running' as any,
       authToken: 'test-token',
     } as Controller;
 
@@ -71,7 +71,7 @@ describe('VncConsoleService', () => {
     });
 
     it('should return wss URL for https protocol', () => {
-      const httpsController = { ...mockController, protocol: 'https:' };
+      const httpsController = { ...mockController, protocol: 'https:' as any };
       const url = service.buildVncWebSocketUrl(httpsController, mockNode);
 
       expect(url).toContain('wss://');
@@ -80,7 +80,7 @@ describe('VncConsoleService', () => {
     it('should include version in path', () => {
       const url = service.buildVncWebSocketUrl(mockController, mockNode);
 
-      expect(url).toContain('/3.0.0/');
+      expect(url).toContain('/v3/');
     });
   });
 

@@ -53,14 +53,14 @@ describe('NotificationService', () => {
       const httpController = { ...mockController, protocol: 'http:' as any };
       const result = service.notificationsPath(httpController);
 
-      expect(result).toBe('ws://localhost:3080/v2/notifications/ws?token=test-token-123');
+      expect(result).toBe('ws://localhost:3080/v3/notifications/ws?token=test-token-123');
     });
 
     it('should build WSS URL for HTTPS controller', () => {
       const httpsController = { ...mockController, protocol: 'https:' as any };
       const result = service.notificationsPath(httpsController);
 
-      expect(result).toBe('wss://localhost:3080/v2/notifications/ws?token=test-token-123');
+      expect(result).toBe('wss://localhost:3080/v3/notifications/ws?token=test-token-123');
     });
 
     it('should include controller host in URL', () => {
@@ -87,7 +87,7 @@ describe('NotificationService', () => {
     it('should include current version in URL path', () => {
       const result = service.notificationsPath(mockController);
 
-      expect(result).toContain('/v2/notifications/ws');
+      expect(result).toContain('/v3/notifications/ws');
     });
 
     it('should handle different port numbers', () => {
@@ -101,7 +101,7 @@ describe('NotificationService', () => {
       const https443Controller = { ...mockController, protocol: 'https:' as any, port: 443 };
       const result = service.notificationsPath(https443Controller);
 
-      expect(result).toBe('wss://localhost:443/v2/notifications/ws?token=test-token-123');
+      expect(result).toBe('wss://localhost:443/v3/notifications/ws?token=test-token-123');
     });
   });
 
@@ -110,14 +110,14 @@ describe('NotificationService', () => {
       const httpController = { ...mockController, protocol: 'http:' as any };
       const result = service.projectNotificationsPath(httpController, 'project-123');
 
-      expect(result).toBe('ws://localhost:3080/v2/projects/project-123/notifications/ws?token=test-token-123');
+      expect(result).toBe('ws://localhost:3080/v3/projects/project-123/notifications/ws?token=test-token-123');
     });
 
     it('should build WSS URL for HTTPS controller', () => {
       const httpsController = { ...mockController, protocol: 'https:' as any };
       const result = service.projectNotificationsPath(httpsController, 'project-456');
 
-      expect(result).toBe('wss://localhost:3080/v2/projects/project-456/notifications/ws?token=test-token-123');
+      expect(result).toBe('wss://localhost:3080/v3/projects/project-456/notifications/ws?token=test-token-123');
     });
 
     it('should include project_id in URL', () => {
@@ -137,7 +137,7 @@ describe('NotificationService', () => {
 
       expect(result).toContain('ws://');
       expect(result).toContain('localhost:3080');
-      expect(result).toContain('/v2/projects/proj-1/notifications/ws');
+      expect(result).toContain('/v3/projects/proj-1/notifications/ws');
       expect(result).toContain('token=test-token-123');
     });
 
@@ -285,7 +285,7 @@ describe('NotificationService', () => {
 
       const message: ComputeNotification = {
         action: 'compute.created',
-        event: { compute_id: 'compute-1', name: 'Test' },
+        event: { compute_id: 'compute-1', name: 'Test' } as any,
       };
 
       service.computeNotificationEmitter.emit(message);
@@ -301,7 +301,7 @@ describe('NotificationService', () => {
 
       const message: ComputeNotification = {
         action: 'compute.created',
-        event: { compute_id: 'compute-1' },
+        event: { compute_id: 'compute-1' } as any,
       };
 
       service.computeNotificationEmitter.emit(message);
@@ -326,7 +326,7 @@ describe('NotificationService', () => {
 
         service.computeNotificationEmitter.emit({
           action,
-          event: { compute_id: 'test' },
+          event: { compute_id: 'test' } as any,
         });
 
         expect(received).toBe(true);
@@ -427,7 +427,7 @@ describe('NotificationService', () => {
     it('should maintain URL structure for project notifications', () => {
       const result = service.projectNotificationsPath(mockController, 'proj-1');
 
-      expect(result).toMatch(/^wss?:\/\/[^\/]+\/v2\/projects\/[^\/]+\/notifications\/ws\?token=.+$/);
+      expect(result).toMatch(/^wss?:\/\/[^\/]+\/v3\/projects\/[^\/]+\/notifications\/ws\?token=.+$/);
     });
   });
 });

@@ -72,7 +72,7 @@ describe('LinkService', () => {
         locked: false,
         ports: [],
         link_type: 'ethernet',
-      } as Node;
+      } as unknown as Node;
 
       mockTargetNode = {
         node_id: 'node-2',
@@ -85,7 +85,7 @@ describe('LinkService', () => {
         locked: false,
         ports: [],
         link_type: 'ethernet',
-      } as Node;
+      } as unknown as Node;
 
       mockSourcePort = {
         port_number: 0,
@@ -94,7 +94,7 @@ describe('LinkService', () => {
         name: 'Ethernet0',
         link_type: 'ethernet',
         data_link_types: ['ethernet'],
-      } as Port;
+      } as unknown as Port;
 
       mockTargetPort = {
         port_number: 0,
@@ -103,7 +103,7 @@ describe('LinkService', () => {
         name: 'Ethernet0',
         link_type: 'ethernet',
         data_link_types: ['ethernet'],
-      } as Port;
+      } as unknown as Port;
     });
 
     it('should call httpController.post with correct endpoint', () => {
@@ -244,7 +244,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-123',
         project_id: 'project-456',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.get.mockReturnValue(of(mockLink));
 
@@ -260,7 +260,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-789',
         project_id: 'project-101',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.get.mockReturnValue(of(mockLink));
 
@@ -286,7 +286,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-delete',
         project_id: 'project-delete',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.delete.mockReturnValue(of({}));
 
@@ -302,7 +302,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-1',
         project_id: 'project-1',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.delete.mockReturnValue(of({}));
 
@@ -315,7 +315,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-to-delete',
         project_id: 'proj-123',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.delete.mockReturnValue(of({}));
 
@@ -341,7 +341,7 @@ describe('LinkService', () => {
             label: { rotation: 0, style: 'style', text: 'text', x: 10, y: 20 },
           },
         ],
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.put.mockReturnValue(of(mockLink));
 
@@ -363,7 +363,7 @@ describe('LinkService', () => {
             protocol: 'ethernet',
           },
         },
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.put.mockReturnValue(of(mockLink));
 
@@ -381,7 +381,7 @@ describe('LinkService', () => {
         link_id: 'link-3',
         project_id: 'project-3',
         suspend: true,
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.put.mockReturnValue(of(mockLink));
 
@@ -400,7 +400,7 @@ describe('LinkService', () => {
         nodes: [],
         filters: {},
         suspend: false,
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.put.mockReturnValue(of(mockLink));
 
@@ -418,7 +418,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-5',
         project_id: 'project-5',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.put.mockReturnValue(of(mockLink));
 
@@ -434,7 +434,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-update',
         project_id: 'project-update',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.put.mockReturnValue(of(mockLink));
 
@@ -454,7 +454,7 @@ describe('LinkService', () => {
         link_id: 'link-1',
         project_id: 'project-1',
         link_style: 'elastic',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.put.mockReturnValue(of(mockLink));
 
@@ -471,7 +471,7 @@ describe('LinkService', () => {
         link_id: 'link-style',
         project_id: 'project-style',
         link_style: 'manhattan',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.put.mockReturnValue(of(mockLink));
 
@@ -489,7 +489,7 @@ describe('LinkService', () => {
         link_id: 'link-1',
         project_id: 'project-1',
         link_style: 'linear',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.put.mockReturnValue(of(mockLink));
 
@@ -504,7 +504,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-1',
         project_id: 'project-1',
-      } as Link;
+      } as unknown as Link;
 
       const mockFilters: FilterDescription[] = [
         { type: 'ethernet', name: 'Ethernet Filter' } as FilterDescription,
@@ -524,7 +524,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-2',
         project_id: 'project-2',
-      } as Link;
+      } as unknown as Link;
 
       const mockFilters: FilterDescription[] = [
         { type: 'udp', name: 'UDP Filter' } as FilterDescription,
@@ -541,7 +541,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-3',
         project_id: 'project-3',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.get.mockReturnValue(of([]));
 
@@ -556,7 +556,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-1',
         project_id: 'project-1',
-      } as Link;
+      } as unknown as Link;
 
       const mockNodes: LinkNode[] = [
         {
@@ -582,7 +582,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-2',
         project_id: 'project-2',
-      } as Link;
+      } as unknown as Link;
 
       const mockNodes: LinkNode[] = [
         {
@@ -614,7 +614,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-3',
         project_id: 'project-3',
-      } as Link;
+      } as unknown as Link;
 
       const mockNodes: LinkNode[] = [] as LinkNode[];
 
@@ -629,7 +629,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-4',
         project_id: 'project-4',
-      } as Link;
+      } as unknown as Link;
 
       const mockNodes: LinkNode[] = [
         {
@@ -662,7 +662,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-1',
         project_id: 'project-1',
-      } as Link;
+      } as unknown as Link;
 
       const mockSettings: CapturingSettings = {
         capture_file_name: 'test.pcap',
@@ -684,7 +684,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-2',
         project_id: 'project-2',
-      } as Link;
+      } as unknown as Link;
 
       const mockSettings: CapturingSettings = {
         capture_file_name: 'capture-test.pcap',
@@ -703,7 +703,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-3',
         project_id: 'project-3',
-      } as Link;
+      } as unknown as Link;
 
       const mockSettings: CapturingSettings = {} as CapturingSettings;
 
@@ -720,7 +720,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-1',
         project_id: 'project-1',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.post.mockReturnValue(of({}));
 
@@ -737,7 +737,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-2',
         project_id: 'project-2',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.post.mockReturnValue(of({}));
 
@@ -751,7 +751,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-3',
         project_id: 'project-3',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.post.mockReturnValue(of({}));
 
@@ -766,7 +766,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-1',
         project_id: 'project-1',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.post.mockReturnValue(of({}));
 
@@ -783,7 +783,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-2',
         project_id: 'project-2',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.post.mockReturnValue(of({}));
 
@@ -797,7 +797,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-3',
         project_id: 'project-3',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.post.mockReturnValue(of({}));
 
@@ -812,7 +812,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-1',
         project_id: 'project-1',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.get.mockReturnValue(of({}));
 
@@ -828,7 +828,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-2',
         project_id: 'project-2',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.get.mockReturnValue(of({}));
 
@@ -841,7 +841,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'pcap-link',
         project_id: 'pcap-project',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.get.mockReturnValue(of({}));
 
@@ -859,7 +859,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-1',
         project_id: 'proj-alpha',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.get.mockReturnValue(of({}));
 
@@ -879,7 +879,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-1',
         project_id: 'project-with-dash',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.get.mockReturnValue(of({}));
 
@@ -895,7 +895,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-with_underscore',
         project_id: 'project-1',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.get.mockReturnValue(of({}));
 
@@ -911,7 +911,7 @@ describe('LinkService', () => {
       const mockLink: Link = {
         link_id: 'link-1',
         project_id: 'project-1',
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.put.mockReturnValue(of({}));
 
@@ -928,7 +928,7 @@ describe('LinkService', () => {
         link_id: 'link-1',
         project_id: 'project-1',
         link_style: null as any,
-      } as Link;
+      } as unknown as Link;
 
       mockHttpController.put.mockReturnValue(of({}));
 

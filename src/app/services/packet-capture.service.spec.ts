@@ -109,7 +109,7 @@ describe('PacketCaptureService', () => {
     });
 
     it('should handle https protocol', () => {
-      const httpsController = { ...mockController, protocol: 'https:' };
+      const httpsController = { ...mockController, protocol: 'https:' as any };
       service.startCapture(httpsController, mockProject, mockLink, 'capture1');
 
       const uri = mockProtocolHandlerService.open.mock.calls[0][0];

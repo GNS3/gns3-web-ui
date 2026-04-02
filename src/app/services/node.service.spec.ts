@@ -503,7 +503,7 @@ describe('NodeService', () => {
 
   describe('getStartupConfiguration', () => {
     it('should return correct URL for vpcs node', () => {
-      const vpcsNode = { ...mockNode, node_type: 'vpcs' as const, properties: {} };
+      const vpcsNode = { ...mockNode, node_type: 'vpcs' as const, properties: {} } as unknown as Node;
       mockHttpController.get.mockReturnValue(of('startup config'));
 
       service.getStartupConfiguration(mockController, vpcsNode);
@@ -516,7 +516,7 @@ describe('NodeService', () => {
     });
 
     it('should return correct URL for iou node', () => {
-      const iouNode = { ...mockNode, node_type: 'iou' as const, properties: {} };
+      const iouNode = { ...mockNode, node_type: 'iou' as const, properties: {} } as unknown as Node;
       mockHttpController.get.mockReturnValue(of('startup config'));
 
       service.getStartupConfiguration(mockController, iouNode);
@@ -529,7 +529,7 @@ describe('NodeService', () => {
     });
 
     it('should return correct URL for dynamips node', () => {
-      const dynamipsNode = { ...mockNode, node_type: 'dynamips' as const, properties: { dynamips_id: '1' } };
+      const dynamipsNode = { ...mockNode, node_type: 'dynamips' as const, properties: { dynamips_id: '1' } } as unknown as Node;
       mockHttpController.get.mockReturnValue(of('startup config'));
 
       service.getStartupConfiguration(mockController, dynamipsNode);
@@ -544,7 +544,7 @@ describe('NodeService', () => {
 
   describe('saveConfiguration', () => {
     it('should call httpController.post with configuration for vpcs', () => {
-      const vpcsNode = { ...mockNode, node_type: 'vpcs' as const, properties: {} };
+      const vpcsNode = { ...mockNode, node_type: 'vpcs' as const, properties: {} } as unknown as Node;
       mockHttpController.post.mockReturnValue(of({}));
 
       service.saveConfiguration(mockController, vpcsNode, 'config data');

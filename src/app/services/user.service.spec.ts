@@ -58,7 +58,7 @@ describe('UserService', () => {
         email: 'test@example.com',
         full_name: 'Test User',
         role: 'User',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.get.mockReturnValue(of(mockUser));
 
@@ -74,7 +74,7 @@ describe('UserService', () => {
       const mockUser: User = {
         user_id: 'user-1',
         username: 'testuser',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.get.mockReturnValue(of(mockUser));
 
@@ -87,7 +87,7 @@ describe('UserService', () => {
       const mockUser: User = {
         user_id: 'user-1',
         username: 'admin',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.get.mockReturnValue(of(mockUser));
 
@@ -102,7 +102,7 @@ describe('UserService', () => {
       const mockUser: User = {
         user_id: 'user-123',
         username: 'testuser',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.get.mockReturnValue(of(mockUser));
 
@@ -118,7 +118,7 @@ describe('UserService', () => {
       const mockUser: User = {
         user_id: 'user-456',
         username: 'anotheruser',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.get.mockReturnValue(of(mockUser));
 
@@ -131,7 +131,7 @@ describe('UserService', () => {
       const mockUser: User = {
         user_id: 'user-abc',
         username: 'test',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.get.mockReturnValue(of(mockUser));
 
@@ -147,8 +147,8 @@ describe('UserService', () => {
   describe('list', () => {
     it('should call httpController.get with correct endpoint', () => {
       const mockUsers: User[] = [
-        { user_id: 'user-1', username: 'user1' } as User,
-        { user_id: 'user-2', username: 'user2' } as User,
+        { user_id: 'user-1', username: 'user1' } as unknown as User,
+        { user_id: 'user-2', username: 'user2' } as unknown as User,
       ];
 
       mockHttpController.get.mockReturnValue(of(mockUsers));
@@ -163,7 +163,7 @@ describe('UserService', () => {
 
     it('should return Observable of User array', () => {
       const mockUsers: User[] = [
-        { user_id: 'user-1', username: 'admin' } as User,
+        { user_id: 'user-1', username: 'admin' } as unknown as User,
       ];
 
       mockHttpController.get.mockReturnValue(of(mockUsers));
@@ -192,7 +192,7 @@ describe('UserService', () => {
         user_id: 'user-new',
         username: 'newuser',
         email: 'new@example.com',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.post.mockReturnValue(of(newUser));
 
@@ -209,7 +209,7 @@ describe('UserService', () => {
       const newUser: User = {
         user_id: 'user-999',
         username: 'brandnew',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.post.mockReturnValue(of(newUser));
 
@@ -223,7 +223,7 @@ describe('UserService', () => {
         user_id: 'user-xyz',
         username: 'testuser',
         password: 'testpass',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.post.mockReturnValue(of(newUser));
 
@@ -270,7 +270,7 @@ describe('UserService', () => {
       const updatedUser: User = {
         user_id: 'user-1',
         username: 'updateduser',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.put.mockReturnValue(of(updatedUser));
 
@@ -287,7 +287,7 @@ describe('UserService', () => {
       const updatedUser: User = {
         user_id: 'user-789',
         username: 'modifieduser',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.put.mockReturnValue(of(updatedUser));
 
@@ -304,7 +304,7 @@ describe('UserService', () => {
       const updatedUser: User = {
         user_id: 'user-111',
         username: 'test',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.put.mockReturnValue(of(updatedUser));
 
@@ -317,7 +317,7 @@ describe('UserService', () => {
       const updatedUser: User = {
         user_id: 'user-222',
         username: 'selfuser',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.put.mockReturnValue(of(updatedUser));
 
@@ -331,7 +331,7 @@ describe('UserService', () => {
       const updatedUser: User = {
         user_id: 'user-333',
         username: 'otheruser',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.put.mockReturnValue(of(updatedUser));
 
@@ -345,8 +345,8 @@ describe('UserService', () => {
   describe('getGroupsByUserId', () => {
     it('should call httpController.get with correct endpoint', () => {
       const mockGroups: Group[] = [
-        { group_id: 'group-1', name: 'Admins' } as Group,
-        { group_id: 'group-2', name: 'Users' } as Group,
+        { group_id: 'group-1', name: 'Admins' } as unknown as Group,
+        { group_id: 'group-2', name: 'Users' } as unknown as Group,
       ];
 
       mockHttpController.get.mockReturnValue(of(mockGroups));
@@ -361,7 +361,7 @@ describe('UserService', () => {
 
     it('should return Observable of Group array', () => {
       const mockGroups: Group[] = [
-        { group_id: 'group-1', name: 'Test Group' } as Group,
+        { group_id: 'group-1', name: 'Test Group' } as unknown as Group,
       ];
 
       mockHttpController.get.mockReturnValue(of(mockGroups));
@@ -413,7 +413,7 @@ describe('UserService', () => {
       const updatedUser: User = {
         user_id: 'user-1',
         username: 'test',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.put.mockReturnValue(of(updatedUser));
 
@@ -464,7 +464,7 @@ describe('UserService', () => {
       const updatedUser: User = {
         user_id: undefined as any,
         username: 'test',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.put.mockReturnValue(of(updatedUser));
 
@@ -479,7 +479,7 @@ describe('UserService', () => {
       const mockUser: User = {
         user_id: 'user-1',
         username: 'test',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.get.mockReturnValue(of(mockUser));
 
@@ -492,7 +492,7 @@ describe('UserService', () => {
       const newUser: User = {
         user_id: 'user-new',
         username: 'new',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.post.mockReturnValue(of(newUser));
 
@@ -505,7 +505,7 @@ describe('UserService', () => {
       const updatedUser: User = {
         user_id: 'user-1',
         username: 'updated',
-      } as User;
+      } as unknown as User;
 
       mockHttpController.put.mockReturnValue(of(updatedUser));
 

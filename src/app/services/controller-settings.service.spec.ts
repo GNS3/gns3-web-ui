@@ -62,7 +62,7 @@ describe('ControllerSettingsService', () => {
 
   describe('update', () => {
     it('should call httpController.post with /settings endpoint', () => {
-      const settings: ControllerSettings = { console_server_password: 'pass' } as ControllerSettings;
+      const settings: ControllerSettings = { console_server_password: 'pass' } as unknown as ControllerSettings;
       mockHttpController.post.mockReturnValue(of(settings));
 
       service.update(mockController, settings);

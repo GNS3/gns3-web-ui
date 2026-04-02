@@ -64,7 +64,7 @@ describe('DrawingService', () => {
       show_interface_labels: true,
       show_layers: false,
       grid_size: 75,
-    } as Project;
+    } as unknown as Project;
 
     // Mock Drawing
     mockDrawing = {
