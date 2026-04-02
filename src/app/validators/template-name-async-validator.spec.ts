@@ -33,7 +33,7 @@ describe('templateNameAsyncValidator', () => {
   });
 
   describe('when template name exists', () => {
-    it('should return templateExist error', (done) => {
+    it('should return templateExist error', async () => {
       const existingTemplates = [
         { name: 'existing-template', template_id: '1' },
         { name: 'another-template', template_id: '2' },
@@ -41,15 +41,20 @@ describe('templateNameAsyncValidator', () => {
       const control = { value: 'existing-template' };
       const validator = createValidator(() => existingTemplates);
 
-      validator(control).subscribe((result) => {
-        expect(result).toEqual({ templateExist: true });
-        done();
+      const resultPromise = new Promise((resolve) => {
+        validator(control).subscribe((result) => {
+          resolve(result);
+        });
       });
 
       vi.advanceTimersByTime(500);
+      await vi.runAllTimersAsync();
+
+      const result = await resultPromise;
+      expect(result).toEqual({ templateExist: true });
     });
 
-    it('should match case-sensitive template names', (done) => {
+    it('should match case-sensitive template names', async () => {
       const existingTemplates = [
         { name: 'MyTemplate', template_id: '1' },
         { name: 'mytemplate', template_id: '2' },
@@ -57,17 +62,22 @@ describe('templateNameAsyncValidator', () => {
       const control = { value: 'MyTemplate' };
       const validator = createValidator(() => existingTemplates);
 
-      validator(control).subscribe((result) => {
-        expect(result).toEqual({ templateExist: true });
-        done();
+      const resultPromise = new Promise((resolve) => {
+        validator(control).subscribe((result) => {
+          resolve(result);
+        });
       });
 
       vi.advanceTimersByTime(500);
+      await vi.runAllTimersAsync();
+
+      const result = await resultPromise;
+      expect(result).toEqual({ templateExist: true });
     });
   });
 
   describe('when template name does not exist', () => {
-    it('should return null', (done) => {
+    it('should return null', async () => {
       const existingTemplates = [
         { name: 'existing-template', template_id: '1' },
         { name: 'another-template', template_id: '2' },
@@ -75,85 +85,116 @@ describe('templateNameAsyncValidator', () => {
       const control = { value: 'new-template' };
       const validator = createValidator(() => existingTemplates);
 
-      validator(control).subscribe((result) => {
-        expect(result).toBeNull();
-        done();
+      const resultPromise = new Promise((resolve) => {
+        validator(control).subscribe((result) => {
+          resolve(result);
+        });
       });
 
       vi.advanceTimersByTime(500);
+      await vi.runAllTimersAsync();
+
+      const result = await resultPromise;
+      expect(result).toBeNull();
     });
 
-    it('should handle empty template list', (done) => {
+    it('should handle empty template list', async () => {
       const existingTemplates: any[] = [];
       const control = { value: 'new-template' };
       const validator = createValidator(() => existingTemplates);
 
-      validator(control).subscribe((result) => {
-        expect(result).toBeNull();
-        done();
+      const resultPromise = new Promise((resolve) => {
+        validator(control).subscribe((result) => {
+          resolve(result);
+        });
       });
 
       vi.advanceTimersByTime(500);
+      await vi.runAllTimersAsync();
+
+      const result = await resultPromise;
+      expect(result).toBeNull();
     });
   });
 
   describe('debounce behavior', () => {
-    it('should debounce by 500ms', (done) => {
+    it('should debounce by 500ms', async () => {
       const existingTemplates: any[] = [];
       const control = { value: 'test-template' };
       const validator = createValidator(() => existingTemplates);
 
       let called = false;
-      validator(control).subscribe(() => {
-        called = true;
-        expect(called).toBe(true);
-        done();
+      const resultPromise = new Promise((resolve) => {
+        validator(control).subscribe(() => {
+          called = true;
+          resolve(true);
+        });
       });
 
       // Should not be called before 500ms
       expect(called).toBe(false);
+
       vi.advanceTimersByTime(500);
+      await vi.runAllTimersAsync();
+
+      await resultPromise;
+      expect(called).toBe(true);
     });
   });
 
   describe('edge cases', () => {
-    it('should handle empty string template name', (done) => {
+    it('should handle empty string template name', async () => {
       const existingTemplates = [{ name: '', template_id: '1' }];
       const control = { value: '' };
       const validator = createValidator(() => existingTemplates);
 
-      validator(control).subscribe((result) => {
-        expect(result).toEqual({ templateExist: true });
-        done();
+      const resultPromise = new Promise((resolve) => {
+        validator(control).subscribe((result) => {
+          resolve(result);
+        });
       });
 
       vi.advanceTimersByTime(500);
+      await vi.runAllTimersAsync();
+
+      const result = await resultPromise;
+      expect(result).toEqual({ templateExist: true });
     });
 
-    it('should handle null template name', (done) => {
+    it('should handle null template name', async () => {
       const existingTemplates = [{ name: null, template_id: '1' }];
       const control = { value: null };
       const validator = createValidator(() => existingTemplates);
 
-      validator(control).subscribe((result) => {
-        expect(result).toEqual({ templateExist: true });
-        done();
+      const resultPromise = new Promise((resolve) => {
+        validator(control).subscribe((result) => {
+          resolve(result);
+        });
       });
 
       vi.advanceTimersByTime(500);
+      await vi.runAllTimersAsync();
+
+      const result = await resultPromise;
+      expect(result).toEqual({ templateExist: true });
     });
 
-    it('should handle undefined template name', (done) => {
+    it('should handle undefined template name', async () => {
       const existingTemplates = [{ name: undefined, template_id: '1' }];
       const control = { value: undefined };
       const validator = createValidator(() => existingTemplates);
 
-      validator(control).subscribe((result) => {
-        expect(result).toEqual({ templateExist: true });
-        done();
+      const resultPromise = new Promise((resolve) => {
+        validator(control).subscribe((result) => {
+          resolve(result);
+        });
       });
 
       vi.advanceTimersByTime(500);
+      await vi.runAllTimersAsync();
+
+      const result = await resultPromise;
+      expect(result).toEqual({ templateExist: true });
     });
   });
 });
