@@ -2,14 +2,14 @@
 
 > **Last Updated**: 2026-04-02
 > **Total Components**: 231 (`.component.ts` files)
-> **Completed**: 86
-> **Remaining**: 145
+> **Completed**: 89
+> **Remaining**: 142
 
 This document tracks the progress of creating unit test files (`.spec.ts`) for all Angular components in the project.
 
 ## Progress Summary
 
-- [ ] 86 / 231 components completed (37.2%)
+- [ ] 89 / 231 components completed (38.5%)
 
 ---
 
@@ -31,10 +31,10 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 - [x] computes.component.ts
 
 ### controllers (4 components)
-- [ ] add-controller-dialog/add-controller-dialog.component.ts
-- [ ] controller-discovery/controller-discovery.component.ts
+- [x] add-controller-dialog/add-controller-dialog.component.ts
+- [x] controller-discovery/controller-discovery.component.ts
 - [x] controllers.component.ts
-- [ ] edit-controller-dialog/edit-controller-dialog.component.ts
+- [x] edit-controller-dialog/edit-controller-dialog.component.ts
 
 ### dialogs (3 components)
 - [x] confirmation-dialog/confirmation-dialog.component.ts
@@ -376,6 +376,7 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 
 | Date | Commit | Components | Tests |
 |------|--------|------------|-------|
+| 2026-04-02 | d8f708b5 | Controllers (3 components) | 21 |
 | 2026-04-02 | 1260f9b6 | Drawings-listeners (9 components) | 27 |
 | 2026-04-02 | 37953117 | WebConsoleFullWindowComponent | 4 |
 | 2026-04-02 | f01c3686 | UserManagementComponent | 10 |
@@ -420,5 +421,5 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 | 2026-04-02 | e2578113 | ControllerManagementService | 28 |
 
 **Service tests completed**: 12 services, 527 tests
-**Component tests completed**: 42 components, 303 tests
-**Total**: 2298 tests passing
+**Component tests completed**: 45 components, 324 tests
+**Total**: 2319 tests passing
