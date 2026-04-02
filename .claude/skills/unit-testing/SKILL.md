@@ -15,6 +15,24 @@ This skill activates when the user's request involves:
 - Testing with Vitest, Jasmine, or Karma
 - Test refactoring or best practices
 
+## Running Tests in GNS3 Web UI
+
+The project uses **Vitest** as the test runner (not Karma). Use the following commands:
+
+```bash
+# Run all tests
+yarn test
+
+# Run tests for a specific file
+yarn test --include='**/my-component.spec.ts'
+
+# Run tests in watch mode
+yarn test --watch
+
+# Run tests with coverage
+yarn test --coverage
+```
+
 ## Test Focus Cheat Sheet
 
 When facing a component and not sure what to test, refer to this table:
