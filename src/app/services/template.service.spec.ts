@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TemplateService } from './template.service';
 import { HttpController } from './http-controller.service';
-import { Observable, of, Subject } from 'rxjs';
+import { Observable, of, Subject, throwError } from 'rxjs';
 import { Controller } from '@models/controller';
 import { Template } from '@models/template';
 
@@ -80,9 +80,12 @@ describe('TemplateService', () => {
     it('should handle empty template list', () => {
       mockHttpController.get.mockReturnValue(of([]));
 
-      const result = service.list(mockController);
+      let receivedTemplates: Template[] = [];
+      service.list(mockController).subscribe((templates) => {
+        receivedTemplates = templates;
+      });
 
-      expect(result).toBeInstanceOf(Observable);
+      expect(receivedTemplates).toEqual([]);
     });
 
     it('should return all templates including builtin and custom', () => {
@@ -94,12 +97,42 @@ describe('TemplateService', () => {
 
       mockHttpController.get.mockReturnValue(of(mockTemplates));
 
-      let receivedTemplates: Template[] | undefined;
+      let receivedTemplates: Template[] = [];
       service.list(mockController).subscribe((templates) => {
         receivedTemplates = templates;
       });
 
       expect(receivedTemplates).toHaveLength(3);
+      expect(receivedTemplates).toEqual(mockTemplates);
+    });
+
+    it('should emit error when httpController.get fails', () => {
+      const error = new Error('Network error');
+      mockHttpController.get.mockReturnValue(throwError(() => error));
+
+      let receivedError: Error | undefined;
+      let receivedTemplates: Template[] = [];
+
+      service.list(mockController).subscribe({
+        next: (templates) => (receivedTemplates = templates),
+        error: (err) => (receivedError = err),
+      });
+
+      expect(receivedError).toBe(error);
+      expect(receivedTemplates).toEqual([]);
+    });
+
+    it('should emit error with specific status code', () => {
+      const error = new Error('Not Found');
+      (error as any).status = 404;
+      mockHttpController.get.mockReturnValue(throwError(() => error));
+
+      let receivedError: Error | undefined;
+      service.list(mockController).subscribe({
+        error: (err) => (receivedError = err),
+      });
+
+      expect(receivedError).toBe(error);
     });
   });
 
@@ -144,6 +177,43 @@ describe('TemplateService', () => {
       const deleteCall = mockHttpController.delete.mock.calls[0];
       expect(deleteCall[2]).toEqual({ observe: 'body' });
     });
+
+    it('should emit deleted template on success', () => {
+      const deletedResponse = { success: true };
+      mockHttpController.delete.mockReturnValue(of(deletedResponse));
+
+      let receivedResponse: any;
+      service.deleteTemplate(mockController, 'tmpl-123').subscribe({
+        next: (response) => (receivedResponse = response),
+      });
+
+      expect(receivedResponse).toEqual(deletedResponse);
+    });
+
+    it('should emit error when httpController.delete fails', () => {
+      const error = new Error('Delete failed');
+      mockHttpController.delete.mockReturnValue(throwError(() => error));
+
+      let receivedError: Error | undefined;
+      service.deleteTemplate(mockController, 'tmpl-123').subscribe({
+        error: (err) => (receivedError = err),
+      });
+
+      expect(receivedError).toBe(error);
+    });
+
+    it('should emit error when template not found', () => {
+      const error = new Error('Template not found');
+      (error as any).status = 404;
+      mockHttpController.delete.mockReturnValue(throwError(() => error));
+
+      let receivedError: Error | undefined;
+      service.deleteTemplate(mockController, 'non-existent').subscribe({
+        error: (err) => (receivedError = err),
+      });
+
+      expect(receivedError).toBe(error);
+    });
   });
 
   describe('newTemplateCreated Subject', () => {
@@ -176,29 +246,57 @@ describe('TemplateService', () => {
 
       expect(count).toBe(2);
     });
+
+    it('should emit to all subscribers independently', () => {
+      let template1: Template | undefined;
+      let template2: Template | undefined;
+
+      service.newTemplateCreated.subscribe((t) => (template1 = t));
+      service.newTemplateCreated.subscribe((t) => (template2 = t));
+
+      const newTemplate: Template = { template_id: 'tmpl-x', name: 'X' } as Template;
+      service.newTemplateCreated.next(newTemplate);
+
+      expect(template1).toEqual(newTemplate);
+      expect(template2).toEqual(newTemplate);
+      expect(template1).toBe(template2);
+    });
+
+    it('should not emit after unsubscribe', () => {
+      let count = 0;
+      const subscription = service.newTemplateCreated.subscribe(() => count++);
+
+      const newTemplate: Template = { template_id: 'tmpl-1', name: 'T' } as Template;
+      service.newTemplateCreated.next(newTemplate);
+      expect(count).toBe(1);
+
+      subscription.unsubscribe();
+      service.newTemplateCreated.next(newTemplate);
+      expect(count).toBe(1);
+    });
+
+    it('should complete when complete is called', () => {
+      let isCompleted = false;
+
+      service.newTemplateCreated.subscribe({
+        complete: () => (isCompleted = true),
+      });
+
+      service.newTemplateCreated.complete();
+      expect(isCompleted).toBe(true);
+    });
   });
 
   describe('Edge Cases', () => {
-    it('should handle template ID with special characters', () => {
+    it('should handle template ID with various characters in URL', () => {
       mockHttpController.delete.mockReturnValue(of({}));
 
-      service.deleteTemplate(mockController, 'tmpl-with-dash');
+      const templateId = 'tmpl_with-underscore-and-dash';
+      service.deleteTemplate(mockController, templateId);
 
       expect(mockHttpController.delete).toHaveBeenCalledWith(
         mockController,
-        '/templates/tmpl-with-dash',
-        { observe: 'body' }
-      );
-    });
-
-    it('should handle template ID with underscores', () => {
-      mockHttpController.delete.mockReturnValue(of({}));
-
-      service.deleteTemplate(mockController, 'tmpl_with_underscore');
-
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/templates/tmpl_with_underscore',
+        `/templates/${templateId}`,
         { observe: 'body' }
       );
     });
