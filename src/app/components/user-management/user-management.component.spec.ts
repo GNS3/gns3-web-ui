@@ -93,6 +93,7 @@ describe('UserManagementComponent', () => {
 
     mockLocation = {
       back: vi.fn(),
+      subscribe: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }),
     };
 
     await TestBed.configureTestingModule({
