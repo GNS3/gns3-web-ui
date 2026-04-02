@@ -45,8 +45,8 @@ describe('XtermService', () => {
       expect(service).toBeInstanceOf(XtermService);
     });
 
-    it('should be providedIn root', () => {
-      expect(service).toBeTruthy();
+    it('should have themeService as dependency', () => {
+      expect((service as any).themeService).toBe(mockThemeService);
     });
   });
 
@@ -157,7 +157,7 @@ describe('XtermService', () => {
         options: {},
       } as Terminal;
 
-      (mockThemeService.getActualTheme as any) = vi.fn(() => 'light');
+      mockThemeService.getActualTheme = vi.fn(() => 'light') as any;
 
       service.updateTerminalTheme(mockTerminal);
 
@@ -194,7 +194,7 @@ describe('XtermService', () => {
         options: {},
       } as Terminal;
 
-      (mockThemeService.getActualTheme as any) = vi.fn(() => 'light');
+      mockThemeService.getActualTheme = vi.fn(() => 'light') as any;
 
       service.updateTerminalTheme(mockTerminal);
 
@@ -206,7 +206,7 @@ describe('XtermService', () => {
         options: {},
       } as Terminal;
 
-      (mockThemeService.getActualTheme as any) = vi.fn(() => 'dark');
+      mockThemeService.getActualTheme = vi.fn(() => 'dark') as any;
 
       service.updateTerminalTheme(mockTerminal);
 
@@ -367,49 +367,49 @@ describe('XtermService', () => {
   });
 
   describe('Edge Cases', () => {
-    it('should handle null CSS variable value', () => {
+    it('should throw when getPropertyValue returns null', () => {
       vi.spyOn(window, 'getComputedStyle').mockReturnValue({
         getPropertyValue: () => null as any,
         trim: () => '',
       } as any);
 
-      // The service will crash when trying to trim null
       expect(() => {
         service.getCssVar('--test');
       }).toThrow();
     });
 
-    it('should handle undefined CSS variable value', () => {
+    it('should throw when getPropertyValue returns undefined', () => {
       vi.spyOn(window, 'getComputedStyle').mockReturnValue({
         getPropertyValue: () => undefined,
         trim: () => '',
       } as any);
 
-      // The service will crash when trying to trim undefined
       expect(() => {
         service.getCssVar('--test');
       }).toThrow();
     });
 
-    it('should handle terminal without core', () => {
+    it('should handle terminal without core using fallback', () => {
       const mockTerminal = {} as any as Terminal;
 
-      expect(() => {
-        service.calculateTerminalDimensions(mockTerminal, 800, 600);
-      }).not.toThrow();
+      const dimensions = service.calculateTerminalDimensions(mockTerminal, 800, 600);
+
+      expect(dimensions.cols).toBe(88); // 800 / 9
+      expect(dimensions.rows).toBe(35); // 600 / 17
     });
 
-    it('should handle terminal with null core', () => {
+    it('should handle terminal with null core using fallback', () => {
       const mockTerminal = {
         _core: null,
       } as any as Terminal;
 
-      expect(() => {
-        service.calculateTerminalDimensions(mockTerminal, 800, 600);
-      }).not.toThrow();
+      const dimensions = service.calculateTerminalDimensions(mockTerminal, 800, 600);
+
+      expect(dimensions.cols).toBe(88); // 800 / 9
+      expect(dimensions.rows).toBe(35); // 600 / 17
     });
 
-    it('should handle zero container dimensions', () => {
+    it('should return zero when container has zero dimensions', () => {
       const mockTerminal = {} as any as Terminal;
 
       const dimensions = service.calculateTerminalDimensions(mockTerminal, 0, 0);
@@ -418,11 +418,13 @@ describe('XtermService', () => {
       expect(dimensions.rows).toBe(0);
     });
 
-    it('should handle negative container dimensions', () => {
+    it('should return negative values when container has negative dimensions (documenting current behavior)', () => {
       const mockTerminal = {} as any as Terminal;
 
       const dimensions = service.calculateTerminalDimensions(mockTerminal, -100, -100);
 
+      // Note: This documents current behavior. The service could guard against
+      // negative dimensions and return 0 instead, which would be more sensible.
       expect(dimensions.cols).toBeLessThan(0);
       expect(dimensions.rows).toBeLessThan(0);
     });
