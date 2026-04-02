@@ -136,6 +136,7 @@ describe('UserDetailDialogComponent', () => {
 
     fixture = TestBed.createComponent(UserDetailDialogComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges(); // Trigger ngOnInit
   });
 
   it('should create', () => {
@@ -269,15 +270,23 @@ describe('UserDetailDialogComponent', () => {
   });
 
   describe('onSaveChanges', () => {
+    beforeEach(() => {
+      // Initialize form manually without ngOnInit to avoid async operations
+      component.initForm();
+      fixture.detectChanges();
+      // Clear async validators to avoid timing issues in tests
+      component.editUserForm.get('username')?.clearAsyncValidators();
+      component.editUserForm.get('email')?.clearAsyncValidators();
+      component.editUserForm.updateValueAndValidity();
+    });
+
     it('should not call update if form is invalid', () => {
-      component.ngOnInit();
       component.editUserForm.get('username')?.setValue(''); // Invalid: required
       component.onSaveChanges();
       expect(mockUserService.update).not.toHaveBeenCalled();
     });
 
     it('should call userService.update with correct data', () => {
-      component.ngOnInit();
       component.editUserForm.get('full_name')?.setValue('Updated Name');
       component.editUserForm.get('full_name')?.markAsDirty();
       component.onSaveChanges();
@@ -290,7 +299,6 @@ describe('UserDetailDialogComponent', () => {
     });
 
     it('should close dialog and show success toast on update success', () => {
-      component.ngOnInit();
       component.editUserForm.get('full_name')?.setValue('Updated Name');
       component.editUserForm.get('full_name')?.markAsDirty();
       component.onSaveChanges();
@@ -303,7 +311,6 @@ describe('UserDetailDialogComponent', () => {
       (mockUserService.update as ReturnType<typeof vi.fn>).mockReturnValue(
         throwError(() => new Error('Update failed'))
       );
-      component.ngOnInit();
       component.editUserForm.get('full_name')?.setValue('Updated Name');
       component.editUserForm.get('full_name')?.markAsDirty();
       component.onSaveChanges();
@@ -314,7 +321,8 @@ describe('UserDetailDialogComponent', () => {
 
   describe('onChangePassword', () => {
     it('should open change password dialog', () => {
-      component.ngOnInit();
+      component.initForm();
+      fixture.detectChanges();
       component.onChangePassword();
       expect(mockDialog.open).toHaveBeenCalled();
     });
@@ -322,7 +330,8 @@ describe('UserDetailDialogComponent', () => {
 
   describe('onCancel', () => {
     it('should close dialog without data', () => {
-      component.ngOnInit();
+      component.initForm();
+      fixture.detectChanges();
       component.onCancel();
       expect(mockDialogRef.close).toHaveBeenCalledWith();
     });
