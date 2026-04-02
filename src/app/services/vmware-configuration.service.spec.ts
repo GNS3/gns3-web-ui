@@ -9,7 +9,7 @@ describe('VmwareConfigurationService', () => {
   });
 
   describe('Service Creation', () => {
-    it('should create the service', () => {
+    it('should be truthy when instantiated', () => {
       expect(service).toBeTruthy();
     });
 
@@ -19,65 +19,73 @@ describe('VmwareConfigurationService', () => {
   });
 
   describe('getConsoleTypes', () => {
-    it('should return telnet and none', () => {
+    it('should return all console types with correct values', () => {
       const result = service.getConsoleTypes();
-      expect(result).toContain('telnet');
-      expect(result).toContain('none');
+
+      expect(result).toEqual(['telnet', 'none']);
     });
 
-    it('should return 2 console types', () => {
-      expect(service.getConsoleTypes()).toHaveLength(2);
+    it.each(['telnet', 'none'])('should include console type: %s', (type) => {
+      expect(service.getConsoleTypes()).toContain(type);
     });
   });
 
   describe('getOnCloseoptions', () => {
-    it('should return 3 on close options', () => {
+    it('should return all on-close options with correct labels and values', () => {
       const result = service.getOnCloseoptions();
-      expect(result).toHaveLength(3);
+
+      expect(result).toEqual([
+        ['Power off the VM', 'power_off'],
+        ['Send the shutdown signal (ACPI)', 'shutdown_signal'],
+        ['Save the VM state', 'save_vm_state'],
+      ]);
     });
 
-    it('should include power_off option', () => {
-      expect(service.getOnCloseoptions()).toContainEqual(['Power off the VM', 'power_off']);
-    });
-
-    it('should include shutdown_signal option', () => {
-      expect(service.getOnCloseoptions()).toContainEqual(['Send the shutdown signal (ACPI)', 'shutdown_signal']);
-    });
-
-    it('should include save_vm_state option', () => {
-      expect(service.getOnCloseoptions()).toContainEqual(['Save the VM state', 'save_vm_state']);
+    it.each([
+      ['Power off the VM', 'power_off'],
+      ['Send the shutdown signal (ACPI)', 'shutdown_signal'],
+      ['Save the VM state', 'save_vm_state'],
+    ])('should include option with label "%s" and value "%s"', (label, value) => {
+      expect(service.getOnCloseoptions()).toContainEqual([label, value]);
     });
   });
 
   describe('getCategories', () => {
-    it('should return 5 categories', () => {
+    it('should return all categories with correct labels and types', () => {
       const result = service.getCategories();
-      expect(result).toHaveLength(5);
+
+      expect(result).toEqual([
+        ['Default', 'guest'],
+        ['Routers', 'router'],
+        ['Switches', 'switch'],
+        ['End devices', 'guest'],
+        ['Security devices', 'firewall'],
+      ]);
     });
 
-    it('should include Default category', () => {
-      expect(service.getCategories()).toContainEqual(['Default', 'guest']);
-    });
-
-    it('should include Routers category', () => {
-      expect(service.getCategories()).toContainEqual(['Routers', 'router']);
+    it.each([
+      ['Default', 'guest'],
+      ['Routers', 'router'],
+      ['Switches', 'switch'],
+      ['End devices', 'guest'],
+      ['Security devices', 'firewall'],
+    ])('should include category with label "%s" and type "%s"', (label, type) => {
+      expect(service.getCategories()).toContainEqual([label, type]);
     });
   });
 
   describe('getNetworkTypes', () => {
-    it('should return 8 network types', () => {
+    it('should return all network types with correct values', () => {
       const result = service.getNetworkTypes();
-      expect(result).toHaveLength(8);
+
+      expect(result).toEqual(['default', 'e1000', 'e1000e', 'flexible', 'vlance', 'vmxnet', 'vmxnet2', 'vmxnet3']);
     });
 
-    it('should include e1000 and vmxnet', () => {
-      const result = service.getNetworkTypes();
-      expect(result).toContain('e1000');
-      expect(result).toContain('vmxnet3');
-    });
-
-    it('should include default', () => {
-      expect(service.getNetworkTypes()).toContain('default');
-    });
+    it.each(['default', 'e1000', 'e1000e', 'flexible', 'vlance', 'vmxnet', 'vmxnet2', 'vmxnet3'])(
+      'should include network type: %s',
+      (type) => {
+        expect(service.getNetworkTypes()).toContain(type);
+      },
+    );
   });
 });
