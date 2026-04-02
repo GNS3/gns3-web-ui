@@ -50,19 +50,19 @@
 |---|--------|----------|--------|------|------|
 | 1 | tools.service.ts | 33 行 | 19 | ✅ 完成 | 65dd25cb |
 | 2 | mapScale.service.ts | 28 行 | 26 | ✅ 完成 | a3f7df79 |
-| 3 | snapshot.service.ts | 25 行 | 20 | ✅ 完成 | 待提交 |
+| 3 | snapshot.service.ts | 25 行 | 20 | ✅ 完成 | 67c69db8 |
+| 4 | login.service.ts | 33 行 | 19 | ✅ 完成 | 待提交 |
 
 ### 🚧 进行中
 
 | # | 服务名 | 文件大小 | 测试数 | 状态 |
 |---|--------|----------|--------|------|
-| 4 | login.service.ts | 33 行 | - | ⏳ 下一个 |
+| 5 | toaster.service.ts | 41 行 | - | ⏳ 下一个 |
 
 ### 📅 待测试
 
 | # | 服务名 | 文件大小 | 优先级 | 备注 |
 |---|--------|----------|--------|------|
-| 5 | toaster.service.ts | 41 行 | 🟡 中 | 通知 |
 | 6 | user.service.ts | 44 行 | 🔴 高 | 用户 |
 | 7 | group.service.ts | 70 行 | 🟡 中 | 分组 |
 | 8 | info.service.ts | 79 行 | 🟡 中 | 项目信息 |
@@ -105,12 +105,23 @@
 
 ---
 
-**最后更新**: 2026-04-02 12:29
+**最后更新**: 2026-04-02 12:30
 **维护者**: Claude Code Assistant
 
 ---
 
 ## 🎯 最近完成
+
+### ✅ login.service.ts (2026-04-02)
+- **测试数**: 19
+- **覆盖率**: 100%
+- **测试内容**:
+  - 服务创建和 controller_id 属性
+  - login 方法（4个测试）
+  - getLoggedUser 方法（3个测试）
+  - getLoggedUserRefToken 方法（4个测试）
+  - 边界情况（4个测试）
+- **提交**: 待提交
 
 ### ✅ snapshot.service.ts (2026-04-02)
 - **测试数**: 20
@@ -120,7 +131,7 @@
   - create/delete/list/restore 方法
   - URL 构建
   - 边界情况
-- **提交**: 待提交
+- **提交**: `test: add unit tests for SnapshotService (20 tests)`
 
 ### ✅ mapScale.service.ts (2026-04-02)
 - **测试数**: 26
