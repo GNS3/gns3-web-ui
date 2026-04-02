@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { Observable, of, throwError } from 'rxjs';
 import { LinkService } from './link.service';
-import { HttpController } from './http-controller.service';
-import { Observable, of } from 'rxjs';
 import { Controller } from '@models/controller';
 import { Node } from '../cartography/models/node';
 import { Port } from '@models/port';
@@ -45,10 +44,6 @@ describe('LinkService', () => {
   });
 
   describe('Service Creation', () => {
-    it('should create the service', () => {
-      expect(service).toBeTruthy();
-    });
-
     it('should be created with HttpController', () => {
       expect(service).toBeInstanceOf(LinkService);
     });
@@ -237,6 +232,24 @@ describe('LinkService', () => {
 
       expect(result).toBeInstanceOf(Observable);
     });
+
+    it('should handle HTTP error', () => {
+      mockHttpController.post.mockReturnValue(throwError(() => new Error('Network error')));
+
+      service.createLink(
+        mockController,
+        mockSourceNode,
+        mockSourcePort,
+        mockTargetNode,
+        mockTargetPort,
+        10,
+        20,
+        30,
+        40
+      ).subscribe({
+        error: (err) => expect(err.message).toBe('Network error'),
+      });
+    });
   });
 
   describe('getLink', () => {
@@ -256,28 +269,12 @@ describe('LinkService', () => {
       );
     });
 
-    it('should return Observable from httpController', () => {
-      const mockLink: Link = {
-        link_id: 'link-789',
-        project_id: 'project-101',
-      } as unknown as Link;
+    it('should handle HTTP error', () => {
+      mockHttpController.get.mockReturnValue(throwError(() => new Error('Network error')));
 
-      mockHttpController.get.mockReturnValue(of(mockLink));
-
-      const result = service.getLink(mockController, 'project-101', 'link-789');
-
-      expect(result).toBeInstanceOf(Observable);
-    });
-
-    it('should include project_id and link_id in URL', () => {
-      mockHttpController.get.mockReturnValue(of({}));
-
-      service.getLink(mockController, 'my-project', 'my-link');
-
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/projects/my-project/links/my-link'
-      );
+      service.getLink(mockController, 'project-456', 'link-123').subscribe({
+        error: (err) => expect(err.message).toBe('Network error'),
+      });
     });
   });
 
@@ -298,49 +295,39 @@ describe('LinkService', () => {
       );
     });
 
-    it('should return Observable from httpController', () => {
-      const mockLink: Link = {
-        link_id: 'link-1',
-        project_id: 'project-1',
-      } as unknown as Link;
+    it('should handle HTTP error', () => {
+      mockHttpController.delete.mockReturnValue(throwError(() => new Error('Network error')));
 
-      mockHttpController.delete.mockReturnValue(of({}));
+      const mockLink = { link_id: 'link-1', project_id: 'project-1' } as unknown as Link;
 
-      const result = service.deleteLink(mockController, mockLink);
-
-      expect(result).toBeInstanceOf(Observable);
-    });
-
-    it('should construct URL from link object', () => {
-      const mockLink: Link = {
-        link_id: 'link-to-delete',
-        project_id: 'proj-123',
-      } as unknown as Link;
-
-      mockHttpController.delete.mockReturnValue(of({}));
-
-      service.deleteLink(mockController, mockLink);
-
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/projects/proj-123/links/link-to-delete'
-      );
+      service.deleteLink(mockController, mockLink).subscribe({
+        error: (err) => expect(err.message).toBe('Network error'),
+      });
     });
   });
 
   describe('updateLink', () => {
-    it('should include nodes in payload when defined', () => {
-      const mockLink: Link = {
+    it.each([
+      {
+        description: 'should include nodes in payload when defined',
+        field: 'nodes',
+        value: [{ node_id: 'node-1', port_number: 0, adapter_number: 0, label: { rotation: 0, style: 'style', text: 'text', x: 10, y: 20 } }],
+      },
+      {
+        description: 'should include filters in payload when defined',
+        field: 'filters',
+        value: { ethernet0: { protocol: 'ethernet' } },
+      },
+      {
+        description: 'should include suspend in payload when defined',
+        field: 'suspend',
+        value: true,
+      },
+    ])('$description', ({ field, value }) => {
+      const mockLink = {
         link_id: 'link-1',
         project_id: 'project-1',
-        nodes: [
-          {
-            node_id: 'node-1',
-            port_number: 0,
-            adapter_number: 0,
-            label: { rotation: 0, style: 'style', text: 'text', x: 10, y: 20 },
-          },
-        ],
+        [field]: value,
       } as unknown as Link;
 
       mockHttpController.put.mockReturnValue(of(mockLink));
@@ -350,47 +337,7 @@ describe('LinkService', () => {
       const putCall = mockHttpController.put.mock.calls[0];
       const payload = putCall[2];
 
-      expect(payload.nodes).toBeDefined();
-      expect(payload.nodes).toEqual(mockLink.nodes);
-    });
-
-    it('should include filters in payload when defined', () => {
-      const mockLink: Link = {
-        link_id: 'link-2',
-        project_id: 'project-2',
-        filters: {
-          'ethernet0': {
-            protocol: 'ethernet',
-          },
-        },
-      } as unknown as Link;
-
-      mockHttpController.put.mockReturnValue(of(mockLink));
-
-      service.updateLink(mockController, mockLink);
-
-      const putCall = mockHttpController.put.mock.calls[0];
-      const payload = putCall[2];
-
-      expect(payload.filters).toBeDefined();
-      expect(payload.filters).toEqual(mockLink.filters);
-    });
-
-    it('should include suspend in payload when defined', () => {
-      const mockLink: Link = {
-        link_id: 'link-3',
-        project_id: 'project-3',
-        suspend: true,
-      } as unknown as Link;
-
-      mockHttpController.put.mockReturnValue(of(mockLink));
-
-      service.updateLink(mockController, mockLink);
-
-      const putCall = mockHttpController.put.mock.calls[0];
-      const payload = putCall[2];
-
-      expect(payload.suspend).toBe(true);
+      expect(payload[field]).toEqual(value);
     });
 
     it('should include all defined properties in payload', () => {
@@ -446,6 +393,16 @@ describe('LinkService', () => {
         expect.any(Object)
       );
     });
+
+    it('should handle HTTP error', () => {
+      mockHttpController.put.mockReturnValue(throwError(() => new Error('Network error')));
+
+      const mockLink = { link_id: 'link-1', project_id: 'project-1' } as unknown as Link;
+
+      service.updateLink(mockController, mockLink).subscribe({
+        error: (err) => expect(err.message).toBe('Network error'),
+      });
+    });
   });
 
   describe('updateLinkStyle', () => {
@@ -484,18 +441,14 @@ describe('LinkService', () => {
       );
     });
 
-    it('should return Observable from httpController', () => {
-      const mockLink: Link = {
-        link_id: 'link-1',
-        project_id: 'project-1',
-        link_style: 'linear',
-      } as unknown as Link;
+    it('should handle HTTP error', () => {
+      mockHttpController.put.mockReturnValue(throwError(() => new Error('Network error')));
 
-      mockHttpController.put.mockReturnValue(of(mockLink));
+      const mockLink = { link_id: 'link-1', project_id: 'project-1' } as unknown as Link;
 
-      const result = service.updateLinkStyle(mockController, mockLink);
-
-      expect(result).toBeInstanceOf(Observable);
+      service.updateLinkStyle(mockController, mockLink).subscribe({
+        error: (err) => expect(err.message).toBe('Network error'),
+      });
     });
   });
 
@@ -520,23 +473,6 @@ describe('LinkService', () => {
       );
     });
 
-    it('should return Observable of FilterDescription array', () => {
-      const mockLink: Link = {
-        link_id: 'link-2',
-        project_id: 'project-2',
-      } as unknown as Link;
-
-      const mockFilters: FilterDescription[] = [
-        { type: 'udp', name: 'UDP Filter' } as FilterDescription,
-      ];
-
-      mockHttpController.get.mockReturnValue(of(mockFilters));
-
-      const result = service.getAvailableFilters(mockController, mockLink);
-
-      expect(result).toBeInstanceOf(Observable);
-    });
-
     it('should handle empty filters list', () => {
       const mockLink: Link = {
         link_id: 'link-3',
@@ -545,9 +481,19 @@ describe('LinkService', () => {
 
       mockHttpController.get.mockReturnValue(of([]));
 
-      const result = service.getAvailableFilters(mockController, mockLink);
+      service.getAvailableFilters(mockController, mockLink);
 
-      expect(result).toBeInstanceOf(Observable);
+      expect(mockHttpController.get).toHaveBeenCalled();
+    });
+
+    it('should handle HTTP error', () => {
+      mockHttpController.get.mockReturnValue(throwError(() => new Error('Network error')));
+
+      const mockLink = { link_id: 'link-1', project_id: 'project-1' } as unknown as Link;
+
+      service.getAvailableFilters(mockController, mockLink).subscribe({
+        error: (err) => expect(err.message).toBe('Network error'),
+      });
     });
   });
 
@@ -610,21 +556,6 @@ describe('LinkService', () => {
       expect(payload.nodes[0].label.y).toBe(200);
     });
 
-    it('should return Observable from httpController', () => {
-      const mockLink: Link = {
-        link_id: 'link-3',
-        project_id: 'project-3',
-      } as unknown as Link;
-
-      const mockNodes: LinkNode[] = [] as LinkNode[];
-
-      mockHttpController.put.mockReturnValue(of({}));
-
-      const result = service.updateNodes(mockController, mockLink, mockNodes);
-
-      expect(result).toBeInstanceOf(Observable);
-    });
-
     it('should handle multiple nodes', () => {
       const mockLink: Link = {
         link_id: 'link-4',
@@ -654,6 +585,16 @@ describe('LinkService', () => {
       const payload = putCall[2];
 
       expect(payload.nodes.length).toBe(2);
+    });
+
+    it('should handle HTTP error', () => {
+      mockHttpController.put.mockReturnValue(throwError(() => new Error('Network error')));
+
+      const mockLink = { link_id: 'link-1', project_id: 'project-1' } as unknown as Link;
+
+      service.updateNodes(mockController, mockLink, []).subscribe({
+        error: (err) => expect(err.message).toBe('Network error'),
+      });
     });
   });
 
@@ -699,19 +640,15 @@ describe('LinkService', () => {
       expect(postCall[2]).toEqual(mockSettings);
     });
 
-    it('should return Observable from httpController', () => {
-      const mockLink: Link = {
-        link_id: 'link-3',
-        project_id: 'project-3',
-      } as unknown as Link;
+    it('should handle HTTP error', () => {
+      mockHttpController.post.mockReturnValue(throwError(() => new Error('Network error')));
 
-      const mockSettings: CapturingSettings = {} as CapturingSettings;
+      const mockLink = { link_id: 'link-1', project_id: 'project-1' } as unknown as Link;
+      const mockSettings = {} as CapturingSettings;
 
-      mockHttpController.post.mockReturnValue(of({}));
-
-      const result = service.startCaptureOnLink(mockController, mockLink, mockSettings);
-
-      expect(result).toBeInstanceOf(Observable);
+      service.startCaptureOnLink(mockController, mockLink, mockSettings).subscribe({
+        error: (err) => expect(err.message).toBe('Network error'),
+      });
     });
   });
 
@@ -747,17 +684,14 @@ describe('LinkService', () => {
       expect(postCall[2]).toEqual({});
     });
 
-    it('should return Observable from httpController', () => {
-      const mockLink: Link = {
-        link_id: 'link-3',
-        project_id: 'project-3',
-      } as unknown as Link;
+    it('should handle HTTP error', () => {
+      mockHttpController.post.mockReturnValue(throwError(() => new Error('Network error')));
 
-      mockHttpController.post.mockReturnValue(of({}));
+      const mockLink = { link_id: 'link-1', project_id: 'project-1' } as unknown as Link;
 
-      const result = service.stopCaptureOnLink(mockController, mockLink);
-
-      expect(result).toBeInstanceOf(Observable);
+      service.stopCaptureOnLink(mockController, mockLink).subscribe({
+        error: (err) => expect(err.message).toBe('Network error'),
+      });
     });
   });
 
@@ -793,17 +727,14 @@ describe('LinkService', () => {
       expect(postCall[2]).toEqual({});
     });
 
-    it('should return Observable from httpController', () => {
-      const mockLink: Link = {
-        link_id: 'link-3',
-        project_id: 'project-3',
-      } as unknown as Link;
+    it('should handle HTTP error', () => {
+      mockHttpController.post.mockReturnValue(throwError(() => new Error('Network error')));
 
-      mockHttpController.post.mockReturnValue(of({}));
+      const mockLink = { link_id: 'link-1', project_id: 'project-1' } as unknown as Link;
 
-      const result = service.resetLink(mockController, mockLink);
-
-      expect(result).toBeInstanceOf(Observable);
+      service.resetLink(mockController, mockLink).subscribe({
+        error: (err) => expect(err.message).toBe('Network error'),
+      });
     });
   });
 
@@ -824,53 +755,14 @@ describe('LinkService', () => {
       );
     });
 
-    it('should return Observable from httpController', () => {
-      const mockLink: Link = {
-        link_id: 'link-2',
-        project_id: 'project-2',
-      } as unknown as Link;
+    it('should handle HTTP error', () => {
+      mockHttpController.get.mockReturnValue(throwError(() => new Error('Network error')));
 
-      mockHttpController.get.mockReturnValue(of({}));
+      const mockLink = { link_id: 'link-1', project_id: 'project-1' } as unknown as Link;
 
-      const result = service.streamPcap(mockController, mockLink);
-
-      expect(result).toBeInstanceOf(Observable);
-    });
-
-    it('should include project_id and link_id in URL', () => {
-      const mockLink: Link = {
-        link_id: 'pcap-link',
-        project_id: 'pcap-project',
-      } as unknown as Link;
-
-      mockHttpController.get.mockReturnValue(of({}));
-
-      service.streamPcap(mockController, mockLink);
-
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/projects/pcap-project/links/pcap-link/capture/stream'
-      );
-    });
-  });
-
-  describe('URL Construction', () => {
-    it('should construct correct URL for different project IDs', () => {
-      const mockLink: Link = {
-        link_id: 'link-1',
-        project_id: 'proj-alpha',
-      } as unknown as Link;
-
-      mockHttpController.get.mockReturnValue(of({}));
-
-      service.getLink(mockController, 'proj-alpha', 'link-1');
-      service.getLink(mockController, 'proj-beta', 'link-2');
-      service.getLink(mockController, 'proj-gamma', 'link-3');
-
-      expect(mockHttpController.get).toHaveBeenCalledTimes(3);
-      expect(mockHttpController.get).toHaveBeenNthCalledWith(1, mockController, '/projects/proj-alpha/links/link-1');
-      expect(mockHttpController.get).toHaveBeenNthCalledWith(2, mockController, '/projects/proj-beta/links/link-2');
-      expect(mockHttpController.get).toHaveBeenNthCalledWith(3, mockController, '/projects/proj-gamma/links/link-3');
+      service.streamPcap(mockController, mockLink).subscribe({
+        error: (err) => expect(err.message).toBe('Network error'),
+      });
     });
   });
 
