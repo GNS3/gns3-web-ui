@@ -2,14 +2,14 @@
 
 > **Last Updated**: 2026-04-02
 > **Total Components**: 231 (`.component.ts` files)
-> **Completed**: 140
-> **Remaining**: 91
+> **Completed**: 148
+> **Remaining**: 83
 
 This document tracks the progress of creating unit test files (`.spec.ts`) for all Angular components in the project.
 
 ## Progress Summary
 
-- [ ] 140 / 231 components completed (60.6%)
+- [ ] 148 / 231 components completed (64.1%)
 
 ---
 
@@ -187,11 +187,11 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 - [ ] change-symbol-dialog/change-symbol-dialog.component.ts
 
 #### console-wrapper (2 components)
-- [ ] console-wrapper/console-devices-panel.component.ts
-- [ ] console-wrapper/console-wrapper.component.ts
+- [x] console-wrapper/console-devices-panel.component.ts
+- [x] console-wrapper/console-wrapper.component.ts
 
 #### context-console-menu (1 component)
-- [ ] context-console-menu/context-console-menu.component.ts
+- [x] context-console-menu/context-console-menu.component.ts
 
 #### context-menu (43 components)
 - [x] context-menu/context-menu.component.ts
@@ -238,7 +238,7 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 
 #### drawings-editors (3 components)
 - [ ] drawings-editors/link-style-editor/link-style-editor.component.ts
-- [ ] drawings-editors/style-editor/style-editor.component.ts
+- [x] drawings-editors/style-editor/style-editor.component.ts
 - [ ] drawings-editors/text-editor/text-editor.component.ts
 
 #### draw-link-tool (1 component)
@@ -254,12 +254,12 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 - [ ] info-dialog/info-dialog.component.ts
 
 #### log-console (1 component)
-- [ ] log-console/log-console.component.ts
+- [x] log-console/log-console.component.ts
 
 #### new-template-dialog (3 components)
-- [ ] new-template-dialog/appliance-info-dialog/appliance-info-dialog.component.ts
-- [ ] new-template-dialog/new-template-dialog.component.ts
-- [ ] new-template-dialog/template-name-dialog/template-name-dialog.component.ts
+- [x] new-template-dialog/appliance-info-dialog/appliance-info-dialog.component.ts
+- [x] new-template-dialog/new-template-dialog.component.ts
+- [x] new-template-dialog/template-name-dialog/template-name-dialog.component.ts
 
 #### node-editors (18 components)
 - [ ] node-editors/config-editor/config-editor.component.ts
