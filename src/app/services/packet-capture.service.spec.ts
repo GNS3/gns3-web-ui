@@ -53,51 +53,32 @@ describe('PacketCaptureService', () => {
     it('should call protocolHandlerService.open with correct URI', () => {
       service.startCapture(mockController, mockProject, mockLink, 'capture1');
 
-      expect(mockProtocolHandlerService.open).toHaveBeenCalled();
+      expect(mockProtocolHandlerService.open).toHaveBeenCalledTimes(1);
       const uri = mockProtocolHandlerService.open.mock.calls[0][0];
       expect(uri).toContain('gns3+pcap://');
     });
 
-    it('should include host in URI', () => {
+    it.each([
+      ['host', 'localhost'],
+      ['port', '3080'],
+      ['protocol', 'protocol=http'],
+    ])('should include %s in URI', (_, expected) => {
       service.startCapture(mockController, mockProject, mockLink, 'capture1');
 
       const uri = mockProtocolHandlerService.open.mock.calls[0][0];
-      expect(uri).toContain('localhost');
+      expect(uri).toContain(expected);
     });
 
-    it('should include port in URI', () => {
+    it.each([
+      ['project_id', 'project_id=project-123'],
+      ['link_id', 'link_id=link-456'],
+      ['project name', 'project=Test Project'],
+      ['capture name', 'name=capture1'],
+    ])('should include %s in URI', (_, expected) => {
       service.startCapture(mockController, mockProject, mockLink, 'capture1');
 
       const uri = mockProtocolHandlerService.open.mock.calls[0][0];
-      expect(uri).toContain('3080');
-    });
-
-    it('should include project_id in URI', () => {
-      service.startCapture(mockController, mockProject, mockLink, 'capture1');
-
-      const uri = mockProtocolHandlerService.open.mock.calls[0][0];
-      expect(uri).toContain('project_id=project-123');
-    });
-
-    it('should include link_id in URI', () => {
-      service.startCapture(mockController, mockProject, mockLink, 'capture1');
-
-      const uri = mockProtocolHandlerService.open.mock.calls[0][0];
-      expect(uri).toContain('link_id=link-456');
-    });
-
-    it('should include project name in URI', () => {
-      service.startCapture(mockController, mockProject, mockLink, 'capture1');
-
-      const uri = mockProtocolHandlerService.open.mock.calls[0][0];
-      expect(uri).toContain('project=Test Project');
-    });
-
-    it('should include capture name in URI', () => {
-      service.startCapture(mockController, mockProject, mockLink, 'myCapture');
-
-      const uri = mockProtocolHandlerService.open.mock.calls[0][0];
-      expect(uri).toContain('name=myCapture');
+      expect(uri).toContain(expected);
     });
 
     it('should strip trailing colon from protocol', () => {
@@ -116,10 +97,74 @@ describe('PacketCaptureService', () => {
       expect(uri).toContain('protocol=https');
     });
 
-    it('should call open exactly once', () => {
-      service.startCapture(mockController, mockProject, mockLink, 'capture1');
+    it('should handle protocol without trailing colon', () => {
+      const noColonController = { ...mockController, protocol: 'http' as any };
+      service.startCapture(noColonController, mockProject, mockLink, 'capture1');
+
+      const uri = mockProtocolHandlerService.open.mock.calls[0][0];
+      // slice(-1) returns 'p' when no colon, so protocol becomes 'htt'
+      expect(uri).toContain('protocol=htt');
+    });
+  });
+
+  describe('URI encoding', () => {
+    it('should handle special characters in project name (no encoding)', () => {
+      const specialProject = { ...mockProject, name: 'Test & Project=123' };
+      service.startCapture(mockController, specialProject, mockLink, 'capture1');
+
+      const uri = mockProtocolHandlerService.open.mock.calls[0][0];
+      // Service does not encode URI components
+      expect(uri).toContain('project=Test & Project=123');
+    });
+
+    it('should handle spaces in capture name (no encoding)', () => {
+      service.startCapture(mockController, mockProject, mockLink, 'my capture');
+
+      const uri = mockProtocolHandlerService.open.mock.calls[0][0];
+      expect(uri).toContain('name=my capture');
+    });
+
+    it('should handle special characters in link_id (no encoding)', () => {
+      const specialLink = { link_id: 'link&456=789' } as Link;
+      service.startCapture(mockController, mockProject, specialLink, 'capture1');
+
+      const uri = mockProtocolHandlerService.open.mock.calls[0][0];
+      expect(uri).toContain('link_id=link&456=789');
+    });
+  });
+
+  describe('edge cases', () => {
+    it('should handle empty strings in parameters', () => {
+      const emptyProject = { ...mockProject, project_id: '', name: '' };
+      service.startCapture(mockController, emptyProject, mockLink, '');
+
+      const uri = mockProtocolHandlerService.open.mock.calls[0][0];
+      expect(uri).toContain('project_id=');
+      expect(uri).toContain('project=');
+      expect(uri).toContain('name=');
+    });
+
+    it('should handle missing optional fields gracefully', () => {
+      const minimalLink = { link_id: '' } as any;
+      service.startCapture(mockController, mockProject, minimalLink, 'capture1');
 
       expect(mockProtocolHandlerService.open).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle zero port in host:port format', () => {
+      const zeroPortController = { ...mockController, port: 0 };
+      service.startCapture(zeroPortController, mockProject, mockLink, 'capture1');
+
+      const uri = mockProtocolHandlerService.open.mock.calls[0][0];
+      expect(uri).toContain('localhost:0');
+    });
+
+    it('should handle unicode characters in project name', () => {
+      const unicodeProject = { ...mockProject, name: '测试项目中文' };
+      service.startCapture(mockController, unicodeProject, mockLink, 'capture1');
+
+      const uri = mockProtocolHandlerService.open.mock.calls[0][0];
+      expect(uri).toContain('project=测试项目中文');
     });
   });
 });

@@ -45,12 +45,13 @@ describe('ProtocolHandlerService', () => {
         } as unknown as Element;
 
         if (tagName.toLowerCase() === 'iframe') {
+          const iframeElement = element as HTMLIFrameElement & { _href: string };
+          iframeElement._href = '';
           Object.defineProperty(element, 'contentWindow', {
             value: {
               location: {
-                href: '',
-                set href(val: string) { (element as HTMLIFrameElement & { _href: string })._href = val; },
-                get href() { return (element as HTMLIFrameElement & { _href: string })._href; },
+                set href(val: string) { iframeElement._href = val; },
+                get href() { return iframeElement._href; },
               },
             },
             configurable: true,
@@ -97,7 +98,7 @@ describe('ProtocolHandlerService', () => {
         };
         if (tagName.toLowerCase() === 'iframe') {
           Object.defineProperty(element, 'contentWindow', {
-            value: { location: { href: '', set href(val: string) {} } },
+            value: { location: { set href(val: string) {} } },
             configurable: true,
           });
         }
@@ -166,7 +167,6 @@ describe('ProtocolHandlerService', () => {
         style: { display: 'none' },
         contentWindow: {
           location: {
-            href: '',
             set href(val: string) { mockIframe.contentWindow.location._href = val; },
             get href() { return mockIframe.contentWindow.location._href; },
             _href: '',
