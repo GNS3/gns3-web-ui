@@ -2,14 +2,14 @@
 
 > **Last Updated**: 2026-04-02
 > **Total Components**: 231 (`.component.ts` files)
-> **Completed**: 99
-> **Remaining**: 132
+> **Completed**: 140
+> **Remaining**: 91
 
 This document tracks the progress of creating unit test files (`.spec.ts`) for all Angular components in the project.
 
 ## Progress Summary
 
-- [ ] 99 / 231 components completed (42.9%)
+- [ ] 140 / 231 components completed (60.6%)
 
 ---
 
@@ -194,47 +194,47 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 - [ ] context-console-menu/context-console-menu.component.ts
 
 #### context-menu (43 components)
-- [ ] context-menu/context-menu.component.ts
-- [ ] context-menu/actions/align-horizontally/align-horizontally.component.ts
-- [ ] context-menu/actions/align_vertically/align-vertically.component.ts
-- [ ] context-menu/actions/auto-idle-pc-action/auto-idle-pc-action.component.ts
-- [ ] context-menu/actions/bring-to-front-action/bring-to-front-action.component.ts
-- [ ] context-menu/actions/change-hostname/change-hostname-action.component.ts
-- [ ] context-menu/actions/change-symbol/change-symbol-action.component.ts
-- [ ] context-menu/actions/config-action/config-action.component.ts
-- [ ] context-menu/actions/console-device-action-browser/console-device-action-browser.component.ts
-- [ ] context-menu/actions/console-device-action/console-device-action.component.ts
-- [ ] context-menu/actions/delete-action/delete-action.component.ts
-- [ ] context-menu/actions/duplicate-action/duplicate-action.component.ts
-- [ ] context-menu/actions/edit-config/edit-config-action.component.ts
-- [ ] context-menu/actions/edit-link-style-action/edit-link-style-action.component.ts
-- [ ] context-menu/actions/edit-style-action/edit-style-action.component.ts
-- [ ] context-menu/actions/edit-text-action/edit-text-action.component.ts
-- [ ] context-menu/actions/export-config/export-config-action.component.ts
-- [ ] context-menu/actions/http-console/http-console-action.component.ts
-- [ ] context-menu/actions/http-console-new-tab/http-console-new-tab-action.component.ts
-- [ ] context-menu/actions/idle-pc-action/idle-pc-action.component.ts
-- [ ] context-menu/actions/import-config/import-config-action.component.ts
-- [ ] context-menu/actions/isolate-node-action/isolate-node-action.component.ts
-- [ ] context-menu/actions/lock-action/lock-action.component.ts
-- [ ] context-menu/actions/move-layer-down-action/move-layer-down-action.component.ts
-- [ ] context-menu/actions/move-layer-up-action/move-layer-up-action.component.ts
-- [ ] context-menu/actions/open-file-explorer/open-file-explorer-action.component.ts
-- [ ] context-menu/actions/packet-filters-action/packet-filters-action.component.ts
-- [ ] context-menu/actions/reload-node-action/reload-node-action.component.ts
-- [ ] context-menu/actions/reset-link/reset-link-action.component.ts
-- [ ] context-menu/actions/resume-link-action/resume-link-action.component.ts
-- [ ] context-menu/actions/show-node-action/show-node-action.component.ts
-- [ ] context-menu/actions/start-capture-on-started-link/start-capture-on-started-link.component.ts
-- [ ] context-menu/actions/start-capture/start-capture-action.component.ts
-- [ ] context-menu/actions/start-node-action/start-node-action.component.ts
-- [ ] context-menu/actions/stop-capture/stop-capture-action.component.ts
-- [ ] context-menu/actions/stop-node-action/stop-node-action.component.ts
-- [ ] context-menu/actions/suspend-link/suspend-link-action.component.ts
-- [ ] context-menu/actions/suspend-node-action/suspend-node-action.component.ts
-- [ ] context-menu/actions/unisolate-node-action/unisolate-node-action.component.ts
-- [ ] context-menu/dialogs/config-dialog/config-dialog.component.ts
-- [ ] context-menu/dialogs/idle-pc-dialog/idle-pc-dialog.component.ts
+- [x] context-menu/context-menu.component.ts
+- [x] context-menu/actions/align-horizontally/align-horizontally.component.ts
+- [x] context-menu/actions/align_vertically/align-vertically.component.ts
+- [x] context-menu/actions/auto-idle-pc-action/auto-idle-pc-action.component.ts
+- [x] context-menu/actions/bring-to-front-action/bring-to-front-action.component.ts
+- [x] context-menu/actions/change-hostname/change-hostname-action.component.ts
+- [x] context-menu/actions/change-symbol/change-symbol-action.component.ts
+- [x] context-menu/actions/config-action/config-action.component.ts
+- [x] context-menu/actions/console-device-action-browser/console-device-action-browser.component.ts
+- [x] context-menu/actions/console-device-action/console-device-action.component.ts
+- [x] context-menu/actions/delete-action/delete-action.component.ts
+- [x] context-menu/actions/duplicate-action/duplicate-action.component.ts
+- [x] context-menu/actions/edit-config/edit-config-action.component.ts
+- [x] context-menu/actions/edit-link-style-action/edit-link-style-action.component.ts
+- [x] context-menu/actions/edit-style-action/edit-style-action.component.ts
+- [x] context-menu/actions/edit-text-action/edit-text-action.component.ts
+- [x] context-menu/actions/export-config/export-config-action.component.ts
+- [x] context-menu/actions/http-console/http-console-action.component.ts
+- [x] context-menu/actions/http-console-new-tab/http-console-new-tab-action.component.ts
+- [x] context-menu/actions/idle-pc-action/idle-pc-action.component.ts
+- [x] context-menu/actions/import-config/import-config-action.component.ts
+- [x] context-menu/actions/isolate-node-action/isolate-node-action.component.ts
+- [x] context-menu/actions/lock-action/lock-action.component.ts
+- [x] context-menu/actions/move-layer-down-action/move-layer-down-action.component.ts
+- [x] context-menu/actions/move-layer-up-action/move-layer-up-action.component.ts
+- [x] context-menu/actions/open-file-explorer/open-file-explorer-action.component.ts
+- [x] context-menu/actions/packet-filters-action/packet-filters-action.component.ts
+- [x] context-menu/actions/reload-node-action/reload-node-action.component.ts
+- [x] context-menu/actions/reset-link/reset-link-action.component.ts
+- [x] context-menu/actions/resume-link-action/resume-link-action.component.ts
+- [x] context-menu/actions/show-node-action/show-node-action.component.ts
+- [x] context-menu/actions/start-capture-on-started-link/start-capture-on-started-link.component.ts
+- [x] context-menu/actions/start-capture/start-capture-action.component.ts
+- [x] context-menu/actions/start-node-action/start-node-action.component.ts
+- [x] context-menu/actions/stop-capture/stop-capture-action.component.ts
+- [x] context-menu/actions/stop-node-action/stop-node-action.component.ts
+- [x] context-menu/actions/suspend-link/suspend-link-action.component.ts
+- [x] context-menu/actions/suspend-node-action/suspend-node-action.component.ts
+- [x] context-menu/actions/unisolate-node-action/unisolate-node-action.component.ts
+- [x] context-menu/dialogs/config-dialog/config-dialog.component.ts
+- [x] context-menu/dialogs/idle-pc-dialog/idle-pc-dialog.component.ts
 
 #### drawings-editors (3 components)
 - [ ] drawings-editors/link-style-editor/link-style-editor.component.ts
