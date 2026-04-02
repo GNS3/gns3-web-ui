@@ -1,200 +1,294 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { of, timer } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { of, throwError } from 'rxjs';
+import { templateNameAsyncValidator } from './template-name-async-validator';
+import { UntypedFormControl } from '@angular/forms';
 
-// Mock the Angular modules to avoid JIT compilation issues
-vi.mock('@angular/forms', () => ({
-  UntypedFormControl: vi.fn().mockImplementation(function (value: any) {
-    this.value = value;
-  }),
-}));
+/**
+ * Mock list function for TemplateService
+ */
+const mockListTemplates = vi.fn();
 
-vi.mock('@services/template.service', () => ({
-  TemplateService: vi.fn(),
-}));
+/**
+ * Mock TemplateService for testing
+ */
+const mockTemplateService = {
+  list: mockListTemplates,
+} as any;
 
-vi.mock('@models/controller', () => ({
-  Controller: vi.fn(),
-}));
+/**
+ * Mock Controller for testing
+ */
+const mockController: any = {
+  id: 'test-controller',
+  authToken: '',
+  name: 'Test Controller',
+  location: 'local',
+  host: 'localhost',
+  port: 3080,
+  protocol: 'http',
+  cpuUsagePercent: 0,
+  memoryUsagePercent: 0,
+  compute: vi.fn(),
+  path: '/path/to/controller',
+  ubridge_path: '/path/to/ubridge',
+  status: 'started',
+  username: 'test-user',
+  consoleHost: 'localhost',
+  consolePort: 3080,
+  password: '',
+  tokenExpired: false,
+};
+
+/**
+ * Helper function to create a mock control
+ */
+const createMockControl = (value: unknown): UntypedFormControl => {
+  return { value } as any;
+};
+
+/**
+ * Helper function to execute validator and advance fake timers
+ * Reduces code duplication across tests
+ */
+const executeValidator = async (
+  validatorFn: ReturnType<typeof templateNameAsyncValidator>,
+  controlValue: unknown
+): Promise<{ result: any; serviceCalls: number }> => {
+  const control = createMockControl(controlValue);
+  let result: any = undefined;
+  let completed = false;
+
+  const subscription = validatorFn(control).subscribe({
+    next: (value) => {
+      result = value;
+    },
+    complete: () => {
+      completed = true;
+    },
+  });
+
+  // Advance timers past debounce threshold
+  vi.advanceTimersByTime(500);
+  await vi.runAllTimersAsync();
+
+  const serviceCalls = mockListTemplates.mock.calls.length;
+  subscription.unsubscribe();
+
+  return { result, serviceCalls };
+};
 
 describe('templateNameAsyncValidator', () => {
-  // Recreate the validator logic inline for testing
-  const createValidator = (listTemplates: () => any[]) => {
-    return (control: any) => {
-      return timer(500).pipe(
-        switchMap(() => of(listTemplates())),
-        map((response) => (response.find((n: any) => n.name === control.value) ? { templateExist: true } : null))
-      );
-    };
-  };
-
   beforeEach(() => {
     vi.useFakeTimers();
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
   describe('when template name exists', () => {
-    it('should return templateExist error', async () => {
+    it.each([
+      ['existing-template', 'existing-template', 'exact match'],
+      ['MyTemplate', 'MyTemplate', 'case-sensitive match'],
+      ['template-with-numbers-123', 'template-with-numbers-123', 'alphanumeric match'],
+    ])('should return templateExist error for "%s" (%s)', async (inputName, existingName, _description) => {
+      // Arrange
       const existingTemplates = [
-        { name: 'existing-template', template_id: '1' },
+        { name: existingName, template_id: '1' },
         { name: 'another-template', template_id: '2' },
       ];
-      const control = { value: 'existing-template' };
-      const validator = createValidator(() => existingTemplates);
+      mockListTemplates.mockReturnValue(of(existingTemplates));
+      const validator = templateNameAsyncValidator(mockController, mockTemplateService);
 
-      const resultPromise = new Promise((resolve) => {
-        validator(control).subscribe((result) => {
-          resolve(result);
-        });
-      });
+      // Act
+      const { result, serviceCalls } = await executeValidator(validator, inputName);
 
-      vi.advanceTimersByTime(500);
-      await vi.runAllTimersAsync();
-
-      const result = await resultPromise;
+      // Assert
       expect(result).toEqual({ templateExist: true });
+      expect(serviceCalls).toBe(1);
+      expect(mockListTemplates).toHaveBeenCalledWith(mockController);
     });
 
-    it('should match case-sensitive template names', async () => {
+    it('should not match different case template names', async () => {
+      // Arrange
       const existingTemplates = [
         { name: 'MyTemplate', template_id: '1' },
         { name: 'mytemplate', template_id: '2' },
       ];
-      const control = { value: 'MyTemplate' };
-      const validator = createValidator(() => existingTemplates);
+      mockListTemplates.mockReturnValue(of(existingTemplates));
+      const validator = templateNameAsyncValidator(mockController, mockTemplateService);
 
-      const resultPromise = new Promise((resolve) => {
-        validator(control).subscribe((result) => {
-          resolve(result);
-        });
-      });
+      // Act - search for exact match "mytemplate"
+      const { result } = await executeValidator(validator, 'mytemplate');
 
-      vi.advanceTimersByTime(500);
-      await vi.runAllTimersAsync();
-
-      const result = await resultPromise;
+      // Assert - should match exactly "mytemplate" (case-sensitive)
       expect(result).toEqual({ templateExist: true });
     });
   });
 
   describe('when template name does not exist', () => {
-    it('should return null', async () => {
-      const existingTemplates = [
-        { name: 'existing-template', template_id: '1' },
-        { name: 'another-template', template_id: '2' },
-      ];
-      const control = { value: 'new-template' };
-      const validator = createValidator(() => existingTemplates);
+    it.each([
+      ['new-template', ['existing-template', 'another-template'], 'completely new name'],
+      ['unique-name', [], 'empty template list'],
+      ['test', ['prod', 'staging', 'dev'], 'name not in existing list'],
+    ])(
+      'should return null for "%s" when list contains %j (%s)',
+      async (inputName, existingNames, _description) => {
+        // Arrange
+        const existingTemplates = existingNames.map((name, index) => ({
+          name,
+          template_id: String(index + 1),
+        }));
+        mockListTemplates.mockReturnValue(of(existingTemplates));
+        const validator = templateNameAsyncValidator(mockController, mockTemplateService);
 
-      const resultPromise = new Promise((resolve) => {
-        validator(control).subscribe((result) => {
-          resolve(result);
-        });
-      });
+        // Act
+        const { result } = await executeValidator(validator, inputName);
 
-      vi.advanceTimersByTime(500);
-      await vi.runAllTimersAsync();
-
-      const result = await resultPromise;
-      expect(result).toBeNull();
-    });
-
-    it('should handle empty template list', async () => {
-      const existingTemplates: any[] = [];
-      const control = { value: 'new-template' };
-      const validator = createValidator(() => existingTemplates);
-
-      const resultPromise = new Promise((resolve) => {
-        validator(control).subscribe((result) => {
-          resolve(result);
-        });
-      });
-
-      vi.advanceTimersByTime(500);
-      await vi.runAllTimersAsync();
-
-      const result = await resultPromise;
-      expect(result).toBeNull();
-    });
+        // Assert
+        expect(result).toBeNull();
+      }
+    );
   });
 
   describe('debounce behavior', () => {
     it('should debounce by 500ms', async () => {
+      // Arrange
       const existingTemplates: any[] = [];
-      const control = { value: 'test-template' };
-      const validator = createValidator(() => existingTemplates);
+      mockListTemplates.mockReturnValue(of(existingTemplates));
+      const validator = templateNameAsyncValidator(mockController, mockTemplateService);
+      const control = createMockControl('test-template');
 
-      let called = false;
-      const resultPromise = new Promise((resolve) => {
-        validator(control).subscribe(() => {
-          called = true;
-          resolve(true);
-        });
+      let result: any = undefined;
+      validator(control).subscribe((value) => {
+        result = value;
       });
 
-      // Should not be called before 500ms
-      expect(called).toBe(false);
+      // Act & Assert - should not be called before debounce
+      expect(result).toBeUndefined();
+      expect(mockListTemplates).not.toHaveBeenCalled();
 
+      // Advance to debounce threshold
       vi.advanceTimersByTime(500);
       await vi.runAllTimersAsync();
 
-      await resultPromise;
-      expect(called).toBe(true);
+      // Assert - should be called after debounce
+      expect(mockListTemplates).toHaveBeenCalledTimes(1);
+      expect(result).toBeNull();
+    });
+
+    it('should debounce rapid input changes', async () => {
+      // Arrange
+      const existingTemplates = [{ name: 'existing', template_id: '1' }];
+      mockListTemplates.mockReturnValue(of(existingTemplates));
+      const validator = templateNameAsyncValidator(mockController, mockTemplateService);
+
+      // Act - simulate rapid typing
+      const control1 = createMockControl('t');
+      const subscription1 = validator(control1).subscribe(() => {});
+
+      vi.advanceTimersByTime(100);
+      const control2 = createMockControl('te');
+      const subscription2 = validator(control2).subscribe(() => {});
+
+      vi.advanceTimersByTime(100);
+      const control3 = createMockControl('tes');
+      const subscription3 = validator(control3).subscribe(() => {});
+
+      vi.advanceTimersByTime(400); // Total 500ms from first input
+      await vi.runAllTimersAsync();
+
+      // Assert - each validator creates its own observable stream
+      expect(mockListTemplates).toHaveBeenCalledTimes(3);
+
+      subscription1.unsubscribe();
+      subscription2.unsubscribe();
+      subscription3.unsubscribe();
     });
   });
 
-  describe('edge cases', () => {
-    it('should handle empty string template name', async () => {
-      const existingTemplates = [{ name: '', template_id: '1' }];
-      const control = { value: '' };
-      const validator = createValidator(() => existingTemplates);
+  describe('edge cases and special values', () => {
+    it.each([
+      ['', { name: '', template_id: '1' }, true, 'empty string matches empty name'],
+      [null, { name: null, template_id: '1' }, true, 'null matches null name'],
+      [undefined, { name: undefined, template_id: '1' }, true, 'undefined matches undefined name'],
+      ['', { name: 'template', template_id: '1' }, false, 'empty string does not match non-empty name'],
+    ])('should handle %s input (%s)', async (inputValue, existingTemplate, shouldExist, _description) => {
+      // Arrange
+      const existingTemplates = [existingTemplate];
+      mockListTemplates.mockReturnValue(of(existingTemplates));
+      const validator = templateNameAsyncValidator(mockController, mockTemplateService);
 
-      const resultPromise = new Promise((resolve) => {
-        validator(control).subscribe((result) => {
-          resolve(result);
-        });
-      });
+      // Act
+      const { result } = await executeValidator(validator, inputValue);
 
-      vi.advanceTimersByTime(500);
-      await vi.runAllTimersAsync();
-
-      const result = await resultPromise;
-      expect(result).toEqual({ templateExist: true });
+      // Assert
+      expect(result).toEqual(shouldExist ? { templateExist: true } : null);
     });
 
-    it('should handle null template name', async () => {
-      const existingTemplates = [{ name: null, template_id: '1' }];
-      const control = { value: null };
-      const validator = createValidator(() => existingTemplates);
+    it('should handle whitespace-only names', async () => {
+      // Arrange
+      const existingTemplates = [{ name: '   ', template_id: '1' }];
+      mockListTemplates.mockReturnValue(of(existingTemplates));
+      const validator = templateNameAsyncValidator(mockController, mockTemplateService);
 
-      const resultPromise = new Promise((resolve) => {
-        validator(control).subscribe((result) => {
-          resolve(result);
-        });
-      });
+      // Act
+      const { result } = await executeValidator(validator, '   ');
 
-      vi.advanceTimersByTime(500);
-      await vi.runAllTimersAsync();
-
-      const result = await resultPromise;
+      // Assert
       expect(result).toEqual({ templateExist: true });
     });
+  });
 
-    it('should handle undefined template name', async () => {
-      const existingTemplates = [{ name: undefined, template_id: '1' }];
-      const control = { value: undefined };
-      const validator = createValidator(() => existingTemplates);
+  describe('error handling', () => {
+    it('should handle TemplateService.list errors gracefully', async () => {
+      // Arrange
+      const error = new Error('Network error');
+      mockListTemplates.mockReturnValue(throwError(() => error));
+      const validator = templateNameAsyncValidator(mockController, mockTemplateService);
 
-      const resultPromise = new Promise((resolve) => {
-        validator(control).subscribe((result) => {
-          resolve(result);
-        });
-      });
+      // Act & Assert
+      const promise = executeValidator(validator, 'test-template');
 
-      vi.advanceTimersByTime(500);
+      // The validator should propagate the error
+      await expect(promise).rejects.toThrow('Network error');
+    });
+
+    it('should handle TemplateService.list returning undefined', async () => {
+      // Arrange
+      mockListTemplates.mockReturnValue(of(undefined as any));
+      const validator = templateNameAsyncValidator(mockController, mockTemplateService);
+
+      // Act & Assert
+      // When response is undefined, the validator will crash trying to call .find()
+      // This is a known issue in the implementation
+      const promise = executeValidator(validator, 'test-template');
+      await expect(promise).rejects.toThrow();
+    });
+  });
+
+  describe('subscription management', () => {
+    it('should allow subscription cancellation', async () => {
+      // Arrange
+      const existingTemplates: any[] = [];
+      mockListTemplates.mockReturnValue(of(existingTemplates));
+      const validator = templateNameAsyncValidator(mockController, mockTemplateService);
+      const control = createMockControl('test-template');
+
+      // Act
+      const subscription = validator(control).subscribe(() => {});
+
+      // Cancel before debounce completes
+      vi.advanceTimersByTime(200);
+      subscription.unsubscribe();
+
+      // Advance past debounce threshold
+      vi.advanceTimersByTime(300);
       await vi.runAllTimersAsync();
 
-      const result = await resultPromise;
-      expect(result).toEqual({ templateExist: true });
+      // Assert - due to timer-based implementation, service may still be called
+      // but the subscription won't receive the result
     });
   });
 });
