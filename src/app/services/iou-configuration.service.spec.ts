@@ -22,58 +22,20 @@ describe('IouConfigurationService', () => {
     it('should return telnet and none console types', () => {
       const result = service.getConsoleTypes();
 
-      expect(result).toContain('telnet');
-      expect(result).toContain('none');
-    });
-
-    it('should return array with exactly 2 console types', () => {
-      const result = service.getConsoleTypes();
-
-      expect(result).toHaveLength(2);
+      expect(result).toEqual(['telnet', 'none']);
     });
   });
 
   describe('getCategories', () => {
-    it('should return categories array', () => {
+    it.each([
+      ['Default', 'guest'],
+      ['Routers', 'router'],
+      ['Switches', 'switch'],
+      ['End devices', 'guest'],
+      ['Security devices', 'firewall'],
+    ])('should include %s category with %s', (name, deviceType) => {
       const result = service.getCategories();
-
-      expect(result).toBeInstanceOf(Array);
-    });
-
-    it('should return 5 categories', () => {
-      const result = service.getCategories();
-
-      expect(result).toHaveLength(5);
-    });
-
-    it('should include Default category with guest', () => {
-      const result = service.getCategories();
-
-      expect(result).toContainEqual(['Default', 'guest']);
-    });
-
-    it('should include Routers category with router', () => {
-      const result = service.getCategories();
-
-      expect(result).toContainEqual(['Routers', 'router']);
-    });
-
-    it('should include Switches category with switch', () => {
-      const result = service.getCategories();
-
-      expect(result).toContainEqual(['Switches', 'switch']);
-    });
-
-    it('should include End devices category with guest', () => {
-      const result = service.getCategories();
-
-      expect(result).toContainEqual(['End devices', 'guest']);
-    });
-
-    it('should include Security devices category with firewall', () => {
-      const result = service.getCategories();
-
-      expect(result).toContainEqual(['Security devices', 'firewall']);
+      expect(result).toContainEqual([name, deviceType]);
     });
 
     it('should return independent array each call', () => {
