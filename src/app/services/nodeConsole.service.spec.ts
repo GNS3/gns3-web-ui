@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { NodeConsoleService } from './nodeConsole.service';
 import { Router } from '@angular/router';
 import { ToasterService } from './toaster.service';
@@ -21,8 +21,11 @@ describe('NodeConsoleService', () => {
   let mockMapSettingsService: any;
   let mockNode: Node;
   let mockController: Controller;
+  let originalWindow: typeof window;
 
   beforeEach(() => {
+    originalWindow = global.window;
+
     mockRouter = {
       url: '/projects/project-1',
     };
@@ -59,21 +62,18 @@ describe('NodeConsoleService', () => {
     service = new NodeConsoleService(mockRouter, mockToasterService, mockMapSettingsService);
   });
 
+  afterEach(() => {
+    global.window = originalWindow;
+    vi.restoreAllMocks();
+  });
+
   describe('Service Creation', () => {
-    it('should create the service', () => {
-      expect(service).toBeTruthy();
-    });
-
-    it('should be instance of NodeConsoleService', () => {
-      expect(service).toBeInstanceOf(NodeConsoleService);
-    });
-
-    it('should have default console dimensions', () => {
+    it('should initialize with default console dimensions', () => {
       expect(service.defaultConsoleWidth).toBe(720);
       expect(service.defaultConsoleHeight).toBe(408);
     });
 
-    it('should have default number of columns and rows', () => {
+    it('should initialize with default number of columns and rows', () => {
       expect(service.defaultNumberOfColumns).toBe(80);
       expect(service.defaultNumberOfRows).toBe(24);
     });
@@ -103,41 +103,44 @@ describe('NodeConsoleService', () => {
 
   describe('openConsoleForNode', () => {
     it('should emit node on nodeConsoleTrigger', () => {
-      let emittedNode: Node | undefined;
-      service.nodeConsoleTrigger.subscribe((node) => {
-        emittedNode = node;
+      const emittedNode: (Node | undefined)[] = [];
+      const subscription = service.nodeConsoleTrigger.subscribe((node) => {
+        emittedNode.push(node);
       });
 
       service.openConsoleForNode(mockNode);
 
-      expect(emittedNode).toBe(mockNode);
+      expect(emittedNode[0]).toBe(mockNode);
+      subscription.unsubscribe();
     });
   });
 
   describe('closeConsoleForNode', () => {
     it('should emit node on closeNodeConsoleTrigger', () => {
-      let emittedNode: Node | undefined;
-      service.closeNodeConsoleTrigger.subscribe((node) => {
-        emittedNode = node;
+      const emittedNode: (Node | undefined)[] = [];
+      const subscription = service.closeNodeConsoleTrigger.subscribe((node) => {
+        emittedNode.push(node);
       });
 
       service.closeConsoleForNode(mockNode);
 
-      expect(emittedNode).toBe(mockNode);
+      expect(emittedNode[0]).toBe(mockNode);
+      subscription.unsubscribe();
     });
   });
 
   describe('resizeTerminal', () => {
     it('should emit event on consoleResized', () => {
       const event = { width: 800, height: 600 };
-      let emittedEvent: any;
-      service.consoleResized.subscribe((e) => {
-        emittedEvent = e;
+      const emittedEvent: any[] = [];
+      const subscription = service.consoleResized.subscribe((e) => {
+        emittedEvent.push(e);
       });
 
       service.resizeTerminal(event);
 
-      expect(emittedEvent).toEqual(event);
+      expect(emittedEvent[0]).toEqual(event);
+      subscription.unsubscribe();
     });
   });
 
@@ -159,25 +162,29 @@ describe('NodeConsoleService', () => {
     it('should return ws URL for http protocol', () => {
       const url = service.getUrl(mockController, mockNode);
 
-      expect(url).toContain('ws://');
-      expect(url).toContain('localhost:3080');
-      expect(url).toContain('/projects/project-1/nodes/node-1/console/ws');
-      expect(url).toContain('token=test-token');
+      expect(url).toMatch(/^ws:\/\/localhost:3080\/3\.0\.0\/projects\/project-1\/nodes\/node-1\/console\/ws\?token=test-token$/);
     });
 
     it('should return wss URL for https protocol', () => {
       const httpsController = { ...mockController, protocol: 'https:' as any };
       const url = service.getUrl(httpsController, mockNode);
 
-      expect(url).toContain('wss://');
+      expect(url).toMatch(/^wss:\/\/localhost:3080\/3\.0\.0\/projects\/project-1\/nodes\/node-1\/console\/ws\?token=test-token$/);
+    });
+
+    it('should return ws URL for unknown protocol', () => {
+      const unknownController = { ...mockController, protocol: 'ftp:' as any };
+      const url = service.getUrl(unknownController, mockNode);
+
+      expect(url).toMatch(/^ws:\/\/localhost:3080\/3\.0\.0\/projects\/project-1\/nodes\/node-1\/console\/ws\?token=test-token$/);
     });
   });
 
   describe('openConsolesForAllNodesInWidget', () => {
     it('should open console for started node', () => {
-      let openedNode: Node | undefined;
-      service.nodeConsoleTrigger.subscribe((node) => {
-        openedNode = node;
+      const openedNode: (Node | undefined)[] = [];
+      const subscription = service.nodeConsoleTrigger.subscribe((node) => {
+        openedNode.push(node);
       });
 
       service.openConsolesForAllNodesInWidget([mockNode]);
@@ -185,7 +192,8 @@ describe('NodeConsoleService', () => {
       vi.advanceTimersByTime(500);
 
       expect(mockMapSettingsService.logConsoleSubject.next).toHaveBeenCalledWith(true);
-      expect(openedNode).toBeDefined();
+      expect(openedNode[0]).toBeDefined();
+      subscription.unsubscribe();
     });
 
     it('should show error for stopped node', () => {
@@ -209,14 +217,11 @@ describe('NodeConsoleService', () => {
   });
 
   describe('openConsolesForAllNodesInNewTabs', () => {
-    beforeEach(() => {
+    it('should open tab for started telnet node', () => {
+      mockRouter.url = '/projects/project-1/edit';
       global.window = {
         open: vi.fn(),
       } as any;
-    });
-
-    it('should open tab for started telnet node', () => {
-      mockRouter.url = '/projects/project-1/edit';
 
       service.openConsolesForAllNodesInNewTabs([mockNode]);
 
@@ -232,6 +237,9 @@ describe('NodeConsoleService', () => {
     });
 
     it('should skip non-telnet console types', () => {
+      global.window = {
+        open: vi.fn(),
+      } as any;
       const vncNode = { ...mockNode, console_type: 'vnc' };
 
       service.openConsolesForAllNodesInNewTabs([vncNode]);
