@@ -2,14 +2,14 @@
 
 > **Last Updated**: 2026-04-02
 > **Total Components**: 231 (`.component.ts` files)
-> **Completed**: 65
-> **Remaining**: 166
+> **Completed**: 66
+> **Remaining**: 165
 
 This document tracks the progress of creating unit test files (`.spec.ts`) for all Angular components in the project.
 
 ## Progress Summary
 
-- [ ] 65 / 231 components completed (28.1%)
+- [ ] 66 / 231 components completed (28.6%)
 
 ---
 
@@ -365,7 +365,7 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 - [ ] user-management.component.ts
 
 ### users (1 component)
-- [ ] logged-user/logged-user.component.ts
+- [x] logged-user/logged-user.component.ts
 
 ### web-console-full-window (1 component)
 - [ ] web-console-full-window.component.ts
@@ -376,6 +376,7 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 
 | Date | Commit | Components | Tests |
 |------|--------|------------|-------|
+| 2026-04-02 | 0dcf00b9 | LoggedUserComponent | 3 |
 | 2026-04-02 | 075e2a38 | TopologySummaryComponent | 17 |
 | 2026-04-02 | 476caa34 | TemplateListDialogComponent | 14 |
 | 2026-04-02 | d9275b46 | TemplateComponent | 8 |
@@ -407,5 +408,5 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 | 2026-04-02 | e2578113 | ControllerManagementService | 28 |
 
 **Service tests completed**: 12 services, 527 tests
-**Component tests completed**: 17 components, 144 tests
-**Total**: 2139 tests passing
+**Component tests completed**: 18 components, 147 tests
+**Total**: 2142 tests passing
