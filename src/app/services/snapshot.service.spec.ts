@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { firstValueFrom, of, throwError } from 'rxjs';
 import { SnapshotService } from './snapshot.service';
 import { HttpController } from './http-controller.service';
-import { Observable, of } from 'rxjs';
 import { Controller } from '@models/controller';
 import { Snapshot } from '@models/snapshot';
 
@@ -10,16 +10,8 @@ describe('SnapshotService', () => {
   let mockHttpController: any;
   let mockController: Controller;
 
-  beforeEach(() => {
-    // Mock HttpController
-    mockHttpController = {
-      post: vi.fn(),
-      get: vi.fn(),
-      delete: vi.fn(),
-    };
-
-    // Mock Controller
-    mockController = {
+  const createMockController = (): Controller =>
+    ({
       id: 1,
       authToken: '',
       name: 'Test Controller',
@@ -33,8 +25,15 @@ describe('SnapshotService', () => {
       username: '',
       password: '',
       tokenExpired: false,
-    } as Controller;
+    }) as Controller;
 
+  beforeEach(() => {
+    mockHttpController = {
+      post: vi.fn(),
+      get: vi.fn(),
+      delete: vi.fn(),
+    };
+    mockController = createMockController();
     service = new SnapshotService(mockHttpController);
   });
 
@@ -49,61 +48,50 @@ describe('SnapshotService', () => {
   });
 
   describe('create', () => {
-    it('should call httpController.post with correct URL', () => {
-      const mockSnapshot: Snapshot = {
-        snapshot_id: 'snap-1',
-        name: 'Test Snapshot',
-        project_id: 'project-1',
-        created_at: 1234567890,
-      };
+    const mockSnapshot = (): Snapshot => ({
+      snapshot_id: 'snap-1',
+      name: 'Test Snapshot',
+      project_id: 'project-1',
+      created_at: 1234567890,
+    });
 
-      mockHttpController.post.mockReturnValue(of(mockSnapshot));
+    it('should call httpController.post with correct URL and data', async () => {
+      const snapshot = mockSnapshot();
+      mockHttpController.post.mockReturnValue(of(snapshot));
 
-      service.create(mockController, 'project-1', mockSnapshot);
+      await firstValueFrom(service.create(mockController, 'project-1', snapshot));
 
       expect(mockHttpController.post).toHaveBeenCalledWith(
         mockController,
         '/projects/project-1/snapshots',
-        mockSnapshot
+        snapshot
       );
     });
 
-    it('should return Observable from httpController', async () => {
-      const mockSnapshot: Snapshot = {
-        snapshot_id: 'snap-1',
-        name: 'Test Snapshot',
-        project_id: 'project-1',
-        created_at: 1234567890,
-      };
+    it('should return the created snapshot', async () => {
+      const snapshot = mockSnapshot();
+      mockHttpController.post.mockReturnValue(of(snapshot));
 
-      mockHttpController.post.mockReturnValue(of(mockSnapshot));
+      const result = await firstValueFrom(service.create(mockController, 'project-1', snapshot));
 
-      const result = service.create(mockController, 'project-1', mockSnapshot);
-
-      expect(result).toBeInstanceOf(Observable);
+      expect(result).toEqual(snapshot);
     });
 
-    it('should pass snapshot data to httpController', () => {
-      const mockSnapshot: Snapshot = {
-        snapshot_id: 'snap-1',
-        name: 'Test Snapshot',
-        project_id: 'project-1',
-        created_at: 1234567890,
-      };
+    it('should propagate error when httpController.post fails', async () => {
+      const error = new Error('Server error');
+      mockHttpController.post.mockReturnValue(throwError(() => error));
 
-      mockHttpController.post.mockReturnValue(of(mockSnapshot));
-
-      service.create(mockController, 'project-1', mockSnapshot);
-
-      expect(mockHttpController.post).toHaveBeenCalledTimes(1);
+      await expect(
+        firstValueFrom(service.create(mockController, 'project-1', mockSnapshot()))
+      ).rejects.toThrow('Server error');
     });
   });
 
   describe('delete', () => {
-    it('should call httpController.delete with correct URL', () => {
+    it('should call httpController.delete with correct URL', async () => {
       mockHttpController.delete.mockReturnValue(of({}));
 
-      service.delete(mockController, 'project-1', 'snap-1');
+      await firstValueFrom(service.delete(mockController, 'project-1', 'snap-1'));
 
       expect(mockHttpController.delete).toHaveBeenCalledWith(
         mockController,
@@ -111,36 +99,34 @@ describe('SnapshotService', () => {
       );
     });
 
-    it('should return Observable from httpController', () => {
+    it('should return empty object on success', async () => {
       mockHttpController.delete.mockReturnValue(of({}));
 
-      const result = service.delete(mockController, 'project-1', 'snap-1');
+      const result = await firstValueFrom(service.delete(mockController, 'project-1', 'snap-1'));
 
-      expect(result).toBeInstanceOf(Observable);
+      expect(result).toEqual({});
     });
 
-    it('should include snapshot_id in URL', () => {
-      mockHttpController.delete.mockReturnValue(of({}));
+    it('should propagate error when httpController.delete fails', async () => {
+      const error = new Error('Delete failed');
+      mockHttpController.delete.mockReturnValue(throwError(() => error));
 
-      service.delete(mockController, 'project-2', 'snap-123');
-
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-2/snapshots/snap-123'
-      );
+      await expect(
+        firstValueFrom(service.delete(mockController, 'project-1', 'snap-1'))
+      ).rejects.toThrow('Delete failed');
     });
   });
 
   describe('list', () => {
-    it('should call httpController.get with correct URL', () => {
-      const mockSnapshots: Snapshot[] = [
-        { snapshot_id: 'snap-1', name: 'Snapshot 1', project_id: 'project-1', created_at: 1234567890 },
-        { snapshot_id: 'snap-2', name: 'Snapshot 2', project_id: 'project-1', created_at: 1234567891 },
-      ];
+    const mockSnapshots = (): Snapshot[] => [
+      { snapshot_id: 'snap-1', name: 'Snapshot 1', project_id: 'project-1', created_at: 1234567890 },
+      { snapshot_id: 'snap-2', name: 'Snapshot 2', project_id: 'project-1', created_at: 1234567891 },
+    ];
 
-      mockHttpController.get.mockReturnValue(of(mockSnapshots));
+    it('should call httpController.get with correct URL', async () => {
+      mockHttpController.get.mockReturnValue(of(mockSnapshots()));
 
-      service.list(mockController, 'project-1');
+      await firstValueFrom(service.list(mockController, 'project-1'));
 
       expect(mockHttpController.get).toHaveBeenCalledWith(
         mockController,
@@ -148,36 +134,50 @@ describe('SnapshotService', () => {
       );
     });
 
-    it('should return Observable of Snapshot array', async () => {
-      const mockSnapshots: Snapshot[] = [
-        { snapshot_id: 'snap-1', name: 'Snapshot 1', project_id: 'project-1', created_at: 1234567890 },
-      ];
+    it('should return array of snapshots', async () => {
+      const snapshots = mockSnapshots();
+      mockHttpController.get.mockReturnValue(of(snapshots));
 
-      mockHttpController.get.mockReturnValue(of(mockSnapshots));
+      const result = await firstValueFrom(service.list(mockController, 'project-1'));
 
-      const result = service.list(mockController, 'project-1');
-
-      expect(result).toBeInstanceOf(Observable);
+      expect(result).toEqual(snapshots);
     });
 
-    it('should handle empty snapshot list', () => {
+    it('should return empty array when no snapshots exist', async () => {
       mockHttpController.get.mockReturnValue(of([]));
 
-      const result = service.list(mockController, 'project-1');
+      const result = await firstValueFrom(service.list(mockController, 'project-1'));
 
-      expect(result).toBeInstanceOf(Observable);
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-1/snapshots'
-      );
+      expect(result).toEqual([]);
+    });
+
+    it('should propagate error when httpController.get fails', async () => {
+      const error = new Error('Network error');
+      mockHttpController.get.mockReturnValue(throwError(() => error));
+
+      await expect(
+        firstValueFrom(service.list(mockController, 'project-1'))
+      ).rejects.toThrow('Network error');
+    });
+
+    it.each([
+      ['proj-alpha', '/projects/proj-alpha/snapshots'],
+      ['proj-beta', '/projects/proj-beta/snapshots'],
+      ['proj-gamma', '/projects/proj-gamma/snapshots'],
+    ])('should construct correct URL for project_id %s', async (projectId, expectedUrl) => {
+      mockHttpController.get.mockReturnValue(of([]));
+
+      await firstValueFrom(service.list(mockController, projectId));
+
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, expectedUrl);
     });
   });
 
   describe('restore', () => {
-    it('should call httpController.post with correct URL', () => {
+    it('should call httpController.post with correct URL and empty body', async () => {
       mockHttpController.post.mockReturnValue(of({}));
 
-      service.restore(mockController, 'project-1', 'snap-1');
+      await firstValueFrom(service.restore(mockController, 'project-1', 'snap-1'));
 
       expect(mockHttpController.post).toHaveBeenCalledWith(
         mockController,
@@ -186,69 +186,40 @@ describe('SnapshotService', () => {
       );
     });
 
-    it('should pass empty body as second parameter', () => {
+    it('should return empty object on success', async () => {
       mockHttpController.post.mockReturnValue(of({}));
 
-      service.restore(mockController, 'project-2', 'snap-5');
+      const result = await firstValueFrom(service.restore(mockController, 'project-1', 'snap-1'));
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-2/snapshots/snap-5/restore',
-        {}
-      );
+      expect(result).toEqual({});
     });
 
-    it('should return Observable from httpController', () => {
+    it('should propagate error when httpController.post fails', async () => {
+      const error = new Error('Restore failed');
+      mockHttpController.post.mockReturnValue(throwError(() => error));
+
+      await expect(
+        firstValueFrom(service.restore(mockController, 'project-1', 'snap-1'))
+      ).rejects.toThrow('Restore failed');
+    });
+
+    it.each([
+      ['snap-100', '/projects/project-1/snapshots/snap-100/restore'],
+      ['snap-999', '/projects/project-1/snapshots/snap-999/restore'],
+    ])('should construct correct restore URL for snapshot_id %s', async (snapshotId, expectedUrl) => {
       mockHttpController.post.mockReturnValue(of({}));
 
-      const result = service.restore(mockController, 'project-1', 'snap-1');
+      await firstValueFrom(service.restore(mockController, 'project-1', snapshotId));
 
-      expect(result).toBeInstanceOf(Observable);
-    });
-
-    it('should include snapshot_id in restore URL', () => {
-      mockHttpController.post.mockReturnValue(of({}));
-
-      service.restore(mockController, 'project-1', 'snap-999');
-
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-1/snapshots/snap-999/restore',
-        {}
-      );
-    });
-  });
-
-  describe('URL Construction', () => {
-    it('should construct correct URL for different project IDs', () => {
-      mockHttpController.get.mockReturnValue(of([]));
-
-      service.list(mockController, 'proj-alpha');
-      service.list(mockController, 'proj-beta');
-      service.list(mockController, 'proj-gamma');
-
-      expect(mockHttpController.get).toHaveBeenCalledTimes(3);
-      expect(mockHttpController.get).toHaveBeenNthCalledWith(1, mockController, '/projects/proj-alpha/snapshots');
-      expect(mockHttpController.get).toHaveBeenNthCalledWith(2, mockController, '/projects/proj-beta/snapshots');
-      expect(mockHttpController.get).toHaveBeenNthCalledWith(3, mockController, '/projects/proj-gamma/snapshots');
-    });
-
-    it('should construct correct URL for different snapshot IDs', () => {
-      mockHttpController.delete.mockReturnValue(of({}));
-
-      service.delete(mockController, 'proj-1', 'snap-a');
-      service.delete(mockController, 'proj-1', 'snap-b');
-
-      expect(mockHttpController.delete).toHaveBeenNthCalledWith(1, mockController, '/projects/proj-1/snapshots/snap-a');
-      expect(mockHttpController.delete).toHaveBeenNthCalledWith(2, mockController, '/projects/proj-1/snapshots/snap-b');
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, expectedUrl, {});
     });
   });
 
   describe('Edge Cases', () => {
-    it('should handle special characters in project_id', () => {
+    it('should handle special characters in project_id', async () => {
       mockHttpController.get.mockReturnValue(of([]));
 
-      service.list(mockController, 'project-with-dash');
+      await firstValueFrom(service.list(mockController, 'project-with-dash'));
 
       expect(mockHttpController.get).toHaveBeenCalledWith(
         mockController,
@@ -256,10 +227,10 @@ describe('SnapshotService', () => {
       );
     });
 
-    it('should handle special characters in snapshot_id', () => {
+    it('should handle special characters in snapshot_id', async () => {
       mockHttpController.delete.mockReturnValue(of({}));
 
-      service.delete(mockController, 'proj-1', 'snap-with_underscore');
+      await firstValueFrom(service.delete(mockController, 'proj-1', 'snap-with_underscore'));
 
       expect(mockHttpController.delete).toHaveBeenCalledWith(
         mockController,
@@ -267,15 +238,23 @@ describe('SnapshotService', () => {
       );
     });
 
-    it('should handle empty snapshot_id', () => {
+    it('should handle empty snapshot_id', async () => {
       mockHttpController.delete.mockReturnValue(of({}));
 
-      service.delete(mockController, 'proj-1', '');
+      await firstValueFrom(service.delete(mockController, 'proj-1', ''));
 
       expect(mockHttpController.delete).toHaveBeenCalledWith(
         mockController,
         '/projects/proj-1/snapshots/'
       );
+    });
+
+    it('should handle empty project_id', async () => {
+      mockHttpController.get.mockReturnValue(of([]));
+
+      await firstValueFrom(service.list(mockController, ''));
+
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/projects//snapshots');
     });
   });
 });
