@@ -1,10 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { firstValueFrom, of, throwError } from 'rxjs';
 import { RoleService } from './role.service';
 import { HttpController } from './http-controller.service';
-import { Observable, of } from 'rxjs';
 import { Controller } from '@models/controller';
 import { Role } from '@models/api/role';
-import { Privilege } from '@models/api/Privilege';
 
 describe('RoleService', () => {
   let service: RoleService;
@@ -51,7 +50,7 @@ describe('RoleService', () => {
   });
 
   describe('get', () => {
-    it('should call httpController.get with correct endpoint', () => {
+    it('should call httpController.get with correct endpoint and return roles', async () => {
       const mockRoles: Role[] = [
         { role_id: 'role-1', name: 'Admin', description: 'Administrator' } as Role,
         { role_id: 'role-2', name: 'User', description: 'Regular user' } as Role,
@@ -59,274 +58,211 @@ describe('RoleService', () => {
 
       mockHttpController.get.mockReturnValue(of(mockRoles));
 
-      service.get(mockController);
+      const result = service.get(mockController);
+      const emittedValue = await firstValueFrom(result);
 
       expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/roles');
+      expect(emittedValue).toEqual(mockRoles);
     });
 
-    it('should return Observable of Role array', () => {
-      const mockRoles: Role[] = [];
-      mockHttpController.get.mockReturnValue(of(mockRoles));
-
-      const result = service.get(mockController);
-
-      expect(result).toBeInstanceOf(Observable);
-    });
-
-    it('should handle empty roles list', () => {
+    it('should handle empty roles list', async () => {
       mockHttpController.get.mockReturnValue(of([]));
 
       const result = service.get(mockController);
+      const emittedValue = await firstValueFrom(result);
 
-      expect(result).toBeInstanceOf(Observable);
+      expect(emittedValue).toEqual([]);
+    });
+
+    it('should propagate error when get fails', async () => {
+      const error = new Error('Server Error');
+      mockHttpController.get.mockReturnValue(throwError(() => error));
+
+      const result = service.get(mockController);
+
+      await expect(firstValueFrom(result)).rejects.toThrow('Server Error');
     });
   });
 
   describe('delete', () => {
-    it('should call httpController.delete with correct endpoint', () => {
+    it.each([
+      { roleId: 'role-123', expectedUrl: '/access/roles/role-123' },
+      { roleId: 'role-with-dash', expectedUrl: '/access/roles/role-with-dash' },
+      { roleId: 'role_with_underscore', expectedUrl: '/access/roles/role_with_underscore' },
+    ])('should call httpController.delete with correct endpoint for $roleId', async ({ roleId, expectedUrl }) => {
       mockHttpController.delete.mockReturnValue(of({}));
 
-      service.delete(mockController, 'role-123');
+      await firstValueFrom(service.delete(mockController, roleId));
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/access/roles/role-123'
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, expectedUrl);
     });
 
-    it('should return Observable', () => {
-      mockHttpController.delete.mockReturnValue(of({}));
+    it('should return the deleted role', async () => {
+      const deletedRole = { role_id: 'role-123', name: 'Deleted Role' };
+      mockHttpController.delete.mockReturnValue(of(deletedRole));
+
+      const result = await firstValueFrom(service.delete(mockController, 'role-123'));
+
+      expect(result).toEqual(deletedRole);
+    });
+
+    it('should propagate error when delete fails', async () => {
+      const error = new Error('Not Found');
+      mockHttpController.delete.mockReturnValue(throwError(() => error));
 
       const result = service.delete(mockController, 'role-123');
 
-      expect(result).toBeInstanceOf(Observable);
-    });
-
-    it('should include role_id in URL', () => {
-      mockHttpController.delete.mockReturnValue(of({}));
-
-      service.delete(mockController, 'role-to-delete');
-
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/access/roles/role-to-delete'
-      );
+      await expect(firstValueFrom(result)).rejects.toThrow('Not Found');
     });
   });
 
   describe('create', () => {
-    it('should call httpController.post with correct endpoint and payload', () => {
-      mockHttpController.post.mockReturnValue(of({}));
-
+    it('should call httpController.post with correct endpoint and payload', async () => {
       const newRole = { name: 'New Role', description: 'New role description' };
+      const createdRole = { role_id: 'new-role-id', ...newRole };
+      mockHttpController.post.mockReturnValue(of(createdRole));
 
-      service.create(mockController, newRole);
+      const result = await firstValueFrom(service.create(mockController, newRole));
 
       expect(mockHttpController.post).toHaveBeenCalledWith(
         mockController,
         '/access/roles',
         newRole
       );
+      expect(result).toEqual(createdRole);
     });
 
-    it('should return Observable', () => {
-      mockHttpController.post.mockReturnValue(of({}));
+    it('should propagate error when create fails', async () => {
+      const error = new Error('Conflict');
+      mockHttpController.post.mockReturnValue(throwError(() => error));
 
       const result = service.create(mockController, { name: 'Test', description: 'Desc' });
 
-      expect(result).toBeInstanceOf(Observable);
+      await expect(firstValueFrom(result)).rejects.toThrow('Conflict');
     });
   });
 
   describe('getById', () => {
-    it('should call httpController.get with correct endpoint', () => {
+    it('should call httpController.get with correct endpoint and return role', async () => {
       const mockRole: Role = { role_id: 'role-1', name: 'Admin', description: 'Admin role' } as Role;
-
       mockHttpController.get.mockReturnValue(of(mockRole));
 
-      service.getById(mockController, 'role-1');
+      const result = await firstValueFrom(service.getById(mockController, 'role-1'));
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/roles/role-1'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/roles/role-1');
+      expect(result).toEqual(mockRole);
     });
 
-    it('should return Observable of Role', () => {
-      const mockRole: Role = { role_id: 'role-1', name: 'Admin' } as Role;
-      mockHttpController.get.mockReturnValue(of(mockRole));
+    it('should propagate error when getById fails', async () => {
+      const error = new Error('Not Found');
+      mockHttpController.get.mockReturnValue(throwError(() => error));
 
       const result = service.getById(mockController, 'role-1');
 
-      expect(result).toBeInstanceOf(Observable);
+      await expect(firstValueFrom(result)).rejects.toThrow('Not Found');
     });
   });
 
   describe('update', () => {
-    it('should call httpController.put with correct endpoint and payload', () => {
+    it('should call httpController.put with correct endpoint and payload', async () => {
       const mockRole: Role = {
         role_id: 'role-1',
         name: 'Updated Role',
         description: 'Updated description',
       } as Role;
-
       mockHttpController.put.mockReturnValue(of(mockRole));
 
-      service.update(mockController, mockRole);
+      const result = await firstValueFrom(service.update(mockController, mockRole));
 
       expect(mockHttpController.put).toHaveBeenCalledWith(
         mockController,
         '/access/roles/role-1',
         { name: 'Updated Role', description: 'Updated description' }
       );
+      expect(result).toEqual(mockRole);
     });
 
-    it('should return Observable', () => {
-      const mockRole: Role = { role_id: 'role-1', name: 'Test', description: 'Desc' } as Role;
-      mockHttpController.put.mockReturnValue(of(mockRole));
-
-      const result = service.update(mockController, mockRole);
-
-      expect(result).toBeInstanceOf(Observable);
-    });
-
-    it('should pass role properties in payload', () => {
+    it('should only pass name and description in payload (not role_id)', async () => {
       const mockRole: Role = {
         role_id: 'role-2',
         name: 'Role Name',
         description: 'Role Description',
       } as Role;
-
       mockHttpController.put.mockReturnValue(of(mockRole));
 
-      service.update(mockController, mockRole);
+      await firstValueFrom(service.update(mockController, mockRole));
 
       const putCall = mockHttpController.put.mock.calls[0];
       const payload = putCall[2];
 
-      expect(payload.name).toBe('Role Name');
-      expect(payload.description).toBe('Role Description');
+      expect(payload).toEqual({ name: 'Role Name', description: 'Role Description' });
+      expect(payload).not.toHaveProperty('role_id');
+    });
+
+    it('should propagate error when update fails', async () => {
+      const error = new Error('Conflict');
+      mockHttpController.put.mockReturnValue(throwError(() => error));
+
+      const result = service.update(mockController, { role_id: 'role-1', name: 'Test', description: 'Desc' } as Role);
+
+      await expect(firstValueFrom(result)).rejects.toThrow('Conflict');
     });
   });
 
   describe('setPrivileges', () => {
-    it('should call httpController.put with correct endpoint', () => {
+    it('should call httpController.put with correct endpoint and undefined body', async () => {
       mockHttpController.put.mockReturnValue(of({}));
 
-      service.setPrivileges(mockController, 'role-1', 'priv-1');
+      const result = await firstValueFrom(service.setPrivileges(mockController, 'role-1', 'priv-1'));
 
       expect(mockHttpController.put).toHaveBeenCalledWith(
         mockController,
         '/access/roles/role-1/privileges/priv-1',
         undefined
       );
+      expect(result).toEqual({});
     });
 
-    it('should pass undefined as body', () => {
-      mockHttpController.put.mockReturnValue(of({}));
-
-      service.setPrivileges(mockController, 'role-1', 'priv-1');
-
-      const putCall = mockHttpController.put.mock.calls[0];
-      expect(putCall[2]).toBeUndefined();
-    });
-
-    it('should return Observable', () => {
-      mockHttpController.put.mockReturnValue(of({}));
+    it('should propagate error when setPrivileges fails', async () => {
+      const error = new Error('Server Error');
+      mockHttpController.put.mockReturnValue(throwError(() => error));
 
       const result = service.setPrivileges(mockController, 'role-1', 'priv-1');
 
-      expect(result).toBeInstanceOf(Observable);
+      await expect(firstValueFrom(result)).rejects.toThrow('Server Error');
     });
   });
 
   describe('removePrivileges', () => {
-    it('should call httpController.delete with correct endpoint', () => {
+    it.each([
+      { roleId: 'role-1', privilegeId: 'priv-1', expectedUrl: '/access/roles/role-1/privileges/priv-1' },
+      { roleId: 'role-to-update', privilegeId: 'priv-to-remove', expectedUrl: '/access/roles/role-to-update/privileges/priv-to-remove' },
+    ])('should call httpController.delete with correct endpoint for $roleId/$privilegeId', async ({ roleId, privilegeId, expectedUrl }) => {
       mockHttpController.delete.mockReturnValue(of({}));
 
-      service.removePrivileges(mockController, 'role-1', 'priv-1');
+      await firstValueFrom(service.removePrivileges(mockController, roleId, privilegeId));
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/access/roles/role-1/privileges/priv-1'
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, expectedUrl);
     });
 
-    it('should return Observable', () => {
-      mockHttpController.delete.mockReturnValue(of({}));
+    it('should propagate error when removePrivileges fails', async () => {
+      const error = new Error('Not Found');
+      mockHttpController.delete.mockReturnValue(throwError(() => error));
 
       const result = service.removePrivileges(mockController, 'role-1', 'priv-1');
 
-      expect(result).toBeInstanceOf(Observable);
-    });
-
-    it('should include role_id and privilege_id in URL', () => {
-      mockHttpController.delete.mockReturnValue(of({}));
-
-      service.removePrivileges(mockController, 'role-to-update', 'priv-to-remove');
-
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/access/roles/role-to-update/privileges/priv-to-remove'
-      );
-    });
-  });
-
-  describe('URL Construction', () => {
-    it('should construct correct URL for different role IDs', () => {
-      mockHttpController.get.mockReturnValue(of({}));
-
-      service.getById(mockController, 'role-alpha');
-      service.getById(mockController, 'role-beta');
-      service.getById(mockController, 'role-gamma');
-
-      expect(mockHttpController.get).toHaveBeenCalledTimes(3);
-      expect(mockHttpController.get).toHaveBeenNthCalledWith(1, mockController, '/access/roles/role-alpha');
-      expect(mockHttpController.get).toHaveBeenNthCalledWith(2, mockController, '/access/roles/role-beta');
-      expect(mockHttpController.get).toHaveBeenNthCalledWith(3, mockController, '/access/roles/role-gamma');
+      await expect(firstValueFrom(result)).rejects.toThrow('Not Found');
     });
   });
 
   describe('Edge Cases', () => {
-    it('should handle special characters in role_id', () => {
-      mockHttpController.delete.mockReturnValue(of({}));
+    it('should handle empty role name in create', async () => {
+      mockHttpController.post.mockReturnValue(of({ role_id: 'new-id', name: '', description: 'Desc' }));
 
-      service.delete(mockController, 'role-with-dash');
-
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/access/roles/role-with-dash'
-      );
-    });
-
-    it('should handle role_id with underscores', () => {
-      mockHttpController.delete.mockReturnValue(of({}));
-
-      service.delete(mockController, 'role_with_underscore');
-
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/access/roles/role_with_underscore'
-      );
-    });
-
-    it('should handle empty role name', () => {
-      mockHttpController.post.mockReturnValue(of({}));
-
-      service.create(mockController, { name: '', description: 'Desc' });
+      const result = await firstValueFrom(service.create(mockController, { name: '', description: 'Desc' }));
 
       expect(mockHttpController.post).toHaveBeenCalled();
-    });
-
-    it('should handle special characters in privilege ID', () => {
-      mockHttpController.delete.mockReturnValue(of({}));
-
-      service.removePrivileges(mockController, 'role-1', 'priv-special');
-
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/access/roles/role-1/privileges/priv-special'
-      );
+      expect(result).toEqual({ role_id: 'new-id', name: '', description: 'Desc' });
     });
   });
 });
