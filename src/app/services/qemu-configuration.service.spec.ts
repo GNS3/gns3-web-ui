@@ -19,159 +19,206 @@ describe('QemuConfigurationService', () => {
   });
 
   describe('getPlatform', () => {
-    it('should return array of platforms', () => {
-      const result = service.getPlatform();
-      expect(result).toBeInstanceOf(Array);
+    let platforms: string[];
+
+    beforeEach(() => {
+      platforms = service.getPlatform();
     });
 
-    it('should include x86_64', () => {
-      expect(service.getPlatform()).toContain('x86_64');
+    it('should return an array', () => {
+      expect(platforms).toBeInstanceOf(Array);
     });
 
-    it('should include aarch64', () => {
-      expect(service.getPlatform()).toContain('aarch64');
-    });
+    it.each(['x86_64', 'aarch64', 'i386', 'ppc64', 's390x'])(
+      'should include %s platform',
+      (platform) => {
+        expect(platforms).toContain(platform);
+      },
+    );
 
-    it('should have 28 platform options', () => {
-      expect(service.getPlatform()).toHaveLength(28);
+    it('should return 28 platform options', () => {
+      expect(platforms).toHaveLength(28);
     });
   });
 
   describe('getConsoleTypes', () => {
-    it('should return 5 console types', () => {
-      const result = service.getConsoleTypes();
-      expect(result).toHaveLength(5);
+    let consoleTypes: string[];
+
+    beforeEach(() => {
+      consoleTypes = service.getConsoleTypes();
     });
 
-    it('should include telnet, vnc, spice', () => {
-      const result = service.getConsoleTypes();
-      expect(result).toContain('telnet');
-      expect(result).toContain('vnc');
-      expect(result).toContain('spice');
+    it('should return 5 console types', () => {
+      expect(consoleTypes).toHaveLength(5);
+    });
+
+    it('should include telnet, vnc, spice, spice+agent, none', () => {
+      expect(consoleTypes).toEqual(['telnet', 'vnc', 'spice', 'spice+agent', 'none']);
     });
   });
 
   describe('getAuxConsoleTypes', () => {
+    let auxConsoleTypes: string[];
+
+    beforeEach(() => {
+      auxConsoleTypes = service.getAuxConsoleTypes();
+    });
+
     it('should return 2 aux console types', () => {
-      const result = service.getAuxConsoleTypes();
-      expect(result).toHaveLength(2);
+      expect(auxConsoleTypes).toHaveLength(2);
     });
 
     it('should include telnet and none', () => {
-      const result = service.getAuxConsoleTypes();
-      expect(result).toContain('telnet');
-      expect(result).toContain('none');
+      expect(auxConsoleTypes).toContain('telnet');
+      expect(auxConsoleTypes).toContain('none');
     });
   });
 
   describe('getDiskInterfaces', () => {
-    it('should return 10 disk interfaces', () => {
-      expect(service.getDiskInterfaces()).toHaveLength(10);
+    let diskInterfaces: string[];
+
+    beforeEach(() => {
+      diskInterfaces = service.getDiskInterfaces();
     });
 
-    it('should include virtio and ide', () => {
-      const result = service.getDiskInterfaces();
-      expect(result).toContain('virtio');
-      expect(result).toContain('ide');
+    it('should return 10 disk interfaces', () => {
+      expect(diskInterfaces).toHaveLength(10);
     });
+
+    it.each(['virtio', 'ide', 'scsi', 'sata', 'nvme'])(
+      'should include %s interface',
+      (interfaceType) => {
+        expect(diskInterfaces).toContain(interfaceType);
+      },
+    );
   });
 
   describe('getNetworkTypes', () => {
-    it('should return array of network type objects', () => {
-      const result = service.getNetworkTypes();
-      expect(result).toBeInstanceOf(Array);
+    let networkTypes: { value: string; name: string }[];
+
+    beforeEach(() => {
+      networkTypes = service.getNetworkTypes();
     });
 
-    it('should have objects with value and name', () => {
-      const result = service.getNetworkTypes();
-      expect(result[0]).toHaveProperty('value');
-      expect(result[0]).toHaveProperty('name');
+    it('should return an array of network type objects', () => {
+      expect(networkTypes).toBeInstanceOf(Array);
     });
 
-    it('should include e1000 network type', () => {
-      const result = service.getNetworkTypes();
-      expect(result.find((n) => n.value === 'e1000')).toBeDefined();
+    it('should have objects with value and name properties', () => {
+      expect(networkTypes[0]).toHaveProperty('value');
+      expect(networkTypes[0]).toHaveProperty('name');
     });
 
-    it('should include virtio network type', () => {
-      const result = service.getNetworkTypes();
-      expect(result.find((n) => n.value === 'virtio')).toBeDefined();
-    });
+    it.each(['e1000', 'virtio', 'pcnet', 'ne2k_pci', 'rtl8139'])(
+      'should include %s network type',
+      (type) => {
+        expect(networkTypes.find((n) => n.value === type)).toBeDefined();
+      },
+    );
   });
 
   describe('getBootPriorities', () => {
+    let bootPriorities: string[][];
+
+    beforeEach(() => {
+      bootPriorities = service.getBootPriorities();
+    });
+
     it('should return 5 boot priorities', () => {
-      const result = service.getBootPriorities();
-      expect(result).toHaveLength(5);
+      expect(bootPriorities).toHaveLength(5);
     });
 
-    it('should include HDD boot option', () => {
-      expect(service.getBootPriorities()).toContainEqual(['HDD', 'c']);
-    });
-
-    it('should include Network boot option', () => {
-      expect(service.getBootPriorities()).toContainEqual(['Network', 'n']);
+    it.each([
+      { label: 'HDD', value: 'c' },
+      { label: 'Network', value: 'n' },
+      { label: 'CD/DVD-ROM', value: 'd' },
+    ])('should include $label boot option', ({ label, value }) => {
+      expect(bootPriorities).toContainEqual([label, value]);
     });
   });
 
   describe('getOnCloseOptions', () => {
+    let onCloseOptions: string[][];
+
+    beforeEach(() => {
+      onCloseOptions = service.getOnCloseOptions();
+    });
+
     it('should return 3 on close options', () => {
-      const result = service.getOnCloseOptions();
-      expect(result).toHaveLength(3);
+      expect(onCloseOptions).toHaveLength(3);
     });
 
-    it('should include power_off option', () => {
-      expect(service.getOnCloseOptions()).toContainEqual(['Power off the VM', 'power_off']);
-    });
-
-    it('should include save_vm_state option', () => {
-      expect(service.getOnCloseOptions()).toContainEqual(['Save the VM state', 'save_vm_state']);
+    it.each([
+      { label: 'Power off the VM', value: 'power_off' },
+      { label: 'Save the VM state', value: 'save_vm_state' },
+      { label: 'Send the shutdown signal (ACPI)', value: 'shutdown_signal' },
+    ])('should include $label option', ({ label, value }) => {
+      expect(onCloseOptions).toContainEqual([label, value]);
     });
   });
 
   describe('getCategories', () => {
+    let categories: string[][];
+
+    beforeEach(() => {
+      categories = service.getCategories();
+    });
+
     it('should return 5 categories', () => {
-      const result = service.getCategories();
-      expect(result).toHaveLength(5);
+      expect(categories).toHaveLength(5);
     });
 
-    it('should include Default category', () => {
-      expect(service.getCategories()).toContainEqual(['Default', 'guest']);
-    });
-
-    it('should include Routers category', () => {
-      expect(service.getCategories()).toContainEqual(['Routers', 'router']);
+    it.each([
+      { label: 'Default', value: 'guest' },
+      { label: 'Routers', value: 'router' },
+      { label: 'Switches', value: 'switch' },
+      { label: 'End devices', value: 'guest' },
+    ])('should include $label category', ({ label, value }) => {
+      expect(categories).toContainEqual([label, value]);
     });
   });
 
   describe('getPriorities', () => {
-    it('should return 6 priority levels', () => {
-      const result = service.getPriorities();
-      expect(result).toHaveLength(6);
+    let priorities: string[];
+
+    beforeEach(() => {
+      priorities = service.getPriorities();
     });
 
-    it('should include realtime and high', () => {
-      const result = service.getPriorities();
-      expect(result).toContain('realtime');
-      expect(result).toContain('high');
+    it('should return 6 priority levels', () => {
+      expect(priorities).toHaveLength(6);
     });
+
+    it.each(['realtime', 'very high', 'high', 'normal', 'low', 'very low'])(
+      'should include %s priority',
+      (priority) => {
+        expect(priorities).toContain(priority);
+      },
+    );
   });
 
   describe('getMacAddrRegex', () => {
+    let regex: RegExp;
+
+    beforeEach(() => {
+      regex = service.getMacAddrRegex();
+    });
+
     it('should return a RegExp', () => {
-      expect(service.getMacAddrRegex()).toBeInstanceOf(RegExp);
+      expect(regex).toBeInstanceOf(RegExp);
     });
 
-    it('should match valid MAC addresses', () => {
-      const regex = service.getMacAddrRegex();
-      expect(regex.test('00:00:00:00:00:00')).toBe(true);
-      expect(regex.test('AA:BB:CC:DD:EE:FF')).toBe(true);
-    });
-
-    it('should not match invalid MAC addresses', () => {
-      const regex = service.getMacAddrRegex();
-      expect(regex.test('00:00:00:00:00')).toBe(false);
-      expect(regex.test('1234567890ab')).toBe(false);
+    it.each([
+      { mac: '00:00:00:00:00:00', valid: true },
+      { mac: 'AA:BB:CC:DD:EE:FF', valid: true },
+      { mac: '00:00:5E:00:53:AF', valid: true },
+      { mac: '00:00:00:00:00', valid: false },
+      { mac: '1234567890ab', valid: false },
+      { mac: 'GG:HH:II:JJ:KK:LL', valid: false },
+      { mac: '00-00-00-00-00-00', valid: false },
+      { mac: '00:00:00:00:00:00:00', valid: false },
+    ])('should return $valid for MAC: $mac', ({ mac, valid }) => {
+      expect(regex.test(mac)).toBe(valid);
     });
   });
 });
