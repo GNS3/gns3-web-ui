@@ -2,14 +2,14 @@
 
 > **Last Updated**: 2026-04-02
 > **Total Components**: 231 (`.component.ts` files)
-> **Completed**: 77
-> **Remaining**: 154
+> **Completed**: 86
+> **Remaining**: 145
 
 This document tracks the progress of creating unit test files (`.spec.ts`) for all Angular components in the project.
 
 ## Progress Summary
 
-- [ ] 77 / 231 components completed (33.3%)
+- [ ] 86 / 231 components completed (37.2%)
 
 ---
 
@@ -45,15 +45,15 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 - [x] direct-link.component.ts
 
 ### drawings-listeners (8 components)
-- [ ] drawing-added/drawing-added.component.ts
-- [ ] drawing-dragged/drawing-dragged.component.ts
-- [ ] drawing-resized/drawing-resized.component.ts
-- [ ] interface-label-dragged/interface-label-dragged.component.ts
-- [ ] link-created/link-created.component.ts
-- [ ] node-dragged/node-dragged.component.ts
-- [ ] node-label-dragged/node-label-dragged.component.ts
-- [ ] text-added/text-added.component.ts
-- [ ] text-edited/text-edited.component.ts
+- [x] drawing-added/drawing-added.component.ts
+- [x] drawing-dragged/drawing-dragged.component.ts
+- [x] drawing-resized/drawing-resized.component.ts
+- [x] interface-label-dragged/interface-label-dragged.component.ts
+- [x] link-created/link-created.component.ts
+- [x] node-dragged/node-dragged.component.ts
+- [x] node-label-dragged/node-label-dragged.component.ts
+- [x] text-added/text-added.component.ts
+- [x] text-edited/text-edited.component.ts
 
 ### export-portable-project (1 component)
 - [x] export-portable-project.component.ts
@@ -376,6 +376,7 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 
 | Date | Commit | Components | Tests |
 |------|--------|------------|-------|
+| 2026-04-02 | 1260f9b6 | Drawings-listeners (9 components) | 27 |
 | 2026-04-02 | 37953117 | WebConsoleFullWindowComponent | 4 |
 | 2026-04-02 | f01c3686 | UserManagementComponent | 10 |
 | 2026-04-02 | be53416b | UserDetailDialogComponent | 10 |
@@ -419,5 +420,5 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 | 2026-04-02 | e2578113 | ControllerManagementService | 28 |
 
 **Service tests completed**: 12 services, 527 tests
-**Component tests completed**: 33 components, 276 tests
-**Total**: 2271 tests passing
+**Component tests completed**: 42 components, 303 tests
+**Total**: 2298 tests passing
