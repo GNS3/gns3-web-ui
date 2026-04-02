@@ -2,14 +2,14 @@
 
 > **Last Updated**: 2026-04-02
 > **Total Components**: 231 (`.component.ts` files)
-> **Completed**: 9
-> **Remaining**: 222
+> **Completed**: 10
+> **Remaining**: 221
 
 This document tracks the progress of creating unit test files (`.spec.ts`) for all Angular components in the project.
 
 ## Progress Summary
 
-- [ ] 9 / 231 components completed (3.9%)
+- [ ] 10 / 231 components completed (4.3%)
 
 ---
 
@@ -39,7 +39,7 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 ### dialogs (3 components)
 - [x] confirmation-dialog/confirmation-dialog.component.ts
 - [x] information-dialog/information-dialog.component.ts
-- [ ] question-dialog/question-dialog.component.ts
+- [x] question-dialog/question-dialog.component.ts
 
 ### direct-link (1 component)
 - [ ] direct-link.component.ts
@@ -376,6 +376,7 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 
 | Date | Commit | Components | Tests |
 |------|--------|------------|-------|
+| 2026-04-02 | 8fffb355 | QuestionDialogComponent | 3 |
 | 2026-04-02 | 39163e44 | InformationDialogComponent | 3 |
 | 2026-04-02 | 34c14d78 | ConfirmationDialogComponent | 11 |
 | 2026-04-02 | e8e39fcf | ControllersComponent | 6 |
@@ -399,5 +400,5 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 | 2026-04-02 | e2578113 | ControllerManagementService | 28 |
 
 **Service tests completed**: 12 services, 527 tests
-**Component tests completed**: 9 components, 76 tests
-**Total**: 1854 tests passing
+**Component tests completed**: 10 components, 79 tests
+**Total**: 1857 tests passing
