@@ -42,39 +42,15 @@ describe('RecentlyOpenedProjectService', () => {
     });
   });
 
-  describe('getcontrollerId', () => {
-    it('should return undefined when not set', () => {
-      expect(service.getcontrollerId()).toBeUndefined();
-    });
-
-    it('should return stored controller ID', () => {
-      service.setcontrollerId('controller-1');
-
-      expect(service.getcontrollerId()).toBe('controller-1');
-    });
-  });
-
-  describe('getProjectId', () => {
-    it('should return undefined when not set', () => {
-      expect(service.getProjectId()).toBeUndefined();
-    });
-
-    it('should return stored project ID', () => {
-      service.setProjectId('project-1');
-
-      expect(service.getProjectId()).toBe('project-1');
-    });
-  });
-
-  describe('getcontrollerIdProjectList', () => {
-    it('should return undefined when not set', () => {
-      expect(service.getcontrollerIdProjectList()).toBeUndefined();
-    });
-
-    it('should return stored controller ID for project list', () => {
-      service.setcontrollerIdProjectList('controller-2');
-
-      expect(service.getcontrollerIdProjectList()).toBe('controller-2');
+  describe('getters', () => {
+    it.each([
+      ['getcontrollerId', 'setcontrollerId', 'controller-1'],
+      ['getProjectId', 'setProjectId', 'project-1'],
+      ['getcontrollerIdProjectList', 'setcontrollerIdProjectList', 'controller-2'],
+    ])('should return undefined when not set and value when set', (getter, setter, value) => {
+      expect(service[getter]()).toBeUndefined();
+      service[setter](value);
+      expect(service[getter]()).toBe(value);
     });
   });
 
@@ -87,6 +63,18 @@ describe('RecentlyOpenedProjectService', () => {
 
       expect(service.getcontrollerId()).toBe('');
       expect(service.getProjectId()).toBe('');
+    });
+
+    it('should not clear controllerIdProjectList', () => {
+      service.setcontrollerIdProjectList('controller-2');
+
+      service.removeData();
+
+      expect(service.getcontrollerIdProjectList()).toBe('controller-2');
+    });
+
+    it('should not throw when called without prior setting', () => {
+      expect(() => service.removeData()).not.toThrow();
     });
   });
 });
