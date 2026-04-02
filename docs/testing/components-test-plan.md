@@ -2,14 +2,14 @@
 
 > **Last Updated**: 2026-04-02
 > **Total Components**: 231 (`.component.ts` files)
-> **Completed**: 148
-> **Remaining**: 83
+> **Completed**: 155
+> **Remaining**: 76
 
 This document tracks the progress of creating unit test files (`.spec.ts`) for all Angular components in the project.
 
 ## Progress Summary
 
-- [ ] 148 / 231 components completed (64.1%)
+- [ ] 155 / 231 components completed (67.1%)
 
 ---
 
@@ -237,7 +237,7 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 - [x] context-menu/dialogs/idle-pc-dialog/idle-pc-dialog.component.ts
 
 #### drawings-editors (3 components)
-- [ ] drawings-editors/link-style-editor/link-style-editor.component.ts
+- [x] drawings-editors/link-style-editor/link-style-editor.component.ts
 - [x] drawings-editors/style-editor/style-editor.component.ts
 - [ ] drawings-editors/text-editor/text-editor.component.ts
 
@@ -262,15 +262,15 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 - [x] new-template-dialog/template-name-dialog/template-name-dialog.component.ts
 
 #### node-editors (18 components)
-- [ ] node-editors/config-editor/config-editor.component.ts
-- [ ] node-editors/configurator/atm_switch/configurator-atm-switch.component.ts
-- [ ] node-editors/configurator/cloud/configurator-cloud.component.ts
-- [ ] node-editors/configurator/docker/configurator-docker.component.ts
+- [x] node-editors/config-editor/config-editor.component.ts
+- [x] node-editors/configurator/atm_switch/configurator-atm-switch.component.ts
+- [x] node-editors/configurator/cloud/configurator-cloud.component.ts
+- [x] node-editors/configurator/docker/configurator-docker.component.ts
 - [ ] node-editors/configurator/docker/configure-custom-adapters/configure-custom-adapters.component.ts
 - [ ] node-editors/configurator/docker/edit-network-configuration/edit-network-configuration.component.ts
-- [ ] node-editors/configurator/ethernet_hub/configurator-ethernet-hub.component.ts
-- [ ] node-editors/configurator/ethernet-switch/configurator-ethernet-switch.component.ts
-- [ ] node-editors/configurator/ios/configurator-ios.component.ts
+- [x] node-editors/configurator/ethernet_hub/configurator-ethernet-hub.component.ts
+- [x] node-editors/configurator/ethernet-switch/configurator-ethernet-switch.component.ts
+- [x] node-editors/configurator/ios/configurator-ios.component.ts
 - [ ] node-editors/configurator/iou/configurator-iou.component.ts
 - [ ] node-editors/configurator/nat/configurator-nat.component.ts
 - [ ] node-editors/configurator/qemu/configurator-qemu.component.ts
