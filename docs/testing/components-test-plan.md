@@ -2,14 +2,14 @@
 
 > **Last Updated**: 2026-04-02
 > **Total Components**: 231 (`.component.ts` files)
-> **Completed**: 4
-> **Remaining**: 227
+> **Completed**: 5
+> **Remaining**: 226
 
 This document tracks the progress of creating unit test files (`.spec.ts`) for all Angular components in the project.
 
 ## Progress Summary
 
-- [ ] 4 / 231 components completed (1.7%)
+- [ ] 5 / 231 components completed (2.2%)
 
 ---
 
@@ -22,7 +22,7 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 - [ ] delete-ace-dialog/delete-ace-dialog.component.ts
 
 ### adbutler (1 component)
-- [ ] adbutler.component.ts
+- [x] adbutler.component.ts
 
 ### bundled-controller-finder (1 component)
 - [ ] bundled-controller-finder.component.ts
@@ -376,6 +376,7 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 
 | Date | Commit | Components | Tests |
 |------|--------|------------|-------|
+| 2026-04-02 | 52321425 | AdbutlerComponent | 12 |
 | 2026-04-02 | 0597b8dd | ManagementComponent | 4 |
 | 2026-04-02 | 19645879 | LoginComponent | 14 |
 | 2026-04-02 | 84cb16e3 | HelpComponent | 7 |
@@ -394,5 +395,5 @@ This document tracks the progress of creating unit test files (`.spec.ts`) for a
 | 2026-04-02 | e2578113 | ControllerManagementService | 28 |
 
 **Service tests completed**: 12 services, 527 tests
-**Component tests completed**: 4 components, 28 tests
-**Total**: 1801 tests passing
+**Component tests completed**: 5 components, 40 tests
+**Total**: 1813 tests passing
