@@ -1,17 +1,31 @@
 ---
 name: unit-testing
-description: Comprehensive unit testing skills for Angular components and services using Vitest. Covers AAA pattern, mocking, branch coverage, RxJS testing, and clean testing practices.
-trigger:
-  - test
-  - testing
-  - unit test
-  - spec
-  - vitest
-  - jasmine
-  - karma
+description: This skill should be used when the user asks to "write tests", "create unit tests", "add test coverage", mentions "vitest", "jasmine", "karma", "testing", or discusses unit testing patterns, mocking strategies, or test quality. Provides comprehensive guidance on writing effective unit tests for Angular components and services using Vitest.
+version: 1.0.0
 ---
 
 # Unit Testing Skills
+
+## When This Skill Applies
+
+This skill activates when the user's request involves:
+- Writing or creating unit tests for Angular components or services
+- Improving test coverage or test quality
+- Mocking strategies and dependency injection
+- Testing with Vitest, Jasmine, or Karma
+- Test refactoring or best practices
+
+## Test Focus Cheat Sheet
+
+When facing a component and not sure what to test, refer to this table:
+
+| Test Target | What to Test |
+|-------------|--------------|
+| **Properties** | After changing property A, does property B update accordingly? |
+| **Methods** | After calling this method, are expected side effects triggered (e.g., API calls)? |
+| **Outputs/@Output** | When a button is clicked, does it correctly emit events to the parent component? |
+| **Inputs/@Input** | When the parent component passes different values, does the component render differently? |
+| **Edge Cases** | What if the array is empty? What if the API returns a 500 error? |
 
 ## 1. The "AAA" Pattern (The Structural Skill)
 
@@ -51,14 +65,22 @@ Since you are using Observables, you need these specific skills:
 - **Test Descriptive Naming**: Writing `it` blocks that read like a requirements document (e.g., "should round coordinates to the nearest integer when updating position").
 - **Avoid Implementation Leaks**: Testing **what** the service does (behavior), not **how** it does it (private variables). This prevents tests from breaking during a refactor.
 
-## Test Focus Cheat Sheet
+## Writing Effective Tests
 
-When facing a component and not sure what to test, refer to this table:
+1. **Test behavior, not implementation**: Focus on what the code does, not how it does it
+2. **Use descriptive test names**: Test names should read like requirements
+3. **One assertion per test**: Keep tests focused and simple
+4. **Arrange-Act-Assert structure**: Make tests readable and maintainable
+5. **Test edge cases**: Don't just test the happy path
+6. **Mock external dependencies**: Isolate the code under test
+7. **Avoid test interdependence**: Each test should be independent
 
-| Test Target | What to Test |
-|-------------|--------------|
-| **Properties** | After changing property A, does property B update accordingly? |
-| **Methods** | After calling this method, are expected side effects triggered (e.g., API calls)? |
-| **Outputs/@Output** | When a button is clicked, does it correctly emit events to the parent component? |
-| **Inputs/@Input** | When the parent component passes different values, does the component render differently? |
-| **Edge Cases** | What if the array is empty? What if the API returns a 500 error? |
+## Common Pitfalls to Avoid
+
+- Testing private methods directly
+- Writing tests that are too tightly coupled to implementation details
+- Not testing edge cases and error conditions
+- Creating brittle tests that break on refactoring
+- Testing multiple things in one test
+- Not mocking external dependencies properly
+- Writing tests that are hard to understand
