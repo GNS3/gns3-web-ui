@@ -137,7 +137,7 @@
                     "options": {
                         "buildTarget": "gns3-web-ui:build:development",
                         "tsConfig": "src/tsconfig.spec.json",
-                        "setupFiles": ["src/test-setup.ts"]
+                        "setupFiles": ["src/test-cdk-setup.ts", "src/test-setup.ts"]
                     }
                 },
                 "lint": {
