@@ -1,7 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { SymbolService } from './symbol.service';
 import { HttpController } from './http-controller.service';
-import { Observable, of, BehaviorSubject } from 'rxjs';
+import { Observable, of, BehaviorSubject, throwError } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { Controller } from '@models/controller';
 import { Symbol } from '@models/symbol';
 import { Template } from '@models/template';
@@ -10,7 +11,7 @@ import { Node } from '../cartography/models/node';
 // Mock environment
 vi.mock('environments/environment', () => ({
   environment: {
-    current_version: 'v2',
+    current_version: 'v3',
   },
 }));
 
@@ -71,6 +72,10 @@ describe('SymbolService', () => {
     ];
 
     service = new SymbolService(mockHttpController);
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
   });
 
   describe('Service Creation', () => {
@@ -193,6 +198,15 @@ describe('SymbolService', () => {
 
       expect(result).toBeInstanceOf(Observable);
     });
+
+    it('should propagate error from httpController.get', async () => {
+      const error = new Error('Network error');
+      mockHttpController.get.mockReturnValue(throwError(() => error));
+
+      await expect(firstValueFrom(service.getDimensions(mockController, 'test-symbol'))).rejects.toThrow(
+        'Network error'
+      );
+    });
   });
 
   describe('getSymbolBlobUrl', () => {
@@ -205,14 +219,11 @@ describe('SymbolService', () => {
       expect(mockHttpController.getBlob).toHaveBeenCalledWith(mockController, '/symbols/test/raw');
     });
 
-    it('should create blob URL from response', () => {
+    it('should create blob URL from response', async () => {
       const mockBlob = new Blob(['<svg></svg>'], { type: 'image/svg+xml' });
       mockHttpController.getBlob.mockReturnValue(of(mockBlob));
 
-      let blobUrl: string | undefined;
-      service.getSymbolBlobUrl(mockController, '/symbols/test/raw').subscribe((url) => {
-        blobUrl = url;
-      });
+      const blobUrl = await firstValueFrom(service.getSymbolBlobUrl(mockController, '/symbols/test/raw'));
 
       expect(blobUrl).toMatch(/^blob:/);
     });
@@ -234,6 +245,15 @@ describe('SymbolService', () => {
       const result = service.getSymbolBlobUrl(mockController, '/symbols/test/raw');
 
       expect(result).toBeInstanceOf(Observable);
+    });
+
+    it('should propagate error from httpController.getBlob', async () => {
+      const error = new Error('Blob fetch error');
+      mockHttpController.getBlob.mockReturnValue(throwError(() => error));
+
+      await expect(
+        firstValueFrom(service.getSymbolBlobUrl(mockController, '/symbols/test/raw'))
+      ).rejects.toThrow('Blob fetch error');
     });
   });
 
@@ -347,6 +367,15 @@ describe('SymbolService', () => {
 
       expect(service['builtinCache']).not.toBeNull();
     });
+
+    it('should propagate error from httpController.post', async () => {
+      const error = new Error('Add failed');
+      mockHttpController.post.mockReturnValue(throwError(() => error));
+
+      await expect(
+        firstValueFrom(service.add(mockController, 'test-symbol', '<svg>test</svg>'))
+      ).rejects.toThrow('Add failed');
+    });
   });
 
   describe('addFile', () => {
@@ -381,6 +410,16 @@ describe('SymbolService', () => {
       service.addFile(mockController, 'test-symbol', mockBlob);
 
       expect(service['builtinCache']).not.toBeNull();
+    });
+
+    it('should propagate error from httpController.postBlob', async () => {
+      const error = new Error('AddFile failed');
+      const mockBlob = new Blob(['test']);
+      mockHttpController.postBlob.mockReturnValue(throwError(() => error));
+
+      await expect(
+        firstValueFrom(service.addFile(mockController, 'test-symbol', mockBlob))
+      ).rejects.toThrow('AddFile failed');
     });
   });
 
@@ -424,6 +463,15 @@ describe('SymbolService', () => {
 
       expect(service['builtinCache']).not.toBeNull();
     });
+
+    it('should propagate error from httpController.delete', async () => {
+      const error = new Error('Delete failed');
+      mockHttpController.delete.mockReturnValue(throwError(() => error));
+
+      await expect(
+        firstValueFrom(service.delete(mockController, 'test-symbol'))
+      ).rejects.toThrow('Delete failed');
+    });
   });
 
   describe('load', () => {
@@ -441,6 +489,13 @@ describe('SymbolService', () => {
       const result = service.load(mockController);
 
       expect(result).toBeInstanceOf(Observable);
+    });
+
+    it('should propagate error from httpController.get', async () => {
+      const error = new Error('Load failed');
+      mockHttpController.get.mockReturnValue(throwError(() => error));
+
+      await expect(firstValueFrom(service.load(mockController))).rejects.toThrow('Load failed');
     });
   });
 
@@ -483,16 +538,13 @@ describe('SymbolService', () => {
   });
 
   describe('listBuiltinSymbols', () => {
-    it('should filter builtin symbols', () => {
+    it('should filter builtin symbols', async () => {
       mockHttpController.get.mockReturnValue(of(mockSymbols));
 
-      let result: Symbol[] | undefined;
-      service.listBuiltinSymbols(mockController).subscribe((symbols) => {
-        result = symbols;
-      });
+      const result = await firstValueFrom(service.listBuiltinSymbols(mockController));
 
       expect(result).toHaveLength(2);
-      expect(result?.every((s) => s.builtin)).toBe(true);
+      expect(result.every((s) => s.builtin)).toBe(true);
     });
 
     it('should cache builtin symbols permanently', () => {
@@ -514,16 +566,13 @@ describe('SymbolService', () => {
   });
 
   describe('listCustomSymbols', () => {
-    it('should filter custom symbols', () => {
+    it('should filter custom symbols', async () => {
       mockHttpController.get.mockReturnValue(of(mockSymbols));
 
-      let result: Symbol[] | undefined;
-      service.listCustomSymbols(mockController).subscribe((symbols) => {
-        result = symbols;
-      });
+      const result = await firstValueFrom(service.listCustomSymbols(mockController));
 
       expect(result).toHaveLength(1);
-      expect(result?.every((s) => !s.builtin)).toBe(true);
+      expect(result.every((s) => !s.builtin)).toBe(true);
     });
 
     it('should not cache custom symbols', () => {
@@ -564,6 +613,15 @@ describe('SymbolService', () => {
       expect(mockHttpController.getText).toHaveBeenCalledWith(
         mockController,
         '/symbols/symbol%20with%20spaces/raw'
+      );
+    });
+
+    it('should propagate error from httpController.getText', async () => {
+      const error = new Error('Raw fetch failed');
+      mockHttpController.getText.mockReturnValue(throwError(() => error));
+
+      await expect(firstValueFrom(service.raw(mockController, 'test-symbol'))).rejects.toThrow(
+        'Raw fetch failed'
       );
     });
   });
@@ -649,13 +707,10 @@ describe('SymbolService', () => {
   });
 
   describe('Edge Cases', () => {
-    it('should handle empty symbol list', () => {
+    it('should handle empty symbol list', async () => {
       mockHttpController.get.mockReturnValue(of([]));
 
-      let result: Symbol[] | undefined;
-      service.list(mockController).subscribe((symbols) => {
-        result = symbols;
-      });
+      const result = await firstValueFrom(service.list(mockController));
 
       expect(result).toEqual([]);
     });
@@ -680,9 +735,10 @@ describe('SymbolService', () => {
         height: 0,
       } as Node;
 
+      // Note: Division by zero produces NaN - this is a known behavior
+      // The service should handle this edge case gracefully
       const result = service.scaleDimensionsForNode(node);
 
-      // Division by zero results in NaN
       expect(result.width).toBeNaN();
       expect(result.height).toBeNaN();
     });
