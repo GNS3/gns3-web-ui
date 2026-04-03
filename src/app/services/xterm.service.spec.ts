@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { XtermService } from './xterm.service';
 import { ThemeService } from './theme.service';
 import { Terminal } from '@xterm/xterm';
@@ -22,15 +22,13 @@ describe('XtermService', () => {
   let mockThemeService: ThemeService;
 
   beforeEach(() => {
-    // Mock getComputedStyle using Object.defineProperty for better compatibility
-    Object.defineProperty(window, 'getComputedStyle', {
-      value: vi.fn(() => ({
+    // Mock getComputedStyle using vi.spyOn
+    vi.spyOn(window, 'getComputedStyle').mockImplementation(
+      (() => ({
         getPropertyValue: (name: string) => mockCssVariables[name] || '',
         trim: () => '',
-      })),
-      writable: true,
-      configurable: true,
-    });
+      })) as any
+    );
 
     // Mock ThemeService
     mockThemeService = {
@@ -38,6 +36,11 @@ describe('XtermService', () => {
     } as any;
 
     service = new XtermService(mockThemeService);
+  });
+
+  afterEach(() => {
+    // Restore original getComputedStyle to prevent test pollution
+    vi.restoreAllMocks();
   });
 
   describe('Service Creation', () => {

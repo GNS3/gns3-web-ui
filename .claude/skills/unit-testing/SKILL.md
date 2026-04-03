@@ -1,196 +1,120 @@
 ---
 name: unit-testing
-description: This skill should be used when the user asks to "write tests", "create unit tests", "add test coverage", mentions "vitest", "jasmine", "karma", "testing", or discusses unit testing patterns, mocking strategies, or test quality. Provides comprehensive guidance on writing effective unit tests for Angular components and services using Vitest.
-version: 1.0.0
+description: This skill should be used when the user asks to "write tests", "create unit tests", "add test coverage", mentions "vitest", "jasmine", "karma", "testing", or discusses unit testing patterns, mocking strategies, or test quality.
+version: 1.1.0
 ---
 
 # Unit Testing Skills
 
-## When This Skill Applies
-
-This skill activates when the user's request involves:
-- Writing or creating unit tests for Angular components or services
-- Improving test coverage or test quality
-- Mocking strategies and dependency injection
-- Testing with Vitest, Jasmine, or Karma
-- Test refactoring or best practices
-
-## Running Tests in GNS3 Web UI
-
-The project uses **Vitest** as the test runner (not Karma). Use the following commands:
+## Running Tests
 
 ```bash
-# Run all tests
-yarn test
-
-# Run tests for a specific file
-yarn test --include='**/my-component.spec.ts'
-
-# Run tests in watch mode
-yarn test --watch
-
-# Run tests with coverage
-yarn test --coverage
+yarn test                              # all tests
+yarn test --include='**/xxx.spec.ts'  # single file
+yarn test --watch                     # watch mode
 ```
 
-## Test Focus Cheat Sheet
+## Test Templates
 
-When facing a component and not sure what to test, refer to this table:
+Copy the right template for your test type.
 
-| Test Target | What to Test |
-|-------------|--------------|
-| **Properties** | After changing property A, does property B update accordingly? |
-| **Methods** | After calling this method, are expected side effects triggered (e.g., API calls)? |
-| **Outputs/@Output** | When a button is clicked, does it correctly emit events to the parent component? |
-| **Inputs/@Input** | When the parent component passes different values, does the component render differently? |
-| **Edge Cases** | What if the array is empty? What if the API returns a 500 error? |
+### Component Template
 
-## 1. The "AAA" Pattern (The Structural Skill)
-
-This is the fundamental skill of writing readable tests. Every test should be visually divided into three parts:
-
-- **Arrange**: Set up the mocks, data, and environment (e.g., `mockHttpController.get.mockReturnValue(...)`).
-- **Act**: Execute the specific method being tested (e.g., `service.getNodeById(...)`).
-- **Assert**: Verify the outcome (e.g., `expect(...).toHaveBeenCalledWith(...)`).
-
-## 2. Advanced Mocking & Spying
-
-Being a "Mock Master" means knowing how to isolate your code from external dependencies:
-
-- **Functional Mocking**: Using `vi.fn()` to track calls, arguments, and return values.
-- **Dependency Injection Isolation**: Understanding how to provide mock versions of services (like your HttpController) so you don't make real network calls.
-- **Partial Object Matching**: Using `expect.objectContaining({...})` to verify only the relevant parts of a large object, making tests less "brittle."
-
-## 3. Logical Branch Coverage
-
-A great tester looks for every `if`, `else`, and `switch` statement:
-
-- **Boundary Testing**: Testing values like `0`, `-1`, `null`, or empty strings `""`.
-- **State-Dependent Logic**: Testing how a function behaves when a flag is toggled (e.g., your `snap_to_grid` logic).
-- **Data Transformation**: Verifying that "Raw Input A" correctly becomes "Processed Output B" (e.g., your coordinate rounding logic).
-
-## 4. RxJS & Asynchronicity
-
-Since you are using Observables, you need these specific skills:
-
-- **Stream Mocking**: Using `of(value)` for successful streams and `throwError(() => new Error())` for failure paths.
-- **Subscription Management**: Ensuring that your service handles subscriptions correctly or returns an Observable that can be piped.
-- **Async/Await**: Handling `firstValueFrom` or `lastValueFrom` when you want to treat an Observable like a Promise in a test.
-
-## 5. Zoneless Testing (Critical for GNS3 Web UI)
-
-**GNS3 Web UI uses Angular 21 with Zoneless mode** - this fundamentally changes how you write async tests.
-
-### ❌ What NOT to Use in Zoneless
-
-- **`fakeAsync` and `tick()`** - These rely on Zone.js interception and won't work
-- **Assuming synchronous execution** - RxJS streams may emit at unexpected times
-
-### ✅ Zoneless Testing Best Practices
-
-When testing Observables with `startWith()` or reactive forms:
+Components have DOM and change detection — they need cleanup.
 
 ```typescript
-it('should filter groups after input change', async () => {
-  // 1. Subscribe BEFORE triggering the change
-  const resultPromise = firstValueFrom(
-    component.filteredGroups.pipe(
-      filter(groups => groups.length === 1), // Skip startWith('') initial emission
-      timeout(2000) // Safety net to prevent hanging tests
-    )
-  );
+describe('MyComponent', () => {
+  let fixture: ComponentFixture<MyComponent>;
 
-  // 2. Trigger the value change
-  component.autocompleteControl.setValue('admin');
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [MyComponent],
+    }).compileComponents();
 
-  // 3. Manually trigger change detection and wait for stability
-  fixture.detectChanges();
-  await fixture.whenStable();
+    fixture = TestBed.createComponent(MyComponent);
+    fixture.detectChanges();
+  });
 
-  // 4. Assert
-  const result = await resultPromise;
-  expect(result.length).toBe(1);
+  afterEach(() => {
+    fixture.destroy();  // ← component MUST have this
+  });
 });
 ```
 
-### Key Points
+### Service Template
 
-1. **Subscribe before setValue** - Observable emissions are synchronous in RxJS; if you subscribe after `setValue()`, you might miss emissions or get the initial `startWith('')` value
-2. **Use `filter` operator** - Skip unwanted emissions like `startWith('')` by filtering for the expected result
-3. **Always call `fixture.detectChanges()`** - In Zoneless, change detection is explicit
-4. **Always await `fixture.whenStable()`** - Waits for all pending microtasks (Signals, Effects, async operations)
-5. **Use `timeout()` operator** - Prevents tests from hanging if an expected emission never occurs
-
-### Common Zoneless Pitfall
+Services have no DOM. With `destroyAfterEach: true` in test-setup, the injector is rebuilt per test.
 
 ```typescript
-// ❌ WRONG - Gets startWith('') emission (3 items)
-component.autocompleteControl.setValue('admin');
-const result = await firstValueFrom(component.filteredGroups);
-expect(result.length).toBe(1); // FAILS: result.length === 3
+describe('MyService', () => {
+  let service: MyService;
 
-// ✅ CORRECT - Gets filtered emission
-const promise = firstValueFrom(component.filteredGroups.pipe(
-  filter(g => g.length === 1),
-  timeout(2000)
-));
-component.autocompleteControl.setValue('admin');
-fixture.detectChanges();
-await fixture.whenStable();
-const result = await promise;
-expect(result.length).toBe(1); // PASSES
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [MyService],
+    });
+    service = TestBed.inject(MyService);
+  });
+
+  // afterEach not needed — destroyAfterEach handles it
+});
 ```
 
-## 6. Clean Code & Maintenance (The "Senior" Skills)
+## What to Test
 
-- **Parameterized Testing**: Using `it.each([])` to run the same test logic with different inputs, reducing code duplication.
-- **Test Descriptive Naming**: Writing `it` blocks that read like a requirements document (e.g., "should round coordinates to the nearest integer when updating position").
-- **Avoid Implementation Leaks**: Testing **what** the service does (behavior), not **how** it does it (private variables). This prevents tests from breaking during a refactor.
+| Target | What to Test |
+|--------|--------------|
+| **Inputs** | Does the component respond correctly when parent passes different values? |
+| **Outputs** | Does clicking a button emit the expected event to the parent? |
+| **Methods** | After calling a method, do expected side effects occur (API calls, state changes)? |
+| **Properties** | After changing property A, does property B update correctly? |
+| **Edge Cases** | Empty array, API returns 500, null/undefined input |
 
-## Writing Effective Tests
+## What NOT to Test
 
-1. **Test behavior, not implementation**: Focus on what the code does, not how it does it
-2. **Use descriptive test names**: Test names should read like requirements
-3. **One assertion per test**: Keep tests focused and simple
-4. **Arrange-Act-Assert structure**: Make tests readable and maintainable
-5. **Test edge cases**: Don't just test the happy path
-6. **Mock external dependencies**: Isolate the code under test
-7. **Avoid test interdependence**: Each test should be independent
+- Private methods
+- Implementation details — only test behavior
+- Multiple assertions in one `it` — split them
 
-## Common Pitfalls to Avoid
+## AAA Pattern
 
-- Testing private methods directly
-- Writing tests that are too tightly coupled to implementation details
-- Not testing edge cases and error conditions
-- Creating brittle tests that break on refactoring
-- Testing multiple things in one test
-- Not mocking external dependencies properly
-- Writing tests that are hard to understand
-- **Using `fakeAsync`/`tick()` in Zoneless** - These don't work without Zone.js
-- **Subscribing after setValue** - You'll get the wrong emission from Observables with `startWith()`
-- **Forgetting `fixture.detectChanges()`** - Change detection is explicit in Zoneless
+Every test has three clearly separated sections:
 
-## 7. Angular Standalone Component Testing
+```typescript
+it('should filter results when search text changes', () => {
+  // Arrange — set up mock data
+  mockService.getResults.mockReturnValue(of([{ id: 1, name: 'test' }]));
 
-GNS3 Web UI uses **Angular 21 Standalone components** with class-level `inject()`. This has specific testing requirements.
+  // Act — call the method under test
+  component.search('test');
 
-### Key Requirements
+  // Assert — verify outcomes
+  expect(component.filteredResults.length).toBe(1);
+});
+```
 
-1. **Use `await TestBed.configureTestingModule(...).compileComponents()`**
-   - Standalone components require compilation; `compileComponents()` ensures templates are ready before component instantiation
-   - Without it, `inject()` may execute before mock providers are registered
+## Resource Cleanup Table
 
-2. **Mock functions MUST return Observable** - Class-level `inject()` + `subscribe()` requires proper return values:
-   ```typescript
-   // ❌ WRONG - returns undefined, causes "Cannot read properties of undefined (reading 'subscribe')"
-   mockProjectService = { getStatistics: vi.fn() };
+Clean up **only what the test uses**. DOM → `destroy`, HTTP → `verify`, timer → `discardPeriodicTasks`.
 
-   // ✅ CORRECT - returns Observable
-   mockProjectService = { getStatistics: vi.fn().mockReturnValue(of({} as ProjectStatistics)) };
-   ```
+| Test Type | `fixture.destroy()` | `httpMock.verify()` | `discardPeriodicTasks()` |
+|-----------|--------------------|--------------------|------------------------|
+| Component, no HTTP | required | not needed | needed if service has `interval` |
+| Component, with HTTP | required | required | needed if service has `interval` |
+| Service, no HTTP | not needed | not needed | needed if service has `interval` |
+| Service, with HTTP | not needed | required | needed if service has `interval` |
 
-3. **Merge `beforeEach` blocks** - Keep all TestBed configuration in a single `beforeEach` to avoid timing issues between mock setup and component instantiation
+**Rule**: clean up whatever resource the test touches — DOM with `destroy`, HTTP with `verify`, timer with `discardPeriodicTasks`.
 
-### Reference
+## Angular 21 Specifics
 
-See `src/app/components/topology-summary/topology-summary.component.spec.ts` for a complete working example (65 tests passing).
+- **Signal inputs**: use `fixture.componentRef.setInput('key', value)` instead of direct property assignment
+- **Zoneless**: change detection is explicit — always call `fixture.detectChanges()` after triggering changes
+- **Mock functions returning Observable**: use `.mockReturnValue(of(...))`, not just `vi.fn()`
+- **Do NOT use `fakeAsync`/`tick()`** — they rely on Zone.js which doesn't exist in Zoneless mode
+
+## Reference Examples
+
+- `src/app/components/topology-summary/topology-summary.component.spec.ts` — 65 tests passing
+- `src/app/components/template/template.component.spec.ts` — 32 tests passing
+- `src/app/services/xterm.service.spec.ts` — 39 tests passing
