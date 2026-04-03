@@ -9,8 +9,12 @@ version: 1.1.0
 ## Running Tests
 
 ```bash
-yarn test                              # all tests
-yarn test --include='**/xxx.spec.ts'  # single file
+# Service tests (CI: yarn test --include="**/services/**/*.spec.ts")
+yarn test --include='**/services/**/*.spec.ts'
+
+# Component tests (CI: yarn test --include="**/components/**/*.spec.ts")
+yarn test --include='**/components/**/*.spec.ts'
+
 yarn test --watch                     # watch mode
 ```
 
