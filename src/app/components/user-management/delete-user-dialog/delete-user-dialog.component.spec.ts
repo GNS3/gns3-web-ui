@@ -10,7 +10,7 @@
  *
  * Author: Sylvain MATHIEU, Elise LEBEAU
  */
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DeleteUserDialogComponent } from './delete-user-dialog.component';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -63,6 +63,10 @@ describe('DeleteUserDialogComponent', () => {
     fixture = TestBed.createComponent(DeleteUserDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    fixture.destroy();
   });
 
   describe('data', () => {
