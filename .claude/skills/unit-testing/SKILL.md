@@ -169,3 +169,28 @@ expect(result.length).toBe(1); // PASSES
 - **Using `fakeAsync`/`tick()` in Zoneless** - These don't work without Zone.js
 - **Subscribing after setValue** - You'll get the wrong emission from Observables with `startWith()`
 - **Forgetting `fixture.detectChanges()`** - Change detection is explicit in Zoneless
+
+## 7. Angular Standalone Component Testing
+
+GNS3 Web UI uses **Angular 21 Standalone components** with class-level `inject()`. This has specific testing requirements.
+
+### Key Requirements
+
+1. **Use `await TestBed.configureTestingModule(...).compileComponents()`**
+   - Standalone components require compilation; `compileComponents()` ensures templates are ready before component instantiation
+   - Without it, `inject()` may execute before mock providers are registered
+
+2. **Mock functions MUST return Observable** - Class-level `inject()` + `subscribe()` requires proper return values:
+   ```typescript
+   // ❌ WRONG - returns undefined, causes "Cannot read properties of undefined (reading 'subscribe')"
+   mockProjectService = { getStatistics: vi.fn() };
+
+   // ✅ CORRECT - returns Observable
+   mockProjectService = { getStatistics: vi.fn().mockReturnValue(of({} as ProjectStatistics)) };
+   ```
+
+3. **Merge `beforeEach` blocks** - Keep all TestBed configuration in a single `beforeEach` to avoid timing issues between mock setup and component instantiation
+
+### Reference
+
+See `src/app/components/topology-summary/topology-summary.component.spec.ts` for a complete working example (65 tests passing).
