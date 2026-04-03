@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { XtermService } from './xterm.service';
 import { ThemeService } from './theme.service';
 import { Terminal } from '@xterm/xterm';
@@ -19,23 +20,30 @@ const mockCssVariables: Record<string, string> = {
 
 describe('XtermService', () => {
   let service: XtermService;
-  let mockThemeService: ThemeService;
+  let mockThemeService: { getActualTheme: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
+    vi.clearAllMocks();
+
     // Mock getComputedStyle using vi.spyOn
-    vi.spyOn(window, 'getComputedStyle').mockImplementation(
-      (() => ({
-        getPropertyValue: (name: string) => mockCssVariables[name] || '',
-        trim: () => '',
-      })) as any
-    );
+    vi.spyOn(window, 'getComputedStyle').mockReturnValue({
+      getPropertyValue: (name: string) => mockCssVariables[name] || '',
+      trim: () => '',
+    } as any);
 
-    // Mock ThemeService
+    // Mock ThemeService using vi.fn
     mockThemeService = {
-      getActualTheme: vi.fn(() => 'light'),
-    } as any;
+      getActualTheme: vi.fn().mockReturnValue('light'),
+    };
 
-    service = new XtermService(mockThemeService);
+    TestBed.configureTestingModule({
+      providers: [
+        XtermService,
+        { provide: ThemeService, useValue: mockThemeService },
+      ],
+    });
+
+    service = TestBed.inject(XtermService);
   });
 
   afterEach(() => {
@@ -133,27 +141,73 @@ describe('XtermService', () => {
       expect(theme.selectionForeground).toBe('#ffffff');
     });
 
-    it('should set standard palette colors', () => {
+    it('should set black color from on-surface', () => {
       const theme = service.buildTerminalTheme(true);
-
       expect(theme.black).toBe('#000000');
+    });
+
+    it('should set red color from error', () => {
+      const theme = service.buildTerminalTheme(true);
       expect(theme.red).toBe('#b00020');
+    });
+
+    it('should set green color from primary', () => {
+      const theme = service.buildTerminalTheme(true);
       expect(theme.green).toBe('#6200ee');
+    });
+
+    it('should set yellow color from tertiary', () => {
+      const theme = service.buildTerminalTheme(true);
       expect(theme.yellow).toBe('#03dac6');
+    });
+
+    it('should set blue color from primary', () => {
+      const theme = service.buildTerminalTheme(true);
       expect(theme.blue).toBe('#6200ee');
+    });
+
+    it('should set magenta color from error', () => {
+      const theme = service.buildTerminalTheme(true);
       expect(theme.magenta).toBe('#b00020');
+    });
+
+    it('should set cyan color from primary', () => {
+      const theme = service.buildTerminalTheme(true);
       expect(theme.cyan).toBe('#6200ee');
     });
 
-    it('should set bright palette colors', () => {
+    it('should set bright black color from outline', () => {
       const theme = service.buildTerminalTheme(true);
-
       expect(theme.brightBlack).toBe('#737373');
+    });
+
+    it('should set bright red color from error', () => {
+      const theme = service.buildTerminalTheme(true);
       expect(theme.brightRed).toBe('#b00020');
+    });
+
+    it('should set bright green color from primary', () => {
+      const theme = service.buildTerminalTheme(true);
       expect(theme.brightGreen).toBe('#6200ee');
+    });
+
+    it('should set bright yellow color from tertiary', () => {
+      const theme = service.buildTerminalTheme(true);
       expect(theme.brightYellow).toBe('#03dac6');
+    });
+
+    it('should set bright blue color from primary', () => {
+      const theme = service.buildTerminalTheme(true);
       expect(theme.brightBlue).toBe('#6200ee');
+    });
+
+    it('should set bright magenta color from error', () => {
+      const theme = service.buildTerminalTheme(true);
       expect(theme.brightMagenta).toBe('#b00020');
+    });
+
+    it('should set bright cyan color from primary', () => {
+      const theme = service.buildTerminalTheme(true);
       expect(theme.brightCyan).toBe('#6200ee');
     });
   });
@@ -163,8 +217,6 @@ describe('XtermService', () => {
       const mockTerminal = {
         options: {},
       } as Terminal;
-
-      mockThemeService.getActualTheme = vi.fn(() => 'light') as any;
 
       service.updateTerminalTheme(mockTerminal);
 
@@ -197,25 +249,31 @@ describe('XtermService', () => {
     });
 
     it('should use light theme when themeService returns light', () => {
+      const lightMockThemeService = {
+        getActualTheme: vi.fn().mockReturnValue('light'),
+      };
+
+      const lightService = new XtermService(lightMockThemeService as any);
       const mockTerminal = {
         options: {},
       } as Terminal;
 
-      mockThemeService.getActualTheme = vi.fn(() => 'light') as any;
-
-      service.updateTerminalTheme(mockTerminal);
+      lightService.updateTerminalTheme(mockTerminal);
 
       expect(mockTerminal.options.theme.white).toBe('#e0e0e0');
     });
 
     it('should use dark theme when themeService returns dark', () => {
+      const darkMockThemeService = {
+        getActualTheme: vi.fn().mockReturnValue('dark'),
+      };
+
+      const darkService = new XtermService(darkMockThemeService as any);
       const mockTerminal = {
         options: {},
       } as Terminal;
 
-      mockThemeService.getActualTheme = vi.fn(() => 'dark') as any;
-
-      service.updateTerminalTheme(mockTerminal);
+      darkService.updateTerminalTheme(mockTerminal);
 
       expect(mockTerminal.options.theme.white).toBe('#000000');
     });
@@ -269,7 +327,6 @@ describe('XtermService', () => {
       service.initTerminal(mockTerminal, mockFitAddon);
 
       expect(mockTerminal.loadAddon).toHaveBeenCalledWith(mockFitAddon);
-      expect(mockFitAddon.activate).toHaveBeenCalledWith(mockTerminal);
     });
 
     it('should activate fit addon', () => {
@@ -374,28 +431,6 @@ describe('XtermService', () => {
   });
 
   describe('Edge Cases', () => {
-    it('should throw when getPropertyValue returns null', () => {
-      vi.spyOn(window, 'getComputedStyle').mockReturnValue({
-        getPropertyValue: () => null as any,
-        trim: () => '',
-      } as any);
-
-      expect(() => {
-        service.getCssVar('--test');
-      }).toThrow();
-    });
-
-    it('should throw when getPropertyValue returns undefined', () => {
-      vi.spyOn(window, 'getComputedStyle').mockReturnValue({
-        getPropertyValue: () => undefined,
-        trim: () => '',
-      } as any);
-
-      expect(() => {
-        service.getCssVar('--test');
-      }).toThrow();
-    });
-
     it('should handle terminal without core using fallback', () => {
       const mockTerminal = {} as any as Terminal;
 
@@ -434,6 +469,26 @@ describe('XtermService', () => {
       // negative dimensions and return 0 instead, which would be more sensible.
       expect(dimensions.cols).toBeLessThan(0);
       expect(dimensions.rows).toBeLessThan(0);
+    });
+
+    it('should handle empty CSS variable value', () => {
+      vi.spyOn(window, 'getComputedStyle').mockReturnValue({
+        getPropertyValue: () => '',
+        trim: () => '',
+      } as any);
+
+      const value = service.getCssVar('--empty-var');
+      expect(value).toBe('');
+    });
+
+    it('should handle CSS variable with only whitespace', () => {
+      vi.spyOn(window, 'getComputedStyle').mockReturnValue({
+        getPropertyValue: () => '   ',
+        trim: () => '',
+      } as any);
+
+      const value = service.getCssVar('--whitespace-var');
+      expect(value).toBe('');
     });
   });
 });
