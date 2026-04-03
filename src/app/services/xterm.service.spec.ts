@@ -22,11 +22,15 @@ describe('XtermService', () => {
   let mockThemeService: ThemeService;
 
   beforeEach(() => {
-    // Mock getComputedStyle
-    vi.spyOn(window, 'getComputedStyle').mockReturnValue({
-      getPropertyValue: (name: string) => mockCssVariables[name] || '',
-      trim: () => '',
-    } as any);
+    // Mock getComputedStyle using Object.defineProperty for better compatibility
+    Object.defineProperty(window, 'getComputedStyle', {
+      value: vi.fn(() => ({
+        getPropertyValue: (name: string) => mockCssVariables[name] || '',
+        trim: () => '',
+      })),
+      writable: true,
+      configurable: true,
+    });
 
     // Mock ThemeService
     mockThemeService = {
