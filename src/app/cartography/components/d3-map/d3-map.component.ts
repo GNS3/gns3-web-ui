@@ -308,7 +308,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     const scale = this.context.transformation.k;
-    const margin = 100;
+    const margin = 30; // Reduced from 100px to 30px to prevent premature scrollbar appearance
     let minX = 0,
       maxX = 0,
       minY = 0,
