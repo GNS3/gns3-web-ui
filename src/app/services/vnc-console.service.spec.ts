@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { VncConsoleService } from './vnc-console.service';
 import { ToasterService } from './toaster.service';
 import { Node } from '../cartography/models/node';
@@ -15,8 +15,11 @@ describe('VncConsoleService', () => {
   let mockToasterService: any;
   let mockNode: Node;
   let mockController: Controller;
+  let originalWindow: typeof window;
 
   beforeEach(() => {
+    originalWindow = global.window;
+
     mockToasterService = {
       error: vi.fn(),
     };
@@ -48,6 +51,11 @@ describe('VncConsoleService', () => {
     } as any;
 
     service = new VncConsoleService(mockToasterService);
+  });
+
+  afterEach(() => {
+    global.window = originalWindow;
+    vi.restoreAllMocks();
   });
 
   describe('Service Creation', () => {
