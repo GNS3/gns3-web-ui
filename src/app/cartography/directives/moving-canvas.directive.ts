@@ -9,27 +9,33 @@ import { Context } from '../models/context';
   selector: '[appMovingCanvas]',
 })
 export class MovingCanvasDirective implements OnInit, OnDestroy {
-  private mouseupListener: Function;
-  private mousemoveListener: Function;
+  private mouseupListener: Function | null = null;
+  private mousemoveListener: Function | null = null;
   private movingModeState: Subscription;
   private activated: boolean = false;
+  private isDragging: boolean = false;
 
   constructor(private element: ElementRef, private movingEventSource: MovingEventSource, private context: Context) {}
 
   ngOnInit() {
     this.movingModeState = this.movingEventSource.movingModeState.subscribe((event: boolean) => {
       this.activated = event;
-      if (!event) this.removelisteners();
+      if (!event) {
+        this.removelisteners();
+      }
     });
   }
 
   ngOnDestroy() {
     this.movingModeState.unsubscribe();
+    this.removelisteners();
   }
 
   @HostListener('mousedown', ['$event'])
   onMouseDown(event: MouseEvent) {
-    if (this.activated) {
+    if (this.activated && !this.isDragging) {
+      this.isDragging = true;
+
       this.mousemoveListener = (event: MouseEvent) => {
         const view = select(this.element.nativeElement);
         const canvas = view.selectAll<SVGGElement, Context>('g.canvas').data([this.context]);
@@ -47,28 +53,41 @@ export class MovingCanvasDirective implements OnInit, OnDestroy {
       };
 
       this.mouseupListener = (event: MouseEvent) => {
+        this.isDragging = false;
         this.removelisteners();
       };
 
-      this.element.nativeElement.addEventListener(
-        'mouseup',
-        this.mouseupListener as EventListenerOrEventListenerObject
-      );
+      // Add mousemove to element for performance
       this.element.nativeElement.addEventListener(
         'mousemove',
         this.mousemoveListener as EventListenerOrEventListenerObject
+      );
+
+      // Add mouseup to document to catch mouse release anywhere on page
+      document.addEventListener(
+        'mouseup',
+        this.mouseupListener as EventListenerOrEventListenerObject
       );
     }
   }
 
   removelisteners() {
-    this.element.nativeElement.removeEventListener(
-      'mouseup',
-      this.mouseupListener as EventListenerOrEventListenerObject
-    );
-    this.element.nativeElement.removeEventListener(
-      'mousemove',
-      this.mousemoveListener as EventListenerOrEventListenerObject
-    );
+    if (this.mousemoveListener) {
+      this.element.nativeElement.removeEventListener(
+        'mousemove',
+        this.mousemoveListener as EventListenerOrEventListenerObject
+      );
+      this.mousemoveListener = null;
+    }
+
+    if (this.mouseupListener) {
+      document.removeEventListener(
+        'mouseup',
+        this.mouseupListener as EventListenerOrEventListenerObject
+      );
+      this.mouseupListener = null;
+    }
+
+    this.isDragging = false;
   }
 }
