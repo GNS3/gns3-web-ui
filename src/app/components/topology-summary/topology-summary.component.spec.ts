@@ -141,7 +141,10 @@ describe('TopologySummaryComponent', () => {
       },
     ],
     filters: {
+      bpf: [],
+      corrupt: [],
       packet_loss: [5],
+      frequency_drop: [],
     },
     project_id: 'proj1',
     suspend: false,
@@ -238,6 +241,7 @@ describe('TopologySummaryComponent', () => {
   });
 
   afterEach(() => {
+    fixture.destroy();
     localStorage.clear();
   });
 
