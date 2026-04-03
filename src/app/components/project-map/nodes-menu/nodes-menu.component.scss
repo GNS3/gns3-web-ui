@@ -15,8 +15,13 @@
 
 .menu-button {
   margin: 0 4px;
+  transition: transform 100ms ease;
 
   mat-icon {
     color: var(--mat-sys-on-primary);
   }
+}
+
+.menu-button:hover {
+  transform: scale(1.2);
 }

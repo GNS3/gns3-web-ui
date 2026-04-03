@@ -3,7 +3,7 @@
  */
 
 .dialogWrapper {
-  background-color: transparent;
+  background-color: var(--mat-sys-surface-container);
   color: var(--mat-sys-on-surface);
   padding: var(--mat-sys-spacing, 16px) 24px;
   margin-bottom: -8px;
