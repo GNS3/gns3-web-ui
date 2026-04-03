@@ -152,8 +152,10 @@ describe('ComputesComponent', () => {
 
   it('should load controller on init', async () => {
     component.ngOnInit();
-    // Wait for async controllerService.get to resolve
-    await new Promise(resolve => setTimeout(resolve, 10));
+    // 等待异步的 controllerService.get 完成
+    // 使用 fake timers 推进时间，而不是真实的 setTimeout
+    vi.advanceTimersByTime(10);
+    await vi.runAllTimersAsync();
     expect(mockControllerService.get).toHaveBeenCalled();
   });
 

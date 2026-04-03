@@ -13,6 +13,7 @@ describe('HelpComponent', () => {
   let mockHttpClient: HttpClient;
 
   beforeEach(async () => {
+    TestBed.resetTestingModule(); // 先重置，防止与全局 afterEach 冲突
     vi.clearAllMocks();
 
     mockHttpClient = {
@@ -30,16 +31,21 @@ describe('HelpComponent', () => {
         { provide: HttpClient, useValue: mockHttpClient },
       ],
     }).compileComponents();
-
-    fixture = TestBed.createComponent(HelpComponent);
-    component = fixture.componentInstance;
   });
 
+  // 为需要完整组件初始化的测试创建 fixture
+  function createComponent() {
+    fixture = TestBed.createComponent(HelpComponent);
+    component = fixture.componentInstance;
+  }
+
   it('should create', () => {
+    createComponent();
     expect(component).toBeTruthy();
   });
 
   it('should initialize with empty signals', () => {
+    createComponent();
     expect(component.thirdpartylicenses()).toBe('');
     expect(component.releasenotes()).toBe('');
   });
@@ -48,6 +54,7 @@ describe('HelpComponent', () => {
     const mockHtml = '<b>License content</b>';
     mockHttpClient.get = vi.fn().mockReturnValue(of(mockHtml));
 
+    createComponent();
     component.ngOnInit();
 
     expect(mockHttpClient.get).toHaveBeenCalledWith(
@@ -60,6 +67,7 @@ describe('HelpComponent', () => {
     const mockHtml = '<b>Release notes</b>';
     mockHttpClient.get = vi.fn().mockReturnValue(of(mockHtml));
 
+    createComponent();
     component.ngOnInit();
 
     expect(mockHttpClient.get).toHaveBeenCalledWith(
@@ -74,6 +82,7 @@ describe('HelpComponent', () => {
       .mockReturnValueOnce(of(mockHtml))
       .mockReturnValueOnce(of(''));
 
+    createComponent();
     component.ngOnInit();
 
     const result = component.thirdpartylicenses();
@@ -86,12 +95,14 @@ describe('HelpComponent', () => {
       .mockReturnValueOnce(throwError(() => error))
       .mockReturnValueOnce(of(''));
 
+    createComponent();
     component.ngOnInit();
 
     expect(component.thirdpartylicenses()).toBe('Download Solar-PuTTY');
   });
 
   it('should have goToDocumentation method', () => {
+    createComponent();
     // Just verify the method exists and is callable
     expect(typeof component.goToDocumentation).toBe('function');
   });

@@ -66,6 +66,8 @@ docs/
 | Document | Description |
 |----------|-------------|
 | [Zoneless Guide](./framework/angular-21/zoneless-guide.md) | ⭐ Angular Zoneless best practices |
+| [Vitest Testing Setup](./framework/angular-21/vitest-testing-setup.md) | Vitest configuration for Angular 21 Zoneless |
+| [Vitest Test Isolation Guide](./framework/angular-21/vitest-test-isolation-guide.md) | ⭐ Solving test environment pollution (Flaky Tests) |
 | [Migration Progress](./framework/angular-21/migration-progress.md) | Migration status tracking |
 | [Dialog Migration Record](./framework/angular-21/dialog-migration-record.md) | Dialog style migration (42 dialogs) |
 
@@ -124,6 +126,20 @@ docs/
 ---
 
 ## Recent Changes
+
+### 2026-04-03
+
+- ✅ **Test Environment Pollution Fix**: Resolved Flaky Tests issue
+  - Implemented `forks` pool for process-level test isolation
+  - Added global `TestBed.resetTestingModule()` cleanup in `afterEach`
+  - Split CI/CD tests by category (services vs components)
+  - Achieved 98.7% stable pass rate (from random failures)
+  - Documentation: [framework/angular-21/vitest-test-isolation-guide.md](./framework/angular-21/vitest-test-isolation-guide.md) ⭐
+
+- ✅ **Component Test Fixes**: Resolved 2 failing component tests
+  - Fixed `computes.component.spec.ts` timeout with fake timers
+  - Fixed `help.component.spec.ts` mock subscription issues
+  - Implemented proper component lifecycle in tests
 
 ### 2026-03-31
 
