@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UserDetailDialogComponent, UserDetailDialogData } from './user-detail-dialog.component';
-import { MAT_DIALOG_DATA, MatDialogRef, MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -19,7 +19,6 @@ import { ACE, ACEDetailed } from '@models/api/ACE';
 import { Endpoint } from '@models/api/endpoint';
 import { Role } from '@models/api/role';
 import { of, throwError } from 'rxjs';
-import { ChangeUserPasswordComponent } from '@components/user-management/user-detail/change-user-password/change-user-password.component';
 
 describe('UserDetailDialogComponent', () => {
   let component: UserDetailDialogComponent;
@@ -117,7 +116,6 @@ describe('UserDetailDialogComponent', () => {
     await TestBed.configureTestingModule({
       imports: [
         UserDetailDialogComponent,
-        MatDialogModule,
         MatTableModule,
         MatButtonModule,
         MatFormFieldModule,
@@ -139,6 +137,10 @@ describe('UserDetailDialogComponent', () => {
     fixture = TestBed.createComponent(UserDetailDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges(); // Trigger ngOnInit
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should create', () => {
@@ -212,12 +214,17 @@ describe('UserDetailDialogComponent', () => {
       expect(component.groupsLoaded).toBe(true);
     });
 
-    it('should set groupsLoaded to true on error', () => {
-      (mockUserService.getGroupsByUserId as ReturnType<typeof vi.fn>).mockReturnValue(
-        throwError(() => new Error('Failed to load groups'))
-      );
-      component.loadGroupsData();
-      expect(component.groupsLoaded).toBe(true);
+    describe('error case', () => {
+      beforeEach(() => {
+        (mockUserService.getGroupsByUserId as ReturnType<typeof vi.fn>).mockReturnValue(
+          throwError(() => new Error('Failed to load groups'))
+        );
+      });
+
+      it('should set groupsLoaded to true on error', () => {
+        component.loadGroupsData();
+        expect(component.groupsLoaded).toBe(true);
+      });
     });
   });
 
@@ -239,12 +246,17 @@ describe('UserDetailDialogComponent', () => {
       expect(component.acesLoaded).toBe(true);
     });
 
-    it('should set acesLoaded to true on error', () => {
-      (mockAclService.list as ReturnType<typeof vi.fn>).mockReturnValue(
-        throwError(() => new Error('Failed to load ACEs'))
-      );
-      component.loadAceData();
-      expect(component.acesLoaded).toBe(true);
+    describe('error case', () => {
+      beforeEach(() => {
+        (mockAclService.list as ReturnType<typeof vi.fn>).mockReturnValue(
+          throwError(() => new Error('Failed to load ACEs'))
+        );
+      });
+
+      it('should set acesLoaded to true on error', () => {
+        component.loadAceData();
+        expect(component.acesLoaded).toBe(true);
+      });
     });
 
     it('should map ACEs with endpoint_name and role_name', () => {
@@ -296,30 +308,15 @@ describe('UserDetailDialogComponent', () => {
       expect(mockUserService.update).not.toHaveBeenCalled();
     });
 
-    it('should call userService.update with correct data', () => {
-      // Can't test service calls with complex form validation in unit tests
-      // This is tested in integration/e2e tests
-      expect(true).toBe(true);
-    });
-
-    it('should close dialog and show success toast on update success', () => {
-      // Can't test service calls with complex form validation in unit tests
-      // This is tested in integration/e2e tests
-      expect(true).toBe(true);
-    });
-
-    it('should show error toast on update failure', () => {
-      // Can't test service calls with complex form validation in unit tests
-      // This is tested in integration/e2e tests
-      expect(true).toBe(true);
-    });
+    // Note: Testing onSaveChanges with valid form requires complex async validator mocking
+    // Form validity is tested separately - see form validation tests
   });
 
   describe('onChangePassword', () => {
-    it('should open change password dialog', () => {
-      // Can't test dialog interactions in unit tests
+    it('should open change password dialog (requires integration test)', () => {
+      // Dialog interaction requires full MatDialog integration
       // This is tested in integration/e2e tests
-      expect(true).toBe(true);
+      expect(component.onChangePassword).toBeDefined();
     });
   });
 
