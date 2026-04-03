@@ -1,11 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
 import { AiProfileDialogComponent, AiProfileDialogData } from './ai-profile-dialog.component';
-import { AiProfileTabComponent } from '@components/user-management/user-detail/ai-profile-tab/ai-profile-tab.component';
 import { AiProfilesService } from '@services/ai-profiles.service';
 import { User } from '@models/users/user';
 import { Controller } from '@models/controller';
@@ -54,9 +51,9 @@ describe('AiProfileDialogComponent', () => {
   };
 
   beforeEach(async () => {
-    mockDialogRef = {
-      close: vi.fn(),
-    };
+    vi.clearAllMocks();
+
+    mockDialogRef = { close: vi.fn() };
 
     mockDialog = {
       open: vi.fn().mockReturnValue({
@@ -97,6 +94,10 @@ describe('AiProfileDialogComponent', () => {
     fixture = TestBed.createComponent(AiProfileDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    fixture.destroy();
   });
 
   it('should create', () => {
