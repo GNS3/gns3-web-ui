@@ -169,12 +169,21 @@ g.node:hover {
     transform: scale(1.3);
   }
 
+  // Ensure selected state takes precedence over hover
+  .menu-button.selected:hover {
+    transform: scale(1.15);
+  }
+
   .add-menu-button mat-icon {
     font-size: 28px;
   }
 
   .selected {
     @extend .selection-on-primary;
+    // Enhance visibility with stronger background and visual feedback
+    background: color-mix(in srgb, var(--mat-sys-on-primary) 30%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--mat-sys-on-primary) 50%, transparent);
+    transform: scale(1.15);
   }
 
   .project-titlebar-controls {
