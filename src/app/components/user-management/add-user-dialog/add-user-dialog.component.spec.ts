@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { AddUserDialogComponent } from './add-user-dialog.component';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -15,8 +15,7 @@ import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
 import { Group } from '@models/groups/group';
 import { User } from '@models/users/user';
-import { of, throwError, lastValueFrom, firstValueFrom } from 'rxjs';
-import { filter, timeout } from 'rxjs/operators';
+import { of, throwError, lastValueFrom } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
 
 describe('AddUserDialogComponent', () => {
@@ -108,6 +107,10 @@ describe('AddUserDialogComponent', () => {
     component.controller = mockController;
   });
 
+  afterEach(() => {
+    fixture.destroy();
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -115,6 +118,7 @@ describe('AddUserDialogComponent', () => {
   describe('ngOnInit', () => {
     it('should initialize form with all required fields', () => {
       component.ngOnInit();
+      fixture.detectChanges();
       expect(component.addUserForm).toBeInstanceOf(UntypedFormGroup);
       expect(component.addUserForm.get('username')).toBeTruthy();
       expect(component.addUserForm.get('email')).toBeTruthy();
@@ -126,23 +130,34 @@ describe('AddUserDialogComponent', () => {
 
     it('should load groups from groupService', () => {
       component.ngOnInit();
+      fixture.detectChanges();
       expect(mockGroupService.getGroups).toHaveBeenCalledWith(mockController);
     });
 
     it('should set is_active to true by default', () => {
       component.ngOnInit();
+      fixture.detectChanges();
       expect(component.addUserForm.get('is_active')?.value).toBe(true);
     });
 
     it('should set groups when loaded', () => {
       component.ngOnInit();
+      fixture.detectChanges();
       expect(component.groups).toEqual(mockGroups);
+    });
+
+    it('should handle empty groups response', () => {
+      (mockGroupService.getGroups as ReturnType<typeof vi.fn>).mockReturnValue(of([]));
+      component.ngOnInit();
+      fixture.detectChanges();
+      expect(component.groups).toEqual([]);
     });
   });
 
   describe('form getter', () => {
     it('should return form controls', () => {
       component.ngOnInit();
+      fixture.detectChanges();
       const form = component.form;
       expect(form.username).toBeDefined();
       expect(form.email).toBeDefined();
@@ -323,62 +338,37 @@ describe('AddUserDialogComponent', () => {
   describe('_filter (via filteredGroups observable)', () => {
     beforeEach(() => {
       component.ngOnInit();
-    });
-
-    it('should filter groups by name when autocomplete changes', async () => {
-      // 1. 在 setValue 之前准备捕获结果的 Promise
-      // 使用 filter 跳过 startWith('') 发出的初始值（3个组），只取过滤后的结果
-      const filteredResultPromise = firstValueFrom(
-        component.filteredGroups.pipe(
-          filter(groups => groups.length === 1 || groups.length === 0),
-          timeout(2000) // 安全网：防止测试永久挂起
-        )
-      );
-
-      // 2. 触发值变更
-      component.autocompleteControl.setValue('admin');
-
-      // 3. Zoneless 下手动触发变更检测并等待所有异步任务稳定
       fixture.detectChanges();
-      await fixture.whenStable();
-
-      // 4. 获取结果并断言
-      const result = await filteredResultPromise;
-      expect(result.length).toBe(1);
-      expect(result[0].name).toBe('Admins');
     });
 
-    it('should return empty array when no matches found', async () => {
-      const filteredResultPromise = firstValueFrom(
-        component.filteredGroups.pipe(
-          filter(groups => groups.length === 0),
-          timeout(2000)
-        )
-      );
+    it('should filter groups by name when autocomplete changes', () => {
+      const results: Group[][] = [];
+      component.filteredGroups.subscribe(groups => results.push(groups));
+      component.autocompleteControl.setValue('admin');
+      fixture.detectChanges();
+      const filteredResult = results.find(groups => groups.length === 1);
+      expect(filteredResult).toBeDefined();
+      expect(filteredResult![0].name).toBe('Admins');
+    });
 
+    it('should return empty array when no matches found', () => {
+      const results: Group[][] = [];
+      component.filteredGroups.subscribe(groups => results.push(groups));
       component.autocompleteControl.setValue('xyz123');
       fixture.detectChanges();
-      await fixture.whenStable();
-
-      const result = await filteredResultPromise;
-      expect(result.length).toBe(0);
+      const filteredResult = results.find(groups => groups.length === 0);
+      expect(filteredResult).toBeDefined();
+      expect(filteredResult!.length).toBe(0);
     });
 
-    it('should be case insensitive', async () => {
-      const filteredResultPromise = firstValueFrom(
-        component.filteredGroups.pipe(
-          filter(groups => groups.length === 1),
-          timeout(2000)
-        )
-      );
-
+    it('should be case insensitive', () => {
+      const results: Group[][] = [];
+      component.filteredGroups.subscribe(groups => results.push(groups));
       component.autocompleteControl.setValue('ADMIN');
       fixture.detectChanges();
-      await fixture.whenStable();
-
-      const result = await filteredResultPromise;
-      expect(result.length).toBe(1);
-      expect(result[0].name).toBe('Admins');
+      const filteredResult = results.find(groups => groups.length === 1);
+      expect(filteredResult).toBeDefined();
+      expect(filteredResult![0].name).toBe('Admins');
     });
   });
 });
