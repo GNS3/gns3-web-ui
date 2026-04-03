@@ -40,6 +40,7 @@ export class ConfigureCustomAdaptersDialogComponent implements OnInit {
           adapter_number: i,
           port_name: '',
         });
+        i++;
       });
     } else {
       this.adapters = this.node.custom_adapters;
