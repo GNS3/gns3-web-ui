@@ -14,7 +14,7 @@ test.describe('User Detail Dialog - Integration Tests', () => {
   // 在每个测试前运行
   test.beforeEach(async ({ page }) => {
     // 导航到用户管理页面
-    await page.goto('/controllers/1/users');
+    await page.goto('http://localhost:4200/controllers/1/users');
 
     // 等待页面加载完成
     await page.waitForLoadState('networkidle');
@@ -104,7 +104,7 @@ test.describe('User Detail Dialog - Integration Tests', () => {
 
 test.describe('User Detail Dialog - Change Password', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/controllers/1/users');
+    await page.goto('http://localhost:4200/controllers/1/users');
     await page.waitForLoadState('networkidle');
   });
 
