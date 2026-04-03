@@ -76,27 +76,65 @@ describe('HelpComponent', () => {
     );
   });
 
-  it('should set thirdpartylicenses signal with sanitized HTML', () => {
+  it('should set thirdpartylicenses signal with sanitized HTML', async () => {
     const mockHtml = 'line1\nline2';
-    mockHttpClient.get = vi.fn()
-      .mockReturnValueOnce(of(mockHtml))
-      .mockReturnValueOnce(of(''));
+    const customMockHttpClient = {
+      get: vi.fn()
+        .mockReturnValueOnce(of(mockHtml))
+        .mockReturnValueOnce(of('')),
+    } as any as HttpClient;
 
-    createComponent();
-    component.ngOnInit();
+    // 完整重建 TestBed
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [
+        HelpComponent,
+        MatButtonModule,
+        MatExpansionModule,
+        MatListModule,
+      ],
+      providers: [
+        { provide: HttpClient, useValue: customMockHttpClient },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(HelpComponent);
+    component = fixture.componentInstance;
+
+    // 手动推进 fake timers 以完成 Observable 订阅
+    vi.runAllTimers();
 
     const result = component.thirdpartylicenses();
     expect(result).toBeTruthy();
   });
 
-  it('should handle 404 error for thirdpartylicenses', () => {
+  it('should handle 404 error for thirdpartylicenses', async () => {
     const error = { status: 404 };
-    mockHttpClient.get = vi.fn()
-      .mockReturnValueOnce(throwError(() => error))
-      .mockReturnValueOnce(of(''));
+    const customMockHttpClient = {
+      get: vi.fn()
+        .mockReturnValueOnce(throwError(() => error))
+        .mockReturnValueOnce(of('')),
+    } as any as HttpClient;
 
-    createComponent();
-    component.ngOnInit();
+    // 完整重建 TestBed
+    TestBed.resetTestingModule();
+    await TestBed.configureTestingModule({
+      imports: [
+        HelpComponent,
+        MatButtonModule,
+        MatExpansionModule,
+        MatListModule,
+      ],
+      providers: [
+        { provide: HttpClient, useValue: customMockHttpClient },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(HelpComponent);
+    component = fixture.componentInstance;
+
+    // 手动推进 fake timers 以完成 Observable 订阅
+    vi.runAllTimers();
 
     expect(component.thirdpartylicenses()).toBe('Download Solar-PuTTY');
   });
