@@ -30,6 +30,7 @@ describe('TemplateComponent', () => {
 
   let newTemplateCreatedSubject: Subject<Template>;
   let themeChangedSubject: Subject<void>;
+  let originalWindowEvent: typeof window.event;
 
   let mockController: Controller;
   let mockProject: Project;
@@ -176,11 +177,15 @@ describe('TemplateComponent', () => {
     it('should have templateTypes with all expected types', () => {
       expect(component.templateTypes).toContain('all');
       expect(component.templateTypes).toContain('cloud');
+      expect(component.templateTypes).toContain('ethernet_hub');
       expect(component.templateTypes).toContain('ethernet_switch');
       expect(component.templateTypes).toContain('docker');
       expect(component.templateTypes).toContain('vpcs');
       expect(component.templateTypes).toContain('dynamips');
       expect(component.templateTypes).toContain('qemu');
+      expect(component.templateTypes).toContain('virtualbox');
+      expect(component.templateTypes).toContain('vmware');
+      expect(component.templateTypes).toContain('iou');
     });
   });
 
@@ -222,8 +227,8 @@ describe('TemplateComponent', () => {
 
       component.ngOnInit();
 
-      // Verify via themeService.getThemeType was called
       expect(mockThemeService.getThemeType).toHaveBeenCalled();
+      expect(component['isLightThemeEnabled']).toBe(true);
     });
 
     it('should detect dark theme', () => {
@@ -233,6 +238,7 @@ describe('TemplateComponent', () => {
       component.ngOnInit();
 
       expect(mockThemeService.getThemeType).toHaveBeenCalled();
+      expect(component['isLightThemeEnabled']).toBe(false);
     });
 
     it('should subscribe to newTemplateCreated and add template to list', () => {
@@ -311,11 +317,12 @@ describe('TemplateComponent', () => {
     beforeEach(() => {
       component.templates = [...templates];
       component.filteredTemplates = [...templates];
+      component.selectedType = 'all';
+      component.searchText = '';
     });
 
     it('should filter templates by searchText case-insensitively', () => {
       component.searchText = 'router';
-      component.selectedType = 'all';
 
       component.filterTemplates({ target: { value: 'router' } });
 
@@ -325,7 +332,6 @@ describe('TemplateComponent', () => {
 
     it('should filter templates by partial match', () => {
       component.searchText = 'host';
-      component.selectedType = 'all';
 
       component.filterTemplates({ target: { value: 'host' } });
 
@@ -344,7 +350,6 @@ describe('TemplateComponent', () => {
     });
 
     it('should combine searchText and selectedType filters', () => {
-      component.searchText = '';
       component.templates = [
         createMockTemplate('t1', 'DockerProd', 'docker'),
         createMockTemplate('t2', 'DockerDev', 'docker'),
@@ -362,7 +367,6 @@ describe('TemplateComponent', () => {
 
     it('should return all templates when searchText is empty and type is all', () => {
       component.searchText = '';
-      component.selectedType = 'all';
 
       component.filterTemplates({ target: { value: '' } });
 
@@ -375,8 +379,6 @@ describe('TemplateComponent', () => {
         createMockTemplate('t2', 'Alpha', 'cloud'),
       ];
       component.filteredTemplates = [...component.templates];
-      component.searchText = '';
-      component.selectedType = 'all';
 
       component.filterTemplates({ target: { value: '' } });
 
@@ -404,11 +406,14 @@ describe('TemplateComponent', () => {
         target: mockElement,
       } as unknown as MouseEvent;
 
-      vi.spyOn(window, 'event', 'get').mockReturnValue(mockMouseEvent);
+      originalWindowEvent = window.event;
+      const eventSpy = vi.spyOn(window, 'event', 'get').mockReturnValue(mockMouseEvent);
 
       component.dragStart({} as any, createMockTemplate('t1', 'Test', 'vpcs'));
 
       expect(component['dragElement']).toBe(mockElement);
+
+      eventSpy.mockReturnValue(originalWindowEvent);
     });
   });
 
@@ -483,7 +488,10 @@ describe('TemplateComponent', () => {
   // openDialog tests are skipped because they require TemplateListDialogComponent
   // which needs ComputeService, ToasterService, NonNegativeValidator and other
   // dependencies that are complex to mock in a unit test context.
-  // These behaviors would be better tested in an integration test.
+  // Additionally, MatDialog.open() creates actual DOM elements that require
+  // the full Angular testing module with all dialog dependencies.
+  // These behaviors would be better tested in an integration test with
+  // TestBed.configureTestingModule with all required imports.
   describe.skip('openDialog', () => {});
 
   describe('getImageSourceForTemplate', () => {
