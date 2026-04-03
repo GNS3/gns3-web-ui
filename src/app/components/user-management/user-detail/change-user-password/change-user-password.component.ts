@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { User } from '@models/users/user';
@@ -22,6 +22,7 @@ export class ChangeUserPasswordComponent {
   private dialogRef = inject(MatDialogRef<ChangeUserPasswordComponent>);
   private userService = inject(UserService);
   private toasterService = inject(ToasterService);
+  private cd = inject(ChangeDetectorRef);
   data = inject<{ user: User; controller: Controller; self_update: boolean }>(MAT_DIALOG_DATA);
 
   user = signal<User | undefined>(this.data.user);
@@ -69,9 +70,11 @@ export class ChangeUserPasswordComponent {
         this.toasterService.success(`User ${user.username} password updated`);
         this.editPasswordForm.reset();
         this.dialogRef.close(true);
+        this.cd.markForCheck();
       },
       (error) => {
         this.toasterService.error('Cannot update password for user: ' + error);
+        this.cd.markForCheck();
       }
     );
   }

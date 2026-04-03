@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChangeUserPasswordComponent } from './change-user-password.component';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -77,6 +77,10 @@ describe('ChangeUserPasswordComponent', () => {
     fixture = TestBed.createComponent(ChangeUserPasswordComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    fixture.destroy();
   });
 
   it('should create', () => {
@@ -170,6 +174,7 @@ describe('ChangeUserPasswordComponent', () => {
       mockUserService.update.mockReturnValue(of(mockUser));
 
       component.onPasswordSave();
+      fixture.detectChanges();
 
       expect(mockToasterService.success).toHaveBeenCalledTimes(1);
       expect(mockToasterService.success).toHaveBeenCalledWith('User testuser password updated');
@@ -180,6 +185,7 @@ describe('ChangeUserPasswordComponent', () => {
       const resetSpy = vi.spyOn(component.editPasswordForm, 'reset');
 
       component.onPasswordSave();
+      fixture.detectChanges();
 
       expect(resetSpy).toHaveBeenCalledTimes(1);
     });
@@ -188,6 +194,7 @@ describe('ChangeUserPasswordComponent', () => {
       mockUserService.update.mockReturnValue(of(mockUser));
 
       component.onPasswordSave();
+      fixture.detectChanges();
 
       expect(mockDialogRef.close).toHaveBeenCalledTimes(1);
       expect(mockDialogRef.close).toHaveBeenCalledWith(true);
@@ -198,6 +205,7 @@ describe('ChangeUserPasswordComponent', () => {
       mockUserService.update.mockReturnValue(throwError(() => error));
 
       component.onPasswordSave();
+      fixture.detectChanges();
 
       expect(mockToasterService.error).toHaveBeenCalledTimes(1);
       expect(mockToasterService.error).toHaveBeenCalledWith(`Cannot update password for user: ${error}`);
@@ -207,6 +215,7 @@ describe('ChangeUserPasswordComponent', () => {
       mockUserService.update.mockReturnValue(throwError(() => new Error('failed')));
 
       component.onPasswordSave();
+      fixture.detectChanges();
 
       expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
@@ -216,6 +225,7 @@ describe('ChangeUserPasswordComponent', () => {
       const resetSpy = vi.spyOn(component.editPasswordForm, 'reset');
 
       component.onPasswordSave();
+      fixture.detectChanges();
 
       expect(resetSpy).not.toHaveBeenCalled();
     });
