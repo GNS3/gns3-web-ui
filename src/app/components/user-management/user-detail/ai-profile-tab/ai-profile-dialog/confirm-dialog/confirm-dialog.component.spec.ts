@@ -21,24 +21,21 @@ describe('ConfirmDialogComponent', () => {
   beforeEach(async () => {
     mockDialogRef = { close: vi.fn() };
 
-    TestBed.configureTestingModule({
+    await TestBed.configureTestingModule({
       imports: [ConfirmDialogComponent, MatDialogModule, MatButtonModule],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: mockData },
       ],
-    });
-    TestBed.configureTestingModule({
-      providers: [provideZonelessChangeDetection()],
-    });
-    await TestBed.compileComponents();
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ConfirmDialogComponent);
     component = fixture.componentInstance;
   });
 
   afterEach(() => {
-    TestBed.resetTestingModule();
+    fixture.destroy();
   });
 
   it('should create', () => {
@@ -94,19 +91,22 @@ describe('ConfirmDialogComponent', () => {
     };
 
     TestBed.resetTestingModule();
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [ConfirmDialogComponent, MatDialogModule, MatButtonModule],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: dataWithoutConfirmText },
       ],
-    }).compileComponents();
+    });
+    await TestBed.compileComponents();
 
     const testFixture = TestBed.createComponent(ConfirmDialogComponent);
     testFixture.detectChanges();
     const buttons = testFixture.nativeElement.querySelectorAll('button');
     const confirmBtn = buttons[1];
     expect(confirmBtn.textContent.trim()).toBe('Confirm');
+    testFixture.destroy();
   });
 
   it('should use default Cancel text when cancelText not provided', async () => {
@@ -116,19 +116,22 @@ describe('ConfirmDialogComponent', () => {
     };
 
     TestBed.resetTestingModule();
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [ConfirmDialogComponent, MatDialogModule, MatButtonModule],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: dataWithoutCancelText },
       ],
-    }).compileComponents();
+    });
+    await TestBed.compileComponents();
 
     const testFixture = TestBed.createComponent(ConfirmDialogComponent);
     testFixture.detectChanges();
     const buttons = testFixture.nativeElement.querySelectorAll('button');
     const cancelBtn = buttons[0];
     expect(cancelBtn.textContent.trim()).toBe('Cancel');
+    testFixture.destroy();
   });
 
   it('should display items list when items are provided', async () => {
@@ -142,13 +145,15 @@ describe('ConfirmDialogComponent', () => {
     };
 
     TestBed.resetTestingModule();
-    await TestBed.configureTestingModule({
+    TestBed.configureTestingModule({
       imports: [ConfirmDialogComponent, MatDialogModule, MatButtonModule],
       providers: [
+        provideZonelessChangeDetection(),
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: dataWithItems },
       ],
-    }).compileComponents();
+    });
+    await TestBed.compileComponents();
 
     const testFixture = TestBed.createComponent(ConfirmDialogComponent);
     testFixture.detectChanges();
@@ -157,5 +162,6 @@ describe('ConfirmDialogComponent', () => {
     expect(liElements[0].textContent).toContain('item1');
     expect(liElements[0].textContent).toContain('description 1');
     expect(liElements[1].textContent).toContain('item2');
+    testFixture.destroy();
   });
 });
