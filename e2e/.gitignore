@@ -1,8 +1,0 @@
-# Playwright 测试结果
-test-results/
-playwright-report/
-playwright/.cache/
-
-# 截图和视频
-*.png
-*.webm
