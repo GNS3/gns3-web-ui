@@ -5,7 +5,7 @@ import { AiChatService } from './ai-chat.service';
 import { HttpController } from './http-controller.service';
 import { ControllerService } from './controller.service';
 import { Controller, ControllerProtocol } from '@models/controller';
-import { of, throwError } from 'rxjs';
+import { of, throwError, firstValueFrom } from 'rxjs';
 import { ChatSession, ConversationHistory, ChatEvent, ChatErrorType } from '@models/ai-chat.interface';
 
 describe('AiChatService', () => {
@@ -73,14 +73,8 @@ describe('AiChatService', () => {
     });
 
     it('should initially be false', async () => {
-      let receivedValue: boolean | undefined;
-      const subscription = service.getStreamingState().subscribe((isStreaming) => {
-        receivedValue = isStreaming;
-      });
-      // Wait for initial emission
-      await new Promise((resolve) => setTimeout(resolve, 0));
-      expect(receivedValue).toBe(false);
-      subscription.unsubscribe();
+      const isStreaming = await firstValueFrom(service.getStreamingState());
+      expect(isStreaming).toBe(false);
     });
   });
 

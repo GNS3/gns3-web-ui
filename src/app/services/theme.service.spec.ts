@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
+import { firstValueFrom, skip } from 'rxjs';
 import { ThemeService, PrebuiltTheme, ThemeType, MapThemeType, DEFAULT_THEME_TOKEN } from './theme.service';
 import { DOCUMENT } from '@angular/common';
 
@@ -365,36 +366,26 @@ describe('ThemeService', () => {
 
   describe('darkMode$ Observable', () => {
     it('should emit true when dark mode is enabled', async () => {
-      let receivedValue: boolean | undefined;
-
-      const subscription = service.darkMode$.subscribe((isDark) => {
-        receivedValue = isDark;
-      });
+      // Skip initial value, get the emission after setDarkMode
+      const promise = firstValueFrom(service.darkMode$.pipe(skip(1)));
 
       service.setDarkMode(true);
 
-      // Wait a tick for the observable to emit
-      await new Promise((resolve) => setTimeout(resolve, 0));
-
-      expect(receivedValue).toBe(true);
-
-      subscription.unsubscribe();
+      const isDark = await promise;
+      expect(isDark).toBe(true);
     });
 
     it('should emit false when light mode is enabled', async () => {
-      let receivedValue: boolean | undefined;
+      // First set to dark mode so we can toggle to light mode
+      service.setDarkMode(true);
 
-      const subscription = service.darkMode$.subscribe((isDark) => {
-        receivedValue = isDark;
-      });
+      // Now skip the initial (dark) value and wait for light mode emission
+      const promise = firstValueFrom(service.darkMode$.pipe(skip(1)));
 
       service.setDarkMode(false);
 
-      await new Promise((resolve) => setTimeout(resolve, 0));
-
-      expect(receivedValue).toBe(false);
-
-      subscription.unsubscribe();
+      const isDark = await promise;
+      expect(isDark).toBe(false);
     });
   });
 

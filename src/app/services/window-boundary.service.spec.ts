@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, take, toArray } from 'rxjs';
 import { WindowBoundaryService, WindowStyle, BoundaryConfig } from './window-boundary.service';
 
 describe('WindowBoundaryService', () => {
@@ -104,18 +104,16 @@ describe('WindowBoundaryService', () => {
     });
 
     it('should emit new configuration via Observable', async () => {
-      const emissions: BoundaryConfig[] = [];
-      service.getConfig().subscribe((config) => {
-        emissions.push(config);
-      });
+      // Collect both emissions (initial + after setConfig)
+      const emissionsPromise = firstValueFrom(service.getConfig().pipe(take(2), toArray()));
 
       service.setConfig({ minWidth: 700 });
 
-      // Wait for emission
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      const emissions = await emissionsPromise;
 
       expect(emissions.length).toBe(2);
-      expect(emissions[1].minWidth).toBe(700);
+      expect(emissions[0].minWidth).toBe(500); // Default initial value
+      expect(emissions[1].minWidth).toBe(700); // Updated value
     });
 
     it('should update multiple config properties', () => {
