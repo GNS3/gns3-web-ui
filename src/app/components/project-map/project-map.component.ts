@@ -175,9 +175,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public isAIChatVisible: boolean = false;
   readonly mapBgClass = computed(() => {
     const mapTheme = this.themeService.savedMapTheme;
-    const isDark = mapTheme === 'auto'
-      ? this.themeService.isDarkMode()
-      : mapTheme.startsWith('dark-');
+    const isDark = mapTheme === 'auto' ? this.themeService.isDarkMode() : mapTheme.startsWith('dark-');
 
     // Auto mode: use light/dark class instead of auto class
     if (mapTheme === 'auto') {
@@ -1125,7 +1123,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       maxHeight: '800px',
       autoFocus: false,
       disableClose: true,
-      panelClass: 'new-template-dialog-panel',
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'new-template-dialog-panel'],
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;

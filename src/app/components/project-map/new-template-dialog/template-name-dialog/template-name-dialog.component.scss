@@ -1,7 +1,21 @@
+/**
+ * GNS3 Template Name Dialog Component Styles
+ * BEM naming applied, Material theme variables used
+ */
+
+.file-name-form {
+  padding: 16px 24px 0;
+}
+
 .file-name-form-field {
   width: 100%;
+  margin-bottom: 8px;
 }
 
 .project-snackbar {
   background: var(--mat-app-primary-color);
+}
+
+.add-project-button {
+  margin-left: auto;
 }
