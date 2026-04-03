@@ -50,6 +50,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { FileUploadModule } from 'ng2-file-upload';
 
 @Component({
@@ -84,6 +85,7 @@ import { FileUploadModule } from 'ng2-file-upload';
     MatCheckboxModule,
     MatExpansionModule,
     MatIconModule,
+    MatMenuModule,
     FileUploadModule,
   ],
 })
@@ -118,6 +120,8 @@ export class NewTemplateDialogComponent implements OnInit {
 
   private templates: Template[] = [];
   uploadProgress: number = 0;
+  uploadingImageName: string = '';
+  isUploading: boolean = false;
 
   readonly paginator = viewChild(MatPaginator);
   readonly stepper = viewChild<MatStepper>('stepper');
@@ -226,7 +230,10 @@ export class NewTemplateDialogComponent implements OnInit {
     ) => {
       this.toasterService.error('An error has occurred because image already exists');
       this.progressService.deactivate();
+      this.isUploading = false;
+      this.uploadingImageName = '';
       this.uploaderImage.clearQueue();
+      this.changeDetectorRef.markForCheck();
     };
 
     this.uploaderImage.onSuccessItem = (
@@ -238,12 +245,16 @@ export class NewTemplateDialogComponent implements OnInit {
       this.toasterService.success('Image successfully imported');
       this.refreshImages();
       this.progressService.deactivate();
+      this.isUploading = false;
+      this.uploadingImageName = '';
       this.uploaderImage.clearQueue();
+      this.changeDetectorRef.markForCheck();
     };
 
     this.uploaderImage.onProgressItem = (progress: any) => {
       this.uploadProgress = progress['progress'];
       this.uploadServiceService.processBarCount(this.uploadProgress);
+      this.changeDetectorRef.markForCheck();
     };
 
     this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
@@ -385,16 +396,16 @@ export class NewTemplateDialogComponent implements OnInit {
   }
 
   importImage(event, imageName) {
+    this.uploadingImageName = imageName;
     this.computeChecksumMd5(event.target.files[0], false).then((output) => {
       let imageToInstall = this.applianceToInstall.images.filter((n) => n.filename === imageName)[0];
 
       if (imageToInstall.md5sum !== output) {
         this.progressService.deactivate();
         const dialogRef = this.dialog.open(InformationDialogComponent, {
-          width: '400px',
-          height: '200px',
           autoFocus: false,
           disableClose: true,
+          panelClass: ['base-confirmation-dialog-panel', 'information-dialog-panel'],
         });
         dialogRef.componentInstance.confirmationMessage = `This is not the correct file.
                     The MD5 sum is ${output} and should be ${imageToInstall.md5sum}. Do you want to accept it at your own risks?`;
@@ -403,7 +414,10 @@ export class NewTemplateDialogComponent implements OnInit {
             this.importImageFile(event, imageName);
             this.openSnackBar();
           } else {
+            this.isUploading = false;
+            this.uploadingImageName = '';
             this.uploaderImage.clearQueue();
+            this.changeDetectorRef.markForCheck();
           }
         });
       } else {
@@ -431,7 +445,10 @@ export class NewTemplateDialogComponent implements OnInit {
       if ((itemToUpload as any).options) (itemToUpload as any).options.disableMultipart = true;
       (itemToUpload as any).options.headers = [{ name: 'Authorization', value: 'Bearer ' + this.controller.authToken }];
 
+      this.isUploading = true;
+      this.uploadProgress = 0;
       this.uploaderImage.uploadItem(itemToUpload);
+      this.changeDetectorRef.markForCheck();
     };
 
     //fileReader.readAsText(file); //web browser out ouf memory when upload large image file
@@ -458,12 +475,48 @@ export class NewTemplateDialogComponent implements OnInit {
     return false;
   }
 
+  /**
+   * Get the count of images in a version
+   */
+  getVersionImageCount(version: Version): number {
+    const images = version.images;
+    let count = 0;
+    if (images.bios_image) count++;
+    if (images.hda_disk_image) count++;
+    if (images.hdb_disk_image) count++;
+    if (images.hdc_disk_image) count++;
+    if (images.hdd_disk_image) count++;
+    if (images.cdrom_image) count++;
+    return count;
+  }
+
+  /**
+   * Get the count of ready (installed) images in a version
+   */
+  getVersionReadyCount(version: Version): number {
+    const images = version.images;
+    let count = 0;
+    if (images.bios_image && this.checkImageFromVersion(images.bios_image)) count++;
+    if (images.hda_disk_image && this.checkImageFromVersion(images.hda_disk_image)) count++;
+    if (images.hdb_disk_image && this.checkImageFromVersion(images.hdb_disk_image)) count++;
+    if (images.hdc_disk_image && this.checkImageFromVersion(images.hdc_disk_image)) count++;
+    if (images.hdd_disk_image && this.checkImageFromVersion(images.hdd_disk_image)) count++;
+    if (images.cdrom_image && this.checkImageFromVersion(images.cdrom_image)) count++;
+    return count;
+  }
+
+  /**
+   * Check if all images in a version are ready
+   */
+  isVersionComplete(version: Version): boolean {
+    return this.getVersionReadyCount(version) === this.getVersionImageCount(version);
+  }
+
   openConfirmationDialog(message: string, link: string) {
     const dialogRef = this.dialog.open(InformationDialogComponent, {
-      width: '400px',
-      height: '200px',
       autoFocus: false,
       disableClose: true,
+      panelClass: ['base-confirmation-dialog-panel', 'information-dialog-panel'],
     });
     dialogRef.componentInstance.confirmationMessage = message;
 
@@ -527,9 +580,9 @@ export class NewTemplateDialogComponent implements OnInit {
 
     const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
       width: '400px',
-      height: '250px',
       autoFocus: false,
       disableClose: true,
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'template-name-dialog-panel'],
       data: {
         name: this.applianceToInstall.name,
       },
@@ -581,9 +634,9 @@ export class NewTemplateDialogComponent implements OnInit {
 
     const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
       width: '400px',
-      height: '250px',
       autoFocus: false,
       disableClose: true,
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'template-name-dialog-panel'],
       data: {
         name: this.applianceToInstall.name,
       },
@@ -618,9 +671,9 @@ export class NewTemplateDialogComponent implements OnInit {
 
     const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
       width: '400px',
-      height: '250px',
       autoFocus: false,
       disableClose: true,
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'template-name-dialog-panel'],
       data: {
         name: this.applianceToInstall.name,
       },
@@ -682,9 +735,9 @@ export class NewTemplateDialogComponent implements OnInit {
 
     const dialogRef = this.dialog.open(TemplateNameDialogComponent, {
       width: '400px',
-      height: '250px',
       autoFocus: false,
       disableClose: true,
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'template-name-dialog-panel'],
       data: {
         name: this.applianceToInstall.name,
       },

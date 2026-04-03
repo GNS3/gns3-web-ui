@@ -610,6 +610,33 @@ h2[mat-dialog-title] {
 }
 
 /* =============================================
+// Information Dialog Panel
+// For general information and MD5 confirmation
+// ============================================= */
+.information-dialog-panel {
+  --mat-dialog-container-max-width: 500px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 500px;
+    max-width: 500px;
+  }
+
+  .mat-mdc-dialog-content {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .information-dialog__message {
+    margin: 0;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+}
+
+/* =============================================
 // Confirmation Danger Panel
 // For dangerous operations (delete, remove, etc.)
 // ============================================= */
@@ -995,6 +1022,17 @@ h2[mat-dialog-title] {
   .mat-mdc-dialog-container {
     width: 600px;
     max-width: 600px;
+  }
+}
+
+// Template Name Dialog - 400px
+.template-name-dialog-panel {
+  --mat-dialog-container-max-width: 400px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 400px;
+    max-width: 400px;
   }
 }
 

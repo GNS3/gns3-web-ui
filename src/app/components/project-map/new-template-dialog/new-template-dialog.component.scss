@@ -129,7 +129,88 @@
   }
 
   /* =============================================
-  // Version Item
+  // Version Item - Now using Accordion
+  // ============================================= */
+  &__version-accordion {
+    margin-bottom: 12px;
+
+    mat-expansion-panel {
+      border-radius: 12px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 3px color-mix(in srgb, var(--mat-sys-shadow) 8%, transparent);
+      transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+      &:hover {
+        box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
+      }
+
+      &.mat-expanded {
+        margin-bottom: 16px;
+      }
+    }
+
+    mat-expansion-panel-header {
+      padding: 0 16px;
+      height: 56px;
+
+      &:hover {
+        background: var(--mat-sys-surface-container-low);
+      }
+
+      .mat-content {
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+
+  &__version-summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: 12px;
+    font-size: 13px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__version-count {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: var(--mat-sys-surface-container-highest);
+    font-size: 12px;
+    font-weight: 500;
+
+    &--complete {
+      background: var(--mat-sys-primary-container);
+      color: var(--mat-sys-on-primary-container);
+    }
+
+    &--partial {
+      background: var(--mat-sys-tertiary-container);
+      color: var(--mat-sys-on-tertiary-container);
+    }
+  }
+
+  &__version-content {
+    padding: 0 16px 16px;
+  }
+
+  /* =============================================
+  // Accordion Create Button
+  // ============================================= */
+  &__version-summary {
+    button {
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  /* =============================================
+  // Legacy Version Item (for non-QEMU)
   // ============================================= */
   &__version-item {
     margin-bottom: 24px;
@@ -173,6 +254,29 @@
     flex-direction: column;
     gap: 8px;
     width: 100%;
+
+    // 卡片样式 - 视觉层次优化
+    background: var(--mat-sys-surface-container-low);
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 12px;
+    padding: 12px 16px;
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    // 悬停效果
+    &:hover {
+      background: var(--mat-sys-surface-container);
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+    }
+
+    // 已安装状态 - 绿色左边框
+    &--installed {
+      border-left: 4px solid var(--mat-sys-primary);
+    }
+
+    // 缺失状态 - 橙色左边框
+    &--missing {
+      border-left: 4px solid var(--mat-sys-tertiary);
+    }
   }
 
   &__image-name {
@@ -184,22 +288,121 @@
   &__image-status {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     flex-wrap: wrap;
+  }
+
+  /* =============================================
+  // Status Badge - Visual state indicators
+  // ============================================= */
+  &__status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 500;
 
     mat-icon {
       font-size: 18px;
       height: 18px;
       width: 18px;
-
-      &.mat-icon-success {
-        color: var(--mat-sys-primary);
-      }
-
-      &.mat-icon-error {
-        color: var(--mat-sys-error);
-      }
     }
+
+    &--ready {
+      background: var(--mat-sys-primary-container);
+      color: var(--mat-sys-on-primary-container);
+    }
+
+    &--missing {
+      background: var(--mat-sys-error-container);
+      color: var(--mat-sys-on-error-container);
+    }
+  }
+
+  /* =============================================
+  // Action Group - Primary action + menu
+  // ============================================= */
+  &__action-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__action-buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  /* =============================================
+  // More Menu - Secondary actions dropdown
+  // ============================================= */
+  &__more-menu {
+    mat-icon {
+      font-size: 20px;
+      height: 20px;
+      width: 20px;
+    }
+  }
+
+  /* =============================================
+  // Upload Progress - Inline progress indicator
+  // ============================================= */
+  &__upload-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--mat-sys-primary-container);
+    border-radius: 8px;
+    margin-top: 12px;
+
+    mat-progress-bar {
+      height: 4px;
+      border-radius: 2px;
+    }
+  }
+
+  &__progress-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--mat-sys-on-primary-container);
+  }
+
+  &__progress-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  &__progress-percentage {
+    font-weight: 500;
+  }
+
+  &__cancel-button {
+    min-width: auto;
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+}
+
+// Progress spinner animation
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 
