@@ -1,60 +1,60 @@
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * Playwright 配置文件
- * 用于 GNS3 Web UI 的 E2E 测试
+ * Playwright configuration file
+ * For GNS3 Web UI E2E testing
  */
 export default defineConfig({
-  // 测试文件位置
+  // Test files location
   testDir: './tests',
 
-  // 完全并行运行测试
+  // Run tests in fully parallel mode
   fullyParallel: true,
 
-  // CI 环境下禁止 only 测试
+  // Fail on `only` in CI environment
   forbidOnly: !!process.env.CI,
 
-  // CI 环境下重试 2 次
+  // Retry 2 times in CI environment
   retries: process.env.CI ? 2 : 0,
 
-  // CI 环境下使用 1 个 worker
+  // Use 1 worker in CI environment
   workers: process.env.CI ? 1 : undefined,
 
-  // 报告器配置
+  // Reporter configuration
   reporter: [
     ['html', { outputFolder: 'playwright-report' }],
     ['junit', { outputFile: 'test-results/junit.xml' }],
     ['list']
   ],
 
-  // 全局配置
+  // Global configuration
   use: {
-    // 基础 URL
+    // Base URL
     baseURL: 'http://localhost:4200',
 
-    // 失败时跟踪
+    // Trace on failure
     trace: 'on-first-retry',
 
-    // 失败时截图
+    // Screenshot on failure
     screenshot: 'only-on-failure',
 
-    // 失败时保留视频
+    // Keep video on failure
     video: 'retain-on-failure',
 
-    // 操作超时
+    // Action timeout
     actionTimeout: 10 * 1000,
 
-    // 导航超时
+    // Navigation timeout
     navigationTimeout: 30 * 1000,
   },
 
-  // 不同浏览器的测试项目
+  // Test projects for different browsers
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
     },
-    // 可选：取消注释以测试其他浏览器
+    // Optional: Uncomment to test other browsers
     // {
     //   name: 'firefox',
     //   use: { ...devices['Desktop Firefox'] },
@@ -65,7 +65,7 @@ export default defineConfig({
     // },
   ],
 
-  // 开发服务器配置
+  // Development server configuration
   webServer: {
     command: 'yarn ng serve',
     port: 4200,

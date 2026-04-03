@@ -1,31 +1,31 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * 简单的验证测试 - 确保 Playwright 设置正确
+ * Simple verification test - Ensure Playwright setup is correct
  */
 test.describe('Playwright Setup Verification', () => {
   test('should load the application', async ({ page }) => {
-    // 导航到应用首页
+    // Navigate to application home page
     await page.goto('/');
 
-    // 等待页面加载
+    // Wait for page to load
     await expect(page).toHaveTitle(/GNS3 Web UI/);
   });
 
   test('should navigate to controllers page', async ({ page }) => {
     await page.goto('/controllers');
 
-    // 验证页面标题或关键元素
+    // Verify page title or key elements
     await expect(page.locator('body')).toBeVisible();
   });
 
   test('should take a screenshot', async ({ page }) => {
     await page.goto('/');
 
-    // 截图
+    // Take screenshot
     await page.screenshot({ path: 'test-results/screenshot.png' });
 
-    // 验证截图文件存在（通过不抛出错误）
+    // Verify screenshot file exists (by not throwing an error)
     expect(true).toBe(true);
   });
 });

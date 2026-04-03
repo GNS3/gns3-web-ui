@@ -1,173 +1,173 @@
-# E2E 测试快速开始
+# E2E Tests Quick Start
 
-## 安装
+## Installation
 
 ```bash
-# 安装 Playwright
+# Install Playwright
 yarn add -D @playwright/test
 
-# 安装浏览器
+# Install browsers
 npx playwright install --with-deps
 ```
 
-## 运行测试
+## Running Tests
 
 ```bash
-# 运行所有 E2E 测试
+# Run all E2E tests
 yarn e2e
 
-# 在 UI 模式下运行（推荐用于开发）
+# Run in UI mode (recommended for development)
 yarn e2e:ui
 
-# 在浏览器中运行（调试模式）
+# Run in browser (debug mode)
 yarn e2e:headed
 
-# 调试特定测试
+# Debug mode
 yarn e2e:debug
 ```
 
-## 目录结构
+## Directory Structure
 
 ```
 e2e/
-├── playwright.config.ts    # Playwright 配置
-├── tests/                  # 测试用例
+├── playwright.config.ts    # Playwright configuration
+├── tests/                  # Test cases
 │   └── user-management/
 │       └── user-detail.spec.ts
-└── README.md              # 本文件
+└── README.md              # This file
 ```
 
-## 当前覆盖的测试
+## Currently Covered Tests
 
-### 用户详情对话框 (user-detail.spec.ts)
+### User Detail Dialog (user-detail.spec.ts)
 
-✅ **已实现测试:**
-- 打开用户详情对话框
-- 显示用户信息
-- 更新用户全名
-- 邮箱验证错误
-- 关闭对话框
-- 更改密码对话框
-- 密码不匹配验证
-- 成功更改密码
-- API 错误处理
-- 网络错误处理
+✅ **Implemented Tests:**
+- Open user detail dialog
+- Display user information
+- Update user full name
+- Email validation error
+- Close dialog
+- Change password dialog
+- Password mismatch validation
+- Successfully change password
+- API error handling
+- Network error handling
 
-## 下一步
+## Next Steps
 
-需要实现的 E2E 测试：
+Need to implement E2E tests for:
 
 ### LoggedUserComponent
-- [ ] 用户登录流程
-- [ ] 复制 Token 到剪贴板
-- [ ] 更改密码对话框
-- [ ] 错误处理
+- [ ] User login flow
+- [ ] Copy token to clipboard
+- [ ] Change password dialog
+- [ ] Error handling
 
 ### WebConsoleFullWindowComponent
-- [ ] 打开控制台
-- [ ] 终端初始化
-- [ ] WebSocket 连接
-- [ ] 输入/输出测试
-- [ ] 复制/粘贴操作
-- [ ] 快捷键处理
-- [ ] 主题切换
-- [ ] 窗口调整
-- [ ] 资源清理
+- [ ] Open console
+- [ ] Terminal initialization
+- [ ] WebSocket connection
+- [ ] Input/output testing
+- [ ] Copy/paste operations
+- [ ] Keyboard shortcuts
+- [ ] Theme switching
+- [ ] Window resizing
+- [ ] Resource cleanup
 
-## 开发提示
+## Development Tips
 
-### 1. 使用 UI 模式开发
+### 1. Use UI Mode for Development
 
 ```bash
 yarn e2e:ui
 ```
 
-UI 模式提供：
-- 可视化测试运行
-- 时间轴查看器
-- 网络请求监控
-- 截图和视频
-- 交互式调试
+UI mode provides:
+- Visual test runner
+- Timeline viewer
+- Network request monitoring
+- Screenshots and videos
+- Interactive debugging
 
-### 2. 调试技巧
+### 2. Debugging Tips
 
 ```typescript
-// 暂停测试执行
+// Pause test execution
 await page.pause();
 
-// 截图
+// Take screenshot
 await page.screenshot({ path: 'screenshot.png' });
 
-// 查看页面内容
+// View page content
 console.log(await page.content());
 
-// 等待特定元素
+// Wait for specific element
 await expect(page.locator('.dialog')).toBeVisible();
 ```
 
-### 3. 选择器最佳实践
+### 3. Selector Best Practices
 
 ```typescript
-// ✅ 使用语义化选择器
+// ✅ Good: Use semantic selectors
 page.getByRole('button', { name: 'Save' })
 page.getByText('Welcome')
 page.getByLabel('Email')
 
-// ✅ 使用测试 ID（在 HTML 中添加 data-testid）
+// ✅ Good: Use test ID (add data-testid in HTML)
 page.locator('[data-testid="save-button"]')
 
-// ❌ 避免 CSS 类（可能变化）
+// ❌ Avoid: CSS classes (may change)
 page.locator('.btn-primary')
 page.locator('#submit-btn')
 ```
 
-### 4. 等待策略
+### 4. Wait Strategies
 
 ```typescript
-// ✅ 好：等待特定条件
+// ✅ Good: Wait for specific condition
 await expect(page.locator('.dialog')).toBeVisible();
 await page.waitForSelector('.dialog', { state: 'visible' });
 await page.waitForResponse('**/api/users');
 
-// ❌ 不好：固定延迟
+// ❌ Bad: Fixed delay
 await page.waitForTimeout(5000);
 ```
 
-## 故障排查
+## Troubleshooting
 
-### 测试超时
+### Test Timeout
 
 ```typescript
-// 增加超时时间
+// Increase timeout
 test.setTimeout(60000);
 
-// 或者
+// Or
 await page.click('button', { timeout: 10000 });
 ```
 
-### 元素未找到
+### Element Not Found
 
 ```typescript
-// 等待元素出现
+// Wait for element to appear
 await page.waitForSelector('button', { state: 'attached' });
 
-// 或使用 expect
+// Or use expect
 await expect(page.locator('button')).toBeVisible({ timeout: 10000 });
 ```
 
-### 网络问题
+### Network Issues
 
 ```typescript
-// 等待网络空闲
+// Wait for network idle
 await page.waitForLoadState('networkidle');
 
-// 等待特定响应
+// Wait for specific response
 await page.waitForResponse('**/api/users');
 ```
 
-## CI/CD 集成
+## CI/CD Integration
 
-在 `.github/workflows/e2e.yml` 中添加：
+Add to `.github/workflows/e2e.yml`:
 
 ```yaml
 name: E2E Tests
@@ -196,9 +196,9 @@ jobs:
           path: playwright-report/
 ```
 
-## 资源
+## Resources
 
-- [Playwright 文档](https://playwright.dev)
-- [最佳实践](https://playwright.dev/docs/best-practices)
-- [调试指南](https://playwright.dev/docs/debug)
-- [完整指南](../docs/testing/e2e-testing-guide.md)
+- [Playwright Documentation](https://playwright.dev)
+- [Best Practices](https://playwright.dev/docs/best-practices)
+- [Debugging Guide](https://playwright.dev/docs/debug)
+- [Full Guide](../docs/testing/e2e-testing-guide.md)

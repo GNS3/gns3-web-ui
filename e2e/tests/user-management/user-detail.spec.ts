@@ -1,34 +1,34 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * 用户详情对话框 E2E 测试
+ * User Detail Dialog E2E Tests
  *
- * 这些测试覆盖了在单元测试中无法测试的功能：
- * 1. 实际的 DOM 操作和渲染
- * 2. 对话框的打开和关闭
- * 3. 表单验证和提交流程
- * 4. 与后端 API 的真实交互
+ * These tests cover functionality that cannot be tested in unit tests:
+ * 1. Actual DOM operations and rendering
+ * 2. Opening and closing dialogs
+ * 3. Form validation and submission flow
+ * 4. Real interactions with backend APIs
  */
 
 test.describe('User Detail Dialog - Integration Tests', () => {
-  // 在每个测试前运行
+  // Run before each test
   test.beforeEach(async ({ page }) => {
-    // 导航到用户管理页面
+    // Navigate to user management page
     await page.goto('http://localhost:4200/controllers/1/users');
 
-    // 等待页面加载完成
+    // Wait for page to finish loading
     await page.waitForLoadState('networkidle');
   });
 
   test('should open user detail dialog when clicking on user row', async ({ page }) => {
-    // 点击用户行
+    // Click on user row
     await page.locator('mat-row').first().click();
 
-    // 验证对话框打开
+    // Verify dialog opens
     await expect(page.locator('h2[mat-dialog-title]')).toBeVisible();
     await expect(page.locator('[mat-dialog-content]')).toBeVisible();
 
-    // 验证表单字段存在
+    // Verify form fields exist
     await expect(page.locator('input[formcontrolname="username"]')).toBeVisible();
     await expect(page.locator('input[formcontrolname="email"]')).toBeVisible();
     await expect(page.locator('input[formcontrolname="full_name"]')).toBeVisible();
@@ -36,10 +36,10 @@ test.describe('User Detail Dialog - Integration Tests', () => {
   });
 
   test('should display user information in dialog', async ({ page }) => {
-    // 点击第一个用户
+    // Click on first user
     await page.locator('mat-row').first().click();
 
-    // 验证用户信息显示
+    // Verify user information is displayed
     const username = await page.locator('input[formcontrolname="username"]').inputValue();
     expect(username).toBeTruthy();
 
@@ -48,56 +48,56 @@ test.describe('User Detail Dialog - Integration Tests', () => {
   });
 
   test('should update user full name', async ({ page }) => {
-    // 点击用户行
+    // Click on user row
     await page.locator('mat-row').first().click();
 
-    // 获取原始值
+    // Get original value
     const originalName = await page.locator('input[formcontrolname="full_name"]').inputValue();
 
-    // 更新全名
+    // Update full name
     const newName = `Updated ${originalName}`;
     await page.fill('input[formcontrolname="full_name"]', newName);
 
-    // 点击保存按钮
+    // Click Save button
     await page.click('button:has-text("Save")');
 
-    // 等待保存完成
+    // Wait for save to complete
     await page.waitForTimeout(1000);
 
-    // 验证成功消息
+    // Verify success message
     await expect(page.locator('.toast-success, [class*="success"]')).toBeVisible({ timeout: 5000 });
 
-    // 重新打开用户详情验证更新
+    // Reopen user details to verify update
     await page.locator('mat-row').first().click();
     const updatedName = await page.locator('input[formcontrolname="full_name"]').inputValue();
     expect(updatedName).toBe(newName);
   });
 
   test('should show validation error for invalid email', async ({ page }) => {
-    // 点击用户行
+    // Click on user row
     await page.locator('mat-row').first().click();
 
-    // 输入无效邮箱
+    // Enter invalid email
     await page.fill('input[formcontrolname="email"]', 'invalid-email');
 
-    // 尝试保存
+    // Try to save
     await page.click('button:has-text("Save")');
 
-    // 验证错误消息
+    // Verify error message
     await expect(page.locator('mat-error:has-text("valid email")')).toBeVisible();
   });
 
   test('should close dialog when clicking Cancel', async ({ page }) => {
-    // 打开对话框
+    // Open dialog
     await page.locator('mat-row').first().click();
 
-    // 验证对话框可见
+    // Verify dialog is visible
     await expect(page.locator('[mat-dialog-container]')).toBeVisible();
 
-    // 点击取消按钮
+    // Click Cancel button
     await page.click('button:has-text("Cancel")');
 
-    // 验证对话框关闭
+    // Verify dialog closes
     await expect(page.locator('[mat-dialog-container]')).not.toBeVisible({ timeout: 3000 });
   });
 });
@@ -109,61 +109,61 @@ test.describe('User Detail Dialog - Change Password', () => {
   });
 
   test('should open change password dialog', async ({ page }) => {
-    // 打开用户详情
+    // Open user details
     await page.locator('mat-row').first().click();
 
-    // 点击更改密码按钮
+    // Click Change Password button
     await page.click('button:has-text("Change Password")');
 
-    // 验证密码对话框打开
+    // Verify password dialog opens
     await expect(page.locator('h2:has-text("Change Password")')).toBeVisible();
     await expect(page.locator('input[formcontrolname="password"]')).toBeVisible();
     await expect(page.locator('input[formcontrolname="confirmPassword"]')).toBeVisible();
   });
 
   test('should show validation error when passwords do not match', async ({ page }) => {
-    // 打开用户详情和密码对话框
+    // Open user details and password dialog
     await page.locator('mat-row').first().click();
     await page.click('button:has-text("Change Password")');
 
-    // 输入不同的密码
+    // Enter different passwords
     await page.fill('input[formcontrolname="password"]', 'newpassword123');
     await page.fill('input[formcontrolname="confirmPassword"]', 'differentpassword');
 
-    // 尝试保存
+    // Try to save
     await page.click('button:has-text("Change")');
 
-    // 验证错误消息
+    // Verify error message
     await expect(page.locator('mat-error')).toBeVisible();
   });
 
   test('should successfully change password', async ({ page }) => {
-    // 打开用户详情和密码对话框
+    // Open user details and password dialog
     await page.locator('mat-row').first().click();
     await page.click('button:has-text("Change Password")');
 
-    // 输入新密码
+    // Enter new password
     const newPassword = 'newpassword123';
     await page.fill('input[formcontrolname="password"]', newPassword);
     await page.fill('input[formcontrolname="confirmPassword"]', newPassword);
 
-    // 点击更改按钮
+    // Click change button
     await page.click('button:has-text("Change")');
 
-    // 等待请求完成
+    // Wait for request to complete
     await page.waitForTimeout(2000);
 
-    // 验证成功消息
+    // Verify success message
     await expect(page.locator('.toast-success, [class*="success"]')).toBeVisible({ timeout: 5000 });
 
-    // 验证对话框关闭
+    // Verify dialog closes
     await expect(page.locator('h2:has-text("Change Password")')).not.toBeVisible();
   });
 });
 
 test.describe('User Detail Dialog - Error Handling', () => {
   test('should handle API errors gracefully', async ({ page }) => {
-    // Mock API 错误
+    // Mock API error
     await page.route('**/api/v2/controllers/1/users/**', route => {
       route.fulfill({
         status: 500,
@@ -172,31 +172,31 @@ test.describe('User Detail Dialog - Error Handling', () => {
       });
     });
 
-    // 打开用户详情
+    // Open user details
     await page.locator('mat-row').first().click();
 
-    // 尝试修改并保存
+    // Try to modify and save
     await page.fill('input[formcontrolname="full_name"]', 'Test User');
     await page.click('button:has-text("Save")');
 
-    // 验证错误消息显示
+    // Verify error message is displayed
     await expect(page.locator('.toast-error, [class*="error"]')).toBeVisible({ timeout: 5000 });
   });
 
   test('should handle network errors', async ({ page }) => {
-    // Mock 网络错误
+    // Mock network error
     await page.route('**/api/v2/controllers/1/users/**', route => {
       route.abort('failed');
     });
 
-    // 打开用户详情
+    // Open user details
     await page.locator('mat-row').first().click();
 
-    // 尝试修改并保存
+    // Try to modify and save
     await page.fill('input[formcontrolname="full_name"]', 'Test User');
     await page.click('button:has-text("Save")');
 
-    // 验证错误消息显示
+    // Verify error message is displayed
     await expect(page.locator('.toast-error, [class*="error"]')).toBeVisible({ timeout: 5000 });
   });
 });
