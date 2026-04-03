@@ -12,7 +12,7 @@
 .consoleWrapper {
   box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent);
   position: fixed;
-  bottom: 40px;
+  bottom: 100px; // Moved up from 40px to avoid bottom button overlap
   left: 80px;
   height: 180px;
   width: 600px;

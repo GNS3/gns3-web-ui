@@ -63,6 +63,8 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   private readonly CONSOLE_HEADER_HEIGHT = 53;
   private readonly DEFAULT_WIDTH = 848;
   private readonly DEFAULT_HEIGHT = 600;
+  private readonly DEFAULT_LEFT = '80px';
+  private readonly DEFAULT_BOTTOM = '100px'; // Moved up from 20px to avoid bottom button overlap
 
   private destroy$ = new Subject<void>();
   private themeSubscription: Subscription | null = null;
@@ -157,10 +159,10 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   minimize(value: boolean) {
     this.isMinimizedSignal.set(value);
     if (!value) {
-      // Restore from minimized state - use saved pre-minimize position
+      // Restore from minimized state - use saved pre-minimize position - default moved up to 100px
       if (this.preMinimizeStyle) {
-        const savedLeft = this.preMinimizeStyle.left || '80px';
-        const savedBottom = this.preMinimizeStyle.bottom || '20px';
+        const savedLeft = this.preMinimizeStyle.left || this.DEFAULT_LEFT;
+        const savedBottom = this.preMinimizeStyle.bottom || this.DEFAULT_BOTTOM;
 
         if (this.isMaximizedSignal()) {
           // Restore to maximized state
@@ -186,9 +188,9 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
         // Clear saved state after restoration
         this.preMinimizeStyle = null;
       } else {
-        // No saved state, use defaults
-        const currentLeft = this.style.left || '80px';
-        const currentBottom = this.style.bottom || '20px';
+        // No saved state, use defaults - moved up from 20px to 100px
+        const currentLeft = this.style.left || this.DEFAULT_LEFT;
+        const currentBottom = this.style.bottom || this.DEFAULT_BOTTOM;
 
         this.updateStyle({
           bottom: currentBottom,
@@ -225,7 +227,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
       const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
       const windowHeight = window.innerHeight;
       const newHeight = windowHeight - toolbarHeight - 20;
-      const currentLeft = this.style.left || '80px';
+      const currentLeft = this.style.left || this.DEFAULT_LEFT;
       this.updateStyle({
         bottom: '0px',
         left: currentLeft,
@@ -245,10 +247,10 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
         });
       }, 50);
     } else {
-      // Restore to normal size
-      const currentLeft = this.style.left || '80px';
+      // Restore to normal size - moved up from 20px to 100px to avoid bottom button overlap
+      const currentLeft = this.style.left || this.DEFAULT_LEFT;
       this.updateStyle({
-        bottom: '20px',
+        bottom: this.DEFAULT_BOTTOM,
         left: currentLeft,
         width: `${this.resizedWidth}px`,
         height: `${this.resizedHeight}px`,
@@ -751,33 +753,33 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
           const newHeight = windowHeight - toolbarHeight - 20;
           this.style = {
             bottom: '0px',
-            left: '80px',
+            left: this.DEFAULT_LEFT,
             width: `${this.resizedWidth}px`,
             height: `${newHeight}px`,
           };
         } else {
-          // Restore to normal state with saved position
+          // Restore to normal state with saved position - default moved up to 100px
           this.style = {
-            bottom: state.bottom || '20px',
-            left: state.left || '80px',
+            bottom: state.bottom || this.DEFAULT_BOTTOM,
+            left: state.left || this.DEFAULT_LEFT,
             width: `${this.resizedWidth}px`,
             height: `${this.resizedHeight}px`,
           };
         }
       } else {
-        // Default state
+        // Default state - moved up from 20px to 100px to avoid bottom button overlap
         this.style = {
-          bottom: '20px',
-          left: '80px',
+          bottom: this.DEFAULT_BOTTOM,
+          left: this.DEFAULT_LEFT,
           width: `${this.DEFAULT_WIDTH}px`,
           height: `${this.DEFAULT_HEIGHT}px`,
         };
       }
     } catch (e) {
-      // Error reading from localStorage, use defaults
+      // Error reading from localStorage, use defaults - moved up from 20px to 100px
       this.style = {
-        bottom: '20px',
-        left: '80px',
+        bottom: this.DEFAULT_BOTTOM,
+        left: this.DEFAULT_LEFT,
         width: `${this.DEFAULT_WIDTH}px`,
         height: `${this.DEFAULT_HEIGHT}px`,
       };
