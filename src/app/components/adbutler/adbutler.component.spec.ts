@@ -21,7 +21,7 @@ describe('AdbutlerComponent', () => {
     themeChangedSubject = new Subject<void>();
 
     mockHttpClient = {
-      get: vi.fn(),
+      get: vi.fn().mockReturnValue({ subscribe: vi.fn() }),
     } as any as HttpClient;
 
     mockThemeService = {
@@ -30,7 +30,7 @@ describe('AdbutlerComponent', () => {
     } as any as ThemeService;
 
     mockLocation = {
-      path: vi.fn().mockReturnValue(''),
+      path: vi.fn().mockReturnValue('/controller/1/nodes'),
     } as any as Location;
 
     await TestBed.configureTestingModule({

@@ -16,7 +16,7 @@ describe('HelpComponent', () => {
     vi.clearAllMocks();
 
     mockHttpClient = {
-      get: vi.fn(),
+      get: vi.fn().mockReturnValue(of('')),
     } as any as HttpClient;
 
     await TestBed.configureTestingModule({

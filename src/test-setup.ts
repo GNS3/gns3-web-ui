@@ -7,18 +7,15 @@ import { TestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 import { beforeEach, afterEach, vi } from 'vitest';
 
-// Only initialize TestBed if no platform exists yet
-// (setupFiles runs before each test file, so we must guard against re-initialization)
+// setupFilesAfterEnvironment 只在测试环境初始化后运行一次
+// 使用 if 判断防止重复初始化
 if (!TestBed.platform) {
   TestBed.initTestEnvironment(
     BrowserDynamicTestingModule,
     platformBrowserDynamicTesting(),
     { teardown: { destroyAfterEach: true } }
   );
-  console.log('✓ Test setup loaded for Angular 21 Zoneless testing');
 }
-
-console.log('✓ Test setup loaded for Angular 21 Zoneless testing');
 
 // Global fake timers to prevent RxJS timer pollution between tests
 beforeEach(() => {
@@ -28,4 +25,7 @@ beforeEach(() => {
 afterEach(() => {
   vi.runAllTimers();
   vi.useRealTimers();
+  // 重置单例服务，防止状态污染到其他测试
+  // 使用 forks 池 + resetTestingModule 确保 Angular 单例服务在每个测试后被清理
+  TestBed.resetTestingModule();
 });
