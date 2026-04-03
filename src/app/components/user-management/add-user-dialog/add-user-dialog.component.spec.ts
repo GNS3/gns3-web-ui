@@ -15,7 +15,8 @@ import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
 import { Group } from '@models/groups/group';
 import { User } from '@models/users/user';
-import { of, throwError } from 'rxjs';
+import { of, throwError, lastValueFrom, firstValueFrom } from 'rxjs';
+import { filter, timeout } from 'rxjs/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 
 describe('AddUserDialogComponent', () => {
@@ -320,34 +321,64 @@ describe('AddUserDialogComponent', () => {
   });
 
   describe('_filter (via filteredGroups observable)', () => {
-    it('should filter groups by name when autocomplete changes', () => {
+    beforeEach(() => {
       component.ngOnInit();
+    });
+
+    it('should filter groups by name when autocomplete changes', async () => {
+      // 1. 在 setValue 之前准备捕获结果的 Promise
+      // 使用 filter 跳过 startWith('') 发出的初始值（3个组），只取过滤后的结果
+      const filteredResultPromise = firstValueFrom(
+        component.filteredGroups.pipe(
+          filter(groups => groups.length === 1 || groups.length === 0),
+          timeout(2000) // 安全网：防止测试永久挂起
+        )
+      );
+
+      // 2. 触发值变更
       component.autocompleteControl.setValue('admin');
 
-      // Wait for observable to emit
-      component.filteredGroups.subscribe((groups) => {
-        expect(groups.length).toBe(1);
-        expect(groups[0].name).toBe('Admins');
-      });
+      // 3. Zoneless 下手动触发变更检测并等待所有异步任务稳定
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      // 4. 获取结果并断言
+      const result = await filteredResultPromise;
+      expect(result.length).toBe(1);
+      expect(result[0].name).toBe('Admins');
     });
 
-    it('should return empty array when no matches found', () => {
-      component.ngOnInit();
+    it('should return empty array when no matches found', async () => {
+      const filteredResultPromise = firstValueFrom(
+        component.filteredGroups.pipe(
+          filter(groups => groups.length === 0),
+          timeout(2000)
+        )
+      );
+
       component.autocompleteControl.setValue('xyz123');
+      fixture.detectChanges();
+      await fixture.whenStable();
 
-      component.filteredGroups.subscribe((groups) => {
-        expect(groups.length).toBe(0);
-      });
+      const result = await filteredResultPromise;
+      expect(result.length).toBe(0);
     });
 
-    it('should be case insensitive', () => {
-      component.ngOnInit();
-      component.autocompleteControl.setValue('ADMIN');
+    it('should be case insensitive', async () => {
+      const filteredResultPromise = firstValueFrom(
+        component.filteredGroups.pipe(
+          filter(groups => groups.length === 1),
+          timeout(2000)
+        )
+      );
 
-      component.filteredGroups.subscribe((groups) => {
-        expect(groups.length).toBe(1);
-        expect(groups[0].name).toBe('Admins');
-      });
+      component.autocompleteControl.setValue('ADMIN');
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      const result = await filteredResultPromise;
+      expect(result.length).toBe(1);
+      expect(result[0].name).toBe('Admins');
     });
   });
 });

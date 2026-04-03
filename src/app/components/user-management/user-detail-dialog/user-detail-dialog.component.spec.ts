@@ -81,6 +81,7 @@ describe('UserDetailDialogComponent', () => {
     vi.clearAllMocks();
 
     mockUserService = {
+      list: vi.fn().mockReturnValue(of([mockUser])),
       getGroupsByUserId: vi.fn().mockReturnValue(of(mockGroups)),
       update: vi.fn().mockReturnValue(of(mockUser)),
     };

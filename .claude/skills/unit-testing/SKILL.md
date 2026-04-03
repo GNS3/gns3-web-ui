@@ -77,7 +77,71 @@ Since you are using Observables, you need these specific skills:
 - **Subscription Management**: Ensuring that your service handles subscriptions correctly or returns an Observable that can be piped.
 - **Async/Await**: Handling `firstValueFrom` or `lastValueFrom` when you want to treat an Observable like a Promise in a test.
 
-## 5. Clean Code & Maintenance (The "Senior" Skills)
+## 5. Zoneless Testing (Critical for GNS3 Web UI)
+
+**GNS3 Web UI uses Angular 21 with Zoneless mode** - this fundamentally changes how you write async tests.
+
+### ❌ What NOT to Use in Zoneless
+
+- **`fakeAsync` and `tick()`** - These rely on Zone.js interception and won't work
+- **Assuming synchronous execution** - RxJS streams may emit at unexpected times
+
+### ✅ Zoneless Testing Best Practices
+
+When testing Observables with `startWith()` or reactive forms:
+
+```typescript
+it('should filter groups after input change', async () => {
+  // 1. Subscribe BEFORE triggering the change
+  const resultPromise = firstValueFrom(
+    component.filteredGroups.pipe(
+      filter(groups => groups.length === 1), // Skip startWith('') initial emission
+      timeout(2000) // Safety net to prevent hanging tests
+    )
+  );
+
+  // 2. Trigger the value change
+  component.autocompleteControl.setValue('admin');
+
+  // 3. Manually trigger change detection and wait for stability
+  fixture.detectChanges();
+  await fixture.whenStable();
+
+  // 4. Assert
+  const result = await resultPromise;
+  expect(result.length).toBe(1);
+});
+```
+
+### Key Points
+
+1. **Subscribe before setValue** - Observable emissions are synchronous in RxJS; if you subscribe after `setValue()`, you might miss emissions or get the initial `startWith('')` value
+2. **Use `filter` operator** - Skip unwanted emissions like `startWith('')` by filtering for the expected result
+3. **Always call `fixture.detectChanges()`** - In Zoneless, change detection is explicit
+4. **Always await `fixture.whenStable()`** - Waits for all pending microtasks (Signals, Effects, async operations)
+5. **Use `timeout()` operator** - Prevents tests from hanging if an expected emission never occurs
+
+### Common Zoneless Pitfall
+
+```typescript
+// ❌ WRONG - Gets startWith('') emission (3 items)
+component.autocompleteControl.setValue('admin');
+const result = await firstValueFrom(component.filteredGroups);
+expect(result.length).toBe(1); // FAILS: result.length === 3
+
+// ✅ CORRECT - Gets filtered emission
+const promise = firstValueFrom(component.filteredGroups.pipe(
+  filter(g => g.length === 1),
+  timeout(2000)
+));
+component.autocompleteControl.setValue('admin');
+fixture.detectChanges();
+await fixture.whenStable();
+const result = await promise;
+expect(result.length).toBe(1); // PASSES
+```
+
+## 6. Clean Code & Maintenance (The "Senior" Skills)
 
 - **Parameterized Testing**: Using `it.each([])` to run the same test logic with different inputs, reducing code duplication.
 - **Test Descriptive Naming**: Writing `it` blocks that read like a requirements document (e.g., "should round coordinates to the nearest integer when updating position").
@@ -102,3 +166,6 @@ Since you are using Observables, you need these specific skills:
 - Testing multiple things in one test
 - Not mocking external dependencies properly
 - Writing tests that are hard to understand
+- **Using `fakeAsync`/`tick()` in Zoneless** - These don't work without Zone.js
+- **Subscribing after setValue** - You'll get the wrong emission from Observables with `startWith()`
+- **Forgetting `fixture.detectChanges()`** - Change detection is explicit in Zoneless
