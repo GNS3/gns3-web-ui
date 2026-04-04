@@ -36,6 +36,10 @@ describe('NotificationService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     MockWebSocket.instances = [];
+
+    // Ensure WebSocket stub is always set (prevents pollution from other tests)
+    vi.stubGlobal('WebSocket', MockWebSocket);
+
     service = new NotificationService();
 
     mockController = {

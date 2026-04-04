@@ -121,8 +121,9 @@ describe('ChooseNameDialogComponent', () => {
     it('should close the dialog when duplicate succeeds', async () => {
       fixture.componentInstance.onSaveClick();
 
-      // The subscription callback fires asynchronously, so we need to wait
-      await fixture.whenStable();
+      // Run fake timers to trigger the async callback
+      await vi.runAllTimersAsync();
+
       expect(mockDialogRef.close).toHaveBeenCalled();
     });
   });
