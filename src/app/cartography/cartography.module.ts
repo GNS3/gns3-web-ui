@@ -35,6 +35,7 @@ import { SelectionEventSource } from './events/selection-event-source';
 import { CanvasSizeDetector } from './helpers/canvas-size-detector';
 import { CssFixer } from './helpers/css-fixer';
 import { DefaultDrawingsFactory } from './helpers/default-drawings-factory';
+import { CurveElementFactory } from './helpers/drawings-factory/curve-element-factory';
 import { EllipseElementFactory } from './helpers/drawings-factory/ellipse-element-factory';
 import { LineElementFactory } from './helpers/drawings-factory/line-element-factory';
 import { RectangleElementFactory } from './helpers/drawings-factory/rectangle-element-factory';
@@ -63,6 +64,7 @@ import { SerialLinkWidget } from './widgets/links/serial-link';
     EllipseElementFactory,
     RectangleElementFactory,
     LineElementFactory,
+    CurveElementFactory,
     MultiLinkCalculatorHelper,
     SvgToDrawingConverter,
     QtDasharrayFixer,
