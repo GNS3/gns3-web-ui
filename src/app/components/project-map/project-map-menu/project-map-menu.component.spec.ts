@@ -230,6 +230,7 @@ describe('ProjectMapMenuComponent', () => {
         isRectangleChosen: false,
         isEllipseChosen: false,
         isLineChosen: false,
+        isCurveChosen: false,
         isTextChosen: false,
       });
     });
@@ -440,6 +441,7 @@ describe('ProjectMapMenuComponent', () => {
         isRectangleChosen: true,
         isEllipseChosen: true,
         isLineChosen: true,
+        isCurveChosen: true,
         isTextChosen: true,
       };
       component.selectedDrawing = 'rectangle';
@@ -449,6 +451,7 @@ describe('ProjectMapMenuComponent', () => {
       expect(component.drawTools.isRectangleChosen).toBe(false);
       expect(component.drawTools.isEllipseChosen).toBe(false);
       expect(component.drawTools.isLineChosen).toBe(false);
+      expect(component.drawTools.isCurveChosen).toBe(false);
       expect(component.drawTools.isTextChosen).toBe(false);
       expect(component.selectedDrawing).toBe('');
     });

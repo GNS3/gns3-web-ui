@@ -89,6 +89,24 @@
 </button>
 }
 <button
+  matTooltip="Draw a curve"
+  matTooltipClass="custom-tooltip"
+  matTooltipPosition="left"
+  mat-icon-button
+  class="menu-button"
+  (click)="addDrawing('curve')"
+>
+  <svg height="20" width="20">
+    <path
+      [ngClass]="{ selected: drawTools.isCurveChosen }"
+      class="draw-line-icon"
+      d="M 3 17 Q 10 3 17 17"
+      fill="none"
+      style="stroke-width: 2"
+    />
+  </svg>
+</button>
+<button
   matTooltip="Lock or unlock all items"
   matTooltipClass="custom-tooltip"
   matTooltipPosition="left"

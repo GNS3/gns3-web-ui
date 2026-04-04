@@ -37,6 +37,7 @@ import { GraphLayout } from '../../widgets/graph-layout';
 import { InterfaceLabelWidget } from '../../widgets/interface-label';
 import { TextEditorComponent } from '../text-editor/text-editor.component';
 import { DrawingAddingComponent } from '../drawing-adding/drawing-adding.component';
+import { CurveDrawingComponent } from '../curve-drawing/curve-drawing.component';
 import { DrawingResizingComponent } from '../drawing-resizing/drawing-resizing.component';
 import { SelectionControlComponent } from '../selection-control/selection-control.component';
 import { SelectionSelectComponent } from '../selection-select/selection-select.component';
@@ -53,6 +54,7 @@ import { ZoomingCanvasDirective } from '../../directives/zooming-canvas.directiv
   imports: [
     TextEditorComponent,
     DrawingAddingComponent,
+    CurveDrawingComponent,
     DrawingResizingComponent,
     SelectionControlComponent,
     SelectionSelectComponent,

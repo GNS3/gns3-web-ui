@@ -20,6 +20,8 @@ export class LineDrawingWidget implements DrawingShapeWidget {
         return curveCatmullRom;
       case 'monotone':
         return curveMonotone;
+      case 'none':
+        return null; // No curve interpolation
       default:
         return curveCatmullRom;
     }
@@ -61,41 +63,24 @@ export class LineDrawingWidget implements DrawingShapeWidget {
   private drawCurveElements(view: SVGSelection) {
     const self = this;
 
+    // Ensure defs element exists
+    let defs = view.select('defs');
+    if (defs.empty()) {
+      defs = view.append('defs');
+    }
+
     // Select path elements for curves
-    const drawing = view.selectAll<SVGPathElement, MapDrawing>('path.curve_element').data((d: MapDrawing) => {
+    const drawing = view.selectAll('path.curve_element').data((d: MapDrawing) => {
       return d.element && d.element instanceof CurveElement ? [d] : [];
     });
 
-    // Handle circle markers for curves (resize handles)
-    const drawing_circles = view
-      .selectAll<SVGCircleElement, MapDrawing>('circle.curve_handle')
-      .data((d: MapDrawing) => {
-        return d.element && d.element instanceof CurveElement ? d.element.points.map((p, i) => ({ point: p, index: i, drawing: d })) : [];
-      });
-
-    drawing_circles.exit().remove();
-
-    const circleEnter = drawing_circles.enter().append<SVGCircleElement>('circle').attr('class', 'curve_handle');
-
-    const circleMerge = drawing_circles.merge(circleEnter);
-
-    circleMerge
-      .attr('cx', (d) => d.point.x)
-      .attr('cy', (d) => d.point.y)
-      .attr('r', 4)
-      .attr('fill', (d) => (d.drawing.element as CurveElement).stroke)
-      .attr('stroke', '#fff')
-      .attr('stroke-width', 1);
-
-    drawing_circles.exit().remove();
-
-    // Handle paths
     drawing.exit().remove();
 
-    const drawing_enter = drawing.enter().append<SVGPathElement>('path').attr('class', 'curve_element noselect');
+    const drawing_enter = drawing.enter().append('path').attr('class', 'curve_element noselect');
 
     const merge = drawing.merge(drawing_enter);
 
+    // Generate path data for each curve and set attributes
     merge.each(function (mapDrawing: MapDrawing) {
       const curve = mapDrawing.element as CurveElement;
 
@@ -103,26 +88,84 @@ export class LineDrawingWidget implements DrawingShapeWidget {
       if (curve.points && curve.points.length > 0) {
         const points: [number, number][] = curve.points.map((p) => [p.x, p.y]);
         const curveInterpolator = self.getCurveInterpolator(curve.curve_type || 'catmullrom');
-        const lineGenerator = line<[number, number]>().curve(curveInterpolator);
-        const pathData = lineGenerator(points) || '';
 
-        select(this).attr('d', pathData);
+        let pathData = '';
+        if (curveInterpolator === null) {
+          // Direct line connection (no curve smoothing)
+          pathData = `M ${points[0][0]} ${points[0][1]}`;
+          for (let i = 1; i < points.length; i++) {
+            pathData += ` L ${points[i][0]} ${points[i][1]}`;
+          }
+        } else {
+          // Use curve interpolation
+          const lineGenerator = line<[number, number]>().curve(curveInterpolator);
+          pathData = lineGenerator(points) || '';
+        }
+
+        // Create arrow markers if needed
+        if (curve.arrow_end) {
+          self.createOrUpdateArrowMarker(defs, mapDrawing.id, 'end', curve.stroke, curve.stroke_width);
+        }
+        if (curve.arrow_start) {
+          self.createOrUpdateArrowMarker(defs, mapDrawing.id, 'start', curve.stroke, curve.stroke_width);
+        }
+
+        select(this)
+          .attr('d', pathData)
+          .attr('stroke', curve.stroke)
+          .attr('stroke-width', curve.stroke_width)
+          .attr('stroke-dasharray', self.qtDasharrayFixer.fix(curve.stroke_dasharray))
+          .attr('fill', 'none')
+          .attr('cursor', 'pointer')
+          .attr('marker-end', curve.arrow_end ? 'url(#arrow-end-' + mapDrawing.id + ')' : null)
+          .attr('marker-start', curve.arrow_start ? 'url(#arrow-start-' + mapDrawing.id + ')' : null);
       }
     });
 
-    merge
-      .attr('stroke', (mapDrawing) => (mapDrawing.element as CurveElement).stroke)
-      .attr('stroke-width', (mapDrawing) => (mapDrawing.element as CurveElement).stroke_width)
-      .attr('stroke-dasharray', (mapDrawing) => this.qtDasharrayFixer.fix((mapDrawing.element as CurveElement).stroke_dasharray))
-      .attr('fill', 'none')
-      .attr('cursor', 'pointer')
-      .attr('marker-end', function (mapDrawing: MapDrawing) {
-        const curve = mapDrawing.element as CurveElement;
-        return curve.arrow_end ? 'url(#arrow-end-' + mapDrawing.id + ')' : null;
-      })
-      .attr('marker-start', function (mapDrawing: MapDrawing) {
-        const curve = mapDrawing.element as CurveElement;
-        return curve.arrow_start ? 'url(#arrow-start-' + mapDrawing.id + ')' : null;
-      });
+    // Clean up old markers
+    const activeDrawingIds = new Set(view.selectAll('path.curve_element').data().map((d) => d.id));
+
+    defs.selectAll('marker[id^="arrow-"]').each(function() {
+      const markerId = select(this).attr('id');
+      if (!markerId) return;
+
+      // Extract drawing ID from marker ID (e.g., "arrow-end-abc123" -> "abc123")
+      const drawingId = markerId.replace(/^arrow-(start|end)-/, '');
+
+      // Remove marker if drawing no longer exists or no longer has arrows
+      if (!activeDrawingIds.has(drawingId)) {
+        select(this).remove();
+      }
+    });
+  }
+
+  private createOrUpdateArrowMarker(
+    defs: any,
+    drawingId: string,
+    position: 'start' | 'end',
+    color: string,
+    strokeWidth: number
+  ) {
+    const markerId = `arrow-${position}-${drawingId}`;
+    let marker = defs.select(`marker#${markerId}`);
+
+    if (marker.empty()) {
+      marker = defs
+        .append('marker')
+        .attr('id', markerId)
+        .attr('markerWidth', '3')
+        .attr('markerHeight', '3')
+        .attr('refX', position === 'end' ? '2.5' : '0.5')
+        .attr('refY', '1.5')
+        .attr('orient', 'auto')
+        .attr('markerUnits', 'strokeWidth');
+
+      marker
+        .append('path')
+        .attr('d', position === 'end' ? 'M0,0 L0,3 L3,1.5 z' : 'M3,0 L3,3 L0,1.5 z')
+        .attr('fill', color);
+    } else {
+      marker.select('path').attr('fill', color);
+    }
   }
 }

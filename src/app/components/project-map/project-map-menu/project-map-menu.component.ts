@@ -79,6 +79,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     isRectangleChosen: false,
     isEllipseChosen: false,
     isLineChosen: false,
+    isCurveChosen: false,
     isTextChosen: false,
   };
   public isLocked: boolean = false;
@@ -314,6 +315,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       (selectedObject === 'rectangle' && this.drawTools.isRectangleChosen) ||
       (selectedObject === 'ellipse' && this.drawTools.isEllipseChosen) ||
       (selectedObject === 'line' && this.drawTools.isLineChosen) ||
+      (selectedObject === 'curve' && this.drawTools.isCurveChosen) ||
       (selectedObject === 'text' && this.drawTools.isTextChosen)
     ) {
       document.documentElement.style.cursor = 'default';
@@ -340,6 +342,13 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         this.drawTools.isRectangleChosen = false;
         this.drawTools.isLineChosen = !this.drawTools.isLineChosen;
         break;
+      case 'curve':
+        this.drawTools.isTextChosen = false;
+        this.drawTools.isEllipseChosen = false;
+        this.drawTools.isRectangleChosen = false;
+        this.drawTools.isLineChosen = false;
+        this.drawTools.isCurveChosen = !this.drawTools.isCurveChosen;
+        break;
       case 'text':
         this.drawTools.isTextChosen = !this.drawTools.isTextChosen;
         this.drawTools.isEllipseChosen = false;
@@ -361,6 +370,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     this.drawTools.isRectangleChosen = false;
     this.drawTools.isEllipseChosen = false;
     this.drawTools.isLineChosen = false;
+    this.drawTools.isCurveChosen = false;
     this.drawTools.isTextChosen = false;
     this.selectedDrawing = '';
     this.toolsService.textAddingToolActivation(this.drawTools.isTextChosen);

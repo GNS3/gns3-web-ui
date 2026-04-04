@@ -50,6 +50,8 @@ export class DrawingAddedComponent implements OnInit, OnDestroy, OnChanges {
     if (changes['selectedDrawing'] && !changes['selectedDrawing'].isFirstChange()) {
       this.selectedDrawing = changes['selectedDrawing'].currentValue;
 
+      // Always emit selected event (needed for curve drawing tool activation)
+      // But curve tool won't create drawings on click - only on drag
       if (this.selectedDrawing !== 'text') {
         this.drawingsEventSource.selected.emit(this.selectedDrawing);
       }
@@ -57,6 +59,11 @@ export class DrawingAddedComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   onDrawingSaved(evt: AddedDataEvent) {
+    // Skip curve tool - it uses drag-to-draw, not click-to-create
+    if (this.selectedDrawing === 'curve') {
+      return;
+    }
+
     let drawing = this.drawingsFactory.getDrawingMock(this.selectedDrawing);
     let svgText = this.mapDrawingToSvgConverter.convert(drawing);
 
