@@ -160,14 +160,12 @@ describe('TextAddedComponent', () => {
 
       component.onTextAdded(event);
 
-      // k=2, transformation.x=10, transformation.y=20, zeroZero=(0,0)
-      // x = (100 - (0 + 10)) / 2 = 45
-      // y = (200 - (0 + 20)) / 2 = 90
+      // evt.x and evt.y are now canvas coordinates (no conversion needed)
       expect(mockDrawingService.add).toHaveBeenCalledWith(
         mockController,
         mockProject.project_id,
-        (100 - (0 + 10)) / 2,
-        (200 - (0 + 20)) / 2,
+        100,
+        200,
         mockSvgText
       );
     });
