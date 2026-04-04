@@ -128,3 +128,8 @@ svg#map text.label {
 svg#map path.ethernet_link:hover {
   stroke: var(--mat-sys-error);
 }
+
+/* Drawing lines */
+svg#map line.line_element:hover {
+  stroke: var(--mat-sys-error);
+}
