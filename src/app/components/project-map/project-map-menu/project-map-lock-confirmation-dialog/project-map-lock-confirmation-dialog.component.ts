@@ -27,4 +27,8 @@ export class ProjectMapLockConfirmationDialogComponent implements OnInit {
     this.confirmActionData.isAction = this.data.actionType == 'Lock' ? true : false;
     this.dialogRef.close(this.confirmActionData);
   }
+
+  onNoClick() {
+    this.dialogRef.close(false);
+  }
 }

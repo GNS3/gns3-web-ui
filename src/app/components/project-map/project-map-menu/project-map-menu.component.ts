@@ -433,23 +433,24 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   }
 
   public changeLockValue() {
-    this.isLocked = !this.isLocked;
-    this.mapSettingsService.changeMapLockValue(this.isLocked);
     const dialogRef = this.dialog.open(ProjectMapLockConfirmationDialogComponent, {
       panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
       autoFocus: false,
       disableClose: true,
-      data: { isAction: this.isLocked, actionType: this.isLocked == true ? 'Lock' : 'Unlock' },
+      data: { actionType: this.isLocked ? 'Unlock' : 'Lock' },
     });
 
     dialogRef.afterClosed().subscribe((confirmAction_result) => {
       if (confirmAction_result && confirmAction_result != '') {
         if (confirmAction_result.actionType == 'Lock' && confirmAction_result.isAction) {
+          this.isLocked = true;
+          this.mapSettingsService.changeMapLockValue(this.isLocked);
           this.lockAllNode();
         } else {
+          this.isLocked = false;
+          this.mapSettingsService.changeMapLockValue(this.isLocked);
           this.unlockAllNode();
         }
-      } else {
       }
     });
   }
