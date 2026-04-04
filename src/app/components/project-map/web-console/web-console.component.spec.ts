@@ -155,7 +155,11 @@ describe('WebConsoleComponent', () => {
       send: mockSocketSend,
       onerror: null,
       onclose: null,
+      onopen: null,
+      onmessage: null,
       readyState: 1,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
     };
     vi.stubGlobal(
       'WebSocket',
