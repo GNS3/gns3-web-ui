@@ -139,8 +139,10 @@ export class DraggableSelectionComponent implements OnInit, OnDestroy {
           }
 
           const node = this.graphDataManager.getNodes().filter((node) => node.id === label.nodeId)[0];
-          node.label.x += evt.dx;
-          node.label.y += evt.dy;
+          label.x += evt.dx;
+          label.y += evt.dy;
+          node.label.x = label.x;
+          node.label.y = label.y;
           this.labelWidget.redrawLabel(svg, label);
         });
 

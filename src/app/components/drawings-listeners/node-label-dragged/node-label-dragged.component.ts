@@ -32,9 +32,7 @@ export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
   onNodeLabelDragged(draggedEvent: DraggedDataEvent<MapLabel>) {
     const node = this.nodesDataSource.get(draggedEvent.datum.nodeId);
     const mapLabel = draggedEvent.datum;
-    mapLabel.x += draggedEvent.dx;
-    mapLabel.y += draggedEvent.dy;
-
+    // Position already updated during drag, datum contains the final position
     const label = this.mapLabelToLabel.convert(mapLabel);
     node.label = label;
 
