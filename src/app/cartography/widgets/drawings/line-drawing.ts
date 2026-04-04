@@ -110,6 +110,9 @@ export class LineDrawingWidget implements DrawingShapeWidget {
           self.createOrUpdateArrowMarker(defs, mapDrawing.id, 'start', curve.stroke, curve.stroke_width);
         }
 
+        // Store original stroke color for hover effect
+        const originalStroke = curve.stroke;
+
         select(this)
           .attr('d', pathData)
           .attr('stroke', curve.stroke)
@@ -118,7 +121,36 @@ export class LineDrawingWidget implements DrawingShapeWidget {
           .attr('fill', 'none')
           .attr('cursor', 'pointer')
           .attr('marker-end', curve.arrow_end ? 'url(#arrow-end-' + mapDrawing.id + ')' : null)
-          .attr('marker-start', curve.arrow_start ? 'url(#arrow-start-' + mapDrawing.id + ')' : null);
+          .attr('marker-start', curve.arrow_start ? 'url(#arrow-start-' + mapDrawing.id + ')' : null)
+          .on('mouseenter', function () {
+            // Get the error color from CSS variable
+            const errorColor = getComputedStyle(document.documentElement)
+              .getPropertyValue('--mat-sys-error')
+              .trim();
+
+            // Update path stroke
+            select(this).attr('stroke', errorColor);
+
+            // Update arrow marker fills
+            if (curve.arrow_end) {
+              defs.select(`#arrow-end-${mapDrawing.id} path`).attr('fill', errorColor);
+            }
+            if (curve.arrow_start) {
+              defs.select(`#arrow-start-${mapDrawing.id} path`).attr('fill', errorColor);
+            }
+          })
+          .on('mouseleave', function () {
+            // Restore original stroke
+            select(this).attr('stroke', originalStroke);
+
+            // Restore arrow marker fills
+            if (curve.arrow_end) {
+              defs.select(`#arrow-end-${mapDrawing.id} path`).attr('fill', originalStroke);
+            }
+            if (curve.arrow_start) {
+              defs.select(`#arrow-start-${mapDrawing.id} path`).attr('fill', originalStroke);
+            }
+          });
       }
     });
 
