@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { line, curveBasis, curveCatmullRom, curveMonotone } from 'd3-shape';
+import { line, curveBasis, curveCatmullRom, monotoneX as curveMonotone } from 'd3-shape';
 import { CurveElement, CurveType } from '../../models/drawings/curve-element';
 import { EllipseElement } from '../../models/drawings/ellipse-element';
 import { LineElement } from '../../models/drawings/line-element';
