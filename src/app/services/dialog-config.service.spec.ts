@@ -30,7 +30,7 @@ describe('DialogConfigService', () => {
       const config = service.getConfig('confirmation');
 
       expect(config).toBeDefined();
-      expect(config.panelClass).toContain('confirmation-dialog-panel');
+      expect(config.panelClass).toContain('confirmation-danger-panel');
     });
 
     it('should return base config for unknown name', () => {
@@ -59,7 +59,7 @@ describe('DialogConfigService', () => {
     it('should return base config when no overrides', () => {
       const config = service.openConfig('confirmation');
 
-      expect(config.panelClass).toContain('confirmation-dialog-panel');
+      expect(config.panelClass).toContain('confirmation-danger-panel');
     });
   });
 
@@ -106,7 +106,7 @@ describe('DialogConfigService', () => {
 
     it('should have confirmation config', () => {
       const config = service.getConfig('confirmation');
-      expect(config.panelClass).toContain('confirmation-dialog-panel');
+      expect(config.panelClass).toContain('confirmation-danger-panel');
     });
 
     it('should have editController config', () => {

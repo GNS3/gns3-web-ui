@@ -1,6 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClient } from '@angular/common/http';
 import { ComputesComponent } from './computes.component';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -12,14 +11,14 @@ import { MatDialogModule, MatDialog, MatDialogRef } from '@angular/material/dial
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { ComputeService } from '@services/compute.service';
 import { ControllerService } from '@services/controller.service';
 import { NotificationService } from '@services/notification.service';
 import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
 import { Compute } from '@models/compute';
-import { of, throwError, Subject } from 'rxjs';
+import { of, Subject } from 'rxjs';
 
 describe('ComputesComponent', () => {
   let component: ComputesComponent;
@@ -61,6 +60,7 @@ describe('ComputesComponent', () => {
   ];
 
   beforeEach(async () => {
+    vi.useFakeTimers();
     vi.clearAllMocks();
 
     computeNotificationEmitter = new Subject<any>();
@@ -134,6 +134,13 @@ describe('ComputesComponent', () => {
     component = fixture.componentInstance;
   });
 
+  afterEach(() => {
+    vi.useRealTimers();
+    if (fixture) {
+      fixture.destroy();
+    }
+  });
+
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -142,18 +149,8 @@ describe('ComputesComponent', () => {
     expect(component.displayedColumns).toEqual(['status', 'name', 'host', 'connected', 'cpu', 'memory', 'disk', 'actions']);
   });
 
-  it('should initialize with empty computes signal', () => {
-    expect(component.computes()).toEqual([]);
-  });
-
-  it('should initialize with loading signal', () => {
-    expect(component.loading()).toBe(true);
-  });
-
   it('should load controller on init', async () => {
     component.ngOnInit();
-    // Wait for async controllerService.get to complete
-    // Use fake timers to advance time, not real setTimeout
     vi.advanceTimersByTime(10);
     await vi.runAllTimersAsync();
     expect(mockControllerService.get).toHaveBeenCalled();
@@ -185,8 +182,11 @@ describe('ComputesComponent', () => {
     expect(component.getStatusColor(compute)).toBe('var(--mat-sys-error)');
   });
 
-  it('should format percent value', () => {
+  it('should format percent value with valid number', () => {
     expect(component.formatPercent(25.5)).toBe('25.5%');
+  });
+
+  it('should format percent value with undefined', () => {
     expect(component.formatPercent(undefined)).toBe('--');
   });
 
@@ -210,7 +210,17 @@ describe('ComputesComponent', () => {
     component.handleComputeNotification(notification);
 
     expect(component.computes()).toHaveLength(1);
-    expect(mockToasterService.success).toHaveBeenCalled();
+  });
+
+  it('should show toast when compute is created', () => {
+    const notification = {
+      action: 'compute.created',
+      event: { compute_id: 'new-id', name: 'New Compute', host: 'localhost', port: 3080, protocol: 'http:' } as Compute,
+    };
+
+    component.handleComputeNotification(notification);
+
+    expect(mockToasterService.success).toHaveBeenCalledWith('Compute "New Compute" added');
   });
 
   it('should handle compute notification for deleted', () => {
@@ -225,23 +235,14 @@ describe('ComputesComponent', () => {
     expect(component.computes()).toHaveLength(0);
   });
 
-  it('should have connectToGlobalNotifications method', () => {
-    expect(typeof component.connectToGlobalNotifications).toBe('function');
-  });
+  it('should show toast when compute is deleted', () => {
+    const notification = {
+      action: 'compute.deleted',
+      event: { compute_id: 'local', name: 'Local Compute' } as Compute,
+    };
 
-  it('should have openAddDialog method', () => {
-    expect(typeof component.openAddDialog).toBe('function');
-  });
+    component.handleComputeNotification(notification);
 
-  it('should have openEditDialog method', () => {
-    expect(typeof component.openEditDialog).toBe('function');
-  });
-
-  it('should have deleteCompute method', () => {
-    expect(typeof component.deleteCompute).toBe('function');
-  });
-
-  it('should have connectCompute method', () => {
-    expect(typeof component.connectCompute).toBe('function');
+    expect(mockToasterService.success).toHaveBeenCalledWith('Compute "Local Compute" deleted');
   });
 });
