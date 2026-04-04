@@ -15,6 +15,7 @@ export class DrawingsEventSource {
   public selected = new EventEmitter<string>();
   public pointToAddSelected = new EventEmitter<AddedDataEvent>();
   public saved = new EventEmitter<any>();
+  public drawingCompleted = new EventEmitter<string>();
 
   public textAdded = new EventEmitter<TextAddedDataEvent>();
   public textEdited = new EventEmitter<TextEditedDataEvent>();

@@ -34,6 +34,7 @@ import { ToasterService } from '@services/toaster.service';
 import { Screenshot, ScreenshotDialogComponent } from '../screenshot-dialog/screenshot-dialog.component';
 import { ProjectMapLockConfirmationDialogComponent } from './project-map-lock-confirmation-dialog/project-map-lock-confirmation-dialog.component';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
+import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { AiChatStore } from '../../../stores/ai-chat.store';
 @Component({
@@ -64,6 +65,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   private nodeService = inject(NodeService);
   private nodesDataSource = inject(NodesDataSource);
   private drawingsDataSource = inject(DrawingsDataSource);
+  private drawingsEventSource = inject(DrawingsEventSource);
   private aiChatStore = inject(AiChatStore);
   private cdr = inject(ChangeDetectorRef);
   private toaster = inject(ToasterService);
@@ -86,19 +88,30 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   public isLightThemeEnabled: boolean = false;
   public isAIChatOpen: boolean = false;
   public isAIMinimized: boolean = false;
-  private projectSubscription: Subscription;
+  private projectSubscriptions: Subscription[] = [];
   private aiChatStateSubscription: Subscription;
 
   ngOnInit() {
     this.themeService.getActualTheme() === 'light'
       ? (this.isLightThemeEnabled = true)
       : (this.isLightThemeEnabled = false);
-    this.projectSubscription = this.projectServices.projectLockIconSubject.subscribe((isRedraw: boolean) => {
-      if (isRedraw) {
-        this.getAllNodesAndDrawingStatus();
-      }
-    });
+    this.projectSubscriptions.push(
+      this.projectServices.projectLockIconSubject.subscribe((isRedraw: boolean) => {
+        if (isRedraw) {
+          this.getAllNodesAndDrawingStatus();
+        }
+      })
+    );
     this.getAllNodesAndDrawingStatus();
+
+    // Subscribe to drawing completed event to reset tool state
+    this.projectSubscriptions.push(
+      this.drawingsEventSource.drawingCompleted.subscribe((toolType) => {
+        if (toolType === 'curve') {
+          this.resetDrawToolChoice();
+        }
+      })
+    );
 
     // Subscribe to AI Chat panel state
     this.aiChatStateSubscription = this.aiChatStore.getPanelState().subscribe((panelState) => {
@@ -484,7 +497,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // this.projectSubscription.unsubscribe();
+    this.projectSubscriptions.forEach(subscription => subscription.unsubscribe());
     if (this.aiChatStateSubscription) {
       this.aiChatStateSubscription.unsubscribe();
     }
