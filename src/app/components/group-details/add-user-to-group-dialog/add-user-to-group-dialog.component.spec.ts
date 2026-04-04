@@ -14,7 +14,7 @@ import { Controller } from '@models/controller';
 import { Group } from '@models/groups/group';
 import { User } from '@models/users/user';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { of } from 'rxjs';
+import { forkJoin, of, throwError } from 'rxjs';
 
 describe('AddUserToGroupDialogComponent', () => {
   let fixture: ComponentFixture<AddUserToGroupDialogComponent>;
@@ -23,16 +23,78 @@ describe('AddUserToGroupDialogComponent', () => {
   let mockGroupService: { getGroupMember: ReturnType<typeof vi.fn>; addMemberToGroup: ReturnType<typeof vi.fn> };
   let mockToastService: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn>; warning: ReturnType<typeof vi.fn> };
 
-  const mockController: Controller = { id: 1, name: 'Test Controller', host: 'localhost', port: 3080, path: '/', ubridge_path: '', protocol: 'http:', username: '', password: '', location: 'local', authToken: '', status: 'running', tokenExpired: false };
-  const mockGroup: Group = { user_group_id: 'group1', name: 'Test Group', created_at: '', updated_at: '', is_builtin: false };
+  const mockController: Controller = {
+    id: 1,
+    name: 'Test Controller',
+    host: 'localhost',
+    port: 3080,
+    path: '/',
+    ubridge_path: '',
+    protocol: 'http:',
+    username: '',
+    password: '',
+    location: 'local',
+    authToken: '',
+    status: 'running',
+    tokenExpired: false,
+  };
+  const mockGroup: Group = {
+    user_group_id: 'group1',
+    name: 'Test Group',
+    created_at: '',
+    updated_at: '',
+    is_builtin: false,
+  };
 
   const mockUsers: User[] = [
-    { user_id: '1', username: 'alice', email: 'alice@test.com', created_at: '', updated_at: '', full_name: '', last_login: '', is_active: true, is_superadmin: false },
-    { user_id: '2', username: 'bob', email: 'bob@test.com', created_at: '', updated_at: '', full_name: '', last_login: '', is_active: true, is_superadmin: false },
-    { user_id: '3', username: 'charlie', email: 'charlie@test.com', created_at: '', updated_at: '', full_name: '', last_login: '', is_active: true, is_superadmin: false },
+    {
+      user_id: '1',
+      username: 'alice',
+      email: 'alice@test.com',
+      created_at: '',
+      updated_at: '',
+      full_name: '',
+      last_login: '',
+      is_active: true,
+      is_superadmin: false,
+    },
+    {
+      user_id: '2',
+      username: 'bob',
+      email: 'bob@test.com',
+      created_at: '',
+      updated_at: '',
+      full_name: '',
+      last_login: '',
+      is_active: true,
+      is_superadmin: false,
+    },
+    {
+      user_id: '3',
+      username: 'charlie',
+      email: 'charlie@test.com',
+      created_at: '',
+      updated_at: '',
+      full_name: '',
+      last_login: '',
+      is_active: true,
+      is_superadmin: false,
+    },
   ];
 
-  const mockMembers: User[] = [{ user_id: '1', username: 'alice', email: 'alice@test.com', created_at: '', updated_at: '', full_name: '', last_login: '', is_active: true, is_superadmin: false }];
+  const mockMembers: User[] = [
+    {
+      user_id: '1',
+      username: 'alice',
+      email: 'alice@test.com',
+      created_at: '',
+      updated_at: '',
+      full_name: '',
+      last_login: '',
+      is_active: true,
+      is_superadmin: false,
+    },
+  ];
 
   beforeEach(async () => {
     mockDialogRef = { close: vi.fn() };
@@ -94,24 +156,19 @@ describe('AddUserToGroupDialogComponent', () => {
   });
 
   describe('user list loading', () => {
-    it('should call userService.list with controller on init', () => {
+    it('should load users and filter out existing group members', () => {
       expect(mockUserService.list).toHaveBeenCalledWith(mockController);
-    });
-
-    it('should call groupService.getGroupMember with controller and group id on init', () => {
       expect(mockGroupService.getGroupMember).toHaveBeenCalledWith(mockController, mockGroup.user_group_id);
     });
 
-    it('should filter out users that are already members of the group', () => {
-      fixture.detectChanges();
+    it('should display only non-member users in the list', () => {
       const displayedUsers = fixture.nativeElement.querySelectorAll('.user-item');
       expect(displayedUsers.length).toBe(2);
     });
   });
 
   describe('user selection', () => {
-    it('should toggle user selection when toggleUserSelection is called', () => {
-      // displayedUsers = [bob, charlie], so index 0 = bob (user_id '2')
+    it('should select a user when toggleUserSelection is called', () => {
       fixture.componentInstance.toggleUserSelection('2');
       fixture.detectChanges();
 
@@ -119,7 +176,7 @@ describe('AddUserToGroupDialogComponent', () => {
       expect(fixture.componentInstance.selectedCount()).toBe(1);
     });
 
-    it('should deselect user when already selected', () => {
+    it('should deselect a user when toggleUserSelection is called again', () => {
       fixture.componentInstance.toggleUserSelection('2');
       fixture.detectChanges();
       fixture.componentInstance.toggleUserSelection('2');
@@ -167,7 +224,7 @@ describe('AddUserToGroupDialogComponent', () => {
       expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
 
-    it('should call groupService.addMemberToGroup for each selected user', () => {
+    it('should add all selected users to the group', () => {
       fixture.componentInstance.toggleSelectAll();
       fixture.detectChanges();
       fixture.componentInstance.addSelectedUsers();
@@ -197,15 +254,11 @@ describe('AddUserToGroupDialogComponent', () => {
 
   describe('addUser (single user)', () => {
     it('should remove user from displayed list after adding', () => {
-      // Initially 2 users displayed (bob and charlie)
       expect(fixture.componentInstance.displayedUsers.value.length).toBe(2);
 
-      // Add bob
-      mockGroupService.addMemberToGroup.mockReturnValue(of({}));
       fixture.componentInstance.addUser(mockUsers[1]);
       fixture.detectChanges();
 
-      // bob should be removed from displayed
       expect(fixture.componentInstance.displayedUsers.value.length).toBe(1);
       expect(fixture.componentInstance.displayedUsers.value[0].username).toBe('charlie');
     });
@@ -219,11 +272,7 @@ describe('AddUserToGroupDialogComponent', () => {
     });
 
     it('should show error toast when adding user fails', () => {
-      mockGroupService.addMemberToGroup.mockReturnValue(of({ throw: () => of({}) }));
-      const errorObs = new (require('rxjs').Observable)(observer => {
-        observer.error({ message: 'error' });
-      });
-      mockGroupService.addMemberToGroup.mockReturnValue(errorObs);
+      mockGroupService.addMemberToGroup.mockReturnValue(throwError(() => ({ message: 'error' })));
       fixture.componentInstance.addUser(mockUsers[1]);
       fixture.detectChanges();
 
@@ -240,7 +289,7 @@ describe('AddUserToGroupDialogComponent', () => {
       expect(mockDialogRef.close).toHaveBeenCalled();
     });
 
-    it('should close dialog when onClose is called directly', () => {
+    it('should close dialog when onClose is called', () => {
       fixture.componentInstance.onClose();
       fixture.detectChanges();
 
