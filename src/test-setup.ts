@@ -22,7 +22,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  vi.runAllTimers();
+  // 只在 fake timers 激活时才运行 timers
+  // 某些测试文件（如 validators）自己管理 fake timers
   vi.useRealTimers();
 
   // 清理所有 mock，防止 mock 调用累积
