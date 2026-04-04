@@ -311,6 +311,9 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   }
 
   public addDrawing(selectedObject: string) {
+    // Set cursor on both document element and SVG
+    const svgElement = document.getElementById('map');
+
     if (
       (selectedObject === 'rectangle' && this.drawTools.isRectangleChosen) ||
       (selectedObject === 'ellipse' && this.drawTools.isEllipseChosen) ||
@@ -319,8 +322,14 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       (selectedObject === 'text' && this.drawTools.isTextChosen)
     ) {
       document.documentElement.style.cursor = 'default';
+      if (svgElement) {
+        svgElement.style.cursor = 'default';
+      }
     } else {
       document.documentElement.style.cursor = 'crosshair';
+      if (svgElement) {
+        svgElement.style.cursor = 'crosshair';
+      }
     }
 
     switch (selectedObject) {
@@ -366,7 +375,13 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
   }
 
   public resetDrawToolChoice() {
+    // Reset cursor on both document element and SVG
+    const svgElement = document.getElementById('map');
     document.documentElement.style.cursor = 'default';
+    if (svgElement) {
+      svgElement.style.cursor = 'default';
+    }
+
     this.drawTools.isRectangleChosen = false;
     this.drawTools.isEllipseChosen = false;
     this.drawTools.isLineChosen = false;

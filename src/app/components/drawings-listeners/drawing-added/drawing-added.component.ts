@@ -50,6 +50,12 @@ export class DrawingAddedComponent implements OnInit, OnDestroy, OnChanges {
     if (changes['selectedDrawing'] && !changes['selectedDrawing'].isFirstChange()) {
       this.selectedDrawing = changes['selectedDrawing'].currentValue;
 
+      // If selectedDrawing becomes empty string, reset draw tools
+      if (this.selectedDrawing === '') {
+        this.drawingSaved.emit(true);
+        return;
+      }
+
       // Always emit selected event (needed for curve drawing tool activation)
       // But curve tool won't create drawings on click - only on drag
       if (this.selectedDrawing !== 'text') {

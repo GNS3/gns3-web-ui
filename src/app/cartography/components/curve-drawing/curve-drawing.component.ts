@@ -89,6 +89,9 @@ export class CurveDrawingComponent implements OnInit, OnDestroy {
 
       // Remove preview
       self.removePreviewPath();
+
+      // Auto-exit curve tool after drawing completes
+      self.drawingsEventSource.selected.emit('');
     };
 
     // Store listener reference for removal
