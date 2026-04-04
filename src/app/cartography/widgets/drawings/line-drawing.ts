@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { select } from 'd3-selection';
 import { QtDasharrayFixer } from '../../helpers/qt-dasharray-fixer';
 import { LineElement } from '../../models/drawings/line-element';
 import { MapDrawing } from '../../models/map/map-drawing';
@@ -29,7 +30,14 @@ export class LineDrawingWidget implements DrawingShapeWidget {
       .attr('x1', (line) => line.x1)
       .attr('x2', (line) => line.x2)
       .attr('y1', (line) => line.y1)
-      .attr('y2', (line) => line.y2);
+      .attr('y2', (line) => line.y2)
+      .attr('cursor', 'pointer')
+      .on('mouseover', function () {
+        select(this).attr('class', 'line_element noselect over').attr('cursor', 'pointer');
+      })
+      .on('mouseout', function () {
+        select(this).attr('class', 'line_element noselect').attr('cursor', 'pointer');
+      });
 
     drawing.exit().remove();
   }
