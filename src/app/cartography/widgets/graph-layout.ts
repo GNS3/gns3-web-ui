@@ -86,7 +86,9 @@ export class GraphLayout implements Widget {
       // Update arrow marker colors based on selection state
       if (drawing.element instanceof CurveElement) {
         const curve = drawing.element as CurveElement;
-        const originalColor = curve.stroke || '#000000';
+        const originalColor = curve.stroke || getComputedStyle(document.documentElement)
+          .getPropertyValue('--gns3-canvas-link-color')
+          .trim();
         const isCurveSelected = this.selectionManager.isSelected(drawing);
 
         // Update arrow markers for this curve

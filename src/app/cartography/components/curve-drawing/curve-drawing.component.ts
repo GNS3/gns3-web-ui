@@ -169,7 +169,13 @@ export class CurveDrawingComponent implements OnInit, OnDestroy {
     // Create CurveElement
     const curveElement = new CurveElement();
     curveElement.points = this.points.map(p => ({ x: p.x - minX, y: p.y - minY }));
-    curveElement.stroke = '#000000';
+
+    // Get default stroke color from CSS variable
+    const defaultStrokeColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--gns3-canvas-link-color')
+      .trim() || '#000000';
+    curveElement.stroke = defaultStrokeColor;
+
     curveElement.stroke_width = 3;
     curveElement.stroke_dasharray = 'none';
     curveElement.curve_type = 'none';
