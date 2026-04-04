@@ -19,6 +19,7 @@ import { MapDrawingToSvgConverter } from '../../../../cartography/converters/map
 import { DrawingsDataSource } from '../../../../cartography/datasources/drawings-datasource';
 import { QtDasharrayFixer } from '../../../../cartography/helpers/qt-dasharray-fixer';
 import { Drawing } from '../../../../cartography/models/drawing';
+import { CurveElement, CurveType } from '../../../../cartography/models/drawings/curve-element';
 import { EllipseElement } from '../../../../cartography/models/drawings/ellipse-element';
 import { LineElement } from '../../../../cartography/models/drawings/line-element';
 import { RectElement } from '../../../../cartography/models/drawings/rect-element';
@@ -71,6 +72,17 @@ export class StyleEditorDialogComponent implements OnInit {
     { qt: '12, 3, 5, 3, 5, 3', value: '25, 25, 5, 25, 5', name: 'Dash Dot Dot' },
     { qt: '', value: '', name: 'No border' },
   ];
+  curveTypes = [
+    { value: 'catmullrom', name: 'Catmull-Rom (Smooth)' },
+    { value: 'basis', name: 'Basis (B-spline)' },
+    { value: 'monotone', name: 'Monotone' },
+  ];
+  arrowDirections = [
+    { value: 'none', name: 'No Arrow' },
+    { value: 'end', name: 'End Arrow' },
+    { value: 'start', name: 'Start Arrow' },
+    { value: 'both', name: 'Both Arrows' },
+  ];
 
   constructor() {
     this.formGroup = this.formBuilder.group({
@@ -99,6 +111,23 @@ export class StyleEditorDialogComponent implements OnInit {
           ? ''
           : this.drawing.element.stroke_dasharray ?? 'none';
       this.element.stroke_width = this.drawing.element.stroke_width;
+    } else if (this.drawing.element instanceof CurveElement) {
+      this.element.stroke = this.drawing.element.stroke;
+      this.element.stroke_dasharray =
+        this.drawing.element.stroke_dasharray == undefined && this.drawing.element.stroke_width == undefined
+          ? ''
+          : this.drawing.element.stroke_dasharray ?? 'none';
+      this.element.stroke_width = this.drawing.element.stroke_width;
+      this.element.curve_type = this.drawing.element.curve_type || 'catmullrom';
+      if (this.drawing.element.arrow_start && this.drawing.element.arrow_end) {
+        this.element.arrow_direction = 'both';
+      } else if (this.drawing.element.arrow_start) {
+        this.element.arrow_direction = 'start';
+      } else if (this.drawing.element.arrow_end) {
+        this.element.arrow_direction = 'end';
+      } else {
+        this.element.arrow_direction = 'none';
+      }
     }
 
     if (this.drawing.element instanceof RectElement) {
@@ -144,6 +173,14 @@ export class StyleEditorDialogComponent implements OnInit {
         this.drawing.element.stroke = this.element.stroke;
         this.drawing.element.stroke_dasharray = this.element.stroke_dasharray;
         this.drawing.element.stroke_width = this.element.stroke_width === 0 ? 2 : this.element.stroke_width;
+      } else if (this.drawing.element instanceof CurveElement) {
+        this.drawing.element.stroke = this.element.stroke ?? '#000000';
+        this.drawing.element.stroke_dasharray =
+          this.element.stroke_dasharray === '' ? 'none' : this.element.stroke_dasharray;
+        this.drawing.element.stroke_width = this.element.stroke_width === 0 ? 2 : this.element.stroke_width;
+        this.drawing.element.curve_type = (this.element.curve_type || 'catmullrom') as CurveType;
+        this.drawing.element.arrow_start = this.element.arrow_direction === 'start' || this.element.arrow_direction === 'both';
+        this.drawing.element.arrow_end = this.element.arrow_direction === 'end' || this.element.arrow_direction === 'both';
       }
 
       if (this.drawing.element instanceof RectElement) {
@@ -178,4 +215,6 @@ export class ElementData {
   stroke_dasharray: string;
   rx: number;
   ry: number;
+  curve_type: string;
+  arrow_direction: string;
 }

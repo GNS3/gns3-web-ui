@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { line, curveBasis, curveCatmullRom, curveMonotone } from 'd3-shape';
+import { CurveElement, CurveType } from '../../models/drawings/curve-element';
 import { EllipseElement } from '../../models/drawings/ellipse-element';
 import { LineElement } from '../../models/drawings/line-element';
 import { RectElement } from '../../models/drawings/rect-element';
@@ -9,6 +11,19 @@ import { Converter } from '../converter';
 @Injectable()
 export class MapDrawingToSvgConverter implements Converter<MapDrawing, string> {
   constructor() {}
+
+  private getCurveInterpolator(curveType: CurveType) {
+    switch (curveType) {
+      case 'basis':
+        return curveBasis;
+      case 'catmullrom':
+        return curveCatmullRom;
+      case 'monotone':
+        return curveMonotone;
+      default:
+        return curveCatmullRom;
+    }
+  }
 
   convert(mapDrawing: MapDrawing) {
     let elem = ``;
@@ -31,6 +46,13 @@ export class MapDrawingToSvgConverter implements Converter<MapDrawing, string> {
       }\" x2=\"${mapDrawing.element.x2}\" y1=\"${mapDrawing.element.y1}\" y2=\"${
         mapDrawing.element.y2
       }\" stroke-dasharray=\"${mapDrawing.element.stroke_dasharray ?? 'none'}\" />`;
+    } else if (mapDrawing.element instanceof CurveElement) {
+      // Generate path data from points
+      const curve = mapDrawing.element;
+      const points: [number, number][] = curve.points.map((p) => [p.x, p.y]);
+      const lineGenerator = line<[number, number]>().curve(this.getCurveInterpolator(curve.curve_type || 'catmullrom'));
+      const pathData = lineGenerator(points) || '';
+      elem = `<path d=\"${pathData}\" stroke=\"${curve.stroke}\" stroke-width=\"${curve.stroke_width}\" stroke-dasharray=\"${curve.stroke_dasharray ?? 'none'}\" fill=\"none\" data-curve-type=\"${curve.curve_type ?? 'catmullrom'}\" data-arrow-start=\"${curve.arrow_start}\" data-arrow-end=\"${curve.arrow_end}\" />`;
     } else if (mapDrawing.element instanceof TextElement) {
       elem = `<text fill=\"${mapDrawing.element.fill}\" fill-opacity=\"1.0\" font-family=\"${mapDrawing.element.font_family}\" font-size=\"${mapDrawing.element.font_size}\" font-weight=\"${mapDrawing.element.font_weight}\">${mapDrawing.element.text}</text>`;
     } else return '';

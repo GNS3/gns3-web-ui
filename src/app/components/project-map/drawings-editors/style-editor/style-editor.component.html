@@ -51,6 +51,25 @@
     </mat-form-field>
     }
 
+    @if (element.curve_type !== undefined) {
+    <mat-form-field class="form-field">
+      <mat-label>Curve type</mat-label>
+      <mat-select [ngModelOptions]="{ standalone: true }" [(ngModel)]="element.curve_type">
+        @for (type of curveTypes; track type.value) {
+        <mat-option [value]="type.value"> {{ type.name }} </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field class="form-field">
+      <mat-label>Arrow direction</mat-label>
+      <mat-select [ngModelOptions]="{ standalone: true }" [(ngModel)]="element.arrow_direction">
+        @for (dir of arrowDirections; track dir.value) {
+        <mat-option [value]="dir.value"> {{ dir.name }} </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    }
+
     <mat-form-field class="form-field">
       <mat-label>Rotation</mat-label>
       <input matInput formControlName="rotation" type="number" />
