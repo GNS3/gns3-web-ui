@@ -1,24 +1,24 @@
 # Unit Testing Best Practices
 
-> **关键要点总结** - 从实际测试污染修复中提取的经验教训
+> **Key Learnings** - Extracted from fixing test pollution
 >
-> **修复成果**：从 114 个失败测试减少到 0 个（100% 成功率）
+> **Results**: 114 failing tests → 0 failing tests (100% success rate)
 
 ---
 
-## 🔑 核心原则
+## Core Principles
 
-### 1. 防御性清理 - Always Check Before Destroy
+### 1. Defensive Cleanup - Always Check Before Destroy
 
-**问题**：如果 `beforeEach` 失败，`fixture` 为 `undefined`，会导致二次错误。
+**Problem**: If `beforeEach` fails, `fixture` is `undefined`, causing secondary errors.
 
 ```typescript
-// ❌ 错误：假设 fixture 总是存在
+// ❌ WRONG: Assume fixture always exists
 afterEach(() => {
-  fixture.destroy(); // 如果 beforeEach 失败，这里会崩溃
+  fixture.destroy();
 });
 
-// ✅ 正确：检查是否存在
+// ✅ RIGHT: Check before destroying
 afterEach(() => {
   if (fixture) {
     fixture.destroy();
@@ -26,94 +26,94 @@ afterEach(() => {
 });
 ```
 
-**影响**：30+ 个文件有这个问题，修复后大幅减少随机失败。
+**Impact**: 30+ files had this issue. Fixing it dramatically reduced flaky tests.
 
 ---
 
-### 2. 全局状态管理 - Stub What You Unstub
+### 2. Global State Management - Stub What You Unstub
 
-**问题**：`vi.stubGlobal()` 修改的是真正的全局对象，影响所有后续测试。
+**Problem**: `vi.stubGlobal()` modifies real global objects, affecting all subsequent tests.
 
 ```typescript
-// ❌ 错误：stub 了但没有清理
+// ❌ WRONG: Stub without cleanup
 beforeAll(() => {
   vi.stubGlobal('WebSocket', mockWebSocket);
 });
-// 测试结束后，WebSocket 仍然是 mock 的！
+// WebSocket remains mocked after tests finish!
 
-// ✅ 正确：成对出现
+// ✅ RIGHT: Always pair with cleanup
 beforeAll(() => {
   vi.stubGlobal('WebSocket', mockWebSocket);
 });
 
 afterAll(() => {
-  vi.unstubAllGlobals(); // 必须清理！
+  vi.unstubAllGlobals(); // Must cleanup!
 });
 ```
 
-**影响**：8 个文件使用了 `vi.stubGlobal()` 但没有清理，导致严重的测试污染。
+**Impact**: 8 files used `vi.stubGlobal()` without cleanup, causing severe test pollution.
 
 ---
 
-### 3. Mock 状态隔离 - Clear Between Tests
+### 3. Mock State Isolation - Clear Between Tests
 
-**问题**：Mock 调用次数会在测试间累积。
+**Problem**: Mock call counts accumulate between tests.
 
 ```typescript
-// ❌ 错误：mock 调用累积
+// ❌ WRONG: Mock calls accumulate
 it('test 1', () => {
-  mockFn(); // 调用次数 = 1
+  mockFn(); // Call count = 1
 });
 
 it('test 2', () => {
-  mockFn(); // 调用次数 = 2！
-  expect(mockFn).toHaveBeenCalledTimes(1); // 失败！
+  mockFn(); // Call count = 2!
+  expect(mockFn).toHaveBeenCalledTimes(1); // Fails!
 });
 
-// ✅ 正确：每个测试前清理
+// ✅ RIGHT: Clear before each test
 beforeEach(() => {
-  vi.clearAllMocks(); // 重置所有 mock 调用计数
+  vi.clearAllMocks(); // Reset all mock call counts
 });
 ```
 
-**影响**：全局添加 `vi.clearAllMocks()` 后，测试稳定性显著提升。
+**Impact**: Adding `vi.clearAllMocks()` globally significantly improved test stability.
 
 ---
 
-### 4. Fake Timers 与异步测试
+### 4. Fake Timers with Async Tests
 
-**问题**：Fake timers 会暂停真实时间，异步操作需要手动推进。
+**Problem**: Fake timers pause real time; async operations need manual advancement.
 
 ```typescript
-// ❌ 错误：fake timers 阻止异步完成
+// ❌ WRONG: Fake timers block async completion
 it('should wait for async', async () => {
   await asyncOperation();
-  expect(result).toBe('done'); // 超时！时间被暂停了
+  expect(result).toBe('done'); // Times out!
 });
 
-// ✅ 正确：运行 timers 推进异步
+// ✅ RIGHT: Advance timers in fake environment
 it('should wait for async', async () => {
   await asyncOperation();
-  await vi.runAllTimersAsync(); // 推进所有 timers
+  await vi.runAllTimersAsync(); // Advance all timers
   expect(result).toBe('done');
 });
 ```
 
-**影响**：修复了 validator 测试（34 个测试）和 choose-name-dialog 测试。
+**Impact**: Fixed validator tests (34 tests) and choose-name-dialog test.
 
 ---
 
-### 5. DOM 清理 - Leave No Trace
+### 5. DOM Cleanup - Leave No Trace
 
-**问题**：创建 DOM 元素不清理会累积，导致后续测试失败。
+**Problem**: Created DOM elements accumulate, causing subsequent test failures.
 
 ```typescript
-// ❌ 错误：创建 DOM 不清理
+// ❌ WRONG: Create DOM without cleanup
 const element = document.createElement('div');
 document.body.appendChild(element);
-// 测试结束后 DOM 仍然存在！
+// DOM remains after test finishes!
 
-// ✅ 正确：追踪并清理
+// ✅ RIGHT: Track and cleanup
 const elements: HTMLElement[] = [];
 
 beforeEach(() => {
@@ -128,16 +128,16 @@ afterEach(() => {
 });
 ```
 
-**影响**：全局添加 `document.body.innerHTML = ''` 清理。
+**Impact**: Added global `document.body.innerHTML = ''` cleanup.
 
 ---
 
-### 6. 测试独立性 - No Execution Order Dependencies
+### 6. Test Independence - No Execution Order Dependencies
 
-**问题**：测试应该可以单独运行，任何顺序都应该通过。
+**Problem**: Tests should run independently in any order.
 
 ```typescript
-// ❌ 错误：测试依赖执行顺序
+// ❌ WRONG: Tests depend on execution order
 describe('Group A', () => {
   it('test A', () => {
     globalState = 'modified by A';
@@ -146,80 +146,80 @@ describe('Group A', () => {
 
 describe('Group B', () => {
   it('test B', () => {
-    expect(globalState).toBe('modified by A'); // 依赖顺序！
+    expect(globalState).toBe('modified by A'); // Order dependency!
   });
 });
 
-// ✅ 正确：每个测试独立
+// ✅ RIGHT: Each test is independent
 beforeEach(() => {
-  globalState = 'initial'; // 每个测试前重置
+  globalState = 'initial'; // Reset before each test
 });
 ```
 
-**影响**：测试执行顺序改变时仍然通过。
+**Impact**: Tests pass regardless of execution order.
 
 ---
 
-### 7. Stub 重设 - Prevent Stub Pollution
+### 7. Stub Reset - Prevent Stub Pollution
 
-**问题**：其他文件的清理可能清除你的 stub。
+**Problem**: Other tests' cleanup may clear your stubs.
 
 ```typescript
-// ❌ 错误：假设 stub 已经存在
+// ❌ WRONG: Assume stub exists
 beforeEach(() => {
-  // 如果其他文件调用了 vi.unstubAllGlobals()，
-  // WebSocket 不再是 mock 的！
+  // If another file called vi.unstubAllGlobals(),
+  // WebSocket is no longer mocked!
   new WebSocket('ws://localhost');
 });
 
-// ✅ 正确：确保 stub 存在
+// ✅ RIGHT: Ensure stub exists
 beforeEach(() => {
-  vi.stubGlobal('WebSocket', MockWebSocket); // 每次重新设置
+  vi.stubGlobal('WebSocket', MockWebSocket); // Re-set every time
   new WebSocket('ws://localhost');
 });
 ```
 
-**影响**：修复了 notification.service 测试（16 个测试）。
+**Impact**: Fixed notification.service tests (16 tests).
 
 ---
 
-## 📋 测试检查清单
+## Testing Checklist
 
-### 测试结构
-- [ ] `beforeEach` 中清理所有 mock 和状态
-- [ ] `afterEach` 中清理 DOM 和临时资源
-- [ ] 使用 `if (fixture)` 检查后再销毁
-- [ ] 全局 stub 在 `afterAll` 中清理
+### Test Structure
+- [ ] Clean all mocks and state in `beforeEach`
+- [ ] Clean DOM and temporary resources in `afterEach`
+- [ ] Use `if (fixture)` check before destroying
+- [ ] Clean global stubs in `afterAll`
 
-### Mock 管理
-- [ ] 使用 `vi.clearAllMocks()` 清理 mock 调用
-- [ ] Stub 全局对象时必须 `unstub`
-- [ ] 模块级 stub 在 `beforeEach` 中重新设置
+### Mock Management
+- [ ] Use `vi.clearAllMocks()` to reset mock call counts
+- [ ] Always `unstub` global objects
+- [ ] Re-set module-level stubs in `beforeEach`
 
-### 异步测试
-- [ ] Fake timers 环境使用 `vi.runAllTimersAsync()`
-- [ ] 避免 `fixture.whenStable()` 与 fake timers 混用
-- [ ] 明确等待异步操作完成
+### Async Tests
+- [ ] Use `vi.runAllTimersAsync()` in fake timer environment
+- [ ] Avoid mixing `fixture.whenStable()` with fake timers
+- [ ] Explicitly wait for async operations
 
-### 环境隔离
-- [ ] 每个测试独立，可单独运行
-- [ ] 不依赖测试执行顺序
-- [ ] 不共享状态（使用 `beforeEach` 隔离）
+### Environment Isolation
+- [ ] Each test is independent and can run alone
+- [ ] No dependencies on test execution order
+- [ ] No shared state (isolate with `beforeEach`)
 
 ---
 
-## 🚨 常见陷阱
+## Common Pitfalls
 
-### 陷阱 1：全局副作用未清理
+### Pitfall 1: Global Side Effects Not Cleaned
 
 ```typescript
-// ❌ 危险
+// ❌ DANGEROUS
 beforeAll(() => {
   vi.stubGlobal('localStorage', mockStorage);
 });
-// 忘记在 afterAll 中清理！
+// Forgot to cleanup in afterAll!
 
-// ✅ 安全
+// ✅ SAFE
 beforeAll(() => {
   vi.stubGlobal('localStorage', mockStorage);
 });
@@ -229,10 +229,10 @@ afterAll(() => {
 });
 ```
 
-### 陷阱 2：Mock 状态泄漏
+### Pitfall 2: Mock State Leakage
 
 ```typescript
-// ❌ 危险
+// ❌ DANGEROUS
 describe('Test Suite', () => {
   const mockFn = vi.fn();
 
@@ -241,11 +241,11 @@ describe('Test Suite', () => {
   });
 
   it('test 2', () => {
-    expect(mockFn).toHaveBeenCalledTimes(1); // 实际是 2！
+    expect(mockFn).toHaveBeenCalledTimes(1); // Actually 2!
   });
 });
 
-// ✅ 安全
+// ✅ SAFE
 describe('Test Suite', () => {
   const mockFn = vi.fn();
 
@@ -258,69 +258,69 @@ describe('Test Suite', () => {
   });
 
   it('test 2', () => {
-    expect(mockFn).toHaveBeenCalledTimes(1); // 正确是 1
+    expect(mockFn).toHaveBeenCalledTimes(1); // Correctly 1
   });
 });
 ```
 
-### 陷阱 3：Fake Timers 阻止异步
+### Pitfall 3: Fake Timers Blocking Async
 
 ```typescript
-// ❌ 危险
+// ❌ DANGEROUS
 beforeEach(() => {
   vi.useFakeTimers();
 });
 
 it('should wait for async', async () => {
-  await asyncOperation(); // 永远等待
+  await asyncOperation(); // Waits forever
   expect(result).toBe('done');
 });
 
-// ✅ 安全
+// ✅ SAFE
 beforeEach(() => {
   vi.useFakeTimers();
 });
 
 it('should wait for async', async () => {
   await asyncOperation();
-  await vi.runAllTimersAsync(); // 推进时间
+  await vi.runAllTimersAsync(); // Advance time
   expect(result).toBe('done');
 });
 ```
 
 ---
 
-## 🎯 快速参考
+## Quick Reference
 
-### 生命周期钩子
+### Lifecycle Hooks
 
-| 钩子 | 用途 | 注意事项 |
-|------|------|----------|
-| `beforeAll` | 一次性设置（stub 全局对象） | 必须配对 `afterAll` 清理 |
-| `afterAll` | 清理全局 stub | 使用 `vi.unstubAllGlobals()` |
-| `beforeEach` | 每个测试前的设置 | 清理 mock、重置状态 |
-| `afterEach` | 每个测试后的清理 | 销毁 fixture、清理 DOM |
+| Hook | Purpose | Caution |
+|------|---------|---------|
+| `beforeAll` | One-time setup (stub globals) | Must pair with `afterAll` cleanup |
+| `afterAll` | Clean global stubs | Use `vi.unstubAllGlobals()` |
+| `beforeEach` | Setup before each test | Clear mocks, reset state |
+| `afterEach` | Cleanup after each test | Destroy fixtures, clean DOM |
 
-### Vitest 关键 API
+### Vitest Key APIs
 
-| API | 用途 | 何时使用 |
-|-----|------|----------|
-| `vi.stubGlobal()` | Mock 全局对象 | `beforeAll` + `afterAll` 配对 |
-| `vi.unstubAllGlobals()` | 清理全局 stub | `afterAll` 中 |
-| `vi.clearAllMocks()` | 清理 mock 调用计数 | `beforeEach` 或 `afterEach` |
-| `vi.runAllTimersAsync()` | 推进 fake timers | 异步测试中 |
-| `vi.useFakeTimers()` | 启用 fake timers | `beforeEach` 中 |
-| `vi.useRealTimers()` | 恢复真实 timers | `afterEach` 中 |
+| API | Purpose | When to Use |
+|-----|---------|-------------|
+| `vi.stubGlobal()` | Mock global objects | `beforeAll` + `afterAll` pair |
+| `vi.unstubAllGlobals()` | Clean global stubs | In `afterAll` |
+| `vi.clearAllMocks()` | Clear mock call counts | `beforeEach` or `afterEach` |
+| `vi.runAllTimersAsync()` | Advance fake timers | In async tests |
+| `vi.useFakeTimers()` | Enable fake timers | In `beforeEach` |
+| `vi.useRealTimers()` | Restore real timers | In `afterEach` |
 
 ---
 
-## 📚 相关资源
+## Related Resources
 
-- **Vitest 官方文档**: https://vitest.dev/
+- **Vitest Docs**: https://vitest.dev/
 - **Testing Library**: https://testing-library.com/
-- **项目测试配置**: `src/test-setup.ts`, `vitest.config.ts`
+- **Project Test Config**: `src/test-setup.ts`, `vitest.config.ts`
 
 ---
 
-**最后更新**: 2026-04-04
-**修复成果**: 从 114 个失败测试 → 0 个失败测试（100% 成功率）
+**Last Updated**: 2026-04-04
+**Success Rate**: 114 failing tests → 0 failing tests (100%)
