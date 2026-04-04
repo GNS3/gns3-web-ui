@@ -12,19 +12,26 @@ import { ThemeService } from '@services/theme.service';
 import { XtermContextMenuService } from '@services/xterm-context-menu.service';
 import { XtermService } from '@services/xterm.service';
 
+// Store DOM elements for cleanup
+const domElementsToCleanup: HTMLElement[] = [];
+
 // Create mock instances
-const createMockTermInstance = () => ({
-  open: vi.fn(),
-  dispose: vi.fn(),
-  loadAddon: vi.fn(),
-  focus: vi.fn(),
-  write: vi.fn(),
-  resize: vi.fn(),
-  attachCustomKeyEventHandler: vi.fn().mockReturnValue(true),
-  cols: 100,
-  rows: 32,
-  element: document.createElement('div'),
-});
+const createMockTermInstance = () => {
+  const element = document.createElement('div');
+  domElementsToCleanup.push(element);
+  return {
+    open: vi.fn(),
+    dispose: vi.fn(),
+    loadAddon: vi.fn(),
+    focus: vi.fn(),
+    write: vi.fn(),
+    resize: vi.fn(),
+    attachCustomKeyEventHandler: vi.fn().mockReturnValue(true),
+    cols: 100,
+    rows: 32,
+    element,
+  };
+};
 
 const createMockFitAddonInstance = () => ({
   fit: vi.fn(),
@@ -128,8 +135,10 @@ describe('WebConsoleComponent', () => {
 
   // Helper to setup terminal mock element ref
   const setupTerminalMock = () => {
+    const element = document.createElement('div');
+    domElementsToCleanup.push(element);
     const mockElementRef = {
-      nativeElement: document.createElement('div'),
+      nativeElement: element,
     };
     Object.defineProperty(component, 'terminal', {
       get: () => () => mockElementRef,
@@ -148,19 +157,25 @@ describe('WebConsoleComponent', () => {
       onclose: null,
       readyState: 1,
     };
-    vi.stubGlobal('WebSocket', vi.fn().mockImplementation(function () {
-      return mockWebSocketInstance;
-    }));
+    vi.stubGlobal(
+      'WebSocket',
+      vi.fn().mockImplementation(function () {
+        return mockWebSocketInstance;
+      })
+    );
 
     // Mock ResizeObserver
-    vi.stubGlobal('ResizeObserver', vi.fn().mockImplementation(function (callback: ResizeObserverCallback) {
-      return {
-        observe: vi.fn(),
-        unobserve: vi.fn(),
-        disconnect: vi.fn(),
-        callback,
-      };
-    }));
+    vi.stubGlobal(
+      'ResizeObserver',
+      vi.fn().mockImplementation(function (callback: ResizeObserverCallback) {
+        return {
+          observe: vi.fn(),
+          unobserve: vi.fn(),
+          disconnect: vi.fn(),
+          callback,
+        };
+      })
+    );
 
     // Store references to subjects for cleanup
     consoleResizedSubject = mockNodeConsoleService.consoleResized;
@@ -168,6 +183,9 @@ describe('WebConsoleComponent', () => {
   });
 
   beforeEach(async () => {
+    // Clear all mocks to prevent test pollution
+    vi.clearAllMocks();
+
     // Reset mock term
     if (mockTermInstance) {
       mockTermInstance.open.mockClear();
@@ -223,11 +241,20 @@ describe('WebConsoleComponent', () => {
     if (fixture) {
       fixture.destroy();
     }
+
+    // Clean up any DOM elements created during tests
+    domElementsToCleanup.forEach((element) => {
+      element.remove();
+    });
+    domElementsToCleanup.length = 0;
   });
 
   afterAll(() => {
     consoleResizedSubject?.complete();
     themeChangedSubject?.complete();
+
+    // Clean up global mocks to prevent test pollution
+    vi.unstubAllGlobals();
   });
 
   describe('Component Creation', () => {
