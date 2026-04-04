@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
 import { firstValueFrom, take, toArray } from 'rxjs';
 import { WindowBoundaryService, WindowStyle, BoundaryConfig } from './window-boundary.service';
 
@@ -536,5 +536,9 @@ describe('WindowBoundaryService', () => {
       // Empty string should be parsed as 0
       expect(result.left).toBe('0px');
     });
+  });
+
+  afterAll(() => {
+    vi.unstubAllGlobals();
   });
 });

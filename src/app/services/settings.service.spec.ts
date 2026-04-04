@@ -27,6 +27,7 @@ describe('SettingsService', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   describe('Service Creation', () => {

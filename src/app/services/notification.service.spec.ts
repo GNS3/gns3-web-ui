@@ -57,6 +57,7 @@ describe('NotificationService', () => {
 
   afterEach(() => {
     service.disconnect();
+    vi.unstubAllGlobals();
   });
 
   describe('Service Creation', () => {
@@ -141,6 +142,7 @@ describe('NotificationService', () => {
       const ws = MockWebSocket.instances[0];
 
       service.disconnect();
+    vi.unstubAllGlobals();
 
       expect(ws.close).toHaveBeenCalled();
     });
@@ -148,6 +150,7 @@ describe('NotificationService', () => {
     it('should clear ws and currentController after disconnect', () => {
       service.connectToComputeNotifications(mockController);
       service.disconnect();
+    vi.unstubAllGlobals();
 
       expect(service['ws']).toBeNull();
       expect(service['currentController']).toBeNull();

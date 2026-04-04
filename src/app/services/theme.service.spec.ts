@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
 import { firstValueFrom, skip } from 'rxjs';
 import { ThemeService, PrebuiltTheme, ThemeType, MapThemeType, DEFAULT_THEME_TOKEN } from './theme.service';
@@ -477,5 +477,9 @@ describe('ThemeService', () => {
     it('getActualTheme should return same as getThemeType', () => {
       expect(service.getActualTheme()).toBe(service.getThemeType());
     });
+  });
+
+  afterAll(() => {
+    vi.unstubAllGlobals();
   });
 });

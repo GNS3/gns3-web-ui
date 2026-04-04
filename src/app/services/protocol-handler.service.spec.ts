@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, afterAll, vi } from 'vitest';
 import { ProtocolHandlerService } from './protocol-handler.service';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { ToasterService } from './toaster.service';
@@ -323,5 +323,9 @@ describe('ProtocolHandlerService', () => {
 
       expect(location.assign).toHaveBeenCalledWith('gns3://test');
     });
+  });
+
+  afterAll(() => {
+    vi.unstubAllGlobals();
   });
 });

@@ -145,6 +145,7 @@ describe('XtermContextMenuService', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   describe('Service Creation', () => {

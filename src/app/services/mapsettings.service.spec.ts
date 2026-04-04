@@ -23,6 +23,7 @@ describe('MapSettingsService', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   describe('Service Creation', () => {

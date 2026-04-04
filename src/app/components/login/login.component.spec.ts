@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterAll, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { LoginComponent } from './login.component';
 import { ReactiveFormsModule, FormControl, FormGroup } from '@angular/forms';
@@ -218,5 +218,9 @@ describe('LoginComponent', () => {
 
   it('should have controllerAddress getter', () => {
     expect(component.controllerAddress).toBe('localhost:3080');
+  });
+
+  afterAll(() => {
+    vi.unstubAllGlobals();
   });
 });
