@@ -8,7 +8,8 @@ import {
   Output,
   SimpleChange,
   inject,
-  input, OnChanges,
+  input,
+  OnChanges,
 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';

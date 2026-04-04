@@ -25,7 +25,8 @@ export class EditStyleActionComponent implements OnChanges {
   constructor() {}
 
   ngOnChanges() {
-    this.isImageDrawing = this.drawing().element instanceof ImageElement;
+    const drawing = this.drawing();
+    this.isImageDrawing = drawing?.element instanceof ImageElement;
   }
 
   editStyle() {

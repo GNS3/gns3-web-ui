@@ -56,7 +56,7 @@ export class DialogConfigService {
 
     // Confirmation Dialog
     this.configs.set('confirmation', {
-      panelClass: ['confirmation-dialog-panel'],
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
     });
 
     // Edit Controller Dialog

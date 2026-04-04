@@ -20,7 +20,6 @@
     "test": "ng test",
     "test:run": "ng test --watch=false",
     "lint": "ng lint",
-    "e2e": "ng e2e",
     "release": "build",
     "prettier:base": "prettier",
     "prettier:check": "yarn prettier:base -- --list-different \"src/**/*.{ts,js,html,scss}\"",

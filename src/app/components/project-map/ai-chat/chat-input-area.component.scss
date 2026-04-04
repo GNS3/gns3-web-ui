@@ -99,7 +99,11 @@
 
   &:hover:not(:disabled) {
     box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 50%, transparent);
-    background: linear-gradient(135deg, var(--mat-sys-primary), color-mix(in srgb, var(--mat-sys-primary-container) 80%, black));
+    background: linear-gradient(
+      135deg,
+      var(--mat-sys-primary),
+      color-mix(in srgb, var(--mat-sys-primary-container) 80%, black)
+    );
     transform: translateY(-1px);
 
     &::before {
@@ -180,7 +184,11 @@
   &:hover:not(:disabled) {
     transform: scale(1.15);
     box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-tertiary) 50%, transparent);
-    background: linear-gradient(135deg, var(--mat-sys-tertiary), color-mix(in srgb, var(--mat-sys-tertiary) 80%, black));
+    background: linear-gradient(
+      135deg,
+      var(--mat-sys-tertiary),
+      color-mix(in srgb, var(--mat-sys-tertiary) 80%, black)
+    );
 
     &::before {
       opacity: 1;

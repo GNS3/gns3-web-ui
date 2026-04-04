@@ -26,7 +26,7 @@ jobs:
       - name: Install JS dependencies
         run: yarn install --frozen-lockfile --immutable
       - name: Test
-        run: yarn test
+        run: yarn ng test --watch=false
 
   lint-check:
     runs-on: ubuntu-latest

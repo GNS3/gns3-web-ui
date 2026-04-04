@@ -17,21 +17,21 @@
 
 :root {
   // Default backgrounds (auto mode follows global theme)
-  --gns3-map-bg-auto: #FAFAFA; // light fallback
-  --gns3-map-bg-light: #FAFAFA;
+  --gns3-map-bg-auto: #fafafa; // light fallback
+  --gns3-map-bg-light: #fafafa;
   --gns3-map-bg-dark: #424242;
 
   // Light presets
-  --gns3-map-bg-light-1: radial-gradient(ellipse at 20% 20%, #B2EBF2 0%, #E0F7FA 70%);
-  --gns3-map-bg-light-2: radial-gradient(ellipse at 20% 20%, #BBDEFB 0%, #E3F2FD 70%);
-  --gns3-map-bg-light-3: radial-gradient(ellipse at 20% 20%, #F5F5F5 0%, #FAFAFA 70%);
-  --gns3-map-bg-light-4: radial-gradient(ellipse at 20% 20%, #E1BEE7 0%, #F3E5F5 70%);
+  --gns3-map-bg-light-1: radial-gradient(ellipse at 20% 20%, #b2ebf2 0%, #e0f7fa 70%);
+  --gns3-map-bg-light-2: radial-gradient(ellipse at 20% 20%, #bbdefb 0%, #e3f2fd 70%);
+  --gns3-map-bg-light-3: radial-gradient(ellipse at 20% 20%, #f5f5f5 0%, #fafafa 70%);
+  --gns3-map-bg-light-4: radial-gradient(ellipse at 20% 20%, #e1bee7 0%, #f3e5f5 70%);
 
   // Dark presets
-  --gns3-map-bg-dark-1: linear-gradient(135deg, #006064 0%, #00838F 50%, #006064 100%);
-  --gns3-map-bg-dark-2: linear-gradient(135deg, #1565C0 0%, #1976D2 50%, #1565C0 100%);
+  --gns3-map-bg-dark-1: linear-gradient(135deg, #006064 0%, #00838f 50%, #006064 100%);
+  --gns3-map-bg-dark-2: linear-gradient(135deg, #1565c0 0%, #1976d2 50%, #1565c0 100%);
   --gns3-map-bg-dark-3: linear-gradient(135deg, #424242 0%, #616161 50%, #424242 100%);
-  --gns3-map-bg-dark-4: linear-gradient(135deg, #4A148C 0%, #6A1B9A 50%, #4A148C 100%);
+  --gns3-map-bg-dark-4: linear-gradient(135deg, #4a148c 0%, #6a1b9a 50%, #4a148c 100%);
 }
 
 /* Light theme backgrounds (auto resolves to these) */
@@ -45,16 +45,32 @@
 }
 
 /* Named light presets */
-.gns3-map-bg-light-1 { --gns3-map-bg: var(--gns3-map-bg-light-1); }
-.gns3-map-bg-light-2 { --gns3-map-bg: var(--gns3-map-bg-light-2); }
-.gns3-map-bg-light-3 { --gns3-map-bg: var(--gns3-map-bg-light-3); }
-.gns3-map-bg-light-4 { --gns3-map-bg: var(--gns3-map-bg-light-4); }
+.gns3-map-bg-light-1 {
+  --gns3-map-bg: var(--gns3-map-bg-light-1);
+}
+.gns3-map-bg-light-2 {
+  --gns3-map-bg: var(--gns3-map-bg-light-2);
+}
+.gns3-map-bg-light-3 {
+  --gns3-map-bg: var(--gns3-map-bg-light-3);
+}
+.gns3-map-bg-light-4 {
+  --gns3-map-bg: var(--gns3-map-bg-light-4);
+}
 
 /* Named dark presets */
-.gns3-map-bg-dark-1 { --gns3-map-bg: var(--gns3-map-bg-dark-1); }
-.gns3-map-bg-dark-2 { --gns3-map-bg: var(--gns3-map-bg-dark-2); }
-.gns3-map-bg-dark-3 { --gns3-map-bg: var(--gns3-map-bg-dark-3); }
-.gns3-map-bg-dark-4 { --gns3-map-bg: var(--gns3-map-bg-dark-4); }
+.gns3-map-bg-dark-1 {
+  --gns3-map-bg: var(--gns3-map-bg-dark-1);
+}
+.gns3-map-bg-dark-2 {
+  --gns3-map-bg: var(--gns3-map-bg-dark-2);
+}
+.gns3-map-bg-dark-3 {
+  --gns3-map-bg: var(--gns3-map-bg-dark-3);
+}
+.gns3-map-bg-dark-4 {
+  --gns3-map-bg: var(--gns3-map-bg-dark-4);
+}
 
 /* Node/Link selection grayscale effect */
 svg#map g.selected {
@@ -83,23 +99,23 @@ svg#map g.selection-line-tool path.selection {
   /* Default (light) colors */
   --gns3-canvas-label-color: #000000;
   --gns3-canvas-link-color: #000000;
-  --gns3-grid-drawing-color: #C0C0C0; // silver
-  --gns3-grid-node-color: #2F4F4F; // DarkSlateGray
+  --gns3-grid-drawing-color: #c0c0c0; // silver
+  --gns3-grid-node-color: #2f4f4f; // DarkSlateGray
 
   /* Light background colors */
   &--light-bg {
     --gns3-canvas-label-color: #000000;
     --gns3-canvas-link-color: #000000;
-    --gns3-grid-drawing-color: #C0C0C0;
-    --gns3-grid-node-color: #2F4F4F;
+    --gns3-grid-drawing-color: #c0c0c0;
+    --gns3-grid-node-color: #2f4f4f;
   }
 
   /* Dark background colors */
   &--dark-bg {
-    --gns3-canvas-label-color: #FFFFFF;
-    --gns3-canvas-link-color: #FFFFFF;
+    --gns3-canvas-label-color: #ffffff;
+    --gns3-canvas-link-color: #ffffff;
     --gns3-grid-drawing-color: #888888;
-    --gns3-grid-node-color: #B0B0B0; // lighter for dark bg - more visible
+    --gns3-grid-node-color: #b0b0b0; // lighter for dark bg - more visible
   }
 }
 

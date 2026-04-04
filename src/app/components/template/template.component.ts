@@ -92,7 +92,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
     'iou',
     'qemu',
   ];
-  selectedType: string;
+  selectedType: string = 'all';
 
   // Track mouse position during drag using signals (zoneless compatible)
   private lastPageX = signal<number>(0);

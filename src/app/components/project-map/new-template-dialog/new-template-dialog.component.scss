@@ -255,25 +255,25 @@
     gap: 8px;
     width: 100%;
 
-    // 卡片样式 - 视觉层次优化
+    // Card style - visual hierarchy optimization
     background: var(--mat-sys-surface-container-low);
     border: 1px solid var(--mat-sys-outline-variant);
     border-radius: 12px;
     padding: 12px 16px;
     transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
 
-    // 悬停效果
+    // Hover effect
     &:hover {
       background: var(--mat-sys-surface-container);
       box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
     }
 
-    // 已安装状态 - 绿色左边框
+    // Installed state - green left border
     &--installed {
       border-left: 4px solid var(--mat-sys-primary);
     }
 
-    // 缺失状态 - 橙色左边框
+    // Missing state - orange left border
     &--missing {
       border-left: 4px solid var(--mat-sys-tertiary);
     }

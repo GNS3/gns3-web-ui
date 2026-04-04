@@ -13,7 +13,12 @@
       [style.height.px]="textareaHeight"
     ></textarea>
 
-    <button class="gns3-chat-input-area__send-button" (click)="sendMessage()" [disabled]="!canSend || disabled()" matRipple>
+    <button
+      class="gns3-chat-input-area__send-button"
+      (click)="sendMessage()"
+      [disabled]="!canSend || disabled()"
+      matRipple
+    >
       @if (!disabled()) {
       <mat-icon>send</mat-icon>
       } @else {
@@ -39,7 +44,9 @@
 
   @if (showCharCount()) {
   <div class="gns3-chat-input-area__input-footer">
-    <span class="gns3-chat-input-area__char-count" [class.gns3-chat-input-area__char-count--warning]="isNearLimit">{{ message.length }}</span>
+    <span class="gns3-chat-input-area__char-count" [class.gns3-chat-input-area__char-count--warning]="isNearLimit">{{
+      message.length
+    }}</span>
     <span class="gns3-chat-input-area__char-separator"> / </span>
     <span class="gns3-chat-input-area__char-max">{{ maxLength() }}</span>
   </div>

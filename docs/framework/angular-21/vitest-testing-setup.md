@@ -298,6 +298,28 @@ describe('MyComponent', () => {
 
 ## Common Issues and Solutions
 
+### ⭐ Test Environment Pollution (Flaky Tests)
+
+**Problem**: Tests pass individually but fail randomly when run together
+
+**Solution**: See [Vitest Test Isolation Guide](./vitest-test-isolation-guide.md) for comprehensive solutions
+
+**Quick Fix**:
+```typescript
+// vitest.config.ts - Use forks pool
+export default defineConfig({
+  test: {
+    pool: 'forks',
+    fileParallelism: false,
+  },
+});
+
+// src/test-setup.ts - Add cleanup
+afterEach(() => {
+  TestBed.resetTestingModule();
+});
+```
+
 ### Issue 1: Platform Already Created
 
 **Error**:
@@ -451,6 +473,14 @@ rm -rf dist out-tsc node_modules/.vite
 
 ## References
 
+### Internal Documentation
+
+- [Vitest Test Isolation Guide](./vitest-test-isolation-guide.md) - ⭐ Solving Flaky Tests
+- [Angular Zoneless Guide](./zoneless-guide.md) - Zoneless patterns
+- [CLAUDE.md](../../../CLAUDE.md) - Development standards
+
+### External Documentation
+
 - [Angular Testing Guide](https://angular.dev/guide/testing)
 - [Angular Zoneless Guide](https://angular.dev/guide/zoneless)
 - [Vitest Documentation](https://vitest.dev/)
@@ -459,6 +489,11 @@ rm -rf dist out-tsc node_modules/.vite
 ---
 
 ## Changelog
+
+### 2026-04-03
+
+- ✅ **Added test isolation guide**: Comprehensive Flaky Tests solution documentation
+- ✅ **Cross-references**: Link to isolation guide from troubleshooting section
 
 ### 2026-04-02
 - ✅ Initial Vitest environment setup

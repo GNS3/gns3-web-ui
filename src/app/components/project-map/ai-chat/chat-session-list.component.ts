@@ -196,12 +196,11 @@ export class ChatSessionListComponent {
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: { message },
-      width: '360px',
       position,
       autoFocus: false,
       restoreFocus: false,
       backdropClass: 'delete-dialog-backdrop',
-      panelClass: 'confirmation-dialog-panel',
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
     });
 
     dialogRef.afterClosed().subscribe((result: boolean) => {

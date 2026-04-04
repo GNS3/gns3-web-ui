@@ -12,7 +12,8 @@
  */
 import { Injectable } from '@angular/core';
 import { Router, Resolve, RouterStateSnapshot, ActivatedRouteSnapshot } from '@angular/router';
-import { Observable, of, Subscriber } from 'rxjs';
+import { Observable, from, throwError, catchError } from 'rxjs';
+import { switchMap } from 'rxjs/operators';
 import { Controller } from '@models/controller';
 import { Role } from '@models/api/role';
 import { ControllerService } from '@services/controller.service';
@@ -25,16 +26,20 @@ export class RoleDetailResolver implements Resolve<Role> {
   constructor(private controllerService: ControllerService, private roleService: RoleService) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Role> {
-    return new Observable<Role>((observer: Subscriber<Role>) => {
-      const controllerId = route.paramMap.get('controller_id');
-      const roleId = route.paramMap.get('role_id');
+    const controllerId = route.paramMap.get('controller_id');
+    const roleId = route.paramMap.get('role_id');
 
-      this.controllerService.get(+controllerId).then((controller: Controller) => {
-        this.roleService.getById(controller, roleId).subscribe((role: Role) => {
-          observer.next(role);
-          observer.complete();
-        });
-      });
-    });
+    // Convert Promise to Observable and handle errors
+    return from(this.controllerService.get(+controllerId)).pipe(
+      // Use switchMap to chain with the role service call
+      switchMap((controller: Controller) => {
+        return this.roleService.getById(controller, roleId);
+      }),
+      // Handle any errors from either service
+      catchError((error) => {
+        // Re-throw the error so the router can handle it
+        return throwError(() => error);
+      })
+    );
   }
 }

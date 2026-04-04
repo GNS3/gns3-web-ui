@@ -2,7 +2,13 @@
   <!-- New session button -->
   <div class="gns3-chat-session-list__header">
     <button mat-button (click)="createNewSession()" class="gns3-chat-session-list__new-button">
-      <svg class="gns3-chat-session-list__icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+      <svg
+        class="gns3-chat-session-list__icon"
+        xmlns="http://www.w3.org/2000/svg"
+        height="20"
+        width="20"
+        viewBox="0 0 24 24"
+      >
         <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
       </svg>
       <span>New Chat</span>
@@ -65,7 +71,13 @@
         [matMenuTriggerFor]="sessionMenu"
         (click)="$event.stopPropagation()"
       >
-        <svg class="gns3-chat-session-list__menu-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+        <svg
+          class="gns3-chat-session-list__menu-icon"
+          xmlns="http://www.w3.org/2000/svg"
+          height="20"
+          width="20"
+          viewBox="0 0 24 24"
+        >
           <path
             d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
           />
@@ -81,7 +93,13 @@
         (closed)="onMenuClosed()"
       >
         <button mat-menu-item (click)="renameSession(session)">
-          <svg class="gns3-chat-session-list__menu-item-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+          <svg
+            class="gns3-chat-session-list__menu-item-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            height="20"
+            width="20"
+            viewBox="0 0 24 24"
+          >
             <path
               d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"
             />
@@ -89,7 +107,13 @@
           <span>Rename</span>
         </button>
         <button mat-menu-item (click)="togglePinSession(session)">
-          <svg class="gns3-chat-session-list__menu-item-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
+          <svg
+            class="gns3-chat-session-list__menu-item-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            height="20"
+            width="20"
+            viewBox="0 0 24 24"
+          >
             <path d="M16 12V4H17V2H7V4H8V12L6 14V16H11V22H13V16H18V14L16 12Z" />
           </svg>
           <span>{{ session.pinned ? 'Unpin' : 'Pin' }}</span>
@@ -111,7 +135,13 @@
     </div>
     } } @else {
     <div class="gns3-chat-session-list__no-sessions">
-      <svg class="gns3-chat-session-list__no-sessions-icon" xmlns="http://www.w3.org/2000/svg" height="48" width="48" viewBox="0 0 24 24">
+      <svg
+        class="gns3-chat-session-list__no-sessions-icon"
+        xmlns="http://www.w3.org/2000/svg"
+        height="48"
+        width="48"
+        viewBox="0 0 24 24"
+      >
         <path
           d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z"
         />

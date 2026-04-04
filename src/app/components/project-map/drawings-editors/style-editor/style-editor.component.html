@@ -5,23 +5,13 @@
     @if (element.fill !== undefined) {
     <mat-form-field class="form-field">
       <mat-label>Fill color</mat-label>
-      <input
-        matInput
-        [ngModelOptions]="{ standalone: true }"
-        type="color"
-        [(ngModel)]="element.fill"
-      />
+      <input matInput [ngModelOptions]="{ standalone: true }" type="color" [(ngModel)]="element.fill" />
     </mat-form-field>
     }
 
     <mat-form-field class="form-field">
       <mat-label>Border color</mat-label>
-      <input
-        matInput
-        [ngModelOptions]="{ standalone: true }"
-        type="color"
-        [(ngModel)]="element.stroke"
-      />
+      <input matInput [ngModelOptions]="{ standalone: true }" type="color" [(ngModel)]="element.stroke" />
     </mat-form-field>
 
     <mat-form-field class="form-field">
@@ -30,10 +20,7 @@
     </mat-form-field>
     <mat-form-field class="form-field">
       <mat-label>Border style</mat-label>
-      <mat-select
-        [ngModelOptions]="{ standalone: true }"
-        [(ngModel)]="element.stroke_dasharray"
-      >
+      <mat-select [ngModelOptions]="{ standalone: true }" [(ngModel)]="element.stroke_dasharray">
         @for (type of borderTypes; track type.value) {
         <mat-option [value]="type.value"> {{ type.name }} </mat-option>
         }
@@ -43,24 +30,12 @@
     @if (element.width !== undefined) {
     <mat-form-field class="form-field">
       <mat-label>Width</mat-label>
-      <input
-        matInput
-        [ngModelOptions]="{ standalone: true }"
-        min="0"
-        type="number"
-        [(ngModel)]="element.width"
-      />
+      <input matInput [ngModelOptions]="{ standalone: true }" min="0" type="number" [(ngModel)]="element.width" />
     </mat-form-field>
     } @if (element.height !== undefined) {
     <mat-form-field class="form-field">
       <mat-label>Height</mat-label>
-      <input
-        matInput
-        [ngModelOptions]="{ standalone: true }"
-        min="0"
-        type="number"
-        [(ngModel)]="element.height"
-      />
+      <input matInput [ngModelOptions]="{ standalone: true }" min="0" type="number" [(ngModel)]="element.height" />
     </mat-form-field>
     } @if (element.rx !== undefined) {
     <mat-form-field class="form-field">

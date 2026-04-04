@@ -50,7 +50,7 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
   readonly virtualBoxTemplate = signal<VirtualBoxTemplate>(<VirtualBoxTemplate>{});
 
   // Form field signals
-  vm = model('');
+  vm = model<VirtualBoxVm | ''>('');
   linkedClone = model(false);
 
   ngOnInit() {

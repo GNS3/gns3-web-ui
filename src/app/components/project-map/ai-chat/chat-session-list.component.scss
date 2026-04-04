@@ -60,8 +60,7 @@
   &--active {
     background-color: var(--mat-sys-primary-container);
     border-left: 4px solid var(--mat-sys-primary);
-    box-shadow:
-      0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent),
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent),
       inset 0 0 0 1px color-mix(in srgb, var(--mat-sys-primary) 10%, transparent);
     transform: translateX(2px);
   }
