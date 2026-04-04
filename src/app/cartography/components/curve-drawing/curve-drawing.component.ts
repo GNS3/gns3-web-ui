@@ -167,7 +167,7 @@ export class CurveDrawingComponent implements OnInit, OnDestroy {
     const curveElement = new CurveElement();
     curveElement.points = this.points.map(p => ({ x: p.x - minX, y: p.y - minY }));
     curveElement.stroke = '#000000';
-    curveElement.stroke_width = 2;
+    curveElement.stroke_width = 3;
     curveElement.stroke_dasharray = 'none';
     curveElement.curve_type = 'none';
     curveElement.arrow_start = false;

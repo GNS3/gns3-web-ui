@@ -153,16 +153,16 @@ export class LineDrawingWidget implements DrawingShapeWidget {
       marker = defs
         .append('marker')
         .attr('id', markerId)
-        .attr('markerWidth', '3')
-        .attr('markerHeight', '3')
-        .attr('refX', position === 'end' ? '2.5' : '0.5')
-        .attr('refY', '1.5')
+        .attr('markerWidth', '4')
+        .attr('markerHeight', '4')
+        .attr('refX', position === 'end' ? '0' : '4')
+        .attr('refY', '2')
         .attr('orient', 'auto')
         .attr('markerUnits', 'strokeWidth');
 
       marker
         .append('path')
-        .attr('d', position === 'end' ? 'M0,0 L0,3 L3,1.5 z' : 'M3,0 L3,3 L0,1.5 z')
+        .attr('d', position === 'end' ? 'M0,0 L4,2 L0,4 z' : 'M4,0 L0,2 L4,4 z')
         .attr('fill', color);
     } else {
       marker.select('path').attr('fill', color);
