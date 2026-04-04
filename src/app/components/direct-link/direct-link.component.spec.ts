@@ -157,12 +157,7 @@ describe('DirectLinkComponent', () => {
       await component.createController();
 
       expect(mockControllerService.create).toHaveBeenCalled();
-      expect(mockRouter.navigate).toHaveBeenCalledWith([
-        '/controller',
-        'new-controller-id',
-        'project',
-        mockProjectId,
-      ]);
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', 'new-controller-id', 'project', mockProjectId]);
     });
   });
 });

@@ -140,13 +140,7 @@ describe('IdlePcActionComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        IdlePcActionComponent,
-        MatDialogModule,
-        MatButtonModule,
-        MatIconModule,
-        MatMenuModule,
-      ],
+      imports: [IdlePcActionComponent, MatDialogModule, MatButtonModule, MatIconModule, MatMenuModule],
       providers: [
         { provide: MatDialog, useValue: mockDialog },
         { provide: NodeService, useValue: mockNodeService },

@@ -55,9 +55,7 @@ describe('InstalledSoftwareService', () => {
     });
 
     it('should preserve other software properties', () => {
-      const mockSoftware = [
-        { name: 'Wireshark', type: 'web', installed: true },
-      ];
+      const mockSoftware = [{ name: 'Wireshark', type: 'web', installed: true }];
       mockExternalSoftwareDefinition.get.mockReturnValue(mockSoftware);
 
       const result = service.list();
@@ -67,9 +65,7 @@ describe('InstalledSoftwareService', () => {
     });
 
     it('should modify objects in place (service behavior)', () => {
-      const mockSoftware = [
-        { name: 'Wireshark', installed: true },
-      ];
+      const mockSoftware = [{ name: 'Wireshark', installed: true }];
       mockExternalSoftwareDefinition.get.mockReturnValue(mockSoftware);
 
       service.list();

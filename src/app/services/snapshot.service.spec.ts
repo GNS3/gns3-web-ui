@@ -25,7 +25,7 @@ describe('SnapshotService', () => {
       username: '',
       password: '',
       tokenExpired: false,
-    }) as Controller;
+    } as Controller);
 
   beforeEach(() => {
     mockHttpController = {
@@ -61,11 +61,7 @@ describe('SnapshotService', () => {
 
       await firstValueFrom(service.create(mockController, 'project-1', snapshot));
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-1/snapshots',
-        snapshot
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/projects/project-1/snapshots', snapshot);
     });
 
     it('should return the created snapshot', async () => {
@@ -81,9 +77,9 @@ describe('SnapshotService', () => {
       const error = new Error('Server error');
       mockHttpController.post.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.create(mockController, 'project-1', mockSnapshot()))
-      ).rejects.toThrow('Server error');
+      await expect(firstValueFrom(service.create(mockController, 'project-1', mockSnapshot()))).rejects.toThrow(
+        'Server error'
+      );
     });
   });
 
@@ -93,10 +89,7 @@ describe('SnapshotService', () => {
 
       await firstValueFrom(service.delete(mockController, 'project-1', 'snap-1'));
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-1/snapshots/snap-1'
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/projects/project-1/snapshots/snap-1');
     });
 
     it('should return empty object on success', async () => {
@@ -111,9 +104,9 @@ describe('SnapshotService', () => {
       const error = new Error('Delete failed');
       mockHttpController.delete.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.delete(mockController, 'project-1', 'snap-1'))
-      ).rejects.toThrow('Delete failed');
+      await expect(firstValueFrom(service.delete(mockController, 'project-1', 'snap-1'))).rejects.toThrow(
+        'Delete failed'
+      );
     });
   });
 
@@ -128,10 +121,7 @@ describe('SnapshotService', () => {
 
       await firstValueFrom(service.list(mockController, 'project-1'));
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-1/snapshots'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/projects/project-1/snapshots');
     });
 
     it('should return array of snapshots', async () => {
@@ -155,9 +145,7 @@ describe('SnapshotService', () => {
       const error = new Error('Network error');
       mockHttpController.get.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.list(mockController, 'project-1'))
-      ).rejects.toThrow('Network error');
+      await expect(firstValueFrom(service.list(mockController, 'project-1'))).rejects.toThrow('Network error');
     });
 
     it.each([
@@ -198,9 +186,9 @@ describe('SnapshotService', () => {
       const error = new Error('Restore failed');
       mockHttpController.post.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.restore(mockController, 'project-1', 'snap-1'))
-      ).rejects.toThrow('Restore failed');
+      await expect(firstValueFrom(service.restore(mockController, 'project-1', 'snap-1'))).rejects.toThrow(
+        'Restore failed'
+      );
     });
 
     it.each([
@@ -221,10 +209,7 @@ describe('SnapshotService', () => {
 
       await firstValueFrom(service.list(mockController, 'project-with-dash'));
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-with-dash/snapshots'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/projects/project-with-dash/snapshots');
     });
 
     it('should handle special characters in snapshot_id', async () => {
@@ -243,10 +228,7 @@ describe('SnapshotService', () => {
 
       await firstValueFrom(service.delete(mockController, 'proj-1', ''));
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/projects/proj-1/snapshots/'
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/projects/proj-1/snapshots/');
     });
 
     it('should handle empty project_id', async () => {

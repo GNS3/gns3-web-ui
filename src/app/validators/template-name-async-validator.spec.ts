@@ -132,24 +132,21 @@ describe('templateNameAsyncValidator', () => {
       ['new-template', ['existing-template', 'another-template'], 'completely new name'],
       ['unique-name', [], 'empty template list'],
       ['test', ['prod', 'staging', 'dev'], 'name not in existing list'],
-    ])(
-      'should return null for "%s" when list contains %j (%s)',
-      async (inputName, existingNames, _description) => {
-        // Arrange
-        const existingTemplates = existingNames.map((name, index) => ({
-          name,
-          template_id: String(index + 1),
-        }));
-        mockListTemplates.mockReturnValue(of(existingTemplates));
-        const validator = templateNameAsyncValidator(mockController, mockTemplateService);
+    ])('should return null for "%s" when list contains %j (%s)', async (inputName, existingNames, _description) => {
+      // Arrange
+      const existingTemplates = existingNames.map((name, index) => ({
+        name,
+        template_id: String(index + 1),
+      }));
+      mockListTemplates.mockReturnValue(of(existingTemplates));
+      const validator = templateNameAsyncValidator(mockController, mockTemplateService);
 
-        // Act
-        const { result } = await executeValidator(validator, inputName);
+      // Act
+      const { result } = await executeValidator(validator, inputName);
 
-        // Assert
-        expect(result).toBeNull();
-      }
-    );
+      // Assert
+      expect(result).toBeNull();
+    });
   });
 
   describe('debounce behavior', () => {

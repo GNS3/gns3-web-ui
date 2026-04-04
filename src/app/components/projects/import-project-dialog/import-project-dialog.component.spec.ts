@@ -41,7 +41,7 @@ describe('ImportProjectDialogComponent', () => {
       username: '',
       password: '',
       tokenExpired: false,
-    }) as Controller;
+    } as Controller);
 
   const createMockProject = (): Project =>
     ({
@@ -64,7 +64,7 @@ describe('ImportProjectDialogComponent', () => {
       variables: [],
       path: '/path/to/project',
       readonly: false,
-    }) as Project;
+    } as Project);
 
   const createMockUploader = (): FileUploader => {
     const uploader = new FileUploader({ url: '' });
@@ -112,11 +112,7 @@ describe('ImportProjectDialogComponent', () => {
     mockProject = createMockProject();
 
     await TestBed.configureTestingModule({
-      imports: [
-        ImportProjectDialogComponent,
-        MatDialogModule,
-        ReactiveFormsModule,
-      ],
+      imports: [ImportProjectDialogComponent, MatDialogModule, ReactiveFormsModule],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: { controller: mockController, project: mockProject } },
@@ -292,11 +288,7 @@ describe('ImportProjectDialogComponent', () => {
 
       component.prepareUploadPath();
 
-      expect(mockProjectService.getUploadPath).toHaveBeenCalledWith(
-        component.controller,
-        component.uuid,
-        'MyProject'
-      );
+      expect(mockProjectService.getUploadPath).toHaveBeenCalledWith(component.controller, component.uuid, 'MyProject');
     });
 
     it('should return upload URL from projectService', () => {

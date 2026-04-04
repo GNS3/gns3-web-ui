@@ -156,7 +156,15 @@ describe('GlobalUploadIndicatorComponent', () => {
 
     it('should stop event propagation', () => {
       fixture.detectChanges();
-      const row = { tempId: 'temp-nav', filename: 'img', image_type: 'qemu', image_size: 0, progress: 0, status: 'uploading' as const, controller_id: 1 };
+      const row = {
+        tempId: 'temp-nav',
+        filename: 'img',
+        image_type: 'qemu',
+        image_size: 0,
+        progress: 0,
+        status: 'uploading' as const,
+        controller_id: 1,
+      };
       const mockEvent = { stopPropagation: vi.fn() } as unknown as MouseEvent;
       fixture.componentInstance.navigateToFile(row as any, mockEvent);
       expect(mockEvent.stopPropagation).toHaveBeenCalled();

@@ -7,8 +7,7 @@ describe('ConfirmationDialogComponent', () => {
   let fixture: ComponentFixture<ConfirmationDialogComponent>;
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
 
-  const createMockProject = (status: string) =>
-    ({ name: 'Test Project', status } as any);
+  const createMockProject = (status: string) => ({ name: 'Test Project', status } as any);
 
   beforeEach(async () => {
     mockDialogRef = { close: vi.fn() };
@@ -47,15 +46,13 @@ describe('ConfirmationDialogComponent', () => {
       fixture.detectChanges();
 
       expect(fixture.componentInstance.confirmationMessage()).toBe(
-        'Project Test Project is open. You can not overwrite it.',
+        'Project Test Project is open. You can not overwrite it.'
       );
       expect(fixture.componentInstance.isOpen()).toBe(true);
     });
 
     it('should set overwrite message when project status is not opened', () => {
-      expect(fixture.componentInstance.confirmationMessage()).toBe(
-        'Project Test Project already exist, overwrite it?',
-      );
+      expect(fixture.componentInstance.confirmationMessage()).toBe('Project Test Project already exist, overwrite it?');
       expect(fixture.componentInstance.isOpen()).toBe(false);
     });
   });

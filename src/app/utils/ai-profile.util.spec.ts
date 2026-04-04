@@ -6,11 +6,7 @@ import { LLMModelConfigWithSource } from '@models/ai-profile';
 // Test Helpers
 // ─────────────────────────────────────────────
 
-function makeConfig(
-  model: string,
-  provider: string,
-  base_url?: string
-): LLMModelConfigWithSource {
+function makeConfig(model: string, provider: string, base_url?: string): LLMModelConfigWithSource {
   return {
     source: 'user',
     config: {
@@ -36,27 +32,9 @@ describe('getModelDisplayName', () => {
         'gemini-2.5-flash (api.google.com)',
         'extracts hostname from base_url',
       ],
-      [
-        'gpt-4o',
-        'openai',
-        'https://www.openai.com/v1',
-        'gpt-4o (openai.com)',
-        'strips www. prefix from hostname',
-      ],
-      [
-        'llama-3',
-        'local',
-        'http://localhost:11434/api',
-        'llama-3 (localhost)',
-        'strips port number from hostname',
-      ],
-      [
-        'gpt-4o',
-        'openrouter',
-        'https://openrouter.ai/api/v1',
-        'gpt-4o (openrouter.ai)',
-        'handles openrouter base_url',
-      ],
+      ['gpt-4o', 'openai', 'https://www.openai.com/v1', 'gpt-4o (openai.com)', 'strips www. prefix from hostname'],
+      ['llama-3', 'local', 'http://localhost:11434/api', 'llama-3 (localhost)', 'strips port number from hostname'],
+      ['gpt-4o', 'openrouter', 'https://openrouter.ai/api/v1', 'gpt-4o (openrouter.ai)', 'handles openrouter base_url'],
       [
         'claude-3-5-sonnet',
         'anthropic',
@@ -64,27 +42,9 @@ describe('getModelDisplayName', () => {
         'claude-3-5-sonnet (api.anthropic.com)',
         'handles base_url with subdomain',
       ],
-      [
-        'gpt-4o',
-        'openai',
-        'not-a-valid-url',
-        'gpt-4o (openai)',
-        'falls back to provider when base_url is invalid',
-      ],
-      [
-        'model',
-        'provider',
-        'http://192.168.1.1:8080/v1',
-        'model (192.168.1.1)',
-        'handles IP address with port',
-      ],
-      [
-        'model',
-        'provider',
-        'https://user:pass@api.com/v1',
-        'model (api.com)',
-        'strips authentication from URL',
-      ],
+      ['gpt-4o', 'openai', 'not-a-valid-url', 'gpt-4o (openai)', 'falls back to provider when base_url is invalid'],
+      ['model', 'provider', 'http://192.168.1.1:8080/v1', 'model (192.168.1.1)', 'handles IP address with port'],
+      ['model', 'provider', 'https://user:pass@api.com/v1', 'model (api.com)', 'strips authentication from URL'],
     ])(
       'should %s for "%s" (%s)',
       (model: string, provider: string, baseUrl: string, expected: string, _description: string) => {

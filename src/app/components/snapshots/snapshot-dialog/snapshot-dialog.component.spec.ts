@@ -28,7 +28,7 @@ describe('SnapshotDialogComponent', () => {
       name,
       created_at: Date.now(),
       project_id: 'proj-1',
-    }) as Snapshot;
+    } as Snapshot);
 
   beforeEach(async () => {
     vi.clearAllMocks();
@@ -102,7 +102,10 @@ describe('SnapshotDialogComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: { controller: mockController, project: mockProject } },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: SnapshotService, useValue: mockSnapshotService },
-        { provide: ProgressDialogService, useValue: { open: vi.fn().mockReturnValue({ afterClosed: () => of(null), close: vi.fn() }) } },
+        {
+          provide: ProgressDialogService,
+          useValue: { open: vi.fn().mockReturnValue({ afterClosed: () => of(null), close: vi.fn() }) },
+        },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: MatDialog, useValue: mockDialog },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
@@ -134,10 +137,7 @@ describe('SnapshotDialogComponent', () => {
 
   describe('filteredSnapshots computed', () => {
     it('should return all snapshots when searchText is empty', () => {
-      const snapshots = [
-        createMockSnapshot('1', 'Snapshot A'),
-        createMockSnapshot('2', 'Snapshot B'),
-      ];
+      const snapshots = [createMockSnapshot('1', 'Snapshot A'), createMockSnapshot('2', 'Snapshot B')];
       component.snapshots.set(snapshots);
       component.searchText.set('');
 

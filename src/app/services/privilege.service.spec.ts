@@ -51,9 +51,12 @@ describe('PrivilegeService', () => {
     });
 
     it.each([
-      { privileges: ([] as Privilege[]), description: 'empty list' },
+      { privileges: [] as Privilege[], description: 'empty list' },
       { privileges: [{ name: 'read' } as Privilege], description: 'single privilege' },
-      { privileges: [{ name: 'read' } as Privilege, { name: 'write' } as Privilege, { name: 'admin' } as Privilege], description: 'multiple privileges' },
+      {
+        privileges: [{ name: 'read' } as Privilege, { name: 'write' } as Privilege, { name: 'admin' } as Privilege],
+        description: 'multiple privileges',
+      },
     ])('should return $description', async ({ privileges }) => {
       mockHttpController.get.mockReturnValue(of(privileges));
 

@@ -124,11 +124,7 @@ describe('RoleService', () => {
 
       const result = await firstValueFrom(service.create(mockController, newRole));
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/access/roles',
-        newRole
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/access/roles', newRole);
       expect(result).toEqual(createdRole);
     });
 
@@ -174,11 +170,10 @@ describe('RoleService', () => {
 
       const result = await firstValueFrom(service.update(mockController, mockRole));
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/access/roles/role-1',
-        { name: 'Updated Role', description: 'Updated description' }
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/access/roles/role-1', {
+        name: 'Updated Role',
+        description: 'Updated description',
+      });
       expect(result).toEqual(mockRole);
     });
 
@@ -236,14 +231,21 @@ describe('RoleService', () => {
   describe('removePrivileges', () => {
     it.each([
       { roleId: 'role-1', privilegeId: 'priv-1', expectedUrl: '/access/roles/role-1/privileges/priv-1' },
-      { roleId: 'role-to-update', privilegeId: 'priv-to-remove', expectedUrl: '/access/roles/role-to-update/privileges/priv-to-remove' },
-    ])('should call httpController.delete with correct endpoint for $roleId/$privilegeId', async ({ roleId, privilegeId, expectedUrl }) => {
-      mockHttpController.delete.mockReturnValue(of({}));
+      {
+        roleId: 'role-to-update',
+        privilegeId: 'priv-to-remove',
+        expectedUrl: '/access/roles/role-to-update/privileges/priv-to-remove',
+      },
+    ])(
+      'should call httpController.delete with correct endpoint for $roleId/$privilegeId',
+      async ({ roleId, privilegeId, expectedUrl }) => {
+        mockHttpController.delete.mockReturnValue(of({}));
 
-      await firstValueFrom(service.removePrivileges(mockController, roleId, privilegeId));
+        await firstValueFrom(service.removePrivileges(mockController, roleId, privilegeId));
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, expectedUrl);
-    });
+        expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, expectedUrl);
+      }
+    );
 
     it('should propagate error when removePrivileges fails', async () => {
       const error = new Error('Not Found');

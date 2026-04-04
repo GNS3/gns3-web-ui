@@ -132,24 +132,21 @@ describe('projectNameAsyncValidator', () => {
       ['new-project', ['existing-project', 'another-project'], 'completely new name'],
       ['unique-name', [], 'empty project list'],
       ['test', ['prod', 'staging', 'dev'], 'name not in existing list'],
-    ])(
-      'should return null for "%s" when list contains %j (%s)',
-      async (inputName, existingNames, _description) => {
-        // Arrange
-        const existingProjects = existingNames.map((name, index) => ({
-          name,
-          project_id: String(index + 1),
-        }));
-        mockListProjects.mockReturnValue(of(existingProjects));
-        const validator = projectNameAsyncValidator(mockController, mockProjectService);
+    ])('should return null for "%s" when list contains %j (%s)', async (inputName, existingNames, _description) => {
+      // Arrange
+      const existingProjects = existingNames.map((name, index) => ({
+        name,
+        project_id: String(index + 1),
+      }));
+      mockListProjects.mockReturnValue(of(existingProjects));
+      const validator = projectNameAsyncValidator(mockController, mockProjectService);
 
-        // Act
-        const { result } = await executeValidator(validator, inputName);
+      // Act
+      const { result } = await executeValidator(validator, inputName);
 
-        // Assert
-        expect(result).toBeNull();
-      }
-    );
+      // Assert
+      expect(result).toBeNull();
+    });
   });
 
   describe('debounce behavior', () => {

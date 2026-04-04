@@ -31,8 +31,20 @@ describe('SettingsComponent', () => {
 
   const mockMapBackgrounds = [
     { key: 'auto' as const, label: 'Follow global theme', background: '', textColor: '', type: 'light' as const },
-    { key: 'light-1' as const, label: 'Cyan Sky', background: 'radial-gradient(...)', textColor: '#006064', type: 'light' as const },
-    { key: 'dark-1' as const, label: 'Deep Cyan', background: 'linear-gradient(...)', textColor: '#FFFFFF', type: 'dark' as const },
+    {
+      key: 'light-1' as const,
+      label: 'Cyan Sky',
+      background: 'radial-gradient(...)',
+      textColor: '#006064',
+      type: 'light' as const,
+    },
+    {
+      key: 'dark-1' as const,
+      label: 'Deep Cyan',
+      background: 'linear-gradient(...)',
+      textColor: '#FFFFFF',
+      type: 'dark' as const,
+    },
   ];
 
   beforeEach(async () => {

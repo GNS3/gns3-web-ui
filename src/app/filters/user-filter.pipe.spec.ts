@@ -97,9 +97,7 @@ describe('UserFilterPipe', () => {
     });
 
     it('should match partial text in any field', () => {
-      const users = [
-        createMockUser({ username: 'testuser', email: 'user@domain.com', full_name: 'Test User' }),
-      ];
+      const users = [createMockUser({ username: 'testuser', email: 'user@domain.com', full_name: 'Test User' })];
       const dataSource = new MatTableDataSource<User>(users);
 
       const result = pipe.transform(dataSource, 'domain') as User[];
@@ -124,10 +122,7 @@ describe('UserFilterPipe', () => {
     });
 
     it('should return empty array when no match found', () => {
-      const users = [
-        createMockUser({ username: 'alice' }),
-        createMockUser({ username: 'bob' }),
-      ];
+      const users = [createMockUser({ username: 'alice' }), createMockUser({ username: 'bob' })];
       const dataSource = new MatTableDataSource<User>(users);
 
       const result = pipe.transform(dataSource, 'xyz');
@@ -136,9 +131,7 @@ describe('UserFilterPipe', () => {
     });
 
     it('should handle case-insensitive search', () => {
-      const users = [
-        createMockUser({ username: 'TESTUSER' }),
-      ];
+      const users = [createMockUser({ username: 'TESTUSER' })];
       const dataSource = new MatTableDataSource<User>(users);
 
       const result = pipe.transform(dataSource, 'testuser') as User[];

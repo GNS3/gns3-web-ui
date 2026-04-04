@@ -38,35 +38,34 @@ describe('ExportConfigActionComponent', () => {
     tokenExpired: false,
   });
 
-  const createMockNode = (nodeType: string, name = 'TestNode'): Node =>
-    ({
-      node_id: `node-${nodeType}`,
-      name,
-      status: 'running',
-      console_host: '0.0.0.0',
-      node_type: nodeType,
-      project_id: 'proj1',
-      command_line: '',
-      compute_id: 'local',
-      height: 50,
-      width: 50,
-      x: 0,
-      y: 0,
-      z: 0,
-      label: { text: '', x: 0, y: 0, style: '', rotation: 0 },
-      locked: false,
-      first_port_name: '',
-      port_name_format: '',
-      port_segment_size: 1,
-      ports: [],
-      properties: {} as Properties,
-      symbol: '',
-      symbol_url: '',
-      console: 0,
-      console_auto_start: false,
-      console_type: '',
-      node_directory: '',
-    });
+  const createMockNode = (nodeType: string, name = 'TestNode'): Node => ({
+    node_id: `node-${nodeType}`,
+    name,
+    status: 'running',
+    console_host: '0.0.0.0',
+    node_type: nodeType,
+    project_id: 'proj1',
+    command_line: '',
+    compute_id: 'local',
+    height: 50,
+    width: 50,
+    x: 0,
+    y: 0,
+    z: 0,
+    label: { text: '', x: 0, y: 0, style: '', rotation: 0 },
+    locked: false,
+    first_port_name: '',
+    port_name_format: '',
+    port_segment_size: 1,
+    ports: [],
+    properties: {} as Properties,
+    symbol: '',
+    symbol_url: '',
+    console: 0,
+    console_auto_start: false,
+    console_type: '',
+    node_directory: '',
+  });
 
   beforeEach(async () => {
     mockDialogRef = {
@@ -182,7 +181,7 @@ describe('ExportConfigActionComponent', () => {
 
     it('should show error toaster when startup config fetch fails for vpcs', () => {
       mockNodeService.getStartupConfiguration.mockReturnValue(
-        throwError(() => ({ error: { message: 'Fetch failed' } })),
+        throwError(() => ({ error: { message: 'Fetch failed' } }))
       );
       const mockNode = createMockNode('vpcs');
       fixture.componentRef.setInput('node', mockNode);
@@ -273,7 +272,7 @@ describe('ExportConfigActionComponent', () => {
     it('should show error toaster when startup config fetch fails for dynamips', () => {
       mockDialogRef.afterClosed.mockReturnValue(of('startup-config'));
       mockNodeService.getStartupConfiguration.mockReturnValue(
-        throwError(() => ({ error: { message: 'Failed to export startup configuration' } })),
+        throwError(() => ({ error: { message: 'Failed to export startup configuration' } }))
       );
       const mockNode = createMockNode('dynamips');
       fixture.componentRef.setInput('node', mockNode);
@@ -289,7 +288,7 @@ describe('ExportConfigActionComponent', () => {
     it('should show error toaster when private config fetch fails for iou', () => {
       mockDialogRef.afterClosed.mockReturnValue(of('private-config'));
       mockNodeService.getPrivateConfiguration.mockReturnValue(
-        throwError(() => ({ error: { message: 'Failed to export private configuration' } })),
+        throwError(() => ({ error: { message: 'Failed to export private configuration' } }))
       );
       const mockNode = createMockNode('iou');
       fixture.componentRef.setInput('node', mockNode);

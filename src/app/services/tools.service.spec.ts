@@ -25,17 +25,13 @@ describe('ToolsService', () => {
 
   describe('Selection Tool', () => {
     it('should activate selection tool when passed true', async () => {
-      const resultPromise = firstValueFrom(
-        service.isSelectionToolActivated.pipe(filter((v) => v === true))
-      );
+      const resultPromise = firstValueFrom(service.isSelectionToolActivated.pipe(filter((v) => v === true)));
       service.selectionToolActivation(true);
       await expect(resultPromise).resolves.toBe(true);
     });
 
     it('should deactivate selection tool when passed false', async () => {
-      const resultPromise = firstValueFrom(
-        service.isSelectionToolActivated.pipe(filter((v) => v === false))
-      );
+      const resultPromise = firstValueFrom(service.isSelectionToolActivated.pipe(filter((v) => v === false)));
       service.selectionToolActivation(false);
       await expect(resultPromise).resolves.toBe(false);
     });
@@ -58,17 +54,13 @@ describe('ToolsService', () => {
 
   describe('Moving Tool', () => {
     it('should activate moving tool when passed true', async () => {
-      const resultPromise = firstValueFrom(
-        service.isMovingToolActivated.pipe(filter((v) => v === true))
-      );
+      const resultPromise = firstValueFrom(service.isMovingToolActivated.pipe(filter((v) => v === true)));
       service.movingToolActivation(true);
       await expect(resultPromise).resolves.toBe(true);
     });
 
     it('should deactivate moving tool when passed false', async () => {
-      const resultPromise = firstValueFrom(
-        service.isMovingToolActivated.pipe(filter((v) => v === false))
-      );
+      const resultPromise = firstValueFrom(service.isMovingToolActivated.pipe(filter((v) => v === false)));
       service.movingToolActivation(false);
       await expect(resultPromise).resolves.toBe(false);
     });
@@ -90,17 +82,13 @@ describe('ToolsService', () => {
 
   describe('Text Editing Tool', () => {
     it('should activate text editing tool when passed true', async () => {
-      const resultPromise = firstValueFrom(
-        service.isTextEditingToolActivated.pipe(filter((v) => v === true))
-      );
+      const resultPromise = firstValueFrom(service.isTextEditingToolActivated.pipe(filter((v) => v === true)));
       service.textEditingToolActivation(true);
       await expect(resultPromise).resolves.toBe(true);
     });
 
     it('should deactivate text editing tool when passed false', async () => {
-      const resultPromise = firstValueFrom(
-        service.isTextEditingToolActivated.pipe(filter((v) => v === false))
-      );
+      const resultPromise = firstValueFrom(service.isTextEditingToolActivated.pipe(filter((v) => v === false)));
       service.textEditingToolActivation(false);
       await expect(resultPromise).resolves.toBe(false);
     });
@@ -108,17 +96,13 @@ describe('ToolsService', () => {
 
   describe('Text Adding Tool', () => {
     it('should activate text adding tool when passed true', async () => {
-      const resultPromise = firstValueFrom(
-        service.isTextAddingToolActivated.pipe(filter((v) => v === true))
-      );
+      const resultPromise = firstValueFrom(service.isTextAddingToolActivated.pipe(filter((v) => v === true)));
       service.textAddingToolActivation(true);
       await expect(resultPromise).resolves.toBe(true);
     });
 
     it('should deactivate text adding tool when passed false', async () => {
-      const resultPromise = firstValueFrom(
-        service.isTextAddingToolActivated.pipe(filter((v) => v === false))
-      );
+      const resultPromise = firstValueFrom(service.isTextAddingToolActivated.pipe(filter((v) => v === false)));
       service.textAddingToolActivation(false);
       await expect(resultPromise).resolves.toBe(false);
     });
@@ -126,17 +110,13 @@ describe('ToolsService', () => {
 
   describe('Draw Link Tool', () => {
     it('should activate draw link tool when passed true', async () => {
-      const resultPromise = firstValueFrom(
-        service.isDrawLinkToolActivated.pipe(filter((v) => v === true))
-      );
+      const resultPromise = firstValueFrom(service.isDrawLinkToolActivated.pipe(filter((v) => v === true)));
       service.drawLinkToolActivation(true);
       await expect(resultPromise).resolves.toBe(true);
     });
 
     it('should deactivate draw link tool when passed false', async () => {
-      const resultPromise = firstValueFrom(
-        service.isDrawLinkToolActivated.pipe(filter((v) => v === false))
-      );
+      const resultPromise = firstValueFrom(service.isDrawLinkToolActivated.pipe(filter((v) => v === false)));
       service.drawLinkToolActivation(false);
       await expect(resultPromise).resolves.toBe(false);
     });
@@ -199,17 +179,13 @@ describe('ToolsService', () => {
     });
 
     it('should pass through undefined boolean conversion', async () => {
-      const resultPromise = firstValueFrom(
-        service.isSelectionToolActivated.pipe(filter((v) => v === undefined))
-      );
+      const resultPromise = firstValueFrom(service.isSelectionToolActivated.pipe(filter((v) => v === undefined)));
       service.selectionToolActivation(undefined as unknown as boolean);
       await expect(resultPromise).resolves.toBeUndefined();
     });
 
     it('should pass through null boolean conversion', async () => {
-      const resultPromise = firstValueFrom(
-        service.isSelectionToolActivated.pipe(filter((v) => v === null))
-      );
+      const resultPromise = firstValueFrom(service.isSelectionToolActivated.pipe(filter((v) => v === null)));
       service.selectionToolActivation(null as unknown as boolean);
       await expect(resultPromise).resolves.toBeNull();
     });

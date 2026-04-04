@@ -29,13 +29,7 @@ describe('AutocompleteComponent', () => {
     vi.clearAllMocks();
 
     await TestBed.configureTestingModule({
-      imports: [
-        AutocompleteComponent,
-        ReactiveFormsModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatAutocompleteModule,
-      ],
+      imports: [AutocompleteComponent, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule],
     }).compileComponents();
   });
 

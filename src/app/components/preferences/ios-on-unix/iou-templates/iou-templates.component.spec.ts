@@ -115,11 +115,7 @@ describe('IouTemplatesComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        IouTemplatesComponent,
-        DeleteTemplateComponent,
-        EmptyTemplatesListComponent,
-      ],
+      imports: [IouTemplatesComponent, DeleteTemplateComponent, EmptyTemplatesListComponent],
       providers: [
         { provide: IouService, useValue: mockIouService },
         { provide: ControllerService, useValue: mockControllerService },

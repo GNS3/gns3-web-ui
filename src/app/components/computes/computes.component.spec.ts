@@ -146,7 +146,16 @@ describe('ComputesComponent', () => {
   });
 
   it('should have correct displayedColumns', () => {
-    expect(component.displayedColumns).toEqual(['status', 'name', 'host', 'connected', 'cpu', 'memory', 'disk', 'actions']);
+    expect(component.displayedColumns).toEqual([
+      'status',
+      'name',
+      'host',
+      'connected',
+      'cpu',
+      'memory',
+      'disk',
+      'actions',
+    ]);
   });
 
   it('should load controller on init', async () => {

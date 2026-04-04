@@ -156,11 +156,7 @@ describe('VpcsService', () => {
 
       service.saveTemplate(mockController, mockTemplate);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/templates/vpcs-1',
-        mockTemplate
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/templates/vpcs-1', mockTemplate);
     });
 
     it('should return Observable that emits the updated template', async () => {

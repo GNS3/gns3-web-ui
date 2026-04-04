@@ -38,7 +38,7 @@ describe('TemplateSymbolDialogComponent', () => {
       username: '',
       password: '',
       tokenExpired: false,
-    }) as Controller;
+    } as Controller);
 
   beforeEach(async () => {
     mockController = createMockController();

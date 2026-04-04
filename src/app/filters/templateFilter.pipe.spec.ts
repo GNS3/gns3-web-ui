@@ -25,8 +25,28 @@ describe('TemplateFilter', () => {
 
   it('should return all items when searchText is empty', () => {
     const items: Template[] = [
-      { name: 'Router1', template_id: '1', template_type: 'dynamips', builtin: false, category: 'router', compute_id: 'local', symbol: 'router', node_type: 'router', default_name_format: '' },
-      { name: 'Switch1', template_id: '2', template_type: 'ethernet_switch', builtin: false, category: 'switch', compute_id: 'local', symbol: 'switch', node_type: 'switch', default_name_format: '' },
+      {
+        name: 'Router1',
+        template_id: '1',
+        template_type: 'dynamips',
+        builtin: false,
+        category: 'router',
+        compute_id: 'local',
+        symbol: 'router',
+        node_type: 'router',
+        default_name_format: '',
+      },
+      {
+        name: 'Switch1',
+        template_id: '2',
+        template_type: 'ethernet_switch',
+        builtin: false,
+        category: 'switch',
+        compute_id: 'local',
+        symbol: 'switch',
+        node_type: 'switch',
+        default_name_format: '',
+      },
     ];
     const result = pipe.transform(items, '');
     expect(result).toEqual(items);
@@ -34,7 +54,17 @@ describe('TemplateFilter', () => {
 
   it('should return all items when searchText is null', () => {
     const items: Template[] = [
-      { name: 'Router1', template_id: '1', template_type: 'dynamips', builtin: false, category: 'router', compute_id: 'local', symbol: 'router', node_type: 'router', default_name_format: '' },
+      {
+        name: 'Router1',
+        template_id: '1',
+        template_type: 'dynamips',
+        builtin: false,
+        category: 'router',
+        compute_id: 'local',
+        symbol: 'router',
+        node_type: 'router',
+        default_name_format: '',
+      },
     ];
     const result = pipe.transform(items, null as any);
     expect(result).toEqual(items);
@@ -42,9 +72,39 @@ describe('TemplateFilter', () => {
 
   it('should filter items by searchText (case insensitive)', () => {
     const items: Template[] = [
-      { name: 'Router1', template_id: '1', template_type: 'dynamips', builtin: false, category: 'router', compute_id: 'local', symbol: 'router', node_type: 'router', default_name_format: '' },
-      { name: 'Switch1', template_id: '2', template_type: 'ethernet_switch', builtin: false, category: 'switch', compute_id: 'local', symbol: 'switch', node_type: 'switch', default_name_format: '' },
-      { name: 'router2', template_id: '3', template_type: 'dynamips', builtin: false, category: 'router', compute_id: 'local', symbol: 'router', node_type: 'router', default_name_format: '' },
+      {
+        name: 'Router1',
+        template_id: '1',
+        template_type: 'dynamips',
+        builtin: false,
+        category: 'router',
+        compute_id: 'local',
+        symbol: 'router',
+        node_type: 'router',
+        default_name_format: '',
+      },
+      {
+        name: 'Switch1',
+        template_id: '2',
+        template_type: 'ethernet_switch',
+        builtin: false,
+        category: 'switch',
+        compute_id: 'local',
+        symbol: 'switch',
+        node_type: 'switch',
+        default_name_format: '',
+      },
+      {
+        name: 'router2',
+        template_id: '3',
+        template_type: 'dynamips',
+        builtin: false,
+        category: 'router',
+        compute_id: 'local',
+        symbol: 'router',
+        node_type: 'router',
+        default_name_format: '',
+      },
     ];
     const result = pipe.transform(items, 'router');
     expect(result.length).toBe(2);
@@ -54,7 +114,17 @@ describe('TemplateFilter', () => {
 
   it('should return empty array when no items match', () => {
     const items: Template[] = [
-      { name: 'Router1', template_id: '1', template_type: 'dynamips', builtin: false, category: 'router', compute_id: 'local', symbol: 'router', node_type: 'router', default_name_format: '' },
+      {
+        name: 'Router1',
+        template_id: '1',
+        template_type: 'dynamips',
+        builtin: false,
+        category: 'router',
+        compute_id: 'local',
+        symbol: 'router',
+        node_type: 'router',
+        default_name_format: '',
+      },
     ];
     const result = pipe.transform(items, 'switch');
     expect(result).toEqual([]);
@@ -62,8 +132,28 @@ describe('TemplateFilter', () => {
 
   it('should filter items where searchText is substring of name', () => {
     const items: Template[] = [
-      { name: 'CloudNode', template_id: '1', template_type: 'cloud', builtin: false, category: 'guest', compute_id: 'local', symbol: 'cloud', node_type: 'cloud', default_name_format: '' },
-      { name: 'DockerContainer', template_id: '2', template_type: 'docker', builtin: false, category: 'guest', compute_id: 'local', symbol: 'docker', node_type: 'docker', default_name_format: '' },
+      {
+        name: 'CloudNode',
+        template_id: '1',
+        template_type: 'cloud',
+        builtin: false,
+        category: 'guest',
+        compute_id: 'local',
+        symbol: 'cloud',
+        node_type: 'cloud',
+        default_name_format: '',
+      },
+      {
+        name: 'DockerContainer',
+        template_id: '2',
+        template_type: 'docker',
+        builtin: false,
+        category: 'guest',
+        compute_id: 'local',
+        symbol: 'docker',
+        node_type: 'docker',
+        default_name_format: '',
+      },
     ];
     const result = pipe.transform(items, 'cloud');
     expect(result.length).toBe(1);

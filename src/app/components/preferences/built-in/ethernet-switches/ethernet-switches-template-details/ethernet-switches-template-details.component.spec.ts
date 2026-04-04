@@ -126,12 +126,7 @@ describe('EthernetSwitchesTemplateDetailsComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        EthernetSwitchesTemplateDetailsComponent,
-        MatDialogModule,
-        RouterModule,
-        PortsComponent,
-      ],
+      imports: [EthernetSwitchesTemplateDetailsComponent, MatDialogModule, RouterModule, PortsComponent],
       providers: [
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: ControllerService, useValue: mockControllerService },
@@ -308,7 +303,6 @@ describe('EthernetSwitchesTemplateDetailsComponent', () => {
 
       expect(mockToasterService.success).toHaveBeenCalledWith('Changes saved');
     });
-
   });
 
   describe('chooseSymbol', () => {

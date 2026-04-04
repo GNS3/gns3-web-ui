@@ -161,9 +161,9 @@ describe('AdbutlerComponent', () => {
     });
 
     it('should handle HTTP error gracefully without throwing', () => {
-      mockHttpClient.get = vi.fn().mockReturnValue(
-        new Observable(observer => observer.error(new Error('Network error')))
-      );
+      mockHttpClient.get = vi
+        .fn()
+        .mockReturnValue(new Observable((observer) => observer.error(new Error('Network error'))));
       expect(() => fixture.componentInstance.ngOnInit()).not.toThrow();
     });
   });

@@ -64,10 +64,7 @@ describe('UserService', () => {
 
       service.getInformationAboutLoggedUser(mockController);
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/users/me/'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/users/me/');
     });
 
     it('should return Observable from httpController', () => {
@@ -108,10 +105,7 @@ describe('UserService', () => {
 
       service.get(mockController, 'user-123');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/users/user-123'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/users/user-123');
     });
 
     it('should return Observable from httpController', () => {
@@ -137,10 +131,7 @@ describe('UserService', () => {
 
       service.get(mockController, 'user-abc');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/users/user-abc'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/users/user-abc');
     });
   });
 
@@ -155,16 +146,11 @@ describe('UserService', () => {
 
       service.list(mockController);
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/users'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/users');
     });
 
     it('should return Observable of User array', () => {
-      const mockUsers: User[] = [
-        { user_id: 'user-1', username: 'admin' } as unknown as User,
-      ];
+      const mockUsers: User[] = [{ user_id: 'user-1', username: 'admin' } as unknown as User];
 
       mockHttpController.get.mockReturnValue(of(mockUsers));
 
@@ -179,10 +165,7 @@ describe('UserService', () => {
       const result = service.list(mockController);
 
       expect(result).toBeInstanceOf(Observable);
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/users'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/users');
     });
   });
 
@@ -198,11 +181,7 @@ describe('UserService', () => {
 
       service.add(mockController, newUser);
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/access/users',
-        newUser
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/access/users', newUser);
     });
 
     it('should return Observable from httpController', () => {
@@ -239,10 +218,7 @@ describe('UserService', () => {
 
       service.delete(mockController, 'user-123');
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/access/users/user-123'
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/access/users/user-123');
     });
 
     it('should return Observable from httpController', () => {
@@ -258,10 +234,7 @@ describe('UserService', () => {
 
       service.delete(mockController, 'user-todelete');
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/access/users/user-todelete'
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/access/users/user-todelete');
     });
   });
 
@@ -276,11 +249,7 @@ describe('UserService', () => {
 
       service.update(mockController, updatedUser, true);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/access/users/me',
-        updatedUser
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/access/users/me', updatedUser);
     });
 
     it('should call httpController.put with user_id in URL for non-self update', () => {
@@ -293,11 +262,7 @@ describe('UserService', () => {
 
       service.update(mockController, updatedUser, false);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/access/users/user-789',
-        updatedUser
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/access/users/user-789', updatedUser);
     });
 
     it('should return Observable from httpController', () => {
@@ -353,16 +318,11 @@ describe('UserService', () => {
 
       service.getGroupsByUserId(mockController, 'user-123');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/users/user-123/groups'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/users/user-123/groups');
     });
 
     it('should return Observable of Group array', () => {
-      const mockGroups: Group[] = [
-        { group_id: 'group-1', name: 'Test Group' } as unknown as Group,
-      ];
+      const mockGroups: Group[] = [{ group_id: 'group-1', name: 'Test Group' } as unknown as Group];
 
       mockHttpController.get.mockReturnValue(of(mockGroups));
 
@@ -377,10 +337,7 @@ describe('UserService', () => {
       const result = service.getGroupsByUserId(mockController, 'user-789');
 
       expect(result).toBeInstanceOf(Observable);
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/users/user-789/groups'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/users/user-789/groups');
     });
 
     it('should include user_id in groups URL', () => {
@@ -388,10 +345,7 @@ describe('UserService', () => {
 
       service.getGroupsByUserId(mockController, 'user-groups');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/users/user-groups/groups'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/users/user-groups/groups');
     });
   });
 
@@ -432,10 +386,7 @@ describe('UserService', () => {
 
       service.get(mockController, 'user-with-dash');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/users/user-with-dash'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/users/user-with-dash');
     });
 
     it('should handle empty user_id', () => {
@@ -443,10 +394,7 @@ describe('UserService', () => {
 
       service.delete(mockController, '');
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/access/users/'
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/access/users/');
     });
 
     it('should handle user_id with underscores', () => {
@@ -454,10 +402,7 @@ describe('UserService', () => {
 
       service.getGroupsByUserId(mockController, 'user_with_underscore');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/users/user_with_underscore/groups'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/users/user_with_underscore/groups');
     });
 
     it('should handle undefined user_id gracefully', () => {

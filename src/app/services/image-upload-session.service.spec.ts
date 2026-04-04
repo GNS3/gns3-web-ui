@@ -58,9 +58,30 @@ describe('ImageUploadSessionService', () => {
         events.push(event);
       });
 
-      service.emit({ tempId: '1', filename: 'test1.img', image_type: 'qemu', image_size: 100, progress: 0, status: 'queued' });
-      service.emit({ tempId: '2', filename: 'test2.img', image_type: 'docker', image_size: 200, progress: 50, status: 'uploading' });
-      service.emit({ tempId: '3', filename: 'test3.img', image_type: 'ios', image_size: 300, progress: 100, status: 'uploaded' });
+      service.emit({
+        tempId: '1',
+        filename: 'test1.img',
+        image_type: 'qemu',
+        image_size: 100,
+        progress: 0,
+        status: 'queued',
+      });
+      service.emit({
+        tempId: '2',
+        filename: 'test2.img',
+        image_type: 'docker',
+        image_size: 200,
+        progress: 50,
+        status: 'uploading',
+      });
+      service.emit({
+        tempId: '3',
+        filename: 'test3.img',
+        image_type: 'ios',
+        image_size: 300,
+        progress: 100,
+        status: 'uploaded',
+      });
 
       expect(events).toHaveLength(3);
     });
@@ -237,7 +258,7 @@ describe('ImageUploadSessionService', () => {
         handlerCalled = true;
       });
 
-      service.requestCancel('' + null as any);
+      service.requestCancel(('' + null) as any);
 
       expect(handlerCalled).toBe(false);
     });
@@ -249,7 +270,7 @@ describe('ImageUploadSessionService', () => {
         handlerCalled = true;
       });
 
-      service.requestCancel('' + undefined as any);
+      service.requestCancel(('' + undefined) as any);
 
       expect(handlerCalled).toBe(false);
     });
@@ -476,13 +497,7 @@ describe('ImageUploadSessionService', () => {
     });
 
     it('should handle different status values', () => {
-      const statuses: ImageUploadEvent['status'][] = [
-        'queued',
-        'uploading',
-        'uploaded',
-        'error',
-        'canceled',
-      ];
+      const statuses: ImageUploadEvent['status'][] = ['queued', 'uploading', 'uploaded', 'error', 'canceled'];
 
       statuses.forEach((status) => {
         const event: ImageUploadEvent = {

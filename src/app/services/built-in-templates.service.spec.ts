@@ -103,11 +103,7 @@ describe('BuiltInTemplatesService', () => {
 
       service.saveTemplate(mockController, template);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/templates/builtin-1',
-        template
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/templates/builtin-1', template);
     });
 
     it('should return Observable', () => {

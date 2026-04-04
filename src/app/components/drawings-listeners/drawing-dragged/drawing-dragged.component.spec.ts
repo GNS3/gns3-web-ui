@@ -46,11 +46,7 @@ describe('DrawingDraggedComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [DrawingDraggedComponent],
-      providers: [
-        DrawingsEventSource,
-        DrawingsDataSource,
-        { provide: DrawingService, useValue: mockDrawingService },
-      ],
+      providers: [DrawingsEventSource, DrawingsDataSource, { provide: DrawingService, useValue: mockDrawingService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(DrawingDraggedComponent);
@@ -83,8 +79,8 @@ describe('DrawingDraggedComponent', () => {
       const subscription = (fixture.componentInstance as any).drawingDragged;
       const unsubscribeSpy = vi.spyOn(subscription, 'unsubscribe');
       if (fixture) {
-      fixture.destroy();
-    }
+        fixture.destroy();
+      }
       expect(unsubscribeSpy).toHaveBeenCalled();
     });
   });
@@ -120,7 +116,7 @@ describe('DrawingDraggedComponent', () => {
         undefined,
         expect.any(Object),
         105,
-        215,
+        215
       );
     });
 

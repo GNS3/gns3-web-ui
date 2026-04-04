@@ -22,7 +22,7 @@ describe('ChatMessageListComponent', () => {
       content: 'Test message',
       created_at: new Date().toISOString(),
       ...overrides,
-    }) as ChatMessage;
+    } as ChatMessage);
 
   const createMockToolCall = (overrides: Partial<ToolCall> = {}): ToolCall =>
     ({
@@ -33,14 +33,14 @@ describe('ChatMessageListComponent', () => {
         arguments: '{}',
       },
       ...overrides,
-    }) as ToolCall;
+    } as ToolCall);
 
   const createMockToolResult = (overrides: Partial<ToolResult> = {}): ToolResult =>
     ({
       toolName: 'test_tool',
       toolOutput: 'success',
       ...overrides,
-    }) as ToolResult;
+    } as ToolResult);
 
   beforeEach(async () => {
     mockDialogRef = { close: vi.fn() } as any;
@@ -112,9 +112,7 @@ describe('ChatMessageListComponent', () => {
     });
 
     it('should return undefined when no assistant messages', () => {
-      const messages = [
-        createMockMessage({ id: '1', role: 'user', content: 'User msg' }),
-      ];
+      const messages = [createMockMessage({ id: '1', role: 'user', content: 'User msg' })];
       fixture.componentRef.setInput('messages', messages);
       fixture.detectChanges();
 
@@ -211,10 +209,7 @@ describe('ChatMessageListComponent', () => {
   describe('ngOnChanges', () => {
     it('should set shouldScrollToBottom when messages change', () => {
       const initialMessages = [createMockMessage({ id: '1', role: 'user' })];
-      const newMessages = [
-        ...initialMessages,
-        createMockMessage({ id: '2', role: 'assistant' }),
-      ];
+      const newMessages = [...initialMessages, createMockMessage({ id: '2', role: 'assistant' })];
 
       fixture.componentRef.setInput('messages', initialMessages);
       fixture.detectChanges();

@@ -39,18 +39,12 @@ describe('NameFilter', () => {
     describe('filtering', () => {
       it('should filter items by name matching searchText', () => {
         const items = [{ name: 'Router1' }, { name: 'Switch1' }, { name: 'Router2' }];
-        expect(pipe.transform(items, 'Router')).toEqual([
-          { name: 'Router1' },
-          { name: 'Router2' },
-        ]);
+        expect(pipe.transform(items, 'Router')).toEqual([{ name: 'Router1' }, { name: 'Router2' }]);
       });
 
       it('should be case insensitive', () => {
         const items = [{ name: 'Router1' }, { name: 'switch1' }, { name: 'ROUTER2' }];
-        expect(pipe.transform(items, 'router')).toEqual([
-          { name: 'Router1' },
-          { name: 'ROUTER2' },
-        ]);
+        expect(pipe.transform(items, 'router')).toEqual([{ name: 'Router1' }, { name: 'ROUTER2' }]);
       });
 
       it('should return empty array when no items match', () => {
@@ -67,6 +61,5 @@ describe('NameFilter', () => {
         expect(pipe.transform([], 'test')).toEqual([]);
       });
     });
-
   });
 });

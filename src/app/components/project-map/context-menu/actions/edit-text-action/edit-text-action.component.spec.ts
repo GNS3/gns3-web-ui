@@ -51,7 +51,7 @@ describe('EditTextActionComponent', () => {
       y: 200,
       z: 1,
       element: { type: 'rect' } as any,
-    }) as unknown as Drawing;
+    } as unknown as Drawing);
 
   const createMockNode = (): Node =>
     ({
@@ -81,7 +81,7 @@ describe('EditTextActionComponent', () => {
       console_auto_start: false,
       console_type: '',
       node_directory: '',
-    }) as unknown as Node;
+    } as unknown as Node);
 
   const createMockLabel = (): Label =>
     ({
@@ -90,14 +90,14 @@ describe('EditTextActionComponent', () => {
       text: 'Test Label',
       x: 100,
       y: 200,
-    }) as unknown as Label;
+    } as unknown as Label);
 
   const createMockLink = (overrides: Partial<Link> = {}): Link =>
     ({
       link_id: 'link-1',
       project_id: 'project-1',
       ...overrides,
-    }) as Link;
+    } as Link);
 
   const createMockLinkNode = (overrides: Partial<LinkNode> = {}): LinkNode =>
     ({
@@ -107,7 +107,7 @@ describe('EditTextActionComponent', () => {
       adapter_number: 0,
       port_number: 0,
       ...overrides,
-    }) as LinkNode;
+    } as LinkNode);
 
   let mockDialogRef: any;
   let mockDialog: any;

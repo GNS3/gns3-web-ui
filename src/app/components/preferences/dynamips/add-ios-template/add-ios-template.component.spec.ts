@@ -152,11 +152,50 @@ describe('AddIosTemplateComponent', () => {
       }),
       getAdapterMatrix: vi.fn().mockReturnValue({
         c1700: { '1760': { 0: ['C1700-MB-1FE'] } },
-        c2600: { '2620': { 0: ['C2600-MB-1FE'], 1: ['NM-1FE-TX', 'NM-1E', 'NM-4E', 'NM-16ESW'] }, '2651XM': { 0: ['C2600-MB-2FE'], 1: ['NM-1FE-TX', 'NM-1E', 'NM-4E', 'NM-16ESW'] } },
-        c3725: { '': { 0: ['GT96100-FE'], 1: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW'], 2: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW'] } },
-        c3745: { '': { 0: ['GT96100-FE'], 1: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW'], 2: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW'], 3: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW'] } },
-        c3600: { '3620': { 0: ['NM-1FE-TX', 'NM-1E', 'NM-4E', 'NM-16ESW'], 1: ['NM-1FE-TX', 'NM-1E', 'NM-4E', 'NM-16ESW'] }, '3640': { 0: ['NM-1FE-TX', 'NM-1E', 'NM-4E', 'NM-16ESW'], 1: ['NM-1FE-TX', 'NM-1E', 'NM-4E', 'NM-16ESW'], 2: ['NM-1FE-TX', 'NM-1E', 'NM-4E', 'NM-16ESW'], 3: ['NM-1FE-TX', 'NM-1E', 'NM-4E', 'NM-16ESW'] }, '3660': { 0: ['Leopard-2FE'], 1: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW', 'NM-4T'], 2: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW', 'NM-4T'], 3: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW', 'NM-4T'], 4: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW', 'NM-4T'], 5: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW', 'NM-4T'], 6: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW', 'NM-4T'] } },
-        c7200: { '': { 0: ['C7200-IO-FE', 'C7200-IO-2FE', 'C7200-IO-GE-E'], 1: ['PA-A1', 'PA-FE-TX', 'PA-2FE-TX', 'PA-GE', 'PA-4T+', 'PA-8T', 'PA-4E', 'PA-8E', 'PA-POS-OC3'], 2: ['PA-A1', 'PA-FE-TX', 'PA-2FE-TX', 'PA-GE', 'PA-4T+', 'PA-8T', 'PA-4E', 'PA-8E', 'PA-POS-OC3'], 3: ['PA-A1', 'PA-FE-TX', 'PA-2FE-TX', 'PA-GE', 'PA-4T+', 'PA-8T', 'PA-4E', 'PA-8E', 'PA-POS-OC3'], 4: ['PA-A1', 'PA-FE-TX', 'PA-2FE-TX', 'PA-GE', 'PA-4T+', 'PA-8T', 'PA-4E', 'PA-8E', 'PA-POS-OC3'], 5: ['PA-A1', 'PA-FE-TX', 'PA-2FE-TX', 'PA-GE', 'PA-4T+', 'PA-8T', 'PA-4E', 'PA-8E', 'PA-POS-OC3'], 6: ['PA-A1', 'PA-FE-TX', 'PA-2FE-TX', 'PA-GE', 'PA-4T+', 'PA-8T', 'PA-4E', 'PA-8E', 'PA-POS-OC3'] } },
+        c2600: {
+          '2620': { 0: ['C2600-MB-1FE'], 1: ['NM-1FE-TX', 'NM-1E', 'NM-4E', 'NM-16ESW'] },
+          '2651XM': { 0: ['C2600-MB-2FE'], 1: ['NM-1FE-TX', 'NM-1E', 'NM-4E', 'NM-16ESW'] },
+        },
+        c3725: {
+          '': { 0: ['GT96100-FE'], 1: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW'], 2: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW'] },
+        },
+        c3745: {
+          '': {
+            0: ['GT96100-FE'],
+            1: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW'],
+            2: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW'],
+            3: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW'],
+          },
+        },
+        c3600: {
+          '3620': { 0: ['NM-1FE-TX', 'NM-1E', 'NM-4E', 'NM-16ESW'], 1: ['NM-1FE-TX', 'NM-1E', 'NM-4E', 'NM-16ESW'] },
+          '3640': {
+            0: ['NM-1FE-TX', 'NM-1E', 'NM-4E', 'NM-16ESW'],
+            1: ['NM-1FE-TX', 'NM-1E', 'NM-4E', 'NM-16ESW'],
+            2: ['NM-1FE-TX', 'NM-1E', 'NM-4E', 'NM-16ESW'],
+            3: ['NM-1FE-TX', 'NM-1E', 'NM-4E', 'NM-16ESW'],
+          },
+          '3660': {
+            0: ['Leopard-2FE'],
+            1: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW', 'NM-4T'],
+            2: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW', 'NM-4T'],
+            3: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW', 'NM-4T'],
+            4: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW', 'NM-4T'],
+            5: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW', 'NM-4T'],
+            6: ['NM-1FE-TX', 'NM-4E', 'NM-16ESW', 'NM-4T'],
+          },
+        },
+        c7200: {
+          '': {
+            0: ['C7200-IO-FE', 'C7200-IO-2FE', 'C7200-IO-GE-E'],
+            1: ['PA-A1', 'PA-FE-TX', 'PA-2FE-TX', 'PA-GE', 'PA-4T+', 'PA-8T', 'PA-4E', 'PA-8E', 'PA-POS-OC3'],
+            2: ['PA-A1', 'PA-FE-TX', 'PA-2FE-TX', 'PA-GE', 'PA-4T+', 'PA-8T', 'PA-4E', 'PA-8E', 'PA-POS-OC3'],
+            3: ['PA-A1', 'PA-FE-TX', 'PA-2FE-TX', 'PA-GE', 'PA-4T+', 'PA-8T', 'PA-4E', 'PA-8E', 'PA-POS-OC3'],
+            4: ['PA-A1', 'PA-FE-TX', 'PA-2FE-TX', 'PA-GE', 'PA-4T+', 'PA-8T', 'PA-4E', 'PA-8E', 'PA-POS-OC3'],
+            5: ['PA-A1', 'PA-FE-TX', 'PA-2FE-TX', 'PA-GE', 'PA-4T+', 'PA-8T', 'PA-4E', 'PA-8E', 'PA-POS-OC3'],
+            6: ['PA-A1', 'PA-FE-TX', 'PA-2FE-TX', 'PA-GE', 'PA-4T+', 'PA-8T', 'PA-4E', 'PA-8E', 'PA-POS-OC3'],
+          },
+        },
       }),
       getWicMatrix: vi.fn().mockReturnValue({
         c1700: { 0: ['WIC-1T', 'WIC-2T', 'WIC-1ENET'], 1: ['WIC-1T', 'WIC-2T', 'WIC-1ENET'] },
@@ -482,7 +521,7 @@ describe('AddIosTemplateComponent', () => {
     });
 
     it('should clear chassis on iosTemplate', () => {
-      component.iosTemplate.update(t => ({ ...t, chassis: '3660' }));
+      component.iosTemplate.update((t) => ({ ...t, chassis: '3660' }));
       component.platform.set('c7200');
       component.onPlatformChosen();
       expect(component.iosTemplate().chassis).toBe('');

@@ -31,7 +31,7 @@ describe('DockerTemplatesComponent', () => {
       port: 3080,
       protocol: 'http:',
       status: 'running',
-    }) as Controller;
+    } as Controller);
 
   const createMockDockerTemplate = (id: string, name: string, builtin = false): DockerTemplate =>
     ({
@@ -58,7 +58,7 @@ describe('DockerTemplatesComponent', () => {
       start_command: '',
       usage: '',
       tags: [],
-    }) as DockerTemplate;
+    } as DockerTemplate);
 
   beforeEach(async () => {
     mockCdr = {
@@ -99,7 +99,10 @@ describe('DockerTemplatesComponent', () => {
         { provide: DockerService, useValue: mockDockerService },
         { provide: ChangeDetectorRef, useValue: mockCdr },
         { provide: Router, useValue: mockRouter },
-        { provide: MatDialog, useValue: { open: vi.fn().mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(true)) }) } },
+        {
+          provide: MatDialog,
+          useValue: { open: vi.fn().mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(true)) }) },
+        },
         { provide: TemplateService, useValue: { deleteTemplate: vi.fn().mockReturnValue(of({})) } },
         { provide: ToasterService, useValue: { success: vi.fn() } },
       ],

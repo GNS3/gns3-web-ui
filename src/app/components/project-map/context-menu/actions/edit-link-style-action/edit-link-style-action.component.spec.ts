@@ -60,29 +60,28 @@ describe('EditLinkStyleActionComponent', () => {
     variables: [],
   };
 
-  const createMockLink = (linkId: string): Link =>
-    ({
-      link_id: linkId,
-      project_id: 'project-1',
-      link_type: 'ethernet',
-      nodes: [],
-      capture_file_name: '',
-      capture_file_path: '',
-      capturing: false,
-      suspend: false,
-      distance: 100,
-      length: 100,
-      source: null as any,
-      target: null as any,
-      x: 0,
-      y: 0,
-      link_style: {
-        color: '#000000',
-        width: 2,
-        type: 1,
-        link_type: 'straight',
-      } as LinkStyle,
-    });
+  const createMockLink = (linkId: string): Link => ({
+    link_id: linkId,
+    project_id: 'project-1',
+    link_type: 'ethernet',
+    nodes: [],
+    capture_file_name: '',
+    capture_file_path: '',
+    capturing: false,
+    suspend: false,
+    distance: 100,
+    length: 100,
+    source: null as any,
+    target: null as any,
+    x: 0,
+    y: 0,
+    link_style: {
+      color: '#000000',
+      width: 2,
+      type: 1,
+      link_type: 'straight',
+    } as LinkStyle,
+  });
 
   beforeEach(async () => {
     mockDialogRef = {

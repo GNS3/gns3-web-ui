@@ -77,7 +77,7 @@ describe('ConfiguratorDialogEthernetHubComponent', () => {
       memory: 0,
       tpm: false,
       uefi: false,
-    }) as Properties;
+    } as Properties);
 
   const createMockNode = (): Node =>
     ({
@@ -112,7 +112,7 @@ describe('ConfiguratorDialogEthernetHubComponent', () => {
         { name: 'Ethernet2', port_number: 2, short_name: 'eth2', adapter_number: 0, adapter_type: '', link_type: '' },
       ] as Port[],
       tags: ['tag1', 'tag2'],
-    }) as Node;
+    } as Node);
 
   const mockController = {
     id: 1,

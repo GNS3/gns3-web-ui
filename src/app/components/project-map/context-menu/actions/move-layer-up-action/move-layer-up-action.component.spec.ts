@@ -37,48 +37,46 @@ describe('MoveLayerUpActionComponent', () => {
     tokenExpired: false,
   };
 
-  const createMockNode = (z = 0): Node =>
-    ({
-      node_id: `node-${z}`,
-      name: `Node ${z}`,
-      status: 'started',
-      console_host: '0.0.0.0',
-      node_type: 'vpcs',
-      project_id: 'proj1',
-      command_line: '',
-      compute_id: 'compute1',
-      height: 50,
-      width: 50,
-      x: 0,
-      y: 0,
-      z,
-      label: { text: '', x: 0, y: 0, style: '', rotation: 0 },
-      locked: false,
-      first_port_name: '',
-      port_name_format: '',
-      port_segment_size: 1,
-      ports: [],
-      properties: {} as any,
-      symbol: '',
-      symbol_url: '',
-      console: 0,
-      console_auto_start: false,
-      console_type: '',
-      node_directory: '',
-    });
+  const createMockNode = (z = 0): Node => ({
+    node_id: `node-${z}`,
+    name: `Node ${z}`,
+    status: 'started',
+    console_host: '0.0.0.0',
+    node_type: 'vpcs',
+    project_id: 'proj1',
+    command_line: '',
+    compute_id: 'compute1',
+    height: 50,
+    width: 50,
+    x: 0,
+    y: 0,
+    z,
+    label: { text: '', x: 0, y: 0, style: '', rotation: 0 },
+    locked: false,
+    first_port_name: '',
+    port_name_format: '',
+    port_segment_size: 1,
+    ports: [],
+    properties: {} as any,
+    symbol: '',
+    symbol_url: '',
+    console: 0,
+    console_auto_start: false,
+    console_type: '',
+    node_directory: '',
+  });
 
-  const createMockDrawing = (z = 0): Drawing =>
-    ({
-      drawing_id: `drawing-${z}`,
-      project_id: 'proj1',
-      rotation: 0,
-      svg: '<svg></svg>',
-      locked: false,
-      x: 0,
-      y: 0,
-      z,
-      element: { type: 'rect' } as any,
-    });
+  const createMockDrawing = (z = 0): Drawing => ({
+    drawing_id: `drawing-${z}`,
+    project_id: 'proj1',
+    rotation: 0,
+    svg: '<svg></svg>',
+    locked: false,
+    x: 0,
+    y: 0,
+    z,
+    element: { type: 'rect' } as any,
+  });
 
   beforeEach(async () => {
     mockNodeService = { update: vi.fn().mockReturnValue(of({})) };

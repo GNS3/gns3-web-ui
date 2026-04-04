@@ -243,7 +243,6 @@ describe('ConfiguratorDialogDockerComponent', () => {
     it('should initialize tags array if undefined', () => {
       expect(component.node.tags).toBeDefined();
     });
-
   });
 
   describe('addTag', () => {

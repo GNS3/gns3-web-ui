@@ -138,10 +138,7 @@ describe('ConfirmDialogComponent', () => {
     const dataWithItems: ConfirmDialogData = {
       title: 'Select Items',
       message: 'Choose items',
-      items: [
-        { name: 'item1', description: 'description 1' },
-        { name: 'item2' },
-      ],
+      items: [{ name: 'item1', description: 'description 1' }, { name: 'item2' }],
     };
 
     TestBed.resetTestingModule();

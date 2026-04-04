@@ -494,8 +494,7 @@ describe('AiChatComponent', () => {
 
   describe('Error Handling', () => {
     it('should parse error message correctly for 401 error', () => {
-      const error =
-        "Error code: 401 - {'error': {'message': 'Missing Authentication header', 'code': 401}}";
+      const error = "Error code: 401 - {'error': {'message': 'Missing Authentication header', 'code': 401}}";
       const result = (component as any).parseErrorMessage(error);
       expect(result).toBe('Authentication failed. Please check your API key or login again.');
     });
@@ -664,9 +663,7 @@ describe('AiChatComponent', () => {
     it('should generate UUID', () => {
       const uuid1 = (component as any).generateUUID();
       const uuid2 = (component as any).generateUUID();
-      expect(uuid1).toMatch(
-        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
-      );
+      expect(uuid1).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
       expect(uuid1).not.toBe(uuid2);
     });
   });

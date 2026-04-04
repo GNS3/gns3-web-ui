@@ -6,7 +6,11 @@ import { Terminal } from '@xterm/xterm';
 
 describe('XtermContextMenuService', () => {
   let service: XtermContextMenuService;
-  let mockToaster: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn>; warning: ReturnType<typeof vi.fn> };
+  let mockToaster: {
+    success: ReturnType<typeof vi.fn>;
+    error: ReturnType<typeof vi.fn>;
+    warning: ReturnType<typeof vi.fn>;
+  };
   let mockTerminal: Terminal;
   let mockTerminalElement: HTMLElement;
   let mockBody: { appendChild: ReturnType<typeof vi.fn>; removeChild: ReturnType<typeof vi.fn> };
@@ -65,7 +69,7 @@ describe('XtermContextMenuService', () => {
       }),
       removeEventListener: vi.fn((event: string, handler: Function) => {
         if (documentEventListeners[event]) {
-          documentEventListeners[event] = documentEventListeners[event].filter(h => h !== handler);
+          documentEventListeners[event] = documentEventListeners[event].filter((h) => h !== handler);
         }
       }),
       createElement: vi.fn((tagName: string) => {
@@ -78,7 +82,9 @@ describe('XtermContextMenuService', () => {
             textContent: '',
             children: [],
             parentNode: null,
-            setAttribute: vi.fn((key: string, value: string) => { attrs[key] = value; }),
+            setAttribute: vi.fn((key: string, value: string) => {
+              attrs[key] = value;
+            }),
             getAttribute: vi.fn((key: string) => attrs[key]),
             appendChild: vi.fn((child: any) => {
               mockElement.children.push(child);
@@ -113,12 +119,21 @@ describe('XtermContextMenuService', () => {
       }),
     });
 
-    vi.stubGlobal('MutationObserver', class {
-      observe = vi.fn();
-      disconnect = vi.fn();
-    });
+    vi.stubGlobal(
+      'MutationObserver',
+      class {
+        observe = vi.fn();
+        disconnect = vi.fn();
+      }
+    );
 
-    vi.stubGlobal('setTimeout', vi.fn((cb: Function) => { cb(); return 0; }));
+    vi.stubGlobal(
+      'setTimeout',
+      vi.fn((cb: Function) => {
+        cb();
+        return 0;
+      })
+    );
 
     vi.stubGlobal('navigator', {
       clipboard: {
@@ -134,10 +149,7 @@ describe('XtermContextMenuService', () => {
     });
 
     TestBed.configureTestingModule({
-      providers: [
-        XtermContextMenuService,
-        { provide: ToasterService, useValue: mockToaster },
-      ],
+      providers: [XtermContextMenuService, { provide: ToasterService, useValue: mockToaster }],
     });
 
     service = TestBed.inject(XtermContextMenuService);
@@ -167,10 +179,7 @@ describe('XtermContextMenuService', () => {
     it('should add contextmenu event listener to terminal element', () => {
       service.attachContextMenu(mockTerminal, mockTerminalElement);
 
-      expect(mockTerminalElement.addEventListener).toHaveBeenCalledWith(
-        'contextmenu',
-        expect.any(Function)
-      );
+      expect(mockTerminalElement.addEventListener).toHaveBeenCalledWith('contextmenu', expect.any(Function));
     });
 
     it('should return a cleanup function', () => {
@@ -189,10 +198,7 @@ describe('XtermContextMenuService', () => {
 
       cleanup();
 
-      expect(mockTerminalElement.removeEventListener).toHaveBeenCalledWith(
-        'contextmenu',
-        registeredHandler
-      );
+      expect(mockTerminalElement.removeEventListener).toHaveBeenCalledWith('contextmenu', registeredHandler);
     });
 
     it('should handle multiple attach calls with separate handlers', () => {
@@ -291,9 +297,7 @@ describe('XtermContextMenuService', () => {
     function getMenuItems() {
       const menu = createdElements[0];
       if (!menu) return [];
-      return menu.children.filter((child: any) =>
-        child.getAttribute?.('role') === 'menuitem'
-      );
+      return menu.children.filter((child: any) => child.getAttribute?.('role') === 'menuitem');
     }
 
     it('should always show Paste menu item', () => {
@@ -367,9 +371,7 @@ describe('XtermContextMenuService', () => {
       triggerContextMenu(100, 200);
 
       const menu = createdElements[0];
-      const separator = menu.children.find((child: any) =>
-        child.className === 'xterm-context-menu-separator'
-      );
+      const separator = menu.children.find((child: any) => child.className === 'xterm-context-menu-separator');
       expect(separator).toBeDefined();
     });
   });
@@ -392,9 +394,7 @@ describe('XtermContextMenuService', () => {
     function getMenuItems() {
       const menu = createdElements[0];
       if (!menu) return [];
-      return menu.children.filter((child: any) =>
-        child.getAttribute?.('role') === 'menuitem'
-      );
+      return menu.children.filter((child: any) => child.getAttribute?.('role') === 'menuitem');
     }
 
     it('should copy selected text to clipboard on Copy click', async () => {
@@ -410,7 +410,7 @@ describe('XtermContextMenuService', () => {
       copyItem.click();
 
       // Wait for async clipboard operation
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith('selected text');
       expect(mockToaster.success).toHaveBeenCalledWith('Copied to clipboard');
@@ -436,9 +436,7 @@ describe('XtermContextMenuService', () => {
     function getMenuItems() {
       const menu = createdElements[0];
       if (!menu) return [];
-      return menu.children.filter((child: any) =>
-        child.getAttribute?.('role') === 'menuitem'
-      );
+      return menu.children.filter((child: any) => child.getAttribute?.('role') === 'menuitem');
     }
 
     it('should paste text from clipboard on Paste click', async () => {
@@ -451,7 +449,7 @@ describe('XtermContextMenuService', () => {
 
       pasteItem.click();
 
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       expect(mockTerminal.paste).toHaveBeenCalledWith('pasted content');
     });
@@ -468,7 +466,7 @@ describe('XtermContextMenuService', () => {
 
       pasteItem.click();
 
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       expect(mockToaster.warning).toHaveBeenCalledWith('Nothing to paste. Clipboard is empty.');
       expect(mockTerminal.paste).not.toHaveBeenCalled();
@@ -496,9 +494,7 @@ describe('XtermContextMenuService', () => {
     function getMenuItems() {
       const menu = createdElements[0];
       if (!menu) return [];
-      return menu.children.filter((child: any) =>
-        child.getAttribute?.('role') === 'menuitem'
-      );
+      return menu.children.filter((child: any) => child.getAttribute?.('role') === 'menuitem');
     }
 
     it('should call terminal.selectAll on Select All click', () => {
@@ -531,9 +527,7 @@ describe('XtermContextMenuService', () => {
     function getMenuItems() {
       const menu = createdElements[0];
       if (!menu) return [];
-      return menu.children.filter((child: any) =>
-        child.getAttribute?.('role') === 'menuitem'
-      );
+      return menu.children.filter((child: any) => child.getAttribute?.('role') === 'menuitem');
     }
 
     it('should call terminal.clearSelection on Clear Selection click', () => {
@@ -569,9 +563,7 @@ describe('XtermContextMenuService', () => {
     function getMenuItems() {
       const menu = createdElements[0];
       if (!menu) return [];
-      return menu.children.filter((child: any) =>
-        child.getAttribute?.('role') === 'menuitem'
-      );
+      return menu.children.filter((child: any) => child.getAttribute?.('role') === 'menuitem');
     }
 
     it('should trigger click handler on Enter key', () => {
@@ -617,9 +609,7 @@ describe('XtermContextMenuService', () => {
     function getMenuItems() {
       const menu = createdElements[0];
       if (!menu) return [];
-      return menu.children.filter((child: any) =>
-        child.getAttribute?.('role') === 'menuitem'
-      );
+      return menu.children.filter((child: any) => child.getAttribute?.('role') === 'menuitem');
     }
 
     it('should dismiss menu after Copy action', async () => {
@@ -634,7 +624,7 @@ describe('XtermContextMenuService', () => {
 
       copyItem.click();
 
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       expect(menu.remove).toHaveBeenCalled();
     });
@@ -648,7 +638,7 @@ describe('XtermContextMenuService', () => {
 
       pasteItem.click();
 
-      await new Promise(resolve => setTimeout(resolve, 10));
+      await new Promise((resolve) => setTimeout(resolve, 10));
 
       expect(menu.remove).toHaveBeenCalled();
     });
@@ -681,9 +671,7 @@ describe('XtermContextMenuService', () => {
     function getMenuItems() {
       const menu = createdElements[0];
       if (!menu) return [];
-      return menu.children.filter((child: any) =>
-        child.getAttribute?.('role') === 'menuitem'
-      );
+      return menu.children.filter((child: any) => child.getAttribute?.('role') === 'menuitem');
     }
 
     it('should use hasSelection method when available (xterm.js 5.0+)', () => {
@@ -756,9 +744,7 @@ describe('XtermContextMenuService', () => {
     function getMenuItems() {
       const menu = createdElements[0];
       if (!menu) return [];
-      return menu.children.filter((child: any) =>
-        child.getAttribute?.('role') === 'menuitem'
-      );
+      return menu.children.filter((child: any) => child.getAttribute?.('role') === 'menuitem');
     }
 
     it('should set role=menuitem on all menu items', () => {

@@ -81,33 +81,42 @@
         <div class="gns3-chat-message-list__text">{{ message.metadata.error }}</div>
       </div>
     </div>
-    }
-  }
+    } }
 
-  <!-- Empty state -->
-  @if (messages().length === 0) {
-  <div class="gns3-chat-message-list__empty-state">
-    <div class="gns3-chat-message-list__empty-content">
-      <div class="gns3-chat-message-list__empty-icon-wrapper">
-        <img src="assets/gns3_icon.svg" alt="GNS3" class="gns3-chat-message-list__empty-logo" />
-      </div>
-      <h3 class="gns3-chat-message-list__empty-title">Welcome to GNS3 AI Assistant</h3>
-      <p class="gns3-chat-message-list__empty-description">Ask me anything about network automation and GNS3</p>
-      <div class="gns3-chat-message-list__empty-suggestions">
-        <div class="gns3-chat-message-list__suggestion-chip" (click)="sendSuggestion('Help me understand this network topology')">
-          <mat-icon>help_outline</mat-icon>
-          <span>Explain network topology</span>
+    <!-- Empty state -->
+    @if (messages().length === 0) {
+    <div class="gns3-chat-message-list__empty-state">
+      <div class="gns3-chat-message-list__empty-content">
+        <div class="gns3-chat-message-list__empty-icon-wrapper">
+          <img src="assets/gns3_icon.svg" alt="GNS3" class="gns3-chat-message-list__empty-logo" />
         </div>
-        <div class="gns3-chat-message-list__suggestion-chip" (click)="sendSuggestion('Analyze the network configuration')">
-          <mat-icon>analytics</mat-icon>
-          <span>Analyze configuration</span>
-        </div>
-        <div class="gns3-chat-message-list__suggestion-chip" (click)="sendSuggestion('Find potential network issues')">
-          <mat-icon>search</mat-icon>
-          <span>Find network issues</span>
+        <h3 class="gns3-chat-message-list__empty-title">Welcome to GNS3 AI Assistant</h3>
+        <p class="gns3-chat-message-list__empty-description">Ask me anything about network automation and GNS3</p>
+        <div class="gns3-chat-message-list__empty-suggestions">
+          <div
+            class="gns3-chat-message-list__suggestion-chip"
+            (click)="sendSuggestion('Help me understand this network topology')"
+          >
+            <mat-icon>help_outline</mat-icon>
+            <span>Explain network topology</span>
+          </div>
+          <div
+            class="gns3-chat-message-list__suggestion-chip"
+            (click)="sendSuggestion('Analyze the network configuration')"
+          >
+            <mat-icon>analytics</mat-icon>
+            <span>Analyze configuration</span>
+          </div>
+          <div
+            class="gns3-chat-message-list__suggestion-chip"
+            (click)="sendSuggestion('Find potential network issues')"
+          >
+            <mat-icon>search</mat-icon>
+            <span>Find network issues</span>
+          </div>
         </div>
       </div>
     </div>
+    }
   </div>
-  }
 </div>

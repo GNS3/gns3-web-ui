@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { TemplateListDialogComponent, TemplateDatabase, TemplateDataSource, NodeAddedEvent } from './template-list-dialog.component';
+import {
+  TemplateListDialogComponent,
+  TemplateDatabase,
+  TemplateDataSource,
+  NodeAddedEvent,
+} from './template-list-dialog.component';
 
 describe('TemplateListDialogComponent', () => {
   describe('prototype methods', () => {

@@ -528,11 +528,7 @@ describe('DrawingService', () => {
 
       service.lockAllNodes(mockController, mockProject);
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/lock',
-        {}
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/projects/project-123/lock', {});
     });
 
     it('should pass empty body', () => {
@@ -559,11 +555,7 @@ describe('DrawingService', () => {
 
       service.unLockAllNodes(mockController, mockProject);
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/unlock',
-        {}
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/projects/project-123/unlock', {});
     });
 
     it('should pass empty body', () => {
@@ -593,9 +585,24 @@ describe('DrawingService', () => {
       service.add(mockController, 'proj-gamma', 100, 200, '<svg>test</svg>');
 
       expect(mockHttpController.post).toHaveBeenCalledTimes(3);
-      expect(mockHttpController.post).toHaveBeenNthCalledWith(1, mockController, '/projects/proj-alpha/drawings', expect.any(Object));
-      expect(mockHttpController.post).toHaveBeenNthCalledWith(2, mockController, '/projects/proj-beta/drawings', expect.any(Object));
-      expect(mockHttpController.post).toHaveBeenNthCalledWith(3, mockController, '/projects/proj-gamma/drawings', expect.any(Object));
+      expect(mockHttpController.post).toHaveBeenNthCalledWith(
+        1,
+        mockController,
+        '/projects/proj-alpha/drawings',
+        expect.any(Object)
+      );
+      expect(mockHttpController.post).toHaveBeenNthCalledWith(
+        2,
+        mockController,
+        '/projects/proj-beta/drawings',
+        expect.any(Object)
+      );
+      expect(mockHttpController.post).toHaveBeenNthCalledWith(
+        3,
+        mockController,
+        '/projects/proj-gamma/drawings',
+        expect.any(Object)
+      );
     });
 
     it('should construct correct URL for different drawing IDs', () => {
@@ -607,8 +614,16 @@ describe('DrawingService', () => {
       service.delete(mockController, drawing1);
       service.delete(mockController, drawing2);
 
-      expect(mockHttpController.delete).toHaveBeenNthCalledWith(1, mockController, '/projects/project-123/drawings/draw-1');
-      expect(mockHttpController.delete).toHaveBeenNthCalledWith(2, mockController, '/projects/project-123/drawings/draw-2');
+      expect(mockHttpController.delete).toHaveBeenNthCalledWith(
+        1,
+        mockController,
+        '/projects/project-123/drawings/draw-1'
+      );
+      expect(mockHttpController.delete).toHaveBeenNthCalledWith(
+        2,
+        mockController,
+        '/projects/project-123/drawings/draw-2'
+      );
     });
   });
 

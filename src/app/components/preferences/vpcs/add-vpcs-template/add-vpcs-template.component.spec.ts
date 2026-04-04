@@ -282,9 +282,10 @@ describe('AddVpcsTemplateComponent', () => {
 
       let capturedTemplate: VpcsTemplate | undefined;
       mockVpcsService.addTemplate.mockReturnValue(
-        of(createMockVpcsTemplate()).pipe(
+        of(createMockVpcsTemplate())
+          .pipe
           // Capture the template passed to addTemplate
-        )
+          ()
       );
 
       // Override mock to capture the argument

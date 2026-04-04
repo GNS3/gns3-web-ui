@@ -51,76 +51,71 @@ describe('TextEditorDialogComponent', () => {
     return element;
   };
 
-  const createMockLabel = (style = 'font-family: Arial; font-size: 12; font-weight: normal; fill: #000; fill-opacity: 1;'): any =>
-    ({
-      text: 'Test Label',
-      style,
-      rotation: 0,
-    });
+  const createMockLabel = (
+    style = 'font-family: Arial; font-size: 12; font-weight: normal; fill: #000; fill-opacity: 1;'
+  ): any => ({
+    text: 'Test Label',
+    style,
+    rotation: 0,
+  });
 
-  const createMockNode = (label: any): any =>
-    ({
-      node_id: 'node1',
-      name: 'Test Node',
-      label,
-    });
+  const createMockNode = (label: any): any => ({
+    node_id: 'node1',
+    name: 'Test Node',
+    label,
+  });
 
-  const createMockLinkNode = (label: any): any =>
-    ({
-      node_id: 'node1',
-      adapter_number: 0,
-      port_number: 0,
-      label,
-    });
+  const createMockLinkNode = (label: any): any => ({
+    node_id: 'node1',
+    adapter_number: 0,
+    port_number: 0,
+    label,
+  });
 
-  const createMockLink = (linkNode: any): any =>
-    ({
-      link_id: 'link1',
-      project_id: 'proj1',
-      nodes: [linkNode],
-      capture_file_name: '',
-      capture_file_path: '',
-      capturing: false,
-      link_type: 'ethernet',
-      suspend: false,
-      distance: 0,
-      length: 0,
-      x: 0,
-      y: 0,
-    });
+  const createMockLink = (linkNode: any): any => ({
+    link_id: 'link1',
+    project_id: 'proj1',
+    nodes: [linkNode],
+    capture_file_name: '',
+    capture_file_path: '',
+    capturing: false,
+    link_type: 'ethernet',
+    suspend: false,
+    distance: 0,
+    length: 0,
+    x: 0,
+    y: 0,
+  });
 
-  const createMockDrawing = (element: TextElement): any =>
-    ({
-      drawing_id: 'drawing1',
-      project_id: 'proj1',
-      rotation: 0,
-      svg: '<svg></svg>',
-      locked: false,
-      x: 0,
-      y: 0,
-      z: 0,
-      element,
-    });
+  const createMockDrawing = (element: TextElement): any => ({
+    drawing_id: 'drawing1',
+    project_id: 'proj1',
+    rotation: 0,
+    svg: '<svg></svg>',
+    locked: false,
+    x: 0,
+    y: 0,
+    z: 0,
+    element,
+  });
 
-  const createMockController = (): any =>
-    ({
-      id: 1,
-      name: 'Test Controller',
-      location: 'local',
-      host: 'localhost',
-      port: 3080,
-      path: '',
-      ubridge_path: '',
-      protocol: 'http:',
-      username: '',
-      password: '',
-      authToken: '',
-    });
+  const createMockController = (): any => ({
+    id: 1,
+    name: 'Test Controller',
+    location: 'local',
+    host: 'localhost',
+    port: 3080,
+    path: '',
+    ubridge_path: '',
+    protocol: 'http:',
+    username: '',
+    password: '',
+    authToken: '',
+  });
 
-  const createMockProject = (): any =>
-    ({
-      project_id: 'proj1',
-    });
+  const createMockProject = (): any => ({
+    project_id: 'proj1',
+  });
 
   beforeEach(async () => {
     mockDialogRef = {
@@ -373,7 +368,9 @@ describe('TextEditorDialogComponent', () => {
   describe('getTextElementFromLabel', () => {
     it('should parse label style into text element properties', () => {
       // Style format: properties separated by semicolons without space after semicolon
-      component.label = createMockLabel('font-family: Helvetica;font-size: 16;font-weight: 600;fill: #00ff00;fill-opacity: 0.8');
+      component.label = createMockLabel(
+        'font-family: Helvetica;font-size: 16;font-weight: 600;fill: #00ff00;fill-opacity: 0.8'
+      );
       const textElement = component.getTextElementFromLabel();
       expect(textElement.font_family).toBe('Helvetica');
       expect(textElement.font_size).toBe(16);

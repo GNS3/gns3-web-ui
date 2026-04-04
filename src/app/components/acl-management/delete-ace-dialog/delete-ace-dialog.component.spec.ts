@@ -10,26 +10,26 @@ describe('DeleteAceDialogComponent', () => {
   let fixture: ComponentFixture<DeleteAceDialogComponent>;
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
   const mockAces: ACE[] = [
-      {
-          ace_id: 'ace-1',
-          ace_type: AceType.user,
-          path: '/path/to/ace1',
-          propagate: true,
-          allowed: true,
-          role_id: 'role-1',
-          created_at: '2024-01-01',
-          updated_at: '2024-01-01',
-      },
-      {
-          ace_id: 'ace-2',
-          ace_type: AceType.group,
-          path: '/path/to/ace2',
-          propagate: false,
-          allowed: false,
-          role_id: 'role-2',
-          created_at: '2024-01-02',
-          updated_at: '2024-01-02',
-      },
+    {
+      ace_id: 'ace-1',
+      ace_type: AceType.user,
+      path: '/path/to/ace1',
+      propagate: true,
+      allowed: true,
+      role_id: 'role-1',
+      created_at: '2024-01-01',
+      updated_at: '2024-01-01',
+    },
+    {
+      ace_id: 'ace-2',
+      ace_type: AceType.group,
+      path: '/path/to/ace2',
+      propagate: false,
+      allowed: false,
+      role_id: 'role-2',
+      created_at: '2024-01-02',
+      updated_at: '2024-01-02',
+    },
   ];
 
   beforeEach(async () => {
@@ -40,8 +40,8 @@ describe('DeleteAceDialogComponent', () => {
     await TestBed.configureTestingModule({
       imports: [DeleteAceDialogComponent, MatDialogModule, MatButtonModule],
       providers: [
-          { provide: MatDialogRef, useValue: mockDialogRef },
-          { provide: MAT_DIALOG_DATA, useValue: { aces: mockAces } },
+        { provide: MatDialogRef, useValue: mockDialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: { aces: mockAces } },
       ],
     }).compileComponents();
 

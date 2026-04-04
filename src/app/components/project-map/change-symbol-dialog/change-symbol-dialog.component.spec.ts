@@ -217,11 +217,7 @@ describe('ChangeSymbolDialogComponent', () => {
 
       component.onSelectClick();
 
-      expect(mockNodeService.updateSymbol).toHaveBeenCalledWith(
-        mockController,
-        mockNode,
-        mockNode.symbol,
-      );
+      expect(mockNodeService.updateSymbol).toHaveBeenCalledWith(mockController, mockNode, mockNode.symbol);
     });
 
     it('should close the dialog after successful symbol update', () => {

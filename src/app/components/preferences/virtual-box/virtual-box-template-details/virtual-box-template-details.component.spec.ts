@@ -114,11 +114,13 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
         ['Routers', 'router'],
         ['Switches', 'switch'],
       ]),
-      getNetworkTypes: vi.fn().mockReturnValue([
-        'PCnet-PCI II (Am79C970A)',
-        'Intel PRO/1000 MT Desktop (82540EM)',
-        'Paravirtualized Network (virtio-net)',
-      ]),
+      getNetworkTypes: vi
+        .fn()
+        .mockReturnValue([
+          'PCnet-PCI II (Am79C970A)',
+          'Intel PRO/1000 MT Desktop (82540EM)',
+          'Paravirtualized Network (virtio-net)',
+        ]),
     };
 
     mockControllerService = {
@@ -181,7 +183,13 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
     });
 
     it('should have displayedColumns for adapters table', () => {
-      expect(component.displayedColumns).toEqual(['adapter_number', 'port_name', 'adapter_type', 'mac_address', 'actions']);
+      expect(component.displayedColumns).toEqual([
+        'adapter_number',
+        'port_name',
+        'adapter_type',
+        'mac_address',
+        'actions',
+      ]);
     });
   });
 
@@ -197,7 +205,7 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
       component.ngOnInit();
 
       // Wait for async operations
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       fixture.detectChanges();
 
       expect(mockControllerService.get).toHaveBeenCalledWith(1);
@@ -209,7 +217,7 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
       mockVirtualBoxService.getTemplate.mockReturnValue(of(mockTemplate));
 
       component.ngOnInit();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       fixture.detectChanges();
 
       expect(mockVirtualBoxConfigurationService.getConsoleTypes).toHaveBeenCalled();
@@ -223,7 +231,7 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
       mockVirtualBoxService.getTemplate.mockReturnValue(of(mockTemplate));
 
       component.ngOnInit();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       fixture.detectChanges();
 
       expect(component.templateName()).toBe(mockTemplate.name);
@@ -240,7 +248,7 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
       mockVirtualBoxService.getTemplate.mockReturnValue(of(mockTemplate));
 
       component.ngOnInit();
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
       fixture.detectChanges();
 
       expect(component.tags()).toEqual([]);
@@ -273,9 +281,7 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
 
       component.onSave();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith(
-        expect.stringContaining('Missing required fields')
-      );
+      expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Missing required fields'));
       expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Template name'));
     });
 
@@ -334,9 +340,7 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
 
       component.onSave();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith(
-        expect.stringContaining('Failed to save template')
-      );
+      expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Failed to save template'));
     });
   });
 

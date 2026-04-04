@@ -200,10 +200,7 @@ describe('TemplateComponent', () => {
     });
 
     it('should load templates and sort them', () => {
-      const templates = [
-        createMockTemplate('t1', 'Zebra', 'dynamips'),
-        createMockTemplate('t2', 'Alpha', 'dynamips'),
-      ];
+      const templates = [createMockTemplate('t1', 'Zebra', 'dynamips'), createMockTemplate('t2', 'Alpha', 'dynamips')];
       mockTemplateService.list.mockReturnValue(of(templates));
 
       component.ngOnInit();
@@ -374,10 +371,7 @@ describe('TemplateComponent', () => {
     });
 
     it('should sort templates after filtering', () => {
-      component.templates = [
-        createMockTemplate('t1', 'Zebra', 'cloud'),
-        createMockTemplate('t2', 'Alpha', 'cloud'),
-      ];
+      component.templates = [createMockTemplate('t1', 'Zebra', 'cloud'), createMockTemplate('t2', 'Alpha', 'cloud')];
       component.filteredTemplates = [...component.templates];
 
       component.filterTemplates({ target: { value: '' } });

@@ -228,9 +228,7 @@ describe('VmwareTemplateDetailsComponent', () => {
 
     fixture.componentInstance.onSave();
 
-    expect(mockToasterService.error).toHaveBeenCalledWith(
-      expect.stringContaining('Missing required fields')
-    );
+    expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Missing required fields'));
     expect(mockVmwareService.saveTemplate).not.toHaveBeenCalled();
   });
 

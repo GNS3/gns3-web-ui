@@ -243,11 +243,7 @@ describe('GroupDetailDialogComponent', () => {
 
   describe('loadMembers', () => {
     it('should load and sort members alphabetically by username', () => {
-      const unsortedUsers = [
-        createMockUser('1', 'Zack'),
-        createMockUser('2', 'Alice'),
-        createMockUser('3', 'Bob'),
-      ];
+      const unsortedUsers = [createMockUser('1', 'Zack'), createMockUser('2', 'Alice'), createMockUser('3', 'Bob')];
       mockGroupService.getGroupMember.mockReturnValue(of(unsortedUsers));
 
       component.loadMembers();
@@ -367,10 +363,7 @@ describe('GroupDetailDialogComponent', () => {
 
   describe('filteredMembers', () => {
     it('should return all members when search is empty', () => {
-      const users = [
-        createMockUser('1', 'Alice'),
-        createMockUser('2', 'Bob'),
-      ];
+      const users = [createMockUser('1', 'Alice'), createMockUser('2', 'Bob')];
       component.members.set(users);
       component.searchMembers = '';
 
@@ -378,11 +371,7 @@ describe('GroupDetailDialogComponent', () => {
     });
 
     it('should filter members by username case-insensitively', () => {
-      const users = [
-        createMockUser('1', 'Alice'),
-        createMockUser('2', 'Bob'),
-        createMockUser('3', 'alice_smith'),
-      ];
+      const users = [createMockUser('1', 'Alice'), createMockUser('2', 'Bob'), createMockUser('3', 'alice_smith')];
       component.members.set(users);
       component.searchMembers = 'alice';
 

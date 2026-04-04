@@ -139,12 +139,7 @@ describe('AutoIdlePcActionComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        AutoIdlePcActionComponent,
-        MatButtonModule,
-        MatIconModule,
-        MatMenuModule,
-      ],
+      imports: [AutoIdlePcActionComponent, MatButtonModule, MatIconModule, MatMenuModule],
       providers: [
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
@@ -242,9 +237,7 @@ describe('AutoIdlePcActionComponent', () => {
 
       component.autoIdlePC();
 
-      expect(mockToasterService.success).toHaveBeenCalledWith(
-        'Node Router1 updated with idle-PC value 0x1234'
-      );
+      expect(mockToasterService.success).toHaveBeenCalledWith('Node Router1 updated with idle-PC value 0x1234');
     });
 
     it('should not show toast when idlepc is null', () => {
@@ -280,9 +273,7 @@ describe('AutoIdlePcActionComponent', () => {
 
       component.autoIdlePC();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith(
-        'Error while updating idle-PC value for node Router1'
-      );
+      expect(mockToasterService.error).toHaveBeenCalledWith('Error while updating idle-PC value for node Router1');
     });
 
     it('should deactivate progress service on error', () => {

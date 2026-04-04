@@ -9,11 +9,9 @@ import { beforeEach, afterEach, vi } from 'vitest';
 
 // Initialize test environment (only runs once, using if to prevent duplicate initialization)
 if (!TestBed.platform) {
-  TestBed.initTestEnvironment(
-    BrowserDynamicTestingModule,
-    platformBrowserDynamicTesting(),
-    { teardown: { destroyAfterEach: true } }
-  );
+  TestBed.initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
+    teardown: { destroyAfterEach: true },
+  });
 }
 
 // Global fake timers to prevent RxJS timer pollution between tests

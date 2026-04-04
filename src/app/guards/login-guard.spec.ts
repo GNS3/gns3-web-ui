@@ -87,10 +87,9 @@ describe('LoginGuard', () => {
       const result = await guard.canActivate(mockRouteSnapshot, mockStateSnapshot);
 
       expect(result).toBeFalsy();
-      expect(mockRouter.navigate).toHaveBeenCalledWith(
-        ['/controller', 1, 'login'],
-        { queryParams: { returnUrl: '/test-url' } }
-      );
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', 1, 'login'], {
+        queryParams: { returnUrl: '/test-url' },
+      });
     });
 
     it('should navigate to login when controller has no authToken', async () => {
@@ -103,10 +102,9 @@ describe('LoginGuard', () => {
       const result = await guard.canActivate(mockRouteSnapshot, mockStateSnapshot);
 
       expect(result).toBeFalsy();
-      expect(mockRouter.navigate).toHaveBeenCalledWith(
-        ['/controller', 1, 'login'],
-        { queryParams: { returnUrl: '/test-url' } }
-      );
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', 1, 'login'], {
+        queryParams: { returnUrl: '/test-url' },
+      });
     });
 
     it('should continue even when getLoggedUser throws an error', async () => {

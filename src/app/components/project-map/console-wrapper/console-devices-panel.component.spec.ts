@@ -316,9 +316,7 @@ describe('ConsoleDevicesPanelComponent', () => {
     });
 
     it('should keep telnet console type nodes', () => {
-      const nodes: Node[] = [
-        createMockNode({ node_id: '1', name: 'Node1', console_type: 'telnet' }),
-      ];
+      const nodes: Node[] = [createMockNode({ node_id: '1', name: 'Node1', console_type: 'telnet' })];
 
       nodesSubject.next(nodes);
       fixture.detectChanges();
@@ -328,9 +326,7 @@ describe('ConsoleDevicesPanelComponent', () => {
     });
 
     it('should keep custom console type nodes', () => {
-      const nodes: Node[] = [
-        createMockNode({ node_id: '1', name: 'Node1', console_type: 'custom' }),
-      ];
+      const nodes: Node[] = [createMockNode({ node_id: '1', name: 'Node1', console_type: 'custom' })];
 
       nodesSubject.next(nodes);
       fixture.detectChanges();
@@ -399,9 +395,7 @@ describe('ConsoleDevicesPanelComponent', () => {
     });
 
     it('should not add new node if itemChanged emits for non-existing node', () => {
-      const originalNodes: Node[] = [
-        createMockNode({ node_id: '1', name: 'Node1', console_type: 'telnet' }),
-      ];
+      const originalNodes: Node[] = [createMockNode({ node_id: '1', name: 'Node1', console_type: 'telnet' })];
       nodesSubject.next(originalNodes);
       fixture.detectChanges();
 
@@ -440,9 +434,7 @@ describe('ConsoleDevicesPanelComponent', () => {
     });
 
     it('should show devices when nodes exist', () => {
-      const nodes: Node[] = [
-        createMockNode({ node_id: '1', name: 'Router1', console_type: 'telnet' }),
-      ];
+      const nodes: Node[] = [createMockNode({ node_id: '1', name: 'Router1', console_type: 'telnet' })];
       nodesSubject.next(nodes);
       component.collapsed.set(false);
       fixture.detectChanges();

@@ -71,7 +71,7 @@ describe('AiProfileDialogComponent', () => {
           configs: [],
           default_config: null,
           total: 0,
-        }),
+        })
       ),
       createConfig: vi.fn().mockReturnValue(of({})),
       updateConfig: vi.fn().mockReturnValue(of({})),

@@ -38,11 +38,7 @@ describe('ManagementComponent', () => {
     } as any as ActivatedRoute;
 
     await TestBed.configureTestingModule({
-      imports: [
-        ManagementComponent,
-        RouterModule,
-        MatTabsModule,
-      ],
+      imports: [ManagementComponent, RouterModule, MatTabsModule],
       providers: [
         { provide: ControllerService, useValue: mockControllerService },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },

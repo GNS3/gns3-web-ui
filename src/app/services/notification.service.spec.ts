@@ -111,8 +111,14 @@ describe('NotificationService', () => {
 
   describe('projectNotificationsPath', () => {
     it.each([
-      { protocol: 'http:', expected: 'ws://localhost:3080/v3/projects/project-123/notifications/ws?token=test-token-123' },
-      { protocol: 'https:', expected: 'wss://localhost:3080/v3/projects/project-456/notifications/ws?token=test-token-123' },
+      {
+        protocol: 'http:',
+        expected: 'ws://localhost:3080/v3/projects/project-123/notifications/ws?token=test-token-123',
+      },
+      {
+        protocol: 'https:',
+        expected: 'wss://localhost:3080/v3/projects/project-456/notifications/ws?token=test-token-123',
+      },
     ])('should build $expected protocol URL for $protocol controller', ({ protocol, expected }) => {
       const controller = { ...mockController, protocol: protocol as any };
       const projectId = protocol === 'http:' ? 'project-123' : 'project-456';
@@ -123,7 +129,10 @@ describe('NotificationService', () => {
       { projectId: 'my-project', expected: '/projects/my-project/' },
       { projectId: 'project-with-dash', expected: '/projects/project-with-dash/' },
       { projectId: 'project_with_underscore', expected: '/projects/project_with_underscore/' },
-      { projectId: '123e4567-e89b-12d3-a456-426614174000', expected: '/projects/123e4567-e89b-12d3-a456-426614174000/' },
+      {
+        projectId: '123e4567-e89b-12d3-a456-426614174000',
+        expected: '/projects/123e4567-e89b-12d3-a456-426614174000/',
+      },
       { projectId: 'project-name-123_test', expected: '/projects/project-name-123_test/' },
     ])('should handle project_id: $projectId', ({ projectId, expected }) => {
       const result = service.projectNotificationsPath(mockController, projectId);
@@ -146,7 +155,7 @@ describe('NotificationService', () => {
       const ws = MockWebSocket.instances[0];
 
       service.disconnect();
-    vi.unstubAllGlobals();
+      vi.unstubAllGlobals();
 
       expect(ws.close).toHaveBeenCalled();
     });
@@ -154,7 +163,7 @@ describe('NotificationService', () => {
     it('should clear ws and currentController after disconnect', () => {
       service.connectToComputeNotifications(mockController);
       service.disconnect();
-    vi.unstubAllGlobals();
+      vi.unstubAllGlobals();
 
       expect(service['ws']).toBeNull();
       expect(service['currentController']).toBeNull();
@@ -166,9 +175,7 @@ describe('NotificationService', () => {
       service.connectToComputeNotifications(mockController);
 
       expect(MockWebSocket.instances).toHaveLength(1);
-      expect(MockWebSocket.instances[0].url).toBe(
-        'ws://localhost:3080/v3/notifications/ws?token=test-token-123'
-      );
+      expect(MockWebSocket.instances[0].url).toBe('ws://localhost:3080/v3/notifications/ws?token=test-token-123');
     });
 
     it('should skip reconnecting to same controller', () => {
@@ -314,11 +321,7 @@ describe('NotificationService', () => {
       expect(count).toBe(2);
     });
 
-    it.each([
-      'compute.created',
-      'compute.updated',
-      'compute.deleted',
-    ])('should emit for action: %s', (action) => {
+    it.each(['compute.created', 'compute.updated', 'compute.deleted'])('should emit for action: %s', (action) => {
       const emitSpy = vi.spyOn(service.computeNotificationEmitter, 'emit');
       service.connectToComputeNotifications(mockController);
       const ws = MockWebSocket.instances[0];

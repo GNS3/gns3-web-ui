@@ -336,7 +336,7 @@ describe('InfoDialogComponent', () => {
       const mockNode = createMockNode({ node_type: 'dynamips' });
       const mockController = createMockController();
       mockInfoService.getCommandLine.mockReturnValue(
-        'Command line information is not supported for this type of node.',
+        'Command line information is not supported for this type of node.'
       );
 
       fixture.componentRef.setInput('node', mockNode);
@@ -356,7 +356,7 @@ describe('InfoDialogComponent', () => {
       const mockNode = createMockNode({ node_type: 'vpcs' });
       const mockController = createMockController();
       mockInfoService.getCommandLine.mockReturnValue(
-        'Please start the node in order to get the command line information.',
+        'Please start the node in order to get the command line information.'
       );
 
       fixture.componentRef.setInput('node', mockNode);

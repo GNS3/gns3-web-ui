@@ -202,7 +202,13 @@ describe('EthernetSwitchesAddTemplateComponent', () => {
 
       component.goBack();
 
-      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', 0, 'preferences', 'builtin', 'ethernet-switches']);
+      expect(mockRouter.navigate).toHaveBeenCalledWith([
+        '/controller',
+        0,
+        'preferences',
+        'builtin',
+        'ethernet-switches',
+      ]);
     });
   });
 

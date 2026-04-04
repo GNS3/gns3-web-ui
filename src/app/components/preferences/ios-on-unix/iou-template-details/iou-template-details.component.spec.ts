@@ -122,11 +122,7 @@ describe('IouTemplateDetailsComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        IouTemplateDetailsComponent,
-        MatDialogModule,
-        RouterModule,
-      ],
+      imports: [IouTemplateDetailsComponent, MatDialogModule, RouterModule],
       providers: [
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: Router, useValue: mockRouter },

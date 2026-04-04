@@ -122,10 +122,7 @@ describe('ImageManagerService', () => {
 
       service.deleteFile(mockController, 'image.img');
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/images/image.img'
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/images/image.img');
     });
 
     it('should return Observable', () => {

@@ -79,7 +79,15 @@ describe('AclService', () => {
 
   describe('add', () => {
     it('should call httpController.post with /access/acl endpoint', () => {
-      const ace = { name: 'test', ace_id: 'ace-1', ace_type: 'access', path: 'test', propagate: true, allowed: true, actions: [] } as unknown as ACE;
+      const ace = {
+        name: 'test',
+        ace_id: 'ace-1',
+        ace_type: 'access',
+        path: 'test',
+        propagate: true,
+        allowed: true,
+        actions: [],
+      } as unknown as ACE;
       mockHttpController.post.mockReturnValue(of(ace));
 
       service.add(mockController, ace);
@@ -99,7 +107,17 @@ describe('AclService', () => {
 
   describe('get', () => {
     it('should call httpController.get with ace_id in endpoint', () => {
-      mockHttpController.get.mockReturnValue(of({ ace_id: 'ace-1', name: 'test', ace_type: 'access', path: 'test', propagate: true, allowed: true, actions: [] } as unknown as unknown as ACE));
+      mockHttpController.get.mockReturnValue(
+        of({
+          ace_id: 'ace-1',
+          name: 'test',
+          ace_type: 'access',
+          path: 'test',
+          propagate: true,
+          allowed: true,
+          actions: [],
+        } as unknown as unknown as ACE)
+      );
 
       service.get(mockController, 'ace-1');
 
@@ -135,16 +153,20 @@ describe('AclService', () => {
 
   describe('update', () => {
     it('should call httpController.put with ace_id in endpoint', () => {
-      const ace = { ace_id: 'ace-1', name: 'updated', ace_type: 'access', path: 'test', propagate: true, allowed: true, actions: [] } as unknown as unknown as ACE;
+      const ace = {
+        ace_id: 'ace-1',
+        name: 'updated',
+        ace_type: 'access',
+        path: 'test',
+        propagate: true,
+        allowed: true,
+        actions: [],
+      } as unknown as unknown as ACE;
       mockHttpController.put.mockReturnValue(of(ace));
 
       service.update(mockController, ace);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/access/acl/ace-1',
-        ace
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/access/acl/ace-1', ace);
     });
 
     it('should return Observable', () => {
@@ -158,16 +180,20 @@ describe('AclService', () => {
 
   describe('update', () => {
     it('should call httpController.put with ace_id in endpoint', () => {
-      const ace = { ace_id: 'ace-1', name: 'updated', ace_type: 'access', path: 'test', propagate: true, allowed: true, actions: [] } as unknown as ACE;
+      const ace = {
+        ace_id: 'ace-1',
+        name: 'updated',
+        ace_type: 'access',
+        path: 'test',
+        propagate: true,
+        allowed: true,
+        actions: [],
+      } as unknown as ACE;
       mockHttpController.put.mockReturnValue(of(ace));
 
       service.update(mockController, ace);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/access/acl/ace-1',
-        ace
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/access/acl/ace-1', ace);
     });
 
     it('should return Observable', () => {

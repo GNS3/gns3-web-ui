@@ -612,7 +612,7 @@ describe('NewTemplateDialogComponent', () => {
         expect.objectContaining({
           panelClass: 'uplaoding-file-snackabar',
           data: { upload_file_type: 'Image' },
-        }),
+        })
       );
     });
   });

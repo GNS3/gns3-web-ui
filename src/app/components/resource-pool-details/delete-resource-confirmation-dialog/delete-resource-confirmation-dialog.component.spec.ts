@@ -9,7 +9,7 @@ import { Resource } from '@models/resourcePools/Resource';
 describe('DeleteResourceConfirmationDialogComponent', () => {
   let component: DeleteResourceConfirmationDialogComponent;
   let fixture: ComponentFixture<DeleteResourceConfirmationDialogComponent>;
-  let mockDialogRef: { close: ReturnType<typeof vi.fn>; };
+  let mockDialogRef: { close: ReturnType<typeof vi.fn> };
   let mockResource: Resource;
 
   beforeEach(async () => {

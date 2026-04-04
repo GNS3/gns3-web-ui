@@ -143,8 +143,18 @@ describe('IouService', () => {
     });
 
     it.each([
-      { protocol: 'http:' as const, host: 'localhost', port: 3080, expected: 'http://localhost:3080/v3/images/upload/test.bin' },
-      { protocol: 'https:' as const, host: '192.168.1.1', port: 443, expected: 'https://192.168.1.1:443/v3/images/upload/test.bin' },
+      {
+        protocol: 'http:' as const,
+        host: 'localhost',
+        port: 3080,
+        expected: 'http://localhost:3080/v3/images/upload/test.bin',
+      },
+      {
+        protocol: 'https:' as const,
+        host: '192.168.1.1',
+        port: 443,
+        expected: 'https://192.168.1.1:443/v3/images/upload/test.bin',
+      },
     ])('should handle different controller configs: $protocol $host:$port', ({ protocol, host, port, expected }) => {
       const controller = { ...mockController, protocol, host, port };
       const result = service.getImagePath(controller, 'test.bin');

@@ -29,7 +29,7 @@ describe('ChooseNameDialogComponent', () => {
       username: '',
       password: '',
       tokenExpired: false,
-    }) as Controller;
+    } as Controller);
 
   const createMockProject = (): Project =>
     ({
@@ -52,7 +52,7 @@ describe('ChooseNameDialogComponent', () => {
       variables: [],
       path: '/path/to/project',
       readonly: false,
-    }) as Project;
+    } as Project);
 
   beforeEach(async () => {
     mockDialogRef = {
@@ -111,11 +111,7 @@ describe('ChooseNameDialogComponent', () => {
 
       fixture.componentInstance.onSaveClick();
 
-      expect(mockProjectService.duplicate).toHaveBeenCalledWith(
-        mockController,
-        mockProject.project_id,
-        newName,
-      );
+      expect(mockProjectService.duplicate).toHaveBeenCalledWith(mockController, mockProject.project_id, newName);
     });
 
     it('should close the dialog when duplicate succeeds', async () => {

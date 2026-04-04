@@ -60,10 +60,9 @@ describe('HelpComponent', () => {
       component.ngOnInit();
       fixture.detectChanges();
 
-      expect(mockHttpClient.get).toHaveBeenCalledWith(
-        window.location.href + '/3rdpartylicenses.txt',
-        { responseType: 'text' },
-      );
+      expect(mockHttpClient.get).toHaveBeenCalledWith(window.location.href + '/3rdpartylicenses.txt', {
+        responseType: 'text',
+      });
     });
 
     it('should fetch release notes from ReleaseNotes.txt', () => {
@@ -100,9 +99,7 @@ describe('HelpComponent', () => {
 
     it('should set fallback text when thirdpartylicenses returns 404', () => {
       const error = { status: 404 };
-      mockHttpClient.get
-        .mockReturnValueOnce(throwError(() => error))
-        .mockReturnValueOnce(of(''));
+      mockHttpClient.get.mockReturnValueOnce(throwError(() => error)).mockReturnValueOnce(of(''));
 
       component.ngOnInit();
       // No detectChanges - throwError is synchronous

@@ -71,13 +71,7 @@ describe('ConfigActionComponent', () => {
     } as any;
 
     await TestBed.configureTestingModule({
-      imports: [
-        ConfigActionComponent,
-        MatButtonModule,
-        MatIconModule,
-        MatMenuModule,
-        MatDialogModule,
-      ],
+      imports: [ConfigActionComponent, MatButtonModule, MatIconModule, MatMenuModule, MatDialogModule],
       providers: [{ provide: MatDialog, useValue: mockDialog }],
     }).compileComponents();
 

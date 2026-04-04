@@ -18,11 +18,7 @@ describe('DeleteConfirmationDialogComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        DeleteConfirmationDialogComponent,
-        MatDialogModule,
-        NoopAnimationsModule,
-      ],
+      imports: [DeleteConfirmationDialogComponent, MatDialogModule, NoopAnimationsModule],
       providers: [
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
         { provide: MatDialogRef, useValue: mockDialogRef },
@@ -96,11 +92,7 @@ describe('DeleteConfirmationDialogComponent', () => {
       mockDialogRef = { close: vi.fn() };
 
       TestBed.configureTestingModule({
-        imports: [
-          DeleteConfirmationDialogComponent,
-          MatDialogModule,
-          NoopAnimationsModule,
-        ],
+        imports: [DeleteConfirmationDialogComponent, MatDialogModule, NoopAnimationsModule],
         providers: [
           { provide: MAT_DIALOG_DATA, useValue: emptyData },
           { provide: MatDialogRef, useValue: mockDialogRef },

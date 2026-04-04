@@ -50,8 +50,12 @@ describe('ProtocolHandlerService', () => {
           Object.defineProperty(element, 'contentWindow', {
             value: {
               location: {
-                set href(val: string) { iframeElement._href = val; },
-                get href() { return iframeElement._href; },
+                set href(val: string) {
+                  iframeElement._href = val;
+                },
+                get href() {
+                  return iframeElement._href;
+                },
               },
             },
             configurable: true,
@@ -66,11 +70,7 @@ describe('ProtocolHandlerService', () => {
       },
     });
 
-    service = new ProtocolHandlerService(
-      mockToasterService,
-      mockDeviceService,
-      mockLoginService
-    );
+    service = new ProtocolHandlerService(mockToasterService, mockDeviceService, mockLoginService);
   });
 
   describe('Service Creation', () => {
@@ -167,8 +167,12 @@ describe('ProtocolHandlerService', () => {
         style: { display: 'none' },
         contentWindow: {
           location: {
-            set href(val: string) { mockIframe.contentWindow.location._href = val; },
-            get href() { return mockIframe.contentWindow.location._href; },
+            set href(val: string) {
+              mockIframe.contentWindow.location._href = val;
+            },
+            get href() {
+              return mockIframe.contentWindow.location._href;
+            },
             _href: '',
           },
         },
@@ -236,9 +240,7 @@ describe('ProtocolHandlerService', () => {
     it('should log the launch message with browser and URI', async () => {
       await service.open('gns3://test');
 
-      expect(console.log).toHaveBeenCalledWith(
-        'Launching external protocol handler with Chrome: gns3://test'
-      );
+      expect(console.log).toHaveBeenCalledWith('Launching external protocol handler with Chrome: gns3://test');
     });
 
     it('should get device info', async () => {

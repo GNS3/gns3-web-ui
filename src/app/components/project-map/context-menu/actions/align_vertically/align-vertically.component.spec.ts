@@ -24,7 +24,7 @@ describe('AlignVerticallyActionComponent', () => {
       x: 100,
       y: 200,
       ...overrides,
-    }) as Node;
+    } as Node);
 
   const createMockController = (): Controller =>
     ({
@@ -41,7 +41,7 @@ describe('AlignVerticallyActionComponent', () => {
       username: '',
       password: '',
       tokenExpired: false,
-    }) as Controller;
+    } as Controller);
 
   beforeEach(async () => {
     mockNodeService = {
@@ -115,15 +115,9 @@ describe('AlignVerticallyActionComponent', () => {
       component.alignVertically();
 
       // Average of 100, 200, 300 = 200
-      expect(mockNodesDataSource.update).toHaveBeenCalledWith(
-        expect.objectContaining({ node_id: 'node-1', x: 200 }),
-      );
-      expect(mockNodesDataSource.update).toHaveBeenCalledWith(
-        expect.objectContaining({ node_id: 'node-2', x: 200 }),
-      );
-      expect(mockNodesDataSource.update).toHaveBeenCalledWith(
-        expect.objectContaining({ node_id: 'node-3', x: 200 }),
-      );
+      expect(mockNodesDataSource.update).toHaveBeenCalledWith(expect.objectContaining({ node_id: 'node-1', x: 200 }));
+      expect(mockNodesDataSource.update).toHaveBeenCalledWith(expect.objectContaining({ node_id: 'node-2', x: 200 }));
+      expect(mockNodesDataSource.update).toHaveBeenCalledWith(expect.objectContaining({ node_id: 'node-3', x: 200 }));
     });
 
     it('should call nodesDataSource.update for each node', () => {
@@ -170,16 +164,11 @@ describe('AlignVerticallyActionComponent', () => {
       component.alignVertically();
 
       // Average of single node = same X
-      expect(mockNodesDataSource.update).toHaveBeenCalledWith(
-        expect.objectContaining({ node_id: 'node-1', x: 100 }),
-      );
+      expect(mockNodesDataSource.update).toHaveBeenCalledWith(expect.objectContaining({ node_id: 'node-1', x: 100 }));
     });
 
     it('should handle nodes with same X position', () => {
-      const sameXNodes = [
-        createMockNode({ node_id: 'node-a', x: 150 }),
-        createMockNode({ node_id: 'node-b', x: 150 }),
-      ];
+      const sameXNodes = [createMockNode({ node_id: 'node-a', x: 150 }), createMockNode({ node_id: 'node-b', x: 150 })];
       mockNodeService.update.mockReturnValue(of(sameXNodes[0]));
       fixture.componentRef.setInput('controller', mockController);
       fixture.componentRef.setInput('nodes', sameXNodes);
@@ -188,12 +177,8 @@ describe('AlignVerticallyActionComponent', () => {
       component.alignVertically();
 
       // Average = 150, all nodes stay at 150
-      expect(mockNodesDataSource.update).toHaveBeenCalledWith(
-        expect.objectContaining({ node_id: 'node-a', x: 150 }),
-      );
-      expect(mockNodesDataSource.update).toHaveBeenCalledWith(
-        expect.objectContaining({ node_id: 'node-b', x: 150 }),
-      );
+      expect(mockNodesDataSource.update).toHaveBeenCalledWith(expect.objectContaining({ node_id: 'node-a', x: 150 }));
+      expect(mockNodesDataSource.update).toHaveBeenCalledWith(expect.objectContaining({ node_id: 'node-b', x: 150 }));
     });
   });
 

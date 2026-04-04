@@ -23,7 +23,7 @@ describe('CustomAdaptersTableComponent', () => {
       adapter_type,
       port_name: '',
       mac_address: '',
-    }) as CustomAdapter;
+    } as CustomAdapter);
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -72,10 +72,7 @@ describe('CustomAdaptersTableComponent', () => {
     });
 
     it('should set adapter_type to first networkType object when networkTypes is provided', () => {
-      const networkTypes = [
-        createMockNetworkType('virtio', 'Virtio'),
-        createMockNetworkType('e1000', 'E1000'),
-      ];
+      const networkTypes = [createMockNetworkType('virtio', 'Virtio'), createMockNetworkType('e1000', 'E1000')];
 
       // Set networkTypes via setInput - this properly updates signal inputs
       fixture.componentRef.setInput('networkTypes', networkTypes);
@@ -213,10 +210,7 @@ describe('CustomAdaptersTableComponent', () => {
 
   describe('networkTypes input binding', () => {
     it('should accept networkTypes via input binding', () => {
-      const networkTypes = [
-        createMockNetworkType('virtio', 'Virtio'),
-        createMockNetworkType('e1000', 'E1000'),
-      ];
+      const networkTypes = [createMockNetworkType('virtio', 'Virtio'), createMockNetworkType('e1000', 'E1000')];
       fixture.componentRef.setInput('networkTypes', networkTypes);
       fixture.detectChanges();
 

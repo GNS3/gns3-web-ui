@@ -392,8 +392,18 @@ describe('WindowBoundaryService', () => {
     });
 
     it.each([
-      { description: 'left takes precedence when listed first', style: { left: '100px', right: '100px', top: '100px', width: '500px', height: '400px' }, expectedLeft: undefined, expectedRight: '100px' },
-      { description: 'left takes precedence when listed second', style: { right: '100px', left: '100px', top: '100px', width: '500px', height: '400px' }, expectedLeft: undefined, expectedRight: '100px' },
+      {
+        description: 'left takes precedence when listed first',
+        style: { left: '100px', right: '100px', top: '100px', width: '500px', height: '400px' },
+        expectedLeft: undefined,
+        expectedRight: '100px',
+      },
+      {
+        description: 'left takes precedence when listed second',
+        style: { right: '100px', left: '100px', top: '100px', width: '500px', height: '400px' },
+        expectedLeft: undefined,
+        expectedRight: '100px',
+      },
     ])('should delete conflicting position properties: $description', ({ style, expectedLeft, expectedRight }) => {
       const result = service.constrainWindowPosition(style);
 

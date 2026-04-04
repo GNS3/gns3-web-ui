@@ -57,7 +57,7 @@ describe('ChangeSymbolActionComponent', () => {
       console_auto_start: false,
       console_type: '',
       node_directory: '',
-    }) as unknown as Node;
+    } as unknown as Node);
 
   let mockDialogRef: any;
   let mockDialog: any;

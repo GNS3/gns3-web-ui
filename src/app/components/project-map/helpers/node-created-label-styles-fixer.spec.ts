@@ -19,35 +19,34 @@ describe('NodeCreatedLabelStylesFixer', () => {
     y: 0,
   });
 
-  const createMockNode = (label: Label, width = 100, height = 50): Node =>
-    ({
-      command_line: '',
-      compute_id: 'local',
-      console: 3000,
-      console_auto_start: false,
-      console_host: '127.0.0.1',
-      console_type: 'telnet',
-      first_port_name: 'Ethernet0',
-      height,
-      label,
-      locked: false,
-      name: 'Test Node',
-      node_directory: '',
-      node_id: 'node-123',
-      node_type: 'vpcs',
-      port_name_format: 'Ethernet{0}',
-      port_segment_size: 1,
-      ports: [],
-      project_id: 'project-123',
-      properties: {} as any,
-      status: 'started',
-      symbol: 'computer',
-      symbol_url: '',
-      width,
-      x: 100,
-      y: 100,
-      z: 0,
-    });
+  const createMockNode = (label: Label, width = 100, height = 50): Node => ({
+    command_line: '',
+    compute_id: 'local',
+    console: 3000,
+    console_auto_start: false,
+    console_host: '127.0.0.1',
+    console_type: 'telnet',
+    first_port_name: 'Ethernet0',
+    height,
+    label,
+    locked: false,
+    name: 'Test Node',
+    node_directory: '',
+    node_id: 'node-123',
+    node_type: 'vpcs',
+    port_name_format: 'Ethernet{0}',
+    port_segment_size: 1,
+    ports: [],
+    project_id: 'project-123',
+    properties: {} as any,
+    status: 'started',
+    symbol: 'computer',
+    symbol_url: '',
+    width,
+    x: 100,
+    y: 100,
+    z: 0,
+  });
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -116,10 +115,7 @@ describe('NodeCreatedLabelStylesFixer', () => {
 
       service.fix(node);
 
-      expect(mockFontBBoxCalculator.calculate).toHaveBeenCalledWith(
-        label.text,
-        label.style,
-      );
+      expect(mockFontBBoxCalculator.calculate).toHaveBeenCalledWith(label.text, label.style);
     });
 
     it('should center label horizontally based on node width and bounding box width', () => {
@@ -172,10 +168,7 @@ describe('NodeCreatedLabelStylesFixer', () => {
 
       service.fix(node);
 
-      expect(mockFontBBoxCalculator.calculate).toHaveBeenCalledWith(
-        'Custom Node Label',
-        expect.any(String),
-      );
+      expect(mockFontBBoxCalculator.calculate).toHaveBeenCalledWith('Custom Node Label', expect.any(String));
     });
   });
 });

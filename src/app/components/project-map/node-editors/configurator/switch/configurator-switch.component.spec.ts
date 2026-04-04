@@ -6,10 +6,7 @@ import { Node, Properties } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
-import {
-  ConfiguratorDialogSwitchComponent,
-  NodeMapping,
-} from './configurator-switch.component';
+import { ConfiguratorDialogSwitchComponent, NodeMapping } from './configurator-switch.component';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('ConfiguratorDialogSwitchComponent', () => {

@@ -46,10 +46,7 @@ describe('AiProfilesService', () => {
 
       service.getConfigs(mockController, 'user-1');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/users/user-1/llm-model-configs'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/users/user-1/llm-model-configs');
     });
 
     it('should return Observable', () => {
@@ -67,10 +64,7 @@ describe('AiProfilesService', () => {
 
       service.getOwnConfigs(mockController, 'user-1');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/users/user-1/llm-model-configs/own'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/users/user-1/llm-model-configs/own');
     });
   });
 
@@ -90,7 +84,13 @@ describe('AiProfilesService', () => {
   describe('createConfig', () => {
     it('should call httpController.post with config', () => {
       mockHttpController.post.mockReturnValue(of({}));
-      const config = { name: 'test', model_type: 'openai', provider: 'openai', base_url: 'https://api.openai.com', api_key: 'test' } as any;
+      const config = {
+        name: 'test',
+        model_type: 'openai',
+        provider: 'openai',
+        base_url: 'https://api.openai.com',
+        api_key: 'test',
+      } as any;
 
       service.createConfig(mockController, 'user-1', config);
 
@@ -164,10 +164,7 @@ describe('AiProfilesService', () => {
 
       service.getGroupConfigs(mockController, 'group-1');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups/group-1/llm-model-configs'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/groups/group-1/llm-model-configs');
     });
   });
 

@@ -44,7 +44,7 @@ describe('InterfaceLabelDraggedComponent', () => {
       segments: [],
       filters: { name: '' },
       link_type: 'ethernet',
-    }) as any;
+    } as any);
 
   const createMockController = (): Controller =>
     ({
@@ -61,7 +61,7 @@ describe('InterfaceLabelDraggedComponent', () => {
       username: '',
       password: '',
       tokenExpired: false,
-    }) as any;
+    } as any);
 
   const createDraggedEvent = (nodeId: string, dx: number, dy: number): DraggedDataEvent<MapLinkNode> => {
     const mapLinkNode: MapLinkNode = {
@@ -70,7 +70,17 @@ describe('InterfaceLabelDraggedComponent', () => {
       linkId: 'link-123',
       adapterNumber: 0,
       portNumber: 0,
-      label: { id: 'label-0', rotation: 0, style: '', text: 'e0', x: 100, y: 200, originalX: 100, originalY: 200, nodeId },
+      label: {
+        id: 'label-0',
+        rotation: 0,
+        style: '',
+        text: 'e0',
+        x: 100,
+        y: 200,
+        originalX: 100,
+        originalY: 200,
+        nodeId,
+      },
     };
     return new DraggedDataEvent(mapLinkNode, dx, dy);
   };
@@ -177,11 +187,7 @@ describe('InterfaceLabelDraggedComponent', () => {
       const event = createDraggedEvent('node-1', 10, 20);
       component.onInterfaceLabelDragged(event);
 
-      expect(mockLinkService.updateNodes).toHaveBeenCalledWith(
-        component.controller(),
-        mockLink,
-        mockLink.nodes
-      );
+      expect(mockLinkService.updateNodes).toHaveBeenCalledWith(component.controller(), mockLink, mockLink.nodes);
     });
 
     it('should update linksDataSource with returned link from service', () => {

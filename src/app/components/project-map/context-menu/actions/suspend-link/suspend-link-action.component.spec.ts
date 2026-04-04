@@ -20,7 +20,7 @@ describe('SuspendLinkActionComponent', () => {
       suspend: false,
       link_id: 'link1',
       ...overrides,
-    }) as Link;
+    } as Link);
 
   const createMockController = (): Controller =>
     ({
@@ -35,7 +35,7 @@ describe('SuspendLinkActionComponent', () => {
       protocol: 'http:',
       username: 'admin',
       password: 'admin',
-    }) as Controller;
+    } as Controller);
 
   beforeEach(async () => {
     mockLinkService = {
@@ -47,9 +47,7 @@ describe('SuspendLinkActionComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [SuspendLinkActionComponent, MatButtonModule, MatIconModule, MatMenuModule],
-      providers: [
-        { provide: LinkService, useValue: mockLinkService },
-      ],
+      providers: [{ provide: LinkService, useValue: mockLinkService }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SuspendLinkActionComponent);
@@ -106,6 +104,5 @@ describe('SuspendLinkActionComponent', () => {
       expect(controller).toBe(mockController);
       expect(link).toBe(mockLink);
     });
-
   });
 });

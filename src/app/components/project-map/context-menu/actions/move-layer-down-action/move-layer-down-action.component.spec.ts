@@ -66,7 +66,7 @@ describe('MoveLayerDownActionComponent', () => {
       console_type: '',
       node_directory: '',
       ...overrides,
-    }) as Node;
+    } as Node);
 
   const createMockDrawing = (overrides: Partial<Drawing> = {}): Drawing =>
     ({
@@ -80,7 +80,7 @@ describe('MoveLayerDownActionComponent', () => {
       z: 10,
       element: null as any,
       ...overrides,
-    }) as Drawing;
+    } as Drawing);
 
   beforeEach(async () => {
     mockNodeService = { update: vi.fn().mockReturnValue(of({})) };
@@ -124,10 +124,7 @@ describe('MoveLayerDownActionComponent', () => {
 
   describe('moveLayerDown', () => {
     it('should decrement z-index for each node', () => {
-      const nodes = [
-        createMockNode({ node_id: 'node-1', z: 5 }),
-        createMockNode({ node_id: 'node-2', z: 10 }),
-      ];
+      const nodes = [createMockNode({ node_id: 'node-1', z: 5 }), createMockNode({ node_id: 'node-2', z: 10 })];
       const drawings = [createMockDrawing({ drawing_id: 'drawing-1' })];
       fixture.componentRef.setInput('nodes', nodes);
       fixture.componentRef.setInput('drawings', drawings);
@@ -141,10 +138,7 @@ describe('MoveLayerDownActionComponent', () => {
     });
 
     it('should update nodesDataSource for each node', () => {
-      const nodes = [
-        createMockNode({ node_id: 'node-1' }),
-        createMockNode({ node_id: 'node-2' }),
-      ];
+      const nodes = [createMockNode({ node_id: 'node-1' }), createMockNode({ node_id: 'node-2' })];
       const drawings = [createMockDrawing({ drawing_id: 'drawing-1' })];
       fixture.componentRef.setInput('nodes', nodes);
       fixture.componentRef.setInput('drawings', drawings);
@@ -159,10 +153,7 @@ describe('MoveLayerDownActionComponent', () => {
     });
 
     it('should call nodeService.update for each node', () => {
-      const nodes = [
-        createMockNode({ node_id: 'node-1' }),
-        createMockNode({ node_id: 'node-2' }),
-      ];
+      const nodes = [createMockNode({ node_id: 'node-1' }), createMockNode({ node_id: 'node-2' })];
       const drawings = [createMockDrawing({ drawing_id: 'drawing-1' })];
       fixture.componentRef.setInput('nodes', nodes);
       fixture.componentRef.setInput('drawings', drawings);
@@ -195,10 +186,7 @@ describe('MoveLayerDownActionComponent', () => {
 
     it('should update drawingsDataSource for each drawing', () => {
       const nodes = [createMockNode({ node_id: 'node-1' })];
-      const drawings = [
-        createMockDrawing({ drawing_id: 'drawing-1' }),
-        createMockDrawing({ drawing_id: 'drawing-2' }),
-      ];
+      const drawings = [createMockDrawing({ drawing_id: 'drawing-1' }), createMockDrawing({ drawing_id: 'drawing-2' })];
       fixture.componentRef.setInput('nodes', nodes);
       fixture.componentRef.setInput('drawings', drawings);
       fixture.componentRef.setInput('controller', mockController);
@@ -213,10 +201,7 @@ describe('MoveLayerDownActionComponent', () => {
 
     it('should call drawingService.update for each drawing', () => {
       const nodes = [createMockNode({ node_id: 'node-1' })];
-      const drawings = [
-        createMockDrawing({ drawing_id: 'drawing-1' }),
-        createMockDrawing({ drawing_id: 'drawing-2' }),
-      ];
+      const drawings = [createMockDrawing({ drawing_id: 'drawing-1' }), createMockDrawing({ drawing_id: 'drawing-2' })];
       fixture.componentRef.setInput('nodes', nodes);
       fixture.componentRef.setInput('drawings', drawings);
       fixture.componentRef.setInput('controller', mockController);

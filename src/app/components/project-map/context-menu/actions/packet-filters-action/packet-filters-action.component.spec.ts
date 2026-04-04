@@ -46,7 +46,7 @@ describe('PacketFiltersActionComponent', () => {
       link_id: 'link-1',
       project_id: 'project-1',
       ...overrides,
-    }) as Link;
+    } as Link);
 
   beforeEach(async () => {
     mockDialogRef = {
@@ -127,7 +127,7 @@ describe('PacketFiltersActionComponent', () => {
         expect.objectContaining({
           autoFocus: false,
           disableClose: false,
-        }),
+        })
       );
     });
 

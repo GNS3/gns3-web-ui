@@ -150,10 +150,7 @@ describe('SymbolService', () => {
 
       service.getDimensions(mockController, 'test-symbol');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/symbols/test-symbol/dimensions'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/symbols/test-symbol/dimensions');
     });
 
     it('should encode symbol_id in URL', () => {
@@ -162,10 +159,7 @@ describe('SymbolService', () => {
 
       service.getDimensions(mockController, 'symbol with spaces');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/symbols/symbol%20with%20spaces/dimensions'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/symbols/symbol%20with%20spaces/dimensions');
     });
 
     it('should cache dimensions by controller and symbol_id', () => {
@@ -251,9 +245,9 @@ describe('SymbolService', () => {
       const error = new Error('Blob fetch error');
       mockHttpController.getBlob.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.getSymbolBlobUrl(mockController, '/symbols/test/raw'))
-      ).rejects.toThrow('Blob fetch error');
+      await expect(firstValueFrom(service.getSymbolBlobUrl(mockController, '/symbols/test/raw'))).rejects.toThrow(
+        'Blob fetch error'
+      );
     });
   });
 
@@ -372,9 +366,9 @@ describe('SymbolService', () => {
       const error = new Error('Add failed');
       mockHttpController.post.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.add(mockController, 'test-symbol', '<svg>test</svg>'))
-      ).rejects.toThrow('Add failed');
+      await expect(firstValueFrom(service.add(mockController, 'test-symbol', '<svg>test</svg>'))).rejects.toThrow(
+        'Add failed'
+      );
     });
   });
 
@@ -385,11 +379,7 @@ describe('SymbolService', () => {
 
       service.addFile(mockController, 'test-symbol', mockBlob);
 
-      expect(mockHttpController.postBlob).toHaveBeenCalledWith(
-        mockController,
-        '/symbols/test-symbol/raw',
-        mockBlob
-      );
+      expect(mockHttpController.postBlob).toHaveBeenCalledWith(mockController, '/symbols/test-symbol/raw', mockBlob);
     });
 
     it('should invalidate cache', () => {
@@ -417,9 +407,9 @@ describe('SymbolService', () => {
       const mockBlob = new Blob(['test']);
       mockHttpController.postBlob.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.addFile(mockController, 'test-symbol', mockBlob))
-      ).rejects.toThrow('AddFile failed');
+      await expect(firstValueFrom(service.addFile(mockController, 'test-symbol', mockBlob))).rejects.toThrow(
+        'AddFile failed'
+      );
     });
   });
 
@@ -429,10 +419,7 @@ describe('SymbolService', () => {
 
       service.delete(mockController, 'test-symbol');
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/symbols/test-symbol'
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/symbols/test-symbol');
     });
 
     it('should encode symbol_id in URL', () => {
@@ -440,10 +427,7 @@ describe('SymbolService', () => {
 
       service.delete(mockController, 'symbol with spaces');
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/symbols/symbol%20with%20spaces'
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/symbols/symbol%20with%20spaces');
     });
 
     it('should invalidate cache', () => {
@@ -468,9 +452,7 @@ describe('SymbolService', () => {
       const error = new Error('Delete failed');
       mockHttpController.delete.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.delete(mockController, 'test-symbol'))
-      ).rejects.toThrow('Delete failed');
+      await expect(firstValueFrom(service.delete(mockController, 'test-symbol'))).rejects.toThrow('Delete failed');
     });
   });
 
@@ -599,10 +581,7 @@ describe('SymbolService', () => {
 
       service.raw(mockController, 'test-symbol');
 
-      expect(mockHttpController.getText).toHaveBeenCalledWith(
-        mockController,
-        '/symbols/test-symbol/raw'
-      );
+      expect(mockHttpController.getText).toHaveBeenCalledWith(mockController, '/symbols/test-symbol/raw');
     });
 
     it('should encode symbol_id in URL', () => {
@@ -610,19 +589,14 @@ describe('SymbolService', () => {
 
       service.raw(mockController, 'symbol with spaces');
 
-      expect(mockHttpController.getText).toHaveBeenCalledWith(
-        mockController,
-        '/symbols/symbol%20with%20spaces/raw'
-      );
+      expect(mockHttpController.getText).toHaveBeenCalledWith(mockController, '/symbols/symbol%20with%20spaces/raw');
     });
 
     it('should propagate error from httpController.getText', async () => {
       const error = new Error('Raw fetch failed');
       mockHttpController.getText.mockReturnValue(throwError(() => error));
 
-      await expect(firstValueFrom(service.raw(mockController, 'test-symbol'))).rejects.toThrow(
-        'Raw fetch failed'
-      );
+      await expect(firstValueFrom(service.raw(mockController, 'test-symbol'))).rejects.toThrow('Raw fetch failed');
     });
   });
 
@@ -722,10 +696,7 @@ describe('SymbolService', () => {
       service.getDimensions(mockController, 'symbol/with/slashes');
 
       // encodeURI doesn't encode slashes, so they remain as-is
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/symbols/symbol/with/slashes/dimensions'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/symbols/symbol/with/slashes/dimensions');
     });
 
     it('should handle node with zero dimensions in scaleDimensionsForNode', () => {
@@ -758,10 +729,7 @@ describe('SymbolService', () => {
 
       service.getDimensions(mockController, 'symbol-test');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        expect.stringContaining('symbols')
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, expect.stringContaining('symbols'));
     });
   });
 });

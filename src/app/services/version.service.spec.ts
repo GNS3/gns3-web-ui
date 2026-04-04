@@ -74,11 +74,7 @@ describe('VersionService', () => {
     });
 
     it('should handle version response with different version formats', async () => {
-      const testCases = [
-        { version: '3.0.0' },
-        { version: '2.5.1' },
-        { version: '1.0.0-beta' },
-      ];
+      const testCases = [{ version: '3.0.0' }, { version: '2.5.1' }, { version: '1.0.0-beta' }];
 
       for (const mockVersion of testCases) {
         mockHttpController.get.mockReturnValue(of(mockVersion));

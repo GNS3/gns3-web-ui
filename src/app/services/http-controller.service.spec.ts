@@ -102,10 +102,7 @@ describe('HttpController', () => {
 
       service.get(mockController, '/test').subscribe();
 
-      expect(mockHttp.get).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({ responseType: 'json' })
-      );
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ responseType: 'json' }));
     });
 
     it('should preserve custom options', () => {
@@ -152,10 +149,7 @@ describe('HttpController', () => {
 
       service.getText(mockController, '/test').subscribe();
 
-      expect(mockHttp.get).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({ responseType: 'text' })
-      );
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ responseType: 'text' }));
     });
   });
 
@@ -166,10 +160,7 @@ describe('HttpController', () => {
 
       service.getBlob(mockController, '/test').subscribe();
 
-      expect(mockHttp.get).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({ responseType: 'blob' })
-      );
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ responseType: 'blob' }));
     });
   });
 

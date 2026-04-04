@@ -238,11 +238,7 @@ describe('ControllerManagementService', () => {
     });
 
     it('should handle concurrent stop calls', async () => {
-      await Promise.all([
-        service.stop(mockController),
-        service.stop(mockController),
-        service.stop(mockController),
-      ]);
+      await Promise.all([service.stop(mockController), service.stop(mockController), service.stop(mockController)]);
 
       // Should not throw
       expect(true).toBe(true);
@@ -263,13 +259,7 @@ describe('ControllerManagementService', () => {
     });
 
     it('should support all status types', () => {
-      const statuses: ControllerStateEvent['status'][] = [
-        'starting',
-        'started',
-        'errored',
-        'stopped',
-        'stderr',
-      ];
+      const statuses: ControllerStateEvent['status'][] = ['starting', 'started', 'errored', 'stopped', 'stderr'];
 
       statuses.forEach((status) => {
         const event: ControllerStateEvent = {

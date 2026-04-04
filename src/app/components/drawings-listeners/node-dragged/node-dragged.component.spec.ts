@@ -177,7 +177,7 @@ describe('NodeDraggedComponent', () => {
         mockProject,
         nodeWithPosition,
         150,
-        230,
+        230
       );
     });
 

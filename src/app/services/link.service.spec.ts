@@ -236,19 +236,11 @@ describe('LinkService', () => {
     it('should handle HTTP error', () => {
       mockHttpController.post.mockReturnValue(throwError(() => new Error('Network error')));
 
-      service.createLink(
-        mockController,
-        mockSourceNode,
-        mockSourcePort,
-        mockTargetNode,
-        mockTargetPort,
-        10,
-        20,
-        30,
-        40
-      ).subscribe({
-        error: (err) => expect(err.message).toBe('Network error'),
-      });
+      service
+        .createLink(mockController, mockSourceNode, mockSourcePort, mockTargetNode, mockTargetPort, 10, 20, 30, 40)
+        .subscribe({
+          error: (err) => expect(err.message).toBe('Network error'),
+        });
     });
   });
 
@@ -263,10 +255,7 @@ describe('LinkService', () => {
 
       service.getLink(mockController, 'project-456', 'link-123');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-456/links/link-123'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/projects/project-456/links/link-123');
     });
 
     it('should handle HTTP error', () => {
@@ -311,7 +300,14 @@ describe('LinkService', () => {
       {
         description: 'should include nodes in payload when defined',
         field: 'nodes',
-        value: [{ node_id: 'node-1', port_number: 0, adapter_number: 0, label: { rotation: 0, style: 'style', text: 'text', x: 10, y: 20 } }],
+        value: [
+          {
+            node_id: 'node-1',
+            port_number: 0,
+            adapter_number: 0,
+            label: { rotation: 0, style: 'style', text: 'text', x: 10, y: 20 },
+          },
+        ],
       },
       {
         description: 'should include filters in payload when defined',
@@ -434,11 +430,9 @@ describe('LinkService', () => {
 
       service.updateLinkStyle(mockController, mockLink);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-style/links/link-style',
-        { link_style: 'manhattan' }
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/projects/project-style/links/link-style', {
+        link_style: 'manhattan',
+      });
     });
 
     it('should handle HTTP error', () => {
@@ -459,9 +453,7 @@ describe('LinkService', () => {
         project_id: 'project-1',
       } as unknown as Link;
 
-      const mockFilters: FilterDescription[] = [
-        { type: 'ethernet', name: 'Ethernet Filter' } as FilterDescription,
-      ];
+      const mockFilters: FilterDescription[] = [{ type: 'ethernet', name: 'Ethernet Filter' } as FilterDescription];
 
       mockHttpController.get.mockReturnValue(of(mockFilters));
 
@@ -777,10 +769,7 @@ describe('LinkService', () => {
 
       service.getLink(mockController, 'project-with-dash', 'link-1');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-with-dash/links/link-1'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/projects/project-with-dash/links/link-1');
     });
 
     it('should handle special characters in link_id', () => {

@@ -133,11 +133,7 @@ describe('DockerTemplateDetailsComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        DockerTemplateDetailsComponent,
-        MatDialogModule,
-        RouterModule,
-      ],
+      imports: [DockerTemplateDetailsComponent, MatDialogModule, RouterModule],
       providers: [
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: Router, useValue: mockRouter },

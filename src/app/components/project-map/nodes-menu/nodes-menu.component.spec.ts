@@ -40,7 +40,7 @@ describe('NodesMenuComponent', () => {
       username: '',
       password: '',
       tokenExpired: false,
-    }) as Controller;
+    } as Controller);
 
   const createMockProject = (): Project =>
     ({
@@ -63,7 +63,7 @@ describe('NodesMenuComponent', () => {
       variables: [],
       path: '/path/to/project',
       readonly: false,
-    }) as Project;
+    } as Project);
 
   const mockNodes = [{ id: 'node-1' }, { id: 'node-2' }];
 
@@ -98,13 +98,7 @@ describe('NodesMenuComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        NodesMenuComponent,
-        MatDialogModule,
-        MatButtonModule,
-        MatIconModule,
-        MatTooltipModule,
-      ],
+      imports: [NodesMenuComponent, MatDialogModule, MatButtonModule, MatIconModule, MatTooltipModule],
       providers: [
         { provide: NodeService, useValue: mockNodeService },
         { provide: NodeConsoleService, useValue: mockNodeConsoleService },

@@ -51,15 +51,12 @@ describe('ConsoleGuard', () => {
 
       guard.canDeactivate();
 
-      expect(mockBottomSheet.open).toHaveBeenCalledWith(
-        ConfirmationBottomSheetComponent,
-        {
-          data: {
-            message: 'Exiting the project will close open consoles, do you want to continue?',
-          },
-          panelClass: 'confirmation-bottom-sheet',
+      expect(mockBottomSheet.open).toHaveBeenCalledWith(ConfirmationBottomSheetComponent, {
+        data: {
+          message: 'Exiting the project will close open consoles, do you want to continue?',
         },
-      );
+        panelClass: 'confirmation-bottom-sheet',
+      });
     });
 
     it('should return Observable from afterDismissed when consoles are open', () => {
@@ -77,9 +74,7 @@ describe('ConsoleGuard', () => {
       guard.canDeactivate();
 
       const openCall = mockBottomSheet.open.mock.calls[0];
-      expect(openCall[1].data.message).toBe(
-        'Exiting the project will close open consoles, do you want to continue?',
-      );
+      expect(openCall[1].data.message).toBe('Exiting the project will close open consoles, do you want to continue?');
     });
   });
 });

@@ -188,9 +188,7 @@ describe('ConfigureCustomAdaptersDialogComponent', () => {
     it('should show success toast with node name after saving', () => {
       component.onSaveClick();
 
-      expect(mockToasterService.success).toHaveBeenCalledWith(
-        `Configuration saved for node ${mockNode.name}`,
-      );
+      expect(mockToasterService.success).toHaveBeenCalledWith(`Configuration saved for node ${mockNode.name}`);
     });
 
     it('should close the dialog after saving', () => {

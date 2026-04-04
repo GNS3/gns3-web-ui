@@ -82,7 +82,10 @@ describe('IosService', () => {
     it.each([
       { images: [] as IosImage[], description: 'empty list' },
       { images: [{ filename: 'c3640.bin' } as IosImage], description: 'single image' },
-      { images: [{ filename: 'a.bin' } as IosImage, { filename: 'b.bin' } as IosImage], description: 'multiple images' },
+      {
+        images: [{ filename: 'a.bin' } as IosImage, { filename: 'b.bin' } as IosImage],
+        description: 'multiple images',
+      },
     ])('should handle $description', async ({ images }) => {
       mockHttpController.get.mockReturnValue(of(images));
 
@@ -211,11 +214,7 @@ describe('IosService', () => {
 
       service.saveTemplate(mockController, template);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/templates/ios-1',
-        template
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/templates/ios-1', template);
     });
 
     it('should return Observable of updated IosTemplate', async () => {
@@ -242,11 +241,9 @@ describe('IosService', () => {
 
       service.findIdlePC(mockController, { path: '/path/to/image' });
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/computes/local/dynamips/auto_idlepc',
-        { path: '/path/to/image' }
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/computes/local/dynamips/auto_idlepc', {
+        path: '/path/to/image',
+      });
     });
 
     it('should return Observable with idle PC value', async () => {
@@ -271,11 +268,7 @@ describe('IosService', () => {
 
       service.findIdlePC(mockController, {});
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/computes/local/dynamips/auto_idlepc',
-        {}
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/computes/local/dynamips/auto_idlepc', {});
     });
   });
 });

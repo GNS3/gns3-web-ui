@@ -113,10 +113,7 @@ describe('ProjectReadmeComponent', () => {
       component.ngAfterViewInit();
       fixture.detectChanges();
 
-      expect(mockProjectService.getReadmeFile).toHaveBeenCalledWith(
-        mockController,
-        mockProject.project_id,
-      );
+      expect(mockProjectService.getReadmeFile).toHaveBeenCalledWith(mockController, mockProject.project_id);
       expect(component.readmeHtml).toBeTruthy();
     });
 

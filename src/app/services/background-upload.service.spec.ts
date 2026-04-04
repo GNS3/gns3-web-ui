@@ -342,9 +342,7 @@ describe('BackgroundUploadService', () => {
     });
 
     it('should find task by tempId in queue', () => {
-      (service as any).queue = [
-        { tempId: 't1', status: 'queued', cancel$: { next: vi.fn(), complete: vi.fn() } },
-      ];
+      (service as any).queue = [{ tempId: 't1', status: 'queued', cancel$: { next: vi.fn(), complete: vi.fn() } }];
 
       const task = (service as any).queue.find((t: any) => t.tempId === 't1');
 

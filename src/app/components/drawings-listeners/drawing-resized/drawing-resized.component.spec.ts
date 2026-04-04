@@ -21,42 +21,40 @@ describe('DrawingResizedComponent', () => {
   let resizedSubject: Subject<ResizedDataEvent<MapDrawing>>;
   let mockController: Controller;
 
-  const createMockMapDrawing = (id: string): MapDrawing =>
-    ({
-      id,
-      projectId: 'proj1',
-      rotation: 0,
-      svg: '<svg>original</svg>',
-      locked: false,
-      x: 100,
-      y: 200,
-      z: 1,
-      element: {
-        type: 'rect',
-        fill: '#ffffff',
-        fill_opacity: 1,
-        height: 50,
-        width: 100,
-        stroke: '',
-        stroke_dasharray: '',
-        stroke_width: 0,
-        rx: 0,
-        ry: 0,
-      } as any,
-    });
+  const createMockMapDrawing = (id: string): MapDrawing => ({
+    id,
+    projectId: 'proj1',
+    rotation: 0,
+    svg: '<svg>original</svg>',
+    locked: false,
+    x: 100,
+    y: 200,
+    z: 1,
+    element: {
+      type: 'rect',
+      fill: '#ffffff',
+      fill_opacity: 1,
+      height: 50,
+      width: 100,
+      stroke: '',
+      stroke_dasharray: '',
+      stroke_width: 0,
+      rx: 0,
+      ry: 0,
+    } as any,
+  });
 
-  const createMockDrawing = (id: string): Drawing =>
-    ({
-      drawing_id: id,
-      project_id: 'proj1',
-      rotation: 0,
-      svg: '<svg>original</svg>',
-      locked: false,
-      x: 100,
-      y: 200,
-      z: 1,
-      element: null as any,
-    });
+  const createMockDrawing = (id: string): Drawing => ({
+    drawing_id: id,
+    project_id: 'proj1',
+    rotation: 0,
+    svg: '<svg>original</svg>',
+    locked: false,
+    x: 100,
+    y: 200,
+    z: 1,
+    element: null as any,
+  });
 
   const createObservableWithCallback = <T>(callback: (value: T) => void): Observable<T> => {
     return new Observable((observer) => {

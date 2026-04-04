@@ -24,7 +24,11 @@ describe('LinkStyleEditorDialogComponent', () => {
   let component: LinkStyleEditorDialogComponent;
   let fixture: ComponentFixture<LinkStyleEditorDialogComponent>;
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
-  let mockToasterService: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn>; warning: ReturnType<typeof vi.fn> };
+  let mockToasterService: {
+    success: ReturnType<typeof vi.fn>;
+    error: ReturnType<typeof vi.fn>;
+    warning: ReturnType<typeof vi.fn>;
+  };
   let mockLinkService: { updateLinkStyle: ReturnType<typeof vi.fn> };
   let mockLinksDataSource: { update: ReturnType<typeof vi.fn> };
   let mockLinksEventSource: { edited: { next: ReturnType<typeof vi.fn> } };
@@ -75,7 +79,7 @@ describe('LinkStyleEditorDialogComponent', () => {
       link_type: 'ethernet',
       link_style: { color: '#000000', width: 2, type: 1 } as LinkStyle,
       ...overrides,
-    }) as Link;
+    } as Link);
 
   beforeEach(async () => {
     mockDialogRef = { close: vi.fn() };
@@ -300,15 +304,16 @@ describe('LinkStyleEditorDialogComponent', () => {
   });
 
   describe('onYesClick', () => {
-    const createUpdatedLink = (link: Link): Link => ({
-      ...link,
-      link_style: {
-        ...link.link_style,
-        link_type: 'bezier',
-        bezier_curviness: StyleTranslator.BEZIER_CURVINESS_DEFAULT,
-        flowchart_roundness: StyleTranslator.FLOWCHART_ROUNDNESS_DEFAULT,
-      },
-    }) as Link;
+    const createUpdatedLink = (link: Link): Link =>
+      ({
+        ...link,
+        link_style: {
+          ...link.link_style,
+          link_type: 'bezier',
+          bezier_curviness: StyleTranslator.BEZIER_CURVINESS_DEFAULT,
+          flowchart_roundness: StyleTranslator.FLOWCHART_ROUNDNESS_DEFAULT,
+        },
+      } as Link);
 
     beforeEach(() => {
       component.link = createMockLink();
@@ -408,26 +413,13 @@ describe('LinkStyleEditorDialogComponent', () => {
 
   describe('borderTypes', () => {
     it('should contain expected border types', () => {
-      expect(component.borderTypes).toEqual([
-        'Invisible',
-        'Solid',
-        'Dash',
-        'Dot',
-        'Dash Dot',
-        'Dash Dot Dot',
-      ]);
+      expect(component.borderTypes).toEqual(['Invisible', 'Solid', 'Dash', 'Dot', 'Dash Dot', 'Dash Dot Dot']);
     });
   });
 
   describe('linkTypes', () => {
     it('should contain expected link types', () => {
-      expect(component.linkTypes).toEqual([
-        'Straight',
-        'Bezier',
-        'Flowchart',
-        'StateMachine',
-        'Freeform',
-      ]);
+      expect(component.linkTypes).toEqual(['Straight', 'Bezier', 'Flowchart', 'StateMachine', 'Freeform']);
     });
   });
 });

@@ -139,12 +139,7 @@ describe('AlignHorizontallyActionComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        AlignHorizontallyActionComponent,
-        MatButtonModule,
-        MatIconModule,
-        MatMenuModule,
-      ],
+      imports: [AlignHorizontallyActionComponent, MatButtonModule, MatIconModule, MatMenuModule],
       providers: [
         { provide: NodesDataSource, useValue: mockNodesDataSource },
         { provide: NodeService, useValue: mockNodeService },
@@ -234,7 +229,6 @@ describe('AlignHorizontallyActionComponent', () => {
       expect(mockNodeService.update).toHaveBeenCalledWith(controller, node2);
       expect(mockNodeService.update).toHaveBeenCalledTimes(2);
     });
-
 
     it('should handle single node alignment', () => {
       const node = createMockNode({ y: 250 });

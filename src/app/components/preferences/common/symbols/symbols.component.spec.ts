@@ -369,10 +369,7 @@ describe('SymbolsComponent', () => {
     });
 
     it('should populate symbols and filteredSymbols on success', () => {
-      const newSymbols = [
-        createMockSymbol({ symbol_id: 'new_router' }),
-        createMockSymbol({ symbol_id: 'new_switch' }),
-      ];
+      const newSymbols = [createMockSymbol({ symbol_id: 'new_router' }), createMockSymbol({ symbol_id: 'new_switch' })];
       mockSymbolService.list.mockReturnValue(of(newSymbols));
       component.loadSymbols();
       expect(component.symbols).toEqual(newSymbols);

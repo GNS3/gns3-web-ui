@@ -64,16 +64,40 @@ describe('UserDetailDialogComponent', () => {
   ];
 
   const mockRoles: Role[] = [
-    { role_id: 'role-1', name: 'Admin', description: '', created_at: '', updated_at: '', is_builtin: false, privileges: [] },
-    { role_id: 'role-2', name: 'Viewer', description: '', created_at: '', updated_at: '', is_builtin: false, privileges: [] },
+    {
+      role_id: 'role-1',
+      name: 'Admin',
+      description: '',
+      created_at: '',
+      updated_at: '',
+      is_builtin: false,
+      privileges: [],
+    },
+    {
+      role_id: 'role-2',
+      name: 'Viewer',
+      description: '',
+      created_at: '',
+      updated_at: '',
+      is_builtin: false,
+      privileges: [],
+    },
   ];
 
-  const mockEndpoints: Endpoint[] = [
-    { endpoint: '/api/test', name: 'Test API', endpoint_type: 'project' as any },
-  ];
+  const mockEndpoints: Endpoint[] = [{ endpoint: '/api/test', name: 'Test API', endpoint_type: 'project' as any }];
 
   const mockAces: ACE[] = [
-    { ace_id: 'ace-1', ace_type: 'user' as any, user_id: 'user-123', role_id: 'role-1', path: '/api/test', propagate: true, allowed: true, created_at: '', updated_at: '' },
+    {
+      ace_id: 'ace-1',
+      ace_type: 'user' as any,
+      user_id: 'user-123',
+      role_id: 'role-1',
+      path: '/api/test',
+      propagate: true,
+      allowed: true,
+      created_at: '',
+      updated_at: '',
+    },
   ];
 
   beforeEach(async () => {

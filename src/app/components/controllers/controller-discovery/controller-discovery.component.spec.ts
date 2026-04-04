@@ -31,22 +31,23 @@ describe('ControllerDiscoveryComponent', () => {
   let serviceInitializedSubject: Subject<boolean>;
 
   // Mock controller for testing
-  const createMockController = (overrides?: Partial<Controller>): Controller => ({
-    id: 1,
-    authToken: 'test-token',
-    name: 'Test Controller',
-    location: 'remote',
-    host: '127.0.0.1',
-    port: 3080,
-    path: '/',
-    ubridge_path: '/usr/bin/ubridge',
-    status: 'running',
-    protocol: 'http:',
-    username: 'admin',
-    password: 'admin',
-    tokenExpired: false,
-    ...overrides,
-  } as Controller);
+  const createMockController = (overrides?: Partial<Controller>): Controller =>
+    ({
+      id: 1,
+      authToken: 'test-token',
+      name: 'Test Controller',
+      location: 'remote',
+      host: '127.0.0.1',
+      port: 3080,
+      path: '/',
+      ubridge_path: '/usr/bin/ubridge',
+      status: 'running',
+      protocol: 'http:',
+      username: 'admin',
+      password: 'admin',
+      tokenExpired: false,
+      ...overrides,
+    } as Controller);
 
   beforeEach(async () => {
     vi.clearAllMocks();

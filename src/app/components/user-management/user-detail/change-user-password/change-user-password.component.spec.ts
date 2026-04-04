@@ -163,11 +163,7 @@ describe('ChangeUserPasswordComponent', () => {
       component.onPasswordSave();
 
       expect(mockUserService.update).toHaveBeenCalledTimes(1);
-      expect(mockUserService.update).toHaveBeenCalledWith(
-        mockController,
-        expectedUser,
-        false
-      );
+      expect(mockUserService.update).toHaveBeenCalledWith(mockController, expectedUser, false);
     });
 
     it('should show success toast on successful update', () => {

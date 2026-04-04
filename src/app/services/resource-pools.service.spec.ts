@@ -37,7 +37,7 @@ describe('ResourcePoolsService', () => {
       username: 'admin',
       password: 'admin',
       tokenExpired: false,
-    }) as Controller;
+    } as Controller);
 
   beforeEach(() => {
     mockHttpController = {
@@ -53,7 +53,10 @@ describe('ResourcePoolsService', () => {
 
     mockController = createMockController();
 
-    service = new ResourcePoolsService(mockHttpController as unknown as HttpController, mockProjectService as unknown as ProjectService);
+    service = new ResourcePoolsService(
+      mockHttpController as unknown as HttpController,
+      mockProjectService as unknown as ProjectService
+    );
   });
 
   afterEach(() => {
@@ -81,9 +84,7 @@ describe('ResourcePoolsService', () => {
     });
 
     it('should return Observable of ResourcePool array', async () => {
-      const pools: ResourcePool[] = [
-        { resource_pool_id: 'pool-1', name: 'Pool 1' } as ResourcePool,
-      ];
+      const pools: ResourcePool[] = [{ resource_pool_id: 'pool-1', name: 'Pool 1' } as ResourcePool];
       mockHttpController.get.mockReturnValue(of(pools));
 
       const result = await firstValueFrom(service.getAll(mockController));
@@ -102,12 +103,8 @@ describe('ResourcePoolsService', () => {
   describe('get', () => {
     it('should call httpController.get for pool and resources', async () => {
       const mockPool: ResourcePool = { resource_pool_id: 'pool-1', name: 'Pool 1' } as ResourcePool;
-      const mockResources: Resource[] = [
-        { resource_id: 'res-1', name: 'Resource 1' } as Resource,
-      ];
-      mockHttpController.get
-        .mockReturnValueOnce(of(mockPool))
-        .mockReturnValueOnce(of(mockResources));
+      const mockResources: Resource[] = [{ resource_id: 'res-1', name: 'Resource 1' } as Resource];
+      mockHttpController.get.mockReturnValueOnce(of(mockPool)).mockReturnValueOnce(of(mockResources));
 
       await firstValueFrom(service.get(mockController, 'pool-1'));
 
@@ -117,12 +114,8 @@ describe('ResourcePoolsService', () => {
 
     it('should return Observable with pool and resources merged', async () => {
       const mockPool: ResourcePool = { resource_pool_id: 'pool-1', name: 'Pool 1' } as ResourcePool;
-      const mockResources: Resource[] = [
-        { resource_id: 'res-1', name: 'Resource 1' } as Resource,
-      ];
-      mockHttpController.get
-        .mockReturnValueOnce(of(mockPool))
-        .mockReturnValueOnce(of(mockResources));
+      const mockResources: Resource[] = [{ resource_id: 'res-1', name: 'Resource 1' } as Resource];
+      mockHttpController.get.mockReturnValueOnce(of(mockPool)).mockReturnValueOnce(of(mockResources));
 
       const result = await firstValueFrom(service.get(mockController, 'pool-1'));
 
@@ -131,9 +124,7 @@ describe('ResourcePoolsService', () => {
 
     it('should emit error when first forkJoin source fails', async () => {
       const error = new Error('Pool not found');
-      mockHttpController.get
-        .mockReturnValueOnce(throwError(() => error))
-        .mockReturnValueOnce(of([]));
+      mockHttpController.get.mockReturnValueOnce(throwError(() => error)).mockReturnValueOnce(of([]));
 
       await expect(firstValueFrom(service.get(mockController, 'pool-1'))).rejects.toThrow('Pool not found');
     });
@@ -198,11 +189,7 @@ describe('ResourcePoolsService', () => {
 
       await firstValueFrom(service.update(mockController, pool));
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/pools/pool-1',
-        { name: 'Updated Pool' }
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/pools/pool-1', { name: 'Updated Pool' });
     });
 
     it('should return Observable with update response', async () => {
@@ -232,11 +219,7 @@ describe('ResourcePoolsService', () => {
 
       await firstValueFrom(service.addResource(mockController, pool, project));
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/pools/pool-1/resources/proj-1',
-        {}
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/pools/pool-1/resources/proj-1', {});
     });
 
     it('should return Observable with addResource response', async () => {
@@ -270,10 +253,7 @@ describe('ResourcePoolsService', () => {
 
       await firstValueFrom(service.deleteResource(mockController, resource, pool));
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/pools/pool-1/resources/res-1'
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/pools/pool-1/resources/res-1');
     });
 
     it('should return Observable with deleteResource response', async () => {
@@ -293,9 +273,9 @@ describe('ResourcePoolsService', () => {
       const error = new Error('Resource deallocation failed');
       mockHttpController.delete.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.deleteResource(mockController, resource, pool))
-      ).rejects.toThrow('Resource deallocation failed');
+      await expect(firstValueFrom(service.deleteResource(mockController, resource, pool))).rejects.toThrow(
+        'Resource deallocation failed'
+      );
     });
   });
 
@@ -306,17 +286,11 @@ describe('ResourcePoolsService', () => {
         { project_id: 'proj-2', name: 'Project 2' } as Project,
         { project_id: 'proj-3', name: 'Project 3' } as Project,
       ];
-      const pools: ResourcePool[] = [
-        { resource_pool_id: 'pool-1', name: 'Pool 1' } as ResourcePool,
-      ];
-      const allocatedResources: Resource[] = [
-        { resource_id: 'proj-2', name: 'Resource for proj-2' } as Resource,
-      ];
+      const pools: ResourcePool[] = [{ resource_pool_id: 'pool-1', name: 'Pool 1' } as ResourcePool];
+      const allocatedResources: Resource[] = [{ resource_id: 'proj-2', name: 'Resource for proj-2' } as Resource];
 
       mockProjectService.list.mockReturnValue(of(projects));
-      mockHttpController.get
-        .mockReturnValueOnce(of(pools))
-        .mockReturnValueOnce(of(allocatedResources));
+      mockHttpController.get.mockReturnValueOnce(of(pools)).mockReturnValueOnce(of(allocatedResources));
 
       const result = await firstValueFrom(service.getFreeResources(mockController));
 
@@ -338,29 +312,19 @@ describe('ResourcePoolsService', () => {
       mockHttpController.get.mockReturnValue(defer(() => of(pools)));
 
       const result = await new Promise<Project[]>((resolve, reject) => {
-        service.getFreeResources(mockController)
-          .pipe(timeout(1000))
-          .subscribe({ next: resolve, error: reject });
+        service.getFreeResources(mockController).pipe(timeout(1000)).subscribe({ next: resolve, error: reject });
       });
 
       expect(result).toHaveLength(2);
     });
 
     it('should return empty array when all projects are allocated', async () => {
-      const projects: Project[] = [
-        { project_id: 'proj-1', name: 'Project 1' } as Project,
-      ];
-      const pools: ResourcePool[] = [
-        { resource_pool_id: 'pool-1', name: 'Pool 1' } as ResourcePool,
-      ];
-      const allocatedResources: Resource[] = [
-        { resource_id: 'proj-1', name: 'Resource for proj-1' } as Resource,
-      ];
+      const projects: Project[] = [{ project_id: 'proj-1', name: 'Project 1' } as Project];
+      const pools: ResourcePool[] = [{ resource_pool_id: 'pool-1', name: 'Pool 1' } as ResourcePool];
+      const allocatedResources: Resource[] = [{ resource_id: 'proj-1', name: 'Resource for proj-1' } as Resource];
 
       mockProjectService.list.mockReturnValue(of(projects));
-      mockHttpController.get
-        .mockReturnValueOnce(of(pools))
-        .mockReturnValueOnce(of(allocatedResources));
+      mockHttpController.get.mockReturnValueOnce(of(pools)).mockReturnValueOnce(of(allocatedResources));
 
       const result = await firstValueFrom(service.getFreeResources(mockController));
 
@@ -371,9 +335,7 @@ describe('ResourcePoolsService', () => {
       const error = new Error('Failed to list projects');
       mockProjectService.list.mockReturnValue(throwError(() => error));
 
-      await expect(firstValueFrom(service.getFreeResources(mockController))).rejects.toThrow(
-        'Failed to list projects'
-      );
+      await expect(firstValueFrom(service.getFreeResources(mockController))).rejects.toThrow('Failed to list projects');
     });
   });
 });

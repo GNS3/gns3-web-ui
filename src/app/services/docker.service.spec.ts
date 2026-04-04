@@ -90,10 +90,7 @@ describe('DockerService', () => {
 
       service.getImages(mockController);
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/computes/local/docker/images'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/computes/local/docker/images');
     });
 
     it('should return Observable of DockerImage array', () => {
@@ -132,11 +129,7 @@ describe('DockerService', () => {
 
       service.saveTemplate(mockController, template);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/templates/docker-1',
-        template
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/templates/docker-1', template);
     });
 
     it('should return Observable', () => {

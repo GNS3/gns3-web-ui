@@ -39,7 +39,7 @@ describe('ResourcePoolDetailsComponent', () => {
       updated_at: '2024-01-01',
       resource_pool_id: 'pool-1',
       resources: [],
-    }) as ResourcePool;
+    } as ResourcePool);
 
   const createMockProject = (name: string): Project =>
     ({
@@ -62,7 +62,7 @@ describe('ResourcePoolDetailsComponent', () => {
       variables: [],
       path: `/path/to/${name}`,
       readonly: false,
-    }) as Project;
+    } as Project);
 
   beforeEach(async () => {
     // ReplaySubject replays values to new subscribers
@@ -170,11 +170,7 @@ describe('ResourcePoolDetailsComponent', () => {
       component.addResourceFormControl.setValue('Project A');
       component.addResource();
 
-      expect(mockResourcePoolsService.addResource).toHaveBeenCalledWith(
-        mockController,
-        component.pool(),
-        mockProject
-      );
+      expect(mockResourcePoolsService.addResource).toHaveBeenCalledWith(mockController, component.pool(), mockProject);
     });
 
     it('should show success toast when project is added', () => {
@@ -231,4 +227,3 @@ describe('ResourcePoolDetailsComponent', () => {
   // because Angular Material's real dialog code is running instead of the mock.
   // This appears to be a specific issue with how inject(MatDialog) works with TestBed mocking.
 });
-

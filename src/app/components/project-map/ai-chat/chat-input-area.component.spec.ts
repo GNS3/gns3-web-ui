@@ -73,14 +73,7 @@ describe('ChatInputAreaComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        ChatInputAreaComponent,
-        FormsModule,
-        MatIconModule,
-        MatRippleModule,
-        MatMenuModule,
-        MatDividerModule,
-      ],
+      imports: [ChatInputAreaComponent, FormsModule, MatIconModule, MatRippleModule, MatMenuModule, MatDividerModule],
       providers: [
         { provide: ThemeService, useValue: mockThemeService },
         { provide: OverlayContainer, useValue: mockOverlayContainer },
@@ -310,15 +303,24 @@ describe('ChatInputAreaComponent', () => {
     });
 
     it('should return shortened first model name when no currentModelId', () => {
-      const config = createMockModelConfig({ config_id: 'config-1', config: { ...createMockModelConfig().config, model: 'google/gemini-2.5-flash' } });
+      const config = createMockModelConfig({
+        config_id: 'config-1',
+        config: { ...createMockModelConfig().config, model: 'google/gemini-2.5-flash' },
+      });
       fixture.componentRef.setInput('modelConfigs', [config]);
       fixture.componentRef.setInput('currentModelId', null);
       expect(component.getCurrentModelDisplayName()).toBe('Gemini 2.5 Flash');
     });
 
     it('should return shortened current model name when currentModelId is set', () => {
-      const config1 = createMockModelConfig({ config_id: 'config-1', config: { ...createMockModelConfig().config, model: 'google/gemini-2.5-flash' } });
-      const config2 = createMockModelConfig({ config_id: 'config-2', config: { ...createMockModelConfig().config, model: 'openai/gpt-4o' } });
+      const config1 = createMockModelConfig({
+        config_id: 'config-1',
+        config: { ...createMockModelConfig().config, model: 'google/gemini-2.5-flash' },
+      });
+      const config2 = createMockModelConfig({
+        config_id: 'config-2',
+        config: { ...createMockModelConfig().config, model: 'openai/gpt-4o' },
+      });
       fixture.componentRef.setInput('modelConfigs', [config1, config2]);
       fixture.componentRef.setInput('currentModelId', 'config-2');
       expect(component.getCurrentModelDisplayName()).toBe('Gpt 4o');

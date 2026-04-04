@@ -18,10 +18,7 @@ describe('DeleteAllImageFilesDialogComponent', () => {
 
   const mockDeleteData = {
     controller: { id: 1, name: 'Test Controller' },
-    deleteFilesPaths: [
-      { filename: 'image1.img' },
-      { filename: 'image2.img' },
-    ],
+    deleteFilesPaths: [{ filename: 'image1.img' }, { filename: 'image2.img' }],
   };
 
   beforeEach(async () => {
@@ -38,12 +35,7 @@ describe('DeleteAllImageFilesDialogComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        DeleteAllImageFilesDialogComponent,
-        MatDialogModule,
-        MatButtonModule,
-        MatProgressSpinnerModule,
-      ],
+      imports: [DeleteAllImageFilesDialogComponent, MatDialogModule, MatButtonModule, MatProgressSpinnerModule],
       providers: [
         { provide: ImageManagerService, useValue: mockImageManagerService },
         { provide: ToasterService, useValue: { success: vi.fn(), error: vi.fn() } },
@@ -110,14 +102,8 @@ describe('DeleteAllImageFilesDialogComponent', () => {
       mockImageManagerService.deleteFile.mockReturnValue(of(null));
       component.deleteAll();
       expect(mockImageManagerService.deleteFile).toHaveBeenCalledTimes(2);
-      expect(mockImageManagerService.deleteFile).toHaveBeenCalledWith(
-        mockDeleteData.controller,
-        'image1.img'
-      );
-      expect(mockImageManagerService.deleteFile).toHaveBeenCalledWith(
-        mockDeleteData.controller,
-        'image2.img'
-      );
+      expect(mockImageManagerService.deleteFile).toHaveBeenCalledWith(mockDeleteData.controller, 'image1.img');
+      expect(mockImageManagerService.deleteFile).toHaveBeenCalledWith(mockDeleteData.controller, 'image2.img');
     });
 
     it('should show spinner while deleting', () => {
@@ -159,9 +145,7 @@ describe('DeleteAllImageFilesDialogComponent', () => {
   describe('deleteFile() - some files fail to delete', () => {
     it('should populate deleteFliesDetails with error responses', () => {
       const errorResponse = { error: { message: 'File in use by template' } };
-      mockImageManagerService.deleteFile
-        .mockReturnValueOnce(of(errorResponse))
-        .mockReturnValueOnce(of(null));
+      mockImageManagerService.deleteFile.mockReturnValueOnce(of(errorResponse)).mockReturnValueOnce(of(null));
       component.deleteFile();
       fixture.detectChanges();
       expect((component.deleteFliesDetails as any).length).toBe(1);
@@ -170,9 +154,7 @@ describe('DeleteAllImageFilesDialogComponent', () => {
 
     it('should show error title when some files cannot be deleted', () => {
       const errorResponse = { error: { message: 'File in use' } };
-      mockImageManagerService.deleteFile
-        .mockReturnValueOnce(of(errorResponse))
-        .mockReturnValueOnce(of(null));
+      mockImageManagerService.deleteFile.mockReturnValueOnce(of(errorResponse)).mockReturnValueOnce(of(null));
       component.deleteFile();
       fixture.detectChanges();
       const compiled = fixture.nativeElement;
@@ -181,13 +163,13 @@ describe('DeleteAllImageFilesDialogComponent', () => {
 
     it('should show success count for deleted files', () => {
       const errorResponse = { error: { message: 'File in use' } };
-      mockImageManagerService.deleteFile
-        .mockReturnValueOnce(of(errorResponse))
-        .mockReturnValueOnce(of(null));
+      mockImageManagerService.deleteFile.mockReturnValueOnce(of(errorResponse)).mockReturnValueOnce(of(null));
       component.deleteFile();
       fixture.detectChanges();
       const compiled = fixture.nativeElement;
-      expect(compiled.querySelector('.delete-files__success-title').textContent).toContain('1 Images deleted successfully');
+      expect(compiled.querySelector('.delete-files__success-title').textContent).toContain(
+        '1 Images deleted successfully'
+      );
     });
 
     it('should update state after deletion completes', () => {
@@ -204,9 +186,7 @@ describe('DeleteAllImageFilesDialogComponent', () => {
   describe('Close button', () => {
     it('should close dialog when close button is clicked after deletion completes', () => {
       const errorResponse = { error: { message: 'File in use' } };
-      mockImageManagerService.deleteFile
-        .mockReturnValueOnce(of(errorResponse))
-        .mockReturnValueOnce(of(null));
+      mockImageManagerService.deleteFile.mockReturnValueOnce(of(errorResponse)).mockReturnValueOnce(of(null));
       component.deleteFile();
       fixture.detectChanges();
       const compiled = fixture.nativeElement;

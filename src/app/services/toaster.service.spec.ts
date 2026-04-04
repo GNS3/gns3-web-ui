@@ -42,7 +42,11 @@ describe('ToasterService', () => {
   describe('success', () => {
     it('should call snackbar.open with message and Close button', () => {
       service.success('Operation successful');
-      expect(mockMatSnackBar.open).toHaveBeenCalledWith('Operation successful', 'Close', service.snackBarConfigForSuccess);
+      expect(mockMatSnackBar.open).toHaveBeenCalledWith(
+        'Operation successful',
+        'Close',
+        service.snackBarConfigForSuccess
+      );
     });
 
     it('should handle empty message', () => {
@@ -105,7 +109,12 @@ describe('ToasterService', () => {
       ['warning', 4000],
       ['error', 10000],
     ])('should have %dms duration for %s messages', (_, duration) => {
-      const configName = _ === 'success' ? 'snackBarConfigForSuccess' : _ === 'warning' ? 'snackBarConfigForWarning' : 'snackBarConfigForError';
+      const configName =
+        _ === 'success'
+          ? 'snackBarConfigForSuccess'
+          : _ === 'warning'
+          ? 'snackBarConfigForWarning'
+          : 'snackBarConfigForError';
       expect(service[configName].duration).toBe(duration);
     });
   });
@@ -117,8 +126,18 @@ describe('ToasterService', () => {
       service.error('Third message');
 
       expect(mockMatSnackBar.open).toHaveBeenCalledTimes(3);
-      expect(mockMatSnackBar.open).toHaveBeenNthCalledWith(1, 'First message', 'Close', service.snackBarConfigForSuccess);
-      expect(mockMatSnackBar.open).toHaveBeenNthCalledWith(2, 'Second message', 'Close', service.snackBarConfigForWarning);
+      expect(mockMatSnackBar.open).toHaveBeenNthCalledWith(
+        1,
+        'First message',
+        'Close',
+        service.snackBarConfigForSuccess
+      );
+      expect(mockMatSnackBar.open).toHaveBeenNthCalledWith(
+        2,
+        'Second message',
+        'Close',
+        service.snackBarConfigForWarning
+      );
       expect(mockMatSnackBar.open).toHaveBeenNthCalledWith(3, 'Third message', 'Close', service.snackBarConfigForError);
     });
 

@@ -73,7 +73,7 @@ describe('ImportConfigActionComponent', () => {
       command_line: '',
       compute_id: 'local',
       ...overrides,
-    }) as Node;
+    } as Node);
 
   beforeEach(async () => {
     mockNodeService = {

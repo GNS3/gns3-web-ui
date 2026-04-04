@@ -253,8 +253,8 @@ describe('DrawingAddedComponent', () => {
       fixture.detectChanges();
 
       if (fixture) {
-      fixture.destroy();
-    }
+        fixture.destroy();
+      }
 
       // If subscription is not cleaned up, this would cause an error
       pointToAddSelected$.next(new AddedDataEvent(100, 200));

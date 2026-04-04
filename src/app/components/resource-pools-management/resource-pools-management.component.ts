@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, OnInit, QueryList, ViewChildren, inject, signal, AfterViewInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  QueryList,
+  ViewChildren,
+  inject,
+  signal,
+  AfterViewInit,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Controller } from '@models/controller';

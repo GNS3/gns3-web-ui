@@ -22,7 +22,7 @@ describe('NodeSelectInterfaceComponent', () => {
       node_id: nodeId,
       name: `Node-${nodeId}`,
       ports,
-    }) as Node;
+    } as Node);
 
   const createMockPort = (adapterNumber: number, portNumber: number, name: string): Port =>
     ({
@@ -30,19 +30,19 @@ describe('NodeSelectInterfaceComponent', () => {
       port_number: portNumber,
       name,
       available: false,
-    }) as Port;
+    } as Port);
 
   const createMockLinkNode = (nodeId: string, adapterNumber: number, portNumber: number): LinkNode =>
     ({
       node_id: nodeId,
       adapter_number: adapterNumber,
       port_number: portNumber,
-    }) as LinkNode;
+    } as LinkNode);
 
   const createMockLink = (nodeIds: string[]): Link =>
     ({
       nodes: nodeIds.map((id) => createMockLinkNode(id, 0, 0)),
-    }) as Link;
+    } as Link);
 
   beforeEach(async () => {
     mockSanitizer = {
@@ -126,10 +126,7 @@ describe('NodeSelectInterfaceComponent', () => {
   });
 
   describe('open', () => {
-    const mockNode = createMockNode('node-1', [
-      createMockPort(0, 0, 'eth0'),
-      createMockPort(0, 1, 'eth1'),
-    ]);
+    const mockNode = createMockNode('node-1', [createMockPort(0, 0, 'eth0'), createMockPort(0, 1, 'eth1')]);
 
     beforeEach(() => {
       fixture.componentRef.setInput('links', []);
@@ -170,10 +167,7 @@ describe('NodeSelectInterfaceComponent', () => {
     });
 
     it('should set all ports to available when no links exist', () => {
-      component.node = createMockNode('node-1', [
-        createMockPort(0, 0, 'eth0'),
-        createMockPort(0, 1, 'eth1'),
-      ]);
+      component.node = createMockNode('node-1', [createMockPort(0, 0, 'eth0'), createMockPort(0, 1, 'eth1')]);
       fixture.componentRef.setInput('links', []);
 
       component.filterNodePorts();

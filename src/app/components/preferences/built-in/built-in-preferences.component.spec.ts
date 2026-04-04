@@ -61,7 +61,6 @@ describe('BuiltInPreferencesComponent', () => {
     expect(icon?.textContent).toBe('arrow_back');
   });
 
-
   it('should render 3 navigation items', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const navItems = compiled.querySelectorAll('a[mat-list-item]');

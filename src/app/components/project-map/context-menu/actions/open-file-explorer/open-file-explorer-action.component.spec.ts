@@ -27,35 +27,34 @@ describe('OpenFileExplorerActionComponent', () => {
     tokenExpired: false,
   };
 
-  const createMockNode = (): Node =>
-    ({
-      node_id: 'node-1',
-      name: 'Test Node',
-      status: 'started',
-      console_host: '0.0.0.0',
-      node_type: 'vpcs',
-      project_id: 'proj1',
-      command_line: '',
-      compute_id: 'compute1',
-      height: 50,
-      width: 50,
-      x: 0,
-      y: 0,
-      z: 0,
-      label: { text: '', x: 0, y: 0, style: '', rotation: 0 },
-      locked: false,
-      first_port_name: '',
-      port_name_format: '',
-      port_segment_size: 1,
-      ports: [],
-      properties: {} as any,
-      symbol: '',
-      symbol_url: '',
-      console: 0,
-      console_auto_start: false,
-      console_type: '',
-      node_directory: '',
-    });
+  const createMockNode = (): Node => ({
+    node_id: 'node-1',
+    name: 'Test Node',
+    status: 'started',
+    console_host: '0.0.0.0',
+    node_type: 'vpcs',
+    project_id: 'proj1',
+    command_line: '',
+    compute_id: 'compute1',
+    height: 50,
+    width: 50,
+    x: 0,
+    y: 0,
+    z: 0,
+    label: { text: '', x: 0, y: 0, style: '', rotation: 0 },
+    locked: false,
+    first_port_name: '',
+    port_name_format: '',
+    port_segment_size: 1,
+    ports: [],
+    properties: {} as any,
+    symbol: '',
+    symbol_url: '',
+    console: 0,
+    console_auto_start: false,
+    console_type: '',
+    node_directory: '',
+  });
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -92,9 +91,7 @@ describe('OpenFileExplorerActionComponent', () => {
       const consoleSpy = vi.spyOn(console, 'log');
       component.open();
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Opening file explorer is only supported in Electron mode',
-      );
+      expect(consoleSpy).toHaveBeenCalledWith('Opening file explorer is only supported in Electron mode');
     });
 
     it('should be callable when button is clicked', () => {

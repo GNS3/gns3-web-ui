@@ -32,7 +32,9 @@ describe('DeleteGroupDialogComponent', () => {
 
   it('should display group names in the dialog', () => {
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Are you sure you want to delete the following groups?');
+    expect(compiled.querySelector('h1')?.textContent).toContain(
+      'Are you sure you want to delete the following groups?'
+    );
     expect(compiled.querySelector('li:nth-child(1)')?.textContent).toBe('Group A');
     expect(compiled.querySelector('li:nth-child(2)')?.textContent).toBe('Group B');
   });

@@ -29,12 +29,9 @@ describe('QemuConfigurationService', () => {
       expect(platforms).toBeInstanceOf(Array);
     });
 
-    it.each(['x86_64', 'aarch64', 'i386', 'ppc64', 's390x'])(
-      'should include %s platform',
-      (platform) => {
-        expect(platforms).toContain(platform);
-      },
-    );
+    it.each(['x86_64', 'aarch64', 'i386', 'ppc64', 's390x'])('should include %s platform', (platform) => {
+      expect(platforms).toContain(platform);
+    });
 
     it('should return 28 platform options', () => {
       expect(platforms).toHaveLength(28);
@@ -85,12 +82,9 @@ describe('QemuConfigurationService', () => {
       expect(diskInterfaces).toHaveLength(10);
     });
 
-    it.each(['virtio', 'ide', 'scsi', 'sata', 'nvme'])(
-      'should include %s interface',
-      (interfaceType) => {
-        expect(diskInterfaces).toContain(interfaceType);
-      },
-    );
+    it.each(['virtio', 'ide', 'scsi', 'sata', 'nvme'])('should include %s interface', (interfaceType) => {
+      expect(diskInterfaces).toContain(interfaceType);
+    });
   });
 
   describe('getNetworkTypes', () => {
@@ -109,12 +103,9 @@ describe('QemuConfigurationService', () => {
       expect(networkTypes[0]).toHaveProperty('name');
     });
 
-    it.each(['e1000', 'virtio', 'pcnet', 'ne2k_pci', 'rtl8139'])(
-      'should include %s network type',
-      (type) => {
-        expect(networkTypes.find((n) => n.value === type)).toBeDefined();
-      },
-    );
+    it.each(['e1000', 'virtio', 'pcnet', 'ne2k_pci', 'rtl8139'])('should include %s network type', (type) => {
+      expect(networkTypes.find((n) => n.value === type)).toBeDefined();
+    });
   });
 
   describe('getBootPriorities', () => {
@@ -193,7 +184,7 @@ describe('QemuConfigurationService', () => {
       'should include %s priority',
       (priority) => {
         expect(priorities).toContain(priority);
-      },
+      }
     );
   });
 

@@ -119,24 +119,29 @@ describe('LinkCreatedComponent', () => {
     mockSourcePort = createMapPort({ name: 'source-port' });
     mockTargetPort = createMapPort({ name: 'target-port' });
 
-    mockLinkCreatedEvent = new MapLinkCreated(
-      mockSourceNode,
-      mockSourcePort,
-      mockTargetNode,
-      mockTargetPort
-    );
+    mockLinkCreatedEvent = new MapLinkCreated(mockSourceNode, mockSourcePort, mockTargetNode, mockTargetPort);
 
     mockConvertedSourceNode = { node_id: 'source' } as unknown as Node;
     mockConvertedTargetNode = { node_id: 'target' } as unknown as Node;
-    mockConvertedSourcePort = { name: 'source-port', adapter_number: 0, adapter_type: 'ethernet', link_type: 'ethernet', port_number: 0, short_name: 'e0' } as Port;
-    mockConvertedTargetPort = { name: 'target-port', adapter_number: 0, adapter_type: 'ethernet', link_type: 'ethernet', port_number: 0, short_name: 'e0' } as Port;
+    mockConvertedSourcePort = {
+      name: 'source-port',
+      adapter_number: 0,
+      adapter_type: 'ethernet',
+      link_type: 'ethernet',
+      port_number: 0,
+      short_name: 'e0',
+    } as Port;
+    mockConvertedTargetPort = {
+      name: 'target-port',
+      adapter_number: 0,
+      adapter_type: 'ethernet',
+      link_type: 'ethernet',
+      port_number: 0,
+      short_name: 'e0',
+    } as Port;
 
-    mockMapNodeToNode.convert
-      .mockReturnValueOnce(mockConvertedSourceNode)
-      .mockReturnValueOnce(mockConvertedTargetNode);
-    mockMapPortToPort.convert
-      .mockReturnValueOnce(mockConvertedSourcePort)
-      .mockReturnValueOnce(mockConvertedTargetPort);
+    mockMapNodeToNode.convert.mockReturnValueOnce(mockConvertedSourceNode).mockReturnValueOnce(mockConvertedTargetNode);
+    mockMapPortToPort.convert.mockReturnValueOnce(mockConvertedSourcePort).mockReturnValueOnce(mockConvertedTargetPort);
 
     await TestBed.configureTestingModule({
       imports: [LinkCreatedComponent],

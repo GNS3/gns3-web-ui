@@ -31,8 +31,7 @@
       <input matInput type="number" tabindex="1" formControlName="port" placeholder="3080" />
       @if (computeForm.get('port').hasError('required')) {
       <mat-error>You must enter a port</mat-error>
-      }
-      @if (computeForm.get('port').hasError('min') || computeForm.get('port').hasError('max')) {
+      } @if (computeForm.get('port').hasError('min') || computeForm.get('port').hasError('max')) {
       <mat-error>Port must be between 1 and 65535</mat-error>
       }
     </mat-form-field>

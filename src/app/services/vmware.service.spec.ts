@@ -144,9 +144,7 @@ describe('VmwareService', () => {
       const error = new Error('Creation failed');
       mockHttpController.post.mockReturnValue(throwError(() => error));
 
-      await expect(firstValueFrom(service.addTemplate(mockController, newTemplate))).rejects.toThrow(
-        'Creation failed'
-      );
+      await expect(firstValueFrom(service.addTemplate(mockController, newTemplate))).rejects.toThrow('Creation failed');
     });
   });
 
@@ -211,9 +209,7 @@ describe('VmwareService', () => {
       const error = new Error('Failed to load VMs');
       mockHttpController.get.mockReturnValue(throwError(() => error));
 
-      await expect(firstValueFrom(service.getVirtualMachines(mockController))).rejects.toThrow(
-        'Failed to load VMs'
-      );
+      await expect(firstValueFrom(service.getVirtualMachines(mockController))).rejects.toThrow('Failed to load VMs');
     });
   });
 });

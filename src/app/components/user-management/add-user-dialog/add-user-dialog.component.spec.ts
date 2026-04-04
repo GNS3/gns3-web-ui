@@ -259,13 +259,16 @@ describe('AddUserDialogComponent', () => {
         is_active: true,
       });
       component.onAddClick();
-      expect(mockUserService.add).toHaveBeenCalledWith(mockController, expect.objectContaining({
-        username: 'newuser',
-        email: 'newuser@example.com',
-        password: 'password123',
-        full_name: 'New User',
-        is_active: true,
-      }));
+      expect(mockUserService.add).toHaveBeenCalledWith(
+        mockController,
+        expect.objectContaining({
+          username: 'newuser',
+          email: 'newuser@example.com',
+          password: 'password123',
+          full_name: 'New User',
+          is_active: true,
+        })
+      );
     });
 
     it('should close dialog and show success toast on add success', () => {
@@ -343,30 +346,30 @@ describe('AddUserDialogComponent', () => {
 
     it('should filter groups by name when autocomplete changes', () => {
       const results: Group[][] = [];
-      component.filteredGroups.subscribe(groups => results.push(groups));
+      component.filteredGroups.subscribe((groups) => results.push(groups));
       component.autocompleteControl.setValue('admin');
       fixture.detectChanges();
-      const filteredResult = results.find(groups => groups.length === 1);
+      const filteredResult = results.find((groups) => groups.length === 1);
       expect(filteredResult).toBeDefined();
       expect(filteredResult![0].name).toBe('Admins');
     });
 
     it('should return empty array when no matches found', () => {
       const results: Group[][] = [];
-      component.filteredGroups.subscribe(groups => results.push(groups));
+      component.filteredGroups.subscribe((groups) => results.push(groups));
       component.autocompleteControl.setValue('xyz123');
       fixture.detectChanges();
-      const filteredResult = results.find(groups => groups.length === 0);
+      const filteredResult = results.find((groups) => groups.length === 0);
       expect(filteredResult).toBeDefined();
       expect(filteredResult!.length).toBe(0);
     });
 
     it('should be case insensitive', () => {
       const results: Group[][] = [];
-      component.filteredGroups.subscribe(groups => results.push(groups));
+      component.filteredGroups.subscribe((groups) => results.push(groups));
       component.autocompleteControl.setValue('ADMIN');
       fixture.detectChanges();
-      const filteredResult = results.find(groups => groups.length === 1);
+      const filteredResult = results.find((groups) => groups.length === 1);
       expect(filteredResult).toBeDefined();
       expect(filteredResult![0].name).toBe('Admins');
     });

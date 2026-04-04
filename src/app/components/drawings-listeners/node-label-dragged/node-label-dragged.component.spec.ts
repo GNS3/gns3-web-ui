@@ -70,7 +70,7 @@ describe('NodeLabelDraggedComponent', () => {
       memory: 0,
       tpm: false,
       uefi: false,
-    }) as unknown as Properties;
+    } as unknown as Properties);
 
   const createMockNode = (): Node =>
     ({
@@ -90,20 +90,19 @@ describe('NodeLabelDraggedComponent', () => {
       ports: [],
       properties: createMockProperties(),
       label: { x: 100, y: 200, text: 'Node Label', rotation: 0, style: '' },
-    }) as unknown as Node;
+    } as unknown as Node);
 
-  const createMockMapLabel = (): MapLabel =>
-    ({
-      id: 'label1',
-      rotation: 0,
-      style: '',
-      text: 'Node Label',
-      x: 100,
-      y: 200,
-      originalX: 100,
-      originalY: 200,
-      nodeId: 'node1',
-    });
+  const createMockMapLabel = (): MapLabel => ({
+    id: 'label1',
+    rotation: 0,
+    style: '',
+    text: 'Node Label',
+    x: 100,
+    y: 200,
+    originalX: 100,
+    originalY: 200,
+    nodeId: 'node1',
+  });
 
   beforeEach(async () => {
     labelDraggedSubject = new Subject<DraggedDataEvent<MapLabel>>();

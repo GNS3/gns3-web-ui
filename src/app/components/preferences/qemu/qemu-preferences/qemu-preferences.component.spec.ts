@@ -139,10 +139,7 @@ describe('QemuPreferencesComponent', () => {
   describe('apply()', () => {
     it('should call updateSettingsForQemu with current settings', () => {
       component.apply();
-      expect(mockControllerSettingsService.updateSettingsForQemu).toHaveBeenCalledWith(
-        mockController,
-        mockSettings,
-      );
+      expect(mockControllerSettingsService.updateSettingsForQemu).toHaveBeenCalledWith(mockController, mockSettings);
     });
 
     it('should show success toaster after apply', () => {

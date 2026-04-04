@@ -55,9 +55,7 @@ const mockFilterDescription: FilterDescription[] = [
     name: 'corrupt',
     description: 'Corrupt packets',
     type: 'number',
-    parameters: [
-      { name: 'percentage', type: 'number', minimum: 0, maximum: 100 },
-    ],
+    parameters: [{ name: 'percentage', type: 'number', minimum: 0, maximum: 100 }],
   },
 ];
 
@@ -145,10 +143,7 @@ describe('PacketFiltersDialogComponent', () => {
         component.link.project_id,
         component.link.link_id
       );
-      expect(mockLinkService.getAvailableFilters).toHaveBeenCalledWith(
-        component.controller,
-        component.link
-      );
+      expect(mockLinkService.getAvailableFilters).toHaveBeenCalledWith(component.controller, component.link);
     });
 
     it('should initialize filters with default values when link has no filters', () => {

@@ -150,17 +150,16 @@ describe('QemuService', () => {
       expect(emittedError).toBe(error);
     });
 
-    it.each([
-      ['qemu-1'],
-      ['template-abc'],
-      ['123'],
-    ])('should call correct endpoint for template_id: %s', (templateId) => {
-      mockHttpController.get.mockReturnValue(of(mockQemuTemplate));
+    it.each([['qemu-1'], ['template-abc'], ['123']])(
+      'should call correct endpoint for template_id: %s',
+      (templateId) => {
+        mockHttpController.get.mockReturnValue(of(mockQemuTemplate));
 
-      service.getTemplate(mockController, templateId);
+        service.getTemplate(mockController, templateId);
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, `/templates/${templateId}`);
-    });
+        expect(mockHttpController.get).toHaveBeenCalledWith(mockController, `/templates/${templateId}`);
+      }
+    );
   });
 
   describe('getImagePath', () => {
@@ -361,11 +360,7 @@ describe('QemuService', () => {
 
       service.saveTemplate(mockController, template);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/templates/qemu-1',
-        template
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/templates/qemu-1', template);
     });
 
     it('should return observable that emits updated template', () => {
@@ -406,11 +401,7 @@ describe('QemuService', () => {
 
       service.saveTemplate(mockController, template);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        `/templates/${templateId}`,
-        template
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, `/templates/${templateId}`, template);
     });
   });
 });

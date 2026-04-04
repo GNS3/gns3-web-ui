@@ -83,11 +83,7 @@ describe('ProjectService', () => {
       readonly: false,
     } as unknown as Project;
 
-    service = new ProjectService(
-      mockHttpController,
-      mockSettingsService,
-      mockRecentlyOpenedProjectService
-    );
+    service = new ProjectService(mockHttpController, mockSettingsService, mockRecentlyOpenedProjectService);
   });
 
   describe('Service Creation', () => {
@@ -144,10 +140,7 @@ describe('ProjectService', () => {
 
       service.getReadmeFile(mockController, 'project-123');
 
-      expect(mockHttpController.getText).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/files/README.txt'
-      );
+      expect(mockHttpController.getText).toHaveBeenCalledWith(mockController, '/projects/project-123/files/README.txt');
     });
 
     it('should return Observable that emits README content', async () => {
@@ -185,9 +178,7 @@ describe('ProjectService', () => {
       const mockResponse = { success: true };
       mockHttpController.post.mockReturnValue(of(mockResponse));
 
-      const response = await firstValueFrom(
-        service.postReadmeFile(mockController, 'project-123', 'Content')
-      );
+      const response = await firstValueFrom(service.postReadmeFile(mockController, 'project-123', 'Content'));
 
       expect(response).toEqual(mockResponse);
     });
@@ -196,9 +187,9 @@ describe('ProjectService', () => {
       const error = new Error('Server error');
       mockHttpController.post.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.postReadmeFile(mockController, 'project-123', 'Content'))
-      ).rejects.toThrow('Server error');
+      await expect(firstValueFrom(service.postReadmeFile(mockController, 'project-123', 'Content'))).rejects.toThrow(
+        'Server error'
+      );
     });
   });
 
@@ -224,9 +215,7 @@ describe('ProjectService', () => {
       const error = new Error('Project not found');
       mockHttpController.get.mockReturnValue(throwError(() => error));
 
-      await expect(firstValueFrom(service.get(mockController, 'nonexistent'))).rejects.toThrow(
-        'Project not found'
-      );
+      await expect(firstValueFrom(service.get(mockController, 'nonexistent'))).rejects.toThrow('Project not found');
     });
   });
 
@@ -236,11 +225,7 @@ describe('ProjectService', () => {
 
       service.open(mockController, 'project-123');
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/open',
-        {}
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/projects/project-123/open', {});
     });
 
     it('should return Observable that emits Project', async () => {
@@ -255,9 +240,7 @@ describe('ProjectService', () => {
       const error = new Error('Open failed');
       mockHttpController.post.mockReturnValue(throwError(() => error));
 
-      await expect(firstValueFrom(service.open(mockController, 'project-123'))).rejects.toThrow(
-        'Open failed'
-      );
+      await expect(firstValueFrom(service.open(mockController, 'project-123'))).rejects.toThrow('Open failed');
     });
   });
 
@@ -275,11 +258,7 @@ describe('ProjectService', () => {
 
       service.close(mockController, 'project-123');
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/close',
-        {}
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/projects/project-123/close', {});
     });
 
     it('should return Observable that emits Project', async () => {
@@ -294,9 +273,7 @@ describe('ProjectService', () => {
       const error = new Error('Close failed');
       mockHttpController.post.mockReturnValue(throwError(() => error));
 
-      await expect(firstValueFrom(service.close(mockController, 'project-123'))).rejects.toThrow(
-        'Close failed'
-      );
+      await expect(firstValueFrom(service.close(mockController, 'project-123'))).rejects.toThrow('Close failed');
     });
   });
 
@@ -349,10 +326,7 @@ describe('ProjectService', () => {
 
       service.nodes(mockController, 'project-123');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/nodes'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/projects/project-123/nodes');
     });
 
     it('should return Observable that emits Node array', async () => {
@@ -369,9 +343,7 @@ describe('ProjectService', () => {
       const error = new Error('Nodes fetch failed');
       mockHttpController.get.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.nodes(mockController, 'project-123'))
-      ).rejects.toThrow('Nodes fetch failed');
+      await expect(firstValueFrom(service.nodes(mockController, 'project-123'))).rejects.toThrow('Nodes fetch failed');
     });
   });
 
@@ -382,10 +354,7 @@ describe('ProjectService', () => {
 
       service.links(mockController, 'project-123');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/links'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/projects/project-123/links');
     });
 
     it('should return Observable that emits Link array', async () => {
@@ -402,9 +371,7 @@ describe('ProjectService', () => {
       const error = new Error('Links fetch failed');
       mockHttpController.get.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.links(mockController, 'project-123'))
-      ).rejects.toThrow('Links fetch failed');
+      await expect(firstValueFrom(service.links(mockController, 'project-123'))).rejects.toThrow('Links fetch failed');
     });
   });
 
@@ -415,10 +382,7 @@ describe('ProjectService', () => {
 
       service.drawings(mockController, 'project-123');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/drawings'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/projects/project-123/drawings');
     });
 
     it('should return Observable that emits Drawing array', async () => {
@@ -435,9 +399,9 @@ describe('ProjectService', () => {
       const error = new Error('Drawings fetch failed');
       mockHttpController.get.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.drawings(mockController, 'project-123'))
-      ).rejects.toThrow('Drawings fetch failed');
+      await expect(firstValueFrom(service.drawings(mockController, 'project-123'))).rejects.toThrow(
+        'Drawings fetch failed'
+      );
     });
   });
 
@@ -465,9 +429,7 @@ describe('ProjectService', () => {
       const error = new Error('Add failed');
       mockHttpController.post.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.add(mockController, 'Test', 'test-id'))
-      ).rejects.toThrow('Add failed');
+      await expect(firstValueFrom(service.add(mockController, 'Test', 'test-id'))).rejects.toThrow('Add failed');
     });
   });
 
@@ -525,9 +487,7 @@ describe('ProjectService', () => {
       const error = new Error('Update failed');
       mockHttpController.put.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.update(mockController, mockProject))
-      ).rejects.toThrow('Update failed');
+      await expect(firstValueFrom(service.update(mockController, mockProject))).rejects.toThrow('Update failed');
     });
   });
 
@@ -552,9 +512,7 @@ describe('ProjectService', () => {
       const error = new Error('Delete failed');
       mockHttpController.delete.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.delete(mockController, 'project-123'))
-      ).rejects.toThrow('Delete failed');
+      await expect(firstValueFrom(service.delete(mockController, 'project-123'))).rejects.toThrow('Delete failed');
     });
   });
 
@@ -601,10 +559,7 @@ describe('ProjectService', () => {
 
       service.export(mockController, 'project-123');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/export'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/projects/project-123/export');
     });
 
     it('should return Observable', async () => {
@@ -619,9 +574,7 @@ describe('ProjectService', () => {
       const error = new Error('Export failed');
       mockHttpController.get.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.export(mockController, 'project-123'))
-      ).rejects.toThrow('Export failed');
+      await expect(firstValueFrom(service.export(mockController, 'project-123'))).rejects.toThrow('Export failed');
     });
   });
 
@@ -632,10 +585,7 @@ describe('ProjectService', () => {
 
       service.getStatistics(mockController, 'project-123');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/stats'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/projects/project-123/stats');
     });
 
     it('should return Observable that emits statistics', async () => {
@@ -652,9 +602,9 @@ describe('ProjectService', () => {
       const error = new Error('Stats failed');
       mockHttpController.get.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.getStatistics(mockController, 'project-123'))
-      ).rejects.toThrow('Stats failed');
+      await expect(firstValueFrom(service.getStatistics(mockController, 'project-123'))).rejects.toThrow(
+        'Stats failed'
+      );
     });
   });
 
@@ -664,20 +614,16 @@ describe('ProjectService', () => {
 
       service.duplicate(mockController, 'project-123', 'Copy of Project');
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/duplicate',
-        { name: 'Copy of Project' }
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/projects/project-123/duplicate', {
+        name: 'Copy of Project',
+      });
     });
 
     it('should return Observable that emits duplicated Project', async () => {
       const duplicatedProject = { ...mockProject, name: 'Copy of Project' };
       mockHttpController.post.mockReturnValue(of(duplicatedProject));
 
-      const project = await firstValueFrom(
-        service.duplicate(mockController, 'project-123', 'Copy')
-      );
+      const project = await firstValueFrom(service.duplicate(mockController, 'project-123', 'Copy'));
 
       expect(project.name).toBe('Copy of Project');
     });
@@ -686,9 +632,9 @@ describe('ProjectService', () => {
       const error = new Error('Duplicate failed');
       mockHttpController.post.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.duplicate(mockController, 'project-123', 'Copy'))
-      ).rejects.toThrow('Duplicate failed');
+      await expect(firstValueFrom(service.duplicate(mockController, 'project-123', 'Copy'))).rejects.toThrow(
+        'Duplicate failed'
+      );
     });
   });
 
@@ -828,10 +774,7 @@ describe('ProjectService', () => {
 
       service.getProjectStatus(mockController, 'project-123');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/locked'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/projects/project-123/locked');
     });
 
     it('should return Observable that emits locked status', async () => {
@@ -846,9 +789,9 @@ describe('ProjectService', () => {
       const error = new Error('Status check failed');
       mockHttpController.get.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.getProjectStatus(mockController, 'project-123'))
-      ).rejects.toThrow('Status check failed');
+      await expect(firstValueFrom(service.getProjectStatus(mockController, 'project-123'))).rejects.toThrow(
+        'Status check failed'
+      );
     });
   });
 
@@ -891,10 +834,7 @@ describe('ProjectService', () => {
 
       service.get(mockController, 'project-with-dash');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-with-dash'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/projects/project-with-dash');
     });
 
     it.each([

@@ -32,7 +32,7 @@ describe('TemplateNameDialogComponent', () => {
       node_type: 'vpcs',
       symbol: 'router',
       template_type: 'dynamips',
-    }) as Template;
+    } as Template);
 
   beforeEach(async () => {
     mockDialogRef = {
@@ -73,11 +73,7 @@ describe('TemplateNameDialogComponent', () => {
     } as Controller;
 
     await TestBed.configureTestingModule({
-      imports: [
-        TemplateNameDialogComponent,
-        ReactiveFormsModule,
-        MatDialogModule,
-      ],
+      imports: [TemplateNameDialogComponent, ReactiveFormsModule, MatDialogModule],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: { name: '' } },
@@ -109,7 +105,6 @@ describe('TemplateNameDialogComponent', () => {
       expect(component.templateNameForm).toBeInstanceOf(UntypedFormGroup);
       expect(component.templateNameForm.controls['templateName']).toBeInstanceOf(UntypedFormControl);
     });
-
   });
 
   describe('onNoClick', () => {

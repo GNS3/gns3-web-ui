@@ -258,7 +258,7 @@ describe('InfoService', () => {
         // Should still have other info but no port info
         expect(result.length).toBeGreaterThan(0);
         // Verify controller info is present
-        expect(result.some(item => item.includes('controller'))).toBe(true);
+        expect(result.some((item) => item.includes('controller'))).toBe(true);
       });
 
       it('should handle ports with different link types', () => {
@@ -474,7 +474,7 @@ describe('InfoService', () => {
       const result = service.getInfoAboutNode(mockNode, controllerWithSpecialName);
 
       // Check that controller info is in the result
-      expect(result.some(item => item.includes('Controller (Test) #1'))).toBe(true);
+      expect(result.some((item) => item.includes('Controller (Test) #1'))).toBe(true);
     });
 
     it('should handle node with very long command line', () => {
@@ -497,8 +497,8 @@ describe('InfoService', () => {
       const result = service.getInfoAboutNode(nodeWithIssuePorts, mockController);
 
       // Should include port info even with null/undefined link_type
-      expect(result.some(item => item.includes('Port eth0'))).toBe(true);
-      expect(result.some(item => item.includes('Port eth1'))).toBe(true);
+      expect(result.some((item) => item.includes('Port eth0'))).toBe(true);
+      expect(result.some((item) => item.includes('Port eth1'))).toBe(true);
     });
   });
 });

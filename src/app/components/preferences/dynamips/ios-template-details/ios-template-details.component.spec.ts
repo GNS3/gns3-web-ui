@@ -115,7 +115,10 @@ describe('IosTemplateDetailsComponent', () => {
       getChassis: vi.fn().mockReturnValue({ c1700: ['1720', '1721'], c2600: ['2610', '2620'] }),
       getDefaultRamSettings: vi.fn().mockReturnValue({ c1700: 160, c2600: 160, c7200: 512 }),
       getConsoleTypes: vi.fn().mockReturnValue(['telnet', 'none']),
-      getCategories: vi.fn().mockReturnValue([['Routers', 'router'], ['Switches', 'switch']]),
+      getCategories: vi.fn().mockReturnValue([
+        ['Routers', 'router'],
+        ['Switches', 'switch'],
+      ]),
       getAdapterMatrix: vi.fn().mockReturnValue({
         c7200: {
           '': {

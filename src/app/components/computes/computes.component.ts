@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnDestroy,
+  OnInit,
+  inject,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ActivatedRoute } from '@angular/router';
@@ -99,9 +107,7 @@ export class ComputesComponent implements OnInit, OnDestroy {
         );
         break;
       case 'compute.deleted':
-        this.computes.update((computes) =>
-          computes.filter((c) => c.compute_id !== notification.event.compute_id)
-        );
+        this.computes.update((computes) => computes.filter((c) => c.compute_id !== notification.event.compute_id));
         this.toasterService.success(`Compute "${notification.event.name}" deleted`);
         break;
     }

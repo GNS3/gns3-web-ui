@@ -34,7 +34,7 @@ describe('ResetLinkActionComponent', () => {
       link_id: 'link-1',
       project_id: 'project-1',
       ...overrides,
-    }) as Link;
+    } as Link);
 
   beforeEach(async () => {
     mockLinkService = {

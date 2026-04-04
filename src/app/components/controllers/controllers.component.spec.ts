@@ -26,7 +26,7 @@ describe('ControllerDataSource', () => {
       password: '',
       tokenExpired: false,
       ...overrides,
-    }) as Controller;
+    } as Controller);
 
   beforeEach(() => {
     vi.clearAllMocks();

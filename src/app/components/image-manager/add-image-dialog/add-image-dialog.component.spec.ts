@@ -29,7 +29,7 @@ describe('AddImageDialogComponent', () => {
       username: '',
       password: '',
       tokenExpired: false,
-    }) as Controller;
+    } as Controller);
 
   beforeEach(async () => {
     mockController = createMockController();
@@ -94,11 +94,7 @@ describe('AddImageDialogComponent', () => {
 
       component.onFilesSelected(event);
 
-      expect(mockBackgroundUploadService.queueFile).toHaveBeenCalledWith(
-        mockController,
-        mockFile,
-        false,
-      );
+      expect(mockBackgroundUploadService.queueFile).toHaveBeenCalledWith(mockController, mockFile, false);
     });
 
     it('should queue multiple files when multiple files are selected', () => {
@@ -113,18 +109,8 @@ describe('AddImageDialogComponent', () => {
       component.onFilesSelected(event);
 
       expect(mockBackgroundUploadService.queueFile).toHaveBeenCalledTimes(2);
-      expect(mockBackgroundUploadService.queueFile).toHaveBeenNthCalledWith(
-        1,
-        mockController,
-        mockFile1,
-        false,
-      );
-      expect(mockBackgroundUploadService.queueFile).toHaveBeenNthCalledWith(
-        2,
-        mockController,
-        mockFile2,
-        false,
-      );
+      expect(mockBackgroundUploadService.queueFile).toHaveBeenNthCalledWith(1, mockController, mockFile1, false);
+      expect(mockBackgroundUploadService.queueFile).toHaveBeenNthCalledWith(2, mockController, mockFile2, false);
     });
 
     it('should show success toast for single file', () => {
@@ -137,9 +123,7 @@ describe('AddImageDialogComponent', () => {
 
       component.onFilesSelected(event);
 
-      expect(mockToasterService.success).toHaveBeenCalledWith(
-        '1 file queued — uploading in the background',
-      );
+      expect(mockToasterService.success).toHaveBeenCalledWith('1 file queued — uploading in the background');
     });
 
     it('should show success toast for multiple files', () => {
@@ -153,9 +137,7 @@ describe('AddImageDialogComponent', () => {
 
       component.onFilesSelected(event);
 
-      expect(mockToasterService.success).toHaveBeenCalledWith(
-        '2 files queued — uploading in the background',
-      );
+      expect(mockToasterService.success).toHaveBeenCalledWith('2 files queued — uploading in the background');
     });
 
     it('should close dialog with true after file selection', () => {
@@ -223,11 +205,7 @@ describe('AddImageDialogComponent', () => {
 
       component.onFilesSelected(event);
 
-      expect(mockBackgroundUploadService.queueFile).toHaveBeenCalledWith(
-        mockController,
-        mockFile,
-        true,
-      );
+      expect(mockBackgroundUploadService.queueFile).toHaveBeenCalledWith(mockController, mockFile, true);
     });
   });
 

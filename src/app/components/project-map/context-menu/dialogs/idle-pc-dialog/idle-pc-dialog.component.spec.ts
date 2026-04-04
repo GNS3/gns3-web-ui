@@ -145,12 +145,7 @@ describe('IdlePCDialogComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        IdlePCDialogComponent,
-        FormsModule,
-        MatSelectModule,
-        MatTooltipModule,
-      ],
+      imports: [IdlePCDialogComponent, FormsModule, MatSelectModule, MatTooltipModule],
       providers: [
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
@@ -330,7 +325,7 @@ describe('IdlePCDialogComponent', () => {
       component.onApply();
 
       expect(mockToasterService.success).toHaveBeenCalledWith(
-        `Node ${mockNode.name} updated with idle-PC value 0x60c09aa0`,
+        `Node ${mockNode.name} updated with idle-PC value 0x60c09aa0`
       );
     });
   });

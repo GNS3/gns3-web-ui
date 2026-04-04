@@ -75,13 +75,7 @@ describe('LockActionComponent', () => {
     } as any;
 
     await TestBed.configureTestingModule({
-      imports: [
-        LockActionComponent,
-        MatButtonModule,
-        MatIconModule,
-        MatMenuModule,
-        MatDialogModule,
-      ],
+      imports: [LockActionComponent, MatButtonModule, MatIconModule, MatMenuModule, MatDialogModule],
     })
       .overrideProvider(MatDialog, { useValue: mockDialog })
       .overrideProvider(NodesDataSource, { useValue: mockNodesDataSource })
@@ -196,7 +190,7 @@ describe('LockActionComponent', () => {
             message: expect.stringContaining('2 items'),
             action: 'lock',
           }),
-        }),
+        })
       );
     });
 

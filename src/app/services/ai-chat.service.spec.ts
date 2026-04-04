@@ -198,10 +198,7 @@ describe('AiChatService', () => {
 
       service.getSessions(mockController, 'project-123').subscribe();
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/chat/sessions'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/projects/project-123/chat/sessions');
     });
 
     it('should return ChatSession array', async () => {

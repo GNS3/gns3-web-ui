@@ -165,7 +165,11 @@ describe('HttpConsoleActionComponent', () => {
         fixture.nativeElement.querySelector('button').click();
         fixture.detectChanges();
 
-        expect(windowOpenSpy).toHaveBeenCalledWith('http://192.168.1.1:80', 'Console-Test Node', 'width=1024,height=768');
+        expect(windowOpenSpy).toHaveBeenCalledWith(
+          'http://192.168.1.1:80',
+          'Console-Test Node',
+          'width=1024,height=768'
+        );
       });
 
       it('should open HTTPS console in popup window for started node', () => {
@@ -185,7 +189,11 @@ describe('HttpConsoleActionComponent', () => {
         fixture.nativeElement.querySelector('button').click();
         fixture.detectChanges();
 
-        expect(windowOpenSpy).toHaveBeenCalledWith('https://192.168.1.1:443', 'Console-Test Node', 'width=1024,height=768');
+        expect(windowOpenSpy).toHaveBeenCalledWith(
+          'https://192.168.1.1:443',
+          'Console-Test Node',
+          'width=1024,height=768'
+        );
       });
 
       it('should replace 0.0.0.0 console_host with controller host', () => {
@@ -205,7 +213,11 @@ describe('HttpConsoleActionComponent', () => {
         fixture.nativeElement.querySelector('button').click();
         fixture.detectChanges();
 
-        expect(windowOpenSpy).toHaveBeenCalledWith('http://192.168.1.100:8080', 'Console-Test Node', 'width=1024,height=768');
+        expect(windowOpenSpy).toHaveBeenCalledWith(
+          'http://192.168.1.100:8080',
+          'Console-Test Node',
+          'width=1024,height=768'
+        );
       });
 
       it('should replace :: console_host with controller host', () => {
@@ -225,7 +237,11 @@ describe('HttpConsoleActionComponent', () => {
         fixture.nativeElement.querySelector('button').click();
         fixture.detectChanges();
 
-        expect(windowOpenSpy).toHaveBeenCalledWith('http://192.168.1.100:8080', 'Console-Test Node', 'width=1024,height=768');
+        expect(windowOpenSpy).toHaveBeenCalledWith(
+          'http://192.168.1.100:8080',
+          'Console-Test Node',
+          'width=1024,height=768'
+        );
       });
 
       it('should replace IPv6 loopback with controller host', () => {
@@ -245,7 +261,11 @@ describe('HttpConsoleActionComponent', () => {
         fixture.nativeElement.querySelector('button').click();
         fixture.detectChanges();
 
-        expect(windowOpenSpy).toHaveBeenCalledWith('http://192.168.1.100:8080', 'Console-Test Node', 'width=1024,height=768');
+        expect(windowOpenSpy).toHaveBeenCalledWith(
+          'http://192.168.1.100:8080',
+          'Console-Test Node',
+          'width=1024,height=768'
+        );
       });
 
       it('should not open HTTP console for stopped node', () => {
@@ -306,7 +326,9 @@ describe('HttpConsoleActionComponent', () => {
         fixture.nativeElement.querySelector('button').click();
         fixture.detectChanges();
 
-        expect(mockToasterService.error).toHaveBeenCalledWith("Console type 'ssh' is not supported for node Test Node.");
+        expect(mockToasterService.error).toHaveBeenCalledWith(
+          "Console type 'ssh' is not supported for node Test Node."
+        );
       });
     });
 
@@ -374,7 +396,13 @@ describe('HttpConsoleActionComponent', () => {
     describe('mixed console types', () => {
       it('should handle multiple nodes with different console types', () => {
         const vncNode = createMockNode({ name: 'VNCNode', console_type: 'vnc', status: 'started' });
-        const httpNode = createMockNode({ name: 'HTTPNode', console_type: 'http', status: 'started', console_host: '192.168.1.1', console: 80 });
+        const httpNode = createMockNode({
+          name: 'HTTPNode',
+          console_type: 'http',
+          status: 'started',
+          console_host: '192.168.1.1',
+          console: 80,
+        });
         const telnetNode = createMockNode({ name: 'TelnetNode', console_type: 'telnet', status: 'started' });
         fixture.componentRef.setInput('nodes', [vncNode, httpNode, telnetNode]);
         fixture.componentRef.setInput('controller', mockController);
@@ -387,7 +415,11 @@ describe('HttpConsoleActionComponent', () => {
         fixture.detectChanges();
 
         expect(mockVncConsoleService.openVncConsole).toHaveBeenCalledWith(mockController, vncNode, false);
-        expect(windowOpenSpy).toHaveBeenCalledWith('http://192.168.1.1:80', 'Console-HTTPNode', 'width=1024,height=768');
+        expect(windowOpenSpy).toHaveBeenCalledWith(
+          'http://192.168.1.1:80',
+          'Console-HTTPNode',
+          'width=1024,height=768'
+        );
         expect(mockMapSettingsService.logConsoleSubject.next).toHaveBeenCalledWith(true);
         // Telnet console uses setTimeout with 500ms delay, which triggers openConsoleForNode after the delay
       });

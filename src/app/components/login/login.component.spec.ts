@@ -88,12 +88,19 @@ describe('LoginComponent', () => {
     const storage: Record<string, string> = {};
     vi.stubGlobal('localStorage', {
       getItem: vi.fn((key: string) => storage[key] || null),
-      setItem: vi.fn((key: string, value: string) => { storage[key] = value; }),
-      removeItem: vi.fn((key: string) => { delete storage[key]; }),
+      setItem: vi.fn((key: string, value: string) => {
+        storage[key] = value;
+      }),
+      removeItem: vi.fn((key: string) => {
+        delete storage[key];
+      }),
     });
 
     // Mock setTimeout
-    vi.stubGlobal('setTimeout', vi.fn((cb: Function) => cb()));
+    vi.stubGlobal(
+      'setTimeout',
+      vi.fn((cb: Function) => cb())
+    );
 
     await TestBed.configureTestingModule({
       imports: [
@@ -184,9 +191,7 @@ describe('LoginComponent', () => {
     component.loginForm.get('username')?.setValue('admin');
     component.loginForm.get('password')?.setValue('admin');
 
-    mockLoginService.login = vi.fn().mockReturnValue(
-      of({ access_token: 'test-token', token_type: 'Bearer' })
-    );
+    mockLoginService.login = vi.fn().mockReturnValue(of({ access_token: 'test-token', token_type: 'Bearer' }));
 
     component.login();
 
@@ -197,9 +202,7 @@ describe('LoginComponent', () => {
     component.loginForm.get('username')?.setValue('admin');
     component.loginForm.get('password')?.setValue('wrong');
 
-    mockLoginService.login = vi.fn().mockReturnValue(
-      throwError(() => new Error('Login failed'))
-    );
+    mockLoginService.login = vi.fn().mockReturnValue(throwError(() => new Error('Login failed')));
 
     component.login();
 

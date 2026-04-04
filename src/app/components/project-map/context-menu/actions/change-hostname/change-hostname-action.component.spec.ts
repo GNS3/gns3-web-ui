@@ -30,14 +30,14 @@ describe('ChangeHostnameActionComponent', () => {
       password: 'admin',
       tokenExpired: false,
       status: 'stopped',
-    }) as Controller;
+    } as Controller);
 
   const createMockNode = (): Node =>
     ({
       node_id: 'test-node-id',
       name: 'Test Node',
       node_type: 'vpcs',
-    }) as Node;
+    } as Node);
 
   beforeEach(async () => {
     mockDialogRef = {
@@ -50,13 +50,7 @@ describe('ChangeHostnameActionComponent', () => {
     } as any;
 
     await TestBed.configureTestingModule({
-      imports: [
-        ChangeHostnameActionComponent,
-        MatButtonModule,
-        MatIconModule,
-        MatMenuModule,
-        MatDialogModule,
-      ],
+      imports: [ChangeHostnameActionComponent, MatButtonModule, MatIconModule, MatMenuModule, MatDialogModule],
     })
       .overrideProvider(MatDialog, { useValue: mockDialog })
       .compileComponents();

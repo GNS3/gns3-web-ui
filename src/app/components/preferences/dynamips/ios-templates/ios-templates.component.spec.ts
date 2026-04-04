@@ -37,7 +37,7 @@ describe('IosTemplatesComponent', () => {
       path: '/',
       ubridge_path: '/usr/bin/ubridge',
       tokenExpired: false,
-    }) as Controller;
+    } as Controller);
 
   const createMockIosTemplate = (overrides: Partial<IosTemplate> = {}): IosTemplate =>
     ({
@@ -72,7 +72,7 @@ describe('IosTemplatesComponent', () => {
       usage: '',
       tags: [],
       ...overrides,
-    }) as IosTemplate;
+    } as IosTemplate);
 
   beforeEach(async () => {
     mockCdr = {
@@ -114,7 +114,10 @@ describe('IosTemplatesComponent', () => {
         { provide: ChangeDetectorRef, useValue: mockCdr },
         { provide: TemplateService, useValue: { deleteTemplate: vi.fn().mockReturnValue(of({})) } },
         { provide: ToasterService, useValue: { success: vi.fn() } },
-        { provide: MatDialog, useValue: { open: vi.fn().mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(true)) }) } },
+        {
+          provide: MatDialog,
+          useValue: { open: vi.fn().mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(true)) }) },
+        },
         { provide: Router, useValue: mockRouter },
       ],
     }).compileComponents();

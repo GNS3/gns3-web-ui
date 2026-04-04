@@ -1,4 +1,13 @@
-import { Component, Inject, OnInit, Renderer2, inject, signal, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import {
+  Component,
+  Inject,
+  OnInit,
+  Renderer2,
+  inject,
+  signal,
+  ChangeDetectionStrategy,
+  OnDestroy,
+} from '@angular/core';
 import { MatSnackBarRef, MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';

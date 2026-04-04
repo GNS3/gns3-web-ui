@@ -21,7 +21,11 @@ describe('AddUserToGroupDialogComponent', () => {
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
   let mockUserService: { list: ReturnType<typeof vi.fn> };
   let mockGroupService: { getGroupMember: ReturnType<typeof vi.fn>; addMemberToGroup: ReturnType<typeof vi.fn> };
-  let mockToastService: { success: ReturnType<typeof vi.fn>; error: ReturnType<typeof vi.fn>; warning: ReturnType<typeof vi.fn> };
+  let mockToastService: {
+    success: ReturnType<typeof vi.fn>;
+    error: ReturnType<typeof vi.fn>;
+    warning: ReturnType<typeof vi.fn>;
+  };
 
   const mockController: Controller = {
     id: 1,

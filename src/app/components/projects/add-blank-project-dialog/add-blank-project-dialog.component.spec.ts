@@ -45,7 +45,7 @@ describe('AddBlankProjectDialogComponent', () => {
       variables: [],
       path: `/path/to/${name}`,
       readonly: false,
-    }) as Project;
+    } as Project);
 
   beforeEach(async () => {
     mockDialogRef = {
@@ -93,11 +93,7 @@ describe('AddBlankProjectDialogComponent', () => {
     } as Controller;
 
     await TestBed.configureTestingModule({
-      imports: [
-        AddBlankProjectDialogComponent,
-        ReactiveFormsModule,
-        MatDialogModule,
-      ],
+      imports: [AddBlankProjectDialogComponent, ReactiveFormsModule, MatDialogModule],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: Router, useValue: mockRouter },

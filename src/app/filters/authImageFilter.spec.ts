@@ -56,7 +56,7 @@ describe('AuthImageFilter', () => {
   });
 
   afterEach(() => {
-    elements.forEach(el => el.remove());
+    elements.forEach((el) => el.remove());
     elements.length = 0;
   });
 

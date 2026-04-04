@@ -78,11 +78,7 @@ describe('AddDockerTemplateComponent', () => {
 
     mockDockerTemplate = createMockDockerTemplate();
 
-    mockDockerImages = [
-      { image: 'nginx:latest' },
-      { image: 'ubuntu:20.04' },
-      { image: 'alpine:latest' },
-    ];
+    mockDockerImages = [{ image: 'nginx:latest' }, { image: 'ubuntu:20.04' }, { image: 'alpine:latest' }];
 
     mockActivatedRoute = {
       snapshot: {

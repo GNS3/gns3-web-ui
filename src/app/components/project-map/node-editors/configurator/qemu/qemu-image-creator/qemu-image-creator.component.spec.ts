@@ -119,37 +119,15 @@ describe('QemuImageCreatorComponent', () => {
 
   describe('Options Properties', () => {
     it('should have diskOptions with expected values', () => {
-      expect(component.diskOptions).toEqual([
-        'hda',
-        'hdb',
-        'hdc',
-        'hdd',
-        'ide0',
-        'ide1',
-        'scsi0',
-        'scsi1',
-        'scsi2',
-      ]);
+      expect(component.diskOptions).toEqual(['hda', 'hdb', 'hdc', 'hdd', 'ide0', 'ide1', 'scsi0', 'scsi1', 'scsi2']);
     });
 
     it('should have formatOptions with expected values', () => {
-      expect(component.formatOptions).toEqual([
-        'qcow2',
-        'qcow',
-        'vhd',
-        'vdi',
-        'vmdk',
-        'raw',
-      ]);
+      expect(component.formatOptions).toEqual(['qcow2', 'qcow', 'vhd', 'vdi', 'vmdk', 'raw']);
     });
 
     it('should have preallocationsOptions with expected values', () => {
-      expect(component.preallocationsOptions).toEqual([
-        'off',
-        'metadata',
-        'falloc',
-        'full',
-      ]);
+      expect(component.preallocationsOptions).toEqual(['off', 'metadata', 'falloc', 'full']);
     });
   });
 
@@ -204,9 +182,7 @@ describe('QemuImageCreatorComponent', () => {
 
       component.onSaveClick();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith(
-        expect.stringContaining('Disk name')
-      );
+      expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Disk name'));
       expect(mockQemuService.createDiskImage).not.toHaveBeenCalled();
     });
 
@@ -218,9 +194,7 @@ describe('QemuImageCreatorComponent', () => {
 
       component.onSaveClick();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith(
-        expect.stringContaining('Format')
-      );
+      expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Format'));
       expect(mockQemuService.createDiskImage).not.toHaveBeenCalled();
     });
 
@@ -232,9 +206,7 @@ describe('QemuImageCreatorComponent', () => {
 
       component.onSaveClick();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith(
-        expect.stringContaining('Size')
-      );
+      expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Size'));
       expect(mockQemuService.createDiskImage).not.toHaveBeenCalled();
     });
 
@@ -243,15 +215,9 @@ describe('QemuImageCreatorComponent', () => {
 
       component.onSaveClick();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith(
-        expect.stringContaining('Disk name')
-      );
-      expect(mockToasterService.error).toHaveBeenCalledWith(
-        expect.stringContaining('Format')
-      );
-      expect(mockToasterService.error).toHaveBeenCalledWith(
-        expect.stringContaining('Size')
-      );
+      expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Disk name'));
+      expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Format'));
+      expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Size'));
     });
   });
 
@@ -271,16 +237,10 @@ describe('QemuImageCreatorComponent', () => {
 
       component.onSaveClick();
 
-      expect(mockQemuService.createDiskImage).toHaveBeenCalledWith(
-        mockController,
-        mockProjectId,
-        mockNodeId,
-        'hda',
-        {
-          format: 'qcow2',
-          size: 100,
-        }
-      );
+      expect(mockQemuService.createDiskImage).toHaveBeenCalledWith(mockController, mockProjectId, mockNodeId, 'hda', {
+        format: 'qcow2',
+        size: 100,
+      });
     });
 
     it('should close dialog on success', () => {
@@ -304,17 +264,11 @@ describe('QemuImageCreatorComponent', () => {
 
       component.onSaveClick();
 
-      expect(mockQemuService.createDiskImage).toHaveBeenCalledWith(
-        mockController,
-        mockProjectId,
-        mockNodeId,
-        'hda',
-        {
-          format: 'qcow2',
-          size: 100,
-          preallocation: 'full',
-        }
-      );
+      expect(mockQemuService.createDiskImage).toHaveBeenCalledWith(mockController, mockProjectId, mockNodeId, 'hda', {
+        format: 'qcow2',
+        size: 100,
+        preallocation: 'full',
+      });
     });
 
     it('should include lazy_refcounts when provided', () => {
@@ -328,17 +282,11 @@ describe('QemuImageCreatorComponent', () => {
 
       component.onSaveClick();
 
-      expect(mockQemuService.createDiskImage).toHaveBeenCalledWith(
-        mockController,
-        mockProjectId,
-        mockNodeId,
-        'hda',
-        {
-          format: 'qcow2',
-          size: 100,
-          lazy_refcounts: 'on',
-        }
-      );
+      expect(mockQemuService.createDiskImage).toHaveBeenCalledWith(mockController, mockProjectId, mockNodeId, 'hda', {
+        format: 'qcow2',
+        size: 100,
+        lazy_refcounts: 'on',
+      });
     });
 
     it('should show error toast on API error', () => {

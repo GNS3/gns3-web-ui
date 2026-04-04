@@ -37,14 +37,14 @@ describe('EditConfigActionComponent', () => {
       project_id: 'test-project-id',
       name: 'Test Project',
       path: '/path/to/project',
-    }) as Project;
+    } as Project);
 
   const createMockNode = (nodeType: string): Node =>
     ({
       node_id: 'test-node-id',
       name: 'Test Node',
       node_type: nodeType,
-    }) as Node;
+    } as Node);
 
   beforeEach(async () => {
     mockDialogRef = {
@@ -57,13 +57,7 @@ describe('EditConfigActionComponent', () => {
     } as any;
 
     await TestBed.configureTestingModule({
-      imports: [
-        EditConfigActionComponent,
-        MatButtonModule,
-        MatIconModule,
-        MatMenuModule,
-        MatDialogModule,
-      ],
+      imports: [EditConfigActionComponent, MatButtonModule, MatIconModule, MatMenuModule, MatDialogModule],
     })
       .overrideProvider(MatDialog, { useValue: mockDialog })
       .compileComponents();
@@ -140,7 +134,7 @@ describe('EditConfigActionComponent', () => {
           panelClass: ['base-dialog-panel', 'edit-config-action-dialog-panel'],
           autoFocus: false,
           disableClose: false,
-        }),
+        })
       );
     });
 
@@ -159,7 +153,7 @@ describe('EditConfigActionComponent', () => {
           panelClass: ['base-dialog-panel', 'edit-config-action-dialog-panel'],
           autoFocus: false,
           disableClose: false,
-        }),
+        })
       );
       expect(mockDialogRef.componentInstance.controller).toBe(controller);
     });

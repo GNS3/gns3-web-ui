@@ -148,11 +148,7 @@ describe('VirtualBoxService', () => {
 
       await firstValueFrom(service.saveTemplate(mockController, template));
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/templates/vb-1',
-        template
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/templates/vb-1', template);
     });
 
     it('should return updated VirtualBoxTemplate', async () => {
@@ -178,19 +174,22 @@ describe('VirtualBoxService', () => {
 
   describe('getVirtualMachines', () => {
     it('should call httpController.get with virtualbox vms endpoint', async () => {
-      const mockVms = [{ vmname: 'VM1', ram: 1024 }, { vmname: 'VM2', ram: 2048 }] as VirtualBoxVm[];
+      const mockVms = [
+        { vmname: 'VM1', ram: 1024 },
+        { vmname: 'VM2', ram: 2048 },
+      ] as VirtualBoxVm[];
       mockHttpController.get.mockReturnValue(of(mockVms));
 
       await firstValueFrom(service.getVirtualMachines(mockController));
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/computes/local/virtualbox/vms'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/computes/local/virtualbox/vms');
     });
 
     it('should return VirtualBoxVm array', async () => {
-      const mockVms = [{ vmname: 'VM1', ram: 1024 }, { vmname: 'VM2', ram: 2048 }] as VirtualBoxVm[];
+      const mockVms = [
+        { vmname: 'VM1', ram: 1024 },
+        { vmname: 'VM2', ram: 2048 },
+      ] as VirtualBoxVm[];
       mockHttpController.get.mockReturnValue(of(mockVms));
 
       const result = await firstValueFrom(service.getVirtualMachines(mockController));
@@ -211,9 +210,7 @@ describe('VirtualBoxService', () => {
       const error = new Error('Compute unavailable');
       mockHttpController.get.mockReturnValue(throwError(() => error));
 
-      await expect(firstValueFrom(service.getVirtualMachines(mockController))).rejects.toThrow(
-        'Compute unavailable'
-      );
+      await expect(firstValueFrom(service.getVirtualMachines(mockController))).rejects.toThrow('Compute unavailable');
     });
   });
 });

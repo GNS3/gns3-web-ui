@@ -142,11 +142,9 @@ describe('TemplateService', () => {
 
       service.deleteTemplate(mockController, 'tmpl-123');
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/templates/tmpl-123',
-        { observe: 'body' }
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/templates/tmpl-123', {
+        observe: 'body',
+      });
     });
 
     it('should return Observable', () => {
@@ -162,11 +160,9 @@ describe('TemplateService', () => {
 
       service.deleteTemplate(mockController, 'template-to-delete');
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/templates/template-to-delete',
-        { observe: 'body' }
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/templates/template-to-delete', {
+        observe: 'body',
+      });
     });
 
     it('should pass observe: body option', () => {
@@ -294,11 +290,9 @@ describe('TemplateService', () => {
       const templateId = 'tmpl_with-underscore-and-dash';
       service.deleteTemplate(mockController, templateId);
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        `/templates/${templateId}`,
-        { observe: 'body' }
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, `/templates/${templateId}`, {
+        observe: 'body',
+      });
     });
 
     it('should handle very long template ID', () => {
@@ -307,11 +301,9 @@ describe('TemplateService', () => {
       const longId = 't'.repeat(100);
       service.deleteTemplate(mockController, longId);
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        `/templates/${longId}`,
-        { observe: 'body' }
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, `/templates/${longId}`, {
+        observe: 'body',
+      });
     });
   });
 });

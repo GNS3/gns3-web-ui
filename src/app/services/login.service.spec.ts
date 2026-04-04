@@ -122,10 +122,7 @@ describe('LoginService', () => {
 
       await service.getLoggedUser(mockController);
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/users/me'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/users/me');
     });
 
     it('should return Promise that resolves to user data', async () => {
@@ -158,11 +155,7 @@ describe('LoginService', () => {
 
       await service.getLoggedUserRefToken(mockController, currentUser);
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/access/users/authenticate',
-        currentUser
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/access/users/authenticate', currentUser);
     });
 
     it('should return Promise that resolves to AuthResponse', async () => {
@@ -192,11 +185,7 @@ describe('LoginService', () => {
 
       await service.getLoggedUserRefToken(mockController, currentUser);
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/access/users/authenticate',
-        currentUser
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/access/users/authenticate', currentUser);
     });
 
     it('should handle authentication errors', async () => {
@@ -204,9 +193,7 @@ describe('LoginService', () => {
 
       const currentUser = { username: 'test', password: 'wrong' };
 
-      await expect(
-        service.getLoggedUserRefToken(mockController, currentUser)
-      ).rejects.toThrow('Invalid credentials');
+      await expect(service.getLoggedUserRefToken(mockController, currentUser)).rejects.toThrow('Invalid credentials');
     });
   });
 

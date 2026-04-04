@@ -184,7 +184,15 @@ describe('ConfiguratorDialogIouComponent', () => {
       mockNodeService.getNode.mockReturnValue(of(mockNode));
 
       await TestBed.configureTestingModule({
-        imports: [ConfiguratorDialogIouComponent, ReactiveFormsModule, MatDialogModule, MatChipsModule, MatIconModule, MatCheckboxModule, MatTabsModule],
+        imports: [
+          ConfiguratorDialogIouComponent,
+          ReactiveFormsModule,
+          MatDialogModule,
+          MatChipsModule,
+          MatIconModule,
+          MatCheckboxModule,
+          MatTabsModule,
+        ],
         providers: [
           { provide: MatDialogRef, useValue: mockDialogRef },
           { provide: NodeService, useValue: mockNodeService },
@@ -209,7 +217,15 @@ describe('ConfiguratorDialogIouComponent', () => {
 
       await TestBed.resetTestingModule();
       await TestBed.configureTestingModule({
-        imports: [ConfiguratorDialogIouComponent, ReactiveFormsModule, MatDialogModule, MatChipsModule, MatIconModule, MatCheckboxModule, MatTabsModule],
+        imports: [
+          ConfiguratorDialogIouComponent,
+          ReactiveFormsModule,
+          MatDialogModule,
+          MatChipsModule,
+          MatIconModule,
+          MatCheckboxModule,
+          MatTabsModule,
+        ],
         providers: [
           { provide: MatDialogRef, useValue: mockDialogRef },
           { provide: NodeService, useValue: mockNodeService },
@@ -244,7 +260,15 @@ describe('ConfiguratorDialogIouComponent', () => {
 
       await TestBed.resetTestingModule();
       await TestBed.configureTestingModule({
-        imports: [ConfiguratorDialogIouComponent, ReactiveFormsModule, MatDialogModule, MatChipsModule, MatIconModule, MatCheckboxModule, MatTabsModule],
+        imports: [
+          ConfiguratorDialogIouComponent,
+          ReactiveFormsModule,
+          MatDialogModule,
+          MatChipsModule,
+          MatIconModule,
+          MatCheckboxModule,
+          MatTabsModule,
+        ],
         providers: [
           { provide: MatDialogRef, useValue: mockDialogRef },
           { provide: NodeService, useValue: mockNodeService },
@@ -300,7 +324,15 @@ describe('ConfiguratorDialogIouComponent', () => {
 
       await TestBed.resetTestingModule();
       await TestBed.configureTestingModule({
-        imports: [ConfiguratorDialogIouComponent, ReactiveFormsModule, MatDialogModule, MatChipsModule, MatIconModule, MatCheckboxModule, MatTabsModule],
+        imports: [
+          ConfiguratorDialogIouComponent,
+          ReactiveFormsModule,
+          MatDialogModule,
+          MatChipsModule,
+          MatIconModule,
+          MatCheckboxModule,
+          MatTabsModule,
+        ],
         providers: [
           { provide: MatDialogRef, useValue: mockDialogRef },
           { provide: NodeService, useValue: mockNodeService },

@@ -25,7 +25,7 @@ describe('ProjectsFilter', () => {
       show_grid: true,
       snap_to_grid: true,
       variables: [],
-    }) as Project;
+    } as Project);
 
   const createMockProjectDataSource = (projects: Project[]) => {
     const mockDatabase = {
@@ -51,28 +51,19 @@ describe('ProjectsFilter', () => {
     });
 
     it('should return items when searchText is null', () => {
-      const mockDataSource = createMockProjectDataSource([
-        mockProject('project1.gns3'),
-        mockProject('project2.gns3'),
-      ]);
+      const mockDataSource = createMockProjectDataSource([mockProject('project1.gns3'), mockProject('project2.gns3')]);
       const result = pipe.transform(mockDataSource, null as any);
       expect(result).toBe(mockDataSource);
     });
 
     it('should return items when searchText is undefined', () => {
-      const mockDataSource = createMockProjectDataSource([
-        mockProject('project1.gns3'),
-        mockProject('project2.gns3'),
-      ]);
+      const mockDataSource = createMockProjectDataSource([mockProject('project1.gns3'), mockProject('project2.gns3')]);
       const result = pipe.transform(mockDataSource, undefined as any);
       expect(result).toBe(mockDataSource);
     });
 
     it('should return items when searchText is empty string', () => {
-      const mockDataSource = createMockProjectDataSource([
-        mockProject('project1.gns3'),
-        mockProject('project2.gns3'),
-      ]);
+      const mockDataSource = createMockProjectDataSource([mockProject('project1.gns3'), mockProject('project2.gns3')]);
       const result = pipe.transform(mockDataSource, '');
       expect(result).toBe(mockDataSource);
     });
@@ -93,10 +84,7 @@ describe('ProjectsFilter', () => {
     });
 
     it('should return empty array when no projects match', () => {
-      const projects = [
-        mockProject('project1.gns3'),
-        mockProject('project2.gns3'),
-      ];
+      const projects = [mockProject('project1.gns3'), mockProject('project2.gns3')];
       const mockDataSource = createMockProjectDataSource(projects);
 
       const result = pipe.transform(mockDataSource, 'nonexistent');
@@ -105,11 +93,7 @@ describe('ProjectsFilter', () => {
     });
 
     it('should filter projects with partial filename match', () => {
-      const projects = [
-        mockProject('test_project.gns3'),
-        mockProject('other.gns3'),
-        mockProject('my_test_file.gns3'),
-      ];
+      const projects = [mockProject('test_project.gns3'), mockProject('other.gns3'), mockProject('my_test_file.gns3')];
       const mockDataSource = createMockProjectDataSource(projects);
 
       const result = pipe.transform(mockDataSource, 'test');

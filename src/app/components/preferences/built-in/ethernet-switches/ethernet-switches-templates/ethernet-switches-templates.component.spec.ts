@@ -31,13 +31,9 @@ describe('EthernetSwitchesTemplatesComponent', () => {
       port: 3080,
       protocol: 'http:',
       status: 'running',
-    }) as Controller;
+    } as Controller);
 
-  const createMockEthernetSwitchTemplate = (
-    id: string,
-    name: string,
-    builtin = false
-  ): EthernetSwitchTemplate =>
+  const createMockEthernetSwitchTemplate = (id: string, name: string, builtin = false): EthernetSwitchTemplate =>
     ({
       template_id: id,
       name,
@@ -49,7 +45,7 @@ describe('EthernetSwitchesTemplatesComponent', () => {
       compute_id: 'local',
       default_name_format: '{name}',
       ports_mapping: [],
-    }) as EthernetSwitchTemplate;
+    } as EthernetSwitchTemplate);
 
   beforeEach(async () => {
     mockCdr = {

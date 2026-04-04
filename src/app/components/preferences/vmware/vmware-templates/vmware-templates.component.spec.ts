@@ -118,11 +118,7 @@ describe('VmwareTemplatesComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        VmwareTemplatesComponent,
-        DeleteTemplateComponent,
-        EmptyTemplatesListComponent,
-      ],
+      imports: [VmwareTemplatesComponent, DeleteTemplateComponent, EmptyTemplatesListComponent],
       providers: [
         { provide: VmwareService, useValue: mockVmwareService },
         { provide: ControllerService, useValue: mockControllerService },

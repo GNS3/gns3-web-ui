@@ -30,7 +30,7 @@ describe('VpcsTemplatesComponent', () => {
       port: 3080,
       protocol: 'http:',
       status: 'running',
-    }) as Controller;
+    } as Controller);
 
   const createMockVpcsTemplate = (id: string, name: string, builtin = false): VpcsTemplate =>
     ({
@@ -45,7 +45,7 @@ describe('VpcsTemplatesComponent', () => {
       default_name_format: '{name}',
       console_auto_start: false,
       base_script_file: '',
-    }) as VpcsTemplate;
+    } as VpcsTemplate);
 
   beforeEach(async () => {
     mockCdr = {
@@ -83,7 +83,10 @@ describe('VpcsTemplatesComponent', () => {
         { provide: ChangeDetectorRef, useValue: mockCdr },
         { provide: TemplateService, useValue: { deleteTemplate: vi.fn().mockReturnValue(of({})) } },
         { provide: ToasterService, useValue: { success: vi.fn() } },
-        { provide: MatDialog, useValue: { open: vi.fn().mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(true)) }) } },
+        {
+          provide: MatDialog,
+          useValue: { open: vi.fn().mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(true)) }) },
+        },
       ],
     }).compileComponents();
 
@@ -112,10 +115,7 @@ describe('VpcsTemplatesComponent', () => {
 
   describe('getTemplates', () => {
     it('should fetch vpcs templates from service', () => {
-      const templates = [
-        createMockVpcsTemplate('tmpl-1', 'VPCS-1'),
-        createMockVpcsTemplate('tmpl-2', 'VPCS-2'),
-      ];
+      const templates = [createMockVpcsTemplate('tmpl-1', 'VPCS-1'), createMockVpcsTemplate('tmpl-2', 'VPCS-2')];
       mockVpcsService.getTemplates.mockReturnValue(of(templates));
 
       fixture.componentInstance.getTemplates();

@@ -19,7 +19,8 @@ import {
   ViewChildren,
   inject,
   signal,
-  computed, AfterViewInit,
+  computed,
+  AfterViewInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';

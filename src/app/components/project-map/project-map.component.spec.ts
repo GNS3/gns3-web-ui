@@ -418,11 +418,7 @@ describe('ProjectMapComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        CommonModule,
-        RouterModule.forRoot([]),
-        ProjectMapComponent,
-      ],
+      imports: [CommonModule, RouterModule.forRoot([]), ProjectMapComponent],
       providers: [
         { provide: ControllerService, useValue: mockControllerService },
         { provide: ProjectService, useValue: mockProjectService },
@@ -756,7 +752,34 @@ describe('ProjectMapComponent', () => {
 
   describe('Export Project', () => {
     it('should show error when project has VirtualBox machines', () => {
-      const vboxNode = { node_id: 'node1', name: 'VBox', status: 'started', node_type: 'virtualbox', console_host: '', project_id: '', command_line: '', compute_id: '', height: 0, width: 0, x: 0, y: 0, z: 0, port_name_format: '', port_segment_size: 0, first_port_name: '', label: undefined, symbol: '', symbol_url: '', console: 0, console_auto_start: false, console_type: '', locked: false, node_directory: '', ports: [], properties: {} } as unknown as Node;
+      const vboxNode = {
+        node_id: 'node1',
+        name: 'VBox',
+        status: 'started',
+        node_type: 'virtualbox',
+        console_host: '',
+        project_id: '',
+        command_line: '',
+        compute_id: '',
+        height: 0,
+        width: 0,
+        x: 0,
+        y: 0,
+        z: 0,
+        port_name_format: '',
+        port_segment_size: 0,
+        first_port_name: '',
+        label: undefined,
+        symbol: '',
+        symbol_url: '',
+        console: 0,
+        console_auto_start: false,
+        console_type: '',
+        locked: false,
+        node_directory: '',
+        ports: [],
+        properties: {},
+      } as unknown as Node;
       component.nodes = signal<Node[]>([vboxNode]);
 
       component.exportProject();
@@ -765,7 +788,34 @@ describe('ProjectMapComponent', () => {
     });
 
     it('should show error when project has running VPCS nodes', () => {
-      const vpcsNode = { node_id: 'node1', name: 'VPCS', status: 'started', node_type: 'vpcs', console_host: '', project_id: '', command_line: '', compute_id: '', height: 0, width: 0, x: 0, y: 0, z: 0, port_name_format: '', port_segment_size: 0, first_port_name: '', label: undefined, symbol: '', symbol_url: '', console: 0, console_auto_start: false, console_type: '', locked: false, node_directory: '', ports: [], properties: {} } as unknown as Node;
+      const vpcsNode = {
+        node_id: 'node1',
+        name: 'VPCS',
+        status: 'started',
+        node_type: 'vpcs',
+        console_host: '',
+        project_id: '',
+        command_line: '',
+        compute_id: '',
+        height: 0,
+        width: 0,
+        x: 0,
+        y: 0,
+        z: 0,
+        port_name_format: '',
+        port_segment_size: 0,
+        first_port_name: '',
+        label: undefined,
+        symbol: '',
+        symbol_url: '',
+        console: 0,
+        console_auto_start: false,
+        console_type: '',
+        locked: false,
+        node_directory: '',
+        ports: [],
+        properties: {},
+      } as unknown as Node;
       component.nodes = signal<Node[]>([vpcsNode]);
 
       component.exportProject();

@@ -41,41 +41,40 @@ describe('AddVirtualBoxTemplateComponent', () => {
       username: '',
       password: '',
       tokenExpired: false,
-    }) as Controller;
+    } as Controller);
 
   const createMockVirtualBoxVm = (): VirtualBoxVm =>
     ({
       ram: 1024,
       vmname: 'TestVM',
-    }) as VirtualBoxVm;
+    } as VirtualBoxVm);
 
-  const createMockVirtualBoxTemplate = (): VirtualBoxTemplate =>
-    ({
-      adapter_type: 'Intel PRO/1000 MT Desktop (82540EM)',
-      adapters: 1,
-      builtin: false,
-      category: 'guest',
-      compute_id: 'local',
-      console_auto_start: false,
-      console_type: 'none',
-      custom_adapters: [],
-      default_name_format: '{name}-{0}',
-      first_port_name: '',
-      headless: false,
-      linked_clone: false,
-      name: '',
-      on_close: 'power_off',
-      port_name_format: 'Ethernet{0}',
-      port_segment_size: 0,
-      ram: 0,
-      symbol: 'vbox_guest',
-      template_id: '',
-      template_type: 'virtualbox',
-      usage: '',
-      use_any_adapter: false,
-      vmname: '',
-      tags: [],
-    });
+  const createMockVirtualBoxTemplate = (): VirtualBoxTemplate => ({
+    adapter_type: 'Intel PRO/1000 MT Desktop (82540EM)',
+    adapters: 1,
+    builtin: false,
+    category: 'guest',
+    compute_id: 'local',
+    console_auto_start: false,
+    console_type: 'none',
+    custom_adapters: [],
+    default_name_format: '{name}-{0}',
+    first_port_name: '',
+    headless: false,
+    linked_clone: false,
+    name: '',
+    on_close: 'power_off',
+    port_name_format: 'Ethernet{0}',
+    port_segment_size: 0,
+    ram: 0,
+    symbol: 'vbox_guest',
+    template_id: '',
+    template_type: 'virtualbox',
+    usage: '',
+    use_any_adapter: false,
+    vmname: '',
+    tags: [],
+  });
 
   beforeEach(async () => {
     mockController = createMockController();

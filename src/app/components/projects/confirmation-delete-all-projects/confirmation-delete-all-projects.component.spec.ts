@@ -31,11 +31,7 @@ describe('ConfirmationDeleteAllProjectsComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        ConfirmationDeleteAllProjectsComponent,
-        MatDialogModule,
-        NoopAnimationsModule,
-      ],
+      imports: [ConfirmationDeleteAllProjectsComponent, MatDialogModule, NoopAnimationsModule],
       providers: [
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
         { provide: MatDialogRef, useValue: { close: vi.fn() } },
@@ -56,9 +52,7 @@ describe('ConfirmationDeleteAllProjectsComponent', () => {
     it('should display confirmation dialog with project list', () => {
       const compiled = fixture.nativeElement as HTMLElement;
 
-      expect(compiled.querySelector('h1[mat-dialog-title]')?.textContent).toContain(
-        'Do you want delete all projects?'
-      );
+      expect(compiled.querySelector('h1[mat-dialog-title]')?.textContent).toContain('Do you want delete all projects?');
       expect(compiled.querySelectorAll('p')[1]?.textContent).toContain('project1.gns3');
       expect(compiled.querySelectorAll('p')[2]?.textContent).toContain('project2.gns3');
     });

@@ -121,11 +121,7 @@ describe('VpcsTemplateDetailsComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        VpcsTemplateDetailsComponent,
-        MatDialogModule,
-        RouterModule,
-      ],
+      imports: [VpcsTemplateDetailsComponent, MatDialogModule, RouterModule],
       providers: [
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: ControllerService, useValue: mockControllerService },

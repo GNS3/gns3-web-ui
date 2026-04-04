@@ -2,10 +2,7 @@ import '@angular/compiler';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideZonelessChangeDetection } from '@angular/core';
-import {
-  ToolDetailsDialogComponent,
-  ToolDetailsDialogData,
-} from './tool-details-dialog.component';
+import { ToolDetailsDialogComponent, ToolDetailsDialogData } from './tool-details-dialog.component';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { ToolCall } from '@models/ai-chat.interface';
@@ -222,7 +219,10 @@ describe('ToolDetailsDialogComponent', () => {
       providers: [
         provideZonelessChangeDetection(),
         { provide: MatDialogRef, useValue: mockDialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: { type: 'tool_result', toolName: 'test_tool', toolOutput: outputObject } },
+        {
+          provide: MAT_DIALOG_DATA,
+          useValue: { type: 'tool_result', toolName: 'test_tool', toolOutput: outputObject },
+        },
       ],
     }).compileComponents();
 

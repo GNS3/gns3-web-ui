@@ -16,14 +16,11 @@ describe('ProjectWebServiceHandler', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let mockDrawingsDataSource: Record<string, any>;
 
-  const createMockNode = (id = 'node-1'): Node =>
-    ({ node_id: id, name: 'Test Node' } as Node);
+  const createMockNode = (id = 'node-1'): Node => ({ node_id: id, name: 'Test Node' } as Node);
 
-  const createMockLink = (id = 'link-1'): Link =>
-    ({ link_id: id } as Link);
+  const createMockLink = (id = 'link-1'): Link => ({ link_id: id } as Link);
 
-  const createMockDrawing = (id = 'drawing-1'): Drawing =>
-    ({ drawing_id: id } as Drawing);
+  const createMockDrawing = (id = 'drawing-1'): Drawing => ({ drawing_id: id } as Drawing);
 
   beforeEach(() => {
     vi.clearAllMocks();

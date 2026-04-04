@@ -26,22 +26,14 @@ describe('DataSourceFilter', () => {
     describe('should filter items by name (case-insensitive)', () => {
       it('should return matching items', () => {
         const items = {
-          filteredData: [
-            { name: 'Server1' },
-            { name: 'Server2' },
-            { name: 'Database' },
-          ],
+          filteredData: [{ name: 'Server1' }, { name: 'Server2' }, { name: 'Database' }],
         };
         expect(pipe.transform(items, 'server')).toEqual([{ name: 'Server1' }, { name: 'Server2' }]);
       });
 
       it('should be case-insensitive', () => {
         const items = {
-          filteredData: [
-            { name: 'SERVER1' },
-            { name: 'server2' },
-            { name: 'Server3' },
-          ],
+          filteredData: [{ name: 'SERVER1' }, { name: 'server2' }, { name: 'Server3' }],
         };
         expect(pipe.transform(items, 'Server')).toHaveLength(3);
       });
@@ -55,11 +47,7 @@ describe('DataSourceFilter', () => {
 
       it('should filter partial matches', () => {
         const items = {
-          filteredData: [
-            { name: 'MySQL Server' },
-            { name: 'MySQL Database' },
-            { name: 'PostgreSQL' },
-          ],
+          filteredData: [{ name: 'MySQL Server' }, { name: 'MySQL Database' }, { name: 'PostgreSQL' }],
         };
         expect(pipe.transform(items, 'MySQL')).toHaveLength(2);
       });

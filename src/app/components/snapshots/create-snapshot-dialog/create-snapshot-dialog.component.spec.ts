@@ -33,7 +33,7 @@ describe('CreateSnapshotDialogComponent', () => {
       username: '',
       password: '',
       tokenExpired: false,
-    }) as Controller;
+    } as Controller);
 
   const createMockProject = (): Project =>
     ({
@@ -56,7 +56,7 @@ describe('CreateSnapshotDialogComponent', () => {
       variables: [],
       path: '/path/to/project',
       readonly: false,
-    }) as Project;
+    } as Project);
 
   const createComponent = () => {
     fixture = TestBed.createComponent(CreateSnapshotDialogComponent);

@@ -183,14 +183,7 @@ describe('StyleEditorDialogComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        MatDialogModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
-        MatOptionModule,
-        MatButtonModule,
-      ],
+      imports: [MatDialogModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatOptionModule, MatButtonModule],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: DrawingService, useValue: mockDrawingService },

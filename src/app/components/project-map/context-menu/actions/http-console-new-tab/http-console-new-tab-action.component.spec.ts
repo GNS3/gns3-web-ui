@@ -138,12 +138,7 @@ describe('HttpConsoleNewTabActionComponent', () => {
     });
 
     await TestBed.configureTestingModule({
-      imports: [
-        HttpConsoleNewTabActionComponent,
-        MatButtonModule,
-        MatIconModule,
-        MatMenuModule,
-      ],
+      imports: [HttpConsoleNewTabActionComponent, MatButtonModule, MatIconModule, MatMenuModule],
       providers: [
         { provide: NodeConsoleService, useValue: mockNodeConsoleService },
         { provide: VncConsoleService, useValue: mockVncConsoleService },
@@ -406,7 +401,13 @@ describe('HttpConsoleNewTabActionComponent', () => {
       });
 
       it('should handle mixed started and not started nodes', () => {
-        const startedNode = createMockNode({ name: 'StartedNode', console_type: 'http', console_host: '192.168.1.50', console: 8080, status: 'started' });
+        const startedNode = createMockNode({
+          name: 'StartedNode',
+          console_type: 'http',
+          console_host: '192.168.1.50',
+          console: 8080,
+          status: 'started',
+        });
         const stoppedNode = createMockNode({ name: 'StoppedNode', console_type: 'http', status: 'stopped' });
         fixture.componentRef.setInput('nodes', [startedNode, stoppedNode]);
         fixture.componentRef.setInput('controller', mockController);
@@ -432,7 +433,12 @@ describe('HttpConsoleNewTabActionComponent', () => {
     });
 
     it('should call openConsole when button is clicked', () => {
-      const node = createMockNode({ console_type: 'http', console_host: '192.168.1.50', console: 8080, status: 'started' });
+      const node = createMockNode({
+        console_type: 'http',
+        console_host: '192.168.1.50',
+        console: 8080,
+        status: 'started',
+      });
       fixture.componentRef.setInput('nodes', [node]);
       fixture.componentRef.setInput('controller', mockController);
       fixture.detectChanges();

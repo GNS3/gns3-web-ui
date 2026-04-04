@@ -16,7 +16,11 @@ const mockSymbolService = {
 };
 
 const mockDialog = {
-  open: vi.fn().mockReturnValue({ afterClosed: vi.fn().mockReturnValue({ subscribe: (cb: (result: boolean) => void) => cb(true) }) }),
+  open: vi
+    .fn()
+    .mockReturnValue({
+      afterClosed: vi.fn().mockReturnValue({ subscribe: (cb: (result: boolean) => void) => cb(true) }),
+    }),
 };
 
 const mockDialogConfigService = {

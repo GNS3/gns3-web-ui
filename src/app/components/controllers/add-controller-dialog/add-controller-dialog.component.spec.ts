@@ -223,14 +223,14 @@ describe('AddControllerDialogComponent', () => {
       component.onAddClick();
 
       expect(component.duplicateNameError).toBe('Controller with name "Existing Controller" already exists');
-      expect(mockToasterService.error).toHaveBeenCalledWith('Controller with name "Existing Controller" already exists');
+      expect(mockToasterService.error).toHaveBeenCalledWith(
+        'Controller with name "Existing Controller" already exists'
+      );
       expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
 
     it('should clear duplicateNameError on subsequent valid add attempt', () => {
-      mockControllerService.isControllerNameTaken
-        .mockReturnValueOnce(true)
-        .mockReturnValueOnce(false);
+      mockControllerService.isControllerNameTaken.mockReturnValueOnce(true).mockReturnValueOnce(false);
       mockControllerService.checkControllerVersion.mockReturnValue(of({ version: '3.0.0' }));
 
       component.controllerForm.patchValue({
@@ -260,9 +260,7 @@ describe('AddControllerDialogComponent', () => {
     });
 
     it('should close dialog with controller on successful version check', () => {
-      mockControllerService.checkControllerVersion.mockReturnValue(
-        of({ version: '3.0.0' })
-      );
+      mockControllerService.checkControllerVersion.mockReturnValue(of({ version: '3.0.0' }));
 
       component.onAddClick();
 
@@ -271,9 +269,7 @@ describe('AddControllerDialogComponent', () => {
     });
 
     it('should set connectionError on unsupported version', () => {
-      mockControllerService.checkControllerVersion.mockReturnValue(
-        of({ version: '2.0.0' })
-      );
+      mockControllerService.checkControllerVersion.mockReturnValue(of({ version: '2.0.0' }));
 
       component.onAddClick();
 
@@ -283,9 +279,7 @@ describe('AddControllerDialogComponent', () => {
     });
 
     it('should close dialog if version starts with 3 or higher', () => {
-      mockControllerService.checkControllerVersion.mockReturnValue(
-        of({ version: '3.1.0' })
-      );
+      mockControllerService.checkControllerVersion.mockReturnValue(of({ version: '3.1.0' }));
 
       component.onAddClick();
 
@@ -303,9 +297,7 @@ describe('AddControllerDialogComponent', () => {
     });
 
     it('should set connectionError when controller is offline', () => {
-      mockControllerService.checkControllerVersion.mockReturnValue(
-        throwError(() => new Error('Network error'))
-      );
+      mockControllerService.checkControllerVersion.mockReturnValue(throwError(() => new Error('Network error')));
 
       component.onAddClick();
 
@@ -315,9 +307,7 @@ describe('AddControllerDialogComponent', () => {
     });
 
     it('should set isCheckingConnection to true during check and false after', () => {
-      mockControllerService.checkControllerVersion.mockReturnValue(
-        throwError(() => new Error('Network error'))
-      );
+      mockControllerService.checkControllerVersion.mockReturnValue(throwError(() => new Error('Network error')));
 
       component.onAddClick();
 

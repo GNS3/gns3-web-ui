@@ -22,7 +22,7 @@ describe('IsolateNodeActionComponent', () => {
       name: 'Test Node',
       status: 'started',
       ...overrides,
-    }) as Node;
+    } as Node);
 
   beforeEach(async () => {
     mockNodeService = {

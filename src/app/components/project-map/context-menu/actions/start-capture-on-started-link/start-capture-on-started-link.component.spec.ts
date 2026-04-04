@@ -116,12 +116,7 @@ describe('StartCaptureOnStartedLinkActionComponent', () => {
       fixture.nativeElement.querySelector('button').click();
       fixture.detectChanges();
 
-      expect(mockPacketCaptureService.startCapture).toHaveBeenCalledWith(
-        mockController,
-        mockProject,
-        mockLink,
-        'test'
-      );
+      expect(mockPacketCaptureService.startCapture).toHaveBeenCalledWith(mockController, mockProject, mockLink, 'test');
     });
 
     it('should handle capture file names with multiple dots', () => {
@@ -137,12 +132,7 @@ describe('StartCaptureOnStartedLinkActionComponent', () => {
       fixture.nativeElement.querySelector('button').click();
       fixture.detectChanges();
 
-      expect(mockPacketCaptureService.startCapture).toHaveBeenCalledWith(
-        mockController,
-        mockProject,
-        mockLink,
-        'my'
-      );
+      expect(mockPacketCaptureService.startCapture).toHaveBeenCalledWith(mockController, mockProject, mockLink, 'my');
     });
   });
 });

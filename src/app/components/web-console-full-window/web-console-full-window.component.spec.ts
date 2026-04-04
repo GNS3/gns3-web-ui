@@ -29,20 +29,20 @@ let mockFitAddonInstance: ReturnType<typeof createMockFitAddonInstance>;
 
 // Mock xterm.js before importing component
 vi.mock('@xterm/xterm', () => ({
-  Terminal: vi.fn().mockImplementation(function() {
+  Terminal: vi.fn().mockImplementation(function () {
     mockTermInstance = createMockTermInstance();
     return mockTermInstance;
   }),
 }));
 
 vi.mock('@xterm/addon-attach', () => ({
-  AttachAddon: vi.fn().mockImplementation(function() {
+  AttachAddon: vi.fn().mockImplementation(function () {
     return {};
   }),
 }));
 
 vi.mock('@xterm/addon-fit', () => ({
-  FitAddon: vi.fn().mockImplementation(function() {
+  FitAddon: vi.fn().mockImplementation(function () {
     mockFitAddonInstance = createMockFitAddonInstance();
     return mockFitAddonInstance;
   }),
@@ -166,9 +166,12 @@ describe('WebConsoleFullWindowComponent', () => {
       onclose: null,
       readyState: 1,
     };
-    vi.stubGlobal('WebSocket', vi.fn().mockImplementation(function() {
-      return mockWebSocketInstance;
-    }));
+    vi.stubGlobal(
+      'WebSocket',
+      vi.fn().mockImplementation(function () {
+        return mockWebSocketInstance;
+      })
+    );
 
     // Store references to subjects for cleanup
     consoleResizedSubject = mockNodeConsoleService.consoleResized;

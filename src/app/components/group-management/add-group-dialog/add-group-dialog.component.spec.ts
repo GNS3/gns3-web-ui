@@ -25,27 +25,25 @@ describe('AddGroupDialogComponent', () => {
   let mockController: Controller;
   let mockUsers: User[];
 
-  const createMockUser = (userId: string, username: string, email: string): User =>
-    ({
-      created_at: '2024-01-01',
-      email,
-      full_name: username,
-      last_login: '2024-01-01',
-      is_active: true,
-      is_superadmin: false,
-      updated_at: '2024-01-01',
-      user_id: userId,
-      username,
-    });
+  const createMockUser = (userId: string, username: string, email: string): User => ({
+    created_at: '2024-01-01',
+    email,
+    full_name: username,
+    last_login: '2024-01-01',
+    is_active: true,
+    is_superadmin: false,
+    updated_at: '2024-01-01',
+    user_id: userId,
+    username,
+  });
 
-  const createMockGroup = (userGroupId: string, name: string): Group =>
-    ({
-      name,
-      created_at: '2024-01-01',
-      updated_at: '2024-01-01',
-      user_group_id: userGroupId,
-      is_builtin: false,
-    });
+  const createMockGroup = (userGroupId: string, name: string): Group => ({
+    name,
+    created_at: '2024-01-01',
+    updated_at: '2024-01-01',
+    user_group_id: userGroupId,
+    is_builtin: false,
+  });
 
   const createMockController = (): Controller =>
     ({
@@ -62,7 +60,7 @@ describe('AddGroupDialogComponent', () => {
       username: '',
       password: '',
       tokenExpired: false,
-    }) as Controller;
+    } as Controller);
 
   beforeEach(async () => {
     mockUsers = [
@@ -98,11 +96,7 @@ describe('AddGroupDialogComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        AddGroupDialogComponent,
-        MatDialogModule,
-        ReactiveFormsModule,
-      ],
+      imports: [AddGroupDialogComponent, MatDialogModule, ReactiveFormsModule],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: { controller: mockController } },

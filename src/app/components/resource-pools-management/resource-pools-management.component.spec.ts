@@ -18,22 +18,21 @@ const createMockResourcePool = (id: string, name: string): ResourcePool => ({
   resource_pool_id: id,
 });
 
-const createMockController = (): Controller =>
-  ({
-    authToken: 'test-token',
-    id: 1,
-    name: 'Test Controller',
-    location: 'local' as const,
-    host: '127.0.0.1',
-    port: 3080,
-    path: '/',
-    ubridge_path: '/usr/local/bin/ubridge',
-    status: 'running' as const,
-    protocol: 'http:' as const,
-    username: 'admin',
-    password: 'admin',
-    tokenExpired: false,
-  });
+const createMockController = (): Controller => ({
+  authToken: 'test-token',
+  id: 1,
+  name: 'Test Controller',
+  location: 'local' as const,
+  host: '127.0.0.1',
+  port: 3080,
+  path: '/',
+  ubridge_path: '/usr/local/bin/ubridge',
+  status: 'running' as const,
+  protocol: 'http:' as const,
+  username: 'admin',
+  password: 'admin',
+  tokenExpired: false,
+});
 
 describe('ResourcePoolsManagementComponent', () => {
   let component: ResourcePoolsManagementComponent;

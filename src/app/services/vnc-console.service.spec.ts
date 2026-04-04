@@ -134,9 +134,7 @@ describe('VncConsoleService', () => {
       service.openVncConsole(mockController, mockNode, false);
 
       expect(window.open).not.toHaveBeenCalled();
-      expect(mockToasterService.error).toHaveBeenCalledWith(
-        'Node must be started before opening console',
-      );
+      expect(mockToasterService.error).toHaveBeenCalledWith('Node must be started before opening console');
     });
 
     it('should show error for non-vnc console type', () => {
@@ -145,9 +143,7 @@ describe('VncConsoleService', () => {
       service.openVncConsole(mockController, mockNode, false);
 
       expect(window.open).not.toHaveBeenCalled();
-      expect(mockToasterService.error).toHaveBeenCalledWith(
-        'Node console type is telnet, not vnc',
-      );
+      expect(mockToasterService.error).toHaveBeenCalledWith('Node console type is telnet, not vnc');
     });
 
     it('should open in new tab when inNewTab is true', () => {
@@ -162,12 +158,12 @@ describe('VncConsoleService', () => {
       expect(window.open).toHaveBeenCalledWith(
         expect.any(String),
         'VNC-Test VNC Node',
-        expect.stringContaining('width=1034'),
+        expect.stringContaining('width=1034')
       );
       expect(window.open).toHaveBeenCalledWith(
         expect.any(String),
         'VNC-Test VNC Node',
-        expect.stringContaining('height=778'),
+        expect.stringContaining('height=778')
       );
     });
 
@@ -181,12 +177,12 @@ describe('VncConsoleService', () => {
       expect(window.open).toHaveBeenCalledWith(
         expect.any(String),
         'VNC-Test VNC Node',
-        expect.stringContaining('width=1290'),
+        expect.stringContaining('width=1290')
       );
       expect(window.open).toHaveBeenCalledWith(
         expect.any(String),
         'VNC-Test VNC Node',
-        expect.stringContaining('height=730'),
+        expect.stringContaining('height=730')
       );
     });
 
@@ -215,9 +211,7 @@ describe('VncConsoleService', () => {
 
       service.openVncConsole(mockController, mockNode, false);
 
-      expect(mockToasterService.error).toHaveBeenCalledWith(
-        'Popup was blocked. Please allow popups for this site.',
-      );
+      expect(mockToasterService.error).toHaveBeenCalledWith('Popup was blocked. Please allow popups for this site.');
     });
 
     it('should handle errors gracefully', () => {
@@ -227,9 +221,7 @@ describe('VncConsoleService', () => {
 
       service.openVncConsole(mockController, mockNode, false);
 
-      expect(mockToasterService.error).toHaveBeenCalledWith(
-        'Failed to open VNC console: Test error',
-      );
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to open VNC console: Test error');
     });
   });
 });

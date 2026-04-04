@@ -164,16 +164,14 @@ describe('EditNetworkConfigurationDialogComponent', () => {
       expect(mockNodeService.saveNetworkConfiguration).toHaveBeenCalledWith(
         mockController,
         mockNode,
-        mockConfiguration,
+        mockConfiguration
       );
     });
 
     it('should show success toast with node name after saving', () => {
       component.onSaveClick();
 
-      expect(mockToasterService.success).toHaveBeenCalledWith(
-        `Configuration for node ${mockNode.name} saved.`,
-      );
+      expect(mockToasterService.success).toHaveBeenCalledWith(`Configuration for node ${mockNode.name} saved.`);
     });
 
     it('should close the dialog after saving', () => {

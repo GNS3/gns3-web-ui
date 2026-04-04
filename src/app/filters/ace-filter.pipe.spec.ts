@@ -154,9 +154,7 @@ describe('AceFilterPipe', () => {
     });
 
     it('should handle case-insensitive search', () => {
-      const aces = [
-        createMockACE({ ace_id: 'ace-1', user_id: 'user-1' }),
-      ];
+      const aces = [createMockACE({ ace_id: 'ace-1', user_id: 'user-1' })];
       const dataSource = new MatTableDataSource<ACE>(aces);
 
       const result = pipe.transform(dataSource, 'user one', endpoints) as ACE[];

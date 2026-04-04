@@ -69,7 +69,7 @@ describe('LogConsoleComponent', () => {
       locked: false,
       node_directory: '',
       ports: [],
-    }) as Node;
+    } as Node);
 
   beforeEach(async () => {
     consoleResizeSubject = new Subject<any>();

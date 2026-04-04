@@ -244,7 +244,7 @@ describe('ExportPortableProjectComponent', () => {
           include_base_image: true,
           include_snapshots: false,
           reset_mac_address: true,
-        }),
+        })
       );
     });
 
@@ -273,7 +273,7 @@ describe('ExportPortableProjectComponent', () => {
         mockProject.project_id,
         expect.objectContaining({
           compression: 'zstd',
-        }),
+        })
       );
     });
 
@@ -293,7 +293,7 @@ describe('ExportPortableProjectComponent', () => {
         mockProject.project_id,
         expect.objectContaining({
           compression: 'zstd',
-        }),
+        })
       );
     });
   });

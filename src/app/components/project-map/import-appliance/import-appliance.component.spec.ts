@@ -334,7 +334,9 @@ describe('ImportApplianceComponent', () => {
     it('should construct correct upload URL', () => {
       const result = component['getUploadPath'](mockController, 'test-image.img');
 
-      expect(result).toBe(`${mockController.protocol}//${mockController.host}:${mockController.port}/v3/images/upload/test-image.img`);
+      expect(result).toBe(
+        `${mockController.protocol}//${mockController.host}:${mockController.port}/v3/images/upload/test-image.img`
+      );
     });
   });
 });

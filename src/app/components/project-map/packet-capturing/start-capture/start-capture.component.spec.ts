@@ -43,7 +43,7 @@ describe('StartCaptureDialogComponent', () => {
       username: '',
       password: '',
       tokenExpired: false,
-    }) as Controller;
+    } as Controller);
 
   const createMockProject = (): Project =>
     ({
@@ -66,7 +66,7 @@ describe('StartCaptureDialogComponent', () => {
       variables: [],
       path: '/path/to/project',
       readonly: false,
-    }) as Project;
+    } as Project);
 
   const createMockNode = (name: string, ports: any[]): Node =>
     ({
@@ -74,7 +74,7 @@ describe('StartCaptureDialogComponent', () => {
       ports,
       status: 'started',
       node_id: `node-${name}`,
-    }) as unknown as Node;
+    } as unknown as Node);
 
   const createMockLinkNode = (nodeId: string, portNumber: number): LinkNode =>
     ({
@@ -82,7 +82,7 @@ describe('StartCaptureDialogComponent', () => {
       adapter_number: 0,
       port_number: portNumber,
       label: { text: '' },
-    }) as LinkNode;
+    } as LinkNode);
 
   const createMockLink = (linkType: string, linkNodes: LinkNode[]): Link =>
     ({
@@ -100,7 +100,7 @@ describe('StartCaptureDialogComponent', () => {
       target: null as unknown as Node,
       x: 0,
       y: 0,
-    }) as Link;
+    } as Link);
 
   beforeEach(async () => {
     mockDialogRef = {
@@ -131,9 +131,7 @@ describe('StartCaptureDialogComponent', () => {
     const defaultDstNode = createMockNode('DefaultDst', [{ name: 'Eth0/0' }]);
 
     mockNodesDataSource = {
-      get: vi.fn()
-        .mockReturnValueOnce(defaultSrcNode)
-        .mockReturnValueOnce(defaultDstNode),
+      get: vi.fn().mockReturnValueOnce(defaultSrcNode).mockReturnValueOnce(defaultDstNode),
     };
 
     await TestBed.configureTestingModule({
@@ -280,11 +278,10 @@ describe('StartCaptureDialogComponent', () => {
 
       fixture.componentInstance.onYesClick();
 
-      expect(mockLinkService.startCaptureOnLink).toHaveBeenCalledWith(
-        mockController,
-        link,
-        { capture_file_name: 'test_capture', data_link_type: 'DLT_EN10MB' },
-      );
+      expect(mockLinkService.startCaptureOnLink).toHaveBeenCalledWith(mockController, link, {
+        capture_file_name: 'test_capture',
+        data_link_type: 'DLT_EN10MB',
+      });
       expect(mockDialogRef.close).toHaveBeenCalled();
     });
 
@@ -298,7 +295,7 @@ describe('StartCaptureDialogComponent', () => {
       fixture.componentInstance.onYesClick();
 
       expect(mockToasterService.error).toHaveBeenCalledWith(
-        'Cannot capture because there is no running device on this link',
+        'Cannot capture because there is no running device on this link'
       );
       expect(mockLinkService.startCaptureOnLink).not.toHaveBeenCalled();
       expect(mockDialogRef.close).not.toHaveBeenCalled();
@@ -332,7 +329,7 @@ describe('StartCaptureDialogComponent', () => {
         mockController,
         mockProject,
         link,
-        'test_capture',
+        'test_capture'
       );
     });
 

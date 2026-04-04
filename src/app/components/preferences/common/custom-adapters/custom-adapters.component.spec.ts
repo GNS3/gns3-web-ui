@@ -1,7 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ToasterService } from '@services/toaster.service';
-import { CustomAdaptersComponent, CustomAdaptersDialogData, CustomAdaptersDialogResult, NetworkType } from './custom-adapters.component';
+import {
+  CustomAdaptersComponent,
+  CustomAdaptersDialogData,
+  CustomAdaptersDialogResult,
+  NetworkType,
+} from './custom-adapters.component';
 import { CustomAdapter } from '@models/qemu/qemu-custom-adapter';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
@@ -149,9 +154,7 @@ describe('CustomAdaptersComponent', () => {
     });
 
     it('should continue numbering after highest existing adapter_number', () => {
-      const existingAdapters: CustomAdapter[] = [
-        { adapter_number: 5, adapter_type: 'e1000', port_name: 'eth5' },
-      ];
+      const existingAdapters: CustomAdapter[] = [{ adapter_number: 5, adapter_type: 'e1000', port_name: 'eth5' }];
       createComponent(createMockData({ adapters: existingAdapters }));
       component.onAdd();
 
@@ -301,7 +304,9 @@ describe('CustomAdaptersComponent', () => {
 
       it('should return invalid format for valid length but wrong format', () => {
         createComponent(createMockData());
-        expect(component.getMacErrorMessage('aabbccddeeff')).toBe('Invalid MAC address format (12 hex digits required)');
+        expect(component.getMacErrorMessage('aabbccddeeff')).toBe(
+          'Invalid MAC address format (12 hex digits required)'
+        );
       });
     });
   });

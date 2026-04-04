@@ -134,13 +134,7 @@ describe('ShowNodeActionComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        ShowNodeActionComponent,
-        MatDialogModule,
-        MatButtonModule,
-        MatIconModule,
-        MatMenuModule,
-      ],
+      imports: [ShowNodeActionComponent, MatDialogModule, MatButtonModule, MatIconModule, MatMenuModule],
       providers: [{ provide: MatDialog, useValue: mockDialog }],
     }).compileComponents();
 

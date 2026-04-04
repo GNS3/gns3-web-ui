@@ -109,13 +109,7 @@ describe('DeleteActionComponent', () => {
     } as any;
 
     await TestBed.configureTestingModule({
-      imports: [
-        DeleteActionComponent,
-        MatButtonModule,
-        MatIconModule,
-        MatMenuModule,
-        MatBottomSheetModule,
-      ],
+      imports: [DeleteActionComponent, MatButtonModule, MatIconModule, MatMenuModule, MatBottomSheetModule],
       providers: [
         { provide: MatBottomSheet, useValue: mockBottomSheet },
         { provide: NodesDataSource, useValue: mockNodesDataSource },

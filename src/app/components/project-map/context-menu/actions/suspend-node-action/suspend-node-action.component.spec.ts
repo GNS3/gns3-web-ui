@@ -19,7 +19,7 @@ describe('SuspendNodeActionComponent', () => {
       name: 'Test Node',
       status: 'started',
       ...overrides,
-    }) as Node;
+    } as Node);
 
   beforeEach(async () => {
     mockNodeService = {
@@ -121,10 +121,7 @@ describe('SuspendNodeActionComponent', () => {
 
   describe('suspendNodes', () => {
     it('should call nodeService.suspend for each node', () => {
-      const nodes = [
-        createMockNode({ node_id: 'node-1' }),
-        createMockNode({ node_id: 'node-2' }),
-      ];
+      const nodes = [createMockNode({ node_id: 'node-1' }), createMockNode({ node_id: 'node-2' })];
       fixture.componentRef.setInput('nodes', nodes);
       fixture.componentRef.setInput('controller', mockController);
       fixture.detectChanges();

@@ -62,16 +62,11 @@ describe('GroupService', () => {
 
       service.getGroups(mockController);
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/groups');
     });
 
     it('should return Observable from httpController', () => {
-      const mockGroups: Group[] = [
-        { user_group_id: 'group-1', name: 'Test' } as Group,
-      ];
+      const mockGroups: Group[] = [{ user_group_id: 'group-1', name: 'Test' } as Group];
 
       mockHttpController.get.mockReturnValue(of(mockGroups));
 
@@ -100,16 +95,11 @@ describe('GroupService', () => {
 
       service.getGroupMember(mockController, 'group-123');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups/group-123/members'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/groups/group-123/members');
     });
 
     it('should return Observable of User array', () => {
-      const mockUsers: User[] = [
-        { user_id: 'user-1', username: 'admin' } as User,
-      ];
+      const mockUsers: User[] = [{ user_id: 'user-1', username: 'admin' } as User];
 
       mockHttpController.get.mockReturnValue(of(mockUsers));
 
@@ -124,10 +114,7 @@ describe('GroupService', () => {
       const result = service.getGroupMember(mockController, 'group-empty');
 
       expect(result).toBeInstanceOf(Observable);
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups/group-empty/members'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/groups/group-empty/members');
     });
   });
 
@@ -142,11 +129,7 @@ describe('GroupService', () => {
 
       service.addGroup(mockController, 'New Group');
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups',
-        { name: 'New Group' }
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/access/groups', { name: 'New Group' });
     });
 
     it('should return Observable from httpController', () => {
@@ -183,10 +166,7 @@ describe('GroupService', () => {
 
       service.delete(mockController, 'group-123');
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups/group-123'
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/access/groups/group-123');
     });
 
     it('should return Observable from httpController', () => {
@@ -202,10 +182,7 @@ describe('GroupService', () => {
 
       service.delete(mockController, 'group-todelete');
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups/group-todelete'
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/access/groups/group-todelete');
     });
   });
 
@@ -220,10 +197,7 @@ describe('GroupService', () => {
 
       service.get(mockController, 'group-789');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups/group-789'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/groups/group-789');
     });
 
     it('should return Observable from httpController', () => {
@@ -374,11 +348,9 @@ describe('GroupService', () => {
 
       service.update(mockController, mockGroup);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups/group-789',
-        { name: 'Updated Group' }
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/access/groups/group-789', {
+        name: 'Updated Group',
+      });
     });
 
     it('should return Observable from httpController', () => {
@@ -420,16 +392,11 @@ describe('GroupService', () => {
 
       service.getGroupRole(mockController, 'group-123');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups/group-123/roles'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/groups/group-123/roles');
     });
 
     it('should return Observable of Role array', () => {
-      const mockRoles: Role[] = [
-        { role_id: 'role-1', name: 'Admin' } as Role,
-      ];
+      const mockRoles: Role[] = [{ role_id: 'role-1', name: 'Admin' } as Role];
 
       mockHttpController.get.mockReturnValue(of(mockRoles));
 
@@ -444,10 +411,7 @@ describe('GroupService', () => {
       const result = service.getGroupRole(mockController, 'group-empty');
 
       expect(result).toBeInstanceOf(Observable);
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups/group-empty/roles'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/groups/group-empty/roles');
     });
   });
 
@@ -467,10 +431,7 @@ describe('GroupService', () => {
 
       service.removeRole(mockController, mockGroup, mockRole);
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups/group-123/roles/role-456'
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/access/groups/group-123/roles/role-456');
     });
 
     it('should return Observable from httpController', () => {
@@ -605,15 +566,8 @@ describe('GroupService', () => {
       service.addMemberToGroup(mockController, mockGroup, mockUser);
       service.removeUser(mockController, mockGroup, mockUser);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups/group-1/members/user-1',
-        {}
-      );
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups/group-1/members/user-1'
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/access/groups/group-1/members/user-1', {});
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/access/groups/group-1/members/user-1');
     });
 
     it('should construct correct URL for role operations', () => {
@@ -633,15 +587,8 @@ describe('GroupService', () => {
       service.addRoleToGroup(mockController, mockGroup, mockRole);
       service.removeRole(mockController, mockGroup, mockRole);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups/group-1/roles/role-1',
-        {}
-      );
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups/group-1/roles/role-1'
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/access/groups/group-1/roles/role-1', {});
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/access/groups/group-1/roles/role-1');
     });
   });
 
@@ -651,10 +598,7 @@ describe('GroupService', () => {
 
       service.get(mockController, 'group-with-dash');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups/group-with-dash'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/groups/group-with-dash');
     });
 
     it('should handle special characters in user ID', () => {
@@ -683,10 +627,7 @@ describe('GroupService', () => {
 
       service.get(mockController, '');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups/'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/access/groups/');
     });
 
     it('should handle empty group name', () => {
@@ -699,11 +640,7 @@ describe('GroupService', () => {
 
       service.addGroup(mockController, '');
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups',
-        { name: '' }
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/access/groups', { name: '' });
     });
 
     it('should handle group name with special characters', () => {
@@ -716,11 +653,9 @@ describe('GroupService', () => {
 
       service.addGroup(mockController, 'Test Group (Admin)');
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups',
-        { name: 'Test Group (Admin)' }
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/access/groups', {
+        name: 'Test Group (Admin)',
+      });
     });
 
     it('should handle group name with unicode characters', () => {
@@ -733,11 +668,7 @@ describe('GroupService', () => {
 
       service.addGroup(mockController, 'Admin Group');
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/access/groups',
-        { name: 'Admin Group' }
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/access/groups', { name: 'Admin Group' });
     });
   });
 });

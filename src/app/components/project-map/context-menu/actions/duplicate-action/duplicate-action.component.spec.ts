@@ -32,7 +32,7 @@ describe('DuplicateActionComponent', () => {
       name: 'Test Node',
       status: 'started',
       ...overrides,
-    }) as Node;
+    } as Node);
 
   const createMockDrawing = (overrides: Partial<Drawing> = {}): Drawing =>
     ({
@@ -40,7 +40,7 @@ describe('DuplicateActionComponent', () => {
       project_id: 'proj-1',
       svg: '<svg></svg>',
       ...overrides,
-    }) as Drawing;
+    } as Drawing);
 
   const createMockController = (): Controller =>
     ({
@@ -57,7 +57,7 @@ describe('DuplicateActionComponent', () => {
       username: '',
       password: '',
       tokenExpired: false,
-    }) as Controller;
+    } as Controller);
 
   const createMockProject = (): Project =>
     ({
@@ -79,7 +79,7 @@ describe('DuplicateActionComponent', () => {
       show_grid: true,
       snap_to_grid: true,
       variables: [],
-    }) as Project;
+    } as Project);
 
   beforeEach(async () => {
     mockNodeService = {
@@ -220,7 +220,9 @@ describe('DuplicateActionComponent', () => {
 
         component.duplicate();
 
-        expect(mockToasterService.error).toHaveBeenCalledWith(`Cannot duplicate node ${mockNode.name}: Internal server error`);
+        expect(mockToasterService.error).toHaveBeenCalledWith(
+          `Cannot duplicate node ${mockNode.name}: Internal server error`
+        );
       });
 
       it('should not add node to nodesDataSource on error', () => {

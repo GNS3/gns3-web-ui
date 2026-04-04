@@ -72,7 +72,9 @@ describe('GroupManagementComponent', () => {
     };
 
     mockGroupService = {
-      getGroups: vi.fn().mockReturnValue(of([createMockGroup(), createMockGroup({ user_group_id: 'group-2', name: 'Admin' })])),
+      getGroups: vi
+        .fn()
+        .mockReturnValue(of([createMockGroup(), createMockGroup({ user_group_id: 'group-2', name: 'Admin' })])),
       delete: vi.fn().mockReturnValue(of(null)),
     };
 

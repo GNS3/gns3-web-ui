@@ -345,9 +345,7 @@ describe('ControllerService', () => {
         location: 'remote',
       } as Controller;
 
-      await expect(service.create(controller2)).rejects.toThrow(
-        'Controller with name "Duplicate Name" already exists'
-      );
+      await expect(service.create(controller2)).rejects.toThrow('Controller with name "Duplicate Name" already exists');
     });
 
     it('should handle existing controllers with IDs', async () => {

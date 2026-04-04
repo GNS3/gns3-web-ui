@@ -36,40 +36,98 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
     status: 'stopped',
   };
 
-  const createMockNode = (overrides: Partial<Node> = {}): Node => ({
-    command_line: '',
-    compute_id: 'local',
-    console: 5000,
-    console_auto_start: false,
-    console_host: '0.0.0.0',
-    console_type: 'telnet',
-    custom_adapters: [],
-    ethernet_adapters: [],
-    serial_adapters: [],
-    first_port_name: '',
-    height: 50,
-    label: { text: 'Test Node' } as any,
-    locked: false,
-    name: 'Test Node',
-    node_directory: '',
-    node_id: 'node-1',
-    node_type: 'qemu',
-    port_name_format: '',
-    port_segment_size: 1,
-    ports: [],
-    project_id: 'project-1',
-    properties: { aux: 5001, adapter_type: '', adapters: 1, ethernet_adapters: 0, serial_adapters: 0, headless: false, linked_clone: false, on_close: '', ram: 512, system_id: '', nvram: 1024, image: '', usage: '', use_any_adapter: false, vmname: '', ports_mapping: [], mappings: {}, bios_image: '', boot_priority: '', cdrom_image: '', cpu_throttling: 0, cpus: 1, hda_disk_image: '', hda_disk_image_md5sum: '', hda_disk_interface: '', hdb_disk_image: '', hdb_disk_interface: '', hdc_disk_image: '', hdc_disk_interface: '', hdd_disk_image: '', hdd_disk_interface: '', initrd: '', kernel_command_line: '', kernel_image: '', mac_address: '', mac_addr: '', options: '', platform: '', disk0: 0, disk1: 0, idlepc: '', idlemax: 0, idlesleep: 0, exec_area: 0, mmap: false, sparsemem: false, auto_delete_disks: false, process_priority: '', qemu_path: '', environment: '', extra_hosts: '', start_command: '', replicate_network_connection_state: false, memory: 512, tpm: false, uefi: false } as any,
-    status: 'started',
-    symbol: '',
-    symbol_url: '',
-    tags: [],
-    usage: '',
-    width: 50,
-    x: 0,
-    y: 0,
-    z: 0,
-    ...overrides,
-  } as Node);
+  const createMockNode = (overrides: Partial<Node> = {}): Node =>
+    ({
+      command_line: '',
+      compute_id: 'local',
+      console: 5000,
+      console_auto_start: false,
+      console_host: '0.0.0.0',
+      console_type: 'telnet',
+      custom_adapters: [],
+      ethernet_adapters: [],
+      serial_adapters: [],
+      first_port_name: '',
+      height: 50,
+      label: { text: 'Test Node' } as any,
+      locked: false,
+      name: 'Test Node',
+      node_directory: '',
+      node_id: 'node-1',
+      node_type: 'qemu',
+      port_name_format: '',
+      port_segment_size: 1,
+      ports: [],
+      project_id: 'project-1',
+      properties: {
+        aux: 5001,
+        adapter_type: '',
+        adapters: 1,
+        ethernet_adapters: 0,
+        serial_adapters: 0,
+        headless: false,
+        linked_clone: false,
+        on_close: '',
+        ram: 512,
+        system_id: '',
+        nvram: 1024,
+        image: '',
+        usage: '',
+        use_any_adapter: false,
+        vmname: '',
+        ports_mapping: [],
+        mappings: {},
+        bios_image: '',
+        boot_priority: '',
+        cdrom_image: '',
+        cpu_throttling: 0,
+        cpus: 1,
+        hda_disk_image: '',
+        hda_disk_image_md5sum: '',
+        hda_disk_interface: '',
+        hdb_disk_image: '',
+        hdb_disk_interface: '',
+        hdc_disk_image: '',
+        hdc_disk_interface: '',
+        hdd_disk_image: '',
+        hdd_disk_interface: '',
+        initrd: '',
+        kernel_command_line: '',
+        kernel_image: '',
+        mac_address: '',
+        mac_addr: '',
+        options: '',
+        platform: '',
+        disk0: 0,
+        disk1: 0,
+        idlepc: '',
+        idlemax: 0,
+        idlesleep: 0,
+        exec_area: 0,
+        mmap: false,
+        sparsemem: false,
+        auto_delete_disks: false,
+        process_priority: '',
+        qemu_path: '',
+        environment: '',
+        extra_hosts: '',
+        start_command: '',
+        replicate_network_connection_state: false,
+        memory: 512,
+        tpm: false,
+        uefi: false,
+      } as any,
+      status: 'started',
+      symbol: '',
+      symbol_url: '',
+      tags: [],
+      usage: '',
+      width: 50,
+      x: 0,
+      y: 0,
+      z: 0,
+      ...overrides,
+    } as Node);
 
   beforeEach(async () => {
     mockNodeService = {
@@ -89,12 +147,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
     } as any;
 
     await TestBed.configureTestingModule({
-      imports: [
-        ConsoleDeviceActionBrowserComponent,
-        MatButtonModule,
-        MatIconModule,
-        MatMenuModule,
-      ],
+      imports: [ConsoleDeviceActionBrowserComponent, MatButtonModule, MatIconModule, MatMenuModule],
     })
       .overrideProvider(NodeService, { useValue: mockNodeService })
       .overrideProvider(ToasterService, { useValue: mockToasterService })
@@ -201,7 +254,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       component.startConsole(false);
 
       expect(mockProtocolHandlerService.open).toHaveBeenCalledWith(
-        'gns3+telnet://192.168.1.1:5000?name=Router1&project_id=proj-1&node_id=node-1',
+        'gns3+telnet://192.168.1.1:5000?name=Router1&project_id=proj-1&node_id=node-1'
       );
     });
 
@@ -223,7 +276,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       component.startConsole(true);
 
       expect(mockProtocolHandlerService.open).toHaveBeenCalledWith(
-        'gns3+telnet://192.168.1.1:5002?name=Router1&project_id=proj-1&node_id=node-1',
+        'gns3+telnet://192.168.1.1:5002?name=Router1&project_id=proj-1&node_id=node-1'
       );
     });
 
@@ -261,7 +314,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       component.startConsole(false);
 
       expect(mockProtocolHandlerService.open).toHaveBeenCalledWith(
-        'gns3+telnet://[::1]:5000?name=Router1&project_id=proj-1&node_id=node-1',
+        'gns3+telnet://[::1]:5000?name=Router1&project_id=proj-1&node_id=node-1'
       );
     });
 
@@ -282,7 +335,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       component.startConsole(false);
 
       expect(mockProtocolHandlerService.open).toHaveBeenCalledWith(
-        `gns3+telnet://${mockController.host}:5000?name=Router1&project_id=proj-1&node_id=node-1`,
+        `gns3+telnet://${mockController.host}:5000?name=Router1&project_id=proj-1&node_id=node-1`
       );
     });
 
@@ -303,7 +356,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       component.startConsole(false);
 
       expect(mockProtocolHandlerService.open).toHaveBeenCalledWith(
-        `gns3+telnet://${mockController.host}:5000?name=Router1&project_id=proj-1&node_id=node-1`,
+        `gns3+telnet://${mockController.host}:5000?name=Router1&project_id=proj-1&node_id=node-1`
       );
     });
   });
@@ -345,7 +398,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       component.startConsole(false);
 
       expect(mockProtocolHandlerService.open).toHaveBeenCalledWith(
-        'gns3+spice://192.168.1.1:5900?name=VM1&project_id=proj-1&node_id=node-1',
+        'gns3+spice://192.168.1.1:5900?name=VM1&project_id=proj-1&node_id=node-1'
       );
     });
   });
@@ -387,7 +440,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       component.startConsole(false);
 
       expect(mockToasterService.error).toHaveBeenCalledWith(
-        'Supported console types are: telnet, vnc, spice and spice+agent.',
+        'Supported console types are: telnet, vnc, spice and spice+agent.'
       );
     });
   });

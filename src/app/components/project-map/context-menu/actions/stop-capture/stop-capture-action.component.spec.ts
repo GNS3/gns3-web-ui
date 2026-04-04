@@ -35,7 +35,7 @@ describe('StopCaptureActionComponent', () => {
       project_id: 'project-1',
       capturing: false,
       ...overrides,
-    }) as Link;
+    } as Link);
 
   beforeEach(async () => {
     mockLinkService = {

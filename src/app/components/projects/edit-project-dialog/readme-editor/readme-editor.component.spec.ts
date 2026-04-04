@@ -34,7 +34,7 @@ describe('ReadmeEditorComponent', () => {
       status: 'opened',
       readonly: false,
       drawing_grid_size: 25,
-    }) as Project;
+    } as Project);
 
   const createMockController = (): Controller =>
     ({
@@ -51,7 +51,7 @@ describe('ReadmeEditorComponent', () => {
       username: '',
       password: '',
       tokenExpired: false,
-    }) as Controller;
+    } as Controller);
 
   beforeEach(() => {
     mockController = createMockController();

@@ -1,22 +1,12 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { AiChatStore } from './ai-chat.store';
-import {
-  ChatSession,
-  ChatMessage,
-  ToolCall,
-  ChatPanelState,
-  MessageRole,
-} from '@models/ai-chat.interface';
+import { ChatSession, ChatMessage, ToolCall, ChatPanelState, MessageRole } from '@models/ai-chat.interface';
 
 describe('AiChatStore', () => {
   let store: AiChatStore;
 
   // Helper function to create mock messages
-  const createMockMessage = (
-    role: MessageRole,
-    content: string,
-    partial?: Partial<ChatMessage>
-  ): ChatMessage => ({
+  const createMockMessage = (role: MessageRole, content: string, partial?: Partial<ChatMessage>): ChatMessage => ({
     id: `msg-${Date.now()}-${Math.random()}`,
     role,
     content,
@@ -25,11 +15,7 @@ describe('AiChatStore', () => {
   });
 
   // Helper function to create mock tool calls
-  const createMockToolCall = (
-    id: string,
-    name: string,
-    args?: Record<string, any>
-  ): ToolCall => ({
+  const createMockToolCall = (id: string, name: string, args?: Record<string, any>): ToolCall => ({
     id,
     type: 'function',
     function: {
@@ -40,11 +26,7 @@ describe('AiChatStore', () => {
   });
 
   // Helper function to create mock sessions
-  const createMockSession = (
-    threadId: string,
-    title: string,
-    partial?: Partial<ChatSession>
-  ): ChatSession => ({
+  const createMockSession = (threadId: string, title: string, partial?: Partial<ChatSession>): ChatSession => ({
     id: 1,
     thread_id: threadId,
     user_id: 'user-123',
@@ -109,9 +91,7 @@ describe('AiChatStore', () => {
     });
 
     it('should clear messages and sessions when setting new project ID', () => {
-      store.setSessions([
-        createMockSession('session-1', 'Session 1'),
-      ]);
+      store.setSessions([createMockSession('session-1', 'Session 1')]);
       store.setMessages('session-1', [createMockMessage('user', 'Hello')]);
 
       store.setCurrentProjectId('project-new');
@@ -253,10 +233,7 @@ describe('AiChatStore', () => {
 
   describe('Messages Management', () => {
     it('should set and get messages for session', async () => {
-      const messages: ChatMessage[] = [
-        createMockMessage('user', 'Hello'),
-        createMockMessage('assistant', 'Hi there!'),
-      ];
+      const messages: ChatMessage[] = [createMockMessage('user', 'Hello'), createMockMessage('assistant', 'Hi there!')];
 
       store.setMessages('session-1', messages);
 

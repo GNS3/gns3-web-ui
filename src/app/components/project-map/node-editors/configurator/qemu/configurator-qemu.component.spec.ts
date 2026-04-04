@@ -143,7 +143,7 @@ describe('ConfiguratorDialogQemuComponent', () => {
       ports: [],
       custom_adapters: [],
       tags: ['tag1'],
-    }) as Node;
+    } as Node);
 
   const mockQemuImages: QemuImage[] = [
     { filename: 'hda.img', path: '/images/hda.img' } as QemuImage,
@@ -207,10 +207,7 @@ describe('ConfiguratorDialogQemuComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        ConfiguratorDialogQemuComponent,
-        ReactiveFormsModule,
-      ],
+      imports: [ConfiguratorDialogQemuComponent, ReactiveFormsModule],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: NodeService, useValue: mockNodeService },
@@ -599,7 +596,7 @@ describe('ConfiguratorDialogQemuComponent', () => {
 
     it('should show error toast on failed update', () => {
       mockNodeService.updateNodeWithCustomAdapters.mockReturnValue(
-        throwError(() => ({ error: { message: 'Update failed' } })),
+        throwError(() => ({ error: { message: 'Update failed' } }))
       );
       component.onSaveClick();
       expect(mockToasterService.error).toHaveBeenCalledWith('Update failed');

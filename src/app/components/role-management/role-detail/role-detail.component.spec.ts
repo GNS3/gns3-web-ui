@@ -180,10 +180,13 @@ describe('RoleDetailComponent', () => {
 
       component.onUpdate();
 
-      expect(mockRoleService.update).toHaveBeenCalledWith(mockController, expect.objectContaining({
-        name: 'Updated Name',
-        description: 'Updated desc',
-      }));
+      expect(mockRoleService.update).toHaveBeenCalledWith(
+        mockController,
+        expect.objectContaining({
+          name: 'Updated Name',
+          description: 'Updated desc',
+        })
+      );
     });
 
     it('should show success toast after update', () => {

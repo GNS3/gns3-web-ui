@@ -144,11 +144,7 @@ describe('ComputeService', () => {
 
       service.updateCompute(mockController, 'comp-1', computeData);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/computes/comp-1',
-        computeData
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/computes/comp-1', computeData);
     });
 
     it('should return Observable of Compute', () => {
@@ -167,11 +163,7 @@ describe('ComputeService', () => {
 
       service.updateCompute(mockController, 'compute-to-update', {} as ComputeUpdate);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/computes/compute-to-update',
-        {}
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/computes/compute-to-update', {});
     });
   });
 
@@ -197,10 +189,7 @@ describe('ComputeService', () => {
 
       service.deleteCompute(mockController, 'compute-to-delete');
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/computes/compute-to-delete'
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/computes/compute-to-delete');
     });
   });
 
@@ -210,11 +199,7 @@ describe('ComputeService', () => {
 
       service.connectCompute(mockController, 'comp-1');
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/computes/comp-1/connect',
-        null
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/computes/comp-1/connect', null);
     });
 
     it('should return Observable', () => {
@@ -291,10 +276,7 @@ describe('ComputeService', () => {
 
       service.getCompute(mockController, 'compute-with-dash');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/computes/compute-with-dash'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/computes/compute-with-dash');
     });
 
     it('should handle compute ID with underscores', () => {
@@ -302,10 +284,7 @@ describe('ComputeService', () => {
 
       service.getCompute(mockController, 'compute_with_underscore');
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/computes/compute_with_underscore'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/computes/compute_with_underscore');
     });
 
     it('should handle empty compute data in create', () => {

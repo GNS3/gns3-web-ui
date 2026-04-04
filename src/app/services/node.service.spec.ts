@@ -91,10 +91,7 @@ describe('NodeService', () => {
 
       await firstValueFrom(service.getNodeById(mockController, 'project-123', 'node-1'));
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/nodes/node-1'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/projects/project-123/nodes/node-1');
     });
 
     it('should return Observable with node data', async () => {
@@ -200,11 +197,7 @@ describe('NodeService', () => {
 
       await firstValueFrom(service.startAll(mockController, mockProject));
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/nodes/start',
-        {}
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/projects/project-123/nodes/start', {});
     });
 
     it('should emit error when startAll fails', async () => {
@@ -242,11 +235,7 @@ describe('NodeService', () => {
 
       await firstValueFrom(service.stopAll(mockController, mockProject));
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/nodes/stop',
-        {}
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/projects/project-123/nodes/stop', {});
     });
 
     it('should emit error when stopAll fails', async () => {
@@ -284,11 +273,7 @@ describe('NodeService', () => {
 
       await firstValueFrom(service.suspendAll(mockController, mockProject));
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/nodes/suspend',
-        {}
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/projects/project-123/nodes/suspend', {});
     });
 
     it('should emit error when suspendAll fails', async () => {
@@ -328,11 +313,7 @@ describe('NodeService', () => {
 
       await firstValueFrom(service.reloadAll(mockController, mockProject));
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/nodes/reload',
-        {}
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/projects/project-123/nodes/reload', {});
     });
 
     it('should emit error when reloadAll fails', async () => {
@@ -368,15 +349,13 @@ describe('NodeService', () => {
     it('should use local compute_id when compute_id is not provided', async () => {
       mockHttpController.post.mockReturnValue(of(mockNode));
 
-      await firstValueFrom(
-        service.createFromTemplate(mockController, mockProject, mockTemplate, 100, 200, '')
-      );
+      await firstValueFrom(service.createFromTemplate(mockController, mockProject, mockTemplate, 100, 200, ''));
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/templates/tmpl-1',
-        { x: 100, y: 200, compute_id: 'local' }
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/projects/project-123/templates/tmpl-1', {
+        x: 100,
+        y: 200,
+        compute_id: 'local',
+      });
     });
 
     it('should use provided compute_id', async () => {
@@ -386,11 +365,11 @@ describe('NodeService', () => {
         service.createFromTemplate(mockController, mockProject, mockTemplate, 100, 200, 'compute-1')
       );
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/templates/tmpl-1',
-        { x: 100, y: 200, compute_id: 'compute-1' }
-      );
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/projects/project-123/templates/tmpl-1', {
+        x: 100,
+        y: 200,
+        compute_id: 'compute-1',
+      });
     });
 
     it.each([
@@ -400,9 +379,7 @@ describe('NodeService', () => {
     ])('should round coordinates (%f, %f) to (%i, %i)', async (x, y, expectedX, expectedY) => {
       mockHttpController.post.mockReturnValue(of(mockNode));
 
-      await firstValueFrom(
-        service.createFromTemplate(mockController, mockProject, mockTemplate, x, y, '')
-      );
+      await firstValueFrom(service.createFromTemplate(mockController, mockProject, mockTemplate, x, y, ''));
 
       const postCall = mockHttpController.post.mock.calls[0];
       const payload = postCall[2];
@@ -446,16 +423,19 @@ describe('NodeService', () => {
     it.each([
       [100.7, 200.3, 101, 200],
       [100.3, 200.7, 100, 201],
-    ])('should round coordinates (%f, %f) to (%i, %i) when snap_to_grid is false', async (x, y, expectedX, expectedY) => {
-      mockHttpController.put.mockReturnValue(of(mockNode));
+    ])(
+      'should round coordinates (%f, %f) to (%i, %i) when snap_to_grid is false',
+      async (x, y, expectedX, expectedY) => {
+        mockHttpController.put.mockReturnValue(of(mockNode));
 
-      await firstValueFrom(service.updatePosition(mockController, mockProject, mockNode, x, y));
+        await firstValueFrom(service.updatePosition(mockController, mockProject, mockNode, x, y));
 
-      const putCall = mockHttpController.put.mock.calls[0];
-      const payload = putCall[2];
-      expect(payload.x).toBe(expectedX);
-      expect(payload.y).toBe(expectedY);
-    });
+        const putCall = mockHttpController.put.mock.calls[0];
+        const payload = putCall[2];
+        expect(payload.x).toBe(expectedX);
+        expect(payload.y).toBe(expectedY);
+      }
+    );
 
     it.each([
       // node width=50, height=50, grid_size=50
@@ -538,11 +518,9 @@ describe('NodeService', () => {
 
       await firstValueFrom(service.updateSymbol(mockController, mockNode, 'new-symbol.svg'));
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/nodes/node-1',
-        { symbol: 'new-symbol.svg' }
-      );
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/projects/project-123/nodes/node-1', {
+        symbol: 'new-symbol.svg',
+      });
     });
 
     it('should return Observable with updated node', async () => {
@@ -557,9 +535,9 @@ describe('NodeService', () => {
       const error = new Error('Update symbol failed');
       mockHttpController.put.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.updateSymbol(mockController, mockNode, 'new-symbol.svg'))
-      ).rejects.toThrow('Update symbol failed');
+      await expect(firstValueFrom(service.updateSymbol(mockController, mockNode, 'new-symbol.svg'))).rejects.toThrow(
+        'Update symbol failed'
+      );
     });
   });
 
@@ -659,9 +637,9 @@ describe('NodeService', () => {
       const error = new Error('Update adapters failed');
       mockHttpController.put.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.updateNodeWithCustomAdapters(mockController, mockNode))
-      ).rejects.toThrow('Update adapters failed');
+      await expect(firstValueFrom(service.updateNodeWithCustomAdapters(mockController, mockNode))).rejects.toThrow(
+        'Update adapters failed'
+      );
     });
   });
 
@@ -671,10 +649,7 @@ describe('NodeService', () => {
 
       await firstValueFrom(service.delete(mockController, mockNode));
 
-      expect(mockHttpController.delete).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/nodes/node-1'
-      );
+      expect(mockHttpController.delete).toHaveBeenCalledWith(mockController, '/projects/project-123/nodes/node-1');
     });
 
     it('should emit error when delete fails', async () => {
@@ -713,10 +688,7 @@ describe('NodeService', () => {
 
       await firstValueFrom(service.getNode(mockController, mockNode));
 
-      expect(mockHttpController.get).toHaveBeenCalledWith(
-        mockController,
-        '/projects/project-123/nodes/node-1'
-      );
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/projects/project-123/nodes/node-1');
     });
 
     it('should return Observable with node data', async () => {
@@ -768,9 +740,9 @@ describe('NodeService', () => {
       const error = new Error('Get config failed');
       mockHttpController.get.mockReturnValue(throwError(() => error));
 
-      await expect(
-        firstValueFrom(service.getNetworkConfiguration(mockController, mockNode))
-      ).rejects.toThrow('Get config failed');
+      await expect(firstValueFrom(service.getNetworkConfiguration(mockController, mockNode))).rejects.toThrow(
+        'Get config failed'
+      );
     });
   });
 
@@ -884,18 +856,21 @@ describe('NodeService', () => {
     it.each([
       ['iou', 'private-config.cfg', {}],
       ['dynamips', 'configs/i1_private-config.cfg', { dynamips_id: '1' }],
-    ])('should call httpController.post with private configuration for %s', async (nodeType, expectedFile, properties) => {
-      const node = { ...mockNode, node_type: nodeType as 'iou' | 'dynamips', properties } as unknown as Node;
-      mockHttpController.post.mockReturnValue(of({}));
+    ])(
+      'should call httpController.post with private configuration for %s',
+      async (nodeType, expectedFile, properties) => {
+        const node = { ...mockNode, node_type: nodeType as 'iou' | 'dynamips', properties } as unknown as Node;
+        mockHttpController.post.mockReturnValue(of({}));
 
-      await firstValueFrom(service.savePrivateConfiguration(mockController, node, 'private config'));
+        await firstValueFrom(service.savePrivateConfiguration(mockController, node, 'private config'));
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(
-        mockController,
-        `/projects/project-123/nodes/node-1/files/${expectedFile}`,
-        'private config'
-      );
-    });
+        expect(mockHttpController.post).toHaveBeenCalledWith(
+          mockController,
+          `/projects/project-123/nodes/node-1/files/${expectedFile}`,
+          'private config'
+        );
+      }
+    );
 
     it('should emit error when savePrivateConfiguration fails', async () => {
       const error = new Error('Save private config failed');
@@ -978,18 +953,8 @@ describe('NodeService', () => {
       await firstValueFrom(service.startAll(mockController, project1));
       await firstValueFrom(service.startAll(mockController, project2));
 
-      expect(mockHttpController.post).toHaveBeenNthCalledWith(
-        1,
-        mockController,
-        '/projects/proj-1/nodes/start',
-        {}
-      );
-      expect(mockHttpController.post).toHaveBeenNthCalledWith(
-        2,
-        mockController,
-        '/projects/proj-2/nodes/start',
-        {}
-      );
+      expect(mockHttpController.post).toHaveBeenNthCalledWith(1, mockController, '/projects/proj-1/nodes/start', {});
+      expect(mockHttpController.post).toHaveBeenNthCalledWith(2, mockController, '/projects/proj-2/nodes/start', {});
     });
   });
 
@@ -997,9 +962,7 @@ describe('NodeService', () => {
     it('should handle zero coordinates in createFromTemplate', async () => {
       mockHttpController.post.mockReturnValue(of(mockNode));
 
-      await firstValueFrom(
-        service.createFromTemplate(mockController, mockProject, mockTemplate, 0, 0, '')
-      );
+      await firstValueFrom(service.createFromTemplate(mockController, mockProject, mockTemplate, 0, 0, ''));
 
       expect(mockHttpController.post).toHaveBeenCalled();
     });
@@ -1007,9 +970,7 @@ describe('NodeService', () => {
     it('should handle negative coordinates', async () => {
       mockHttpController.post.mockReturnValue(of(mockNode));
 
-      await firstValueFrom(
-        service.createFromTemplate(mockController, mockProject, mockTemplate, -50, -100, '')
-      );
+      await firstValueFrom(service.createFromTemplate(mockController, mockProject, mockTemplate, -50, -100, ''));
 
       expect(mockHttpController.post).toHaveBeenCalled();
     });
@@ -1018,9 +979,7 @@ describe('NodeService', () => {
       mockHttpController.post.mockReturnValue(of(mockNode));
 
       const emptyTemplate = { ...mockTemplate, template_id: '' };
-      await firstValueFrom(
-        service.createFromTemplate(mockController, mockProject, emptyTemplate, 100, 200, '')
-      );
+      await firstValueFrom(service.createFromTemplate(mockController, mockProject, emptyTemplate, 100, 200, ''));
 
       expect(mockHttpController.post).toHaveBeenCalledWith(
         mockController,

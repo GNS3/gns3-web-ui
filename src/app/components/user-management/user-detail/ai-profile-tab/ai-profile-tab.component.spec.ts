@@ -8,10 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Controller } from '../../../../models/controller';
 import { User } from '../../../../models/users/user';
-import {
-  LLMModelConfigWithSource,
-  LLMModelConfigInheritedResponse,
-} from '../../../../models/ai-profile';
+import { LLMModelConfigWithSource, LLMModelConfigInheritedResponse } from '../../../../models/ai-profile';
 
 function createMockController(): Controller {
   const controller = new Controller();
@@ -80,7 +77,13 @@ describe('AiProfileTabComponent', () => {
     mockUser = createMockUser();
     mockConfigs = [
       createMockConfig({ config_id: 'config-1', name: 'User Config', source: 'user' }),
-      createMockConfig({ config_id: 'config-2', name: 'Group Config', source: 'group', group_name: 'Admins', is_default: true }),
+      createMockConfig({
+        config_id: 'config-2',
+        name: 'Group Config',
+        source: 'group',
+        group_name: 'Admins',
+        is_default: true,
+      }),
     ];
 
     afterClosedSubject = new BehaviorSubject<any>(undefined);

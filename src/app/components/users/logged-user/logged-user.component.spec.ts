@@ -59,11 +59,7 @@ describe('LoggedUserComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        LoggedUserComponent,
-        MatDialogModule,
-        RouterModule.forRoot([]),
-      ],
+      imports: [LoggedUserComponent, MatDialogModule, RouterModule.forRoot([])],
       providers: [
         {
           provide: ActivatedRoute,

@@ -22,53 +22,51 @@ describe('ConfigEditorDialogComponent', () => {
   let mockController: Controller;
   let mockNode: Node;
 
-  const createMockNode = (nodeType: string = 'vpcs'): Node =>
-    ({
-      node_id: 'node-1',
-      name: 'Test-Node',
-      tags: [],
-      command_line: '',
-      compute_id: 'local',
-      console: 3080,
-      console_auto_start: false,
-      console_host: 'localhost',
-      console_type: 'telnet',
-      first_port_name: 'eth0',
-      height: 50,
-      label: { rotation: 0, style: '', text: 'Test-Node', x: 0, y: 0 },
-      locked: false,
-      node_directory: '/tmp/node',
-      node_type: nodeType,
-      port_name_format: 'eth{0}',
-      port_segment_size: 1,
-      ports: [],
-      project_id: 'project-1',
-      properties: {} as any,
-      status: 'stopped',
-      symbol: 'router',
-      symbol_url: 'http://localhost:3080/v4/symbols/router/raw',
-      width: 50,
-      x: 100,
-      y: 100,
-      z: 0,
-    });
+  const createMockNode = (nodeType: string = 'vpcs'): Node => ({
+    node_id: 'node-1',
+    name: 'Test-Node',
+    tags: [],
+    command_line: '',
+    compute_id: 'local',
+    console: 3080,
+    console_auto_start: false,
+    console_host: 'localhost',
+    console_type: 'telnet',
+    first_port_name: 'eth0',
+    height: 50,
+    label: { rotation: 0, style: '', text: 'Test-Node', x: 0, y: 0 },
+    locked: false,
+    node_directory: '/tmp/node',
+    node_type: nodeType,
+    port_name_format: 'eth{0}',
+    port_segment_size: 1,
+    ports: [],
+    project_id: 'project-1',
+    properties: {} as any,
+    status: 'stopped',
+    symbol: 'router',
+    symbol_url: 'http://localhost:3080/v4/symbols/router/raw',
+    width: 50,
+    x: 100,
+    y: 100,
+    z: 0,
+  });
 
-  const createMockController = (): Controller =>
-    ({
-      id: 1,
-      authToken: 'token',
-      name: 'Test Controller',
-      location: 'local',
-      host: '127.0.0.1',
-      port: 3080,
-      path: '/',
-      ubridge_path: '/usr/bin/ubridge',
-      protocol: 'http:',
-      username: 'admin',
-      password: 'admin',
-      tokenExpired: false,
-      status: 'running',
-    });
+  const createMockController = (): Controller => ({
+    id: 1,
+    authToken: 'token',
+    name: 'Test Controller',
+    location: 'local',
+    host: '127.0.0.1',
+    port: 3080,
+    path: '/',
+    ubridge_path: '/usr/bin/ubridge',
+    protocol: 'http:',
+    username: 'admin',
+    password: 'admin',
+    tokenExpired: false,
+    status: 'running',
+  });
 
   beforeEach(async () => {
     mockController = createMockController();
@@ -91,13 +89,7 @@ describe('ConfigEditorDialogComponent', () => {
     };
 
     await TestBed.configureTestingModule({
-      imports: [
-        MatDialogModule,
-        MatButtonModule,
-        MatProgressSpinnerModule,
-        MatTabsModule,
-        ConfigEditorDialogComponent,
-      ],
+      imports: [MatDialogModule, MatButtonModule, MatProgressSpinnerModule, MatTabsModule, ConfigEditorDialogComponent],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: NodeService, useValue: mockNodeService },

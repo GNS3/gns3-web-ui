@@ -287,12 +287,8 @@ describe('QemuVmTemplateDetailsComponent', () => {
 
     fixture.componentInstance.onSave();
 
-    expect(mockToasterService.error).toHaveBeenCalledWith(
-      expect.stringContaining('Missing required fields')
-    );
-    expect(mockToasterService.error).toHaveBeenCalledWith(
-      expect.stringContaining('Template name')
-    );
+    expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Missing required fields'));
+    expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Template name'));
     expect(mockQemuService.saveTemplate).not.toHaveBeenCalled();
   });
 
@@ -303,9 +299,7 @@ describe('QemuVmTemplateDetailsComponent', () => {
 
     fixture.componentInstance.onSave();
 
-    expect(mockToasterService.error).toHaveBeenCalledWith(
-      expect.stringContaining('Default name format')
-    );
+    expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Default name format'));
     expect(mockQemuService.saveTemplate).not.toHaveBeenCalled();
   });
 
@@ -316,9 +310,7 @@ describe('QemuVmTemplateDetailsComponent', () => {
 
     fixture.componentInstance.onSave();
 
-    expect(mockToasterService.error).toHaveBeenCalledWith(
-      expect.stringContaining('Symbol')
-    );
+    expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Symbol'));
     expect(mockQemuService.saveTemplate).not.toHaveBeenCalled();
   });
 
@@ -330,9 +322,7 @@ describe('QemuVmTemplateDetailsComponent', () => {
   });
 
   it('should handle save error', () => {
-    mockQemuService.saveTemplate.mockReturnValue(
-      throwError(() => new Error('Save failed'))
-    );
+    mockQemuService.saveTemplate.mockReturnValue(throwError(() => new Error('Save failed')));
 
     fixture.componentInstance.onSave();
 

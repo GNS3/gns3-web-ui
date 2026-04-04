@@ -37,10 +37,7 @@ describe('XtermService', () => {
     };
 
     TestBed.configureTestingModule({
-      providers: [
-        XtermService,
-        { provide: ThemeService, useValue: mockThemeService },
-      ],
+      providers: [XtermService, { provide: ThemeService, useValue: mockThemeService }],
     });
 
     service = TestBed.inject(XtermService);

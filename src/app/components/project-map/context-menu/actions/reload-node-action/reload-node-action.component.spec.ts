@@ -30,35 +30,34 @@ describe('ReloadNodeActionComponent', () => {
     tokenExpired: false,
   };
 
-  const createMockNode = (nodeType: string): Node =>
-    ({
-      node_id: `node-${nodeType}`,
-      name: `Node ${nodeType}`,
-      status: 'running',
-      console_host: '0.0.0.0',
-      node_type: nodeType,
-      project_id: 'proj1',
-      command_line: '',
-      compute_id: 'compute1',
-      height: 50,
-      width: 50,
-      x: 0,
-      y: 0,
-      z: 0,
-      label: { text: '', x: 0, y: 0, style: '', rotation: 0 },
-      locked: false,
-      first_port_name: '',
-      port_name_format: '',
-      port_segment_size: 1,
-      ports: [],
-      properties: {} as any,
-      symbol: '',
-      symbol_url: '',
-      console: 0,
-      console_auto_start: false,
-      console_type: '',
-      node_directory: '',
-    });
+  const createMockNode = (nodeType: string): Node => ({
+    node_id: `node-${nodeType}`,
+    name: `Node ${nodeType}`,
+    status: 'running',
+    console_host: '0.0.0.0',
+    node_type: nodeType,
+    project_id: 'proj1',
+    command_line: '',
+    compute_id: 'compute1',
+    height: 50,
+    width: 50,
+    x: 0,
+    y: 0,
+    z: 0,
+    label: { text: '', x: 0, y: 0, style: '', rotation: 0 },
+    locked: false,
+    first_port_name: '',
+    port_name_format: '',
+    port_segment_size: 1,
+    ports: [],
+    properties: {} as any,
+    symbol: '',
+    symbol_url: '',
+    console: 0,
+    console_auto_start: false,
+    console_type: '',
+    node_directory: '',
+  });
 
   beforeEach(async () => {
     mockNodeService = { reload: vi.fn().mockReturnValue(of({})) };
@@ -145,7 +144,6 @@ describe('ReloadNodeActionComponent', () => {
 
       expect(component.filteredNodes).toHaveLength(0);
     });
-
   });
 
   describe('Reload button visibility', () => {

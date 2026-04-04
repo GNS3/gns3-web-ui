@@ -85,7 +85,7 @@ describe('VmwareConfigurationService', () => {
       'should include network type: %s',
       (type) => {
         expect(service.getNetworkTypes()).toContain(type);
-      },
+      }
     );
   });
 });
