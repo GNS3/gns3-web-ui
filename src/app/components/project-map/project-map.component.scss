@@ -405,6 +405,10 @@ path.serial_link.selected {
   @extend .selection-error;
 }
 
+path.curve_element.selected {
+  @extend .selection-error;
+}
+
 .selected > .interface_label_border {
   stroke: var(--mat-sys-on-surface);
   fill: none;
