@@ -7,7 +7,7 @@ import { TestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 import { beforeEach, afterEach, vi } from 'vitest';
 
-// 初始化测试环境（只执行一次，使用 if 防止重复初始化）
+// Initialize test environment (only runs once, using if to prevent duplicate initialization)
 if (!TestBed.platform) {
   TestBed.initTestEnvironment(
     BrowserDynamicTestingModule,
@@ -22,13 +22,13 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  // 只在 fake timers 激活时才运行 timers
-  // 某些测试文件（如 validators）自己管理 fake timers
+  // Run timers only when fake timers are active
+  // Some test files (like validators) manage fake timers themselves
   vi.useRealTimers();
 
-  // 清理所有 mock，防止 mock 调用累积
+  // Clear all mocks to prevent mock call accumulation
   vi.clearAllMocks();
 
-  // 清理 DOM，防止 DOM 元素累积
+  // Clean DOM to prevent DOM element accumulation
   document.body.innerHTML = '';
 });

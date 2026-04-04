@@ -152,8 +152,8 @@ describe('ComputesComponent', () => {
 
   it('should load controller on init', async () => {
     component.ngOnInit();
-    // 等待异步的 controllerService.get 完成
-    // 使用 fake timers 推进时间，而不是真实的 setTimeout
+    // Wait for async controllerService.get to complete
+    // Use fake timers to advance time, not real setTimeout
     vi.advanceTimersByTime(10);
     await vi.runAllTimersAsync();
     expect(mockControllerService.get).toHaveBeenCalled();

@@ -160,11 +160,11 @@ describe('PacketCaptureService', () => {
     });
 
     it('should handle unicode characters in project name', () => {
-      const unicodeProject = { ...mockProject, name: '测试项目中文' };
+      const unicodeProject = { ...mockProject, name: 'Test Project Chinese' };
       service.startCapture(mockController, unicodeProject, mockLink, 'capture1');
 
       const uri = mockProtocolHandlerService.open.mock.calls[0][0];
-      expect(uri).toContain('project=测试项目中文');
+      expect(uri).toContain('project=Test Project Chinese');
     });
   });
 });

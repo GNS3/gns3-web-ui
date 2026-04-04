@@ -756,7 +756,7 @@ describe('SymbolService', () => {
       const mockDimensions = { width: 100, height: 80 };
       mockHttpController.get.mockReturnValue(of(mockDimensions));
 
-      service.getDimensions(mockController, '符号-测试');
+      service.getDimensions(mockController, 'symbol-test');
 
       expect(mockHttpController.get).toHaveBeenCalledWith(
         mockController,

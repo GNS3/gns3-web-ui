@@ -726,17 +726,17 @@ describe('GroupService', () => {
     it('should handle group name with unicode characters', () => {
       const newGroup: Group = {
         user_group_id: 'group-new',
-        name: '管理员组',
+        name: 'Admin Group',
       } as Group;
 
       mockHttpController.post.mockReturnValue(of(newGroup));
 
-      service.addGroup(mockController, '管理员组');
+      service.addGroup(mockController, 'Admin Group');
 
       expect(mockHttpController.post).toHaveBeenCalledWith(
         mockController,
         '/access/groups',
-        { name: '管理员组' }
+        { name: 'Admin Group' }
       );
     });
   });

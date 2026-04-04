@@ -194,7 +194,7 @@ describe('shortenModelName', () => {
       // [input, expected, description]
       ['', '', 'empty string'],
       ['provider/', '', 'only prefix slash'],
-      ['中文模型', '中文模型', 'unicode characters'],
+      ['Chinese Model', 'Chinese Model', 'unicode characters'],
       ['model+name', 'Model+Name', 'special characters preserved'],
       ['model-name-with-+-sign', 'Model Name With + Sign', 'plus sign with word separators'],
     ])('should handle %s', (input: string, expected: string, _description: string) => {

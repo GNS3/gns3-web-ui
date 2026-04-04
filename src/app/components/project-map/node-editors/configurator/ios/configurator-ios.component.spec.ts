@@ -498,7 +498,7 @@ describe('ConfiguratorDialogIosComponent', () => {
         exec_area: 128,
         mmap: true,
         sparsemem: true,
-        usage: '繁忙路由器',
+        usage: 'Busy Router',
       });
 
       component.onSaveClick();
@@ -511,7 +511,7 @@ describe('ConfiguratorDialogIosComponent', () => {
       expect(component.node.properties.exec_area).toBe(128);
       expect(component.node.properties.mmap).toBe(true);
       expect(component.node.properties.sparsemem).toBe(true);
-      expect(component.node.properties.usage).toBe('繁忙路由器');
+      expect(component.node.properties.usage).toBe('Busy Router');
     });
 
     it('should call saveSlotsData when saving', () => {

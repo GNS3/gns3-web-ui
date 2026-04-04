@@ -143,9 +143,9 @@ describe('ToasterService', () => {
     });
 
     it('should handle unicode characters in messages', () => {
-      service.success('成功 ✓');
-      service.warning('⚠️ 警告');
-      service.error('❌ 错误');
+      service.success('Success ✓');
+      service.warning('⚠️ Warning');
+      service.error('❌ Error');
       expect(mockMatSnackBar.open).toHaveBeenCalledTimes(3);
     });
 

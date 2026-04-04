@@ -167,7 +167,7 @@ describe('TopologySummaryComponent', () => {
       getItems: vi.fn().mockReturnValue([]),
     };
 
-    // ✅ 修复：确保 mock 函数返回 Observable
+    // ✅ Fix: Ensure mock function returns Observable
     mockProjectService = {
       getStatistics: vi.fn().mockReturnValue(of({} as ProjectStatistics)),
     };
@@ -281,7 +281,7 @@ describe('TopologySummaryComponent', () => {
 
     it('should subscribe to nodes data changes and update nodes list', () => {
       const testNodes = [mockNode];
-      // mock 已经在 beforeEach 中设置了，这里不需要再设置
+      // Mock was already set up in beforeEach, no need to set it again here
 
       component.ngOnInit();
       nodesSubject.next(testNodes);
