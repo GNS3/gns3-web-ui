@@ -155,7 +155,9 @@ describe('DockerTemplateDetailsComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('Creation', () => {

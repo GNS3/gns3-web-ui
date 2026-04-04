@@ -59,7 +59,9 @@ describe('DrawingDraggedComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('initialization', () => {
@@ -80,7 +82,9 @@ describe('DrawingDraggedComponent', () => {
       fixture.detectChanges();
       const subscription = (fixture.componentInstance as any).drawingDragged;
       const unsubscribeSpy = vi.spyOn(subscription, 'unsubscribe');
+      if (fixture) {
       fixture.destroy();
+    }
       expect(unsubscribeSpy).toHaveBeenCalled();
     });
   });

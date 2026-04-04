@@ -63,7 +63,9 @@ describe('SymbolsMenuComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('default values', () => {

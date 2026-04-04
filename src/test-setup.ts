@@ -7,8 +7,7 @@ import { TestBed } from '@angular/core/testing';
 import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
 import { beforeEach, afterEach, vi } from 'vitest';
 
-// setupFilesAfterEnvironment 只在测试环境初始化后运行一次
-// 使用 if 判断防止重复初始化
+// 初始化测试环境（只执行一次，使用 if 防止重复初始化）
 if (!TestBed.platform) {
   TestBed.initTestEnvironment(
     BrowserDynamicTestingModule,
@@ -25,7 +24,10 @@ beforeEach(() => {
 afterEach(() => {
   vi.runAllTimers();
   vi.useRealTimers();
-  // 重置单例服务，防止状态污染到其他测试
-  // 使用 forks 池 + resetTestingModule 确保 Angular 单例服务在每个测试后被清理
-  TestBed.resetTestingModule();
+
+  // 清理所有 mock，防止 mock 调用累积
+  vi.clearAllMocks();
+
+  // 清理 DOM，防止 DOM 元素累积
+  document.body.innerHTML = '';
 });

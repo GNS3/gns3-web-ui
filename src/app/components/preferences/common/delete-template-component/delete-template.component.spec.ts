@@ -80,7 +80,9 @@ describe('DeleteTemplateComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
     vi.clearAllMocks();
   });
 
@@ -219,7 +221,9 @@ describe('DeleteTemplateComponent', () => {
 
     component.deleteItem(templateName, templateId);
 
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
 
     expect(unsubscribeSpy).toHaveBeenCalled();
   });

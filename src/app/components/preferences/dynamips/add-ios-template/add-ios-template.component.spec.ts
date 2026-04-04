@@ -216,7 +216,9 @@ describe('AddIosTemplateComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('Creation', () => {

@@ -15,7 +15,9 @@ describe('EmptyTemplatesListComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   it('should create', () => {

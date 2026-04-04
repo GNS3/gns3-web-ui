@@ -96,7 +96,9 @@ describe('SymbolsComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('initialization', () => {

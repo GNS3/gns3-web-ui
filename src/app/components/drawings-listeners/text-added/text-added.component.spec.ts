@@ -128,7 +128,9 @@ describe('TextAddedComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('Creation', () => {

@@ -155,7 +155,9 @@ describe('AddIouTemplateComponent', () => {
     if (component.subscription) {
       component.subscription.unsubscribe();
     }
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('Creation', () => {

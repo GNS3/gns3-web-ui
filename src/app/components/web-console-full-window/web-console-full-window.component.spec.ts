@@ -139,10 +139,15 @@ describe('WebConsoleFullWindowComponent', () => {
     markForCheck: vi.fn(),
   };
 
+  // Store DOM elements for cleanup
+  const domElementsToCleanup: HTMLElement[] = [];
+
   // Helper to setup terminal mock element ref
   const setupTerminalMock = () => {
+    const element = document.createElement('div');
+    domElementsToCleanup.push(element);
     const mockElementRef = {
-      nativeElement: document.createElement('div'),
+      nativeElement: element,
     };
     Object.defineProperty(component, 'terminal', {
       get: () => () => mockElementRef,
@@ -274,12 +279,21 @@ describe('WebConsoleFullWindowComponent', () => {
     if (fixture) {
       fixture.destroy();
     }
+
+    // Clean up any DOM elements created during tests
+    domElementsToCleanup.forEach((element) => {
+      element.remove();
+    });
+    domElementsToCleanup.length = 0;
   });
 
   afterAll(() => {
     consoleResizedSubject.complete();
     themeChangedSubject.complete();
     vi.restoreAllMocks();
+
+    // Clean up global mocks to prevent test pollution
+    vi.unstubAllGlobals();
   });
 
   describe('Component Creation', () => {

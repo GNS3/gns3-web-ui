@@ -118,13 +118,12 @@ describe('ChooseNameDialogComponent', () => {
       );
     });
 
-    it('should close the dialog when duplicate succeeds', () => {
+    it('should close the dialog when duplicate succeeds', async () => {
       fixture.componentInstance.onSaveClick();
 
       // The subscription callback fires asynchronously, so we need to wait
-      fixture.whenStable().then(() => {
-        expect(mockDialogRef.close).toHaveBeenCalled();
-      });
+      await fixture.whenStable();
+      expect(mockDialogRef.close).toHaveBeenCalled();
     });
   });
 });

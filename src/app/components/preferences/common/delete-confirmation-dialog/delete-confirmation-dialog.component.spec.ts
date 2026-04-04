@@ -34,7 +34,9 @@ describe('DeleteConfirmationDialogComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('initial state', () => {
