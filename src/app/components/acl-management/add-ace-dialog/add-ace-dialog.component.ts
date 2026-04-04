@@ -130,6 +130,13 @@ export class AddAceDialogComponent implements OnInit {
   }
 
   onAddClick() {
+    if (!this.selectedEndpoint || !this.selectedRole) {
+      return;
+    }
+    if (!this.selectedUser && !this.selectedGroup) {
+      return;
+    }
+
     const ACE = {
       ace_type: this.form.type.value,
       allowed: this.allowed,
@@ -172,6 +179,7 @@ export class AddAceDialogComponent implements OnInit {
 
       return data.filter((option) => option.name.toLowerCase().includes(filterValue));
     }
+    return [];
   }
 
   _filterUser(value: string, users: User[]): User[] {
