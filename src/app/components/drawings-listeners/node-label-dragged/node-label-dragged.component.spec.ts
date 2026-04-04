@@ -182,21 +182,21 @@ describe('NodeLabelDraggedComponent', () => {
       expect(mockNodesDataSource.get).toHaveBeenCalledWith(mapLabel.nodeId);
     });
 
-    it('should update mapLabel x and y with delta values', () => {
+    it('should update node label with converted label containing correct x and y', () => {
       const mockNode = createMockNode();
       mockNodesDataSource.get.mockReturnValue(mockNode);
 
       const mapLabel = createMockMapLabel();
-      const originalX = mapLabel.x;
-      const originalY = mapLabel.y;
-      const dx = 50;
-      const dy = 50;
-      const draggedEvent = new DraggedDataEvent<MapLabel>(mapLabel, dx, dy);
+      // Position is already updated during drag, so we update mapLabel before calling
+      mapLabel.x += 50;
+      mapLabel.y += 50;
+      const draggedEvent = new DraggedDataEvent<MapLabel>(mapLabel, 50, 50);
 
       component.onNodeLabelDragged(draggedEvent);
 
-      expect(mapLabel.x).toBe(originalX + dx);
-      expect(mapLabel.y).toBe(originalY + dy);
+      // The converted label is assigned to node.label
+      expect(mockMapLabelToLabel.convert).toHaveBeenCalledWith(mapLabel);
+      expect(mockNode.label).toEqual({ x: 150, y: 250, text: 'Node Label', rotation: 0, style: '' });
     });
 
     it('should convert mapLabel to label using converter', () => {
