@@ -81,8 +81,22 @@ export class TextEditorComponent implements OnInit, OnDestroy {
 
   activateTextAdding() {
     let addTextListener = (event: MouseEvent) => {
-      this.leftPosition.set(event.pageX.toString() + 'px');
-      this.topPosition.set(event.pageY.toString() + 'px');
+      // Convert page coordinates to canvas coordinates (same as rectangle/circle)
+      const zeroZeroX = this.context.getZeroZeroTransformationPoint().x;
+      const zeroZeroY = this.context.getZeroZeroTransformationPoint().y;
+      const transX = this.context.transformation.x;
+      const transY = this.context.transformation.y;
+      const scale = this.context.transformation.k;
+      const canvasX = (event.pageX - (zeroZeroX + transX)) / scale;
+      const canvasY = (event.pageY - (zeroZeroY + transY)) / scale;
+
+      // Position temporary input div using canvas coordinates converted back to page
+      const pageX = canvasX * scale + zeroZeroX + transX;
+      const pageY = canvasY * scale + zeroZeroY + transY;
+
+      this.leftPosition.set(pageX.toString() + 'px');
+      this.topPosition.set(pageY.toString() + 'px');
+
       const temporaryTextElement = this.temporaryTextElement();
       this.renderer.setStyle(temporaryTextElement.nativeElement, 'display', 'initial');
       this.renderer.setStyle(
@@ -93,13 +107,14 @@ export class TextEditorComponent implements OnInit, OnDestroy {
       temporaryTextElement.nativeElement.focus();
       document.documentElement.style.cursor = 'default';
 
+      // Use canvas coordinates (like rectangle/circle)
       let textListener = () => {
         const temporaryTextElementValue = this.temporaryTextElement();
         this.drawingsEventSource.textAdded.emit(
           new TextAddedDataEvent(
             temporaryTextElementValue.nativeElement.innerText.replace(/\n$/, ''),
-            event.pageX,
-            event.pageY
+            canvasX,
+            canvasY
           )
         );
         this.deactivateTextAdding();
@@ -238,8 +253,19 @@ export class TextEditorComponent implements OnInit, OnDestroy {
           Number(transformData[1].split(/,/)[0]) * self.context.transformation.k +
           self.context.getZeroZeroTransformationPoint().x +
           self.context.transformation.x;
+
+        // Get the text element's internal transform offset (e.g., translate(0, 40))
+        var textTransformData = target.getAttribute('transform');
+        var textYOffset = 0;
+        if (textTransformData) {
+          var textOffsetMatch = textTransformData.match(/translate\(0,\s*([^)]+)\)/);
+          if (textOffsetMatch) {
+            textYOffset = parseFloat(textOffsetMatch[1]) || 0;
+          }
+        }
+
         var y =
-          Number(transformData[1].split(/,/)[1]) * self.context.transformation.k +
+          (Number(transformData[1].split(/,/)[1]) + textYOffset) * self.context.transformation.k +
           self.context.getZeroZeroTransformationPoint().y +
           self.context.transformation.y;
         self.leftPosition.set(x.toString() + 'px');

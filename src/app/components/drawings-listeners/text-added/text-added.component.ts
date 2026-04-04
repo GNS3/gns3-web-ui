@@ -51,14 +51,13 @@ export class TextAddedComponent implements OnInit, OnDestroy {
     (drawing.element as TextElement).text = evt.savedText;
     let svgText = this.mapDrawingToSvgConverter.convert(drawing);
 
+    // evt.x and evt.y are canvas coordinates (like rectangle/circle)
     this.drawingService
       .add(
         this.controller(),
         this.project.project_id,
-        (evt.x - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x)) /
-          this.context.transformation.k,
-        (evt.y - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y)) /
-          this.context.transformation.k,
+        evt.x,
+        evt.y,
         svgText
       )
       .subscribe((controllerDrawing: Drawing) => {

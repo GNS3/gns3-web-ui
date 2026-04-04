@@ -7,4 +7,9 @@
   font-size: 11pt;
   font-weight: bold;
   color: var(--mat-app-on-surface-color);
+  // Align with SVG dominant-baseline: text-before-edge
+  vertical-align: top;
+  line-height: 1.2;
+  // Scale from top-left so position (left/top) remains correct
+  transform-origin: top left;
 }
