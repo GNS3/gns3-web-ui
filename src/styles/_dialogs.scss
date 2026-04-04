@@ -756,23 +756,6 @@ h2[mat-dialog-title] {
   }
 }
 
-// Export Portable Project Dialog - 700px x 850px
-.export-portable-project-dialog-panel {
-  --mat-dialog-container-max-width: 700px;
-
-  mat-dialog-container,
-  .mat-mdc-dialog-container {
-    width: 700px;
-    max-width: 700px;
-    max-height: 850px;
-  }
-
-  .mat-mdc-dialog-content {
-    max-height: calc(850px - 140px);
-    overflow-y: auto;
-  }
-}
-
 /* =============================================
 // Image Manager Dialogs
 // ============================================= */
@@ -991,28 +974,6 @@ h2[mat-dialog-title] {
 /* =============================================
 // Other Component Dialogs
 // ============================================= */
-
-// Symbols Dialog - 400px
-.symbols-dialog-panel {
-  --mat-dialog-container-max-width: 400px;
-
-  mat-dialog-container,
-  .mat-mdc-dialog-container {
-    width: 400px;
-    max-width: 400px;
-  }
-}
-
-// Logged User Dialog - 500px
-.logged-user-dialog-panel {
-  --mat-dialog-container-max-width: 500px;
-
-  mat-dialog-container,
-  .mat-mdc-dialog-container {
-    width: 500px;
-    max-width: 500px;
-  }
-}
 
 // Template Dialog - 600px
 .template-dialog-panel {
