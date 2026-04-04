@@ -133,3 +133,8 @@ svg#map path.ethernet_link:hover {
 svg#map line.line_element:hover {
   stroke: var(--mat-sys-error);
 }
+
+/* Drawing curves */
+svg#map path.curve_element:hover {
+  stroke: var(--mat-sys-error);
+}
