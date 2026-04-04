@@ -177,6 +177,21 @@ describe('WebConsoleComponent', () => {
       })
     );
 
+    // Mock matchMedia for xterm.js (JSDOM doesn't support it)
+    vi.stubGlobal(
+      'matchMedia',
+      vi.fn().mockReturnValue({
+        matches: false,
+        media: '',
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })
+    );
+
     // Store references to subjects for cleanup
     consoleResizedSubject = mockNodeConsoleService.consoleResized;
     themeChangedSubject = mockThemeService.themeChanged;
