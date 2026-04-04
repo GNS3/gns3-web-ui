@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { select } from 'd3-selection';
-import { line, curveBasis, curveCatmullRom, monotoneX as curveMonotone } from 'd3-shape';
+import { line, curveBasis, curveCatmullRom, curveMonotoneX as curveMonotone } from 'd3-shape';
 import { QtDasharrayFixer } from '../../helpers/qt-dasharray-fixer';
 import { CurveElement, CurveType } from '../../models/drawings/curve-element';
 import { LineElement } from '../../models/drawings/line-element';
