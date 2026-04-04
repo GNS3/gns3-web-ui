@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import { Injectable } from '@angular/core';
 import { SelectionManager } from '../managers/selection-manager';
 import { LayersManager } from '../managers/layers-manager';
@@ -76,9 +77,10 @@ export class GraphLayout implements Widget {
       .getPropertyValue('--mat-sys-error')
       .trim();
 
-    drawingBodies.each(function (drawing: MapDrawing) {
+    drawingBodies.each(function (drawing: MapDrawing, index, elements) {
+      const groupElement = elements[index];
       const isSelected = drawing.element && this.selectionManager.isSelected(drawing);
-      const group = canvas.select(this);
+      const group = d3.select(groupElement);
 
       // Update curve path selection state
       group.selectAll<SVGPathElement, any>('path.curve_element').classed('selected', () => this.selectionManager.isSelected(drawing));
