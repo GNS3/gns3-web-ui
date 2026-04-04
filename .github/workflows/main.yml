@@ -25,10 +25,8 @@ jobs:
           cache: 'yarn'
       - name: Install JS dependencies
         run: yarn install --frozen-lockfile --immutable
-      - name: Test Services
-        run: yarn test --include="**/services/**/*.spec.ts"
-      - name: Test Components
-        run: yarn test --include="**/components/**/*.spec.ts"
+      - name: Test
+        run: yarn ng test --watch=false
 
   lint-check:
     runs-on: ubuntu-latest
