@@ -1,73 +1,104 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { ComponentFixture } from '@angular/core/testing';
+import { TestBed } from '@angular/core/testing';
 import { ConfirmationDialogComponent, ConfirmationDialogData } from './confirmation-dialog.component';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 describe('ConfirmationDialogComponent', () => {
+  let fixture: ComponentFixture<ConfirmationDialogComponent>;
   let component: ConfirmationDialogComponent;
   let mockDialogRef: MatDialogRef<ConfirmationDialogComponent>;
 
-  const mockData: ConfirmationDialogData = {
+  const defaultDialogData: ConfirmationDialogData = {
     message: 'Are you sure?',
     title: 'Confirm Action',
     confirmButtonText: 'Yes, proceed',
     cancelButtonText: 'No, cancel',
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockDialogRef = {
       close: vi.fn(),
     } as any as MatDialogRef<ConfirmationDialogComponent>;
 
-    component = new ConfirmationDialogComponent(mockDialogRef, mockData);
+    await TestBed.configureTestingModule({
+      imports: [ConfirmationDialogComponent],
+      providers: [
+        { provide: MatDialogRef, useValue: mockDialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: defaultDialogData },
+      ],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(ConfirmationDialogComponent);
+    fixture.detectChanges();
+    component = fixture.componentInstance;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  afterEach(() => {
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
-  it('should have dialogRef', () => {
-    expect(component.dialogRef).toBeDefined();
+  describe('creation', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy();
+    });
+
+    it('should have dialogRef', () => {
+      expect(component.dialogRef).toBeDefined();
+    });
+
+    it('should have data', () => {
+      expect(component.data).toBeDefined();
+      expect(component.data.message).toBe('Are you sure?');
+    });
   });
 
-  it('should have data', () => {
-    expect(component.data).toBeDefined();
-    expect(component.data.message).toBe('Are you sure?');
+  describe('title', () => {
+    it('should return custom title from data', () => {
+      expect(component.title).toBe('Confirm Action');
+    });
+
+    it('should return default title when not provided', () => {
+      const componentWithoutTitle = new ConfirmationDialogComponent(mockDialogRef, { message: 'Test' });
+      expect(componentWithoutTitle.title).toBe('Confirm Delete');
+    });
   });
 
-  it('should return custom title from data', () => {
-    expect(component.title).toBe('Confirm Action');
+  describe('confirmButtonText', () => {
+    it('should return custom confirm button text', () => {
+      expect(component.confirmButtonText).toBe('Yes, proceed');
+    });
+
+    it('should return default confirm button text when not provided', () => {
+      const componentWithoutText = new ConfirmationDialogComponent(mockDialogRef, { message: 'Test' });
+      expect(componentWithoutText.confirmButtonText).toBe('Yes');
+    });
   });
 
-  it('should return default title when not provided', () => {
-    const componentWithoutTitle = new ConfirmationDialogComponent(mockDialogRef, { message: 'Test' });
-    expect(componentWithoutTitle.title).toBe('Confirm Delete');
+  describe('cancelButtonText', () => {
+    it('should return custom cancel button text', () => {
+      expect(component.cancelButtonText).toBe('No, cancel');
+    });
+
+    it('should return default cancel button text when not provided', () => {
+      const componentWithoutText = new ConfirmationDialogComponent(mockDialogRef, { message: 'Test' });
+      expect(componentWithoutText.cancelButtonText).toBe('No');
+    });
   });
 
-  it('should return custom confirm button text', () => {
-    expect(component.confirmButtonText).toBe('Yes, proceed');
-  });
+  describe('actions', () => {
+    it('should close dialog with false on onNoClick', () => {
+      component.onNoClick();
+      expect(mockDialogRef.close).toHaveBeenCalledWith(false);
+    });
 
-  it('should return default confirm button text when not provided', () => {
-    const componentWithoutText = new ConfirmationDialogComponent(mockDialogRef, { message: 'Test' });
-    expect(componentWithoutText.confirmButtonText).toBe('Yes');
-  });
-
-  it('should return custom cancel button text', () => {
-    expect(component.cancelButtonText).toBe('No, cancel');
-  });
-
-  it('should return default cancel button text when not provided', () => {
-    const componentWithoutText = new ConfirmationDialogComponent(mockDialogRef, { message: 'Test' });
-    expect(componentWithoutText.cancelButtonText).toBe('No');
-  });
-
-  it('should close dialog with false on onNoClick', () => {
-    component.onNoClick();
-    expect(mockDialogRef.close).toHaveBeenCalledWith(false);
-  });
-
-  it('should close dialog with true on onYesClick', () => {
-    component.onYesClick();
-    expect(mockDialogRef.close).toHaveBeenCalledWith(true);
+    it('should close dialog with true on onYesClick', () => {
+      component.onYesClick();
+      expect(mockDialogRef.close).toHaveBeenCalledWith(true);
+    });
   });
 });
