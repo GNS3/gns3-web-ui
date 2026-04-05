@@ -13,6 +13,8 @@ app-default-layout {
 // Header
 // ============================================= */
 .header {
+  position: sticky;
+  top: 0;
   box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent);
   z-index: 10;
 }
