@@ -122,12 +122,12 @@ app-chat-message-list markdown li p {
 
 app-root {
   width: 100%;
-  min-height: 100vh;
+  height: 100%; // Changed to 100%, relative to html/body
 }
 
 html,
 body {
-  min-height: 100%;
+  height: 100%; // Changed to height to ensure full viewport
   margin: 0;
   padding: 0;
 }

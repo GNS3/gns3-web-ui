@@ -1,12 +1,15 @@
 /**
  * GNS3 Default Layout Component Styles
  * Using MD3 CSS variables only
+ * Using Grid layout for proper sticky footer behavior
  */
 
-app-default-layout {
-  display: flex;
-  flex-direction: column;
+:host {
+  display: grid;
+  grid-template-rows: auto 1fr; // header auto height, main takes remaining space
   min-height: 100vh;
+  // Unified gradient background
+  background: linear-gradient(135deg, var(--mat-sys-primary-container) 0%, var(--mat-sys-background) 100%);
 }
 
 /* =============================================
@@ -39,11 +42,8 @@ app-default-layout {
 // Main Content
 // ============================================= */
 .main-content {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+  overflow-y: auto; // Allow scrolling
+  background: transparent; // Ensure transparent to show parent background
 }
 
 /* =============================================
