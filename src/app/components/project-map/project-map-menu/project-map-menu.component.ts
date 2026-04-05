@@ -164,13 +164,19 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         svgClone.style.background = background;
       }
 
-      // Resolve CSS custom properties to actual colors for SVG export
+      // Resolve CSS custom properties to actual colors for both PNG and SVG export
       const canvasColors = this.getCanvasColors(projectMap);
       this.applyCanvasColors(svgClone, canvasColors.label, canvasColors.link);
     }
 
     // Process embedded images (node symbols) to inline SVG content
     await this.processEmbeddedImages(svgClone);
+
+    // For SVG export, resolve all remaining CSS variables to computed values
+    // This ensures exported SVG works standalone without external CSS dependencies
+    if (screenshotProperties.filetype === 'svg') {
+      this.resolveAllCssVariables(svgClone, projectMap);
+    }
 
     if (screenshotProperties.filetype === 'png') {
       try {
@@ -187,12 +193,25 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       const blob = new Blob([svgStr], { type: 'image/svg+xml' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      link.href = url;
-      link.download = `${screenshotProperties.name}.svg`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
+      let linkAdded = false;
+
+      try {
+        link.href = url;
+        link.download = `${screenshotProperties.name}.svg`;
+        document.body.appendChild(link);
+        linkAdded = true;
+        link.click();
+      } catch (err) {
+        console.error('Failed to save SVG:', err);
+        this.toaster.error('Failed to save screenshot as SVG');
+        throw err;
+      } finally {
+        // Clean up resources even if an error occurs
+        if (linkAdded) {
+          document.body.removeChild(link);
+        }
+        URL.revokeObjectURL(url);
+      }
     }
   }
 
@@ -256,6 +275,55 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         linkEl.style.setProperty('stroke', linkColor);
       }
       // Custom colors are kept as-is
+    });
+  }
+
+  /**
+   * Resolve all CSS variables in SVG elements to their computed values.
+   * This ensures the exported SVG works standalone without external CSS dependencies.
+   * Only processes var() references, preserving custom colors (hex/rgb).
+   */
+  private resolveAllCssVariables(svgClone: SVGElement, contextElement: HTMLElement | null): void {
+    if (!contextElement) return;
+
+    const computedStyle = window.getComputedStyle(contextElement);
+
+    // Process all SVG elements that may have CSS variables in their styles
+    const styledElements = svgClone.querySelectorAll('*[style]');
+
+    styledElements.forEach((element) => {
+      const el = element as SVGElement;
+      const style = el.getAttribute('style');
+      if (!style) return;
+
+      // Find and replace all var(--xxx) references with computed values
+      const resolvedStyle = style.replace(/var\(([^)]+)\)/g, (match, varName) => {
+        const computedValue = computedStyle.getPropertyValue(varName).trim();
+        return computedValue || match;
+      });
+
+      // Only update if changes were made
+      if (resolvedStyle !== style) {
+        el.setAttribute('style', resolvedStyle);
+      }
+    });
+
+    // Also process SVG attributes that might contain CSS variables (like stroke, fill)
+    const svgElements = svgClone.querySelectorAll('*');
+    svgElements.forEach((element) => {
+      const el = element as SVGElement;
+      ['stroke', 'fill', 'color', 'background', 'background-color'].forEach((attr) => {
+        const value = el.getAttribute(attr);
+        if (value && value.startsWith('var(')) {
+          const varName = value.match(/var\(([^)]+)\)/)?.[1];
+          if (varName) {
+            const computedValue = computedStyle.getPropertyValue(varName).trim();
+            if (computedValue) {
+              el.setAttribute(attr, computedValue);
+            }
+          }
+        }
+      });
     });
   }
 
