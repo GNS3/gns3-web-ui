@@ -473,3 +473,24 @@ g.link:hover .link-hidden {
   opacity: 1;
   pointer-events: auto;
 }
+
+/* =============================================
+// Chips in Form Fields - Fix label overlap
+// ============================================= */
+mat-form-field {
+  mat-chip-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 16px;
+  }
+
+  .mat-mdc-form-field-subscript-wrapper {
+    margin-top: 4px;
+  }
+
+  /* Ensure label floats above chips when present */
+  .mat-mdc-form-field-flex {
+    align-items: flex-start;
+  }
+}
