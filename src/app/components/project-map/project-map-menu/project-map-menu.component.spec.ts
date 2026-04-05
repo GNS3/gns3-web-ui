@@ -131,6 +131,7 @@ describe('ProjectMapMenuComponent', () => {
       textAdded: new EventEmitter<any>(),
       textEdited: new EventEmitter<any>(),
       textSaved: new EventEmitter<any>(),
+      drawingCompleted: new Subject<string>(),
     };
 
     mockMapDrawingToSvgConverter = {
@@ -643,6 +644,347 @@ describe('ProjectMapMenuComponent', () => {
 
       // Should not throw when unsubscribing
       expect(component).toBeTruthy();
+    });
+  });
+
+  describe('resolveAllCssVariables', () => {
+    let mockSvgClone: SVGElement;
+    let mockProjectMap: HTMLElement;
+    let mockComputedStyle: any;
+
+    beforeEach(() => {
+      // Create mock SVG element with CSS variables
+      mockSvgClone = document.createElementNS('http://www.w3.org/2000/svg', 'svg') as SVGElement;
+      const mockRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect') as SVGElement;
+      mockRect.setAttribute('style', 'fill: var(--mat-sys-primary); stroke: var(--mat-sys-on-surface)');
+      mockSvgClone.appendChild(mockRect);
+
+      const mockText = document.createElementNS('http://www.w3.org/2000/svg', 'text') as SVGElement;
+      mockText.setAttribute('fill', 'var(--gns3-canvas-label-color)');
+      mockSvgClone.appendChild(mockText);
+
+      // Create mock project map element
+      mockProjectMap = document.createElement('div');
+      mockProjectMap.className = 'project-map';
+      document.body.appendChild(mockProjectMap);
+
+      // Mock getComputedStyle
+      mockComputedStyle = {
+        getPropertyValue: vi.fn((varName: string) => {
+          const mockValues: { [key: string]: string } = {
+            '--mat-sys-primary': '#2196f3',
+            '--mat-sys-on-surface': '#ffffff',
+            '--gns3-canvas-label-color': '#000000',
+          };
+          return mockValues[varName] || '';
+        }),
+      };
+    });
+
+    afterEach(() => {
+      if (mockProjectMap && mockProjectMap.parentNode) {
+        mockProjectMap.parentNode.removeChild(mockProjectMap);
+      }
+    });
+
+    it('should resolve CSS variables in style attributes', () => {
+      const getComputedStyleSpy = vi.spyOn(window, 'getComputedStyle').mockReturnValue(mockComputedStyle as any);
+
+      (component as any).resolveAllCssVariables(mockSvgClone, mockProjectMap);
+
+      const rect = mockSvgClone.querySelector('rect') as SVGElement;
+      const style = rect.getAttribute('style');
+
+      expect(style).toContain('#2196f3');
+      expect(style).toContain('#ffffff');
+      expect(style).not.toContain('var(--');
+      expect(getComputedStyleSpy).toHaveBeenCalledWith(mockProjectMap);
+    });
+
+    it('should resolve CSS variables in SVG attributes', () => {
+      const getComputedStyleSpy = vi.spyOn(window, 'getComputedStyle').mockReturnValue(mockComputedStyle as any);
+
+      (component as any).resolveAllCssVariables(mockSvgClone, mockProjectMap);
+
+      const text = mockSvgClone.querySelector('text') as SVGElement;
+      const fill = text.getAttribute('fill');
+
+      expect(fill).toBe('#000000');
+      expect(fill).not.toContain('var(--');
+    });
+
+    it('should preserve custom hex colors in attributes', () => {
+      const mockPath = document.createElementNS('http://www.w3.org/2000/svg', 'path') as SVGElement;
+      mockPath.setAttribute('stroke', '#ff0000');
+      mockSvgClone.appendChild(mockPath);
+
+      const getComputedStyleSpy = vi.spyOn(window, 'getComputedStyle').mockReturnValue(mockComputedStyle as any);
+
+      (component as any).resolveAllCssVariables(mockSvgClone, mockProjectMap);
+
+      const path = mockSvgClone.querySelector('path') as SVGElement;
+      expect(path.getAttribute('stroke')).toBe('#ff0000');
+    });
+
+    it('should return early if contextElement is null', () => {
+      // Clear previous mocks
+      vi.restoreAllMocks();
+      const getComputedStyleSpy = vi.spyOn(window, 'getComputedStyle');
+
+      (component as any).resolveAllCssVariables(mockSvgClone, null);
+
+      expect(getComputedStyleSpy).not.toHaveBeenCalled();
+    });
+
+    it('should process all SVG attributes that may contain CSS variables', () => {
+      const mockElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle') as SVGElement;
+      mockElement.setAttribute('stroke', 'var(--test-stroke)');
+      mockElement.setAttribute('fill', 'var(--test-fill)');
+      mockElement.setAttribute('color', 'var(--test-color)');
+      mockElement.setAttribute('background', 'var(--test-bg)');
+      mockElement.setAttribute('background-color', 'var(--test-bg-color)');
+      mockSvgClone.appendChild(mockElement);
+
+      const mockComputedStyleWithAll = {
+        getPropertyValue: vi.fn((varName: string) => {
+          const values: { [key: string]: string } = {
+            '--test-stroke': '#111',
+            '--test-fill': '#222',
+            '--test-color': '#333',
+            '--test-bg': '#444',
+            '--test-bg-color': '#555',
+          };
+          return values[varName] || '';
+        }),
+      };
+
+      vi.spyOn(window, 'getComputedStyle').mockReturnValue(mockComputedStyleWithAll as any);
+
+      (component as any).resolveAllCssVariables(mockSvgClone, mockProjectMap);
+
+      expect(mockElement.getAttribute('stroke')).toBe('#111');
+      expect(mockElement.getAttribute('fill')).toBe('#222');
+      expect(mockElement.getAttribute('color')).toBe('#333');
+      expect(mockElement.getAttribute('background')).toBe('#444');
+      expect(mockElement.getAttribute('background-color')).toBe('#555');
+    });
+  });
+
+  describe('saveImage - SVG export with error handling', () => {
+    let mockSvgClone: SVGElement;
+    let mockProjectMap: HTMLElement;
+    let mockRevokeObjectURLSpy: any;
+    let mockCreateObjectURLSpy: any;
+    let appendedLinks: HTMLElement[] = [];
+
+    beforeEach(() => {
+      appendedLinks = [];
+
+      // Create mock map element
+      const mockMapElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg') as SVGElement;
+      mockMapElement.id = 'map';
+      mockMapElement.setAttribute('width', '2000');
+      mockMapElement.setAttribute('height', '1000');
+      document.body.appendChild(mockMapElement);
+
+      // Create mock SVG clone element
+      mockSvgClone = document.createElementNS('http://www.w3.org/2000/svg', 'svg') as SVGElement;
+      const mockRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect') as SVGElement;
+      mockSvgClone.appendChild(mockRect);
+
+      // Create mock project map element
+      mockProjectMap = document.createElement('div');
+      mockProjectMap.className = 'project-map';
+      document.body.appendChild(mockProjectMap);
+
+      // Mock URL.createObjectURL and URL.revokeObjectURL
+      mockCreateObjectURLSpy = vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-url');
+      mockRevokeObjectURLSpy = vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {});
+
+      // Mock document methods to track appended elements
+      vi.spyOn(document.body, 'appendChild').mockImplementation((el: any) => {
+        appendedLinks.push(el);
+        return el;
+      });
+      vi.spyOn(document.body, 'removeChild').mockImplementation((el: any) => {
+        const index = appendedLinks.indexOf(el);
+        if (index > -1) {
+          appendedLinks.splice(index, 1);
+        }
+        return el;
+      });
+
+      // Mock getComputedStyle
+      const mockComputedStyle = {
+        getPropertyValue: vi.fn(() => '#000000'),
+      };
+      vi.spyOn(window, 'getComputedStyle').mockReturnValue(mockComputedStyle as any);
+    });
+
+    afterEach(() => {
+      // Clean up any remaining appended elements
+      appendedLinks.forEach((el) => {
+        if (el.parentNode) {
+          el.parentNode.removeChild(el);
+        }
+      });
+      appendedLinks = [];
+
+      if (mockProjectMap && mockProjectMap.parentNode) {
+        mockProjectMap.parentNode.removeChild(mockProjectMap);
+      }
+
+      // Clean up mock map element
+      const mockMapElement = document.getElementById('map');
+      if (mockMapElement && mockMapElement.parentNode) {
+        mockMapElement.parentNode.removeChild(mockMapElement);
+      }
+
+      vi.restoreAllMocks();
+    });
+
+    it('should call URL.revokeObjectURL even when SVG export succeeds', async () => {
+      const screenshotProperties = {
+        filetype: 'svg' as const,
+        name: 'test-screenshot',
+      };
+
+      // Mock saveImage internal implementation
+      vi.spyOn(component as any, 'processEmbeddedImages').mockResolvedValue(undefined);
+
+      // Call saveImage via takeScreenshot flow or directly
+      await (component as any).saveImage(screenshotProperties);
+
+      expect(mockRevokeObjectURLSpy).toHaveBeenCalledWith('blob:mock-url');
+    });
+
+    it('should show toaster error and call URL.revokeObjectURL when SVG export fails', async () => {
+      const screenshotProperties = {
+        filetype: 'svg' as const,
+        name: 'test-screenshot',
+      };
+
+      // Mock processEmbeddedImages
+      vi.spyOn(component as any, 'processEmbeddedImages').mockResolvedValue(undefined);
+
+      // Create a mock link that throws on click
+      let clickCalled = false;
+      const mockLink = {
+        href: '',
+        download: '',
+        click: vi.fn(() => {
+          clickCalled = true;
+          throw new Error('Export failed');
+        }),
+      };
+
+      // Track when createElement is called
+      vi.spyOn(document, 'createElement').mockReturnValue(mockLink as any);
+
+      // Call saveImage
+      let errorThrown = false;
+      try {
+        await (component as any).saveImage(screenshotProperties);
+      } catch (err) {
+        errorThrown = true;
+        expect((err as Error).message).toBe('Export failed');
+      }
+
+      expect(clickCalled).toBe(true);
+      expect(errorThrown).toBe(true);
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to save screenshot as SVG');
+      expect(mockRevokeObjectURLSpy).toHaveBeenCalled();
+    });
+
+    it('should only remove link from DOM if it was successfully added', async () => {
+      const screenshotProperties = {
+        filetype: 'svg' as const,
+        name: 'test-screenshot',
+      };
+
+      // Mock processEmbeddedImages
+      vi.spyOn(component as any, 'processEmbeddedImages').mockResolvedValue(undefined);
+
+      // Create a mock link
+      const mockLink = {
+        href: '',
+        download: '',
+        click: vi.fn(),
+      };
+
+      vi.spyOn(document, 'createElement').mockReturnValue(mockLink as any);
+
+      // Make appendChild throw after linkAdded would be set to true
+      // Actually, looking at the code, linkAdded is set AFTER appendChild succeeds
+      // So if appendChild throws, linkAdded remains false
+      let appendChildCalled = false;
+      vi.spyOn(document.body, 'appendChild').mockImplementation((el: any) => {
+        appendChildCalled = true;
+        throw new Error('appendChild failed');
+      });
+
+      // Call saveImage
+      let errorThrown = false;
+      try {
+        await (component as any).saveImage(screenshotProperties);
+      } catch (err) {
+        errorThrown = true;
+      }
+
+      expect(appendChildCalled).toBe(true);
+      expect(errorThrown).toBe(true);
+      expect(mockRevokeObjectURLSpy).toHaveBeenCalled();
+
+      // Link should not be in appendedLinks because appendChild threw
+      expect(appendedLinks.length).toBe(0);
+    });
+
+    it('should call resolveAllCssVariables when filetype is svg', async () => {
+      const screenshotProperties = {
+        filetype: 'svg' as const,
+        name: 'test-screenshot',
+      };
+
+      // Mock processEmbeddedImages
+      vi.spyOn(component as any, 'processEmbeddedImages').mockResolvedValue(undefined);
+
+      // Spy on resolveAllCssVariables
+      const resolveCssVarsSpy = vi.spyOn(component as any, 'resolveAllCssVariables');
+
+      // Mock document.createElement to return a valid link
+      vi.spyOn(document, 'createElement').mockReturnValue({
+        href: '',
+        download: '',
+        click: vi.fn(),
+      } as any);
+
+      await (component as any).saveImage(screenshotProperties);
+
+      expect(resolveCssVarsSpy).toHaveBeenCalledWith(expect.anything(), mockProjectMap);
+    });
+
+    it('should NOT call resolveAllCssVariables when filetype is png', async () => {
+      const screenshotProperties = {
+        filetype: 'png' as const,
+        name: 'test-screenshot',
+      };
+
+      // Spy on resolveAllCssVariables
+      const resolveCssVarsSpy = vi.spyOn(component as any, 'resolveAllCssVariables');
+
+      // Mock saveSvgAsPng
+      vi.doMock('save-svg-as-png', () => ({
+        saveSvgAsPng: vi.fn(),
+      }));
+
+      // Call saveImage
+      try {
+        await (component as any).saveImage(screenshotProperties);
+      } catch (err) {
+        // Expected - saveSvgAsPng is mocked
+      }
+
+      expect(resolveCssVarsSpy).not.toHaveBeenCalled();
     });
   });
 });
