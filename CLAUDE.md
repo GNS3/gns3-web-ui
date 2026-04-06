@@ -141,7 +141,9 @@ loadData() {
 
 ### Material Theme Variables
 
-**All colors must use `--mat-sys-*` variables.**
+**All colors must use `--mat-sys-*` variables. No fallback colors allowed.**
+
+> **⚠️ No fallback values**: Do not use fallback colors like `var(--mat-sys-primary, #6750A4)`. Material Design 3 variables are always defined in themes.
 
 | Category | Prefix | Purpose |
 |----------|--------|---------|
@@ -180,6 +182,9 @@ loadData() {
 
 // ❌ Wrong: Hardcoded colors
 .button { background-color: #2196f3; }
+
+// ❌ Wrong: Fallback colors (not allowed)
+.button { background-color: var(--mat-sys-primary, #6750A4); }
 ```
 
 ### Dialog Styling
