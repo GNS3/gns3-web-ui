@@ -155,7 +155,7 @@ export class LineDrawingWidget implements DrawingShapeWidget {
     });
 
     // Clean up old markers
-    const activeDrawingIds = new Set(view.selectAll('path.curve_element').data().map((d) => d.id));
+    const activeDrawingIds = new Set(view.selectAll('path.curve_element').data().map((d: MapDrawing) => d.id));
 
     defs.selectAll('marker[id^="arrow-"]').each(function() {
       const markerId = select(this).attr('id');
