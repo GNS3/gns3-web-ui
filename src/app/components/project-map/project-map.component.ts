@@ -159,8 +159,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public links: Link[] = [];
   public drawings: Drawing[] = [];
   public symbols: Symbol[] = [];
-  public project: Project;
-  public controller: Controller;
+  public project: Project = {} as Project;
+  public controller: Controller = {} as Controller;
   public projectws: WebSocket;
   public ws: WebSocket;
   public isProjectMapMenuVisible: boolean = false;
@@ -204,7 +204,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   };
 
   protected settings: Settings;
-  private inReadOnlyMode = false;
+  inReadOnlyMode = false;
   readonly contextMenu = viewChild(ContextMenuComponent);
   readonly mapChild = viewChild(D3MapComponent);
   readonly projectMapMenuComponent = viewChild.required(ProjectMapMenuComponent);

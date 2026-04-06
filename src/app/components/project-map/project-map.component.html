@@ -1,4 +1,3 @@
-@if (project) {
 <div class="project-map" #projectMap [class.pan-mode]="tools.moving" [ngClass]="mapBgClass()">
   <!-- Project Titlebar -->
   <div id="project-titlebar">
@@ -156,14 +155,10 @@
     [nodes]="nodes()"
     [links]="links"
     [drawings]="drawings"
-    [width]="project.scene_width"
-    [height]="project.scene_height"
+    [width]="project.scene_width || 2000"
+    [height]="project.scene_height || 2000"
     [show-interface-labels]="isInterfaceLabelVisible"
     [readonly]="inReadOnlyMode"
-    (nodeDragged)="onNodeDragged($event)"
-    (drawingDragged)="onDrawingDragged($event)"
-    (onLinkCreated)="onLinkCreated($event)"
-    (onDrawingResized)="onDrawingResized($event)"
   >
   </app-d3-map>
 
@@ -266,6 +261,5 @@
   <app-ai-chat [project]="project" [controller]="controller" (closed)="closeAIChat()"> </app-ai-chat>
   }
 </div>
-}
 
 <ng-template #topologySummaryContainer></ng-template>
