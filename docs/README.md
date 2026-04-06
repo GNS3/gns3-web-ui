@@ -34,6 +34,8 @@ docs/
 │   │   └── map-backgrounds.md
 │   ├── dialog-style-isolation.md
 │   └── window-boundary-service.md
+├── known-issues/               # Known issues (won't fix)
+│   └── route-transition-white-flash.md
 ├── todo/                        # Optimization tasks
 │   └── optimization-todos.md
 └── archive/                     # Historical & deprecated docs
@@ -86,6 +88,14 @@ docs/
 
 ---
 
+### Known Issues
+
+| Document | Description |
+|----------|-------------|
+| [Route Transition White Flash](./known-issues/route-transition-white-flash.md) | White flash during Projects → ProjectMap navigation |
+
+---
+
 ### Archive
 
 #### Bug Fixes
@@ -126,6 +136,14 @@ docs/
 ---
 
 ## Recent Changes
+
+### 2026-04-06
+
+- 📝 **Known Issues Documentation**: Added route transition white flash issue
+  - Documented white flash during Projects → ProjectMap navigation
+  - Root cause analysis: Layout discontinuity between DefaultLayout and ProjectMap
+  - Assessment: Known issue, won't fix due to high cost/low benefit
+  - Documentation: [known-issues/route-transition-white-flash.md](./known-issues/route-transition-white-flash.md)
 
 ### 2026-04-03
 
