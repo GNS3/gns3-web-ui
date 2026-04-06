@@ -129,7 +129,7 @@ export class CurveDrawingComponent implements OnInit, OnDestroy {
 
     const previewGroup = this.canvasGroup.select<SVGGElement>('g.curve-preview');
     this.previewPath = previewGroup.append<SVGPathElement>('path')
-      .attr('stroke', '#000')
+      .attr('stroke', 'var(--gns3-canvas-link-color)')
       .attr('stroke-width', '2')
       .attr('fill', 'none')
       .attr('stroke-dasharray', '5,5');
@@ -173,7 +173,7 @@ export class CurveDrawingComponent implements OnInit, OnDestroy {
     // Get default stroke color from CSS variable
     const defaultStrokeColor = getComputedStyle(document.documentElement)
       .getPropertyValue('--gns3-canvas-link-color')
-      .trim() || '#000000';
+      .trim() || 'var(--gns3-canvas-link-color)';
     curveElement.stroke = defaultStrokeColor;
 
     curveElement.stroke_width = 3;

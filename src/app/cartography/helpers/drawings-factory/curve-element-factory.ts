@@ -7,7 +7,7 @@ import { DrawingElementFactory } from './drawing-element-factory';
 export class CurveElementFactory implements DrawingElementFactory {
   getDrawingElement(): DrawingElement {
     let curveElement = new CurveElement();
-    curveElement.stroke = '#000000';
+    curveElement.stroke = 'var(--gns3-canvas-link-color)';
     curveElement.stroke_width = 2;
     curveElement.stroke_dasharray = 'none';
     curveElement.points = [
