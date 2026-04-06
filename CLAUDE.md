@@ -2,7 +2,7 @@
 
 > Essential information for Claude Code to work effectively with the GNS3 Web UI project.
 
-**Last Updated**: 2026-03-30
+**Last Updated**: 2026-04-06
 
 ---
 
@@ -28,10 +28,10 @@
 | UI Library | Angular Material 21.0.0 (MDC-based) |
 | State Management | Signals (modern) + RxJS (legacy) |
 | Change Detection | Zoneless (no Zone.js) |
-| Styling | SCSS, Bootstrap 5.3.8, Tailwind CSS 3.4.19 |
+| Styling | SCSS (196 files), Bootstrap 5.3.8, Angular Material 21.0.0 |
 | Map Rendering | D3.js (dagre-d3-es) |
-| Terminal Emulation | xterm.js 5.3.0 |
-| Testing | Karma + Jasmine |
+| Terminal Emulation | xterm.js 5.5.0 |
+| Testing | Vitest 4.1.2 |
 
 ---
 
@@ -40,8 +40,8 @@
 ```
 gns3-web-ui/
 ├── src/app/
-│   ├── components/         # 97 component directories
-│   ├── services/           # 31 services
+│   ├── components/         # 32 component directories
+│   ├── services/           # 137 service files
 │   ├── stores/             # State management (AI Chat store)
 │   ├── models/             # TypeScript interfaces
 │   ├── cartography/        # D3.js map rendering
@@ -237,7 +237,8 @@ const dialogRef = this.dialog.open(MyDialogComponent, {
 
 ### Current Status
 
-- **OnPush Migrated**: ~105 components (42%)
+- **Total Components**: 245 component files
+- **OnPush Applied**: 248 files (100% migration complete)
 - **Zoneless Compatible**: 100%
 
 ### Key Patterns
@@ -302,11 +303,15 @@ readonly value = input<string>('');
 
 | Document | Description |
 |----------|-------------|
-| `docs/features/ai-chat/ai-chat-guide.md` | AI Chat implementation |
+| `docs/features/ai-chat/ai-chat-guide.md` | ⭐ AI Chat implementation guide |
 | `docs/features/context-menu.md` | Context menu (38 actions) |
-| `docs/framework/angular-21/zoneless-guide.md` | Zoneless patterns |
-| `docs/guides/dialog-style-isolation.md` | Dialog styling architecture |
-| `docs/guides/css/02-material3-variables.md` | CSS variable reference |
+| `docs/framework/angular-21/zoneless-guide.md` | ⭐ Zoneless patterns |
+| `docs/framework/angular-21/vitest-test-isolation-guide.md` | ⭐ Test environment pollution fix |
+| `docs/framework/angular-21/migration-progress.md` | Migration status tracking |
+| `docs/guides/dialog-style-isolation.md` | ⭐ Dialog styling architecture |
+| `docs/guides/css/02-material3-variables.md` | Material Design 3 CSS variables |
+| `docs/guides/css/hardcoded-color-protection.md` | ⭐ Multi-layer color protection mechanism |
+| `docs/known-issues/route-transition-white-flash.md` | Route transition white flash issue |
 
 ---
 
