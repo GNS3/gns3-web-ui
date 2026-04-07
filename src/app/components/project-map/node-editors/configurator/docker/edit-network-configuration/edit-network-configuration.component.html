@@ -2,7 +2,7 @@
 
 @if (node) {
 <div class="modal-form-container">
-  <textarea matInput [(ngModel)]="configuration" class="textArea" type="text"></textarea>
+  <textarea matInput [value]="configuration()" (input)="configuration.set($event.target.value)" class="textArea" type="text"></textarea>
 </div>
 }
 

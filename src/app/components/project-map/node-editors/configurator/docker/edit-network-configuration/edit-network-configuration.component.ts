@@ -1,6 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, ChangeDetectorRef, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -13,7 +12,7 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-edit-network-configuration',
   templateUrl: './edit-network-configuration.component.html',
   styleUrl: './edit-network-configuration.component.scss',
-  imports: [CommonModule, FormsModule, MatDialogModule, MatInputModule, MatButtonModule],
+  imports: [CommonModule, MatDialogModule, MatInputModule, MatButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditNetworkConfigurationDialogComponent implements OnInit {
@@ -24,20 +23,20 @@ export class EditNetworkConfigurationDialogComponent implements OnInit {
 
   controller: Controller;
   node: Node;
-  configuration: string;
+  readonly configuration = model('');
 
   constructor() {}
 
   ngOnInit() {
     this.nodeService.getNetworkConfiguration(this.controller, this.node).subscribe((response: string) => {
-      this.configuration = response;
+      this.configuration.set(response);
       this.cdr.markForCheck();
     });
   }
 
   onSaveClick() {
     this.nodeService
-      .saveNetworkConfiguration(this.controller, this.node, this.configuration)
+      .saveNetworkConfiguration(this.controller, this.node, this.configuration())
       .subscribe((response: string) => {
         this.onCancelClick();
         this.toasterService.success(`Configuration for node ${this.node.name} saved.`);
