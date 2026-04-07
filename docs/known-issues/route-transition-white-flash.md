@@ -155,10 +155,21 @@ Target:
 
 **Mitigation Strategies**:
 - ✅ **Completed**: Fixed ProjectMapComponent tests with comprehensive mocking
-- 🔄 **Recommended**: Create separate unit tests for DrawingAddedComponent
+- ✅ **Completed**: DrawingAddedComponent has its own unit tests (8 tests, all passing)
+  - File: `src/app/components/drawings-listeners/drawing-added/drawing-added.component.spec.ts`
+  - Includes dedicated `ngOnDestroy` test that verifies subscription cleanup
+  - Independent testing ensures cleanup logic is properly validated
 - 🔄 **Recommended**: Add integration tests for cartography module
 - 🔄 **Recommended**: Periodically review NO_ERRORS_SCHEMA usage
 - 🔄 **Recommended**: Consider refactoring to reduce deep dependency chains
+
+**Test Coverage Verification**:
+```bash
+# DrawingAddedComponent tests (independent unit tests)
+$ yarn ng test --include="**/drawing-added.component.spec.ts"
+✅ 8/8 tests passing
+✅ Includes ngOnDestroy cleanup verification
+```
 
 **Status**: ✅ **Resolved** - Tests passing with workarounds documented
 
