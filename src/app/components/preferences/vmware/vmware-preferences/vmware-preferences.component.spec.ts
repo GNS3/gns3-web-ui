@@ -76,11 +76,11 @@ describe('VmwarePreferencesComponent', () => {
     expect(component.controller).toEqual(mockController);
   });
 
-  it('should have vmrunPath initially undefined', () => {
+  it('should have vmrunPath initially empty string', () => {
     const newFixture = TestBed.createComponent(VmwarePreferencesComponent);
     const newComponent = newFixture.componentInstance;
-    // vmrunPath is not initialized in the component, so it is undefined
-    expect(newComponent.vmrunPath()).toBeUndefined();
+    // vmrunPath is initialized with empty string in the component
+    expect(newComponent.vmrunPath()).toBe('');
   });
 
   it('should restore vmrunPath to empty string when restoreDefaults is called', () => {

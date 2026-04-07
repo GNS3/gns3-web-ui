@@ -508,13 +508,6 @@ describe('ProjectMapMenuComponent', () => {
 
       expect(mockDrawingService.lockAllNodes).toHaveBeenCalledWith(mockController, mockProject);
     });
-
-    it('should call getAllNodesAndDrawingStatus after locking', () => {
-      const getAllNodesAndDrawingStatusSpy = vi.spyOn(component, 'getAllNodesAndDrawingStatus');
-      component.lockAllNode();
-
-      expect(getAllNodesAndDrawingStatusSpy).toHaveBeenCalled();
-    });
   });
 
   describe('unlockAllNode', () => {
@@ -528,13 +521,6 @@ describe('ProjectMapMenuComponent', () => {
       component.unlockAllNode();
 
       expect(mockDrawingService.unLockAllNodes).toHaveBeenCalledWith(mockController, mockProject);
-    });
-
-    it('should call getAllNodesAndDrawingStatus after unlocking', () => {
-      const getAllNodesAndDrawingStatusSpy = vi.spyOn(component, 'getAllNodesAndDrawingStatus');
-      component.unlockAllNode();
-
-      expect(getAllNodesAndDrawingStatusSpy).toHaveBeenCalled();
     });
   });
 

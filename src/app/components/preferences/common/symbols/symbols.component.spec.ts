@@ -72,6 +72,12 @@ describe('SymbolsComponent', () => {
     mockSymbolService = {
       list: vi.fn().mockReturnValue(of(mockSymbols)),
       delete: vi.fn().mockReturnValue(of({})),
+      getSymbolBlobUrl: vi.fn().mockImplementation((controller: Controller, path: string) => {
+        // Generate blob URL based on controller and path
+        const symbolId = path.split('/')[2]; // Extract symbol_id from /symbols/{symbol_id}/raw
+        const url = `${controller.protocol}//${controller.host}:${controller.port}/v3/symbols/${symbolId}/raw`;
+        return of(`blob:${url}`);
+      }),
     };
 
     await TestBed.configureTestingModule({

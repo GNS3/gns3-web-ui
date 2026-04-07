@@ -101,7 +101,7 @@ describe('VirtualBoxPreferencesComponent', () => {
     });
 
     it('should set vboxManagePath to empty string initially', () => {
-      expect(component.vboxManagePath()).toBeUndefined();
+      expect(component.vboxManagePath()).toBe('');
     });
   });
 

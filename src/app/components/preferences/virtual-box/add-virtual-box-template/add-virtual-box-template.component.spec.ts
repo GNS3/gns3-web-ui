@@ -77,6 +77,8 @@ describe('AddVirtualBoxTemplateComponent', () => {
   });
 
   beforeEach(async () => {
+    vi.useFakeTimers();
+
     mockController = createMockController();
     mockVirtualBoxVm = createMockVirtualBoxVm();
     mockVirtualBoxTemplate = createMockVirtualBoxTemplate();
@@ -130,6 +132,7 @@ describe('AddVirtualBoxTemplateComponent', () => {
 
   afterEach(() => {
     fixture.destroy();
+    vi.useRealTimers();
   });
 
   describe('Creation', () => {
@@ -159,9 +162,12 @@ describe('AddVirtualBoxTemplateComponent', () => {
   });
 
   describe('ngOnInit', () => {
-    it('should show deprecation warning via toasterService.error', () => {
+    it('should show deprecation warning via toasterService.error', async () => {
       component.ngOnInit();
       fixture.detectChanges();
+
+      // Wait for setTimeout in ngOnInit
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith(
         'VirtualBox VM support is deprecated and will be removed in a future version, please use Qemu VMs instead'

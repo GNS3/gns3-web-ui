@@ -206,7 +206,7 @@ describe('GroupDetailDialogComponent', () => {
     });
 
     it('should initialize searchMembers as empty string', () => {
-      expect(component.searchMembers).toBe('');
+      expect(component.searchMembers()).toBe('');
     });
 
     it('should set aceDisplayedColumns with correct columns', () => {

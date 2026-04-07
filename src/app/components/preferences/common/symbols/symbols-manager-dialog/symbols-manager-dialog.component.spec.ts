@@ -44,6 +44,16 @@ describe('SymbolsManagerDialogComponent', () => {
       add: vi.fn(),
       addFile: vi.fn(),
       delete: vi.fn().mockReturnValue(of({})),
+      getSymbolBlobUrl: vi.fn().mockImplementation((controller: Controller, path: string) => {
+        // Return empty string if controller is undefined
+        if (!controller) {
+          return of('');
+        }
+        // Generate blob URL based on controller and path
+        const symbolId = path.split('/')[2]; // Extract symbol_id from /symbols/{symbol_id}/raw
+        const url = `${controller.protocol}//${controller.host}:${controller.port}/v3/symbols/${symbolId}/raw`;
+        return of(`blob:${url}`);
+      }),
     };
 
     await TestBed.configureTestingModule({
@@ -153,9 +163,10 @@ describe('SymbolsManagerDialogComponent', () => {
       expect(imageUrl).toContain('router');
     });
 
-    it('should return empty string if controller is undefined', () => {
-      component.controller.set(undefined as any);
-      const imageUrl = component.getImageSource('router');
+    it('should return empty string if symbol is not in cache', () => {
+      // Clear the cache to simulate symbol not loaded
+      component.symbolBlobUrls.clear();
+      const imageUrl = component.getImageSource('non_existent_symbol');
       expect(imageUrl).toBe('');
     });
   });

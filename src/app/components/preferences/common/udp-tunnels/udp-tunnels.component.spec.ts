@@ -13,6 +13,8 @@ describe('UdpTunnelsComponent', () => {
   const mockPortTypes = ['access', 'dot1q', 'qinq'];
 
   beforeEach(async () => {
+    TestBed.resetTestingModule();
+
     mockBuiltInTemplatesConfigurationService = {
       getEtherTypesForEthernetSwitches: vi.fn().mockReturnValue(mockEtherTypes),
       getPortTypesForEthernetSwitches: vi.fn().mockReturnValue(mockPortTypes),

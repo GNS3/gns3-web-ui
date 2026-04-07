@@ -124,7 +124,7 @@ describe('DynamipsPreferencesComponent', () => {
 
   describe('dynamipsPath binding', () => {
     it('should have dynamipsPath property bound via ngModel', () => {
-      expect(component.dynamipsPath()).toBeUndefined();
+      expect(component.dynamipsPath()).toBe('');
     });
   });
 });

@@ -80,6 +80,8 @@ describe('EthernetSwitchesAddTemplateComponent', () => {
       error: vi.fn(),
     };
 
+    TestBed.resetTestingModule();
+
     await TestBed.configureTestingModule({
       imports: [EthernetSwitchesAddTemplateComponent],
       providers: [

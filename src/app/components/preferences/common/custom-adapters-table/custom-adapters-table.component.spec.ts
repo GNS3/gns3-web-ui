@@ -71,7 +71,7 @@ describe('CustomAdaptersTableComponent', () => {
       expect(fixture.componentInstance.adapters()[1].adapter_number).toBe(1);
     });
 
-    it('should set adapter_type to first networkType object when networkTypes is provided', () => {
+    it('should set adapter_type to first networkType value when networkTypes is provided', () => {
       const networkTypes = [createMockNetworkType('virtio', 'Virtio'), createMockNetworkType('e1000', 'E1000')];
 
       // Set networkTypes via setInput - this properly updates signal inputs
@@ -81,8 +81,8 @@ describe('CustomAdaptersTableComponent', () => {
       fixture.componentInstance.onAdd();
       fixture.detectChanges();
 
-      // Component stores the entire networkType object (not just .value)
-      expect(fixture.componentInstance.adapters()[0].adapter_type).toEqual(networkTypes[0]);
+      // Component stores only the .value part of the networkType object
+      expect(fixture.componentInstance.adapters()[0].adapter_type).toEqual('virtio');
     });
 
     it('should not crash when networkTypes is empty', () => {

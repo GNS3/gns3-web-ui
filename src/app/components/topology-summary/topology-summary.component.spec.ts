@@ -222,6 +222,8 @@ describe('TopologySummaryComponent', () => {
       readonly: false,
     } as Project;
 
+    TestBed.resetTestingModule();
+
     await TestBed.configureTestingModule({
       imports: [TopologySummaryComponent],
       providers: [
@@ -241,7 +243,9 @@ describe('TopologySummaryComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
     localStorage.clear();
   });
 

@@ -31,6 +31,8 @@ describe('QemuImageCreatorComponent', () => {
   const mockNodeId = 'node-456';
 
   beforeEach(async () => {
+    TestBed.resetTestingModule();
+
     mockDialogRef = {
       close: vi.fn(),
     };
