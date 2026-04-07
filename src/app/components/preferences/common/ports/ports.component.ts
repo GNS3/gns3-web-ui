@@ -1,6 +1,5 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,7 +19,6 @@ import { ToasterService } from '@services/toaster.service';
   styleUrls: ['./ports.component.scss'],
   imports: [
     CommonModule,
-    FormsModule,
     MatTableModule,
     MatButtonModule,
     MatIconModule,
@@ -34,13 +32,11 @@ import { ToasterService } from '@services/toaster.service';
 })
 export class PortsComponent implements OnInit {
   @Input() ethernetPorts: PortsMappingEntity[] = [];
-  newPort: PortsMappingEntity = {
-    name: '',
-    port_number: 0,
-    vlan: 1,
-    type: 'access',
-    ethertype: '0x8100',
-  };
+
+  readonly newPortNumber = model<number>(0);
+  readonly newPortVlan = model<number>(1);
+  readonly newPortType = model<string>('access');
+  readonly newPortEthertype = model<string>('0x8100');
 
   private builtInTemplatesConfigurationService = inject(BuiltInTemplatesConfigurationService);
   private toasterService = inject(ToasterService);
@@ -51,7 +47,7 @@ export class PortsComponent implements OnInit {
 
   ngOnInit() {
     this.getConfiguration();
-    this.newPort.port_number = this.ethernetPorts.length;
+    this.newPortNumber.set(this.ethernetPorts.length);
   }
 
   getConfiguration() {
@@ -60,17 +56,22 @@ export class PortsComponent implements OnInit {
   }
 
   onAdd() {
-    const portExists = this.ethernetPorts.some((p) => p.port_number === this.newPort.port_number);
+    const portExists = this.ethernetPorts.some((p) => p.port_number === this.newPortNumber());
     if (portExists) {
-      this.toasterService.error(`Port number ${this.newPort.port_number} already exists.`);
+      this.toasterService.error(`Port number ${this.newPortNumber()} already exists.`);
       return;
     }
 
-    const port: PortsMappingEntity = { ...this.newPort };
-    port.name = 'Ethernet' + port.port_number;
+    const port: PortsMappingEntity = {
+      name: 'Ethernet' + this.newPortNumber(),
+      port_number: this.newPortNumber(),
+      vlan: this.newPortVlan(),
+      type: this.newPortType(),
+      ethertype: this.newPortEthertype(),
+    };
     this.ethernetPorts.push(port);
     this.ethernetPorts = [].concat(this.ethernetPorts); // this forces the refresh of the table
-    this.newPort.port_number = this.ethernetPorts.length;
+    this.newPortNumber.set(this.ethernetPorts.length);
   }
 
   delete(port: PortsMappingEntity) {

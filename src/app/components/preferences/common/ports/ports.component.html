@@ -35,13 +35,13 @@
 
   <div class="ports__add-row">
     <mat-form-field class="ports__field">
-      <input matInput type="number" min="0" [(ngModel)]="newPort.port_number" placeholder="Port" />
+      <input matInput type="number" min="0" [value]="newPortNumber()" (input)="newPortNumber.set(+$event.target.value)" placeholder="Port" />
     </mat-form-field>
     <mat-form-field class="ports__field">
-      <input matInput type="number" min="1" max="65535" [(ngModel)]="newPort.vlan" placeholder="VLAN" />
+      <input matInput type="number" min="1" max="65535" [value]="newPortVlan()" (input)="newPortVlan.set(+$event.target.value)" placeholder="VLAN" />
     </mat-form-field>
     <mat-form-field class="ports__field">
-      <mat-select placeholder="Type" [ngModelOptions]="{ standalone: true }" [(ngModel)]="newPort.type">
+      <mat-select placeholder="Type" [value]="newPortType()" (selectionChange)="newPortType.set($event.value)">
         @for (type of portTypes(); track type) {
         <mat-option [value]="type">
           {{ type }}
@@ -50,7 +50,7 @@
       </mat-select>
     </mat-form-field>
     <mat-form-field class="ports__field">
-      <mat-select placeholder="EtherType" [ngModelOptions]="{ standalone: true }" [(ngModel)]="newPort.ethertype">
+      <mat-select placeholder="EtherType" [value]="newPortEthertype()" (selectionChange)="newPortEthertype.set($event.value)">
         @for (type of etherTypes(); track type) {
         <mat-option [value]="type">
           {{ type }}
