@@ -8,6 +8,7 @@ import {
   OnInit,
   ViewChild,
   inject,
+  model,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -71,7 +72,7 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
   dataSource: ControllerDataSource | null = null;
   displayedColumns = ['id', 'name', 'status', 'location', 'ip', 'port', 'actions'];
   controllerStatusSubscription: Subscription;
-  searchText: string = '';
+  readonly searchText = model('');
   private readonly minStartingDisplayMs = 700;
   private readonly statusRefreshIntervalMs = 5000;
   private startingTimestamps: Map<string, number> = new Map();
@@ -301,6 +302,7 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onSearchChange(value: string) {
+    this.searchText.set(value);
     if (this.dataSource) {
       this.dataSource.setFilter(value);
     }
