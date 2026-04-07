@@ -14,7 +14,7 @@
     <mat-form-field class="input-field">
       <input placeholder="File name" formControlName="fileName" matInput type="text" />
     </mat-form-field>
-    <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="startProgram">
+    <mat-checkbox [checked]="startProgram()" (change)="startProgram.set($event.checked)">
       Start the capture visualization program
     </mat-checkbox>
   </form>

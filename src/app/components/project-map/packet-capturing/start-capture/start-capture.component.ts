@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   UntypedFormBuilder,
@@ -6,7 +6,6 @@ import {
   UntypedFormGroup,
   Validators,
   ReactiveFormsModule,
-  FormsModule,
 } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -31,7 +30,6 @@ import { PacketFiltersDialogComponent } from '../packet-filters/packet-filters.c
   styleUrl: './start-capture.component.scss',
   imports: [
     CommonModule,
-    FormsModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatButtonModule,
@@ -48,7 +46,7 @@ export class StartCaptureDialogComponent implements OnInit {
   link: Link;
   linkTypes = [];
   inputForm: UntypedFormGroup;
-  startProgram: boolean;
+  readonly startProgram = model(false);
 
   private dialogRef = inject(MatDialogRef<PacketFiltersDialogComponent>);
   private linkService = inject(LinkService);
@@ -105,7 +103,7 @@ export class StartCaptureDialogComponent implements OnInit {
         data_link_type: this.inputForm.get('linkType').value,
       };
 
-      if (this.startProgram) {
+      if (this.startProgram()) {
         this.packetCaptureService.startCapture(
           this.controller,
           this.project,
