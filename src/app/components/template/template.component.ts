@@ -1,6 +1,7 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   OnDestroy,
@@ -11,6 +12,7 @@ import {
   Inject,
   signal,
   model,
+  effect,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -64,6 +66,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
   private themeService = inject(ThemeService);
   private overlayContainer = inject(OverlayContainer);
   private context = inject(Context);
+  private cd = inject(ChangeDetectorRef);
 
   readonly controller = input<Controller>(undefined);
   readonly project = input<Project>(undefined);
@@ -113,20 +116,37 @@ export class TemplateComponent implements OnInit, OnDestroy {
   private themeSubscription: Subscription;
   private isLightThemeEnabled: boolean = false;
 
+  // Watch for controller changes and reload templates when it becomes available
+  private controllerWatcher = effect(() => {
+    const ctrl = this.controller();
+    if (ctrl && ctrl.id && this.templates.length === 0) {
+      this.loadTemplates();
+    }
+  });
+
   ngOnInit() {
     this.subscription = this.templateService.newTemplateCreated.subscribe((template: Template) => {
       this.templates.push(template);
+      this.cd.markForCheck();
     });
 
-    this.templateService.list(this.controller()).subscribe((listOfTemplates: Template[]) => {
-      this.filteredTemplates = listOfTemplates;
-      this.sortTemplates();
-      this.templates = listOfTemplates;
-    });
+    // Only load templates if controller is available
+    if (this.controller() && this.controller().id) {
+      this.loadTemplates();
+    }
     this.symbolService.list(this.controller());
     this.isLightThemeEnabled = this.themeService.getThemeType() === 'light';
     this.themeSubscription = this.themeService.themeChanged.subscribe(() => {
       this.isLightThemeEnabled = this.themeService.getThemeType() === 'light';
+    });
+  }
+
+  private loadTemplates() {
+    this.templateService.list(this.controller()).subscribe((listOfTemplates: Template[]) => {
+      this.filteredTemplates = listOfTemplates;
+      this.sortTemplates();
+      this.templates = listOfTemplates;
+      this.cd.markForCheck();
     });
   }
 
