@@ -21,6 +21,7 @@ import {
   signal,
   computed,
   AfterViewInit,
+  model,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -93,7 +94,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<User>();
   displayedColumns = ['select', 'username', 'full_name', 'email', 'is_active', 'last_login', 'updated_at', 'actions'];
   selection = new SelectionModel<User>(true, []);
-  searchText = '';
+  readonly searchText = model('');
 
   @ViewChildren('usersPaginator') usersPaginator: QueryList<MatPaginator>;
   @ViewChildren('usersSort') usersSort: QueryList<MatSort>;

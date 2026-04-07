@@ -20,14 +20,14 @@
     <input
       matInput
       placeholder="Search by username, full name or email"
-      [(ngModel)]="searchText"
-      [ngModelOptions]="{ standalone: true }"
+      [value]="searchText()"
+      (input)="searchText.set($event.target.value)"
     />
   </mat-form-field>
 </form>
 
 <div class="user-management__table-container">
-  <mat-table [dataSource]="dataSource | userFilter : searchText" matSort #usersSort="matSort">
+  <mat-table [dataSource]="dataSource | userFilter : searchText()" matSort #usersSort="matSort">
     <ng-container matColumnDef="select">
       <mat-header-cell *matHeaderCellDef class="user-management__small-col">
         <mat-checkbox
