@@ -109,8 +109,63 @@ Target:
 - `src/app/components/project-map/` - Project map component
 - `src/styles.scss` - Global styles
 
+## Related Issues
+
+### Conditional Rendering Removal (Commit c3b4794c)
+
+**Date**: 2026-04-06
+
+**Description**: Removed `@if (project)` conditional wrapper to enable immediate page rendering
+
+**Change Summary**:
+- **Before**: Page content only rendered after project data was loaded
+- **After**: Page renders immediately with default values, data fills in asynchronously
+- **Benefit**: Improved perceived performance - users see UI faster
+- **Trade-off**: Increased test complexity significantly
+
+**Technical Impact**:
+
+1. **Test Complexity Increase**:
+   - Before: Tests could assume project data was always available
+   - After: Tests must handle components rendering with default/undefined data
+   - Result: Test file grew from ~150 lines to ~850 lines (5x increase)
+
+2. **Dependency Chain Exposure**:
+   - Conditional rendering was hiding deep dependency trees
+   - After removal, all child components render immediately
+   - Exposed 67+ cartography services requiring proper mocking
+
+3. **Test Fixes Required**:
+   - Add `CartographyModule` and all its service providers to test setup
+   - Mock 67+ cartography services to prevent dependency injection errors
+   - Add `NO_ERRORS_SCHEMA` to handle unknown template elements
+   - Spy on `DrawingAddedComponent.ngOnDestroy` to prevent cleanup errors
+   - Add try-catch in `afterEach` for complex child component cleanup
+
+**Files Modified**:
+- `src/app/components/project-map/project-map.component.html` - Removed `@if (project)` wrapper
+- `src/app/components/project-map/project-map.component.ts` - Added default values and fallbacks
+- `src/app/components/project-map/project-map.component.spec.ts` - Extensive test refactoring
+
+**Test Architecture Documentation**: See `src/app/components/project-map/project-map.component.spec.ts` for detailed notes on:
+- NO_ERRORS_SCHEMA usage and risks
+- DrawingAddedComponent.ngOnDestroy spy workaround
+- CartographyModule dependency complexity
+- Known limitations and mitigation strategies
+
+**Mitigation Strategies**:
+- ✅ **Completed**: Fixed ProjectMapComponent tests with comprehensive mocking
+- 🔄 **Recommended**: Create separate unit tests for DrawingAddedComponent
+- 🔄 **Recommended**: Add integration tests for cartography module
+- 🔄 **Recommended**: Periodically review NO_ERRORS_SCHEMA usage
+- 🔄 **Recommended**: Consider refactoring to reduce deep dependency chains
+
+**Status**: ✅ **Resolved** - Tests passing with workarounds documented
+
+---
+
 ## Record Information
 
 - **Created**: 2026-04-06
-- **Last Updated**: 2026-04-06
+- **Last Updated**: 2026-04-07
 - **Status**: Known issue, no fix planned
