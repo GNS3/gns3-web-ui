@@ -20,6 +20,7 @@ import {
   inject,
   signal,
   AfterViewInit,
+  model,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -95,7 +96,7 @@ export class GroupManagementComponent implements OnInit, AfterViewInit {
   selection = new SelectionModel<Group>(true, []);
   groups: Group[];
   dataSource = new MatTableDataSource<Group>();
-  searchText: string;
+  readonly searchText = model('');
   readonly isReady = signal(false);
 
   constructor() {}
