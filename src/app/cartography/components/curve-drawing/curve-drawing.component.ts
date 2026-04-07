@@ -10,6 +10,7 @@ import { Drawing } from '../../models/drawing';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { DrawingService } from '../../../services/drawing.service';
+import { ToolsService } from '../../../services/tools.service';
 
 @Component({
   selector: 'app-curve-drawing',
@@ -34,6 +35,7 @@ export class CurveDrawingComponent implements OnInit, OnDestroy {
   private context = inject(Context);
   private drawingsDataSource = inject(DrawingsDataSource);
   private drawingService = inject(DrawingService);
+  private toolsService = inject(ToolsService);
 
   ngOnInit() {
     this.svgSelection = select(this.svg());
@@ -46,6 +48,9 @@ export class CurveDrawingComponent implements OnInit, OnDestroy {
 
   private activate() {
     const self = this;
+
+    // Disable selection tool to prevent conflict during curve drawing
+    this.toolsService.selectionToolActivation(false);
 
     const onMouseDown = (event: MouseEvent) => {
       event.preventDefault();
@@ -100,6 +105,9 @@ export class CurveDrawingComponent implements OnInit, OnDestroy {
   }
 
   private deactivate() {
+    // Re-enable selection tool when curve drawing is deactivated
+    this.toolsService.selectionToolActivation(true);
+
     // Remove event listener
     const oldListener = (this.svg() as any)._curveDrawingListener;
     if (oldListener) {
