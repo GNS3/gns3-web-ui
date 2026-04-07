@@ -20,6 +20,7 @@ import {
   inject,
   signal,
   AfterViewInit,
+  model,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -83,7 +84,7 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
   aces: ACE[];
   dataSource = new MatTableDataSource<ACE>();
   readonly isReady = signal(false);
-  searchText = '';
+  readonly searchText = model('');
   readonly endpoints = signal<Endpoint[]>([]);
 
   constructor() {}

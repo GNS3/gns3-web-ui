@@ -20,14 +20,14 @@
     <input
       matInput
       placeholder="Search by path, user/group or role"
-      [(ngModel)]="searchText"
-      [ngModelOptions]="{ standalone: true }"
+      [value]="searchText()"
+      (input)="searchText.set($event.target.value)"
     />
   </mat-form-field>
 </form>
 
 <div class="acl-management__table-container">
-  <table mat-table [dataSource]="dataSource | aceFilter : searchText : endpoints()" matSort #acesSort="matSort">
+  <table mat-table [dataSource]="dataSource | aceFilter : searchText() : endpoints()" matSort #acesSort="matSort">
     <ng-container matColumnDef="select">
       <th mat-header-cell *matHeaderCellDef class="acl-management__small-col">
         <mat-checkbox

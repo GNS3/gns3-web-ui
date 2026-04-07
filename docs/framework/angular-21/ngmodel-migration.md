@@ -29,7 +29,7 @@ searchText = model('');
 
 ## Migration Progress
 
-**Total: 38 files | Completed: 37 | Pending: 1**
+**Total: 38 files | Completed: 38 | Pending: 0**
 
 ## Files Requiring Migration
 
@@ -89,7 +89,7 @@ searchText = model('');
 | `src/app/components/group-management/group-detail-dialog/group-detail-dialog.component.html` | Completed |
 | `src/app/components/group-management/group-management.component.html` | Completed |
 | `src/app/components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component.html` | Completed |
-| `src/app/components/acl-management/acl-management.component.html` | Pending |
+| `src/app/components/acl-management/acl-management.component.html` | Completed |
 
 ## Notes
 
