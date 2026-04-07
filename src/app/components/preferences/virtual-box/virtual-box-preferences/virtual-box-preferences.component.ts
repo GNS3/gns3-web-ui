@@ -1,6 +1,5 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -13,15 +12,15 @@ import { ControllerService } from '@services/controller.service';
   selector: 'app-virtual-box-preferences',
   templateUrl: './virtual-box-preferences.component.html',
   styleUrls: ['./virtual-box-preferences.component.scss'],
-  imports: [CommonModule, FormsModule, MatFormFieldModule, MatInputModule],
+  imports: [CommonModule, MatFormFieldModule, MatInputModule],
 })
 export class VirtualBoxPreferencesComponent implements OnInit {
-  private route = inject(ActivatedRoute);
+  private readonly route: ActivatedRoute = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
-  private cd = inject(ChangeDetectorRef);
+  readonly cd = inject(ChangeDetectorRef);
 
   controller: Controller;
-  vboxManagePath: string;
+  vboxManagePath = model('');
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
@@ -32,6 +31,6 @@ export class VirtualBoxPreferencesComponent implements OnInit {
   }
 
   restoreDefaults() {
-    this.vboxManagePath = '';
+    this.vboxManagePath.set('');
   }
 }
