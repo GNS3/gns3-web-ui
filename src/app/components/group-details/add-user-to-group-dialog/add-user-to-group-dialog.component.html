@@ -9,7 +9,8 @@
       <input
         matInput
         type="text"
-        [(ngModel)]="searchText"
+        [value]="searchText()"
+        (input)="searchText.set($event.target.value)"
         (keydown)="onSearch()"
         placeholder="Type to filter users..."
       />

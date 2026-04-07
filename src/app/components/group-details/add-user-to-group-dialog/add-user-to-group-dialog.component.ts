@@ -19,6 +19,7 @@ import {
   inject,
   signal,
   computed,
+  model,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -66,7 +67,7 @@ export class AddUserToGroupDialogComponent implements OnInit {
   users = new BehaviorSubject<User[]>([]);
   displayedUsers = new BehaviorSubject<User[]>([]);
 
-  searchText: string;
+  readonly searchText = model('');
   loading = false;
 
   // Batch selection state
@@ -86,7 +87,7 @@ export class AddUserToGroupDialogComponent implements OnInit {
   onSearch() {
     timer(500).subscribe(() => {
       const displayedUsers = this.users.value.filter((user: User) => {
-        return user.username.includes(this.searchText) || user.email?.includes(this.searchText);
+        return user.username.includes(this.searchText()) || user.email?.includes(this.searchText());
       });
 
       this.displayedUsers.next(displayedUsers);
