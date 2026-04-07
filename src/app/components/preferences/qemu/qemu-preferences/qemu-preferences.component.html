@@ -19,13 +19,19 @@
       @if (settings) {
       <mat-nav-list>
         <mat-list-item>
-          <mat-checkbox [(ngModel)]="settings.enable_hardware_acceleration">
+          <mat-checkbox
+            [checked]="settings.enable_hardware_acceleration"
+            (change)="settings.enable_hardware_acceleration = $event.checked; cd.markForCheck()"
+          >
             Enable Hardware Acceleration (KVM/HAXM)
           </mat-checkbox>
         </mat-list-item>
         @if (settings.enable_hardware_acceleration) {
         <mat-list-item>
-          <mat-checkbox [(ngModel)]="settings.require_hardware_acceleration">
+          <mat-checkbox
+            [checked]="settings.require_hardware_acceleration"
+            (change)="settings.require_hardware_acceleration = $event.checked; cd.markForCheck()"
+          >
             Require Hardware Acceleration (KVM/HAXM)
           </mat-checkbox>
         </mat-list-item>

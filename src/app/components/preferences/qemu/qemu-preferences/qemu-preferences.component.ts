@@ -1,6 +1,5 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -17,14 +16,14 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-qemu-preferences',
   templateUrl: './qemu-preferences.component.html',
   styleUrls: ['./qemu-preferences.component.scss'],
-  imports: [CommonModule, FormsModule, RouterModule, MatButtonModule, MatCheckboxModule, MatListModule],
+  imports: [CommonModule, RouterModule, MatButtonModule, MatCheckboxModule, MatListModule],
 })
 export class QemuPreferencesComponent implements OnInit {
-  private route = inject(ActivatedRoute);
+  private readonly route: ActivatedRoute = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private controllerSettingsService = inject(ControllerSettingsService);
   private toasterService = inject(ToasterService);
-  private cd = inject(ChangeDetectorRef);
+  readonly cd = inject(ChangeDetectorRef);
 
   controller: Controller;
   settings: QemuSettings;
