@@ -1,3 +1,35 @@
+/**
+ * TEST ARCHITECTURE NOTES
+ * ========================
+ *
+ * This test file uses several workarounds to handle the complex dependency tree
+ * introduced after commit c3b4794c which removed @if (project) conditional rendering.
+ *
+ * ⚠️ KNOWN LIMITATIONS:
+ *
+ * 1. NO_ERRORS_SCHEMA Usage:
+ *    - Purpose: Ignores unknown template elements to avoid compilation errors
+ *    - Risk: May hide real template errors (typos, missing components)
+ *    - Mitigation: Manual code review and integration tests needed
+ *
+ * 2. DrawingAddedComponent.ngOnDestroy Spy:
+ *    - Purpose: Prevents cleanup errors when pointToAddSelected.unsubscribe() is called
+ *    - Root Cause: ngOnInit doesn't complete, leaving subscriptions undefined
+ *    - Risk: DrawingAddedComponent cleanup logic is not tested
+ *    - Mitigation: DrawingAddedComponent should have its own unit tests
+ *
+ * 3. CartographyModule Dependencies:
+ *    - Purpose: Provides 67+ cartography services required by child components
+ *    - Issue: Many mocks are simplified/stub implementations
+ *    - Risk: Edge cases in cartography logic may not be covered
+ *    - Mitigation: Integration/E2E tests should verify full cartography behavior
+ *
+ * RECOMMENDATIONS:
+ * - Create separate unit tests for DrawingAddedComponent
+ * - Add integration tests for cartography module
+ * - Periodically review NO_ERRORS_SCHEMA usage
+ * - Consider refactoring to reduce deep dependency chains
+ */
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChangeDetectorRef, input, signal, ViewContainerRef, NO_ERRORS_SCHEMA } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
@@ -673,8 +705,12 @@ describe('ProjectMapComponent', () => {
     mockLabel = { };
     mockNodesWidget = { };
 
+    // Configure TestBed with cartography module and all required mocks
+    // Note: CartographyModule provides 67+ services that are used by child components
     await TestBed.configureTestingModule({
       imports: [CommonModule, RouterModule.forRoot([]), CartographyModule, ProjectMapComponent],
+      // NO_ERRORS_SCHEMA: Ignore unknown template elements to avoid compilation errors
+      // ⚠️ This may hide real template errors - manual review required
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: ControllerService, useValue: mockControllerService },
@@ -777,10 +813,17 @@ describe('ProjectMapComponent', () => {
         { provide: NodesWidget, useValue: mockNodesWidget },
       ],
     })
+      // Override D3MapComponent template to simplify it (avoids complex D3.js initialization)
       .overrideComponent(D3MapComponent, { set: { template: '<svg></svg>' } })
       .compileComponents();
 
-    // Spy on DrawingAddedComponent.ngOnDestroy to prevent cleanup errors
+    // ⚠️ WORKAROUND: Spy on DrawingAddedComponent.ngOnDestroy to prevent cleanup errors
+    // Root cause: DrawingAddedComponent.ngOnInit doesn't complete when project data is not ready,
+    // leaving pointToAddSelected subscription undefined. When ngOnDestroy tries to unsubscribe,
+    // it throws "Cannot read properties of undefined (reading 'unsubscribe')".
+    //
+    // Impact: DrawingAddedComponent cleanup logic is NOT tested by these tests
+    // Mitigation: DrawingAddedComponent should have its own dedicated unit tests
     vi.spyOn(DrawingAddedComponent.prototype, 'ngOnDestroy').mockImplementation(() => {});
 
     fixture = TestBed.createComponent(ProjectMapComponent);
@@ -791,12 +834,16 @@ describe('ProjectMapComponent', () => {
   });
 
   afterEach(() => {
+    // ⚠️ WORKAROUND: Try-catch around fixture.destroy() to handle complex child component cleanup
+    // Some child components may throw errors during ngOnDestroy due to incomplete initialization
+    // This prevents test failures from bubbling up and marking all tests as failed
     if (fixture) {
       try {
         fixture.destroy();
       } catch (e) {
         console.error('Cleanup error:', e);
         // Ignore destroy errors from complex child components
+        // These errors indicate incomplete component lifecycle, not test failures
       }
     }
     vi.clearAllMocks();
