@@ -480,6 +480,7 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         this.isLocked = false;
         this.lock = 'lock_open';
       }
+      this.cdr.markForCheck();
     });
     this.projectServices.nodes(this.controller(), this.project().project_id).subscribe((response) => {
       this.nodes = response;
@@ -513,10 +514,12 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
         if (confirmAction_result.actionType == 'Lock' && confirmAction_result.isAction) {
           this.isLocked = true;
           this.mapSettingsService.changeMapLockValue(this.isLocked);
+          this.cdr.markForCheck();
           this.lockAllNode();
         } else {
           this.isLocked = false;
           this.mapSettingsService.changeMapLockValue(this.isLocked);
+          this.cdr.markForCheck();
           this.unlockAllNode();
         }
       }
@@ -525,15 +528,29 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
 
   lockAllNode() {
     this.lock = 'lock';
+    this.isLocked = true;
+    this.cdr.markForCheck();
     this.drawingService.lockAllNodes(this.controller(), this.project()).subscribe((res) => {
-      this.getAllNodesAndDrawingStatus();
+      // Ensure update happens in next tick
+      setTimeout(() => {
+        this.lock = 'lock';
+        this.isLocked = true;
+        this.cdr.markForCheck();
+      });
     });
   }
 
   unlockAllNode() {
     this.lock = 'lock_open';
+    this.isLocked = false;
+    this.cdr.markForCheck();
     this.drawingService.unLockAllNodes(this.controller(), this.project()).subscribe((res) => {
-      this.getAllNodesAndDrawingStatus();
+      // Ensure update happens in next tick
+      setTimeout(() => {
+        this.lock = 'lock_open';
+        this.isLocked = false;
+        this.cdr.markForCheck();
+      });
     });
   }
 
