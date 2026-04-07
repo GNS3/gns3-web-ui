@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, ChangeDetectorRef, model } from '@angular/core';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -25,27 +25,37 @@ export class ConfigEditorDialogComponent implements OnInit {
   project: Project;
   node: Node;
 
-  config: any;
-  privateConfig: any;
+  readonly config = model<any>('');
+  readonly privateConfig = model<any>('');
 
   ngOnInit() {
     this.nodeService.getStartupConfiguration(this.controller, this.node).subscribe((config: any) => {
-      this.config = config;
+      this.config.set(config);
       this.cdr.markForCheck();
     });
 
     if (this.node.node_type === 'iou' || this.node.node_type === 'dynamips') {
       this.nodeService.getPrivateConfiguration(this.controller, this.node).subscribe((privateConfig: any) => {
-        this.privateConfig = privateConfig;
+        this.privateConfig.set(privateConfig);
         this.cdr.markForCheck();
       });
     }
   }
 
+  onConfigChange(value: string) {
+    this.config.set(value);
+    this.cdr.markForCheck();
+  }
+
+  onPrivateConfigChange(value: string) {
+    this.privateConfig.set(value);
+    this.cdr.markForCheck();
+  }
+
   onSaveClick() {
-    this.nodeService.saveConfiguration(this.controller, this.node, this.config).subscribe((response) => {
+    this.nodeService.saveConfiguration(this.controller, this.node, this.config()).subscribe((response) => {
       if (this.node.node_type === 'iou' || this.node.node_type === 'dynamips') {
-        this.nodeService.savePrivateConfiguration(this.controller, this.node, this.privateConfig).subscribe((resp) => {
+        this.nodeService.savePrivateConfiguration(this.controller, this.node, this.privateConfig()).subscribe((resp) => {
           this.dialogRef.close();
           this.toasterService.success(`Configuration for node ${this.node.name} saved.`);
         });

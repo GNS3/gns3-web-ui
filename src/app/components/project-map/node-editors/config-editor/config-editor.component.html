@@ -2,15 +2,15 @@
 
 @if (node.node_type === 'vpcs') {
 <div class="modal-form-container">
-  <textarea #textArea id="textArea" class="textArea" [(ngModel)]="config"></textarea>
+  <textarea #textArea id="textArea" class="textArea" [value]="config()" (input)="onConfigChange($event.target.value)"></textarea>
 </div>
 } @if (node.node_type === 'iou' || node.node_type === 'dynamips') {
 <mat-tab-group>
   <mat-tab label="Startup config">
-    <textarea #textArea id="textArea" class="textAreaTab" [(ngModel)]="config"></textarea>
+    <textarea #textArea id="textArea" class="textAreaTab" [value]="config()" (input)="onConfigChange($event.target.value)"></textarea>
   </mat-tab>
   <mat-tab label="Private config">
-    <textarea #textArea id="textArea" class="textAreaTab" [(ngModel)]="privateConfig"></textarea>
+    <textarea #textArea id="textArea" class="textAreaTab" [value]="privateConfig()" (input)="onPrivateConfigChange($event.target.value)"></textarea>
   </mat-tab>
 </mat-tab-group>
 }
