@@ -1,7 +1,6 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  FormsModule,
   ReactiveFormsModule,
   UntypedFormBuilder,
   UntypedFormControl,
@@ -36,7 +35,6 @@ import { RotationValidator } from '../../../../validators/rotation-validator';
   styleUrl: './style-editor.component.scss',
   imports: [
     CommonModule,
-    FormsModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatFormFieldModule,
@@ -58,6 +56,7 @@ export class StyleEditorDialogComponent implements OnInit {
   private nonNegativeValidator = inject(NonNegativeValidator);
   private rotationValidator = inject(RotationValidator);
   private qtDasharrayFixer = inject(QtDasharrayFixer);
+  private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
   project: Project;
@@ -138,6 +137,46 @@ export class StyleEditorDialogComponent implements OnInit {
     if (this.element.stroke_width === undefined) this.element.stroke_width = 0;
     this.formGroup.controls['borderWidth'].setValue(this.element.stroke_width);
     this.formGroup.controls['rotation'].setValue(this.drawing.rotation);
+  }
+
+  onFillChange(value: string) {
+    this.element.fill = value;
+    this.cd.markForCheck();
+  }
+
+  onStrokeChange(value: string) {
+    this.element.stroke = value;
+    this.cd.markForCheck();
+  }
+
+  onStrokeDasharrayChange(value: string) {
+    this.element.stroke_dasharray = value;
+    this.cd.markForCheck();
+  }
+
+  onWidthChange(value: number) {
+    this.element.width = value;
+    this.cd.markForCheck();
+  }
+
+  onHeightChange(value: number) {
+    this.element.height = value;
+    this.cd.markForCheck();
+  }
+
+  onRxChange(value: number) {
+    this.element.rx = value;
+    this.cd.markForCheck();
+  }
+
+  onCurveTypeChange(value: string) {
+    this.element.curve_type = value;
+    this.cd.markForCheck();
+  }
+
+  onArrowDirectionChange(value: string) {
+    this.element.arrow_direction = value;
+    this.cd.markForCheck();
   }
 
   onNoClick() {

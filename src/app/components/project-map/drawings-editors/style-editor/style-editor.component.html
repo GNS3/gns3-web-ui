@@ -5,13 +5,13 @@
     @if (element.fill !== undefined) {
     <mat-form-field class="form-field">
       <mat-label>Fill color</mat-label>
-      <input matInput [ngModelOptions]="{ standalone: true }" type="color" [(ngModel)]="element.fill" />
+      <input matInput type="color" [value]="element.fill" (input)="onFillChange($event.target.value)" />
     </mat-form-field>
     }
 
     <mat-form-field class="form-field">
       <mat-label>Border color</mat-label>
-      <input matInput [ngModelOptions]="{ standalone: true }" type="color" [(ngModel)]="element.stroke" />
+      <input matInput type="color" [value]="element.stroke" (input)="onStrokeChange($event.target.value)" />
     </mat-form-field>
 
     <mat-form-field class="form-field">
@@ -20,7 +20,7 @@
     </mat-form-field>
     <mat-form-field class="form-field">
       <mat-label>Border style</mat-label>
-      <mat-select [ngModelOptions]="{ standalone: true }" [(ngModel)]="element.stroke_dasharray">
+      <mat-select [value]="element.stroke_dasharray" (selectionChange)="onStrokeDasharrayChange($event.value)">
         @for (type of borderTypes; track type.value) {
         <mat-option [value]="type.value"> {{ type.name }} </mat-option>
         }
@@ -30,31 +30,24 @@
     @if (element.width !== undefined) {
     <mat-form-field class="form-field">
       <mat-label>Width</mat-label>
-      <input matInput [ngModelOptions]="{ standalone: true }" min="0" type="number" [(ngModel)]="element.width" />
+      <input matInput min="0" type="number" [value]="element.width" (input)="onWidthChange(+$event.target.value)" />
     </mat-form-field>
     } @if (element.height !== undefined) {
     <mat-form-field class="form-field">
       <mat-label>Height</mat-label>
-      <input matInput [ngModelOptions]="{ standalone: true }" min="0" type="number" [(ngModel)]="element.height" />
+      <input matInput min="0" type="number" [value]="element.height" (input)="onHeightChange(+$event.target.value)" />
     </mat-form-field>
     } @if (element.rx !== undefined) {
     <mat-form-field class="form-field">
       <mat-label>Corner radius</mat-label>
-      <input
-        matInput
-        [ngModelOptions]="{ standalone: true }"
-        type="number"
-        min="0"
-        max="100"
-        [(ngModel)]="element.rx"
-      />
+      <input matInput type="number" min="0" max="100" [value]="element.rx" (input)="onRxChange(+$event.target.value)" />
     </mat-form-field>
     }
 
     @if (element.curve_type !== undefined) {
     <mat-form-field class="form-field">
       <mat-label>Curve type</mat-label>
-      <mat-select [ngModelOptions]="{ standalone: true }" [(ngModel)]="element.curve_type">
+      <mat-select [value]="element.curve_type" (selectionChange)="onCurveTypeChange($event.value)">
         @for (type of curveTypes; track type.value) {
         <mat-option [value]="type.value"> {{ type.name }} </mat-option>
         }
@@ -62,7 +55,7 @@
     </mat-form-field>
     <mat-form-field class="form-field">
       <mat-label>Arrow direction</mat-label>
-      <mat-select [ngModelOptions]="{ standalone: true }" [(ngModel)]="element.arrow_direction">
+      <mat-select [value]="element.arrow_direction" (selectionChange)="onArrowDirectionChange($event.value)">
         @for (dir of arrowDirections; track dir.value) {
         <mat-option [value]="dir.value"> {{ dir.name }} </mat-option>
         }
