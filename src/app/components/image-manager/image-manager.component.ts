@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, signal, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, signal, viewChild, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -57,7 +57,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   public version: string;
   dataSource: imageDataSource;
   imageDatabase = new imageDatabase();
-  searchText: string = '';
+  readonly searchText = model('');
   isAllDelete: boolean = false;
   selectedPaths = new Set<string>();
   private images: Image[] = [];
@@ -163,6 +163,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   }
 
   onSearchChange(value: string) {
+    this.searchText.set(value);
     if (this.dataSource) {
       this.dataSource.setFilter(value);
       // Reset to first page when searching

@@ -29,7 +29,7 @@ searchText = model('');
 
 ## Migration Progress
 
-**Total: 38 files | Completed: 33 | Pending: 5**
+**Total: 38 files | Completed: 34 | Pending: 4**
 
 ## Files Requiring Migration
 
@@ -85,7 +85,7 @@ searchText = model('');
 | `src/app/components/role-management/role-management.component.html` | Completed |
 | `src/app/components/settings/settings.component.html` | Completed |
 | `src/app/components/resource-pools-management/resource-pools-management.component.html` | Completed |
-| `src/app/components/image-manager/image-manager.component.html` | Pending |
+| `src/app/components/image-manager/image-manager.component.html` | Completed |
 | `src/app/components/group-management/group-detail-dialog/group-detail-dialog.component.html` | Pending |
 | `src/app/components/group-management/group-management.component.html` | Pending |
 | `src/app/components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component.html` | Pending |

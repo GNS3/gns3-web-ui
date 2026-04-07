@@ -31,9 +31,8 @@
         <input
           matInput
           placeholder="Search images"
-          [(ngModel)]="searchText"
-          [ngModelOptions]="{ standalone: true }"
-          (ngModelChange)="onSearchChange($event)"
+          [value]="searchText()"
+          (input)="onSearchChange($event.target.value)"
         />
       </mat-form-field>
     </form>
