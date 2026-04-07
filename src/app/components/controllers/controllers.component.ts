@@ -200,14 +200,6 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  startLocalController() {
-    const controller = this.controllerDatabase.data.find((n) => n.location === 'bundled' || n.location === 'local');
-    if (!controller) {
-      return;
-    }
-    this.startController(controller);
-  }
-
   openProjects(controller) {
     this.router.navigate(['/controller', controller.id, 'projects']);
   }
@@ -306,22 +298,6 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
         this.changeDetector.markForCheck();
       }
     });
-  }
-
-  async startController(controller: Controller) {
-    if (!controller) {
-      return;
-    }
-
-    controller.status = 'starting';
-    this.controllerDatabase.update(controller);
-    this.changeDetector.markForCheck();
-
-    await this.controllerManagement.start(controller);
-  }
-
-  async stopController(controller: Controller) {
-    await this.controllerManagement.stop(controller);
   }
 
   onSearchChange(value: string) {

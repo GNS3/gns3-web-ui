@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -27,7 +27,7 @@ import { ToasterService } from '@services/toaster.service';
     MatOptionModule,
   ],
 })
-export class AddControllerDialogComponent implements OnInit {
+export class AddControllerDialogComponent {
   private dialogRef = inject(MatDialogRef<AddControllerDialogComponent>);
   private controllerService = inject(ControllerService);
   private toasterService = inject(ToasterService);
@@ -38,7 +38,6 @@ export class AddControllerDialogComponent implements OnInit {
     { key: 'http:', name: 'HTTP' },
     { key: 'https:', name: 'HTTPS' },
   ];
-  locations = [];
   connectionError: string = '';
   canAddAnyway = false;
   isCheckingConnection = false;
@@ -46,33 +45,10 @@ export class AddControllerDialogComponent implements OnInit {
 
   controllerForm = new UntypedFormGroup({
     name: new UntypedFormControl('', [Validators.required]),
-    location: new UntypedFormControl(''),
-    path: new UntypedFormControl(''),
-    ubridge_path: new UntypedFormControl(''),
     host: new UntypedFormControl('', [Validators.required]),
     port: new UntypedFormControl('', [Validators.required, Validators.min(1)]),
     protocol: new UntypedFormControl('http:'),
   });
-
-  constructor() {}
-
-  async getLocations() {
-    const localControllers = await this.numberOfLocalControllers();
-
-    let locations = [];
-    locations.push({ key: 'remote', name: 'Remote' });
-    return locations;
-  }
-
-  async getDefaultLocation() {
-    return 'remote';
-  }
-
-  async numberOfLocalControllers() {
-    const controllers = await this.controllerService.findAll();
-
-    return controllers.filter((controller) => controller.location === 'local').length;
-  }
 
   getDefaultHost() {
     return '127.0.0.1';
@@ -82,36 +58,18 @@ export class AddControllerDialogComponent implements OnInit {
     return 3080;
   }
 
-  async ngOnInit() {
-    this.locations = await this.getLocations();
-
-    this.controllerForm.get('location').valueChanges.subscribe((location: string) => {
-      const pathControl = this.controllerForm.get('path');
-      const ubridgePathControl = this.controllerForm.get('ubridge_path');
-
-      if (location === 'local') {
-        pathControl.setValidators([Validators.required]);
-
-        ubridgePathControl.setValidators([Validators.required]);
-      } else {
-        pathControl.setValue('');
-        pathControl.clearValidators();
-
-        ubridgePathControl.setValue('');
-        ubridgePathControl.clearValidators();
-      }
-
-      [pathControl, ubridgePathControl].forEach((control) => {
-        control.updateValueAndValidity({
-          onlySelf: true,
-        });
-      });
-    });
-
-    const defaultLocation = await this.getDefaultLocation();
-    this.controllerForm.get('location').setValue(defaultLocation);
+  constructor() {
     this.controllerForm.get('host').setValue(this.getDefaultHost());
     this.controllerForm.get('port').setValue(this.getDefaultPort());
+  }
+
+  /**
+   * Auto-detect controller location based on host address
+   * 127.0.0.1 or localhost → local
+   * Other addresses → remote
+   */
+  private detectLocation(host: string): 'local' | 'remote' {
+    return host === '127.0.0.1' || host === 'localhost' ? 'local' : 'remote';
   }
 
   onAddClick(): void {
@@ -136,6 +94,10 @@ export class AddControllerDialogComponent implements OnInit {
     this.changeDetector.markForCheck();
 
     const controller: Controller = Object.assign({}, this.controllerForm.value);
+
+    // Auto-detect location based on host
+    controller.location = this.detectLocation(controller.host);
+
     this.controllerService.checkControllerVersion(controller).subscribe(
       (controllerInfo) => {
         this.isCheckingConnection = false;
@@ -175,6 +137,10 @@ export class AddControllerDialogComponent implements OnInit {
     }
 
     const controller: Controller = Object.assign({}, this.controllerForm.value);
+
+    // Auto-detect location based on host
+    controller.location = this.detectLocation(controller.host);
+
     this.dialogRef.close(controller);
     this.toasterService.warning(`Controller ${controller.name} added in offline mode.`);
   }

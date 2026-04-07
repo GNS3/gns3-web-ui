@@ -132,12 +132,21 @@ export class ControllerDiscoveryComponent implements OnInit, OnDestroy {
     this.discoveredController.set(null);
   }
 
+  /**
+   * Auto-detect controller location based on host address
+   * 127.0.0.1 or localhost → local
+   * Other addresses → remote
+   */
+  private detectLocation(host: string): 'local' | 'remote' {
+    return host === '127.0.0.1' || host === 'localhost' ? 'local' : 'remote';
+  }
+
   accept(controller: Controller) {
     if (controller.name == null) {
       controller.name = controller.host;
     }
 
-    controller.location = 'remote';
+    controller.location = this.detectLocation(controller.host);
     controller.protocol = location.protocol as ControllerProtocol;
 
     this.controllerService.create(controller).then((created: Controller) => {

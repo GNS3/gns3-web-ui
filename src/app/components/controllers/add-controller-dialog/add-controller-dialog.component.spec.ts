@@ -23,8 +23,6 @@ describe('AddControllerDialogComponent', () => {
       location: 'remote',
       host: '127.0.0.1',
       port: 3080,
-      path: '',
-      ubridge_path: '',
       protocol: 'http:',
       status: 'running',
       authToken: '',
@@ -108,41 +106,17 @@ describe('AddControllerDialogComponent', () => {
       expect(form.get('name')).toBeTruthy();
       expect(form.get('host')).toBeTruthy();
       expect(form.get('port')).toBeTruthy();
-      expect(form.get('location')).toBeTruthy();
+      expect(form.get('protocol')).toBeTruthy();
     });
   });
 
-  describe('ngOnInit', () => {
-    it('should set default location to remote', async () => {
-      component.ngOnInit();
-      await Promise.resolve(); // Wait for async operations
-
-      expect(component.controllerForm.get('location').value).toBe('remote');
-    });
-
+  describe('constructor', () => {
     it('should set default host to 127.0.0.1', () => {
-      component.ngOnInit();
-
       expect(component.controllerForm.get('host').value).toBe('127.0.0.1');
     });
 
     it('should set default port to 3080', () => {
-      component.ngOnInit();
-
       expect(component.controllerForm.get('port').value).toBe(3080);
-    });
-
-    it('should call findAll to count local controllers', async () => {
-      mockControllerService.findAll.mockResolvedValue([
-        createMockController({ location: 'local' }),
-        createMockController({ location: 'local' }),
-        createMockController({ location: 'remote' }),
-      ]);
-
-      component.ngOnInit();
-      await Promise.resolve();
-
-      expect(mockControllerService.findAll).toHaveBeenCalled();
     });
   });
 
@@ -158,37 +132,18 @@ describe('AddControllerDialogComponent', () => {
     });
   });
 
-  describe('getDefaultLocation', () => {
-    it('should return remote', async () => {
-      const location = await component.getDefaultLocation();
-      expect(location).toBe('remote');
-    });
-  });
-
-  describe('getLocations', () => {
-    it('should return remote location', async () => {
-      const locations = await component.getLocations();
-      expect(locations).toEqual([{ key: 'remote', name: 'Remote' }]);
-    });
-  });
-
-  describe('numberOfLocalControllers', () => {
-    it('should return count of local controllers', async () => {
-      mockControllerService.findAll.mockResolvedValue([
-        createMockController({ location: 'local' }),
-        createMockController({ location: 'local' }),
-        createMockController({ location: 'remote' }),
-      ]);
-
-      const count = await component.numberOfLocalControllers();
-      expect(count).toBe(2);
+  describe('detectLocation', () => {
+    it('should return local for 127.0.0.1', () => {
+      expect(component['detectLocation']('127.0.0.1')).toBe('local');
     });
 
-    it('should return 0 when no controllers exist', async () => {
-      mockControllerService.findAll.mockResolvedValue([]);
+    it('should return local for localhost', () => {
+      expect(component['detectLocation']('localhost')).toBe('local');
+    });
 
-      const count = await component.numberOfLocalControllers();
-      expect(count).toBe(0);
+    it('should return remote for other addresses', () => {
+      expect(component['detectLocation']('192.168.1.1')).toBe('remote');
+      expect(component['detectLocation']('example.com')).toBe('remote');
     });
   });
 
@@ -352,45 +307,69 @@ describe('AddControllerDialogComponent', () => {
     });
   });
 
-  describe('Form behavior - location change', () => {
-    it('should add required validators to path and ubridge_path when location is local', async () => {
-      component.ngOnInit();
-      await Promise.resolve();
+  describe('onAddClick - auto-detect location', () => {
+    it('should set location to local for 127.0.0.1', () => {
+      mockControllerService.isControllerNameTaken.mockReturnValue(false);
+      mockControllerService.checkControllerVersion.mockReturnValue(
+        of({ version: '3.0.0' })
+      );
 
-      const locationControl = component.controllerForm.get('location');
-      locationControl.setValue('local');
+      component.controllerForm.get('name').setValue('Test Controller');
+      component.controllerForm.get('host').setValue('127.0.0.1');
+      component.controllerForm.get('port').setValue(3080);
 
-      // validators are set asynchronously via subscribe
-      await Promise.resolve();
+      component.onAddClick();
 
-      const pathControl = component.controllerForm.get('path');
-      const ubridgePathControl = component.controllerForm.get('ubridge_path');
-
-      // After setting location to local and providing values, path and ubridge_path should be valid
-      pathControl.setValue('/some/path');
-      ubridgePathControl.setValue('/some/ubridge');
-
-      expect(pathControl.valid).toBe(true);
-      expect(ubridgePathControl.valid).toBe(true);
+      expect(mockControllerService.checkControllerVersion).toHaveBeenCalled();
+      const controllerArg = mockControllerService.checkControllerVersion.mock.calls[0][0];
+      expect(controllerArg.location).toBe('local');
     });
 
-    it('should clear validators from path and ubridge_path when location is remote', async () => {
-      component.ngOnInit();
-      await Promise.resolve();
+    it('should set location to remote for non-local addresses', () => {
+      mockControllerService.isControllerNameTaken.mockReturnValue(false);
+      mockControllerService.checkControllerVersion.mockReturnValue(
+        of({ version: '3.0.0' })
+      );
 
-      const locationControl = component.controllerForm.get('location');
-      locationControl.setValue('local');
-      await Promise.resolve();
+      component.controllerForm.get('name').setValue('Test Controller');
+      component.controllerForm.get('host').setValue('192.168.1.100');
+      component.controllerForm.get('port').setValue(3080);
 
-      locationControl.setValue('remote');
-      await Promise.resolve();
+      component.onAddClick();
 
-      const pathControl = component.controllerForm.get('path');
-      const ubridgePathControl = component.controllerForm.get('ubridge_path');
+      expect(mockControllerService.checkControllerVersion).toHaveBeenCalled();
+      const controllerArg = mockControllerService.checkControllerVersion.mock.calls[0][0];
+      expect(controllerArg.location).toBe('remote');
+    });
+  });
 
-      // Path should not have required validator when remote
-      expect(pathControl.hasError('required')).toBe(false);
-      expect(ubridgePathControl.hasError('required')).toBe(false);
+  describe('onAddAnywayClick - auto-detect location', () => {
+    it('should set location to local for localhost', () => {
+      mockControllerService.isControllerNameTaken.mockReturnValue(false);
+
+      component.controllerForm.get('name').setValue('Test Controller');
+      component.controllerForm.get('host').setValue('localhost');
+      component.controllerForm.get('port').setValue(3080);
+
+      component.onAddAnywayClick();
+
+      expect(mockDialogRef.close).toHaveBeenCalled();
+      const controllerArg = mockDialogRef.close.mock.calls[0][0];
+      expect(controllerArg.location).toBe('local');
+    });
+
+    it('should set location to remote for remote addresses', () => {
+      mockControllerService.isControllerNameTaken.mockReturnValue(false);
+
+      component.controllerForm.get('name').setValue('Test Controller');
+      component.controllerForm.get('host').setValue('example.com');
+      component.controllerForm.get('port').setValue(3080);
+
+      component.onAddAnywayClick();
+
+      expect(mockDialogRef.close).toHaveBeenCalled();
+      const controllerArg = mockDialogRef.close.mock.calls[0][0];
+      expect(controllerArg.location).toBe('remote');
     });
   });
 });

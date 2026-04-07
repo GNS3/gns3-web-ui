@@ -125,25 +125,6 @@
               </button>
               }
 
-              <!-- Start Controller (only for local stopped controllers) -->
-              @if (row.location === 'local' && getControllerStatus(row) === 'stopped') {
-              <button mat-icon-button (click)="startController(row)">
-                <mat-icon aria-label="Start controller">play_arrow</mat-icon>
-              </button>
-              }
-
-              <!-- Stop Controller (only for local running controllers) -->
-              @if (row.location === 'local' && getControllerStatus(row) === 'running') {
-              <button mat-icon-button (click)="stopController(row)">
-                <mat-icon aria-label="Stop controller">stop</mat-icon>
-              </button>
-              }
-
-              <!-- Loading Spinner (for starting controllers) -->
-              @if (row.location === 'local' && getControllerStatus(row) === 'starting') {
-              <mat-spinner [diameter]="24"></mat-spinner>
-              }
-
               <!-- Edit Controller -->
               <button mat-icon-button (click)="editController(row)">
                 <mat-icon>edit</mat-icon>

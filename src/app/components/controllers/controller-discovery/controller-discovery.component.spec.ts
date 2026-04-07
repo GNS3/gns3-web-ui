@@ -168,12 +168,21 @@ describe('ControllerDiscoveryComponent', () => {
       expect(mockController.name).toBe('127.0.0.1');
     });
 
-    it('should set controller location to remote', async () => {
-      const mockController = createMockController();
+    it('should auto-detect location based on host address', async () => {
+      // Test 127.0.0.1 → local
+      const localController = createMockController({ host: '127.0.0.1' });
+      await component.accept(localController);
+      expect(localController.location).toBe('local');
 
-      await component.accept(mockController);
+      // Test localhost → local
+      const localhostController = createMockController({ host: 'localhost' });
+      await component.accept(localhostController);
+      expect(localhostController.location).toBe('local');
 
-      expect(mockController.location).toBe('remote');
+      // Test remote address → remote
+      const remoteController = createMockController({ host: '192.168.1.100' });
+      await component.accept(remoteController);
+      expect(remoteController.location).toBe('remote');
     });
 
     it('should call controllerService.create with the controller', async () => {
