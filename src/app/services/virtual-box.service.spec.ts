@@ -113,12 +113,13 @@ describe('VirtualBoxService', () => {
   describe('addTemplate', () => {
     it('should call httpController.post with correct endpoint and template', async () => {
       const inputTemplate = { name: 'New VB' } as VirtualBoxTemplate;
+      const expectedTemplate = { name: 'New VB', custom_adapters: [] };
       const returnedTemplate = { ...inputTemplate, template_id: 'vb-new' } as VirtualBoxTemplate;
       mockHttpController.post.mockReturnValue(of(returnedTemplate));
 
       await firstValueFrom(service.addTemplate(mockController, inputTemplate));
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/templates', inputTemplate);
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/templates', expectedTemplate);
     });
 
     it('should return created VirtualBoxTemplate with template_id', async () => {
@@ -144,11 +145,12 @@ describe('VirtualBoxService', () => {
   describe('saveTemplate', () => {
     it('should call httpController.put with correct template_id endpoint', async () => {
       const template = { template_id: 'vb-1', name: 'Updated' } as VirtualBoxTemplate;
+      const expectedTemplate = { template_id: 'vb-1', name: 'Updated', custom_adapters: [] };
       mockHttpController.put.mockReturnValue(of(template));
 
       await firstValueFrom(service.saveTemplate(mockController, template));
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/templates/vb-1', template);
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/templates/vb-1', expectedTemplate);
     });
 
     it('should return updated VirtualBoxTemplate', async () => {

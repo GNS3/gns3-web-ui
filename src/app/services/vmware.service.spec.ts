@@ -122,6 +122,7 @@ describe('VmwareService', () => {
 
   describe('addTemplate', () => {
     const newTemplate: VmwareTemplate = { name: 'New VMware' } as VmwareTemplate;
+    const expectedTemplate = { name: 'New VMware', custom_adapters: [] };
     const createdTemplate: VmwareTemplate = { name: 'New VMware', template_id: 'vm-2' } as VmwareTemplate;
 
     it('should call httpController.post with template', async () => {
@@ -129,7 +130,7 @@ describe('VmwareService', () => {
 
       await firstValueFrom(service.addTemplate(mockController, newTemplate));
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/templates', newTemplate);
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/templates', expectedTemplate);
     });
 
     it('should return created VmwareTemplate with id', async () => {
@@ -150,13 +151,14 @@ describe('VmwareService', () => {
 
   describe('saveTemplate', () => {
     const template: VmwareTemplate = { template_id: 'vmware-1', name: 'Updated' } as VmwareTemplate;
+    const expectedTemplate = { template_id: 'vmware-1', name: 'Updated', custom_adapters: [] };
 
     it('should call httpController.put with template_id', async () => {
       mockHttpController.put.mockReturnValue(of(template));
 
       await firstValueFrom(service.saveTemplate(mockController, template));
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/templates/vmware-1', template);
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/templates/vmware-1', expectedTemplate);
     });
 
     it('should return updated VmwareTemplate', async () => {

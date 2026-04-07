@@ -307,11 +307,12 @@ describe('QemuService', () => {
   describe('addTemplate', () => {
     it('should call httpController.post with template to templates endpoint', () => {
       const template: QemuTemplate = { name: 'New QEMU' } as QemuTemplate;
+      const expectedTemplate = { name: 'New QEMU', custom_adapters: [] };
       mockHttpController.post.mockReturnValue(of(template));
 
       service.addTemplate(mockController, template);
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/templates', template);
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/templates', expectedTemplate);
     });
 
     it('should return observable that emits created template with id', () => {
@@ -345,22 +346,24 @@ describe('QemuService', () => {
 
     it('should pass full template object to httpController.post', () => {
       const fullTemplate = { ...mockQemuTemplate, name: 'Full VM' };
+      const expectedTemplate = { ...fullTemplate, custom_adapters: fullTemplate.custom_adapters || [] };
       mockHttpController.post.mockReturnValue(of(fullTemplate));
 
       service.addTemplate(mockController, fullTemplate);
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/templates', fullTemplate);
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/templates', expectedTemplate);
     });
   });
 
   describe('saveTemplate', () => {
     it('should call httpController.put with template_id in endpoint', () => {
       const template: QemuTemplate = { template_id: 'qemu-1', name: 'Updated' } as QemuTemplate;
+      const expectedTemplate = { template_id: 'qemu-1', name: 'Updated', custom_adapters: [] };
       mockHttpController.put.mockReturnValue(of(template));
 
       service.saveTemplate(mockController, template);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/templates/qemu-1', template);
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/templates/qemu-1', expectedTemplate);
     });
 
     it('should return observable that emits updated template', () => {
@@ -397,11 +400,12 @@ describe('QemuService', () => {
       ['12345', 'Numbered VM'],
     ])('should use correct template_id %s in endpoint', (templateId, name) => {
       const template: QemuTemplate = { template_id: templateId, name } as QemuTemplate;
+      const expectedTemplate = { template_id: templateId, name, custom_adapters: [] };
       mockHttpController.put.mockReturnValue(of(template));
 
       service.saveTemplate(mockController, template);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, `/templates/${templateId}`, template);
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, `/templates/${templateId}`, expectedTemplate);
     });
   });
 });

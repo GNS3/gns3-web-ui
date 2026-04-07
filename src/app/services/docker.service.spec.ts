@@ -105,11 +105,12 @@ describe('DockerService', () => {
   describe('addTemplate', () => {
     it('should call httpController.post with template', () => {
       const template: DockerTemplate = { name: 'New Docker' } as DockerTemplate;
+      const expectedTemplate = { name: 'New Docker', custom_adapters: [] };
       mockHttpController.post.mockReturnValue(of(template));
 
       service.addTemplate(mockController, template);
 
-      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/templates', template);
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/templates', expectedTemplate);
     });
 
     it('should return Observable', () => {
@@ -125,11 +126,12 @@ describe('DockerService', () => {
   describe('saveTemplate', () => {
     it('should call httpController.put with template_id', () => {
       const template: DockerTemplate = { template_id: 'docker-1', name: 'Updated' } as DockerTemplate;
+      const expectedTemplate = { template_id: 'docker-1', name: 'Updated', custom_adapters: [] };
       mockHttpController.put.mockReturnValue(of(template));
 
       service.saveTemplate(mockController, template);
 
-      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/templates/docker-1', template);
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/templates/docker-1', expectedTemplate);
     });
 
     it('should return Observable', () => {
