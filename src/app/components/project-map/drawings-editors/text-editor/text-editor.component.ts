@@ -10,7 +10,6 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  FormsModule,
   ReactiveFormsModule,
   UntypedFormBuilder,
   UntypedFormControl,
@@ -48,7 +47,6 @@ import { RotationValidator } from '../../../../validators/rotation-validator';
   styleUrl: './text-editor.component.scss',
   imports: [
     CommonModule,
-    FormsModule,
     ReactiveFormsModule,
     MatDialogModule,
     MatFormFieldModule,
@@ -204,8 +202,15 @@ export class TextEditorDialogComponent implements OnInit {
     }
   }
 
-  changeTextColor(changedColor) {
+  changeTextColor(changedColor: string) {
+    this.element.fill = changedColor;
     this.renderer.setStyle(this.textArea().nativeElement, 'color', changedColor);
+    this.cdr.markForCheck();
+  }
+
+  onTextChange(value: string) {
+    this.element.text = value;
+    this.cdr.markForCheck();
   }
 }
 

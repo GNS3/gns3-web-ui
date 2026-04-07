@@ -3,7 +3,7 @@
 <div class="modal-form-container">
   <mat-form-field class="form-field">
     <mat-label>Fill color</mat-label>
-    <input matInput type="color" (ngModelChange)="changeTextColor($event)" [(ngModel)]="element.fill" />
+    <input matInput type="color" [value]="element.fill" (input)="changeTextColor($event.target.value)" />
   </mat-form-field>
 
   <form [formGroup]="formGroup">
@@ -13,7 +13,7 @@
     </mat-form-field>
   </form>
 
-  <textarea #textArea id="textArea" class="text" [(ngModel)]="element.text" [readonly]="!isTextEditable"></textarea>
+  <textarea #textArea id="textArea" class="text" [value]="element.text" (input)="onTextChange($event.target.value)" [readonly]="!isTextEditable"></textarea>
 </div>
 
 <div mat-dialog-actions>
