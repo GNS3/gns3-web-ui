@@ -2,7 +2,7 @@
 
 <div class="modal-form-container">
   <mat-form-field class="form-field">
-    <input matInput placeholder="Project name" [(ngModel)]="name" type="text" />
+    <input matInput placeholder="Project name" [value]="name()" (input)="name.set($event.target.value)" type="text" />
   </mat-form-field>
 </div>
 

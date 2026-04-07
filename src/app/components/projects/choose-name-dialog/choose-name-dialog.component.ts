@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
@@ -24,10 +24,10 @@ export class ChooseNameDialogComponent implements OnInit {
 
   @Input() controller: Controller;
   @Input() project: Project;
-  name: string;
+  readonly name = model('');
 
   ngOnInit() {
-    this.name = this.project.name;
+    this.name.set(this.project.name);
     this.cd.markForCheck();
   }
 
@@ -36,7 +36,7 @@ export class ChooseNameDialogComponent implements OnInit {
   }
 
   onSaveClick() {
-    this.projectService.duplicate(this.controller, this.project.project_id, this.name).subscribe(() => {
+    this.projectService.duplicate(this.controller, this.project.project_id, this.name()).subscribe(() => {
       this.dialogRef.close();
     });
   }

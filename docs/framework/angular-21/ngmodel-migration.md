@@ -29,7 +29,7 @@ searchText = model('');
 
 ## Migration Progress
 
-**Total: 38 files | Completed: 28 | Pending: 10**
+**Total: 38 files | Completed: 29 | Pending: 9**
 
 ## Files Requiring Migration
 
@@ -80,7 +80,7 @@ searchText = model('');
 | `src/app/components/controllers/controllers.component.html` | Completed |
 | `src/app/components/projects/projects.component.html` | Completed |
 | `src/app/components/projects/edit-project-dialog/edit-project-dialog.component.html` | Completed |
-| `src/app/components/projects/choose-name-dialog/choose-name-dialog.component.html` | Pending |
+| `src/app/components/projects/choose-name-dialog/choose-name-dialog.component.html` | Completed |
 | `src/app/components/user-management/user-management.component.html` | Pending |
 | `src/app/components/role-management/role-management.component.html` | Pending |
 | `src/app/components/settings/settings.component.html` | Pending |
