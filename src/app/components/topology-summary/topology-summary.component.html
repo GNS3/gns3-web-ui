@@ -76,7 +76,7 @@
         <div class="tabContent">
           <div class="summaryContentComputes">
             @for (compute of computes; track compute.name) {
-            <div class="nodeRow">
+            <div class="nodeRow" [matTooltip]="getComputeTooltip(compute)" matTooltipPosition="above">
               <div>
                 @if (compute.connected) {
                 <svg width="10" height="10">
@@ -87,13 +87,10 @@
                   <rect class="status_stopped" x="0" y="0" width="10" height="10" fill="red"></rect>
                 </svg>
                 }
-                {{ compute.name }}
+                {{ truncateComputeName(compute.name) }}
               </div>
               <div>
-                {{ compute.host }}
-              </div>
-              <div>
-                {{ controller.location }}
+                {{ compute.host }}:{{ compute.port }}
               </div>
             </div>
             }

@@ -3,17 +3,21 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
+  Injector,
   Input,
   OnDestroy,
   OnInit,
   Output,
+  effect,
   inject,
+  runInInjectionContext,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ResizeEvent } from 'angular-resizable-element';
 import { Subscription } from 'rxjs';
 import { LinksDataSource } from '../../cartography/datasources/links-datasource';
@@ -26,13 +30,14 @@ import { Controller } from '@models/controller';
 import { ComputeService } from '@services/compute.service';
 import { ProjectService } from '@services/project.service';
 import { ThemeService } from '@services/theme.service';
+import { NotificationService, ComputeNotification } from '@services/notification.service';
 
 @Component({
   selector: 'app-topology-summary',
   templateUrl: './topology-summary.component.html',
   styleUrl: './topology-summary.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, MatTabsModule, MatSelectModule, MatOptionModule, MatDividerModule],
+  imports: [CommonModule, MatTabsModule, MatSelectModule, MatOptionModule, MatDividerModule, MatTooltipModule],
 })
 export class TopologySummaryComponent implements OnInit, OnDestroy {
   private nodesDataSource = inject(NodesDataSource);
@@ -40,10 +45,15 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
   private computeService = inject(ComputeService);
   private linksDataSource = inject(LinksDataSource);
   private themeService = inject(ThemeService);
+  private notificationService = inject(NotificationService);
   private cd = inject(ChangeDetectorRef);
+  private injector = inject(Injector);
 
   @Input() controller: Controller;
   @Input() project: Project;
+
+  // Track if computes have been initialized
+  private computesInitialized = false;
 
   @Output() closeTopologySummary = new EventEmitter<boolean>();
 
@@ -76,7 +86,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         this.nodes = nodes;
         this.nodes.forEach((n) => {
           if (n.console_host === '0.0.0.0' || n.console_host === '0:0:0:0:0:0:0:0' || n.console_host === '::') {
-            n.console_host = this.controller.host;
+            n.console_host = this.controller?.host;
           }
         });
         if (this.sortingOrder === 'asc') {
@@ -89,6 +99,25 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
       })
     );
 
+    // Delay initialization to wait for controller and project to be set
+    // This is necessary because the component is dynamically loaded
+    // and ngOnInit runs before the @Input properties are set
+    setTimeout(() => {
+      this.initializeComputesAndNotifications();
+    }, 0);
+
+    this.revertPosition();
+  }
+
+  private initializeComputesAndNotifications() {
+    if (!this.controller || !this.project || this.computesInitialized) {
+      return;
+    }
+
+    this.computesInitialized = true;
+
+    console.log('[TopologySummary] Initializing with controller:', this.controller);
+
     this.projectService.getStatistics(this.controller, this.project.project_id).subscribe((stats) => {
       this.projectsStatistics = stats;
       // In zoneless mode, trigger change detection when async data arrives
@@ -96,12 +125,15 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     });
 
     this.computeService.getComputes(this.controller).subscribe((computes) => {
+      console.log('[TopologySummary] Initial computes loaded:', computes);
+      console.log('[TopologySummary] Number of computes:', computes.length);
       this.computes = computes;
       // In zoneless mode, trigger change detection when async data arrives
       this.cd.markForCheck();
     });
 
-    this.revertPosition();
+    // Connect to WebSocket notifications for real-time compute updates
+    this.connectToComputeNotifications();
   }
 
   revertPosition() {
@@ -205,6 +237,54 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
   compareDesc(first: Node, second: Node) {
     if (first.name < second.name) return 1;
     return -1;
+  }
+
+  connectToComputeNotifications() {
+    // Connect to global WebSocket for compute notifications
+    console.log('[TopologySummary] Connecting to compute notifications...');
+    this.notificationService.connectToComputeNotifications(this.controller);
+
+    // Subscribe to compute notifications for real-time updates
+    this.subscriptions.push(
+      this.notificationService.computeNotificationEmitter.subscribe((notification: ComputeNotification) => {
+        console.log('[TopologySummary] Compute notification received:', notification);
+        this.handleComputeNotification(notification);
+      })
+    );
+  }
+
+  handleComputeNotification(notification: ComputeNotification) {
+    console.log('[TopologySummary] Handling compute notification:', notification.action, notification.event);
+    switch (notification.action) {
+      case 'compute.created':
+        // Add new compute to the list
+        this.computes = [...this.computes, notification.event];
+        console.log('[TopologySummary] After compute.created, total computes:', this.computes.length);
+        break;
+      case 'compute.updated':
+        // Update existing compute or add if it doesn't exist
+        const existingIndex = this.computes.findIndex((c) => c.compute_id === notification.event.compute_id);
+        if (existingIndex !== -1) {
+          // Update existing compute
+          this.computes = this.computes.map((c) =>
+            c.compute_id === notification.event.compute_id ? notification.event : c
+          );
+        } else {
+          // Add new compute (it wasn't in the initial load)
+          this.computes = [...this.computes, notification.event];
+          console.log('[TopologySummary] Added new compute via updated event:', notification.event.compute_id);
+        }
+        console.log('[TopologySummary] After compute.updated, computes:', this.computes);
+        console.log('[TopologySummary] Total computes after update:', this.computes.length);
+        break;
+      case 'compute.deleted':
+        // Remove deleted compute from the list
+        this.computes = this.computes.filter((c) => c.compute_id !== notification.event.compute_id);
+        console.log('[TopologySummary] After compute.deleted, total computes:', this.computes.length);
+        break;
+    }
+    // Trigger change detection for zoneless mode
+    this.cd.markForCheck();
   }
 
   ngOnDestroy() {
@@ -323,5 +403,24 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
 
   close() {
     this.closeTopologySummary.emit(false);
+  }
+
+  truncateComputeName(name: string): string {
+    if (!name) return '';
+    const maxLength = 15;
+    if (name.length <= maxLength) return name;
+    return name.substring(0, maxLength) + '...';
+  }
+
+  getComputeTooltip(compute: Compute): string {
+    if (!compute) return '';
+    const parts = [
+      `Name: ${compute.name || 'N/A'}`,
+      `Host: ${compute.host}:${compute.port}`,
+      `Connected: ${compute.connected ? 'Yes' : 'No'}`,
+      compute.cpu_usage_percent !== undefined ? `CPU: ${compute.cpu_usage_percent.toFixed(1)}%` : null,
+      compute.memory_usage_percent !== undefined ? `Memory: ${compute.memory_usage_percent.toFixed(1)}%` : null,
+    ].filter(Boolean);
+    return parts.join('\n');
   }
 }
