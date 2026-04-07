@@ -29,7 +29,7 @@ searchText = model('');
 
 ## Migration Progress
 
-**Total: 38 files | Completed: 16 | Pending: 22**
+**Total: 38 files | Completed: 17 | Pending: 21**
 
 ## Files Requiring Migration
 
@@ -63,7 +63,7 @@ searchText = model('');
 | `src/app/components/project-map/drawings-editors/style-editor/style-editor.component.html` | Completed |
 | `src/app/components/project-map/drawings-editors/text-editor/text-editor.component.html` | Completed |
 | `src/app/components/project-map/ai-chat/chat-input-area.component.html` | Completed |
-| `src/app/components/project-map/packet-capturing/packet-filters/packet-filters.component.html` | Pending |
+| `src/app/components/project-map/packet-capturing/packet-filters/packet-filters.component.html` | Completed |
 | `src/app/components/project-map/packet-capturing/start-capture/start-capture.component.html` | Pending |
 | `src/app/components/project-map/node-editors/configurator/docker/edit-network-configuration/edit-network-configuration.component.html` | Pending |
 | `src/app/components/project-map/node-editors/configurator/docker/configure-custom-adapters/configure-custom-adapters.component.html` | Pending |

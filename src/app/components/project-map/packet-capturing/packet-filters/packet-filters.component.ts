@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { MatDialogModule, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -22,7 +21,6 @@ import { DialogConfigService } from '@services/dialog-config.service';
   styleUrl: './packet-filters.component.scss',
   imports: [
     CommonModule,
-    FormsModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
@@ -73,6 +71,36 @@ export class PacketFiltersDialogComponent implements OnInit {
         this.availableFilters = availableFilters;
         this.cdr.markForCheck();
       });
+  }
+
+  onFrequencyDropChange(value: number) {
+    this.filters.frequency_drop[0] = value;
+    this.cdr.markForCheck();
+  }
+
+  onPacketLossChange(value: number) {
+    this.filters.packet_loss[0] = value;
+    this.cdr.markForCheck();
+  }
+
+  onDelayLatencyChange(value: number) {
+    this.filters.delay[0] = value;
+    this.cdr.markForCheck();
+  }
+
+  onDelayJitterChange(value: number) {
+    this.filters.delay[1] = value;
+    this.cdr.markForCheck();
+  }
+
+  onCorruptChange(value: number) {
+    this.filters.corrupt[0] = value;
+    this.cdr.markForCheck();
+  }
+
+  onBpfChange(value: string) {
+    this.filters.bpf[0] = value;
+    this.cdr.markForCheck();
   }
 
   onNoClick() {
