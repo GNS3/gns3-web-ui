@@ -10,6 +10,7 @@ import {
   input,
   Inject,
   signal,
+  model,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -78,7 +79,6 @@ export class TemplateComponent implements OnInit, OnDestroy {
     this.overlay = this.overlayContainer.getContainerElement();
     this.bodyElement = this.document.body;
   }
-  searchText: string = '';
   templateTypes: string[] = [
     'all',
     'cloud',
@@ -92,7 +92,10 @@ export class TemplateComponent implements OnInit, OnDestroy {
     'iou',
     'qemu',
   ];
-  selectedType: string = 'all';
+
+  // Model signals for two-way binding
+  searchText = model('');
+  selectedType = model('all');
 
   // Track mouse position during drag using signals (zoneless compatible)
   private lastPageX = signal<number>(0);
@@ -131,15 +134,15 @@ export class TemplateComponent implements OnInit, OnDestroy {
     this.filteredTemplates = this.filteredTemplates.sort((a, b) => (a.name < b.name ? -1 : 1));
   }
 
-  filterTemplates(event) {
+  filterTemplates() {
     let temporaryTemplates = this.templates.filter((item) => {
-      return item.name.toLowerCase().includes(this.searchText.toLowerCase());
+      return item.name.toLowerCase().includes(this.searchText().toLowerCase());
     });
 
-    if (this.selectedType === 'all' || !this.selectedType) {
+    if (this.selectedType() === 'all' || !this.selectedType()) {
       this.filteredTemplates = temporaryTemplates;
     } else {
-      this.filteredTemplates = temporaryTemplates.filter((t) => t.template_type === this.selectedType);
+      this.filteredTemplates = temporaryTemplates.filter((t) => t.template_type === this.selectedType());
     }
     this.sortTemplates();
   }

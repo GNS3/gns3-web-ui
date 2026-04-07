@@ -19,8 +19,9 @@
       <input
         matInput
         placeholder="Search template by name"
-        (keyup)="filterTemplates($event)"
-        [(ngModel)]="searchText"
+        (keyup)="filterTemplates()"
+        [ngModel]="searchText()"
+        (ngModelChange)="searchText.set($event)"
         [ngModelOptions]="{ standalone: true }"
       />
     </mat-form-field>
@@ -28,8 +29,8 @@
       <mat-select
         [ngModelOptions]="{ standalone: true }"
         placeholder="Filter templates by type"
-        (selectionChange)="filterTemplates($event)"
-        [(ngModel)]="selectedType"
+        (selectionChange)="selectedType.set($event.value); filterTemplates()"
+        [ngModel]="selectedType()"
       >
         @for (type of templateTypes; track type) {
         <mat-option [value]="type">

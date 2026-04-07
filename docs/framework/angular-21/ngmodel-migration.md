@@ -29,7 +29,7 @@ searchText = model('');
 
 ## Migration Progress
 
-**Total: 38 files | Completed: 1 | Pending: 37**
+**Total: 38 files | Completed: 2 | Pending: 36**
 
 ## Files Requiring Migration
 
@@ -37,7 +37,7 @@ searchText = model('');
 
 | File | Status |
 |------|--------|
-| `src/app/components/template/template.component.html` | Pending |
+| `src/app/components/template/template.component.html` | Completed |
 | `src/app/components/template/template-list-dialog/template-list-dialog.component.html` | Completed |
 
 ### Preferences Components
