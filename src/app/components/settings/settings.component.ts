@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -28,9 +28,11 @@ export class SettingsComponent implements OnInit {
   private cdr = inject(ChangeDetectorRef);
 
   settings: Settings;
-  integrateLinksLabelsToLinks: boolean;
-  openReadme: boolean;
-  openConsolesInWidget: boolean;
+  readonly integrateLinksLabelsToLinks = model(false);
+  readonly openReadme = model(false);
+  readonly openConsolesInWidget = model(false);
+  readonly crashReports = model(false);
+  readonly anonymousStatistics = model(false);
   mapTheme: string;
   currentTheme: PrebuiltTheme;
   availableThemes = this.themeService.availableThemes;
@@ -58,21 +60,25 @@ export class SettingsComponent implements OnInit {
 
   ngOnInit() {
     this.settings = this.settingsService.getAll();
-    this.integrateLinksLabelsToLinks = this.mapSettingsService.integrateLinkLabelsToLinks;
-    this.openReadme = this.mapSettingsService.openReadme;
-    this.openConsolesInWidget = this.mapSettingsService.openConsolesInWidget;
+    this.integrateLinksLabelsToLinks.set(this.mapSettingsService.integrateLinkLabelsToLinks);
+    this.openReadme.set(this.mapSettingsService.openReadme);
+    this.openConsolesInWidget.set(this.mapSettingsService.openConsolesInWidget);
+    this.crashReports.set(this.settings.crash_reports);
+    this.anonymousStatistics.set(this.settings.anonymous_statistics);
     this.mapTheme = this.themeService.savedMapTheme;
     this.currentTheme = this.themeService.getCurrentTheme();
     this.cdr.markForCheck();
   }
 
   save() {
+    this.settings.crash_reports = this.crashReports();
+    this.settings.anonymous_statistics = this.anonymousStatistics();
     this.settingsService.setAll(this.settings);
     this.toaster.success('Settings have been saved.');
 
-    this.mapSettingsService.toggleIntegrateInterfaceLabels(this.integrateLinksLabelsToLinks);
-    this.mapSettingsService.toggleOpenReadme(this.openReadme);
-    this.mapSettingsService.toggleOpenConsolesInWidget(this.openConsolesInWidget);
+    this.mapSettingsService.toggleIntegrateInterfaceLabels(this.integrateLinksLabelsToLinks());
+    this.mapSettingsService.toggleOpenReadme(this.openReadme());
+    this.mapSettingsService.toggleOpenConsolesInWidget(this.openConsolesInWidget());
   }
 
   setTheme(theme: PrebuiltTheme) {

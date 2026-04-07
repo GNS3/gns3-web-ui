@@ -13,11 +13,11 @@
           </mat-expansion-panel-header>
 
           <div class="settings__checkbox-group">
-            <mat-checkbox [(ngModel)]="settings.crash_reports">Send anonymous crash reports</mat-checkbox>
-            <mat-checkbox [(ngModel)]="integrateLinksLabelsToLinks">Integrate link labels to links</mat-checkbox>
-            <mat-checkbox [(ngModel)]="openReadme">Automatically open project README files</mat-checkbox>
-            <mat-checkbox [(ngModel)]="settings.anonymous_statistics">Send anonymous usage statistics</mat-checkbox>
-            <mat-checkbox [(ngModel)]="openConsolesInWidget"
+            <mat-checkbox [checked]="crashReports()" (change)="crashReports.set($event.checked)">Send anonymous crash reports</mat-checkbox>
+            <mat-checkbox [checked]="integrateLinksLabelsToLinks()" (change)="integrateLinksLabelsToLinks.set($event.checked)">Integrate link labels to links</mat-checkbox>
+            <mat-checkbox [checked]="openReadme()" (change)="openReadme.set($event.checked)">Automatically open project README files</mat-checkbox>
+            <mat-checkbox [checked]="anonymousStatistics()" (change)="anonymousStatistics.set($event.checked)">Send anonymous usage statistics</mat-checkbox>
+            <mat-checkbox [checked]="openConsolesInWidget()" (change)="openConsolesInWidget.set($event.checked)"
               >Open consoles in the widget instead of in new tabs after clicking start consoles for all
               nodes</mat-checkbox
             >
