@@ -1,5 +1,5 @@
 import { DataSource } from '@angular/cdk/collections';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormsModule,
@@ -35,7 +35,6 @@ import { TemplateFilter } from '@filters/templateFilter.pipe';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    FormsModule,
     ReactiveFormsModule,
     RouterModule,
     MatDialogModule,
@@ -69,15 +68,16 @@ export class TemplateListDialogComponent implements OnInit {
     'iou',
     'qemu',
   ];
-  selectedType: string;
   configurationForm: UntypedFormGroup;
   positionForm: UntypedFormGroup;
   templates: Template[] = [];
   filteredTemplates: Template[] = [];
-  selectedTemplate: Template;
-  searchText: string = '';
-
   nodeControllers: { display: string; value: string }[] = [{ display: 'local', value: 'local' }];
+
+  // Model signals for two-way binding
+  searchText = model('');
+  selectedType = model('');
+  selectedTemplate = model<Template | null>(null);
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
     this.controller = data['controller'];
@@ -132,29 +132,34 @@ export class TemplateListDialogComponent implements OnInit {
     return a === b;
   }
 
-  filterTemplates(event) {
+  filterTemplates() {
     let temporaryTemplates = this.templates.filter((item) => {
-      return item.name.toLowerCase().includes(this.searchText.toLowerCase());
+      return item.name.toLowerCase().includes(this.searchText().toLowerCase());
     });
-    this.filteredTemplates = temporaryTemplates.filter((t) => t.template_type === event.value.toString());
+    if (this.selectedType() === '' || this.selectedType() === 'all') {
+      this.filteredTemplates = temporaryTemplates;
+    } else {
+      this.filteredTemplates = temporaryTemplates.filter((t) => t.template_type === this.selectedType());
+    }
   }
 
-  chooseTemplate(event) {
-    this.selectedTemplate = event.value;
-    if (
-      this.selectedTemplate.template_type === 'cloud' ||
-      this.selectedTemplate.template_type === 'ethernet_hub' ||
-      this.selectedTemplate.template_type === 'ethernet_switch'
-    ) {
-      this.selectedTemplate.compute_id = 'local';
+  chooseTemplate() {
+    if (this.selectedTemplate()) {
+      const template = this.selectedTemplate()!;
+      if (
+        template.template_type === 'cloud' ||
+        template.template_type === 'ethernet_hub' ||
+        template.template_type === 'ethernet_switch'
+      ) {
+        template.compute_id = 'local';
+      }
     }
-    // this.configurationForm.controls['name'].setValue(this.selectedTemplate.default_name_format);
   }
 
   onAddClick(): void {
-    if (!this.selectedTemplate || this.filteredTemplates.length === 0) {
+    if (!this.selectedTemplate() || this.filteredTemplates.length === 0) {
       this.toasterService.error('Please firstly choose template.');
-    } else if (!this.positionForm.valid || !this.configurationForm.valid || !this.selectedTemplate.compute_id) {
+    } else if (!this.positionForm.valid || !this.configurationForm.valid || !this.selectedTemplate().compute_id) {
       this.toasterService.error('Please fill all required fields.');
     } else {
       let x: number = this.positionForm.get('left').value;
@@ -167,15 +172,14 @@ export class TemplateListDialogComponent implements OnInit {
       ) {
         this.toasterService.error('Please set correct position values.');
       } else {
-        let event: NodeAddedEvent = {
-          template: this.selectedTemplate,
-          controller: this.selectedTemplate.compute_id,
-          // name: this.configurationForm.get('name').value,
+        let nodeAddedEvent: NodeAddedEvent = {
+          template: this.selectedTemplate(),
+          controller: this.selectedTemplate().compute_id,
           numberOfNodes: this.configurationForm.get('numberOfNodes').value,
           x: x,
           y: y,
         };
-        this.dialogRef.close(event);
+        this.dialogRef.close(nodeAddedEvent);
       }
     }
   }

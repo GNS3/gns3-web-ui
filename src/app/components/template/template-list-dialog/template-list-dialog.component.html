@@ -18,18 +18,15 @@
     <input
       matInput
       placeholder="Search by name"
-      [(ngModel)]="searchText"
-      [ngModelOptions]="{ standalone: true }"
-      ngDefaultControl
+      [value]="searchText()"
+      (input)="searchText.set($event.target.value); filterTemplates()"
     />
   </mat-form-field>
   <mat-form-field class="form-field">
     <mat-select
-      [ngModelOptions]="{ standalone: true }"
       placeholder="Filter templates by type"
-      (selectionChange)="filterTemplates($event)"
-      [(ngModel)]="selectedType"
-      ngDefaultControl
+      [value]="selectedType()"
+      (selectionChange)="selectedType.set($event.value); filterTemplates()"
     >
       @for (type of templateTypes; track type) {
       <mat-option [value]="type">
@@ -40,13 +37,12 @@
   </mat-form-field>
   <mat-form-field class="form-field">
     <mat-select
-      [ngModelOptions]="{ standalone: true }"
       placeholder="Choose template"
-      (selectionChange)="chooseTemplate($event)"
-      [(ngModel)]="selectedTemplate"
-      ngDefaultControl
+      [value]="selectedTemplate()"
+      (selectionChange)="selectedTemplate.set($event.value); chooseTemplate()"
+      [compareWith]="compareControllers"
     >
-      @for (template of filteredTemplates | templatefilter: searchText; track template.name) {
+      @for (template of filteredTemplates | templatefilter: searchText(); track template.name) {
       <mat-option [value]="template">
         {{ template.name }}
       </mat-option>
@@ -67,11 +63,11 @@
       />
     </mat-form-field>
   </form>
-  @if (selectedTemplate) {
+  @if (selectedTemplate()) {
   <mat-form-field class="form-field compute-select">
     <mat-select
       placeholder="Choose controller for node"
-      [(value)]="selectedTemplate.compute_id"
+      [(value)]="selectedTemplate()!.compute_id"
       [compareWith]="compareControllers"
     >
       @for (controller of nodeControllers; track controller.value) {
