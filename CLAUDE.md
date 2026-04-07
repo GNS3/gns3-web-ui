@@ -286,6 +286,7 @@ readonly value = input<string>('');
 
 ### Code Quality
 - [ ] No TypeScript/lint errors
+- [ ] **NEVER commit/push without explicit user instruction**
 
 ---
 
