@@ -472,7 +472,14 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     this.toolsService.textAddingToolActivation(this.drawTools.isTextChosen);
   }
   getAllNodesAndDrawingStatus() {
-    this.projectServices.getProjectStatus(this.controller(), this.project().project_id).subscribe((status) => {
+    const controller = this.controller();
+    const project = this.project();
+
+    if (!controller || !project || !project.project_id) {
+      return;
+    }
+
+    this.projectServices.getProjectStatus(controller, project.project_id).subscribe((status) => {
       if (status) {
         this.isLocked = true;
         this.lock = 'lock';
@@ -482,10 +489,10 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       }
       this.cdr.markForCheck();
     });
-    this.projectServices.nodes(this.controller(), this.project().project_id).subscribe((response) => {
+    this.projectServices.nodes(controller, project.project_id).subscribe((response) => {
       this.nodes = response;
       this.nodes.forEach((node) => {
-        this.nodeService.updateNode(this.controller(), node).subscribe((node) => {
+        this.nodeService.updateNode(controller, node).subscribe((node) => {
           this.nodesDataSource.update(node);
         });
       });

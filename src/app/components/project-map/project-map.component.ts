@@ -440,6 +440,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   getData() {
     const routeSub = this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const controller_id = parseInt(paramMap.get('controller_id'), 10);
+      const project_id = paramMap.get('project_id');
+
+      if (!project_id) {
+        this.router.navigate(['/controllers']);
+        return;
+      }
 
       from(this.controllerService.get(controller_id))
         .pipe(
@@ -447,7 +453,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             if (!controller) this.router.navigate(['/controllers']);
             this.controller = controller;
             this.cd.markForCheck();
-            return this.projectService.get(controller, paramMap.get('project_id')).pipe(
+            return this.projectService.get(controller, project_id).pipe(
               map((project) => {
                 return project;
               })
@@ -456,7 +462,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           mergeMap((project: Project) => {
             this.project = project;
             this.cd.markForCheck();
-            if (!project) this.router.navigate(['/controllers']);
+            if (!project || !project.project_id) {
+              this.router.navigate(['/controllers']);
+              return new Observable<Project>((observer) => observer.complete());
+            }
 
             this.projectService.open(this.controller, this.project.project_id);
             this.title.setTitle(this.project.name);
@@ -476,7 +485,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         )
         .subscribe(
           (project: Project) => {
-            this.onProjectLoad(project);
+            if (project && project.project_id) {
+              this.onProjectLoad(project);
+            }
             this.cd.markForCheck();
             if (this.mapSettingsService.openReadme) this.showReadme();
           },
@@ -581,6 +592,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   onProjectLoad(project: Project) {
+    if (!project || !project.project_id) {
+      this.progressService.setError('Invalid project data');
+      this.router.navigate(['/controllers']);
+      return;
+    }
+
     this.readonly = this.projectService.isReadOnly(project);
     this.recentlyOpenedProjectService.setProjectId(this.project.project_id);
 
