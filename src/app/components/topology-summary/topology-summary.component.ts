@@ -3,14 +3,11 @@ import {
   ChangeDetectorRef,
   Component,
   EventEmitter,
-  Injector,
   Input,
   OnDestroy,
   OnInit,
   Output,
-  effect,
   inject,
-  runInInjectionContext,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -47,7 +44,6 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
   private themeService = inject(ThemeService);
   private notificationService = inject(NotificationService);
   private cd = inject(ChangeDetectorRef);
-  private injector = inject(Injector);
 
   @Input() controller: Controller;
   @Input() project: Project;
@@ -116,8 +112,6 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
 
     this.computesInitialized = true;
 
-    console.log('[TopologySummary] Initializing with controller:', this.controller);
-
     this.projectService.getStatistics(this.controller, this.project.project_id).subscribe((stats) => {
       this.projectsStatistics = stats;
       // In zoneless mode, trigger change detection when async data arrives
@@ -125,8 +119,6 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
     });
 
     this.computeService.getComputes(this.controller).subscribe((computes) => {
-      console.log('[TopologySummary] Initial computes loaded:', computes);
-      console.log('[TopologySummary] Number of computes:', computes.length);
       this.computes = computes;
       // In zoneless mode, trigger change detection when async data arrives
       this.cd.markForCheck();
@@ -241,25 +233,21 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
 
   connectToComputeNotifications() {
     // Connect to global WebSocket for compute notifications
-    console.log('[TopologySummary] Connecting to compute notifications...');
     this.notificationService.connectToComputeNotifications(this.controller);
 
     // Subscribe to compute notifications for real-time updates
     this.subscriptions.push(
       this.notificationService.computeNotificationEmitter.subscribe((notification: ComputeNotification) => {
-        console.log('[TopologySummary] Compute notification received:', notification);
         this.handleComputeNotification(notification);
       })
     );
   }
 
   handleComputeNotification(notification: ComputeNotification) {
-    console.log('[TopologySummary] Handling compute notification:', notification.action, notification.event);
     switch (notification.action) {
       case 'compute.created':
         // Add new compute to the list
         this.computes = [...this.computes, notification.event];
-        console.log('[TopologySummary] After compute.created, total computes:', this.computes.length);
         break;
       case 'compute.updated':
         // Update existing compute or add if it doesn't exist
@@ -272,15 +260,11 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
         } else {
           // Add new compute (it wasn't in the initial load)
           this.computes = [...this.computes, notification.event];
-          console.log('[TopologySummary] Added new compute via updated event:', notification.event.compute_id);
         }
-        console.log('[TopologySummary] After compute.updated, computes:', this.computes);
-        console.log('[TopologySummary] Total computes after update:', this.computes.length);
         break;
       case 'compute.deleted':
         // Remove deleted compute from the list
         this.computes = this.computes.filter((c) => c.compute_id !== notification.event.compute_id);
-        console.log('[TopologySummary] After compute.deleted, total computes:', this.computes.length);
         break;
     }
     // Trigger change detection for zoneless mode

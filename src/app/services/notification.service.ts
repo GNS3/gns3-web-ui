@@ -37,7 +37,6 @@ export class NotificationService {
   connectToComputeNotifications(controller: Controller) {
     // If already connected to the same controller, skip
     if (this.ws && this.currentController === controller) {
-      console.log('[NotificationService] Already connected to controller, skipping');
       return;
     }
 
@@ -45,26 +44,18 @@ export class NotificationService {
     this.disconnect();
 
     this.currentController = controller;
-    const wsUrl = this.notificationsPath(controller);
-    console.log('[NotificationService] Connecting to WebSocket:', wsUrl);
-    this.ws = new WebSocket(wsUrl);
-
-    this.ws.onopen = () => {
-      console.log('[NotificationService] WebSocket connected successfully');
-    };
+    this.ws = new WebSocket(this.notificationsPath(controller));
 
     this.ws.onmessage = (event: MessageEvent) => {
       const message = JSON.parse(event.data);
-      console.log('[NotificationService] WebSocket message received:', message);
       this.handleMessage(message);
     };
 
-    this.ws.onerror = (error) => {
-      console.error('[NotificationService] WebSocket error:', error);
+    this.ws.onerror = () => {
+      console.error('Compute notifications WebSocket error');
     };
 
     this.ws.onclose = () => {
-      console.log('[NotificationService] WebSocket closed');
       this.ws = null;
       this.currentController = null;
     };
