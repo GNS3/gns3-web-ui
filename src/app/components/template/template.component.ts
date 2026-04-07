@@ -164,8 +164,8 @@ export class TemplateComponent implements OnInit, OnDestroy {
 
       if (symbol.startsWith(':/')) {
         // Builtin symbol: e.g., :/symbols/affinity/circle/blue/router.svg
-        const symbolWithoutPrefix = symbol.substring(2);
-        path = `/symbols/:${symbolWithoutPrefix}/raw`;
+        // Keep the full symbol path including :/ prefix to match API format
+        path = `/symbols/${symbol}/raw`;
       } else {
         // Custom symbol: e.g., firefox.svg
         path = `/symbols/${symbol}/raw`;
