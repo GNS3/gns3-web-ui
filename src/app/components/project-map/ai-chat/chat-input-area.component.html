@@ -4,9 +4,9 @@
       #messageInput
       [placeholder]="placeholder()"
       [disabled]="disabled()"
-      [(ngModel)]="message"
+      [value]="message()"
+      (input)="onInputChange($event.target.value)"
       (keydown)="handleKeyDown($event)"
-      (input)="onInputChange()"
       [rows]="1"
       [maxLength]="maxLength()"
       class="gns3-chat-input-area__textarea"
@@ -45,7 +45,7 @@
   @if (showCharCount()) {
   <div class="gns3-chat-input-area__input-footer">
     <span class="gns3-chat-input-area__char-count" [class.gns3-chat-input-area__char-count--warning]="isNearLimit">{{
-      message.length
+      message().length
     }}</span>
     <span class="gns3-chat-input-area__char-separator"> / </span>
     <span class="gns3-chat-input-area__char-max">{{ maxLength() }}</span>

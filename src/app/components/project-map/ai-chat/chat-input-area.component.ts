@@ -9,10 +9,10 @@ import {
   ChangeDetectorRef,
   inject,
   input,
+  model,
   viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatRippleModule } from '@angular/material/core';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
@@ -31,7 +31,7 @@ import { OverlayContainer } from '@angular/cdk/overlay';
  */
 @Component({
   selector: 'app-chat-input-area',
-  imports: [CommonModule, FormsModule, MatIconModule, MatRippleModule, MatMenuModule, MatDividerModule],
+  imports: [CommonModule, MatIconModule, MatRippleModule, MatMenuModule, MatDividerModule],
   templateUrl: './chat-input-area.component.html',
   styleUrls: ['./chat-input-area.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -56,7 +56,7 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
   readonly messageInput = viewChild.required<ElementRef<HTMLTextAreaElement>>('messageInput');
   readonly menuTrigger = viewChild.required<MatMenuTrigger>('menuTrigger');
 
-  message = '';
+  readonly message = model('');
   textareaHeight = 48; // Initial height
   private destroy$ = new Subject<void>();
   private previousMessageLength = 0;
@@ -120,14 +120,14 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
    * Check if message can be sent
    */
   get canSend(): boolean {
-    return this.message.trim().length > 0 && this.message.length <= this.maxLength();
+    return this.message().trim().length > 0 && this.message().length <= this.maxLength();
   }
 
   /**
    * Check if approaching length limit
    */
   get isNearLimit(): boolean {
-    return this.message.length >= this.maxLength() * this.warningThreshold();
+    return this.message().length >= this.maxLength() * this.warningThreshold();
   }
 
   /**
@@ -147,8 +147,9 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
   /**
    * Input change event
    */
-  onInputChange(): void {
-    this.inputChanged.emit(this.message);
+  onInputChange(value: string): void {
+    this.message.set(value);
+    this.inputChanged.emit(this.message());
 
     // Defer height adjustment to avoid ExpressionChangedAfterItHasBeenCheckedError
     setTimeout(() => {
@@ -179,9 +180,9 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
 
     // Only set height if it changed or message length changed
     // This prevents unnecessary style updates
-    if (this.previousMessageLength !== this.message.length) {
+    if (this.previousMessageLength !== this.message().length) {
       textarea.style.height = `${newHeight}px`;
-      this.previousMessageLength = this.message.length;
+      this.previousMessageLength = this.message().length;
     }
   }
 
@@ -193,10 +194,10 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const message = this.message.trim();
+    const message = this.message().trim();
     if (message) {
       this.messageSent.emit(message);
-      this.message = '';
+      this.message.set('');
 
       // Reset textarea height after sending
       setTimeout(() => {
@@ -219,7 +220,7 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
    * Clear input
    */
   clear(): void {
-    this.message = '';
+    this.message.set('');
     setTimeout(() => {
       this.adjustTextareaHeight();
     }, 0);
