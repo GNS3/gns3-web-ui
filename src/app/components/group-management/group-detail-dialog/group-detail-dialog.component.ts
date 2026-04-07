@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit, inject, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnInit, inject, signal, computed, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UntypedFormControl, UntypedFormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -71,10 +71,10 @@ export class GroupDetailDialogComponent implements OnInit {
   aces: ACEDetailed[] = [];
   aceDatasource = new MatTableDataSource<ACEDetailed>();
   aceDisplayedColumns = ['endpoint', 'role', 'propagate', 'allowed'];
-  searchMembers: string = '';
+  readonly searchMembers = model('');
 
   filteredMembers = computed(() => {
-    const search = this.searchMembers.toLowerCase();
+    const search = this.searchMembers().toLowerCase();
     const members = this.members();
     if (!search) return members;
     return members.filter((m) => m.username.toLowerCase().includes(search));

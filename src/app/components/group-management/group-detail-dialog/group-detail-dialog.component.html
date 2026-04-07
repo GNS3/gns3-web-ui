@@ -72,7 +72,7 @@
           <div class="group-detail-dialog__search">
             <mat-form-field appearance="fill" class="group-detail-dialog__search-field">
               <mat-label>Filter members</mat-label>
-              <input matInput [(ngModel)]="searchMembers" />
+              <input matInput [value]="searchMembers()" (input)="searchMembers.set($event.target.value)" />
             </mat-form-field>
           </div>
 
