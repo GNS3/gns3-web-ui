@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { pointer } from 'd3-selection';
-import { line, curveCatmullRom } from 'd3-shape';
+import { line } from 'd3-shape';
 import { Context } from '../models/context';
 import { DrawingLine } from '../models/drawing-line';
 import { Point } from '../models/point';
@@ -23,9 +23,12 @@ export class DrawingLineWidget {
     const over = function (this: SVGGElement, event: MouseEvent, d: unknown) {
       const node = self.selection.select<SVGGElement>('g.canvas').node();
       const coordinates = pointer(event, node);
-      // Add point on mousemove during drawing
+      // Update with only start point and current mouse position for straight line
       if (self.drawing) {
-        self.drawingLine.points.push(new Point(coordinates[0], coordinates[1]));
+        self.drawingLine.points = [
+          self.drawingLine.points[0], // Keep the start point
+          new Point(coordinates[0], coordinates[1]) // Current mouse position
+        ];
       }
       self.draw(null, null);
     };
@@ -83,8 +86,8 @@ export class DrawingLineWidget {
       ];
     }
 
-    // Use d3.line with curveCatmullRom for smooth curves
-    const value_line = line<[number, number]>().curve(curveCatmullRom);
+    // Use straight line (no curve) for link drawing
+    const value_line = line<[number, number]>();
 
     const tool = drawing_line_tool.selectAll<SVGPathElement, [number, number][]>('path').data(link_data);
 
