@@ -29,7 +29,7 @@ searchText = model('');
 
 ## Migration Progress
 
-**Total: 38 files | Completed: 12 | Pending: 26**
+**Total: 38 files | Completed: 13 | Pending: 25**
 
 ## Files Requiring Migration
 
@@ -54,7 +54,7 @@ searchText = model('');
 | `src/app/components/preferences/common/udp-tunnels/udp-tunnels.component.html` | Completed |
 | `src/app/components/preferences/common/ports/ports.component.html` | Completed |
 | `src/app/components/preferences/common/custom-adapters-table/custom-adapters-table.component.html` | Completed |
-| `src/app/components/preferences/common/custom-adapters/custom-adapters.component.html` | Pending |
+| `src/app/components/preferences/common/custom-adapters/custom-adapters.component.html` | Completed |
 
 ### Project-Map Components
 

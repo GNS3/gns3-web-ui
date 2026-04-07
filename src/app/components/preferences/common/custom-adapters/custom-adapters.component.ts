@@ -1,5 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, inject, model } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -34,7 +33,6 @@ export interface CustomAdaptersDialogResult {
   templateUrl: './custom-adapters.component.html',
   styleUrls: ['./custom-adapters.component.scss'],
   imports: [
-    FormsModule,
     MatButtonModule,
     MatFormFieldModule,
     MatIconModule,
@@ -47,13 +45,14 @@ export interface CustomAdaptersDialogResult {
 })
 export class CustomAdaptersComponent {
   readonly dialogRef = inject(MatDialogRef<CustomAdaptersComponent>);
+  private cd = inject(ChangeDetectorRef);
   private toasterService = inject(ToasterService);
 
-  public adapters: CustomAdapter[] = [];
+  readonly adapters = model<CustomAdapter[]>([]);
   public numberOfAdapters: number;
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: CustomAdaptersDialogData) {
-    this.adapters = data.adapters ? [...data.adapters] : [];
+    this.adapters.set(data.adapters ? [...data.adapters] : []);
   }
 
   get networkTypes(): any[] {
@@ -61,8 +60,9 @@ export class CustomAdaptersComponent {
   }
 
   onAdd() {
+    const currentAdapters = this.adapters();
     // Find the highest adapter_number to avoid duplicates
-    const maxAdapterNumber = this.adapters.length > 0 ? Math.max(...this.adapters.map((a) => a.adapter_number)) : -1;
+    const maxAdapterNumber = currentAdapters.length > 0 ? Math.max(...currentAdapters.map((a) => a.adapter_number)) : -1;
     const adapterNumber = maxAdapterNumber + 1;
 
     const portNameFormat = this.data.portNameFormat || 'Ethernet{0}';
@@ -84,11 +84,33 @@ export class CustomAdaptersComponent {
       port_name: portName,
       mac_address: '',
     };
-    this.adapters = [...this.adapters, adapter];
+    this.adapters.set([...currentAdapters, adapter]);
   }
 
   delete(adapter: CustomAdapter) {
-    this.adapters = this.adapters.filter((a) => a !== adapter);
+    this.adapters.set(this.adapters().filter((a) => a !== adapter));
+  }
+
+  onPortNameChange(adapterNumber: number, value: string) {
+    this.adapters.update((adapters) =>
+      adapters.map((a) => (a.adapter_number === adapterNumber ? { ...a, port_name: value } : a))
+    );
+    this.cd.markForCheck();
+  }
+
+  onAdapterTypeChange(adapterNumber: number, value: string) {
+    this.adapters.update((adapters) =>
+      adapters.map((a) => (a.adapter_number === adapterNumber ? { ...a, adapter_type: value } : a))
+    );
+    this.cd.markForCheck();
+  }
+
+  onMacAddressChange(adapterNumber: number, value: string) {
+    const formattedMac = this.formatMacAddress(value);
+    this.adapters.update((adapters) =>
+      adapters.map((a) => (a.adapter_number === adapterNumber ? { ...a, mac_address: formattedMac } : a))
+    );
+    this.cd.markForCheck();
   }
 
   formatMacAddress(mac: string): string {
@@ -113,7 +135,7 @@ export class CustomAdaptersComponent {
   }
 
   hasInvalidMacAddresses(): boolean {
-    return this.adapters.some((adapter) => adapter.mac_address && !this.isValidMacAddress(adapter.mac_address));
+    return this.adapters().some((adapter) => adapter.mac_address && !this.isValidMacAddress(adapter.mac_address));
   }
 
   getMacErrorMessage(mac: string): string {
@@ -138,7 +160,7 @@ export class CustomAdaptersComponent {
   configureCustomAdapters() {
     // Check for invalid MAC addresses before submitting
     if (this.hasInvalidMacAddresses()) {
-      const invalidAdapters = this.adapters.filter(
+      const invalidAdapters = this.adapters().filter(
         (adapter) => adapter.mac_address && !this.isValidMacAddress(adapter.mac_address)
       );
 
@@ -158,7 +180,7 @@ export class CustomAdaptersComponent {
     // Incremental save: only keep adapters with non-default values (like Desktop GUI)
     const customAdapters: CustomAdapter[] = [];
 
-    for (const adapter of this.adapters) {
+    for (const adapter of this.adapters()) {
       // Calculate default port name for this adapter_number
       let defaultPortName: string;
       if (segmentSize > 0) {
@@ -186,7 +208,7 @@ export class CustomAdaptersComponent {
     }
 
     // Calculate required adapters based on the current adapter count
-    const requiredAdapters = this.adapters.length;
+    const requiredAdapters = this.adapters().length;
 
     const result: CustomAdaptersDialogResult = {
       adapters: customAdapters, // Only non-default adapters

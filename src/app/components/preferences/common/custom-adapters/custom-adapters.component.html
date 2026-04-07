@@ -10,14 +10,23 @@
       <span class="adapter-header-actions"></span>
     </div>
 
-    @for (adapter of adapters; track adapter.adapter_number; let i = $index) {
+    @for (adapter of adapters(); track adapter.adapter_number; let i = $index) {
     <div class="adapter-item">
       <span class="adapter-label">Adapter {{ adapter.adapter_number }}</span>
       <mat-form-field appearance="fill" subscriptSizing="dynamic" class="adapter-field">
-        <input matInput [(ngModel)]="adapter.port_name" name="port_name_{{ i }}" />
+        <input
+          matInput
+          [value]="adapter.port_name"
+          (input)="onPortNameChange(adapter.adapter_number, $event.target.value)"
+          name="port_name_{{ i }}"
+        />
       </mat-form-field>
       <mat-form-field appearance="fill" subscriptSizing="dynamic" class="adapter-field">
-        <mat-select [(ngModel)]="adapter.adapter_type" name="adapter_type_{{ i }}">
+        <mat-select
+          [value]="adapter.adapter_type"
+          (selectionChange)="onAdapterTypeChange(adapter.adapter_number, $event.value)"
+          name="adapter_type_{{ i }}"
+        >
           @for (type of networkTypes; track type.value) {
           <mat-option [value]="type.value">{{ type.name }}</mat-option>
           }
@@ -26,8 +35,8 @@
       <mat-form-field appearance="fill" subscriptSizing="dynamic" class="adapter-field">
         <input
           matInput
-          [(ngModel)]="adapter.mac_address"
-          (ngModelChange)="adapter.mac_address = formatMacAddress($event)"
+          [value]="adapter.mac_address"
+          (input)="onMacAddressChange(adapter.adapter_number, $event.target.value)"
           name="mac_address_{{ i }}"
           placeholder="Paste any MAC format"
         />
