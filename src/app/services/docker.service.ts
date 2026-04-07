@@ -29,18 +29,27 @@ export class DockerService {
   }
 
   addTemplate(controller: Controller, dockerTemplate: any): Observable<any> {
+    const templateToSend = this.prepareTemplate(dockerTemplate);
     return this.httpController.post<DockerTemplate>(
       controller,
       `/templates`,
-      dockerTemplate
+      templateToSend
     ) as Observable<DockerTemplate>;
   }
 
   saveTemplate(controller: Controller, dockerTemplate: any): Observable<any> {
+    const templateToSend = this.prepareTemplate(dockerTemplate);
     return this.httpController.put<DockerTemplate>(
       controller,
       `/templates/${dockerTemplate.template_id}`,
-      dockerTemplate
+      templateToSend
     ) as Observable<DockerTemplate>;
+  }
+
+  private prepareTemplate(template: DockerTemplate): DockerTemplate {
+    return {
+      ...template,
+      custom_adapters: template.custom_adapters || []
+    };
   }
 }

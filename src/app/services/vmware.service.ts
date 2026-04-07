@@ -22,19 +22,28 @@ export class VmwareService {
   }
 
   addTemplate(controller: Controller, vmwareTemplate: VmwareTemplate): Observable<VmwareTemplate> {
+    const templateToSend = this.prepareTemplate(vmwareTemplate);
     return this.httpController.post<VmwareTemplate>(
       controller,
       `/templates`,
-      vmwareTemplate
+      templateToSend
     ) as Observable<VmwareTemplate>;
   }
 
   saveTemplate(controller: Controller, vmwareTemplate: VmwareTemplate): Observable<VmwareTemplate> {
+    const templateToSend = this.prepareTemplate(vmwareTemplate);
     return this.httpController.put<VmwareTemplate>(
       controller,
       `/templates/${vmwareTemplate.template_id}`,
-      vmwareTemplate
+      templateToSend
     ) as Observable<VmwareTemplate>;
+  }
+
+  private prepareTemplate(template: VmwareTemplate): VmwareTemplate {
+    return {
+      ...template,
+      custom_adapters: template.custom_adapters || []
+    };
   }
 
   getVirtualMachines(controller: Controller): Observable<VmwareVm[]> {

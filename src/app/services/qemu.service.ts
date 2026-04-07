@@ -47,15 +47,24 @@ export class QemuService {
   }
 
   addTemplate(controller: Controller, qemuTemplate: QemuTemplate): Observable<QemuTemplate> {
-    return this.httpController.post<QemuTemplate>(controller, `/templates`, qemuTemplate) as Observable<QemuTemplate>;
+    const templateToSend = this.prepareTemplate(qemuTemplate);
+    return this.httpController.post<QemuTemplate>(controller, `/templates`, templateToSend) as Observable<QemuTemplate>;
   }
 
   saveTemplate(controller: Controller, qemuTemplate: QemuTemplate): Observable<QemuTemplate> {
+    const templateToSend = this.prepareTemplate(qemuTemplate);
     return this.httpController.put<QemuTemplate>(
       controller,
       `/templates/${qemuTemplate.template_id}`,
-      qemuTemplate
+      templateToSend
     ) as Observable<QemuTemplate>;
+  }
+
+  private prepareTemplate(template: QemuTemplate): QemuTemplate {
+    return {
+      ...template,
+      custom_adapters: template.custom_adapters || []
+    };
   }
 }
 

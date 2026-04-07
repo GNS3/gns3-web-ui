@@ -22,19 +22,28 @@ export class VirtualBoxService {
   }
 
   addTemplate(controller: Controller, virtualBoxTemplate: VirtualBoxTemplate): Observable<VirtualBoxTemplate> {
+    const templateToSend = this.prepareTemplate(virtualBoxTemplate);
     return this.httpController.post<VirtualBoxTemplate>(
       controller,
       `/templates`,
-      virtualBoxTemplate
+      templateToSend
     ) as Observable<VirtualBoxTemplate>;
   }
 
   saveTemplate(controller: Controller, virtualBoxTemplate: VirtualBoxTemplate): Observable<VirtualBoxTemplate> {
+    const templateToSend = this.prepareTemplate(virtualBoxTemplate);
     return this.httpController.put<VirtualBoxTemplate>(
       controller,
       `/templates/${virtualBoxTemplate.template_id}`,
-      virtualBoxTemplate
+      templateToSend
     ) as Observable<VirtualBoxTemplate>;
+  }
+
+  private prepareTemplate(template: VirtualBoxTemplate): VirtualBoxTemplate {
+    return {
+      ...template,
+      custom_adapters: template.custom_adapters || []
+    };
   }
 
   getVirtualMachines(controller: Controller): Observable<VirtualBoxVm[]> {
