@@ -61,7 +61,6 @@ yarn ng serve             # Development server (http://127.0.0.1:4200/)
 yarn ng build             # Production build
 yarn ng test              # Run tests
 yarn ng lint              # Lint code
-yarn prettier:write       # Format code
 ```
 
 ---
@@ -286,7 +285,6 @@ readonly value = input<string>('');
 - [ ] No forbidden Zone.js APIs
 
 ### Code Quality
-- [ ] `yarn prettier:write` formatted
 - [ ] No TypeScript/lint errors
 
 ---
