@@ -29,6 +29,35 @@
   button mat-icon {
     color: var(--mat-sys-on-primary);
   }
+
+  .gns3-button {
+    position: relative;
+    top: -2px;
+
+    mat-icon {
+      width: 30px;
+      height: 30px;
+    }
+  }
+
+  .menu-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 40px;
+    width: 40px;
+    border-radius: 20px;
+    margin: 2px 0;
+    transition: transform 100ms ease;
+
+    mat-icon {
+      color: var(--mat-sys-on-primary);
+    }
+  }
+
+  .menu-button:hover {
+    transform: scale(1.3);
+  }
 }
 
 /* =============================================

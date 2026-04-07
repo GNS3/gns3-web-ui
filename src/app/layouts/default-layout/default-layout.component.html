@@ -1,6 +1,13 @@
 <header class="header">
   <mat-toolbar class="toolbar-primary">
-    <button mat-icon-button matTooltip="Open menu" matTooltipClass="custom-tooltip" [matMenuTriggerFor]="mainMenu">
+    <button
+      matTooltip="Open menu"
+      matTooltipClass="custom-tooltip"
+      matTooltipPosition="left"
+      mat-icon-button
+      class="gns3-button menu-button"
+      [matMenuTriggerFor]="mainMenu"
+    >
       <mat-icon svgIcon="gns3"></mat-icon>
     </button>
 
