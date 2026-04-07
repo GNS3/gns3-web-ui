@@ -32,19 +32,19 @@
         </mat-form-field>
       </form>
 
-      <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="project.auto_open">
+      <mat-checkbox [checked]="auto_open()" (change)="auto_open.set($event.checked)">
         Open this project in the background when GNS3 controller starts
       </mat-checkbox>
 
-      <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="project.auto_start">
+      <mat-checkbox [checked]="auto_start()" (change)="auto_start.set($event.checked)">
         Start all nodes when this project is opened
       </mat-checkbox>
 
-      <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="auto_close">
+      <mat-checkbox [checked]="auto_close()" (change)="auto_close.set($event.checked)">
         Leave this project running in the background after closing
       </mat-checkbox>
 
-      <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="project.show_interface_labels">
+      <mat-checkbox [checked]="show_interface_labels()" (change)="show_interface_labels.set($event.checked)">
         Show interface labels at start
       </mat-checkbox>
     </mat-tab>

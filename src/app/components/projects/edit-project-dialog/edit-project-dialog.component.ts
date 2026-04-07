@@ -6,6 +6,7 @@ import {
   Injectable,
   inject,
   viewChild,
+  model,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
@@ -75,7 +76,10 @@ export class EditProjectDialogComponent implements OnInit {
   displayedColumns: string[] = ['name', 'value', 'actions'];
   variables: ProjectVariable[] = [];
 
-  auto_close: boolean;
+  readonly auto_open = model(false);
+  readonly auto_start = model(false);
+  readonly auto_close = model(false);
+  readonly show_interface_labels = model(false);
 
   constructor() {
     this.formGroup = this.formBuilder.group({
@@ -101,7 +105,10 @@ export class EditProjectDialogComponent implements OnInit {
     if (this.project.variables) {
       this.project.variables.forEach((n) => this.variables.push(n));
     }
-    this.auto_close = !this.project.auto_close;
+    this.auto_open.set(this.project.auto_open);
+    this.auto_start.set(this.project.auto_start);
+    this.auto_close.set(!this.project.auto_close);
+    this.show_interface_labels.set(this.project.show_interface_labels);
     this.cd.markForCheck();
   }
 
@@ -144,7 +151,10 @@ export class EditProjectDialogComponent implements OnInit {
       this.project.grid_size = this.formGroup.get('nodeGridSize').value;
       this.project.variables = this.variables;
 
-      this.project.auto_close = !this.auto_close;
+      this.project.auto_open = this.auto_open();
+      this.project.auto_start = this.auto_start();
+      this.project.auto_close = !this.auto_close();
+      this.project.show_interface_labels = this.show_interface_labels();
 
       this.projectService.update(this.controller, this.project).subscribe((project: Project) => {
         this.projectService
