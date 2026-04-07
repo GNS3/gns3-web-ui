@@ -58,6 +58,15 @@
   .menu-button:hover {
     transform: scale(1.3);
   }
+
+  .back-to-project-button {
+    color: var(--mat-sys-on-primary);
+    transition: transform 100ms ease;
+  }
+
+  .back-to-project-button:hover {
+    transform: scale(1.05);
+  }
 }
 
 /* =============================================

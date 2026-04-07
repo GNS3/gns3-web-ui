@@ -1,9 +1,6 @@
 <header class="header">
   <mat-toolbar class="toolbar-primary">
     <button
-      matTooltip="Open menu"
-      matTooltipClass="custom-tooltip"
-      matTooltipPosition="left"
       mat-icon-button
       class="gns3-button menu-button"
       [matMenuTriggerFor]="mainMenu"
@@ -14,7 +11,7 @@
     @if (!recentlyOpenedProjectId && controllerIdProjectList) {
     <button mat-button (click)="listProjects()">Projects</button>
     } @if (recentlyOpenedProjectId && recentlyOpenedcontrollerId) {
-    <button mat-button (click)="backToProject()">Back to project</button>
+    <button mat-button class="back-to-project-button" (click)="backToProject()">Back to project</button>
     }
 
     <span class="spacer"></span>
