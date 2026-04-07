@@ -29,7 +29,7 @@ searchText = model('');
 
 ## Migration Progress
 
-**Total: 38 files | Completed: 3 | Pending: 35**
+**Total: 38 files | Completed: 4 | Pending: 34**
 
 ## Files Requiring Migration
 
@@ -45,7 +45,7 @@ searchText = model('');
 | File | Status |
 |------|--------|
 | `src/app/components/preferences/qemu/qemu-preferences/qemu-preferences.component.html` | Completed |
-| `src/app/components/preferences/vpcs/vpcs-preferences/vpcs-preferences.component.html` | Pending |
+| `src/app/components/preferences/vpcs/vpcs-preferences/vpcs-preferences.component.html` | Completed |
 | `src/app/components/preferences/vmware/vmware-preferences/vmware-preferences.component.html` | Pending |
 | `src/app/components/preferences/virtual-box/virtual-box-preferences/virtual-box-preferences.component.html` | Pending |
 | `src/app/components/preferences/dynamips/dynamips-preferences/dynamips-preferences.component.html` | Pending |
