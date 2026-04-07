@@ -8,12 +8,14 @@ import { Link } from '@models/link';
 import { ComputeService } from '@services/compute.service';
 import { ProjectService } from '@services/project.service';
 import { ThemeService } from '@services/theme.service';
+import { NotificationService } from '@services/notification.service';
 import { ProjectStatistics } from '@models/project-statistics';
 import { Compute } from '@models/compute';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { TopologySummaryComponent } from './topology-summary.component';
 import { ResizeEvent } from 'angular-resizable-element';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('TopologySummaryComponent', () => {
@@ -24,6 +26,7 @@ describe('TopologySummaryComponent', () => {
   let mockProjectService: any;
   let mockComputeService: any;
   let mockThemeService: any;
+  let mockNotificationService: any;
   let mockChangeDetectorRef: any;
   let nodesSubject: Subject<Node[]>;
   let mockController: Controller;
@@ -157,6 +160,9 @@ describe('TopologySummaryComponent', () => {
   };
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+    vi.useFakeTimers();
+
     nodesSubject = new Subject<Node[]>();
 
     mockNodesDataSource = {
@@ -178,6 +184,11 @@ describe('TopologySummaryComponent', () => {
 
     mockThemeService = {
       getActualTheme: vi.fn().mockReturnValue('dark'),
+    };
+
+    mockNotificationService = {
+      computeNotificationEmitter: new Subject(),
+      connectToComputeNotifications: vi.fn(),
     };
 
     mockChangeDetectorRef = {
@@ -225,13 +236,14 @@ describe('TopologySummaryComponent', () => {
     TestBed.resetTestingModule();
 
     await TestBed.configureTestingModule({
-      imports: [TopologySummaryComponent],
+      imports: [TopologySummaryComponent, MatTooltipModule],
       providers: [
         { provide: NodesDataSource, useValue: mockNodesDataSource },
         { provide: LinksDataSource, useValue: mockLinksDataSource },
         { provide: ProjectService, useValue: mockProjectService },
         { provide: ComputeService, useValue: mockComputeService },
         { provide: ThemeService, useValue: mockThemeService },
+        { provide: NotificationService, useValue: mockNotificationService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
@@ -247,6 +259,7 @@ describe('TopologySummaryComponent', () => {
       fixture.destroy();
     }
     localStorage.clear();
+    vi.useRealTimers();
   });
 
   describe('Creation', () => {
@@ -267,129 +280,142 @@ describe('TopologySummaryComponent', () => {
   });
 
   describe('ngOnInit', () => {
-    it('should detect light theme', () => {
+    it('should detect light theme', async () => {
       mockThemeService.getActualTheme.mockReturnValue('light');
 
       component.ngOnInit();
+      await vi.runAllTimersAsync();
 
       expect(component.isLightThemeEnabled).toBe(true);
     });
 
-    it('should detect dark theme', () => {
+    it('should detect dark theme', async () => {
       mockThemeService.getActualTheme.mockReturnValue('dark');
 
       component.ngOnInit();
+      await vi.runAllTimersAsync();
 
       expect(component.isLightThemeEnabled).toBe(false);
     });
 
-    it('should subscribe to nodes data changes and update nodes list', () => {
+    it('should subscribe to nodes data changes and update nodes list', async () => {
       const testNodes = [mockNode];
       // Mock was already set up in beforeEach, no need to set it again here
 
       component.ngOnInit();
+      await vi.runAllTimersAsync();
       nodesSubject.next(testNodes);
 
       expect(component.nodes).toEqual(testNodes);
       expect(component.filteredNodes).toEqual(testNodes);
     });
 
-    it('should replace console_host with controller host when 0.0.0.0', () => {
+    it('should replace console_host with controller host when 0.0.0.0', async () => {
       const testNode = { ...mockNode, console_host: '0.0.0.0' };
 
       component.ngOnInit();
+      await vi.runAllTimersAsync();
       nodesSubject.next([testNode]);
 
       expect(component.nodes[0].console_host).toBe(mockController.host);
     });
 
-    it('should replace console_host with controller host when ::', () => {
+    it('should replace console_host with controller host when ::', async () => {
       const testNode = { ...mockNode, console_host: '::' };
 
       component.ngOnInit();
+      await vi.runAllTimersAsync();
       nodesSubject.next([testNode]);
 
       expect(component.nodes[0].console_host).toBe(mockController.host);
     });
 
-    it('should replace console_host with controller host when 0:0:0:0:0:0:0:0', () => {
+    it('should replace console_host with controller host when 0:0:0:0:0:0:0:0', async () => {
       const testNode = { ...mockNode, console_host: '0:0:0:0:0:0:0:0' };
 
       component.ngOnInit();
+      await vi.runAllTimersAsync();
       nodesSubject.next([testNode]);
 
       expect(component.nodes[0].console_host).toBe(mockController.host);
     });
 
-    it('should not replace console_host when it is a valid IP', () => {
+    it('should not replace console_host when it is a valid IP', async () => {
       const testNode = { ...mockNode, console_host: '192.168.1.50' };
 
       component.ngOnInit();
+      await vi.runAllTimersAsync();
       nodesSubject.next([testNode]);
 
       expect(component.nodes[0].console_host).toBe('192.168.1.50');
     });
 
-    it('should sort nodes ascending by default', () => {
+    it('should sort nodes ascending by default', async () => {
       const node2 = { ...mockNode, name: 'Zebra', node_id: 'node2' };
       const node1 = { ...mockNode, name: 'Alpha', node_id: 'node1' };
       const testNodes = [node2, node1];
 
       component.ngOnInit();
+      await vi.runAllTimersAsync();
       nodesSubject.next(testNodes);
 
       expect(component.filteredNodes[0].name).toBe('Alpha');
       expect(component.filteredNodes[1].name).toBe('Zebra');
     });
 
-    it('should sort nodes descending when sortingOrder is desc', () => {
+    it('should sort nodes descending when sortingOrder is desc', async () => {
       component.sortingOrder = 'desc';
       const node1 = { ...mockNode, name: 'Alpha', node_id: 'node1' };
       const node2 = { ...mockNode, name: 'Zebra', node_id: 'node2' };
       const testNodes = [node1, node2];
 
       component.ngOnInit();
+      await vi.runAllTimersAsync();
       nodesSubject.next(testNodes);
 
       expect(component.filteredNodes[0].name).toBe('Zebra');
       expect(component.filteredNodes[1].name).toBe('Alpha');
     });
 
-    it('should fetch project statistics', () => {
+    it('should fetch project statistics', async () => {
       const mockStats = { nodes: 5, links: 3, snapshots: 1 } as ProjectStatistics;
       mockProjectService.getStatistics.mockReturnValue(of(mockStats));
 
       component.ngOnInit();
+      await vi.runAllTimersAsync();
 
       expect(mockProjectService.getStatistics).toHaveBeenCalledWith(mockController, mockProject.project_id);
       expect(component.projectsStatistics).toEqual(mockStats);
     });
 
-    it('should fetch computes', () => {
+    it('should fetch computes', async () => {
       const mockComputes = [{ compute_id: 'comp1', name: 'Local' } as Compute];
       mockComputeService.getComputes.mockReturnValue(of(mockComputes));
 
       component.ngOnInit();
+      await vi.runAllTimersAsync();
 
       expect(mockComputeService.getComputes).toHaveBeenCalledWith(mockController);
       expect(component.computes).toEqual(mockComputes);
     });
 
-    it('should call revertPosition on init', () => {
+    it('should call revertPosition on init', async () => {
       const revertPositionSpy = vi.spyOn(component, 'revertPosition');
 
       component.ngOnInit();
+      await vi.runAllTimersAsync();
 
       expect(revertPositionSpy).toHaveBeenCalled();
     });
   });
 
   describe('ngOnDestroy', () => {
-    it('should unsubscribe from all subscriptions', () => {
+    it('should unsubscribe from all subscriptions', async () => {
       mockProjectService.getStatistics.mockReturnValue(of({} as ProjectStatistics));
       mockComputeService.getComputes.mockReturnValue(of([]));
 
       component.ngOnInit();
+      await vi.runAllTimersAsync();
       component.ngOnDestroy();
 
       // Verify ngOnDestroy completes without errors
@@ -940,23 +966,25 @@ describe('TopologySummaryComponent', () => {
       expect(component.filteredNodes).toEqual([mockNode]);
     });
 
-    it('should update project statistics after async operation', () => {
+    it('should update project statistics after async operation', async () => {
       const mockStats = { nodes: 5, links: 3, snapshots: 1 } as ProjectStatistics;
       mockProjectService.getStatistics.mockReturnValue(of(mockStats));
       mockComputeService.getComputes.mockReturnValue(of([]));
 
       component.ngOnInit();
+      await vi.runAllTimersAsync();
 
       // Verify that the component state is updated correctly
       expect(component.projectsStatistics).toEqual(mockStats);
     });
 
-    it('should update computes after async operation', () => {
+    it('should update computes after async operation', async () => {
       const mockComputes = [{ compute_id: 'comp1', name: 'Local' } as Compute];
       mockProjectService.getStatistics.mockReturnValue(of({} as ProjectStatistics));
       mockComputeService.getComputes.mockReturnValue(of(mockComputes));
 
       component.ngOnInit();
+      await vi.runAllTimersAsync();
 
       // Verify that the component state is updated correctly
       expect(component.computes).toEqual(mockComputes);
