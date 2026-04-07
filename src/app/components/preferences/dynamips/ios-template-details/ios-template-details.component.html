@@ -189,8 +189,8 @@
             <mat-label>Slot {{ index }}</mat-label>
             <mat-select
               placeholder="Slot {{ index }}"
-              [(ngModel)]="networkAdaptersForTemplate[index]"
-              [ngModelOptions]="{ standalone: true }"
+              [value]="networkAdaptersForTemplate[index]"
+              (selectionChange)="networkAdaptersForTemplate[index] = $event.value"
             >
               @if (adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index].length > 1 &&
               !adapterMatrix[iosTemplate.platform][iosTemplate.chassis || ''][index][0].startsWith('C7200')) {
@@ -211,8 +211,8 @@
             <mat-label>WIC {{ index }}</mat-label>
             <mat-select
               placeholder="WIC {{ index }}"
-              [(ngModel)]="wicsForTemplate[index]"
-              [ngModelOptions]="{ standalone: true }"
+              [value]="wicsForTemplate[index]"
+              (selectionChange)="wicsForTemplate[index] = $event.value"
             >
               <mat-option [value]="">{{ '' }}</mat-option>
               @for (option of wicMatrix[iosTemplate.platform][index]; track option) {

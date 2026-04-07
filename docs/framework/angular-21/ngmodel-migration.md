@@ -29,7 +29,7 @@ searchText = model('');
 
 ## Migration Progress
 
-**Total: 38 files | Completed: 7 | Pending: 31**
+**Total: 38 files | Completed: 8 | Pending: 30**
 
 ## Files Requiring Migration
 
@@ -49,7 +49,7 @@ searchText = model('');
 | `src/app/components/preferences/vmware/vmware-preferences/vmware-preferences.component.html` | Completed |
 | `src/app/components/preferences/virtual-box/virtual-box-preferences/virtual-box-preferences.component.html` | Completed |
 | `src/app/components/preferences/dynamips/dynamips-preferences/dynamips-preferences.component.html` | Completed |
-| `src/app/components/preferences/dynamips/ios-template-details/ios-template-details.component.html` | Pending |
+| `src/app/components/preferences/dynamips/ios-template-details/ios-template-details.component.html` | Completed |
 | `src/app/components/preferences/common/symbols/symbols.component.html` | Pending |
 | `src/app/components/preferences/common/udp-tunnels/udp-tunnels.component.html` | Pending |
 | `src/app/components/preferences/common/ports/ports.component.html` | Pending |
