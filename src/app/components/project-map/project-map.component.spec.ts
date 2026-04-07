@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ChangeDetectorRef, signal, ViewContainerRef } from '@angular/core';
+import { ChangeDetectorRef, input, signal, ViewContainerRef, NO_ERRORS_SCHEMA } from '@angular/core';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
 import { Title } from '@angular/platform-browser';
@@ -8,6 +8,9 @@ import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { of, Subject } from 'rxjs';
 import { ProjectMapComponent } from './project-map.component';
+import { CartographyModule } from '../../cartography/cartography.module';
+import { DrawingAddedComponent } from '../drawings-listeners/drawing-added/drawing-added.component';
+import { InRectangleHelper } from '../../cartography/helpers/in-rectangle-helper';
 import { ControllerService } from '@services/controller.service';
 import { ProjectService } from '@services/project.service';
 import { NodeService } from '@services/node.service';
@@ -52,10 +55,79 @@ import { NodeConsoleService } from '@services/nodeConsole.service';
 import { SymbolService } from '@services/symbol.service';
 import { ThemeService } from '@services/theme.service';
 import { AiChatStore } from '../../stores/ai-chat.store';
+import { DockerService } from '@services/docker.service';
+import { IosService } from '@services/ios.service';
+import { IouService } from '@services/iou.service';
+import { QemuService } from '@services/qemu.service';
+import { GraphDataManager } from '../../cartography/managers/graph-data-manager';
+import { MapSettingsManager } from '../../cartography/managers/map-settings-manager';
+import { LayersManager } from '../../cartography/managers/layers-manager';
+import { Context } from '../../cartography/models/context';
+import { CanvasSizeDetector } from '../../cartography/helpers/canvas-size-detector';
+import { MovingTool } from '../../cartography/tools/moving-tool';
+import { GraphLayout } from '../../cartography/widgets/graph-layout';
+import { DrawingsEventSource } from '../../cartography/events/drawings-event-source';
+import { LinksEventSource } from '../../cartography/events/links-event-source';
+import { NodesEventSource } from '../../cartography/events/nodes-event-source';
+import { SelectionEventSource } from '../../cartography/events/selection-event-source';
+import { CssFixer } from '../../cartography/helpers/css-fixer';
+import { DefaultDrawingsFactory } from '../../cartography/helpers/default-drawings-factory';
+import { CurveElementFactory } from '../../cartography/helpers/drawings-factory/curve-element-factory';
+import { EllipseElementFactory } from '../../cartography/helpers/drawings-factory/ellipse-element-factory';
+import { LineElementFactory } from '../../cartography/helpers/drawings-factory/line-element-factory';
+import { RectangleElementFactory } from '../../cartography/helpers/drawings-factory/rectangle-element-factory';
+import { TextElementFactory } from '../../cartography/helpers/drawings-factory/text-element-factory';
+import { FontBBoxCalculator } from '../../cartography/helpers/font-bbox-calculator';
+import { FontFixer } from '../../cartography/helpers/font-fixer';
+import { MultiLinkCalculatorHelper } from '../../cartography/helpers/multi-link-calculator-helper';
+import { QtDasharrayFixer } from '../../cartography/helpers/qt-dasharray-fixer';
+import { SvgToDrawingConverter } from '../../cartography/helpers/svg-to-drawing-converter';
+import { DrawingToMapDrawingConverter } from '../../cartography/converters/map/drawing-to-map-drawing-converter';
+import { LabelToMapLabelConverter } from '../../cartography/converters/map/label-to-map-label-converter';
+import { LinkNodeToMapLinkNodeConverter } from '../../cartography/converters/map/link-node-to-map-link-node-converter';
+import { LinkToMapLinkConverter } from '../../cartography/converters/map/link-to-map-link-converter';
+import { MapPortToPortConverter } from '../../cartography/converters/map/map-port-to-port-converter';
+import { MapSymbolToSymbolConverter } from '../../cartography/converters/map/map-symbol-to-symbol-converter';
+import { NodeToMapNodeConverter } from '../../cartography/converters/map/node-to-map-node-converter';
+import { PortToMapPortConverter } from '../../cartography/converters/map/port-to-map-port-converter';
+import { SymbolToMapSymbolConverter } from '../../cartography/converters/map/symbol-to-map-symbol-converter';
+import { StylesToFontConverter } from '../../cartography/converters/styles-to-font-converter';
+import { DrawingWidget } from '../../cartography/widgets/drawing';
+import { DrawingLineWidget } from '../../cartography/widgets/drawing-line';
+import { EllipseDrawingWidget } from '../../cartography/widgets/drawings/ellipse-drawing';
+import { ImageDrawingWidget } from '../../cartography/widgets/drawings/image-drawing';
+import { LineDrawingWidget } from '../../cartography/widgets/drawings/line-drawing';
+import { RectDrawingWidget } from '../../cartography/widgets/drawings/rect-drawing';
+import { TextDrawingWidget } from '../../cartography/widgets/drawings/text-drawing';
+import { LinksWidget } from '../../cartography/widgets/links';
+import { LayersWidget } from '../../cartography/widgets/layers';
+import { InterfaceStatusWidget } from '../../cartography/widgets/interface-status';
+import { NodesWidget } from '../../cartography/widgets/nodes';
+import { Symbol } from '@models/symbol';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
 import { Node } from '../../cartography/models/node';
+import { D3MapComponent } from '../../cartography/components/d3-map/d3-map.component';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
+// Stub D3MapComponent to avoid complex child component initialization
+@Component({
+  selector: 'app-d3-map',
+  standalone: true,
+  template: '<svg></svg>',
+})
+class StubD3MapComponent {
+  nodes: Node[] = [];
+  links: any[] = [];
+  drawings: any[] = [];
+  symbols: Symbol[] = [];
+  project?: Project;
+  controller?: Controller;
+  width = 1500;
+  height = 600;
+  ngOnDestroy() {}
+}
 
 describe('ProjectMapComponent', () => {
   let component: ProjectMapComponent;
@@ -110,6 +182,56 @@ describe('ProjectMapComponent', () => {
   let mockActivatedRoute: any;
   let mockTitle: any;
   let mockChangeDetectorRef: any;
+  let mockDockerService: any;
+  let mockIosService: any;
+  let mockIouService: any;
+  let mockQemuService: any;
+  let mockGraphDataManager: any;
+  let mockMapSettingsManager: any;
+  let mockLayersManager: any;
+  let mockContext: any;
+  let mockCanvasSizeDetector: any;
+  let mockMovingTool: any;
+  let mockGraphLayout: any;
+  let mockDrawingsEventSource: any;
+  let mockLinksEventSource: any;
+  let mockNodesEventSource: any;
+  let mockSelectionEventSource: any;
+  let mockInRectangleHelper: any;
+  let mockCssFixer: any;
+  let mockDefaultDrawingsFactory: any;
+  let mockCurveElementFactory: any;
+  let mockEllipseElementFactory: any;
+  let mockLineElementFactory: any;
+  let mockRectangleElementFactory: any;
+  let mockTextElementFactory: any;
+  let mockFontBBoxCalculator: any;
+  let mockFontFixer: any;
+  let mockMultiLinkCalculatorHelper: any;
+  let mockQtDasharrayFixer: any;
+  let mockSvgToDrawingConverter: any;
+  let mockDrawingToMapDrawingConverter: any;
+  let mockLabelToMapLabelConverter: any;
+  let mockLinkNodeToMapLinkNodeConverter: any;
+  let mockLinkToMapLinkConverter: any;
+  let mockMapPortToPortConverter: any;
+  let mockMapSymbolToSymbolConverter: any;
+  let mockNodeToMapNodeConverter: any;
+  let mockPortToMapPortConverter: any;
+  let mockSymbolToMapSymbolConverter: any;
+  let mockStylesToFontConverter: any;
+  let mockDrawingWidget: any;
+  let mockDrawingLineWidget: any;
+  let mockEllipseDrawingWidget: any;
+  let mockImageDrawingWidget: any;
+  let mockLineDrawingWidget: any;
+  let mockRectDrawingWidget: any;
+  let mockTextDrawingWidget: any;
+  let mockLinksWidget: any;
+  let mockLayersWidget: any;
+  let mockInterfaceStatusWidget: any;
+  let mockLabel: any;
+  let mockNodesWidget: any;
 
   // Mock data
   let mockController: Controller;
@@ -203,6 +325,9 @@ describe('ProjectMapComponent', () => {
 
     mockMapChangeDetectorRef = {
       detectChanges: vi.fn(),
+      changesDetected: new Subject<boolean>(),
+      selectionChangesDetected: new Subject<void>(),
+      hasBeenDrawn: false,
     };
 
     mockNodeWidget = {
@@ -297,6 +422,9 @@ describe('ProjectMapComponent', () => {
     mockToolsService = {
       selectionToolActivation: vi.fn(),
       drawLinkToolActivation: vi.fn(),
+      isSelectionToolActivated: { subscribe: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }) },
+      isMovingToolActivated: { subscribe: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }) },
+      isDrawLinkToolActivated: { subscribe: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }) },
     };
 
     mockSelectionManager = {
@@ -314,13 +442,17 @@ describe('ProjectMapComponent', () => {
     };
 
     mockMovingEventSource = {
-      movingModeState: { emit: vi.fn() },
+      movingModeState: {
+        emit: vi.fn(),
+        subscribe: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }),
+      },
     };
 
     mockMapScaleService = {
       getScale: vi.fn().mockReturnValue(1),
       setScale: vi.fn(),
       resetToDefault: vi.fn(),
+      scaleChangeEmitter: { emit: vi.fn(), subscribe: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }) },
     };
 
     mockNodeCreatedLabelStylesFixer = {
@@ -348,6 +480,7 @@ describe('ProjectMapComponent', () => {
       logConsoleSubject: of(true),
       symbolScalingSubject: of(true),
       mapRenderedEmitter: { emit: vi.fn() },
+      isScrollDisabled: { subscribe: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }) },
     };
 
     mockNotificationService = {
@@ -417,8 +550,132 @@ describe('ProjectMapComponent', () => {
       markForCheck: vi.fn(),
     };
 
+    mockDockerService = {
+      addTemplate: vi.fn().mockReturnValue(of({})),
+    };
+
+    mockIosService = {
+      addTemplate: vi.fn().mockReturnValue(of({})),
+    };
+
+    mockIouService = {
+      addTemplate: vi.fn().mockReturnValue(of({})),
+    };
+
+    mockQemuService = {
+      addTemplate: vi.fn().mockReturnValue(of({})),
+    };
+
+    mockGraphDataManager = {
+      setNodes: vi.fn(),
+      setLinks: vi.fn(),
+      setDrawings: vi.fn(),
+      getNodes: vi.fn().mockReturnValue([]),
+      getDrawings: vi.fn().mockReturnValue([]),
+    };
+
+    mockMapSettingsManager = {
+      updateSettings: vi.fn(),
+    };
+
+    mockLayersManager = {
+      updateLayers: vi.fn(),
+    };
+
+    mockContext = {
+      transformation: { x: 0, y: 0, k: 1 },
+      size: { width: 0, height: 0 },
+      centerZeroZeroPoint: true,
+      centerX: null,
+      centerY: null,
+      getZeroZeroTransformationPoint: vi.fn().mockReturnValue({ x: 0, y: 0 }),
+    };
+
+    mockCanvasSizeDetector = {
+      getOptimalSize: vi.fn().mockReturnValue({ width: 1920, height: 1080 }),
+    };
+
+    mockMovingTool = {
+      activate: vi.fn(),
+      deactivate: vi.fn(),
+    };
+
+    mockGraphLayout = {
+      updateLayout: vi.fn(),
+      connect: vi.fn(),
+      disconnect: vi.fn(),
+      getNodesWidget: vi.fn().mockReturnValue({
+        draggable: {
+          start: { subscribe: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }) },
+          drag: { subscribe: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }) },
+          end: { subscribe: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }) },
+        },
+      }),
+    };
+
+    mockDrawingsEventSource = {
+      drawingClick: { emit: vi.fn() },
+      drawingDblClick: { emit: vi.fn() },
+      drawingChanged: { emit: vi.fn() },
+      pointToAddSelected: { subscribe: vi.fn().mockReturnValue({ unsubscribe: vi.fn() }) },
+    };
+
+    mockLinksEventSource = {
+      linkClick: { emit: vi.fn() },
+      linkDblClick: { emit: vi.fn() },
+    };
+
+    mockNodesEventSource = {
+      nodeClick: { emit: vi.fn() },
+      nodeDblClick: { emit: vi.fn() },
+    };
+
+    mockSelectionEventSource = {
+      selectionChanged: { emit: vi.fn() },
+    };
+
+    mockInRectangleHelper = {
+      inRectangle: vi.fn().mockReturnValue(false),
+    };
+
+    mockCssFixer = { fix: vi.fn() };
+    mockDefaultDrawingsFactory = { createDefaultDrawings: vi.fn().mockReturnValue([]) };
+    mockCurveElementFactory = { create: vi.fn() };
+    mockEllipseElementFactory = { create: vi.fn() };
+    mockLineElementFactory = { create: vi.fn() };
+    mockRectangleElementFactory = { create: vi.fn() };
+    mockTextElementFactory = { create: vi.fn() };
+    mockFontBBoxCalculator = { compute: vi.fn().mockReturnValue({ width: 100, height: 20 }) };
+    mockFontFixer = { fix: vi.fn() };
+    mockMultiLinkCalculatorHelper = { calculate: vi.fn() };
+    mockQtDasharrayFixer = { fix: vi.fn() };
+    mockSvgToDrawingConverter = { convert: vi.fn() };
+    mockDrawingToMapDrawingConverter = { convert: vi.fn() };
+    mockLabelToMapLabelConverter = { convert: vi.fn() };
+    mockLinkNodeToMapLinkNodeConverter = { convert: vi.fn() };
+    mockLinkToMapLinkConverter = { convert: vi.fn() };
+    mockMapPortToPortConverter = { convert: vi.fn() };
+    mockMapSymbolToSymbolConverter = { convert: vi.fn() };
+    mockNodeToMapNodeConverter = { convert: vi.fn() };
+    mockPortToMapPortConverter = { convert: vi.fn() };
+    mockSymbolToMapSymbolConverter = { convert: vi.fn() };
+    mockStylesToFontConverter = { convert: vi.fn() };
+    mockDrawingWidget = { };
+    mockDrawingLineWidget = { };
+    mockEllipseDrawingWidget = { };
+    mockImageDrawingWidget = { };
+    mockLineDrawingWidget = { };
+    mockRectDrawingWidget = { };
+    mockTextDrawingWidget = { };
+    mockLinksWidget = { };
+    mockLayersWidget = { };
+    mockInterfaceStatusWidget = { };
+    mockLabel = { };
+    mockNodesWidget = { };
+
     await TestBed.configureTestingModule({
-      imports: [CommonModule, RouterModule.forRoot([]), ProjectMapComponent],
+      imports: [CommonModule, RouterModule.forRoot([]), CartographyModule, ProjectMapComponent],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: ControllerService, useValue: mockControllerService },
         { provide: ProjectService, useValue: mockProjectService },
@@ -468,8 +725,63 @@ describe('ProjectMapComponent', () => {
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: Title, useValue: mockTitle },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
+        { provide: DockerService, useValue: mockDockerService },
+        { provide: IosService, useValue: mockIosService },
+        { provide: IouService, useValue: mockIouService },
+        { provide: QemuService, useValue: mockQemuService },
+        { provide: GraphDataManager, useValue: mockGraphDataManager },
+        { provide: MapSettingsManager, useValue: mockMapSettingsManager },
+        { provide: LayersManager, useValue: mockLayersManager },
+        { provide: Context, useValue: mockContext },
+        { provide: CanvasSizeDetector, useValue: mockCanvasSizeDetector },
+        { provide: MovingTool, useValue: mockMovingTool },
+        { provide: GraphLayout, useValue: mockGraphLayout },
+        { provide: DrawingsEventSource, useValue: mockDrawingsEventSource },
+        { provide: LinksEventSource, useValue: mockLinksEventSource },
+        { provide: NodesEventSource, useValue: mockNodesEventSource },
+        { provide: SelectionEventSource, useValue: mockSelectionEventSource },
+        { provide: InRectangleHelper, useValue: mockInRectangleHelper },
+        { provide: CssFixer, useValue: mockCssFixer },
+        { provide: DefaultDrawingsFactory, useValue: mockDefaultDrawingsFactory },
+        { provide: CurveElementFactory, useValue: mockCurveElementFactory },
+        { provide: EllipseElementFactory, useValue: mockEllipseElementFactory },
+        { provide: LineElementFactory, useValue: mockLineElementFactory },
+        { provide: RectangleElementFactory, useValue: mockRectangleElementFactory },
+        { provide: TextElementFactory, useValue: mockTextElementFactory },
+        { provide: FontBBoxCalculator, useValue: mockFontBBoxCalculator },
+        { provide: FontFixer, useValue: mockFontFixer },
+        { provide: MultiLinkCalculatorHelper, useValue: mockMultiLinkCalculatorHelper },
+        { provide: QtDasharrayFixer, useValue: mockQtDasharrayFixer },
+        { provide: SvgToDrawingConverter, useValue: mockSvgToDrawingConverter },
+        { provide: DrawingToMapDrawingConverter, useValue: mockDrawingToMapDrawingConverter },
+        { provide: LabelToMapLabelConverter, useValue: mockLabelToMapLabelConverter },
+        { provide: LinkNodeToMapLinkNodeConverter, useValue: mockLinkNodeToMapLinkNodeConverter },
+        { provide: LinkToMapLinkConverter, useValue: mockLinkToMapLinkConverter },
+        { provide: MapPortToPortConverter, useValue: mockMapPortToPortConverter },
+        { provide: MapSymbolToSymbolConverter, useValue: mockMapSymbolToSymbolConverter },
+        { provide: NodeToMapNodeConverter, useValue: mockNodeToMapNodeConverter },
+        { provide: PortToMapPortConverter, useValue: mockPortToMapPortConverter },
+        { provide: SymbolToMapSymbolConverter, useValue: mockSymbolToMapSymbolConverter },
+        { provide: StylesToFontConverter, useValue: mockStylesToFontConverter },
+        { provide: DrawingWidget, useValue: mockDrawingWidget },
+        { provide: DrawingLineWidget, useValue: mockDrawingLineWidget },
+        { provide: EllipseDrawingWidget, useValue: mockEllipseDrawingWidget },
+        { provide: ImageDrawingWidget, useValue: mockImageDrawingWidget },
+        { provide: LineDrawingWidget, useValue: mockLineDrawingWidget },
+        { provide: RectDrawingWidget, useValue: mockRectDrawingWidget },
+        { provide: TextDrawingWidget, useValue: mockTextDrawingWidget },
+        { provide: LinksWidget, useValue: mockLinksWidget },
+        { provide: LayersWidget, useValue: mockLayersWidget },
+        { provide: InterfaceStatusWidget, useValue: mockInterfaceStatusWidget },
+        { provide: LabelWidget, useValue: mockLabelWidget },
+        { provide: NodesWidget, useValue: mockNodesWidget },
       ],
-    }).compileComponents();
+    })
+      .overrideComponent(D3MapComponent, { set: { template: '<svg></svg>' } })
+      .compileComponents();
+
+    // Spy on DrawingAddedComponent.ngOnDestroy to prevent cleanup errors
+    vi.spyOn(DrawingAddedComponent.prototype, 'ngOnDestroy').mockImplementation(() => {});
 
     fixture = TestBed.createComponent(ProjectMapComponent);
     component = fixture.componentInstance;
@@ -479,7 +791,14 @@ describe('ProjectMapComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      try {
+        fixture.destroy();
+      } catch (e) {
+        console.error('Cleanup error:', e);
+        // Ignore destroy errors from complex child components
+      }
+    }
     vi.clearAllMocks();
   });
 
