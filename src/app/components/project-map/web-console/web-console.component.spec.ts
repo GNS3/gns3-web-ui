@@ -15,6 +15,11 @@ import { XtermService } from '@services/xterm.service';
 // Store DOM elements for cleanup
 const domElementsToCleanup: HTMLElement[] = [];
 
+// Store latest mock instances
+let mockTermInstance: any = null;
+let mockFitAddonInstance: any = null;
+let allMockTermInstances: any[] = [];
+
 // Create mock instances
 const createMockTermInstance = () => {
   const element = document.createElement('div');
@@ -39,14 +44,13 @@ const createMockFitAddonInstance = () => ({
   load: vi.fn(),
 });
 
-let mockTermInstance: ReturnType<typeof createMockTermInstance>;
-let mockFitAddonInstance: ReturnType<typeof createMockFitAddonInstance>;
-
 // Mock xterm.js before importing component
 vi.mock('@xterm/xterm', () => ({
   Terminal: vi.fn().mockImplementation(function () {
-    mockTermInstance = createMockTermInstance();
-    return mockTermInstance;
+    const instance = createMockTermInstance();
+    mockTermInstance = instance;
+    allMockTermInstances.push(instance);
+    return instance;
   }),
 }));
 
@@ -58,8 +62,9 @@ vi.mock('@xterm/addon-attach', () => ({
 
 vi.mock('@xterm/addon-fit', () => ({
   FitAddon: vi.fn().mockImplementation(function () {
-    mockFitAddonInstance = createMockFitAddonInstance();
-    return mockFitAddonInstance;
+    const instance = createMockFitAddonInstance();
+    mockFitAddonInstance = instance;
+    return instance;
   }),
 }));
 
@@ -205,23 +210,10 @@ describe('WebConsoleComponent', () => {
     // Clear all mocks to prevent test pollution
     vi.clearAllMocks();
 
-    // Reset mock term
-    if (mockTermInstance) {
-      mockTermInstance.open.mockClear();
-      mockTermInstance.dispose.mockClear();
-      mockTermInstance.loadAddon.mockClear();
-      mockTermInstance.focus.mockClear();
-      mockTermInstance.write.mockClear();
-      mockTermInstance.resize.mockClear();
-      mockTermInstance.attachCustomKeyEventHandler.mockClear();
-      mockTermInstance.cols = 100;
-      mockTermInstance.rows = 32;
-    }
-    if (mockFitAddonInstance) {
-      mockFitAddonInstance.fit.mockClear();
-      mockFitAddonInstance.activate.mockClear();
-      mockFitAddonInstance.load.mockClear();
-    }
+    // Clear previous mock instances
+    allMockTermInstances = [];
+    mockTermInstance = null;
+    mockFitAddonInstance = null;
 
     // Reset service mocks to default state
     mockNodeConsoleService.getNumberOfColumns.mockReturnValue(80);
@@ -266,6 +258,11 @@ describe('WebConsoleComponent', () => {
       element.remove();
     });
     domElementsToCleanup.length = 0;
+
+    // Clean up mock instances
+    allMockTermInstances = [];
+    mockTermInstance = null;
+    mockFitAddonInstance = null;
   });
 
   afterAll(() => {
