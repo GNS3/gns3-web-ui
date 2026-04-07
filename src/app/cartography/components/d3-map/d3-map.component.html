@@ -1,39 +1,41 @@
 <svg id="map" #svg class="map" preserveAspectRatio="none" appMovingCanvas appZoomingCanvas>
-  <defs>
-    <pattern
-      [attr.x]="drawingGridX"
-      [attr.y]="drawingGridY"
-      id="gridDrawing"
-      [attr.width]="project().drawing_grid_size"
-      [attr.height]="project().drawing_grid_size"
-      patternUnits="userSpaceOnUse"
-    >
-      <path
-        [attr.d]="'M ' + project().drawing_grid_size + ' 0 L 0 0 0 ' + project().drawing_grid_size"
-        fill="none"
-        [attr.stroke]="'var(--gns3-grid-drawing-color)'"
-        [attr.stroke-width]="gridVisibility()"
-      />
-    </pattern>
-    <pattern
-      [attr.x]="nodeGridX"
-      [attr.y]="nodeGridY"
-      id="gridNode"
-      [attr.width]="project().grid_size"
-      [attr.height]="project().grid_size"
-      patternUnits="userSpaceOnUse"
-    >
-      <path
-        [attr.d]="'M ' + project().grid_size + ' 0 L 0 0 0 ' + project().grid_size"
-        fill="none"
-        [attr.stroke]="'var(--gns3-grid-node-color)'"
-        [attr.stroke-width]="gridVisibility()"
-      />
-    </pattern>
-  </defs>
+  @if (gridVisibility() > 0 && project()) {
+    <defs>
+      <pattern
+        [attr.x]="drawingGridX"
+        [attr.y]="drawingGridY"
+        id="gridDrawing"
+        [attr.width]="project().drawing_grid_size"
+        [attr.height]="project().drawing_grid_size"
+        patternUnits="userSpaceOnUse"
+      >
+        <path
+          [attr.d]="'M ' + project().drawing_grid_size + ' 0 L 0 0 0 ' + project().drawing_grid_size"
+          fill="none"
+          [attr.stroke]="'var(--gns3-grid-drawing-color)'"
+          [attr.stroke-width]="1"
+        />
+      </pattern>
+      <pattern
+        [attr.x]="nodeGridX"
+        [attr.y]="nodeGridY"
+        id="gridNode"
+        [attr.width]="project().grid_size"
+        [attr.height]="project().grid_size"
+        patternUnits="userSpaceOnUse"
+      >
+        <path
+          [attr.d]="'M ' + project().grid_size + ' 0 L 0 0 0 ' + project().grid_size"
+          fill="none"
+          [attr.stroke]="'var(--gns3-grid-node-color)'"
+          [attr.stroke-width]="1"
+        />
+      </pattern>
+    </defs>
 
-  <rect width="100%" height="100%" fill="url(#gridDrawing)" />
-  <rect width="100%" height="100%" fill="url(#gridNode)" />
+    <rect width="100%" height="100%" fill="url(#gridDrawing)" />
+    <rect width="100%" height="100%" fill="url(#gridNode)" />
+  }
 </svg>
 
 <app-drawing-adding [svg]="svg"></app-drawing-adding>
