@@ -8,6 +8,7 @@ import {
   inject,
   input,
   signal,
+  model,
 } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { CommonModule } from '@angular/common';
@@ -69,7 +70,7 @@ export class SymbolsComponent implements OnInit {
   symbolGroups: SymbolGroup[] = [];
   isSelected: string = '';
   selectedForDeletion = signal<Set<string>>(new Set());
-  searchText: string = '';
+  searchText = model('');
   expandedThemes = signal<string[]>([]);
   zoomLevel = signal(1.0);
   isDeleteMode = signal(false);

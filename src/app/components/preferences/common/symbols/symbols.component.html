@@ -30,7 +30,7 @@
 </div>
 <form>
   <mat-form-field class="example-full-width">
-    <input matInput placeholder="Search by filename" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }" />
+    <input matInput placeholder="Search by filename" [value]="searchText()" (input)="searchText.set($event.target.value)" />
   </mat-form-field>
 </form>
 <div class="zoom-controls">
