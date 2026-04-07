@@ -7,6 +7,7 @@ import {
   inject,
   signal,
   AfterViewInit,
+  model,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -70,7 +71,7 @@ export class ResourcePoolsManagementComponent implements OnInit, AfterViewInit {
   selection = new SelectionModel<ResourcePool>(true, []);
   resourcePools = signal<ResourcePool[]>([]);
   dataSource = new MatTableDataSource<ResourcePool>();
-  searchText = '';
+  readonly searchText = model('');
   isReady = signal(false);
 
   constructor() {}
