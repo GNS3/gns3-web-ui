@@ -22,15 +22,15 @@
         <input
           matInput
           placeholder="Search projects"
-          [(ngModel)]="searchText"
-          [ngModelOptions]="{ standalone: true }"
+          [value]="searchText()"
+          (input)="searchText.set($event.target.value)"
         />
       </mat-form-field>
     </form>
 
     <!-- Projects Table -->
     <div class="projects__table-container">
-      <mat-table #table [dataSource]="dataSource | projectsfilter : searchText" matSort>
+      <mat-table #table [dataSource]="dataSource | projectsfilter : searchText()" matSort>
         <ng-container matColumnDef="select">
           <mat-header-cell *matHeaderCellDef>
             <mat-checkbox

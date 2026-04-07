@@ -1,5 +1,5 @@
 import { DataSource, SelectionModel } from '@angular/cdk/collections';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, viewChild, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
@@ -61,7 +61,7 @@ export class ProjectsComponent implements OnInit {
   displayedColumns = ['select', 'name', 'actions', 'delete'];
   settings: Settings;
   project: Project;
-  searchText: string = '';
+  readonly searchText = model('');
   isAllDelete: boolean = false;
   selection = new SelectionModel(true, []);
   public readonly version = version;
