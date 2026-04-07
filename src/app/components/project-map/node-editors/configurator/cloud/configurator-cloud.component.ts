@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormsModule,
@@ -73,8 +73,8 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
 
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
   networkTypes = [];
-  tapInterface: string = '';
-  ethernetInterface: string = '';
+  readonly tapInterface = model('');
+  readonly ethernetInterface = model('');
   ethernetInterfaces: string[] = ['Ethernet 2', 'Ethernet 3'];
 
   readonly udpTunnels = viewChild<UdpTunnelsComponent>('udpTunnels');
@@ -125,10 +125,10 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
   }
 
   onAddEthernetInterface() {
-    if (this.ethernetInterface) {
+    if (this.ethernetInterface()) {
       this.portsMappingEthernet.push({
-        interface: this.ethernetInterface,
-        name: this.ethernetInterface,
+        interface: this.ethernetInterface(),
+        name: this.ethernetInterface(),
         port_number: 0,
         type: 'ethernet',
       });
@@ -136,10 +136,10 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
   }
 
   onAddTapInterface() {
-    if (this.tapInterface) {
+    if (this.tapInterface()) {
       this.portsMappingTap.push({
-        interface: this.tapInterface,
-        name: this.tapInterface,
+        interface: this.tapInterface(),
+        name: this.tapInterface(),
         port_number: 0,
         type: 'tap',
       });

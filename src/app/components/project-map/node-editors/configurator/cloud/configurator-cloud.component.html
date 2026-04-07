@@ -16,8 +16,8 @@
             <mat-form-field class="select">
               <mat-select
                 placeholder="Ethernet interface"
-                [ngModelOptions]="{ standalone: true }"
-                [(ngModel)]="ethernetInterface"
+                [value]="ethernetInterface()"
+                (selectionChange)="ethernetInterface.set($event.value)"
               >
                 @for (type of ethernetInterfaces; track type) {
                 <mat-option [value]="type">
@@ -37,7 +37,7 @@
             </div>
             }
             <mat-form-field class="form-field">
-              <input matInput type="text" [(ngModel)]="tapInterface" placeholder="TAP interface" />
+              <input matInput type="text" [value]="tapInterface()" (input)="tapInterface.set($event.target.value)" placeholder="TAP interface" />
             </mat-form-field>
             <button mat-button class="form-field" (click)="onAddTapInterface()">Add</button>
           </mat-tab>
