@@ -1,6 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, UntypedFormBuilder } from '@angular/forms';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatListModule } from '@angular/material/list';
 import { MatInputModule } from '@angular/material/input';
@@ -15,40 +14,49 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-configure-custom-adapters',
   templateUrl: './configure-custom-adapters.component.html',
   styleUrl: './configure-custom-adapters.component.scss',
-  imports: [CommonModule, FormsModule, MatDialogModule, MatListModule, MatInputModule, MatButtonModule],
+  imports: [CommonModule, MatDialogModule, MatListModule, MatInputModule, MatButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigureCustomAdaptersDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<ConfigureCustomAdaptersDialogComponent>);
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
-  private formBuilder = inject(UntypedFormBuilder);
   private dockerConfigurationService = inject(DockerConfigurationService);
+  private cdr = inject(ChangeDetectorRef);
 
   controller: Controller;
   node: Node;
   displayedColumns: string[] = ['adapter_number', 'port_name'];
-  adapters: CustomAdapter[] = [];
+  readonly adapters = model<CustomAdapter[]>([]);
 
   constructor() {}
 
   ngOnInit() {
     let i: number = 0;
+    const currentAdapters: CustomAdapter[] = [];
     if (!this.node.custom_adapters) {
       this.node.ports.forEach((port) => {
-        this.adapters.push({
+        currentAdapters.push({
           adapter_number: i,
           port_name: '',
         });
         i++;
       });
     } else {
-      this.adapters = this.node.custom_adapters;
+      currentAdapters.push(...this.node.custom_adapters);
     }
+    this.adapters.set(currentAdapters);
+  }
+
+  onPortNameChange(adapterNumber: number, value: string) {
+    this.adapters.update((adapters) =>
+      adapters.map((a) => (a.adapter_number === adapterNumber ? { ...a, port_name: value } : a))
+    );
+    this.cdr.markForCheck();
   }
 
   onSaveClick() {
-    this.node.custom_adapters = this.adapters;
+    this.node.custom_adapters = this.adapters();
     this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe(() => {
       this.onCancelClick();
       this.toasterService.success(`Configuration saved for node ${this.node.name}`);

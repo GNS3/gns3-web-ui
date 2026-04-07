@@ -9,12 +9,12 @@
 
   <div>
     <mat-list>
-      @for (adapter of adapters; track $index; let i = $index) {
+      @for (adapter of adapters(); track $index; let i = $index) {
       <mat-list-item>
         <div class="header">
           <span class="column"> Adapter {{ adapter.adapter_number }} </span>
           <span class="column">
-            <input matInput type="text" [(ngModel)]="adapter.port_name" placeholder="Edit port name" />
+            <input matInput type="text" [value]="adapter.port_name" (input)="onPortNameChange(adapter.adapter_number, $event.target.value)" placeholder="Edit port name" />
           </span>
         </div>
       </mat-list-item>
