@@ -41,6 +41,10 @@
           <mat-icon>more_vert</mat-icon>
         </button>
         <mat-menu #menu="matMenu" xPosition="before">
+          <a mat-menu-item [routerLink]="template.template_id">
+            <mat-icon>edit</mat-icon>
+            <span>Edit</span>
+          </a>
           <button mat-menu-item (click)="deleteTemplate(template)">
             <mat-icon>delete</mat-icon>
             <span>Delete</span>
