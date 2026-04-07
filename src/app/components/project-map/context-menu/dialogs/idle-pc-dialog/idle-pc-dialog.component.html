@@ -10,8 +10,8 @@
 <mat-form-field class="form-field">
   <mat-select
     placeholder="Idle-PC"
-    [ngModelOptions]="{ standalone: true }"
-    [(ngModel)]="idlePC"
+    [value]="idlePC()"
+    (selectionChange)="idlePC.set($event.value)"
     [matTooltip]="getTooltip()"
     matTooltipClass="multiline-tooltip"
   >

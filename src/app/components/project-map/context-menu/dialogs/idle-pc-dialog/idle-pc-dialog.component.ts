@@ -1,9 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject, model } from '@angular/core';
 import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatInputModule } from '@angular/material/input';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { FormsModule } from '@angular/forms';
 import { Controller } from '@models/controller';
 import { Node } from '../../../../../cartography/models/node';
 import { NodeService } from '@services/node.service';
@@ -15,7 +17,7 @@ import { ToasterService } from '@services/toaster.service';
   templateUrl: './idle-pc-dialog.component.html',
   styleUrls: ['./idle-pc-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatDialogModule, MatButtonModule, MatProgressSpinnerModule, MatInputModule, MatRadioModule],
+  imports: [MatDialogModule, MatButtonModule, MatProgressSpinnerModule, MatInputModule, MatRadioModule, MatSelectModule, FormsModule],
 })
 export class IdlePCDialogComponent implements OnInit {
   private nodeService = inject(NodeService);
@@ -27,7 +29,7 @@ export class IdlePCDialogComponent implements OnInit {
   @Input() node: Node;
 
   idlepcs = [];
-  idlePC: string = '';
+  readonly idlePC = model('');
   isComputing: boolean = false;
 
   ngOnInit() {
@@ -56,7 +58,7 @@ export class IdlePCDialogComponent implements OnInit {
       }
       this.idlepcs = idlepcs_values;
       if (this.idlepcs.length > 0) {
-        this.idlePC = this.idlepcs[0].key;
+        this.idlePC.set(this.idlepcs[0].key);
       }
       this.isComputing = false;
       this.cd.markForCheck();
@@ -68,10 +70,10 @@ export class IdlePCDialogComponent implements OnInit {
   }
 
   onApply() {
-    if (this.idlePC && this.idlePC !== '0x0') {
-      this.node.properties.idlepc = this.idlePC;
+    if (this.idlePC() && this.idlePC() !== '0x0') {
+      this.node.properties.idlepc = this.idlePC();
       this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
-        this.toasterService.success(`Node ${this.node.name} updated with idle-PC value ${this.idlePC}`);
+        this.toasterService.success(`Node ${this.node.name} updated with idle-PC value ${this.idlePC()}`);
         this.cd.markForCheck();
       });
     }
