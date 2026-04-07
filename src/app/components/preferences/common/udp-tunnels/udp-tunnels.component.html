@@ -36,15 +36,15 @@
 <br />
 }
 <mat-form-field class="form-field">
-  <input matInput type="text" [(ngModel)]="newPort.name" placeholder="Name" />
+  <input matInput type="text" [value]="newPortName()" (input)="newPortName.set($event.target.value)" placeholder="Name" />
 </mat-form-field>
 <mat-form-field class="form-field">
-  <input matInput type="number" min="0" max="65535" [(ngModel)]="newPort.lport" placeholder="Local port" />
+  <input matInput type="number" min="0" max="65535" [value]="newPortLport()" (input)="newPortLport.set(+$event.target.value)" placeholder="Local port" />
 </mat-form-field>
 <mat-form-field class="form-field">
-  <input matInput type="text" [(ngModel)]="newPort.rhost" placeholder="Remote host" />
+  <input matInput type="text" [value]="newPortRhost()" (input)="newPortRhost.set($event.target.value)" placeholder="Remote host" />
 </mat-form-field>
 <mat-form-field class="form-field">
-  <input matInput type="number" min="0" max="65535" [(ngModel)]="newPort.rport" placeholder="Remote port" />
+  <input matInput type="number" min="0" max="65535" [value]="newPortRport()" (input)="newPortRport.set(+$event.target.value)" placeholder="Remote port" />
 </mat-form-field>
 <button mat-button class="form-field" (click)="onAddUdpInterface()">Add</button>
