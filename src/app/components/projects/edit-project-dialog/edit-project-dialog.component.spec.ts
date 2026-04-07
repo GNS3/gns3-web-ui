@@ -171,7 +171,7 @@ describe('EditProjectDialogComponent', () => {
     it('should set auto_close as negated project.auto_close', () => {
       initializeComponent();
 
-      expect(component.auto_close).toBe(!component.project.auto_close);
+      expect(component.auto_close()).toBe(!component.project.auto_close);
     });
   });
 
@@ -314,7 +314,7 @@ describe('EditProjectDialogComponent', () => {
       initializeComponent();
 
       const initialAutoClose = component.project.auto_close;
-      component.auto_close = !initialAutoClose;
+      component.auto_close.set(!initialAutoClose);
 
       component.onYesClick();
 

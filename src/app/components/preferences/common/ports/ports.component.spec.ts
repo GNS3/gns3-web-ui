@@ -66,16 +66,16 @@ describe('PortsComponent', () => {
       expect(getConfigurationSpy).toHaveBeenCalled();
     });
 
-    it('should set initial newPort.port_number based on ethernetPorts length', () => {
+    it('should set initial newPortNumber based on ethernetPorts length', () => {
       component.ethernetPorts = [createMockPort({ port_number: 0 }), createMockPort({ port_number: 1 })];
       component.ngOnInit();
-      expect(component.newPort.port_number).toBe(2);
+      expect(component.newPortNumber()).toBe(2);
     });
 
-    it('should set newPort.port_number to 0 when ethernetPorts is empty', () => {
+    it('should set newPortNumber to 0 when ethernetPorts is empty', () => {
       component.ethernetPorts = [];
       component.ngOnInit();
-      expect(component.newPort.port_number).toBe(0);
+      expect(component.newPortNumber()).toBe(0);
     });
   });
 
@@ -96,7 +96,7 @@ describe('PortsComponent', () => {
   describe('onAdd', () => {
     it('should add a new port to ethernetPorts array', () => {
       component.ethernetPorts = [];
-      component.newPort = createMockPort({ port_number: 0 });
+      component.newPortNumber.set(0);
       component.onAdd();
       expect(component.ethernetPorts.length).toBe(1);
       expect(component.ethernetPorts[0].port_number).toBe(0);
@@ -104,14 +104,14 @@ describe('PortsComponent', () => {
 
     it('should set port name to Ethernet{port_number}', () => {
       component.ethernetPorts = [];
-      component.newPort = createMockPort({ port_number: 5 });
+      component.newPortNumber.set(5);
       component.onAdd();
       expect(component.ethernetPorts[0].name).toBe('Ethernet5');
     });
 
     it('should show error when port number already exists', () => {
       component.ethernetPorts = [createMockPort({ port_number: 3 })];
-      component.newPort = createMockPort({ port_number: 3 });
+      component.newPortNumber.set(3);
       component.onAdd();
       expect(mockToasterService.error).toHaveBeenCalledWith('Port number 3 already exists.');
       expect(component.ethernetPorts.length).toBe(1);
@@ -119,25 +119,25 @@ describe('PortsComponent', () => {
 
     it('should not add port when duplicate port number exists', () => {
       component.ethernetPorts = [createMockPort({ port_number: 1 })];
-      component.newPort = createMockPort({ port_number: 1 });
+      component.newPortNumber.set(1);
       component.onAdd();
       expect(component.ethernetPorts.length).toBe(1);
     });
 
-    it('should increment newPort.port_number after adding', () => {
+    it('should increment newPortNumber after adding', () => {
       component.ethernetPorts = [];
-      component.newPort = createMockPort({ port_number: 0 });
+      component.newPortNumber.set(0);
       component.onAdd();
-      expect(component.newPort.port_number).toBe(1);
+      expect(component.newPortNumber()).toBe(1);
     });
 
     it('should add multiple ports sequentially', () => {
       component.ethernetPorts = [];
-      component.newPort = createMockPort({ port_number: 0 });
+      component.newPortNumber.set(0);
       component.onAdd();
-      component.newPort = createMockPort({ port_number: 1 });
+      component.newPortNumber.set(1);
       component.onAdd();
-      component.newPort = createMockPort({ port_number: 2 });
+      component.newPortNumber.set(2);
       component.onAdd();
       expect(component.ethernetPorts.length).toBe(3);
       expect(component.ethernetPorts[0].name).toBe('Ethernet0');
@@ -147,7 +147,10 @@ describe('PortsComponent', () => {
 
     it('should preserve port properties when adding', () => {
       component.ethernetPorts = [];
-      component.newPort = createMockPort({ port_number: 0, vlan: 10, type: 'dot1q', ethertype: '0x88A8' });
+      component.newPortNumber.set(0);
+      component.newPortVlan.set(10);
+      component.newPortType.set('dot1q');
+      component.newPortEthertype.set('0x88A8');
       component.onAdd();
       expect(component.ethernetPorts[0].vlan).toBe(10);
       expect(component.ethernetPorts[0].type).toBe('dot1q');
@@ -196,13 +199,12 @@ describe('PortsComponent', () => {
   });
 
   describe('newPort initialization', () => {
-    it('should initialize newPort with default values', () => {
+    it('should initialize newPort signals with default values', () => {
       component.ngOnInit();
-      expect(component.newPort.name).toBe('');
-      expect(component.newPort.port_number).toBe(0);
-      expect(component.newPort.vlan).toBe(1);
-      expect(component.newPort.type).toBe('access');
-      expect(component.newPort.ethertype).toBe('0x8100');
+      expect(component.newPortNumber()).toBe(0);
+      expect(component.newPortVlan()).toBe(1);
+      expect(component.newPortType()).toBe('access');
+      expect(component.newPortEthertype()).toBe('0x8100');
     });
   });
 

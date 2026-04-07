@@ -69,17 +69,21 @@ describe('UdpTunnelsComponent', () => {
   });
 
   describe('onAddUdpInterface', () => {
-    it('should add newPort to dataSourceUdp array', () => {
+    it('should add new port to dataSourceUdp array', () => {
       const initialLength = component.dataSourceUdp.length;
-      component.newPort = { name: 'test-port', port_number: 8080 };
+      component.newPortName.set('test-port');
+      component.newPortLport.set(8080);
 
       component.onAddUdpInterface();
 
       expect(component.dataSourceUdp.length).toBe(initialLength + 1);
     });
 
-    it('should append newPort as last element in dataSourceUdp', () => {
-      component.newPort = { name: 'new-interface', port_number: 3000, lport: 8080, rhost: 'localhost', rport: 9000 };
+    it('should append new port as last element in dataSourceUdp', () => {
+      component.newPortName.set('new-interface');
+      component.newPortLport.set(8080);
+      component.newPortRhost.set('localhost');
+      component.newPortRport.set(9000);
 
       component.onAddUdpInterface();
 
@@ -87,20 +91,22 @@ describe('UdpTunnelsComponent', () => {
       expect(lastEntry.name).toBe('new-interface');
     });
 
-    it('should reset newPort to empty object after adding', () => {
-      component.newPort = { name: 'test', port_number: 8080 };
+    it('should reset newPort signals to empty after adding', () => {
+      component.newPortName.set('test');
+      component.newPortLport.set(8080);
 
       component.onAddUdpInterface();
 
-      expect(component.newPort.name).toBe('');
-      expect(component.newPort.port_number).toBe(0);
+      expect(component.newPortName()).toBe('');
+      expect(component.newPortLport()).toBe(0);
     });
 
     it('should preserve existing entries in dataSourceUdp', () => {
       const existingPort: PortsMappingEntity = { name: 'existing', port_number: 1000 };
       component.dataSourceUdp = [existingPort];
 
-      component.newPort = { name: 'new-port', port_number: 2000 };
+      component.newPortName.set('new-port');
+      component.newPortLport.set(2000);
       component.onAddUdpInterface();
 
       expect(component.dataSourceUdp).toContain(existingPort);
@@ -178,9 +184,9 @@ describe('UdpTunnelsComponent', () => {
   });
 
   describe('initial state after ngOnInit', () => {
-    it('should have empty newPort on initialization', () => {
-      expect(component.newPort.name).toBe('');
-      expect(component.newPort.port_number).toBe(0);
+    it('should have empty newPort signals on initialization', () => {
+      expect(component.newPortName()).toBe('');
+      expect(component.newPortLport()).toBe(0);
     });
 
     it('should have empty dataSourceUdp by default', () => {

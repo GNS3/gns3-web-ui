@@ -80,13 +80,13 @@ describe('VmwarePreferencesComponent', () => {
     const newFixture = TestBed.createComponent(VmwarePreferencesComponent);
     const newComponent = newFixture.componentInstance;
     // vmrunPath is not initialized in the component, so it is undefined
-    expect(newComponent.vmrunPath).toBeUndefined();
+    expect(newComponent.vmrunPath()).toBeUndefined();
   });
 
   it('should restore vmrunPath to empty string when restoreDefaults is called', () => {
-    component.vmrunPath = '/some/path';
+    component.vmrunPath.set('/some/path');
     component.restoreDefaults();
-    expect(component.vmrunPath).toBe('');
+    expect(component.vmrunPath()).toBe('');
   });
 
   it('should display VMware preferences title', () => {

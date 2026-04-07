@@ -310,57 +310,57 @@ describe('LogConsoleComponent', () => {
     });
 
     it('should show help message when command is help', () => {
-      component.command = 'help';
+      component.command.set('help');
       component.handleCommand();
-      expect(component.command).toBe('');
+      expect(component.command()).toBe('');
     });
 
     it('should clear command and process version when command is version', () => {
-      component.command = 'version';
+      component.command.set('version');
       component.handleCommand();
-      expect(component.command).toBe('');
+      expect(component.command()).toBe('');
     });
 
     it('should call startAll when command is start all', () => {
-      component.command = 'start all';
+      component.command.set('start all');
       component.handleCommand();
       expect(mockNodeService.startAll).toHaveBeenCalledWith(mockController, mockProject);
     });
 
     it('should call stopAll when command is stop all', () => {
-      component.command = 'stop all';
+      component.command.set('stop all');
       component.handleCommand();
       expect(mockNodeService.stopAll).toHaveBeenCalledWith(mockController, mockProject);
     });
 
     it('should call suspendAll when command is suspend all', () => {
-      component.command = 'suspend all';
+      component.command.set('suspend all');
       component.handleCommand();
       expect(mockNodeService.suspendAll).toHaveBeenCalledWith(mockController, mockProject);
     });
 
     it('should call reloadAll when command is reload all', () => {
-      component.command = 'reload all';
+      component.command.set('reload all');
       component.handleCommand();
       expect(mockNodeService.reloadAll).toHaveBeenCalledWith(mockController, mockProject);
     });
 
     it('should call start for specific node when command matches regex', () => {
-      component.command = 'start TestNode';
+      component.command.set('start TestNode');
       component.handleCommand();
       expect(mockNodeService.start).toHaveBeenCalledWith(mockController, mockNode);
     });
 
     it('should clear command after handling', () => {
-      component.command = 'help';
+      component.command.set('help');
       component.handleCommand();
-      expect(component.command).toBe('');
+      expect(component.command()).toBe('');
     });
 
     it('should show unknown syntax for unrecognized commands', () => {
-      component.command = 'foobar';
+      component.command.set('foobar');
       component.handleCommand();
-      expect(component.command).toBe('');
+      expect(component.command()).toBe('');
     });
   });
 

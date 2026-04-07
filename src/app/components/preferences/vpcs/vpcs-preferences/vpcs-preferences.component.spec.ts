@@ -97,19 +97,19 @@ describe('VpcsPreferencesComponent', () => {
       input.dispatchEvent(new Event('input'));
       fixture.detectChanges();
 
-      expect(component.vpcsExecutable).toBe('/custom/path/vpcs');
+      expect(component.vpcsExecutable()).toBe('/custom/path/vpcs');
     });
   });
 
   describe('restoreDefaults', () => {
     it('should clear vpcsExecutable', () => {
-      component.vpcsExecutable = '/some/path/vpcs';
+      component.vpcsExecutable.set('/some/path/vpcs');
       fixture.detectChanges();
 
       component.restoreDefaults();
       fixture.detectChanges();
 
-      expect(component.vpcsExecutable).toBe('');
+      expect(component.vpcsExecutable()).toBe('');
     });
   });
 });

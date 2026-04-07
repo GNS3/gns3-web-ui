@@ -274,7 +274,7 @@ describe('StartCaptureDialogComponent', () => {
         linkType: 'DLT_EN10MB',
         fileName: 'test_capture',
       });
-      fixture.componentInstance.startProgram = false;
+      fixture.componentInstance.startProgram.set(false);
 
       fixture.componentInstance.onYesClick();
 
@@ -321,7 +321,7 @@ describe('StartCaptureDialogComponent', () => {
         linkType: 'DLT_EN10MB',
         fileName: 'test_capture',
       });
-      fixture.componentInstance.startProgram = true;
+      fixture.componentInstance.startProgram.set(true);
 
       fixture.componentInstance.onYesClick();
 
@@ -339,7 +339,7 @@ describe('StartCaptureDialogComponent', () => {
         linkType: 'DLT_EN10MB',
         fileName: 'test_capture',
       });
-      fixture.componentInstance.startProgram = false;
+      fixture.componentInstance.startProgram.set(false);
 
       fixture.componentInstance.onYesClick();
 

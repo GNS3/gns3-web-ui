@@ -55,20 +55,20 @@ describe('CustomAdaptersTableComponent', () => {
     });
 
     it('should have empty adapters by default', () => {
-      expect(fixture.componentInstance.adapters).toEqual([]);
+      expect(fixture.componentInstance.adapters()).toEqual([]);
     });
   });
 
   describe('onAdd', () => {
     it('should add a new adapter with correct adapter_number based on current length', () => {
-      fixture.componentInstance.adapters = [createMockAdapter(0)];
+      fixture.componentInstance.adapters.set([createMockAdapter(0)]);
       fixture.detectChanges();
 
       fixture.componentInstance.onAdd();
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.adapters.length).toBe(2);
-      expect(fixture.componentInstance.adapters[1].adapter_number).toBe(1);
+      expect(fixture.componentInstance.adapters().length).toBe(2);
+      expect(fixture.componentInstance.adapters()[1].adapter_number).toBe(1);
     });
 
     it('should set adapter_type to first networkType object when networkTypes is provided', () => {
@@ -82,7 +82,7 @@ describe('CustomAdaptersTableComponent', () => {
       fixture.detectChanges();
 
       // Component stores the entire networkType object (not just .value)
-      expect(fixture.componentInstance.adapters[0].adapter_type).toEqual(networkTypes[0]);
+      expect(fixture.componentInstance.adapters()[0].adapter_type).toEqual(networkTypes[0]);
     });
 
     it('should not crash when networkTypes is empty', () => {
@@ -96,13 +96,13 @@ describe('CustomAdaptersTableComponent', () => {
     });
 
     it('should emit updated adapters list after adding', () => {
-      fixture.componentInstance.adapters = [];
+      fixture.componentInstance.adapters.set([]);
       fixture.detectChanges();
 
       fixture.componentInstance.onAdd();
 
-      expect(fixture.componentInstance.adapters.length).toBe(1);
-      expect(fixture.componentInstance.adapters[0]).toBeDefined();
+      expect(fixture.componentInstance.adapters().length).toBe(1);
+      expect(fixture.componentInstance.adapters()[0]).toBeDefined();
     });
   });
 
@@ -110,39 +110,39 @@ describe('CustomAdaptersTableComponent', () => {
     it('should remove the specified adapter from the list', () => {
       const adapter0 = createMockAdapter(0);
       const adapter1 = createMockAdapter(1);
-      fixture.componentInstance.adapters = [adapter0, adapter1];
+      fixture.componentInstance.adapters.set([adapter0, adapter1]);
       fixture.detectChanges();
 
       fixture.componentInstance.delete(adapter0);
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.adapters.length).toBe(1);
-      expect(fixture.componentInstance.adapters).not.toContain(adapter0);
-      expect(fixture.componentInstance.adapters).toContain(adapter1);
+      expect(fixture.componentInstance.adapters().length).toBe(1);
+      expect(fixture.componentInstance.adapters()).not.toContain(adapter0);
+      expect(fixture.componentInstance.adapters()).toContain(adapter1);
     });
 
     it('should handle deleting the last adapter', () => {
       const adapter = createMockAdapter(0);
-      fixture.componentInstance.adapters = [adapter];
+      fixture.componentInstance.adapters.set([adapter]);
       fixture.detectChanges();
 
       fixture.componentInstance.delete(adapter);
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.adapters.length).toBe(0);
+      expect(fixture.componentInstance.adapters().length).toBe(0);
     });
 
     it('should not modify list if adapter not found', () => {
       const adapter0 = createMockAdapter(0);
       const adapter1 = createMockAdapter(1);
       const nonExistent = createMockAdapter(99);
-      fixture.componentInstance.adapters = [adapter0, adapter1];
+      fixture.componentInstance.adapters.set([adapter0, adapter1]);
       fixture.detectChanges();
 
       fixture.componentInstance.delete(nonExistent);
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.adapters.length).toBe(2);
+      expect(fixture.componentInstance.adapters().length).toBe(2);
     });
   });
 
@@ -175,7 +175,7 @@ describe('CustomAdaptersTableComponent', () => {
     });
 
     it('should render delete button for each adapter row when displayedColumns includes actions', () => {
-      fixture.componentInstance.adapters = [createMockAdapter(0), createMockAdapter(1)];
+      fixture.componentInstance.adapters.set([createMockAdapter(0), createMockAdapter(1)]);
       fixture.componentRef.setInput('displayedColumns', [
         'adapter_number',
         'port_name',
@@ -191,20 +191,20 @@ describe('CustomAdaptersTableComponent', () => {
 
     it('should update adapters list when adapters input is set', () => {
       const adapters = [createMockAdapter(0), createMockAdapter(1)];
-      fixture.componentRef.setInput('adapters', adapters);
+      fixture.componentInstance.adapters.set(adapters);
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.adapters.length).toBe(2);
+      expect(fixture.componentInstance.adapters().length).toBe(2);
     });
   });
 
-  describe('adapters input binding', () => {
-    it('should accept adapters via input binding', () => {
+  describe('adapters model binding', () => {
+    it('should accept adapters via model binding', () => {
       const adapters = [createMockAdapter(0), createMockAdapter(1)];
-      fixture.componentRef.setInput('adapters', adapters);
+      fixture.componentInstance.adapters.set(adapters);
       fixture.detectChanges();
 
-      expect(fixture.componentInstance.adapters.length).toBe(2);
+      expect(fixture.componentInstance.adapters().length).toBe(2);
     });
   });
 

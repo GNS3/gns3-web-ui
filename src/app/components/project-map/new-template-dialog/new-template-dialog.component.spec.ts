@@ -262,11 +262,11 @@ describe('NewTemplateDialogComponent', () => {
     });
 
     it('should have default searchText as empty string', () => {
-      expect(component.searchText).toBe('');
+      expect(component.searchText()).toBe('');
     });
 
     it('should have default category as all categories', () => {
-      expect(component.category).toBe('all categories');
+      expect(component.category()).toBe('all categories');
     });
   });
 
@@ -337,39 +337,39 @@ describe('NewTemplateDialogComponent', () => {
     });
 
     it('should filter appliances by search text', () => {
-      component.searchText = 'Router';
-      component.filterAppliances({});
+      component.searchText.set('Router');
+      component.filterAppliances();
 
       expect(component.appliances.length).toBe(1);
       expect(component.appliances[0].name).toBe('Router1');
     });
 
     it('should filter appliances by category', () => {
-      component.category = 'router';
-      component.filterAppliances({});
+      component.category.set('router');
+      component.filterAppliances();
 
       expect(component.appliances.length).toBe(1);
       expect(component.appliances[0].category).toBe('router');
     });
 
     it('should filter by both search text and category', () => {
-      component.searchText = 'Router';
-      component.category = 'router';
-      component.filterAppliances({});
+      component.searchText.set('Router');
+      component.category.set('router');
+      component.filterAppliances();
 
       expect(component.appliances.length).toBe(1);
     });
 
     it('should return all appliances when category is all categories', () => {
-      component.category = 'all categories';
-      component.filterAppliances({});
+      component.category.set('all categories');
+      component.filterAppliances();
 
       expect(component.appliances.length).toBe(3);
     });
 
     it('should update dataSource after filtering', () => {
-      component.searchText = 'Router';
-      component.filterAppliances({});
+      component.searchText.set('Router');
+      component.filterAppliances();
 
       expect(component.dataSource.data.length).toBe(1);
     });

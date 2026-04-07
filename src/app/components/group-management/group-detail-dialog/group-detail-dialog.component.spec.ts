@@ -365,7 +365,7 @@ describe('GroupDetailDialogComponent', () => {
     it('should return all members when search is empty', () => {
       const users = [createMockUser('1', 'Alice'), createMockUser('2', 'Bob')];
       component.members.set(users);
-      component.searchMembers = '';
+      component.searchMembers.set('');
 
       expect(component.filteredMembers()).toEqual(users);
     });
@@ -373,7 +373,7 @@ describe('GroupDetailDialogComponent', () => {
     it('should filter members by username case-insensitively', () => {
       const users = [createMockUser('1', 'Alice'), createMockUser('2', 'Bob'), createMockUser('3', 'alice_smith')];
       component.members.set(users);
-      component.searchMembers = 'alice';
+      component.searchMembers.set('alice');
 
       const filtered = component.filteredMembers();
       expect(filtered.length).toBe(2);
@@ -384,7 +384,7 @@ describe('GroupDetailDialogComponent', () => {
     it('should return empty array when no members match', () => {
       const users = [createMockUser('1', 'Alice')];
       component.members.set(users);
-      component.searchMembers = 'xyz';
+      component.searchMembers.set('xyz');
 
       expect(component.filteredMembers()).toEqual([]);
     });

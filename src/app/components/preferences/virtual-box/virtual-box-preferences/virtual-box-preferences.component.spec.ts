@@ -101,17 +101,17 @@ describe('VirtualBoxPreferencesComponent', () => {
     });
 
     it('should set vboxManagePath to empty string initially', () => {
-      expect(component.vboxManagePath).toBeUndefined();
+      expect(component.vboxManagePath()).toBeUndefined();
     });
   });
 
   describe('restoreDefaults', () => {
     it('should reset vboxManagePath to empty string', () => {
-      component.vboxManagePath = '/some/path';
+      component.vboxManagePath.set('/some/path');
 
       component.restoreDefaults();
 
-      expect(component.vboxManagePath).toBe('');
+      expect(component.vboxManagePath()).toBe('');
     });
   });
 
@@ -131,7 +131,7 @@ describe('VirtualBoxPreferencesComponent', () => {
     });
 
     it('should have input bound to vboxManagePath', async () => {
-      component.vboxManagePath = '/usr/bin/vboxmanage';
+      component.vboxManagePath.set('/usr/bin/vboxmanage');
 
       fixture.detectChanges();
       await fixture.whenStable();

@@ -107,9 +107,9 @@ describe('SettingsComponent', () => {
     });
 
     it('should initialize map settings properties', () => {
-      expect(component.integrateLinksLabelsToLinks).toBe(true);
-      expect(component.openReadme).toBe(false);
-      expect(component.openConsolesInWidget).toBe(false);
+      expect(component.integrateLinksLabelsToLinks()).toBe(true);
+      expect(component.openReadme()).toBe(false);
+      expect(component.openConsolesInWidget()).toBe(false);
     });
 
     it('should initialize theme settings', () => {
@@ -167,9 +167,9 @@ describe('SettingsComponent', () => {
     });
 
     it('should toggle map settings', () => {
-      component.integrateLinksLabelsToLinks = false;
-      component.openReadme = true;
-      component.openConsolesInWidget = true;
+      component.integrateLinksLabelsToLinks.set(false);
+      component.openReadme.set(true);
+      component.openConsolesInWidget.set(true);
 
       component.save();
 

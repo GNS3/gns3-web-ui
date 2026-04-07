@@ -146,8 +146,8 @@ describe('ConfigureCustomAdaptersDialogComponent', () => {
       fixture.detectChanges();
 
       // adapter_number should be assigned sequentially
-      expect(component.adapters[0].adapter_number).toBe(0);
-      expect(component.adapters[1].adapter_number).toBe(1);
+      expect(component.adapters()[0].adapter_number).toBe(0);
+      expect(component.adapters()[1].adapter_number).toBe(1);
     });
 
     it('should use existing custom_adapters when node has them defined', () => {
@@ -163,8 +163,8 @@ describe('ConfigureCustomAdaptersDialogComponent', () => {
       component.node = mockNode;
       fixture.detectChanges();
 
-      expect(component.adapters).toBe(existingAdapters);
-      expect(component.adapters[1].port_name).toBe('custom0');
+      expect(component.adapters()).toEqual(existingAdapters);
+      expect(component.adapters()[1].port_name).toBe('custom0');
     });
   });
 
@@ -176,7 +176,7 @@ describe('ConfigureCustomAdaptersDialogComponent', () => {
     it('should assign adapters to node.custom_adapters', () => {
       component.onSaveClick();
 
-      expect(mockNode.custom_adapters).toBe(component.adapters);
+      expect(mockNode.custom_adapters).toBe(component.adapters());
     });
 
     it('should call updateNodeWithCustomAdapters with controller and node', () => {

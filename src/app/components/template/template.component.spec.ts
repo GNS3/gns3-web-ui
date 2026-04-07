@@ -171,7 +171,7 @@ describe('TemplateComponent', () => {
     });
 
     it('should have searchText initialized to empty string', () => {
-      expect(component.searchText).toBe('');
+      expect(component.searchText()).toBe('');
     });
 
     it('should have templateTypes with all expected types', () => {
@@ -314,33 +314,33 @@ describe('TemplateComponent', () => {
     beforeEach(() => {
       component.templates = [...templates];
       component.filteredTemplates = [...templates];
-      component.selectedType = 'all';
-      component.searchText = '';
+      component.selectedType.set('all');
+      component.searchText.set('');
     });
 
     it('should filter templates by searchText case-insensitively', () => {
-      component.searchText = 'router';
+      component.searchText.set('router');
 
-      component.filterTemplates({ target: { value: 'router' } });
+      component.filterTemplates();
 
       expect(component.filteredTemplates.length).toBe(1);
       expect(component.filteredTemplates[0].name).toBe('Router');
     });
 
     it('should filter templates by partial match', () => {
-      component.searchText = 'host';
+      component.searchText.set('host');
 
-      component.filterTemplates({ target: { value: 'host' } });
+      component.filterTemplates();
 
       expect(component.filteredTemplates.length).toBe(1);
       expect(component.filteredTemplates[0].name).toBe('DockerHost');
     });
 
     it('should filter by selectedType when not all', () => {
-      component.searchText = '';
-      component.selectedType = 'docker';
+      component.searchText.set('');
+      component.selectedType.set('docker');
 
-      component.filterTemplates({ target: { value: '' } });
+      component.filterTemplates();
 
       expect(component.filteredTemplates.length).toBe(1);
       expect(component.filteredTemplates[0].template_type).toBe('docker');
@@ -353,19 +353,19 @@ describe('TemplateComponent', () => {
         createMockTemplate('t3', 'DockerHQ', 'docker'),
       ];
       component.filteredTemplates = [...component.templates];
-      component.selectedType = 'docker';
+      component.selectedType.set('docker');
 
-      component.searchText = 'prod';
-      component.filterTemplates({ target: { value: 'prod' } });
+      component.searchText.set('prod');
+      component.filterTemplates();
 
       expect(component.filteredTemplates.length).toBe(1);
       expect(component.filteredTemplates[0].name).toBe('DockerProd');
     });
 
     it('should return all templates when searchText is empty and type is all', () => {
-      component.searchText = '';
+      component.searchText.set('');
 
-      component.filterTemplates({ target: { value: '' } });
+      component.filterTemplates();
 
       expect(component.filteredTemplates.length).toBe(4);
     });
@@ -374,7 +374,7 @@ describe('TemplateComponent', () => {
       component.templates = [createMockTemplate('t1', 'Zebra', 'cloud'), createMockTemplate('t2', 'Alpha', 'cloud')];
       component.filteredTemplates = [...component.templates];
 
-      component.filterTemplates({ target: { value: '' } });
+      component.filterTemplates();
 
       expect(component.filteredTemplates[0].name).toBe('Alpha');
       expect(component.filteredTemplates[1].name).toBe('Zebra');

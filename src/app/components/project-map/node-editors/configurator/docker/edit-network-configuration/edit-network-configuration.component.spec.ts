@@ -123,8 +123,8 @@ describe('EditNetworkConfigurationDialogComponent', () => {
       expect(component).toBeTruthy();
     });
 
-    it('should have undefined configuration initially', () => {
-      expect(component.configuration).toBeUndefined();
+    it('should have empty string configuration initially', () => {
+      expect(component.configuration()).toBe('');
     });
 
     it('should have node and controller assigned', () => {
@@ -143,19 +143,19 @@ describe('EditNetworkConfigurationDialogComponent', () => {
     it('should populate configuration after fetching', () => {
       fixture.detectChanges();
 
-      expect(component.configuration).toBe(mockConfiguration);
+      expect(component.configuration()).toBe(mockConfiguration);
     });
 
     it('should call markForCheck after receiving configuration', () => {
       fixture.detectChanges();
 
-      expect(component.configuration).toBe(mockConfiguration);
+      expect(component.configuration()).toBe(mockConfiguration);
     });
   });
 
   describe('onSaveClick', () => {
     beforeEach(() => {
-      component.configuration = mockConfiguration;
+      component.configuration.set(mockConfiguration);
     });
 
     it('should save network configuration via NodeService', () => {
@@ -183,7 +183,7 @@ describe('EditNetworkConfigurationDialogComponent', () => {
 
   describe('onCancelClick', () => {
     it('should close the dialog without saving', () => {
-      component.configuration = 'some unsaved config';
+      component.configuration.set('some unsaved config');
       component.onCancelClick();
 
       expect(mockDialogRef.close).toHaveBeenCalled();
@@ -195,7 +195,7 @@ describe('EditNetworkConfigurationDialogComponent', () => {
     it('should update configuration after async operation in ngOnInit', () => {
       fixture.detectChanges();
 
-      expect(component.configuration).toBe(mockConfiguration);
+      expect(component.configuration()).toBe(mockConfiguration);
     });
   });
 });

@@ -174,7 +174,7 @@ describe('IdlePCDialogComponent', () => {
     });
 
     it('should have empty initial idlePC', () => {
-      expect(component.idlePC).toBe('');
+      expect(component.idlePC()).toBe('');
     });
 
     it('should not be computing initially', () => {
@@ -241,7 +241,7 @@ describe('IdlePCDialogComponent', () => {
 
       component.onCompute();
 
-      expect(component.idlePC).toBe('0x60c09aa0');
+      expect(component.idlePC()).toBe('0x60c09aa0');
     });
 
     it('should not select any idlepc when idlepcs is empty', () => {
@@ -250,7 +250,7 @@ describe('IdlePCDialogComponent', () => {
 
       component.onCompute();
 
-      expect(component.idlePC).toBe('');
+      expect(component.idlePC()).toBe('');
     });
 
     it('should filter out invalid idle-pc format entries', () => {
@@ -283,7 +283,7 @@ describe('IdlePCDialogComponent', () => {
 
   describe('onApply', () => {
     it('should not update node when idlePC is empty', () => {
-      component.idlePC = '';
+      component.idlePC.set('');
 
       component.onApply();
 
@@ -292,7 +292,7 @@ describe('IdlePCDialogComponent', () => {
     });
 
     it('should not update node when idlePC is 0x0', () => {
-      component.idlePC = '0x0';
+      component.idlePC.set('0x0');
 
       component.onApply();
 
@@ -301,7 +301,7 @@ describe('IdlePCDialogComponent', () => {
     });
 
     it('should update node properties with idlePC when value is valid', () => {
-      component.idlePC = '0x60c09aa0';
+      component.idlePC.set('0x60c09aa0');
       mockNodeService.updateNode.mockReturnValue(of(mockNode));
 
       component.onApply();
@@ -310,7 +310,7 @@ describe('IdlePCDialogComponent', () => {
     });
 
     it('should call nodeService.updateNode with controller and node', () => {
-      component.idlePC = '0x60c09aa0';
+      component.idlePC.set('0x60c09aa0');
       mockNodeService.updateNode.mockReturnValue(of(mockNode));
 
       component.onApply();
@@ -319,7 +319,7 @@ describe('IdlePCDialogComponent', () => {
     });
 
     it('should show success toast after updating node', () => {
-      component.idlePC = '0x60c09aa0';
+      component.idlePC.set('0x60c09aa0');
       mockNodeService.updateNode.mockReturnValue(of(mockNode));
 
       component.onApply();

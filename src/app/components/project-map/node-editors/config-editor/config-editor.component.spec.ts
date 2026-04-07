@@ -133,7 +133,7 @@ describe('ConfigEditorDialogComponent', () => {
       component.ngOnInit();
       fixture.detectChanges();
 
-      expect(component.config).toBe('startup config content');
+      expect(component.config()).toBe('startup config content');
     });
 
     it('should not fetch private configuration for vpcs node type', () => {
@@ -166,7 +166,7 @@ describe('ConfigEditorDialogComponent', () => {
       component.ngOnInit();
       fixture.detectChanges();
 
-      expect(component.privateConfig).toBe('private config content');
+      expect(component.privateConfig()).toBe('private config content');
     });
 
     it('should store private configuration in privateConfig property for dynamips', () => {
@@ -174,13 +174,13 @@ describe('ConfigEditorDialogComponent', () => {
       component.ngOnInit();
       fixture.detectChanges();
 
-      expect(component.privateConfig).toBe('private config content');
+      expect(component.privateConfig()).toBe('private config content');
     });
   });
 
   describe('onSaveClick', () => {
     it('should call saveConfiguration with controller, node and config', () => {
-      component.config = 'new config';
+      component.config.set('new config');
       component.onSaveClick();
 
       expect(mockNodeService.saveConfiguration).toHaveBeenCalledWith(mockController, mockNode, 'new config');
@@ -200,8 +200,8 @@ describe('ConfigEditorDialogComponent', () => {
 
     it('should also save private configuration for iou node', () => {
       component.node = createMockNode('iou');
-      component.config = 'startup';
-      component.privateConfig = 'private';
+      component.config.set('startup');
+      component.privateConfig.set('private');
       component.onSaveClick();
 
       expect(mockNodeService.saveConfiguration).toHaveBeenCalledWith(mockController, component.node, 'startup');
@@ -210,8 +210,8 @@ describe('ConfigEditorDialogComponent', () => {
 
     it('should also save private configuration for dynamips node', () => {
       component.node = createMockNode('dynamips');
-      component.config = 'startup';
-      component.privateConfig = 'private';
+      component.config.set('startup');
+      component.privateConfig.set('private');
       component.onSaveClick();
 
       expect(mockNodeService.saveConfiguration).toHaveBeenCalledWith(mockController, component.node, 'startup');
@@ -221,8 +221,8 @@ describe('ConfigEditorDialogComponent', () => {
     it('should close dialog after saving both configs for iou', () => {
       mockNodeService.savePrivateConfiguration.mockReturnValue(of({}));
       component.node = createMockNode('iou');
-      component.config = 'startup';
-      component.privateConfig = 'private';
+      component.config.set('startup');
+      component.privateConfig.set('private');
       component.onSaveClick();
 
       expect(mockDialogRef.close).toHaveBeenCalled();

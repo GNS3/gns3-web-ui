@@ -85,8 +85,8 @@ describe('CustomAdaptersComponent', () => {
         { adapter_number: 1, adapter_type: 'virtio', port_name: 'Ethernet1', mac_address: '' },
       ];
       createComponent(createMockData({ adapters: existingAdapters }));
-      expect(component.adapters.length).toBe(2);
-      expect(component.adapters[0].port_name).toBe('Ethernet0');
+      expect(component.adapters().length).toBe(2);
+      expect(component.adapters()[0].port_name).toBe('Ethernet0');
     });
 
     it('should return networkTypes from data', () => {
@@ -105,11 +105,11 @@ describe('CustomAdaptersComponent', () => {
       createComponent(createMockData());
       component.onAdd();
 
-      expect(component.adapters.length).toBe(1);
-      expect(component.adapters[0].adapter_number).toBe(0);
-      expect(component.adapters[0].adapter_type).toBe('e1000');
-      expect(component.adapters[0].port_name).toBe('Ethernet0');
-      expect(component.adapters[0].mac_address).toBe('');
+      expect(component.adapters().length).toBe(1);
+      expect(component.adapters()[0].adapter_number).toBe(0);
+      expect(component.adapters()[0].adapter_type).toBe('e1000');
+      expect(component.adapters()[0].port_name).toBe('Ethernet0');
+      expect(component.adapters()[0].mac_address).toBe('');
     });
 
     it('should add multiple adapters with sequential numbers', () => {
@@ -118,17 +118,17 @@ describe('CustomAdaptersComponent', () => {
       component.onAdd();
       component.onAdd();
 
-      expect(component.adapters.length).toBe(3);
-      expect(component.adapters[0].adapter_number).toBe(0);
-      expect(component.adapters[1].adapter_number).toBe(1);
-      expect(component.adapters[2].adapter_number).toBe(2);
+      expect(component.adapters().length).toBe(3);
+      expect(component.adapters()[0].adapter_number).toBe(0);
+      expect(component.adapters()[1].adapter_number).toBe(1);
+      expect(component.adapters()[2].adapter_number).toBe(2);
     });
 
     it('should use first networkType value as default adapter_type', () => {
       createComponent(createMockData({ networkTypes }));
       component.onAdd();
 
-      expect(component.adapters[0].adapter_type).toBe('e1000');
+      expect(component.adapters()[0].adapter_type).toBe('e1000');
     });
 
     it('should generate port name based on portNameFormat', () => {
@@ -136,8 +136,8 @@ describe('CustomAdaptersComponent', () => {
       component.onAdd();
       component.onAdd();
 
-      expect(component.adapters[0].port_name).toBe('eth0');
-      expect(component.adapters[1].port_name).toBe('eth1');
+      expect(component.adapters()[0].port_name).toBe('eth0');
+      expect(component.adapters()[1].port_name).toBe('eth1');
     });
 
     it('should handle portSegmentSize for port name generation', () => {
@@ -147,10 +147,10 @@ describe('CustomAdaptersComponent', () => {
       component.onAdd();
       component.onAdd();
 
-      expect(component.adapters[0].port_name).toBe('eth0');
-      expect(component.adapters[1].port_name).toBe('eth1');
-      expect(component.adapters[2].port_name).toBe('eth2');
-      expect(component.adapters[3].port_name).toBe('eth3');
+      expect(component.adapters()[0].port_name).toBe('eth0');
+      expect(component.adapters()[1].port_name).toBe('eth1');
+      expect(component.adapters()[2].port_name).toBe('eth2');
+      expect(component.adapters()[3].port_name).toBe('eth3');
     });
 
     it('should continue numbering after highest existing adapter_number', () => {
@@ -158,8 +158,8 @@ describe('CustomAdaptersComponent', () => {
       createComponent(createMockData({ adapters: existingAdapters }));
       component.onAdd();
 
-      expect(component.adapters.length).toBe(2);
-      expect(component.adapters[1].adapter_number).toBe(6);
+      expect(component.adapters().length).toBe(2);
+      expect(component.adapters()[1].adapter_number).toBe(6);
     });
   });
 
@@ -168,23 +168,23 @@ describe('CustomAdaptersComponent', () => {
       createComponent(createMockData());
       component.onAdd();
       component.onAdd();
-      const adapterToDelete = component.adapters[0];
+      const adapterToDelete = component.adapters()[0];
 
       component.delete(adapterToDelete);
 
-      expect(component.adapters.length).toBe(1);
-      expect(component.adapters).not.toContain(adapterToDelete);
+      expect(component.adapters().length).toBe(1);
+      expect(component.adapters()).not.toContain(adapterToDelete);
     });
 
     it('should not affect other adapters when deleting one', () => {
       createComponent(createMockData());
       component.onAdd();
       component.onAdd();
-      const adapterToDelete = component.adapters[0];
+      const adapterToDelete = component.adapters()[0];
 
       component.delete(adapterToDelete);
 
-      expect(component.adapters[0].adapter_number).toBe(1);
+      expect(component.adapters()[0].adapter_number).toBe(1);
     });
 
     it('should do nothing when deleting non-existent adapter', () => {
@@ -194,7 +194,7 @@ describe('CustomAdaptersComponent', () => {
 
       component.delete(nonExistentAdapter as CustomAdapter);
 
-      expect(component.adapters.length).toBe(1);
+      expect(component.adapters().length).toBe(1);
     });
   });
 
@@ -262,21 +262,27 @@ describe('CustomAdaptersComponent', () => {
       it('should return false when all adapters have valid or empty MAC', () => {
         createComponent(createMockData());
         component.onAdd();
-        component.adapters[0].mac_address = 'aa:bb:cc:dd:ee:ff';
+        const adapters = [...component.adapters()];
+        adapters[0].mac_address = 'aa:bb:cc:dd:ee:ff';
+        component.adapters.set(adapters);
         expect(component.hasInvalidMacAddresses()).toBe(false);
       });
 
       it('should return true when any adapter has invalid MAC', () => {
         createComponent(createMockData());
         component.onAdd();
-        component.adapters[0].mac_address = 'invalid';
+        const adapters = [...component.adapters()];
+        adapters[0].mac_address = 'invalid';
+        component.adapters.set(adapters);
         expect(component.hasInvalidMacAddresses()).toBe(true);
       });
 
       it('should return false when no adapters have MAC set', () => {
         createComponent(createMockData());
         component.onAdd();
-        component.adapters[0].mac_address = '';
+        const adapters = [...component.adapters()];
+        adapters[0].mac_address = '';
+        component.adapters.set(adapters);
         expect(component.hasInvalidMacAddresses()).toBe(false);
       });
     });
@@ -334,7 +340,9 @@ describe('CustomAdaptersComponent', () => {
     it('should show error when MAC address is invalid', () => {
       createComponent(createMockData());
       component.onAdd();
-      component.adapters[0].mac_address = 'invalid';
+      const adapters = [...component.adapters()];
+      adapters[0].mac_address = 'invalid';
+      component.adapters.set(adapters);
       component.configureCustomAdapters();
 
       expect(mockToasterService.error).toHaveBeenCalled();
@@ -355,7 +363,9 @@ describe('CustomAdaptersComponent', () => {
     it('should include adapter when port_name differs from default', () => {
       createComponent(createMockData({ defaultAdapterType: 'e1000', portNameFormat: 'Ethernet{0}' }));
       component.onAdd();
-      component.adapters[0].port_name = 'CustomName';
+      const adapters = [...component.adapters()];
+      adapters[0].port_name = 'CustomName';
+      component.adapters.set(adapters);
       component.configureCustomAdapters();
 
       const result = mockDialogRef.close.mock.calls[0][0] as CustomAdaptersDialogResult;
@@ -366,7 +376,9 @@ describe('CustomAdaptersComponent', () => {
     it('should include adapter when adapter_type differs from default', () => {
       createComponent(createMockData({ defaultAdapterType: 'e1000' }));
       component.onAdd();
-      component.adapters[0].adapter_type = 'virtio';
+      const adapters = [...component.adapters()];
+      adapters[0].adapter_type = 'virtio';
+      component.adapters.set(adapters);
       component.configureCustomAdapters();
 
       const result = mockDialogRef.close.mock.calls[0][0] as CustomAdaptersDialogResult;
@@ -377,7 +389,9 @@ describe('CustomAdaptersComponent', () => {
     it('should include adapter when mac_address is set', () => {
       createComponent(createMockData({ defaultAdapterType: 'e1000' }));
       component.onAdd();
-      component.adapters[0].mac_address = 'aa:bb:cc:dd:ee:ff';
+      const adapters = [...component.adapters()];
+      adapters[0].mac_address = 'aa:bb:cc:dd:ee:ff';
+      component.adapters.set(adapters);
       component.configureCustomAdapters();
 
       const result = mockDialogRef.close.mock.calls[0][0] as CustomAdaptersDialogResult;
@@ -399,7 +413,9 @@ describe('CustomAdaptersComponent', () => {
     it('should handle segment size when calculating default port names', () => {
       createComponent(createMockData({ portNameFormat: 'eth{0}', portSegmentSize: 2, defaultAdapterType: 'e1000' }));
       component.onAdd();
-      component.adapters[0].adapter_type = 'virtio';
+      const adapters = [...component.adapters()];
+      adapters[0].adapter_type = 'virtio';
+      component.adapters.set(adapters);
       component.configureCustomAdapters();
 
       const result = mockDialogRef.close.mock.calls[0][0] as CustomAdaptersDialogResult;
@@ -410,8 +426,10 @@ describe('CustomAdaptersComponent', () => {
     it('should set mac_address to null when empty string', () => {
       createComponent(createMockData({ defaultAdapterType: 'e1000' }));
       component.onAdd();
-      component.adapters[0].mac_address = '';
-      component.adapters[0].adapter_type = 'virtio';
+      const adapters = [...component.adapters()];
+      adapters[0].mac_address = '';
+      adapters[0].adapter_type = 'virtio';
+      component.adapters.set(adapters);
       component.configureCustomAdapters();
 
       const result = mockDialogRef.close.mock.calls[0][0] as CustomAdaptersDialogResult;

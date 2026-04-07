@@ -135,22 +135,22 @@ describe('ChatInputAreaComponent', () => {
 
   describe('canSend', () => {
     it('should return false when message is empty', () => {
-      component.message = '';
+      component.message.set('');
       expect(component.canSend).toBe(false);
     });
 
     it('should return false when message is only whitespace', () => {
-      component.message = '   ';
+      component.message.set('   ');
       expect(component.canSend).toBe(false);
     });
 
     it('should return true when message has content and within maxLength', () => {
-      component.message = 'Hello world';
+      component.message.set('Hello world');
       expect(component.canSend).toBe(true);
     });
 
     it('should return false when message exceeds maxLength', () => {
-      component.message = 'a'.repeat(4001);
+      component.message.set('a'.repeat(4001));
       expect(component.canSend).toBe(false);
     });
 
@@ -160,22 +160,22 @@ describe('ChatInputAreaComponent', () => {
 
   describe('isNearLimit', () => {
     it('should return false when message is empty', () => {
-      component.message = '';
+      component.message.set('');
       expect(component.isNearLimit).toBe(false);
     });
 
     it('should return false when message is below 90% of maxLength', () => {
-      component.message = 'a'.repeat(3000); // 75% of 4000
+      component.message.set('a'.repeat(3000)); // 75% of 4000
       expect(component.isNearLimit).toBe(false);
     });
 
     it('should return true when message is at 90% of maxLength', () => {
-      component.message = 'a'.repeat(3600); // 90% of 4000
+      component.message.set('a'.repeat(3600)); // 90% of 4000
       expect(component.isNearLimit).toBe(true);
     });
 
     it('should return true when message exceeds maxLength', () => {
-      component.message = 'a'.repeat(4500);
+      component.message.set('a'.repeat(4500));
       expect(component.isNearLimit).toBe(true);
     });
   });
@@ -184,7 +184,7 @@ describe('ChatInputAreaComponent', () => {
     it('should not send message on regular Enter key', () => {
       const sendMessageSpy = vi.spyOn(component, 'sendMessage');
       const event = new KeyboardEvent('keydown', { key: 'Enter' });
-      component.message = 'test';
+      component.message.set('test');
       component.handleKeyDown(event);
       expect(sendMessageSpy).not.toHaveBeenCalled();
     });
@@ -192,7 +192,7 @@ describe('ChatInputAreaComponent', () => {
     it('should send message on Ctrl+Enter when canSend is true', () => {
       const sendMessageSpy = vi.spyOn(component, 'sendMessage');
       const event = new KeyboardEvent('keydown', { key: 'Enter', ctrlKey: true });
-      component.message = 'test';
+      component.message.set('test');
       component.handleKeyDown(event);
       expect(sendMessageSpy).toHaveBeenCalled();
     });
@@ -200,7 +200,7 @@ describe('ChatInputAreaComponent', () => {
     it('should send message on Cmd+Enter (mac) when canSend is true', () => {
       const sendMessageSpy = vi.spyOn(component, 'sendMessage');
       const event = new KeyboardEvent('keydown', { key: 'Enter', metaKey: true });
-      component.message = 'test';
+      component.message.set('test');
       component.handleKeyDown(event);
       expect(sendMessageSpy).toHaveBeenCalled();
     });
@@ -208,7 +208,7 @@ describe('ChatInputAreaComponent', () => {
     it('should not send message on Ctrl+Enter when disabled', () => {
       const sendMessageSpy = vi.spyOn(component, 'sendMessage');
       const event = new KeyboardEvent('keydown', { key: 'Enter', ctrlKey: true });
-      component.message = 'test';
+      component.message.set('test');
       fixture.componentRef.setInput('disabled', true);
       component.handleKeyDown(event);
       expect(sendMessageSpy).not.toHaveBeenCalled();
@@ -217,7 +217,7 @@ describe('ChatInputAreaComponent', () => {
     it('should not send message on Ctrl+Enter when canSend is false', () => {
       const sendMessageSpy = vi.spyOn(component, 'sendMessage');
       const event = new KeyboardEvent('keydown', { key: 'Enter', ctrlKey: true });
-      component.message = '';
+      component.message.set('');
       component.handleKeyDown(event);
       expect(sendMessageSpy).not.toHaveBeenCalled();
     });
@@ -225,7 +225,7 @@ describe('ChatInputAreaComponent', () => {
     it('should prevent default on Ctrl+Enter', () => {
       const event = new KeyboardEvent('keydown', { key: 'Enter', ctrlKey: true });
       const preventDefaultSpy = vi.spyOn(event, 'preventDefault');
-      component.message = 'test';
+      component.message.set('test');
       component.handleKeyDown(event);
       expect(preventDefaultSpy).toHaveBeenCalled();
     });
@@ -234,8 +234,7 @@ describe('ChatInputAreaComponent', () => {
   describe('onInputChange()', () => {
     it('should emit inputChanged event', () => {
       const inputChangedSpy = vi.spyOn(component.inputChanged, 'emit');
-      component.message = 'Hello';
-      component.onInputChange();
+      component.onInputChange('Hello');
       expect(inputChangedSpy).toHaveBeenCalledWith('Hello');
     });
   });
@@ -243,34 +242,34 @@ describe('ChatInputAreaComponent', () => {
   describe('sendMessage()', () => {
     it('should emit messageSent with trimmed message', () => {
       const messageSentSpy = vi.spyOn(component.messageSent, 'emit');
-      component.message = '  Hello World  ';
+      component.message.set('  Hello World  ');
       component.sendMessage();
       expect(messageSentSpy).toHaveBeenCalledWith('Hello World');
     });
 
     it('should clear message after sending', () => {
-      component.message = 'Hello';
+      component.message.set('Hello');
       component.sendMessage();
-      expect(component.message).toBe('');
+      expect(component.message()).toBe('');
     });
 
     it('should not emit messageSent when message is empty', () => {
       const messageSentSpy = vi.spyOn(component.messageSent, 'emit');
-      component.message = '';
+      component.message.set('');
       component.sendMessage();
       expect(messageSentSpy).not.toHaveBeenCalled();
     });
 
     it('should not emit messageSent when message is only whitespace', () => {
       const messageSentSpy = vi.spyOn(component.messageSent, 'emit');
-      component.message = '   ';
+      component.message.set('   ');
       component.sendMessage();
       expect(messageSentSpy).not.toHaveBeenCalled();
     });
 
     it('should not emit messageSent when disabled', () => {
       const messageSentSpy = vi.spyOn(component.messageSent, 'emit');
-      component.message = 'Hello';
+      component.message.set('Hello');
       fixture.componentRef.setInput('disabled', true);
       component.sendMessage();
       expect(messageSentSpy).not.toHaveBeenCalled();
@@ -290,9 +289,9 @@ describe('ChatInputAreaComponent', () => {
 
   describe('clear()', () => {
     it('should clear the message', () => {
-      component.message = 'Hello';
+      component.message.set('Hello');
       component.clear();
-      expect(component.message).toBe('');
+      expect(component.message()).toBe('');
     });
   });
 

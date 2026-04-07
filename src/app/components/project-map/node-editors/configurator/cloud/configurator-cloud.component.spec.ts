@@ -187,7 +187,7 @@ describe('ConfiguratorDialogCloudComponent', () => {
 
   describe('onAddEthernetInterface', () => {
     it('should add ethernet interface to portsMappingEthernet when interface is selected', () => {
-      component.ethernetInterface = 'Ethernet 2';
+      component.ethernetInterface.set('Ethernet 2');
       const initialLength = component.portsMappingEthernet.length;
 
       component.onAddEthernetInterface();
@@ -198,7 +198,7 @@ describe('ConfiguratorDialogCloudComponent', () => {
     });
 
     it('should not add ethernet interface when ethernetInterface is empty', () => {
-      component.ethernetInterface = '';
+      component.ethernetInterface.set('');
       const initialLength = component.portsMappingEthernet.length;
 
       component.onAddEthernetInterface();
@@ -209,7 +209,7 @@ describe('ConfiguratorDialogCloudComponent', () => {
 
   describe('onAddTapInterface', () => {
     it('should add tap interface to portsMappingTap when interface is specified', () => {
-      component.tapInterface = 'tap0';
+      component.tapInterface.set('tap0');
       const initialLength = component.portsMappingTap.length;
 
       component.onAddTapInterface();
@@ -220,7 +220,7 @@ describe('ConfiguratorDialogCloudComponent', () => {
     });
 
     it('should not add tap interface when tapInterface is empty', () => {
-      component.tapInterface = '';
+      component.tapInterface.set('');
       const initialLength = component.portsMappingTap.length;
 
       component.onAddTapInterface();

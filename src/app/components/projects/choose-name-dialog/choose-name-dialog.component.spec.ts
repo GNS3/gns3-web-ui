@@ -92,7 +92,7 @@ describe('ChooseNameDialogComponent', () => {
 
   describe('ngOnInit', () => {
     it('should initialize name from project name', () => {
-      expect(fixture.componentInstance.name).toBe(mockProject.name);
+      expect(fixture.componentInstance.name()).toBe(mockProject.name);
     });
   });
 
@@ -107,7 +107,7 @@ describe('ChooseNameDialogComponent', () => {
   describe('onSaveClick', () => {
     it('should call projectService.duplicate with correct parameters', () => {
       const newName = 'New Project Name';
-      fixture.componentInstance.name = newName;
+      fixture.componentInstance.name.set(newName);
 
       fixture.componentInstance.onSaveClick();
 

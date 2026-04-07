@@ -108,13 +108,13 @@ describe('DynamipsPreferencesComponent', () => {
 
   describe('restoreDefaults()', () => {
     it('should set dynamipsPath to empty string', () => {
-      component.dynamipsPath = '/some/path';
+      component.dynamipsPath.set('/some/path');
       component.restoreDefaults();
-      expect(component.dynamipsPath).toBe('');
+      expect(component.dynamipsPath()).toBe('');
     });
 
     it('should reset dynamipsPath in template after restoreDefaults', () => {
-      component.dynamipsPath = '/some/path';
+      component.dynamipsPath.set('/some/path');
       component.restoreDefaults();
       fixture.detectChanges();
       const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
@@ -124,7 +124,7 @@ describe('DynamipsPreferencesComponent', () => {
 
   describe('dynamipsPath binding', () => {
     it('should have dynamipsPath property bound via ngModel', () => {
-      expect(component.dynamipsPath).toBeUndefined();
+      expect(component.dynamipsPath()).toBeUndefined();
     });
   });
 });
