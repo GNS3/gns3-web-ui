@@ -9,6 +9,7 @@ import {
   OnInit,
   inject,
   input,
+  model,
   viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -42,7 +43,7 @@ import * as ipaddr from 'ipaddr.js';
   selector: 'app-log-console',
   templateUrl: './log-console.component.html',
   styleUrls: ['./log-console.component.scss'],
-  imports: [CommonModule, FormsModule, MatIconModule, MatButtonModule, MatMenuModule],
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatMenuModule],
 })
 export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   private projectWebServiceHandler = inject(ProjectWebServiceHandler);
@@ -80,7 +81,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   private warningSubscription: Subscription;
   private infoSubscription: Subscription;
 
-  public command: string = '';
+  readonly command = model('');
   public filters: string[] = ['all', 'errors', 'warnings', 'info', 'map updates', 'controller requests'];
   public selectedFilter: string = 'all';
   public filteredEvents: LogEvent[] = [];
@@ -195,60 +196,60 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleCommand() {
-    if (this.command === 'help' || this.command === '') {
+    if (this.command() === 'help' || this.command() === '') {
       this.showCommand(
         'Available commands: help, version, console {node name}, start all, start {node name}, stop all, stop {node name}, suspend all, suspend {node name}, reload all, reload {node name}, show {node name}.'
       );
-    } else if (this.command === 'version') {
+    } else if (this.command() === 'version') {
       this.showCommand('Current version: ' + this.version);
-    } else if (this.command === 'start all') {
+    } else if (this.command() === 'start all') {
       this.showCommand('Starting all nodes...');
       this.nodeService.startAll(this.controller, this.project()).subscribe(() => {
         this.showCommand('All nodes started.');
       });
-    } else if (this.command === 'stop all') {
+    } else if (this.command() === 'stop all') {
       this.showCommand('Stopping all nodes...');
       this.nodeService.stopAll(this.controller, this.project()).subscribe(() => {
         this.showCommand('All nodes stopped.');
       });
-    } else if (this.command === 'suspend all') {
+    } else if (this.command() === 'suspend all') {
       this.showCommand('Suspending all nodes...');
       this.nodeService.suspendAll(this.controller, this.project()).subscribe(() => {
         this.showCommand('All nodes suspended.');
       });
-    } else if (this.command === 'reload all') {
+    } else if (this.command() === 'reload all') {
       this.showCommand('Reloading all nodes...');
       this.nodeService.reloadAll(this.controller, this.project()).subscribe(() => {
         this.showCommand('All nodes reloaded.');
       });
     } else if (
-      this.regexStart.test(this.command) ||
-      this.regexStop.test(this.command) ||
-      this.regexSuspend.test(this.command) ||
-      this.regexReload.test(this.command) ||
-      this.regexShow.test(this.command) ||
-      this.regexConsole.test(this.command)
+      this.regexStart.test(this.command()) ||
+      this.regexStop.test(this.command()) ||
+      this.regexSuspend.test(this.command()) ||
+      this.regexReload.test(this.command()) ||
+      this.regexShow.test(this.command()) ||
+      this.regexConsole.test(this.command())
     ) {
-      let splittedCommand = this.command.split(/[ ,]+/);
+      let splittedCommand = this.command().split(/[ ,]+/);
       let node = this.nodesDataSource.getItems().find((n) => n.name.valueOf() === splittedCommand[1].valueOf());
       if (node) {
-        if (this.regexStart.test(this.command)) {
+        if (this.regexStart.test(this.command())) {
           this.showCommand(`Starting node ${splittedCommand[1]}...`);
           this.nodeService.start(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} started.`));
-        } else if (this.regexStop.test(this.command)) {
+        } else if (this.regexStop.test(this.command())) {
           this.showCommand(`Stopping node ${splittedCommand[1]}...`);
           this.nodeService.stop(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} stopped.`));
-        } else if (this.regexSuspend.test(this.command)) {
+        } else if (this.regexSuspend.test(this.command())) {
           this.showCommand(`Suspending node ${splittedCommand[1]}...`);
           this.nodeService
             .suspend(this.controller, node)
             .subscribe(() => this.showCommand(`Node ${node.name} suspended.`));
-        } else if (this.regexReload.test(this.command)) {
+        } else if (this.regexReload.test(this.command())) {
           this.showCommand(`Reloading node ${splittedCommand[1]}...`);
           this.nodeService
             .reload(this.controller, node)
             .subscribe(() => this.showCommand(`Node ${node.name} reloaded.`));
-        } else if (this.regexConsole.test(this.command)) {
+        } else if (this.regexConsole.test(this.command())) {
           if (node.status === 'started') {
             this.showCommand(`Launching console for node ${splittedCommand[1]}...`);
             var host = node.console_host;
@@ -275,7 +276,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
           } else {
             this.showCommand(`This node must be started before a console can be opened.`);
           }
-        } else if (this.regexShow.test(this.command)) {
+        } else if (this.regexShow.test(this.command())) {
           this.showCommand(`Information about node ${node.name}:`);
           this.showCommand(this.printNode(node));
         }
@@ -283,9 +284,9 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         this.showCommand(`Node with ${splittedCommand[1]} name was not found.`);
       }
     } else {
-      this.showCommand(`Unknown syntax: ${this.command}`);
+      this.showCommand(`Unknown syntax: ${this.command()}`);
     }
-    this.command = '';
+    this.command.set('');
     this.cd.detectChanges();
   }
 

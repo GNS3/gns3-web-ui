@@ -29,6 +29,7 @@
     autofocus
     (keydown)="onKeyDown($event)"
     type="text"
-    [(ngModel)]="command"
+    [value]="command()"
+    (input)="command.set($event.target.value)"
   />
 </div>
