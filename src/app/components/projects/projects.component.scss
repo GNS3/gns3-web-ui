@@ -4,6 +4,12 @@
   margin: 20px 0 20px 20px;
 }
 
+.refresh-button {
+  height: 40px;
+  width: 160px;
+  margin: 20px 0 20px 20px;
+}
+
 .add-button {
   height: 40px;
   width: 160px;
@@ -75,7 +81,8 @@ table {
   }
 
   .add-button,
-  .import-button {
+  .import-button,
+  .refresh-button {
     width: 100%;
     margin: 0;
   }
