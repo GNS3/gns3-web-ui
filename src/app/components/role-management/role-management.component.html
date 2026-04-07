@@ -20,14 +20,14 @@
     <input
       matInput
       placeholder="Search role by name"
-      [(ngModel)]="searchText"
-      [ngModelOptions]="{ standalone: true }"
+      [value]="searchText()"
+      (input)="searchText.set($event.target.value)"
     />
   </mat-form-field>
 </form>
 
 <div class="role-management__table-container">
-  <mat-table [dataSource]="dataSource | roleFilter : searchText" matSort #rolesSort="matSort">
+  <mat-table [dataSource]="dataSource | roleFilter : searchText()" matSort #rolesSort="matSort">
     <ng-container matColumnDef="select">
       <mat-header-cell *matHeaderCellDef class="role-management__small-col">
         <mat-checkbox

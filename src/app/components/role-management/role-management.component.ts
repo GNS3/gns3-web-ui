@@ -20,6 +20,7 @@ import {
   inject,
   signal,
   AfterViewInit,
+  model,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -82,7 +83,7 @@ export class RoleManagementComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<Role>();
   displayedColumns = ['select', 'name', 'description'];
   selection = new SelectionModel<Role>(true, []);
-  searchText = '';
+  readonly searchText = model('');
 
   @ViewChildren('rolesPaginator') rolesPaginator: QueryList<MatPaginator>;
   @ViewChildren('rolesSort') rolesSort: QueryList<MatSort>;
