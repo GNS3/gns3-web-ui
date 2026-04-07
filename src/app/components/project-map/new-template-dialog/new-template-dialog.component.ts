@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject, viewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject, model, viewChild } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -68,7 +68,6 @@ import { FileUploadModule } from 'ng2-file-upload';
   ],
   imports: [
     CommonModule,
-    FormsModule,
     MatDialogModule,
     MatRadioModule,
     MatButtonModule,
@@ -100,7 +99,7 @@ export class NewTemplateDialogComponent implements OnInit {
   public actionTitle: string = 'Install appliance from controller';
   public secondActionTitle: string = 'Appliance settings';
 
-  public searchText: string = '';
+  readonly searchText = model('');
   public allAppliances: Appliance[] = [];
   public appliances: Appliance[] = [];
   public applianceToInstall: Appliance;
@@ -109,7 +108,7 @@ export class NewTemplateDialogComponent implements OnInit {
   private isLocalComputerChosen = false;
 
   public categories: string[] = ['all categories', 'router', 'multilayer_switch', 'guest', 'firewall'];
-  public category: string = 'all categories';
+  readonly category = model('all categories');
   public displayedColumns: string[] = ['name', 'emulator', 'vendor', 'actions'];
 
   public dataSource: MatTableDataSource<Appliance>;
@@ -332,19 +331,29 @@ export class NewTemplateDialogComponent implements OnInit {
     fileReader.readAsText(file);
   }
 
-  filterAppliances(event) {
+  filterAppliances() {
     let temporaryAppliances = this.allAppliances.filter((item) => {
-      return item.name.toLowerCase().includes(this.searchText.toLowerCase());
+      return item.name.toLowerCase().includes(this.searchText().toLowerCase());
     });
 
-    if (this.category === 'all categories' || !this.category) {
+    if (this.category() === 'all categories' || !this.category()) {
       this.appliances = temporaryAppliances;
     } else {
-      this.appliances = temporaryAppliances.filter((t) => t.category === this.category);
+      this.appliances = temporaryAppliances.filter((t) => t.category === this.category());
     }
 
     this.dataSource = new MatTableDataSource(this.appliances);
     this.dataSource.paginator = this.paginator();
+  }
+
+  onSearchTextChange(value: string) {
+    this.searchText.set(value);
+    this.filterAppliances();
+  }
+
+  onCategoryChange(value: string) {
+    this.category.set(value);
+    this.filterAppliances();
   }
 
   setAction(action: string) {

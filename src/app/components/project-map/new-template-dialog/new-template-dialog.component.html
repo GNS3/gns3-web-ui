@@ -29,12 +29,12 @@
       <div class="new-template__table-header">
         <mat-form-field appearance="fill" class="new-template__filter-field">
           <mat-label>Filter</mat-label>
-          <input matInput [(ngModel)]="searchText" (ngModelChange)="filterAppliances($event)" />
+          <input matInput [value]="searchText()" (input)="onSearchTextChange($event.target.value)" />
         </mat-form-field>
 
         <mat-form-field appearance="fill" class="new-template__category-field">
           <mat-label>Category</mat-label>
-          <mat-select [(ngModel)]="category" (selectionChange)="filterAppliances($event)">
+          <mat-select [value]="category()" (selectionChange)="onCategoryChange($event.value)">
             @for (cat of categories; track cat) {
             <mat-option [value]="cat">{{ cat }}</mat-option>
             }
