@@ -150,10 +150,10 @@ mat-row {
 
   // Row left border indicator - Running state
   &.controllers__row--running {
-    border-left: 3px solid var(--custom-mat-sys-success);
+    border-left: 3px solid var(--mat-sys-primary);
 
     &:hover {
-      background-color: color-mix(in srgb, var(--custom-mat-sys-success) 4%, transparent);
+      background-color: color-mix(in srgb, var(--mat-sys-primary) 4%, transparent);
     }
   }
 
@@ -168,10 +168,10 @@ mat-row {
 
   // Row left border indicator - Stopped state
   &.controllers__row--stopped {
-    border-left: 3px solid var(--custom-mat-sys-neutral);
+    border-left: 3px solid var(--mat-sys-outline-variant);
 
     &:hover {
-      background-color: color-mix(in srgb, var(--custom-mat-sys-neutral) 6%, transparent);
+      background-color: color-mix(in srgb, var(--mat-sys-outline-variant) 6%, transparent);
     }
   }
 }
@@ -265,9 +265,9 @@ mat-cell[mat-column='actions'] {
   animation: status-fade-in 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
   // Default: Gray/Neutral (Stopped state)
-  background-color: var(--custom-mat-sys-neutral-container);
-  color: var(--custom-mat-sys-neutral);
-  border: 1px solid var(--custom-mat-sys-neutral);
+  background-color: var(--mat-sys-surface-container-highest);
+  color: var(--mat-sys-on-surface-variant);
+  border: 1px solid var(--mat-sys-outline-variant);
 
   &:hover {
     transform: translateY(-1px);
@@ -279,31 +279,31 @@ mat-cell[mat-column='actions'] {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background-color: var(--custom-mat-sys-neutral);
+  background-color: var(--mat-sys-on-surface-variant);
   transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 // Running: Green/Success
 .controllers__status--running {
-  background-color: var(--custom-mat-sys-success-container);
-  color: var(--custom-mat-sys-success);
-  border: 1px solid var(--custom-mat-sys-success);
+  background-color: var(--mat-sys-primary-container);
+  color: var(--mat-sys-on-primary-container);
+  border: 1px solid var(--mat-sys-primary);
 
   .controllers__status-dot {
-    background-color: var(--custom-mat-sys-success);
+    background-color: var(--mat-sys-primary);
     animation: pulse-green 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
   &:hover {
-    background-color: color-mix(in srgb, var(--custom-mat-sys-success) 20%, var(--custom-mat-sys-success-container));
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--custom-mat-sys-success) 25%, transparent);
+    background-color: color-mix(in srgb, var(--mat-sys-primary) 20%, var(--mat-sys-primary-container));
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-primary) 25%, transparent);
   }
 }
 
 // Starting: Orange/Secondary
 .controllers__status--starting {
-  background-color: color-mix(in srgb, var(--mat-sys-secondary) 12%, transparent);
-  color: var(--mat-sys-secondary);
+  background-color: var(--mat-sys-secondary-container);
+  color: var(--mat-sys-on-secondary-container);
   border: 1px solid var(--mat-sys-secondary);
 
   .controllers__status-dot {
@@ -312,7 +312,7 @@ mat-cell[mat-column='actions'] {
   }
 
   &:hover {
-    background-color: color-mix(in srgb, var(--mat-sys-secondary) 20%, transparent);
+    background-color: color-mix(in srgb, var(--mat-sys-secondary) 20%, var(--mat-sys-secondary-container));
     box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-secondary) 25%, transparent);
   }
 }
