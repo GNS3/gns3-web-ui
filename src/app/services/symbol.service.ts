@@ -15,7 +15,9 @@ const CACHE_SIZE = 1;
 export class SymbolService {
   public symbols: BehaviorSubject<Symbol[]> = new BehaviorSubject<Symbol[]>([]);
   private cache: Observable<Symbol[]>;
+  private cachedControllerKey: string = '';
   private builtinCache: Observable<Symbol[]>;
+  private builtinControllerKey: string = '';
   private dimensionsCache = new Map<string, Observable<SymbolDimension>>();
   private blobUrlCache = new Map<string, Observable<string>>();
   private maximumSymbolSize: number = 80;
@@ -70,18 +72,21 @@ export class SymbolService {
   add(controller: Controller, symbolName: string, symbol: string) {
     // Only invalidate regular cache, builtin cache stays valid
     this.cache = null;
+    this.cachedControllerKey = '';
     return this.httpController.post(controller, `/symbols/${symbolName}/raw`, symbol);
   }
 
   addFile(controller: Controller, symbolName: string, file: Blob) {
     // Only invalidate regular cache, builtin cache stays valid
     this.cache = null;
+    this.cachedControllerKey = '';
     return this.httpController.postBlob(controller, `/symbols/${symbolName}/raw`, file);
   }
 
   delete(controller: Controller, symbolId: string) {
     // Only invalidate regular cache, builtin cache stays valid
     this.cache = null;
+    this.cachedControllerKey = '';
     const encoded_uri = encodeURI(symbolId);
     return this.httpController.delete(controller, `/symbols/${encoded_uri}`);
   }
@@ -91,7 +96,9 @@ export class SymbolService {
   }
 
   list(controller: Controller): Observable<Symbol[]> {
-    if (!this.cache) {
+    const controllerKey = `${controller.host}:${controller.port}`;
+    if (!this.cache || this.cachedControllerKey !== controllerKey) {
+      this.cachedControllerKey = controllerKey;
       this.cache = this.load(controller).pipe(shareReplay(CACHE_SIZE));
     }
     return this.cache;
@@ -102,7 +109,9 @@ export class SymbolService {
    * Built-in symbols don't change, so we cache them permanently
    */
   listBuiltinSymbols(controller: Controller): Observable<Symbol[]> {
-    if (!this.builtinCache) {
+    const controllerKey = `${controller.host}:${controller.port}`;
+    if (!this.builtinCache || this.builtinControllerKey !== controllerKey) {
+      this.builtinControllerKey = controllerKey;
       this.builtinCache = this.load(controller).pipe(
         map((symbols) => symbols.filter((s) => s.builtin)),
         shareReplay(1)

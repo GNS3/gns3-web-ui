@@ -54,7 +54,7 @@
         <mat-panel-description> {{ group.symbols.length }} symbols </mat-panel-description>
       </mat-expansion-panel-header>
       <div class="wrapper">
-        @for (symbol of group.symbols | filenamefilter: searchText; track symbol.symbol_id) {
+        @for (symbol of group.symbols | filenamefilter: searchText(); track symbol.symbol_id) {
         <div class="buttonWrapper">
           <div class="symbol-item" [class.delete-mode]="isDeleteMode()">
             <button
