@@ -65,6 +65,10 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   networkTypes: any[] = [];
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'mac_address', 'actions'];
 
+  generalSettingsExpanded = true;
+  networkExpanded = false;
+  usageExpanded = false;
+
   // Model signals for form fields
   templateName = model('');
   defaultName = model('');
@@ -139,6 +143,20 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
     this.onCloseOptions = this.virtualBoxConfigurationService.getOnCloseoptions();
     this.categories = this.virtualBoxConfigurationService.getCategories();
     this.networkTypes = this.virtualBoxConfigurationService.getNetworkTypes();
+  }
+
+  toggleSection(section: string) {
+    switch (section) {
+      case 'general':
+        this.generalSettingsExpanded = !this.generalSettingsExpanded;
+        break;
+      case 'network':
+        this.networkExpanded = !this.networkExpanded;
+        break;
+      case 'usage':
+        this.usageExpanded = !this.usageExpanded;
+        break;
+    }
   }
 
   openCustomAdaptersDialog() {

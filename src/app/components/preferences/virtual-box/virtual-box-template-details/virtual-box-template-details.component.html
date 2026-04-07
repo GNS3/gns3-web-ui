@@ -11,7 +11,13 @@
   @if (virtualBoxTemplate) {
   <main class="virtualbox-details__content">
     <section class="virtualbox-details__form-card">
-      <h3 class="virtualbox-details__section-title">General settings</h3>
+      <div class="virtualbox-details__section-header" (click)="toggleSection('general')">
+        <h3 class="virtualbox-details__section-title">General settings</h3>
+        <mat-icon class="virtualbox-details__expand-icon">{{
+          generalSettingsExpanded ? 'expand_less' : 'expand_more'
+        }}</mat-icon>
+      </div>
+      @if (generalSettingsExpanded) {
       <form class="virtualbox-details__form">
         <mat-form-field appearance="fill" class="virtualbox-details__field">
           <mat-label>Template name</mat-label>
@@ -125,10 +131,17 @@
           >Use as a linked base VM (experimental)</mat-checkbox
         >
       </form>
+      }
     </section>
 
     <section class="virtualbox-details__form-card">
-      <h3 class="virtualbox-details__section-title">Network</h3>
+      <div class="virtualbox-details__section-header" (click)="toggleSection('network')">
+        <h3 class="virtualbox-details__section-title">Network</h3>
+        <mat-icon class="virtualbox-details__expand-icon">{{
+          networkExpanded ? 'expand_less' : 'expand_more'
+        }}</mat-icon>
+      </div>
+      @if (networkExpanded) {
       <form class="virtualbox-details__form">
         <mat-form-field appearance="fill" class="virtualbox-details__field">
           <mat-label>Adapters</mat-label>
@@ -192,16 +205,24 @@
         class="virtualbox-details__checkbox"
         >Allow GNS3 to use any configured VirtualBox adapter</mat-checkbox
       >
+      }
     </section>
 
     <section class="virtualbox-details__form-card">
-      <h3 class="virtualbox-details__section-title">Usage</h3>
+      <div class="virtualbox-details__section-header" (click)="toggleSection('usage')">
+        <h3 class="virtualbox-details__section-title">Usage</h3>
+        <mat-icon class="virtualbox-details__expand-icon">{{
+          usageExpanded ? 'expand_less' : 'expand_more'
+        }}</mat-icon>
+      </div>
+      @if (usageExpanded) {
       <div class="preferences__usage-form">
         <mat-form-field appearance="fill" class="preferences__usage-field--full">
           <mat-label>Usage</mat-label>
           <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
         </mat-form-field>
       </div>
+      }
     </section>
 
     <div class="virtualbox-details__actions">
