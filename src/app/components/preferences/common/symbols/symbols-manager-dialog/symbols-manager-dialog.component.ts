@@ -35,6 +35,9 @@ export class SymbolsManagerDialogComponent {
   selectedForDeletion = signal<Set<string>>(new Set());
   isLoading = signal(false);
 
+  // Store blob URLs for symbols to enable JWT authentication
+  symbolBlobUrls = new Map<string, string>();
+
   constructor() {
     if (this.data?.controller) {
       this.controller.set(this.data.controller);
@@ -61,14 +64,39 @@ export class SymbolsManagerDialogComponent {
     this.symbolService.list(this.controller()).subscribe((symbols: Symbol[]) => {
       const custom = symbols.filter((s) => !s.builtin);
       this.customSymbols.set(custom);
+      this.loadSymbolBlobs(custom);
       this.cd.markForCheck();
     });
   }
 
+  private loadSymbolBlobs(symbols: Symbol[]) {
+    // Build list of unique symbol paths
+    const symbolPathMap = new Map<string, string>();
+    symbols.forEach((symbol) => {
+      const path = `/symbols/${symbol.symbol_id}/raw`;
+      symbolPathMap.set(symbol.symbol_id, path);
+    });
+
+    // Fetch all blob URLs in parallel
+    const uniquePaths = Array.from(symbolPathMap.values());
+    forkJoin(uniquePaths.map((path) => this.symbolService.getSymbolBlobUrl(this.controller(), path))).subscribe(
+      (blobUrls: string[]) => {
+        uniquePaths.forEach((path, index) => {
+          // Find which symbol_id this path belongs to
+          for (const [symbolId, symbolPath] of symbolPathMap.entries()) {
+            if (symbolPath === path) {
+              this.symbolBlobUrls.set(symbolId, blobUrls[index]);
+              break;
+            }
+          }
+        });
+        this.cd.markForCheck();
+      }
+    );
+  }
+
   getImageSource(symbolId: string): string {
-    const ctrl = this.controller();
-    if (!ctrl) return '';
-    return `${ctrl.protocol}//${ctrl.host}:${ctrl.port}/${environment.current_version}/symbols/${symbolId}/raw`;
+    return this.symbolBlobUrls.get(symbolId) || '';
   }
 
   toggleSelection(symbolId: string) {

@@ -76,6 +76,9 @@ export class SymbolsComponent implements OnInit {
   isDeleteMode = signal(false);
   previousFilter = '';
 
+  // Store blob URLs for symbols to enable JWT authentication
+  symbolBlobUrls = new Map<string, string>();
+
   readonly Math = Math;
 
   ngOnInit() {
@@ -116,9 +119,36 @@ export class SymbolsComponent implements OnInit {
     this.symbolService.list(this.controller()).subscribe((symbols: Symbol[]) => {
       this.symbols = symbols;
       this.filteredSymbols = symbols;
+      this.loadSymbolBlobs(symbols);
       this.updateSymbolGroups();
       this.cd.markForCheck();
     });
+  }
+
+  private loadSymbolBlobs(symbols: Symbol[]) {
+    // Build list of unique symbol paths
+    const symbolPathMap = new Map<string, string>();
+    symbols.forEach((symbol) => {
+      const path = `/symbols/${symbol.symbol_id}/raw`;
+      symbolPathMap.set(symbol.symbol_id, path);
+    });
+
+    // Fetch all blob URLs in parallel
+    const uniquePaths = Array.from(symbolPathMap.values());
+    forkJoin(uniquePaths.map((path) => this.symbolService.getSymbolBlobUrl(this.controller(), path))).subscribe(
+      (blobUrls: string[]) => {
+        uniquePaths.forEach((path, index) => {
+          // Find which symbol_id this path belongs to
+          for (const [symbolId, symbolPath] of symbolPathMap.entries()) {
+            if (symbolPath === path) {
+              this.symbolBlobUrls.set(symbolId, blobUrls[index]);
+              break;
+            }
+          }
+        });
+        this.cd.markForCheck();
+      }
+    );
   }
 
   private updateSymbolGroups() {
@@ -135,10 +165,8 @@ export class SymbolsComponent implements OnInit {
       .sort((a, b) => a.theme.localeCompare(b.theme));
   }
 
-  getImageSourceForTemplate(symbol: string) {
-    return `${this.controller().protocol}//${this.controller().host}:${this.controller().port}/${
-      environment.current_version
-    }/symbols/${symbol}/raw`;
+  getImageSourceForTemplate(symbol: string): string {
+    return this.symbolBlobUrls.get(symbol) || '';
   }
 
   canDeleteSymbol(symbol: Symbol): boolean {

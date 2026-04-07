@@ -28,6 +28,7 @@ import { MatListModule } from '@angular/material/list';
 import { DragAndDropModule } from 'angular-draggable-droppable';
 import { ThemeService } from '@services/theme.service';
 import { Subscription } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { Template } from '@models/template';
@@ -74,6 +75,9 @@ export class TemplateComponent implements OnInit, OnDestroy {
   overlay;
   templates: Template[] = [];
   filteredTemplates: Template[] = [];
+
+  // Store blob URLs for template symbols to enable JWT authentication
+  templateSymbolBlobUrls = new Map<string, string>();
 
   // Expose body element for drag ghost element
   readonly bodyElement: HTMLElement;
@@ -146,8 +150,46 @@ export class TemplateComponent implements OnInit, OnDestroy {
       this.filteredTemplates = listOfTemplates;
       this.sortTemplates();
       this.templates = listOfTemplates;
+      this.loadTemplateSymbolBlobs(listOfTemplates);
       this.cd.markForCheck();
     });
+  }
+
+  private loadTemplateSymbolBlobs(templates: Template[]) {
+    // Build list of unique symbol paths
+    const symbolPathMap = new Map<string, string>();
+    templates.forEach((template) => {
+      const symbol = template.symbol;
+      let path: string;
+
+      if (symbol.startsWith(':/')) {
+        // Builtin symbol: e.g., :/symbols/affinity/circle/blue/router.svg
+        const symbolWithoutPrefix = symbol.substring(2);
+        path = `/symbols/:${symbolWithoutPrefix}/raw`;
+      } else {
+        // Custom symbol: e.g., firefox.svg
+        path = `/symbols/${symbol}/raw`;
+      }
+
+      symbolPathMap.set(symbol, path);
+    });
+
+    // Fetch all blob URLs in parallel
+    const uniquePaths = Array.from(symbolPathMap.values());
+    forkJoin(uniquePaths.map((path) => this.symbolService.getSymbolBlobUrl(this.controller(), path))).subscribe(
+      (blobUrls: string[]) => {
+        uniquePaths.forEach((path, index) => {
+          // Find which symbol this path belongs to
+          for (const [symbol, symbolPath] of symbolPathMap.entries()) {
+            if (symbolPath === path) {
+              this.templateSymbolBlobUrls.set(symbol, blobUrls[index]);
+              break;
+            }
+          }
+        });
+        this.cd.markForCheck();
+      }
+    );
   }
 
   sortTemplates() {
@@ -255,11 +297,8 @@ export class TemplateComponent implements OnInit, OnDestroy {
     });
   }
 
-  getImageSourceForTemplate(template: Template) {
-    return this.symbolService.getSymbolFromTemplate(this.controller(), template);
-    // let symbol = this.symbolService.getSymbolFromTemplate(template);
-    // if (symbol) return this.domSanitizer.bypassSecurityTrustUrl(`data:image/svg+xml;base64,${btoa(symbol.raw)}`);
-    // return this.domSanitizer.bypassSecurityTrustUrl('data:image/svg+xml;base64,');
+  getImageSourceForTemplate(template: Template): string {
+    return this.templateSymbolBlobUrls.get(template.symbol) || '';
   }
 
   ngOnDestroy() {
