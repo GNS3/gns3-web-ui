@@ -255,14 +255,22 @@
     <app-console-wrapper
       [controller]="controller"
       [project]="project"
+      [zIndex]="consoleZIndex"
       (closeConsole)="toggleShowConsole($event)"
+      (windowFocused)="bringConsoleToFront()"
     ></app-console-wrapper>
     }
   </div>
 
   <!-- AI Chat Panel -->
   @if (project && isAIChatVisible) {
-  <app-ai-chat [project]="project" [controller]="controller" (closed)="closeAIChat()"> </app-ai-chat>
+  <app-ai-chat
+    [project]="project"
+    [controller]="controller"
+    [zIndex]="aiChatZIndex"
+    (closed)="closeAIChat()"
+    (windowFocused)="bringAIChatToFront()"
+  ></app-ai-chat>
   }
 
   <!-- Web Wireshark Inline Windows (multiple) -->
@@ -272,7 +280,9 @@
         [link]="link"
         [controller]="controller"
         [project]="project"
+        [zIndex]="getWebWiresharkWindowZIndex(link.link_id)"
         (closeWindow)="closeWebWiresharkInline(link.link_id)"
+        (windowFocused)="bringWebWiresharkWindowToFront(link.link_id)"
       ></app-web-wireshark-inline>
     }
   }

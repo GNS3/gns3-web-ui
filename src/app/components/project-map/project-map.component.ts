@@ -179,6 +179,16 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   // Track multiple Web Wireshark inline windows
   // Key is link_id, value is the Link object
   public webWiresharkInlineWindows = new Map<string, Link>();
+  // Track z-index for each window
+  public webWiresharkInlineZIndex = new Map<string, number>();
+  // Base z-index for windows
+  private baseZIndex = 1000;
+  // Counter for generating unique z-indices
+  private zIndexCounter = 0;
+
+  // Z-index for console and AI chat windows
+  public consoleZIndex: number = this.baseZIndex;
+  public aiChatZIndex: number = this.baseZIndex;
 
   readonly mapBgClass = computed(() => {
     const mapTheme = this.themeService.savedMapTheme;
@@ -918,12 +928,19 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public openWebWiresharkInline(data: { link: Link; controller: Controller; project: Project }) {
     // Check if window already open for this link
     if (this.webWiresharkInlineWindows.has(data.link.link_id)) {
+      // Bring existing window to front
+      this.bringWebWiresharkWindowToFront(data.link.link_id);
       this.toasterService.warning('Web Wireshark is already open for this link');
       return;
     }
 
+    // Assign z-index for new window (increment counter)
+    this.zIndexCounter++;
+    const windowZIndex = this.baseZIndex + this.zIndexCounter;
+
     // Add the link to our Map of open windows
     this.webWiresharkInlineWindows.set(data.link.link_id, data.link);
+    this.webWiresharkInlineZIndex.set(data.link.link_id, windowZIndex);
     this.cd.markForCheck();
   }
 
@@ -932,7 +949,30 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
    */
   public closeWebWiresharkInline(linkId: string) {
     this.webWiresharkInlineWindows.delete(linkId);
+    this.webWiresharkInlineZIndex.delete(linkId);
     this.cd.markForCheck();
+  }
+
+  /**
+   * Bring a Web Wireshark window to front
+   */
+  public bringWebWiresharkWindowToFront(linkId: string) {
+    if (!this.webWiresharkInlineWindows.has(linkId)) {
+      return;
+    }
+
+    // Increment counter and assign higher z-index
+    this.zIndexCounter++;
+    const newZIndex = this.baseZIndex + this.zIndexCounter;
+    this.webWiresharkInlineZIndex.set(linkId, newZIndex);
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Get z-index for a specific window
+   */
+  public getWebWiresharkWindowZIndex(linkId: string): number {
+    return this.webWiresharkInlineZIndex.get(linkId) || this.baseZIndex;
   }
 
   /**
@@ -940,6 +980,24 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
    */
   public getWebWiresharkInlineWindows(): Link[] {
     return Array.from(this.webWiresharkInlineWindows.values());
+  }
+
+  /**
+   * Bring console window to front
+   */
+  public bringConsoleToFront() {
+    this.zIndexCounter++;
+    this.consoleZIndex = this.baseZIndex + this.zIndexCounter;
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Bring AI chat window to front
+   */
+  public bringAIChatToFront() {
+    this.zIndexCounter++;
+    this.aiChatZIndex = this.baseZIndex + this.zIndexCounter;
+    this.cd.markForCheck();
   }
 
   public toggleShowTopologySummary(visible: boolean) {

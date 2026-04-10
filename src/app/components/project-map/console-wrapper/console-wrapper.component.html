@@ -8,6 +8,8 @@
     'is-minimized': isMinimized(),
     'is-dragging': isDragging()
   }"
+  [style.z-index]="zIndex()"
+  (mousedown)="onWindowFocus()"
   mwlResizable
   [validateResize]="validate"
   [enableGhostResize]="true"

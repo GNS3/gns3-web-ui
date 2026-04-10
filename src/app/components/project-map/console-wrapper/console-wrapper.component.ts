@@ -70,9 +70,11 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   private themeSubscription: Subscription | null = null;
   readonly controller = input<Controller>(undefined);
   readonly project = input<Project>(undefined);
+  readonly zIndex = input<number>(1000);
   @Output() closeConsole = new EventEmitter<boolean>();
   @Output() deviceSelected = new EventEmitter<string>();
   @Output() consoleDeactivated = new EventEmitter<void>();
+  @Output() windowFocused = new EventEmitter<void>();
 
   filters: string[] = ['all', 'errors', 'warnings', 'info', 'map updates', 'controller requests'];
   selectedFilter: string = 'all';
@@ -496,6 +498,13 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   onConsoleActivate(): void {
     this.isConsoleActiveSignal.set(true);
     this.cdr.markForCheck();
+  }
+
+  /**
+   * Handle window focus (bring to front)
+   */
+  onWindowFocus(): void {
+    this.windowFocused.emit();
   }
 
   /**

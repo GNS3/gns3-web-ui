@@ -55,7 +55,9 @@ export class WebWiresharkInlineComponent implements OnInit, OnDestroy {
   readonly link = input.required<Link>();
   readonly controller = input.required<Controller>();
   readonly project = input.required<Project>();
+  readonly zIndex = input<number>(1000);
   @Output() closeWindow = new EventEmitter<void>();
+  @Output() windowFocused = new EventEmitter<void>();
 
   // Window state
   public style: WindowStyle = {
@@ -140,6 +142,13 @@ export class WebWiresharkInlineComponent implements OnInit, OnDestroy {
    */
   close(): void {
     this.closeWindow.emit();
+  }
+
+  /**
+   * Handle window focus (bring to front)
+   */
+  onWindowFocus(): void {
+    this.windowFocused.emit();
   }
 
   /**

@@ -4,6 +4,8 @@
   [class.is-dragging]="isDragging()"
   [class.is-resizing]="isResizing()"
   [ngStyle]="style"
+  [style.z-index]="zIndex()"
+  (mousedown)="onWindowFocus()"
   mwlResizable
   [validateResize]="validate"
   [enableGhostResize]="false"
