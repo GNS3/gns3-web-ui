@@ -50,6 +50,7 @@ export class StartCaptureDialogComponent implements OnInit {
   inputForm: UntypedFormGroup;
   readonly startProgram = model(false);
   readonly webWireshark = model(false);  // Web Wireshark checkbox
+  readonly openWebWireshark = model(false);  // Auto-open Web Wireshark
 
   // Loading states
   readonly isLoading = signal(false);
@@ -135,6 +136,12 @@ export class StartCaptureDialogComponent implements OnInit {
               captureSettings.capture_file_name
             );
           }
+
+          // Open Web Wireshark in new tab if checkbox is selected
+          if (this.openWebWireshark()) {
+            this.openWebWiresharkInNewTab();
+          }
+
           this.isLoading.set(false);
           this.dialogRef.close();
         },
@@ -162,5 +169,26 @@ export class StartCaptureDialogComponent implements OnInit {
 
   onNoClick() {
     this.dialogRef.close();
+  }
+
+  /**
+   * Open Web Wireshark in a new browser tab
+   * Connects to the WebSocket stream for packet capture data
+   */
+  private openWebWiresharkInNewTab() {
+    // Build WebSocket URL
+    const protocol = this.controller.protocol === 'https:' ? 'wss' : 'ws';
+    const wsUrl = `${protocol}://${this.controller.host}:${this.controller.port}/v3/projects/${this.link.project_id}/links/${this.link.link_id}/capture/wireshark?token=${this.controller.authToken}`;
+
+    // Encode WebSocket URL as query parameter
+    const webWiresharkUrl = `/assets/web-wireshark/index.html?ws_url=${encodeURIComponent(wsUrl)}&link_id=${this.link.link_id}`;
+
+    // Open in new tab
+    const newWindow = window.open(webWiresharkUrl, '_blank');
+
+    // Detect if popup was blocked
+    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+      this.toasterService.error('Popup was blocked. Please allow popups for this site.');
+    }
   }
 }

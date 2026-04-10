@@ -36,6 +36,11 @@
       <mat-checkbox [checked]="webWireshark()" (change)="webWireshark.set($event.checked)">
         Web Wireshark
       </mat-checkbox>
+      @if (webWireshark()) {
+      <mat-checkbox [checked]="openWebWireshark()" (change)="openWebWireshark.set($event.checked)" class="nested-checkbox">
+        Open Web Wireshark in new tab
+      </mat-checkbox>
+      }
     </form>
   </div>
 
