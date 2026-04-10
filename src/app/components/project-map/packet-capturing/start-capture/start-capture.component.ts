@@ -173,18 +173,26 @@ export class StartCaptureDialogComponent implements OnInit {
 
   /**
    * Open Web Wireshark in a new browser tab
-   * Connects to the WebSocket stream for packet capture data
+   * Connects to the WebSocket stream via xpra-html5 client
    */
   private openWebWiresharkInNewTab() {
-    // Build WebSocket URL
-    const protocol = this.controller.protocol === 'https:' ? 'wss' : 'ws';
-    const wsUrl = `${protocol}://${this.controller.host}:${this.controller.port}/v3/projects/${this.link.project_id}/links/${this.link.link_id}/capture/web-wireshark?token=${this.controller.authToken}`;
+    // Determine protocol
+    const ssl = this.controller.protocol === 'https:';
 
-    // Encode WebSocket URL as query parameter
-    const webWiresharkUrl = `/assets/web-wireshark/index.html?ws_url=${encodeURIComponent(wsUrl)}&link_id=${this.link.link_id}`;
+    // Build xpra-html5 URL with parameters
+    // xpra-html5 connects directly using server:port:path and token as password
+    const params = new URLSearchParams({
+      server: this.controller.host,
+      port: this.controller.port.toString(),
+      ssl: ssl.toString(),
+      path: `/v3/projects/${this.link.project_id}/links/${this.link.link_id}/capture/web-wireshark`,
+      token: this.controller.authToken,
+    });
+
+    const xpraUrl = `/assets/xpra-html5/index.html?${params.toString()}`;
 
     // Open in new tab
-    const newWindow = window.open(webWiresharkUrl, '_blank');
+    const newWindow = window.open(xpraUrl, '_blank');
 
     // Detect if popup was blocked
     if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
