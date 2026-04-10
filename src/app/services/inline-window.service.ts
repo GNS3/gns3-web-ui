@@ -136,27 +136,35 @@ export class InlineWindowService {
     state: InlineWindowState,
     targetElement: HTMLElement
   ): void {
+    // Get SVG namespace
+    const svgNamespace = 'http://www.w3.org/2000/svg';
+    const xlinkNamespace = 'http://www.w3.org/1999/xlink';
+
     // Create foreignObject for embedding HTML in SVG
-    const namespace = 'http://www.w3.org/2000/svg';
-    const foreignObject = document.createElementNS(namespace, 'foreignObject');
+    const foreignObject = document.createElementNS(svgNamespace, 'foreignObject');
     foreignObject.setAttribute('id', windowId);
-    foreignObject.setAttribute('class', 'web-wireshark-inline-container');
-    foreignObject.setAttribute('x', state.position.x.toString());
-    foreignObject.setAttribute('y', state.position.y.toString());
+    foreignObject.setAttribute('class', 'web-wireshark-inline-foreign-object');
+    foreignObject.setAttribute('x', '0');
+    foreignObject.setAttribute('y', '0');
     foreignObject.setAttribute('width', state.size.width.toString());
     foreignObject.setAttribute('height', state.size.height.toString());
+    foreignObject.style.position = 'absolute';
+    foreignObject.style.zIndex = '1000';
 
     // Create HTML container div
     const container = document.createElement('div');
-    container.className = 'web-wireshark-inline-container';
-    container.style.width = '100%';
-    container.style.height = '100%';
+    container.className = 'web-wireshark-inline-html-container';
+    container.style.width = state.size.width + 'px';
+    container.style.height = state.size.height + 'px';
     container.style.display = 'flex';
     container.style.flexDirection = 'column';
+    container.style.position = 'relative';
+    container.style.overflow = 'hidden';
 
     // Create header
     const header = document.createElement('div');
     header.className = 'web-wireshark-inline-header';
+    header.style.flexShrink = '0';
     header.innerHTML = `
       <span class="window-title">Web Wireshark</span>
       <button class="close-button" data-window-id="${windowId}">×</button>
@@ -168,6 +176,7 @@ export class InlineWindowService {
     iframeContainer.style.flex = '1';
     iframeContainer.style.position = 'relative';
     iframeContainer.style.overflow = 'hidden';
+    iframeContainer.style.minHeight = '400px';
 
     // Create iframe
     const iframe = document.createElement('iframe');
@@ -186,9 +195,11 @@ export class InlineWindowService {
 
     // Add close button handler
     const closeButton = header.querySelector('.close-button') as HTMLElement;
-    closeButton.addEventListener('click', () => {
-      this.closeInlineWindow(windowId);
-    });
+    if (closeButton) {
+      closeButton.addEventListener('click', () => {
+        this.closeInlineWindow(windowId);
+      });
+    }
 
     // Append container to foreignObject
     foreignObject.appendChild(container);
@@ -198,5 +209,14 @@ export class InlineWindowService {
 
     // Store element reference
     state.element = foreignObject;
+
+    // Log for debugging
+    console.log('[InlineWindow] Created window:', windowId, {
+      x: state.position.x,
+      y: state.position.y,
+      width: state.size.width,
+      height: state.size.height,
+      svgElement: targetElement.tagName
+    });
   }
 }
