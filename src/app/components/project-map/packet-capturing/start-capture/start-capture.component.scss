@@ -1,3 +1,38 @@
 .input-field {
   width: 100%;
 }
+
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  gap: 16px;
+
+  mat-spinner {
+    width: 40px;
+    height: 40px;
+  }
+
+  .loading-message {
+    margin: 0;
+    text-align: center;
+    color: var(--mat-sys-on-surface);
+    font-size: 14px;
+  }
+}
+
+.error-message {
+  padding: 16px;
+  margin-bottom: 16px;
+  background: var(--mat-sys-error-container);
+  border-radius: 4px;
+
+  p {
+    margin: 0;
+    color: var(--mat-sys-on-error-container);
+    font-size: 14px;
+  }
+}
+

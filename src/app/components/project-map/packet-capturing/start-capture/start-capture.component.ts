@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, model, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   UntypedFormBuilder,
@@ -13,6 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
 import { CapturingSettings } from '@models/capturingSettings';
 import { Link } from '@models/link';
@@ -37,6 +38,7 @@ import { PacketFiltersDialogComponent } from '../packet-filters/packet-filters.c
     MatInputModule,
     MatSelectModule,
     MatCheckboxModule,
+    MatProgressSpinnerModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -48,6 +50,11 @@ export class StartCaptureDialogComponent implements OnInit {
   inputForm: UntypedFormGroup;
   readonly startProgram = model(false);
   readonly webWireshark = model(false);  // Web Wireshark checkbox
+
+  // Loading states
+  readonly isLoading = signal(false);
+  readonly loadingMessage = signal('');
+  readonly errorMessage = signal('');
 
   private dialogRef = inject(MatDialogRef<PacketFiltersDialogComponent>);
   private linkService = inject(LinkService);
@@ -88,6 +95,9 @@ export class StartCaptureDialogComponent implements OnInit {
   }
 
   onYesClick() {
+    // Clear previous error
+    this.errorMessage.set('');
+
     let isAnyRunningDevice = false;
     this.link.nodes.forEach((linkNode: LinkNode) => {
       let node = this.nodesDataSource.get(linkNode.node_id);
@@ -96,15 +106,45 @@ export class StartCaptureDialogComponent implements OnInit {
 
     if (!isAnyRunningDevice) {
       this.toasterService.error(`Cannot capture because there is no running device on this link`);
-    } else if (this.inputForm.invalid) {
-      this.toasterService.error(`Fill all required fields`);
-    } else {
-      let captureSettings: CapturingSettings = {
-        capture_file_name: this.inputForm.get('fileName').value,
-        data_link_type: this.inputForm.get('linkType').value,
-        wireshark: this.webWireshark(),  // Add Web Wireshark option
-      };
+      return;
+    }
 
+    if (this.inputForm.invalid) {
+      this.toasterService.error(`Fill all required fields`);
+      return;
+    }
+
+    let captureSettings: CapturingSettings = {
+      capture_file_name: this.inputForm.get('fileName').value,
+      data_link_type: this.inputForm.get('linkType').value,
+      wireshark: this.webWireshark(),
+    };
+
+    // Show loading state for Web Wireshark
+    if (this.webWireshark()) {
+      this.isLoading.set(true);
+      this.loadingMessage.set('Starting Web Wireshark, please wait...');
+
+      this.linkService.startCaptureOnLink(this.controller, this.link, captureSettings).subscribe({
+        next: () => {
+          if (this.startProgram()) {
+            this.packetCaptureService.startCapture(
+              this.controller,
+              this.project,
+              this.link,
+              captureSettings.capture_file_name
+            );
+          }
+          this.isLoading.set(false);
+          this.dialogRef.close();
+        },
+        error: (err) => {
+          this.isLoading.set(false);
+          this.errorMessage.set(`Failed to start Web Wireshark: ${err.message || 'Unknown error'}`);
+        },
+      });
+    } else {
+      // Normal capture without Web Wireshark - fast response
       if (this.startProgram()) {
         this.packetCaptureService.startCapture(
           this.controller,
