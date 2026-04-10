@@ -23,9 +23,13 @@ export class StartWebWiresharkInlineActionComponent {
   readonly link = input<Link>(undefined);
 
   openWebWiresharkInline() {
+    console.log('[StartWebWiresharkInline] Action triggered');
+
     const ctrl = this.controller();
     const proj = this.project();
     const linkItem = this.link();
+
+    console.log('[StartWebWiresharkInline] Inputs:', { ctrl: !!ctrl, proj: !!proj, link: !!linkItem });
 
     if (!ctrl || !proj || !linkItem) {
       this.toasterService.error('Missing controller, project or link');
@@ -35,10 +39,14 @@ export class StartWebWiresharkInlineActionComponent {
     try {
       // Find the SVG map element
       const mapElement = document.getElementById('map');
+      console.log('[StartWebWiresharkInline] Map element:', mapElement);
+
       if (!mapElement) {
         this.toasterService.error('Map element not found');
         return;
       }
+
+      console.log('[StartWebWiresharkInline] Map element tag:', mapElement.tagName);
 
       // Check if window already open for this link
       if (this.inlineWindowService.hasOpenWindowForLink(linkItem.link_id)) {
@@ -46,11 +54,16 @@ export class StartWebWiresharkInlineActionComponent {
         return;
       }
 
+      console.log('[StartWebWiresharkInline] Opening inline window for link:', linkItem.link_id);
+
       // Open inline window
       const windowId = this.inlineWindowService.openInlineWebWireshark(linkItem, ctrl, mapElement);
 
+      console.log('[StartWebWiresharkInline] Window opened with ID:', windowId);
+
       this.toasterService.success(`Web Wireshark opened inline (${windowId})`);
     } catch (error) {
+      console.error('[StartWebWiresharkInline] Error:', error);
       this.toasterService.error(`Failed to open Web Wireshark inline: ${error.message}`);
     }
   }

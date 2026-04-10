@@ -40,9 +40,15 @@ export class InlineWindowService {
     controller: Controller,
     targetElement: HTMLElement
   ): string {
+    console.log('[InlineWindowService] openInlineWebWireshark called');
+    console.log('[InlineWindowService] Link:', link.link_id);
+    console.log('[InlineWindowService] Target element:', targetElement.tagName);
+
     const windowId = `inline-wireshark-${this.nextId++}`;
     const wsUrl = this.xpraConsoleService.buildXpraWebSocketUrlForWebWireshark(controller, link);
     const pageUrl = this.xpraConsoleService.buildXpraConsolePageUrl(wsUrl);
+
+    console.log('[InlineWindowService] Page URL:', pageUrl);
 
     const state: InlineWindowState = {
       linkId: link.link_id,
@@ -54,6 +60,8 @@ export class InlineWindowService {
 
     this.windows.set(windowId, state);
     this.createInlineWindow(windowId, state, targetElement);
+
+    console.log('[InlineWindowService] Window creation initiated, ID:', windowId);
 
     return windowId;
   }
@@ -136,9 +144,17 @@ export class InlineWindowService {
     state: InlineWindowState,
     targetElement: HTMLElement
   ): void {
+    console.log('[InlineWindow] createInlineWindow called');
+    console.log('[InlineWindow] Window ID:', windowId);
+    console.log('[InlineWindow] Target element:', targetElement);
+    console.log('[InlineWindow] Target element tag:', targetElement.tagName);
+    console.log('[InlineWindow] Target element id:', targetElement.id);
+
     // Get SVG namespace
     const svgNamespace = 'http://www.w3.org/2000/svg';
     const xlinkNamespace = 'http://www.w3.org/1999/xlink';
+
+    console.log('[InlineWindow] Creating foreignObject...');
 
     // Create foreignObject for embedding HTML in SVG
     const foreignObject = document.createElementNS(svgNamespace, 'foreignObject');
@@ -151,6 +167,8 @@ export class InlineWindowService {
     foreignObject.style.position = 'absolute';
     foreignObject.style.zIndex = '1000';
 
+    console.log('[InlineWindow] foreignObject created:', foreignObject);
+
     // Create HTML container div
     const container = document.createElement('div');
     container.className = 'web-wireshark-inline-html-container';
@@ -160,6 +178,8 @@ export class InlineWindowService {
     container.style.flexDirection = 'column';
     container.style.position = 'relative';
     container.style.overflow = 'hidden';
+
+    console.log('[InlineWindow] HTML container created');
 
     // Create header
     const header = document.createElement('div');
@@ -188,15 +208,20 @@ export class InlineWindowService {
     iframe.style.border = 'none';
     iframe.style.display = 'block';
 
+    console.log('[InlineWindow] iframe created, src:', state.url);
+
     // Assemble
     iframeContainer.appendChild(iframe);
     container.appendChild(header);
     container.appendChild(iframeContainer);
 
+    console.log('[InlineWindow] Assembling parts...');
+
     // Add close button handler
     const closeButton = header.querySelector('.close-button') as HTMLElement;
     if (closeButton) {
       closeButton.addEventListener('click', () => {
+        console.log('[InlineWindow] Close button clicked for window:', windowId);
         this.closeInlineWindow(windowId);
       });
     }
@@ -204,19 +229,25 @@ export class InlineWindowService {
     // Append container to foreignObject
     foreignObject.appendChild(container);
 
+    console.log('[InlineWindow] Appending foreignObject to SVG...');
+
     // Append foreignObject to SVG
     targetElement.appendChild(foreignObject);
+
+    console.log('[InlineWindow] foreignObject appended to SVG');
+    console.log('[InlineWindow] SVG children count:', targetElement.children.length);
 
     // Store element reference
     state.element = foreignObject;
 
     // Log for debugging
-    console.log('[InlineWindow] Created window:', windowId, {
+    console.log('[InlineWindow] Window created successfully:', windowId, {
       x: state.position.x,
       y: state.position.y,
       width: state.size.width,
       height: state.size.height,
-      svgElement: targetElement.tagName
+      svgElement: targetElement.tagName,
+      svgChildren: targetElement.children.length
     });
   }
 }
