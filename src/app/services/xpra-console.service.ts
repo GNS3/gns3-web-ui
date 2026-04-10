@@ -76,7 +76,7 @@ export class XpraConsoleService {
    */
   buildXpraConsolePageUrl(wsUrl: string): string {
     // Parse WebSocket URL
-    const { server, port, ssl, path, token } = this.parseWebSocketUrl(wsUrl);
+    const { server, port, ssl } = this.parseWebSocketUrl(wsUrl);
 
     // Build xpra-html5 parameters
     const params = new URLSearchParams();
@@ -84,15 +84,11 @@ export class XpraConsoleService {
     params.set('port', port);
     params.set('ssl', ssl ? 'true' : 'false');
 
-    // Add path if it's not just root
-    // Append token to path for servers that require it in the WebSocket URL (like GNS3 web-wireshark)
-    let fullPath = path;
-    if (token) {
-      fullPath += (path.includes('?') ? '&' : '?') + 'token=' + encodeURIComponent(token);
-    }
-    if (fullPath && fullPath !== '/') {
-      params.set('path', fullPath);
-    }
+    // Extract the path and query string from the WebSocket URL
+    // The xpra-html5 client will use this path directly when building the WebSocket URI
+    const url = new URL(wsUrl);
+    const fullPath = url.pathname + url.search; // includes path and query string (with token)
+    params.set('path', fullPath);
 
     // Optional: enable features
     params.set('sound', 'true');

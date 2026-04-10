@@ -188,6 +188,7 @@ class XpraProtocol {
     );
     // connect the socket
     try {
+      // Request 'binary' subprotocol as required by xpra protocol
       this.websocket = new WebSocket(uri, "binary");
     } catch (error) {
       handle(["error", `${error}`, 0]);
