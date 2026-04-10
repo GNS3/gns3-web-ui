@@ -17,6 +17,9 @@
     <mat-checkbox [checked]="startProgram()" (change)="startProgram.set($event.checked)">
       Start the capture visualization program
     </mat-checkbox>
+    <mat-checkbox [checked]="webWireshark()" (change)="webWireshark.set($event.checked)">
+      Web Wireshark
+    </mat-checkbox>
   </form>
 </div>
 

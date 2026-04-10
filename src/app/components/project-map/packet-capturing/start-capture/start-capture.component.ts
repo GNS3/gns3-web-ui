@@ -47,6 +47,7 @@ export class StartCaptureDialogComponent implements OnInit {
   linkTypes = [];
   inputForm: UntypedFormGroup;
   readonly startProgram = model(false);
+  readonly webWireshark = model(false);  // Web Wireshark checkbox
 
   private dialogRef = inject(MatDialogRef<PacketFiltersDialogComponent>);
   private linkService = inject(LinkService);
@@ -101,6 +102,7 @@ export class StartCaptureDialogComponent implements OnInit {
       let captureSettings: CapturingSettings = {
         capture_file_name: this.inputForm.get('fileName').value,
         data_link_type: this.inputForm.get('linkType').value,
+        wireshark: this.webWireshark(),  // Add Web Wireshark option
       };
 
       if (this.startProgram()) {
