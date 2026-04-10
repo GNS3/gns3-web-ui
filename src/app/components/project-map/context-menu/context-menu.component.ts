@@ -39,6 +39,7 @@ import { StartCaptureActionComponent } from './actions/start-capture/start-captu
 import { StopCaptureActionComponent } from './actions/stop-capture/stop-capture-action.component';
 import { StartCaptureOnStartedLinkActionComponent } from './actions/start-capture-on-started-link/start-capture-on-started-link.component';
 import { StartWebWiresharkActionComponent } from './actions/start-web-wireshark-action/start-web-wireshark-action.component';
+import { StartWebWiresharkInlineActionComponent } from './actions/start-web-wireshark-inline-action/start-web-wireshark-inline-action.component';
 import { PacketFiltersActionComponent } from './actions/packet-filters-action/packet-filters-action.component';
 import { ResumeLinkActionComponent } from './actions/resume-link-action/resume-link-action.component';
 import { SuspendLinkActionComponent } from './actions/suspend-link/suspend-link-action.component';
@@ -84,6 +85,7 @@ import { AlignVerticallyActionComponent } from './actions/align_vertically/align
     StopCaptureActionComponent,
     StartCaptureOnStartedLinkActionComponent,
     StartWebWiresharkActionComponent,
+    StartWebWiresharkInlineActionComponent,
     PacketFiltersActionComponent,
     ResumeLinkActionComponent,
     SuspendLinkActionComponent,
