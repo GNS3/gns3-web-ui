@@ -178,7 +178,7 @@ export class StartCaptureDialogComponent implements OnInit {
   private openWebWiresharkInNewTab() {
     // Build WebSocket URL
     const protocol = this.controller.protocol === 'https:' ? 'wss' : 'ws';
-    const wsUrl = `${protocol}://${this.controller.host}:${this.controller.port}/v3/projects/${this.link.project_id}/links/${this.link.link_id}/capture/wireshark?token=${this.controller.authToken}`;
+    const wsUrl = `${protocol}://${this.controller.host}:${this.controller.port}/v3/projects/${this.link.project_id}/links/${this.link.link_id}/capture/web-wireshark?token=${this.controller.authToken}`;
 
     // Encode WebSocket URL as query parameter
     const webWiresharkUrl = `/assets/web-wireshark/index.html?ws_url=${encodeURIComponent(wsUrl)}&link_id=${this.link.link_id}`;
