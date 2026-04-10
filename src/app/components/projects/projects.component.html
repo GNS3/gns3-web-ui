@@ -1,4 +1,3 @@
-<<<<<<< modernization/angular-21-migration
 <div class="projects">
   <div class="projects__content">
     <!-- Header with Title and Buttons -->
@@ -13,22 +12,11 @@
           <mat-icon>cloud_upload</mat-icon>
           Import Project
         </button>
+        <button mat-raised-button class="projects__button" color="primary" (click)="refresh()">
+          <mat-icon>refresh</mat-icon>
+          Refresh Projects
+        </button>
       </div>
-=======
-<div class="content">
-  <div class="default-header">
-    <div class="row">
-      <h1 class="col">Projects</h1>
-      <button class="col add-button" mat-raised-button color="primary" (click)="addBlankProject()">
-        Add blank project
-      </button>
-      <button class="col import-button" mat-raised-button color="primary" (click)="importProject()">
-        Import project
-      </button>
-      <button class="col refresh-button" mat-raised-button color="primary" (click)="refresh()">
-        Refresh list
-      </button>
->>>>>>> master-3.0
     </div>
 
     <!-- Search -->
