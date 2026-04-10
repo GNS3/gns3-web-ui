@@ -229,7 +229,6 @@ button[mat-icon-button] {
     transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-<<<<<<< modernization/angular-21-migration
   &:hover::before {
     opacity: var(--mat-icon-button-hover-state-layer-opacity);
   }
@@ -246,13 +245,6 @@ button[mat-icon-button] {
 
   &:hover mat-icon {
     transform: scale(1.15);
-=======
-  .add-button,
-  .import-button,
-  .refresh-button {
-    width: 100%;
-    margin: 0;
->>>>>>> master-3.0
   }
 
   &:active mat-icon {
