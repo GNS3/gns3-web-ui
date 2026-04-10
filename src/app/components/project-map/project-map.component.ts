@@ -84,6 +84,7 @@ import { SymbolService } from '@services/symbol.service';
 import { ToasterService } from '@services/toaster.service';
 import { ToolsService } from '@services/tools.service';
 import { ThemeService } from '@services/theme.service';
+import { WindowManagementService } from '@services/window-management.service';
 import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-dialog/add-blank-project-dialog.component';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { EditProjectDialogComponent } from '../projects/edit-project-dialog/edit-project-dialog.component';
@@ -190,6 +191,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public consoleZIndex: number = this.baseZIndex;
   public aiChatZIndex: number = this.baseZIndex;
 
+  // Taskbar icon positioning
+  private readonly TASKBAR_BASE_LEFT = 20;
+  private readonly TASKBAR_ICON_WIDTH = 180;
+  private readonly TASKBAR_ICON_GAP = 8;
+
   readonly mapBgClass = computed(() => {
     const mapTheme = this.themeService.savedMapTheme;
     const isDark = mapTheme === 'auto' ? this.themeService.isDarkMode() : mapTheme.startsWith('dark-');
@@ -277,6 +283,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private themeService = inject(ThemeService);
   private cd = inject(ChangeDetectorRef);
   private aiChatStore = inject(AiChatStore);
+  public windowManagement = inject(WindowManagementService);
   private viewContainerRef = inject(ViewContainerRef);
   // private cfr: ComponentFactoryResolver,
   // private injector: Injector,
@@ -997,6 +1004,72 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public bringAIChatToFront() {
     this.zIndexCounter++;
     this.aiChatZIndex = this.baseZIndex + this.zIndexCounter;
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Restore console window from minimized state
+   */
+  public restoreConsole(): void {
+    this.windowManagement.restoreWindow('console');
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Restore Wireshark window from minimized state
+   */
+  public restoreWiresharkWindow(linkId: string): void {
+    this.windowManagement.restoreWindow(`wireshark-${linkId}`);
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Get taskbar icon position for console
+   */
+  public getConsoleTaskbarLeft(): number {
+    return this.TASKBAR_BASE_LEFT;
+  }
+
+  /**
+   * Get taskbar icon position for Wireshark windows
+   * Icons are arranged by window open order, not minimized order
+   */
+  public getWiresharkTaskbarLeft(linkId: string | undefined): number {
+    if (!linkId) return this.TASKBAR_BASE_LEFT;
+
+    // Calculate index based on position in open windows list
+    const openWindows = this.getWebWiresharkInlineWindows();
+    const index = openWindows.findIndex(w => w.link_id === linkId);
+
+    // Console icon always takes first slot
+    let baseOffset = this.TASKBAR_ICON_WIDTH + this.TASKBAR_ICON_GAP;
+    return this.TASKBAR_BASE_LEFT + baseOffset + index * (this.TASKBAR_ICON_WIDTH + this.TASKBAR_ICON_GAP);
+  }
+
+  /**
+   * Toggle console minimize/restore
+   */
+  public toggleConsoleMinimize(): void {
+    const isMinimized = this.windowManagement.minimizedWindows().some(w => w.id === 'console');
+    if (isMinimized) {
+      this.windowManagement.restoreWindow('console');
+    } else {
+      this.windowManagement.minimizeWindow('console', 'console');
+    }
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Toggle Wireshark window minimize/restore
+   */
+  public toggleWiresharkMinimize(linkId: string): void {
+    const windowId = `wireshark-${linkId}`;
+    const isMinimized = this.windowManagement.minimizedWindows().some(w => w.id === windowId);
+    if (isMinimized) {
+      this.windowManagement.restoreWindow(windowId);
+    } else {
+      this.windowManagement.minimizeWindow(windowId, 'wireshark', linkId);
+    }
     this.cd.markForCheck();
   }
 

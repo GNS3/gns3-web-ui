@@ -8,6 +8,7 @@ import {
   HostListener,
   ChangeDetectorRef,
   AfterViewInit,
+  effect,
   inject,
   input,
   viewChildren,
@@ -34,6 +35,7 @@ import { MapSettingsService } from '@services/mapsettings.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { ThemeService } from '@services/theme.service';
 import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.service';
+import { WindowManagementService } from '@services/window-management.service';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { ConsoleDevicesPanelComponent } from './console-devices-panel.component';
 import { WebConsoleComponent } from '../web-console/web-console.component';
@@ -75,6 +77,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   @Output() deviceSelected = new EventEmitter<string>();
   @Output() consoleDeactivated = new EventEmitter<void>();
   @Output() windowFocused = new EventEmitter<void>();
+  @Output() windowMinimized = new EventEmitter<boolean>(); // true = minimized, false = restored
 
   filters: string[] = ['all', 'errors', 'warnings', 'info', 'map updates', 'controller requests'];
   selectedFilter: string = 'all';
@@ -104,6 +107,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   private themeService = inject(ThemeService);
   private mapSettingsService = inject(MapSettingsService);
   private boundaryService = inject(WindowBoundaryService);
+  private windowManagement = inject(WindowManagementService);
   private cdr = inject(ChangeDetectorRef);
   private renderer = inject(Renderer2);
 
@@ -116,7 +120,21 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   // Store pre-minimize state for position restoration
   private preMinimizeStyle: WindowStyle | null = null;
 
-  constructor() {}
+  constructor() {
+    // Effect to sync windowManagement minimize state with isMinimizedSignal
+    effect(() => {
+      const minimizedWindows = this.windowManagement.minimizedWindows();
+      const isInMinimizedList = minimizedWindows.some(w => w.id === 'console');
+
+      if (isInMinimizedList && !this.isMinimizedSignal()) {
+        // Should be minimized
+        this.isMinimizedSignal.set(true);
+      } else if (!isInMinimizedList && this.isMinimizedSignal()) {
+        // Should be restored
+        this.isMinimizedSignal.set(false);
+      }
+    });
+  }
 
   nodes: Node[] = [];
   selected = new UntypedFormControl(0);
@@ -160,6 +178,11 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
 
   minimize(value: boolean) {
     this.isMinimizedSignal.set(value);
+    if (value) {
+      this.windowManagement.minimizeWindow('console', 'console');
+    } else {
+      this.windowManagement.restoreWindow('console');
+    }
     if (!value) {
       // Restore from minimized state - use saved pre-minimize position - default moved up to 100px
       if (this.preMinimizeStyle) {

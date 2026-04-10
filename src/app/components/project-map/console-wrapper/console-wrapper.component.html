@@ -111,9 +111,3 @@
     </div>
   </div>
 </div>
-
-<!-- Taskbar Icon (always visible, fixed in bottom-left corner) -->
-<div class="taskbar-icon" (click)="toggleMinimize()" [title]="isMinimized() ? 'Click to restore' : 'Click to minimize'">
-  <mat-icon class="taskbar-icon__icon">terminal</mat-icon>
-  <span class="taskbar-icon__label">{{ getActiveTabName() }}</span>
-</div>

@@ -286,6 +286,37 @@
       ></app-web-wireshark-inline>
     }
   }
+
+  <!-- Unified Taskbar for all open windows -->
+  <div class="inline-taskbar">
+    <!-- Console taskbar icon - always shown when console is open -->
+    @if (project && isConsoleVisible) {
+      <div
+        class="inline-taskbar__icon"
+        [class.inline-taskbar__icon--minimized]="windowManagement.minimizedWindows().some(w => w.id === 'console')"
+        [style.left.px]="getConsoleTaskbarLeft()"
+        (click)="toggleConsoleMinimize()"
+        [title]="windowManagement.minimizedWindows().some(w => w.id === 'console') ? 'Console - Click to restore' : 'Console - Click to minimize'"
+      >
+        <mat-icon class="inline-taskbar__icon-type">terminal</mat-icon>
+        <span class="inline-taskbar__label">Console</span>
+      </div>
+    }
+
+    <!-- Wireshark taskbar icons - shown for all open Wireshark windows -->
+    @for (link of getWebWiresharkInlineWindows(); track link.link_id) {
+      <div
+        class="inline-taskbar__icon"
+        [class.inline-taskbar__icon--minimized]="windowManagement.minimizedWindows().some(w => w.id === 'wireshark-' + link.link_id)"
+        [style.left.px]="getWiresharkTaskbarLeft(link.link_id)"
+        (click)="toggleWiresharkMinimize(link.link_id)"
+        [title]="windowManagement.minimizedWindows().some(w => w.id === 'wireshark-' + link.link_id) ? 'Web Wireshark - Click to restore' : 'Web Wireshark - Click to minimize'"
+      >
+        <mat-icon class="inline-taskbar__icon-type">analytics</mat-icon>
+        <span class="inline-taskbar__label">Wireshark {{ link.link_id?.substring(0, 6) }}</span>
+      </div>
+    }
+  </div>
 </div>
 
 <ng-template #topologySummaryContainer></ng-template>

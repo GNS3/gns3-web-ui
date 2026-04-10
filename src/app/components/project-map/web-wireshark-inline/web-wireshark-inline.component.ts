@@ -7,6 +7,7 @@ import {
   Output,
   OnDestroy,
   OnInit,
+  effect,
   inject,
   input,
   viewChild,
@@ -28,6 +29,7 @@ import { Controller } from '@models/controller';
 import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.service';
 import { XpraConsoleService } from '@services/xpra-console.service';
 import { ToasterService } from '@services/toaster.service';
+import { WindowManagementService } from '@services/window-management.service';
 
 @Component({
   selector: 'app-web-wireshark-inline',
@@ -58,6 +60,7 @@ export class WebWiresharkInlineComponent implements OnInit, OnDestroy {
   readonly zIndex = input<number>(1000);
   @Output() closeWindow = new EventEmitter<void>();
   @Output() windowFocused = new EventEmitter<void>();
+  @Output() windowMinimized = new EventEmitter<boolean>(); // true = minimized, false = restored
 
   // Window state
   public style: WindowStyle = {
@@ -75,10 +78,12 @@ export class WebWiresharkInlineComponent implements OnInit, OnDestroy {
   private isDraggingSignal = signal(false);
   private isResizingSignal = signal(false);
   private isLoadingSignal = signal(true);
+  private isMinimizedSignal = signal(false);
 
   public readonly isDragging = this.isDraggingSignal.asReadonly();
   public readonly isResizing = this.isResizingSignal.asReadonly();
   public readonly isLoading = this.isLoadingSignal.asReadonly();
+  public readonly isMinimized = this.isMinimizedSignal.asReadonly();
 
   // Wireshark URL
   public wiresharkUrl: SafeResourceUrl = '';
@@ -89,6 +94,7 @@ export class WebWiresharkInlineComponent implements OnInit, OnDestroy {
   private cdr = inject(ChangeDetectorRef);
   private renderer = inject(Renderer2);
   private sanitizer = inject(DomSanitizer);
+  private windowManagement = inject(WindowManagementService);
 
   // Drag state
   private dragStartX = 0;
@@ -98,7 +104,23 @@ export class WebWiresharkInlineComponent implements OnInit, OnDestroy {
 
   readonly windowWrapper = viewChild<ElementRef>('windowWrapper');
 
-  constructor() {}
+  constructor() {
+    // Effect to sync with WindowManagementService minimize state
+    effect(() => {
+      const link = this.link();
+      const minimizedWindows = this.windowManagement.minimizedWindows();
+      const windowId = `wireshark-${link?.link_id}`;
+      const isInMinimizedList = minimizedWindows.some(w => w.id === windowId);
+
+      if (isInMinimizedList && !this.isMinimizedSignal()) {
+        // Window should be minimized
+        this.isMinimizedSignal.set(true);
+      } else if (!isInMinimizedList && this.isMinimizedSignal()) {
+        // Window should be restored
+        this.isMinimizedSignal.set(false);
+      }
+    });
+  }
 
   ngOnInit() {
     // Set top offset to keep window below toolbar
@@ -110,6 +132,13 @@ export class WebWiresharkInlineComponent implements OnInit, OnDestroy {
 
     // Setup drag handling
     this.setupDragHandling();
+  }
+
+  /**
+   * Get unique window ID for this instance
+   */
+  private getWindowId(): string {
+    return `wireshark-${this.link().link_id}`;
   }
 
   /**
@@ -141,13 +170,28 @@ export class WebWiresharkInlineComponent implements OnInit, OnDestroy {
    * Close window
    */
   close(): void {
+    // Remove from minimized list if present
+    this.windowManagement.restoreWindow(this.getWindowId());
     this.closeWindow.emit();
+  }
+
+  /**
+   * Toggle minimize state
+   */
+  toggleMinimize(): void {
+    this.windowManagement.toggleMinimize(this.getWindowId(), 'wireshark', this.link().link_id);
+    this.cdr.markForCheck();
   }
 
   /**
    * Handle window focus (bring to front)
    */
   onWindowFocus(): void {
+    // If minimized, restore on focus
+    if (this.isMinimizedSignal()) {
+      this.toggleMinimize();
+      return;
+    }
     this.windowFocused.emit();
   }
 

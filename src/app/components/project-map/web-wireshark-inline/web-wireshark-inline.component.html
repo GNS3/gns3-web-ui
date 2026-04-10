@@ -1,8 +1,10 @@
+<!-- Main Window (hidden when minimized) -->
 <div
   #windowWrapper
   class="web-wireshark-inline"
   [class.is-dragging]="isDragging()"
   [class.is-resizing]="isResizing()"
+  [class.is-minimized]="isMinimized()"
   [ngStyle]="style"
   [style.z-index]="zIndex()"
   (mousedown)="onWindowFocus()"
@@ -12,7 +14,8 @@
   (resizeStart)="onResizeStart()"
   (resizeEnd)="onResizeEnd($event)"
 >
-  <!-- Resize handles -->
+  <!-- Resize handles - hidden when minimized -->
+  @if (!isMinimized()) {
   <div class="resize-handle resize-handle-top" mwlResizeHandle [resizeEdges]="{ top: true }"></div>
   <div class="resize-handle resize-handle-right" mwlResizeHandle [resizeEdges]="{ right: true }"></div>
   <div class="resize-handle resize-handle-bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
@@ -23,6 +26,7 @@
   <div class="resize-handle resize-handle-top-right" mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
   <div class="resize-handle resize-handle-bottom-left" mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
   <div class="resize-handle resize-handle-bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
+  }
 
   <!-- Window content -->
   <div class="web-wireshark-inline__content">
@@ -34,6 +38,9 @@
         <span class="link-info">Link {{ link().link_id?.substring(0, 8) }}</span>
       </div>
       <div class="web-wireshark-inline-header__actions">
+        <button mat-icon-button class="minimize-button" (click)="toggleMinimize()" title="Minimize">
+          <mat-icon>remove</mat-icon>
+        </button>
         <button mat-icon-button class="close-button" (click)="close()" title="Close">
           <mat-icon>close</mat-icon>
         </button>

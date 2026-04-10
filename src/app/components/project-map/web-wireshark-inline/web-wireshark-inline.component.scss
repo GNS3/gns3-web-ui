@@ -21,6 +21,11 @@
     cursor: move;
   }
 
+  // Minimized state - hide from view but keep in DOM
+  &.is-minimized {
+    display: none;
+  }
+
   &__content {
     display: flex;
     flex-direction: column;
