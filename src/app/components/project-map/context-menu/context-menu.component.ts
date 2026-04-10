@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -105,6 +105,7 @@ export class ContextMenuComponent implements OnInit {
 
   @Input() project: Project;
   @Input() controller: Controller;
+  @Output() openWebWiresharkInline = new EventEmitter<{ link: Link; controller: Controller; project: Project }>();
 
   @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
 
@@ -199,5 +200,9 @@ export class ContextMenuComponent implements OnInit {
     this.linkNodes = [];
     this.links = [];
     this.hasTextCapabilities = false;
+  }
+
+  public onOpenWebWiresharkInline(data: { link: Link; controller: Controller; project: Project }) {
+    this.openWebWiresharkInline.emit(data);
   }
 }

@@ -105,6 +105,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { AiChatComponent } from './ai-chat/ai-chat.component';
 import { ConsoleWrapperComponent } from './console-wrapper/console-wrapper.component';
+import { WebWiresharkInlineComponent } from './web-wireshark-inline/web-wireshark-inline.component';
 import { DrawLinkToolComponent } from './draw-link-tool/draw-link-tool.component';
 import { ImportApplianceComponent } from './import-appliance/import-appliance.component';
 import { NodesMenuComponent } from './nodes-menu/nodes-menu.component';
@@ -143,6 +144,7 @@ import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edit
     ImportApplianceComponent,
     ConsoleWrapperComponent,
     AiChatComponent,
+    WebWiresharkInlineComponent,
     ProgressComponent,
     DrawingDraggedComponent,
     DrawingResizedComponent,
@@ -173,6 +175,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toolbarVisibility: boolean = true;
   public symbolScaling: boolean = true;
   public isAIChatVisible: boolean = false;
+  public webWiresharkInlineLink: Link | null = null;
   readonly mapBgClass = computed(() => {
     const mapTheme = this.themeService.savedMapTheme;
     const isDark = mapTheme === 'auto' ? this.themeService.isDarkMode() : mapTheme.startsWith('dark-');
@@ -903,6 +906,28 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
    */
   public closeAIChat() {
     this.isAIChatVisible = false;
+  }
+
+  /**
+   * Open Web Wireshark inline window for a link
+   */
+  public openWebWiresharkInline(data: { link: Link; controller: Controller; project: Project }) {
+    // Close any existing Web Wireshark window first
+    if (this.webWiresharkInlineLink) {
+      this.closeWebWiresharkInline();
+    }
+
+    // Set the link for which to show Web Wireshark
+    this.webWiresharkInlineLink = data.link;
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Close Web Wireshark inline window
+   */
+  public closeWebWiresharkInline() {
+    this.webWiresharkInlineLink = null;
+    this.cd.markForCheck();
   }
 
   public toggleShowTopologySummary(visible: boolean) {

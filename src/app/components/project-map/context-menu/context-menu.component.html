@@ -109,6 +109,7 @@
       [controller]="controller"
       [project]="project"
       [link]="links[0]"
+      (openWebWiresharkInline)="onOpenWebWiresharkInline($event)"
     ></app-start-web-wireshark-inline-action>
     } @if (!projectService.isReadOnly(project) && drawings.length === 0 && nodes.length === 0 && links.length === 1 &&
     linkNodes.length === 0) {

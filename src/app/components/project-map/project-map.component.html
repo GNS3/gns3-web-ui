@@ -32,7 +32,11 @@
       }
       <div class="menu-button-group">
         <app-nodes-menu [controller]="controller" [project]="project"></app-nodes-menu>
-        <app-context-menu [project]="project" [controller]="controller"></app-context-menu>
+        <app-context-menu
+          [project]="project"
+          [controller]="controller"
+          (openWebWiresharkInline)="openWebWiresharkInline($event)"
+        ></app-context-menu>
       </div>
     </div>
     <div>
@@ -259,6 +263,16 @@
   <!-- AI Chat Panel -->
   @if (project && isAIChatVisible) {
   <app-ai-chat [project]="project" [controller]="controller" (closed)="closeAIChat()"> </app-ai-chat>
+  }
+
+  <!-- Web Wireshark Inline Window -->
+  @if (project && webWiresharkInlineLink) {
+  <app-web-wireshark-inline
+    [link]="webWiresharkInlineLink"
+    [controller]="controller"
+    [project]="project"
+    (closeWindow)="closeWebWiresharkInline()"
+  ></app-web-wireshark-inline>
   }
 </div>
 
