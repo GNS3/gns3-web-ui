@@ -289,3 +289,92 @@ input:focus {
   overflow: hidden;
   position: relative;
 }
+
+.resize-handle {
+  position: absolute;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+
+  .consoleWrapper:hover & {
+    opacity: 1;
+  }
+
+  // Edge handles
+  &.resize-handle-top {
+    top: -4px;
+    left: 12px;
+    right: 12px;
+    height: 12px;
+    cursor: ns-resize;
+    background: linear-gradient(to bottom, var(--mat-sys-primary) 0%, transparent 100%);
+  }
+
+  &.resize-handle-right {
+    top: 12px;
+    right: -4px;
+    bottom: 12px;
+    width: 12px;
+    cursor: ew-resize;
+    background: linear-gradient(to left, var(--mat-sys-primary) 0%, transparent 100%);
+  }
+
+  &.resize-handle-bottom {
+    bottom: -4px;
+    left: 12px;
+    right: 12px;
+    height: 12px;
+    cursor: ns-resize;
+    background: linear-gradient(to top, var(--mat-sys-primary) 0%, transparent 100%);
+  }
+
+  &.resize-handle-left {
+    top: 12px;
+    left: -4px;
+    bottom: 12px;
+    width: 12px;
+    cursor: ew-resize;
+    background: linear-gradient(to right, var(--mat-sys-primary) 0%, transparent 100%);
+  }
+
+  // Corner handles
+  &.resize-handle-top-left {
+    top: -6px;
+    left: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nwse-resize;
+    border-radius: 4px 0 0 0;
+    background: radial-gradient(circle at top left, var(--mat-sys-primary) 0%, transparent 70%);
+  }
+
+  &.resize-handle-top-right {
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nesw-resize;
+    border-radius: 0 4px 0 0;
+    background: radial-gradient(circle at top right, var(--mat-sys-primary) 0%, transparent 70%);
+  }
+
+  &.resize-handle-bottom-left {
+    bottom: -6px;
+    left: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nesw-resize;
+    border-radius: 0 0 0 4px;
+    background: radial-gradient(circle at bottom left, var(--mat-sys-primary) 0%, transparent 70%);
+  }
+
+  &.resize-handle-bottom-right {
+    bottom: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nwse-resize;
+    border-radius: 0 0 4px 0;
+    background: radial-gradient(circle at bottom right, var(--mat-sys-primary) 0%, transparent 70%);
+  }
+}
