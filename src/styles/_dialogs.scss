@@ -1073,7 +1073,13 @@ h2[mat-dialog-title] {
 // Web Wireshark Inline Window Styles
 // ============================================= */
 
-.web-wireshark-inline-container {
+/* SVG foreignObject container */
+foreignObject.web-wireshark-inline-container {
+  overflow: visible;
+}
+
+/* Inner HTML container */
+.web-wireshark-inline-container > div {
   display: flex;
   flex-direction: column;
   background: var(--mat-sys-surface);
@@ -1083,6 +1089,8 @@ h2[mat-dialog-title] {
     0 4px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
   overflow: hidden;
   transition: box-shadow 0.2s ease;
+  width: 100%;
+  height: 100%;
 
   &:hover {
     box-shadow: 0 12px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),

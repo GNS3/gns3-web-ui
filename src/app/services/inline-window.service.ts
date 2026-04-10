@@ -129,23 +129,30 @@ export class InlineWindowService {
    *
    * @param windowId Window ID
    * @param state Window state
-   * @param targetElement Target DOM element
+   * @param targetElement Target SVG element
    */
   private createInlineWindow(
     windowId: string,
     state: InlineWindowState,
     targetElement: HTMLElement
   ): void {
-    // Create container div
+    // Create foreignObject for embedding HTML in SVG
+    const namespace = 'http://www.w3.org/2000/svg';
+    const foreignObject = document.createElementNS(namespace, 'foreignObject');
+    foreignObject.setAttribute('id', windowId);
+    foreignObject.setAttribute('class', 'web-wireshark-inline-container');
+    foreignObject.setAttribute('x', state.position.x.toString());
+    foreignObject.setAttribute('y', state.position.y.toString());
+    foreignObject.setAttribute('width', state.size.width.toString());
+    foreignObject.setAttribute('height', state.size.height.toString());
+
+    // Create HTML container div
     const container = document.createElement('div');
-    container.id = windowId;
     container.className = 'web-wireshark-inline-container';
-    container.style.width = `${state.size.width}px`;
-    container.style.height = `${state.size.height}px`;
-    container.style.position = 'absolute';
-    container.style.left = `${state.position.x}px`;
-    container.style.top = `${state.position.y}px`;
-    container.style.zIndex = '1000';
+    container.style.width = '100%';
+    container.style.height = '100%';
+    container.style.display = 'flex';
+    container.style.flexDirection = 'column';
 
     // Create header
     const header = document.createElement('div');
@@ -158,12 +165,19 @@ export class InlineWindowService {
     // Create iframe container
     const iframeContainer = document.createElement('div');
     iframeContainer.className = 'web-wireshark-inline-iframe-container';
+    iframeContainer.style.flex = '1';
+    iframeContainer.style.position = 'relative';
+    iframeContainer.style.overflow = 'hidden';
 
     // Create iframe
     const iframe = document.createElement('iframe');
     iframe.src = state.url;
     iframe.className = 'web-wireshark-inline-iframe';
     iframe.setAttribute('allowfullscreen', '');
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    iframe.style.display = 'block';
 
     // Assemble
     iframeContainer.appendChild(iframe);
@@ -176,10 +190,13 @@ export class InlineWindowService {
       this.closeInlineWindow(windowId);
     });
 
-    // Store element reference
-    state.element = container;
+    // Append container to foreignObject
+    foreignObject.appendChild(container);
 
-    // Append to target
-    targetElement.appendChild(container);
+    // Append foreignObject to SVG
+    targetElement.appendChild(foreignObject);
+
+    // Store element reference
+    state.element = foreignObject;
   }
 }

@@ -33,10 +33,10 @@ export class StartWebWiresharkInlineActionComponent {
     }
 
     try {
-      // Find the target element in the canvas
-      const canvasElement = document.getElementById('cartography');
-      if (!canvasElement) {
-        this.toasterService.error('Canvas element not found');
+      // Find the SVG map element
+      const mapElement = document.getElementById('map');
+      if (!mapElement) {
+        this.toasterService.error('Map element not found');
         return;
       }
 
@@ -47,7 +47,7 @@ export class StartWebWiresharkInlineActionComponent {
       }
 
       // Open inline window
-      const windowId = this.inlineWindowService.openInlineWebWireshark(linkItem, ctrl, canvasElement);
+      const windowId = this.inlineWindowService.openInlineWebWireshark(linkItem, ctrl, mapElement);
 
       this.toasterService.success(`Web Wireshark opened inline (${windowId})`);
     } catch (error) {
