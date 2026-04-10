@@ -29,10 +29,6 @@
   will-change: left, bottom;
   contain: layout style; // Isolate from parent layout recalculations
 
-  &.console-active {
-    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent), 0 0 0 1px var(--mat-sys-outline);
-  }
-
   &:focus {
     outline: none;
   }
