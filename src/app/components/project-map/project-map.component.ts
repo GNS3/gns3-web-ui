@@ -175,7 +175,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toolbarVisibility: boolean = true;
   public symbolScaling: boolean = true;
   public isAIChatVisible: boolean = false;
-  public webWiresharkInlineLink: Link | null = null;
+
+  // Track multiple Web Wireshark inline windows
+  // Key is link_id, value is the Link object
+  public webWiresharkInlineWindows = new Map<string, Link>();
+
   readonly mapBgClass = computed(() => {
     const mapTheme = this.themeService.savedMapTheme;
     const isDark = mapTheme === 'auto' ? this.themeService.isDarkMode() : mapTheme.startsWith('dark-');
@@ -912,22 +916,30 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
    * Open Web Wireshark inline window for a link
    */
   public openWebWiresharkInline(data: { link: Link; controller: Controller; project: Project }) {
-    // Close any existing Web Wireshark window first
-    if (this.webWiresharkInlineLink) {
-      this.closeWebWiresharkInline();
+    // Check if window already open for this link
+    if (this.webWiresharkInlineWindows.has(data.link.link_id)) {
+      this.toasterService.warning('Web Wireshark is already open for this link');
+      return;
     }
 
-    // Set the link for which to show Web Wireshark
-    this.webWiresharkInlineLink = data.link;
+    // Add the link to our Map of open windows
+    this.webWiresharkInlineWindows.set(data.link.link_id, data.link);
     this.cd.markForCheck();
   }
 
   /**
-   * Close Web Wireshark inline window
+   * Close Web Wireshark inline window for a specific link
    */
-  public closeWebWiresharkInline() {
-    this.webWiresharkInlineLink = null;
+  public closeWebWiresharkInline(linkId: string) {
+    this.webWiresharkInlineWindows.delete(linkId);
     this.cd.markForCheck();
+  }
+
+  /**
+   * Get all open Web Wireshark inline windows as an array
+   */
+  public getWebWiresharkInlineWindows(): Link[] {
+    return Array.from(this.webWiresharkInlineWindows.values());
   }
 
   public toggleShowTopologySummary(visible: boolean) {

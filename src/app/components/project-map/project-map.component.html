@@ -265,14 +265,16 @@
   <app-ai-chat [project]="project" [controller]="controller" (closed)="closeAIChat()"> </app-ai-chat>
   }
 
-  <!-- Web Wireshark Inline Window -->
-  @if (project && webWiresharkInlineLink) {
-  <app-web-wireshark-inline
-    [link]="webWiresharkInlineLink"
-    [controller]="controller"
-    [project]="project"
-    (closeWindow)="closeWebWiresharkInline()"
-  ></app-web-wireshark-inline>
+  <!-- Web Wireshark Inline Windows (multiple) -->
+  @if (project && webWiresharkInlineWindows.size > 0) {
+    @for (link of getWebWiresharkInlineWindows(); track link.link_id) {
+      <app-web-wireshark-inline
+        [link]="link"
+        [controller]="controller"
+        [project]="project"
+        (closeWindow)="closeWebWiresharkInline(link.link_id)"
+      ></app-web-wireshark-inline>
+    }
   }
 </div>
 

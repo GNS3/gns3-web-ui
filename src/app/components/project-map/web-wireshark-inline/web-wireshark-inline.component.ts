@@ -71,9 +71,11 @@ export class WebWiresharkInlineComponent implements OnInit, OnDestroy {
 
   // UI state
   private isDraggingSignal = signal(false);
+  private isResizingSignal = signal(false);
   private isLoadingSignal = signal(true);
 
   public readonly isDragging = this.isDraggingSignal.asReadonly();
+  public readonly isResizing = this.isResizingSignal.asReadonly();
   public readonly isLoading = this.isLoadingSignal.asReadonly();
 
   // Wireshark URL
@@ -155,9 +157,23 @@ export class WebWiresharkInlineComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Handle resize start
+   */
+  onResizeStart(): void {
+    this.isResizingSignal.set(true);
+    // Disable iframe pointer events during resize
+    this.setIframePointerEvents('none');
+    this.cdr.markForCheck();
+  }
+
+  /**
    * Handle resize end
    */
   onResizeEnd(event: ResizeEvent): void {
+    console.log('[WebWiresharkInline] Resize end:', {
+      rectangle: event.rectangle
+    });
+
     const constrained = this.boundaryService.constrainResizeSize(
       event.rectangle.width || this.resizedWidth,
       event.rectangle.height || this.resizedHeight,
@@ -165,8 +181,10 @@ export class WebWiresharkInlineComponent implements OnInit, OnDestroy {
       event.rectangle.top
     );
 
+    console.log('[WebWiresharkInline] Constrained:', constrained);
+
     this.style = {
-      ...this.style,
+      position: 'fixed',
       left: `${constrained.left}px`,
       top: `${constrained.top}px`,
       width: `${constrained.width}px`,
@@ -177,6 +195,12 @@ export class WebWiresharkInlineComponent implements OnInit, OnDestroy {
     this.resizedHeight = constrained.height;
 
     this.applyStyleToElement();
+
+    console.log('[WebWiresharkInline] Style applied:', this.style);
+
+    // Restore iframe pointer events and clear resizing state
+    this.isResizingSignal.set(false);
+    this.setIframePointerEvents('');
     this.cdr.markForCheck();
   }
 

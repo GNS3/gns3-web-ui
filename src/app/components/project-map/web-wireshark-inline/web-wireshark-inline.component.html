@@ -2,10 +2,12 @@
   #windowWrapper
   class="web-wireshark-inline"
   [class.is-dragging]="isDragging()"
+  [class.is-resizing]="isResizing()"
   [ngStyle]="style"
   mwlResizable
   [validateResize]="validate"
-  [enableGhostResize]="true"
+  [enableGhostResize]="false"
+  (resizeStart)="onResizeStart()"
   (resizeEnd)="onResizeEnd($event)"
 >
   <!-- Resize handles -->

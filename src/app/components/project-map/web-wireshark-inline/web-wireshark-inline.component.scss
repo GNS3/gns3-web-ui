@@ -6,7 +6,7 @@
   border-radius: 8px;
   box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent),
     0 4px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
-  overflow: hidden;
+  overflow: visible; // Changed to visible to allow resize handles to extend outside
   transition: box-shadow 0.2s ease;
 
   &:hover {
@@ -26,6 +26,8 @@
     flex-direction: column;
     width: 100%;
     height: 100%;
+    overflow: hidden; // Keep content clipped
+    border-radius: 6px; // Slightly smaller than outer border
   }
 }
 
@@ -91,7 +93,8 @@
   flex: 1;
   position: relative;
   overflow: hidden;
-  min-height: 400px;
+  min-height: 200px; // Reduced from 400px to allow smaller window sizes
+  height: 100%; // Ensure it fills available space
 }
 
 .web-wireshark-inline__iframe {
@@ -138,70 +141,115 @@
 
 .resize-handle {
   position: absolute;
-  background: transparent;
+  z-index: 100; // Much higher to ensure handles are clickable above everything
 
+  // Edge handles - subtle visual indicator
   &.resize-handle-top {
-    top: 0;
-    left: 8px;
-    right: 8px;
-    height: 8px;
+    top: -4px;
+    left: 12px;
+    right: 12px;
+    height: 12px;
     cursor: ns-resize;
+    border-top: 2px solid transparent;
+
+    &:hover {
+      border-top-color: var(--mat-sys-primary);
+    }
   }
 
   &.resize-handle-right {
-    top: 8px;
-    right: 0;
-    bottom: 8px;
-    width: 8px;
+    top: 12px;
+    right: -4px;
+    bottom: 12px;
+    width: 12px;
     cursor: ew-resize;
+    border-right: 2px solid transparent;
+
+    &:hover {
+      border-right-color: var(--mat-sys-primary);
+    }
   }
 
   &.resize-handle-bottom {
-    bottom: 0;
-    left: 8px;
-    right: 8px;
-    height: 8px;
+    bottom: -4px;
+    left: 12px;
+    right: 12px;
+    height: 12px;
     cursor: ns-resize;
+    border-bottom: 2px solid transparent;
+
+    &:hover {
+      border-bottom-color: var(--mat-sys-primary);
+    }
   }
 
   &.resize-handle-left {
-    top: 8px;
-    left: 0;
-    bottom: 8px;
-    width: 8px;
+    top: 12px;
+    left: -4px;
+    bottom: 12px;
+    width: 12px;
     cursor: ew-resize;
+    border-left: 2px solid transparent;
+
+    &:hover {
+      border-left-color: var(--mat-sys-primary);
+    }
   }
 
-  // Corner handles - larger and more visible
+  // Corner handles - more visible with background
   &.resize-handle-top-left {
-    top: 0;
-    left: 0;
-    width: 16px;
-    height: 16px;
+    top: -6px;
+    left: -6px;
+    width: 20px;
+    height: 20px;
     cursor: nwse-resize;
+    background: transparent;
+
+    &:hover {
+      background: color-mix(in srgb, var(--mat-sys-primary) 20%, transparent);
+      border-radius: 4px;
+    }
   }
 
   &.resize-handle-top-right {
-    top: 0;
-    right: 0;
-    width: 16px;
-    height: 16px;
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
     cursor: nesw-resize;
+    background: transparent;
+
+    &:hover {
+      background: color-mix(in srgb, var(--mat-sys-primary) 20%, transparent);
+      border-radius: 4px;
+    }
   }
 
   &.resize-handle-bottom-left {
-    bottom: 0;
-    left: 0;
-    width: 16px;
-    height: 16px;
+    bottom: -6px;
+    left: -6px;
+    width: 20px;
+    height: 20px;
     cursor: nesw-resize;
+    background: transparent;
+
+    &:hover {
+      background: color-mix(in srgb, var(--mat-sys-primary) 20%, transparent);
+      border-radius: 4px;
+    }
   }
 
   &.resize-handle-bottom-right {
-    bottom: 0;
-    right: 0;
-    width: 16px;
-    height: 16px;
+    bottom: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
     cursor: nwse-resize;
+    background: transparent;
+
+    &:hover {
+      background: color-mix(in srgb, var(--mat-sys-primary) 20%, transparent);
+      border-radius: 4px;
+    }
   }
 }
