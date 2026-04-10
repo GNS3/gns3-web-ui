@@ -50,7 +50,6 @@ export class StartCaptureDialogComponent implements OnInit {
   inputForm: UntypedFormGroup;
   readonly startProgram = model(false);
   readonly webWireshark = model(false);  // Web Wireshark checkbox
-  readonly openWebWireshark = model(false);  // Auto-open Web Wireshark
 
   // Loading states
   readonly isLoading = signal(false);
@@ -136,12 +135,6 @@ export class StartCaptureDialogComponent implements OnInit {
               captureSettings.capture_file_name
             );
           }
-
-          // Open Web Wireshark in new tab if checkbox is selected
-          if (this.openWebWireshark()) {
-            this.openWebWiresharkInNewTab();
-          }
-
           this.isLoading.set(false);
           this.dialogRef.close();
         },
@@ -169,34 +162,5 @@ export class StartCaptureDialogComponent implements OnInit {
 
   onNoClick() {
     this.dialogRef.close();
-  }
-
-  /**
-   * Open Web Wireshark in a new browser tab
-   * Connects to the WebSocket stream via xpra-html5 client
-   */
-  private openWebWiresharkInNewTab() {
-    // Determine protocol
-    const ssl = this.controller.protocol === 'https:';
-
-    // Build xpra-html5 URL with parameters
-    // xpra-html5 connects directly using server:port:path and token as password
-    const params = new URLSearchParams({
-      server: this.controller.host,
-      port: this.controller.port.toString(),
-      ssl: ssl.toString(),
-      path: `/v3/projects/${this.link.project_id}/links/${this.link.link_id}/capture/web-wireshark`,
-      token: this.controller.authToken,
-    });
-
-    const xpraUrl = `/assets/xpra-html5/index.html?${params.toString()}`;
-
-    // Open in new tab
-    const newWindow = window.open(xpraUrl, '_blank');
-
-    // Detect if popup was blocked
-    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-      this.toasterService.error('Popup was blocked. Please allow popups for this site.');
-    }
   }
 }

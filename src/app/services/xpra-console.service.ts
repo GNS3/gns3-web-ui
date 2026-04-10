@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Controller } from '@models/controller';
+import { Link } from '@models/link';
 import { Node } from '../cartography/models/node';
 import { ToasterService } from './toaster.service';
 
@@ -84,13 +85,13 @@ export class XpraConsoleService {
     params.set('ssl', ssl ? 'true' : 'false');
 
     // Add path if it's not just root
-    if (path && path !== '/') {
-      params.set('path', path);
-    }
-
-    // Add token as password if available
+    // Append token to path for servers that require it in the WebSocket URL (like GNS3 web-wireshark)
+    let fullPath = path;
     if (token) {
-      params.set('token', token);
+      fullPath += (path.includes('?') ? '&' : '?') + 'token=' + encodeURIComponent(token);
+    }
+    if (fullPath && fullPath !== '/') {
+      params.set('path', fullPath);
     }
 
     // Optional: enable features
@@ -112,6 +113,18 @@ export class XpraConsoleService {
   buildXpraConsolePageUrlFromNode(controller: Controller, node: Node): string {
     const wsUrl = this.buildXpraWebSocketUrl(controller, node);
     return this.buildXpraConsolePageUrl(wsUrl);
+  }
+
+  /**
+   * Build WebSocket URL for Web Wireshark connection on a link
+   *
+   * @param controller GNS3 controller
+   * @param link Link to capture
+   * @returns WebSocket URL (e.g., ws://host:port/v3/projects/{id}/links/{id}/capture/web-wireshark?token=xxx)
+   */
+  buildXpraWebSocketUrlForWebWireshark(controller: Controller, link: Link): string {
+    const protocol = controller.protocol === 'https:' ? 'wss' : 'ws';
+    return `${protocol}://${controller.host}:${controller.port}/v3/projects/${link.project_id}/links/${link.link_id}/capture/web-wireshark?token=${controller.authToken}`;
   }
 
   /**
