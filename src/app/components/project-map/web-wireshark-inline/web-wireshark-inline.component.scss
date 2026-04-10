@@ -4,17 +4,20 @@
   background: var(--mat-sys-surface);
   border: 2px solid var(--mat-sys-outline);
   border-radius: 8px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent),
+    0 4px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
   overflow: visible;
   transition: box-shadow 0.2s ease;
   contain: layout style;
 
   &:hover {
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2), 0 6px 12px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 12px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+      0 6px 12px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
   }
 
   &.is-dragging {
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25), 0 8px 16px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 16px 48px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
+      0 8px 16px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
     opacity: 0.9;
     cursor: move;
     will-change: left, top;
