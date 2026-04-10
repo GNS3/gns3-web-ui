@@ -296,14 +296,14 @@ input:focus {
     opacity: 1;
   }
 
-  // Edge handles
+  // Edge handles - transparent
   &.resize-handle-top {
     top: -4px;
     left: 12px;
     right: 12px;
     height: 12px;
     cursor: ns-resize;
-    background: linear-gradient(to bottom, var(--mat-sys-primary) 0%, transparent 100%);
+    background: transparent;
   }
 
   &.resize-handle-right {
@@ -312,7 +312,7 @@ input:focus {
     bottom: 12px;
     width: 12px;
     cursor: ew-resize;
-    background: linear-gradient(to left, var(--mat-sys-primary) 0%, transparent 100%);
+    background: transparent;
   }
 
   &.resize-handle-bottom {
@@ -321,7 +321,7 @@ input:focus {
     right: 12px;
     height: 12px;
     cursor: ns-resize;
-    background: linear-gradient(to top, var(--mat-sys-primary) 0%, transparent 100%);
+    background: transparent;
   }
 
   &.resize-handle-left {
@@ -330,7 +330,7 @@ input:focus {
     bottom: 12px;
     width: 12px;
     cursor: ew-resize;
-    background: linear-gradient(to right, var(--mat-sys-primary) 0%, transparent 100%);
+    background: transparent;
   }
 
   // Corner handles - more subtle
