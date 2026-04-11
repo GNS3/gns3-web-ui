@@ -335,7 +335,7 @@
   }
 
   code {
-    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 15%, transparent);
     padding: 2px 6px;
     border-radius: 4px;
     font-family: monospace;
@@ -343,12 +343,13 @@
   }
 
   pre {
-    background-color: color-mix(in srgb, var(--mat-sys-surface-container-high) 50%, transparent);
+    background-color: color-mix(in srgb, var(--mat-sys-surface-container-high) 80%, transparent);
     padding: 12px;
     border-radius: 4px;
     overflow-x: auto;
     margin: 8px 0;
     font-size: 14px;
+    border: 1px solid var(--mat-sys-outline-variant);
 
     code {
       background-color: transparent;
