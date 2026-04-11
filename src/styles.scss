@@ -155,6 +155,13 @@ body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.mat-mdc-menu-p
   overflow-y: auto;
 }
 
+/* Template menu - fixed width and increased height to prevent double scrollbar */
+body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.template-menu {
+  max-width: 400px;
+  width: 400px;
+  max-height: 700px;
+}
+
 /* =============================================
 // Tab Styles
 // ============================================= */
