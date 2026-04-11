@@ -47,7 +47,7 @@ export type MapBackgroundKey =
  */
 export const DEFAULT_THEME_TOKEN = new InjectionToken<PrebuiltTheme>('DEFAULT_THEME_TOKEN', {
   providedIn: 'root',
-  factory: () => 'deeppurple-amber' as PrebuiltTheme,
+  factory: () => 'indigo-pink' as PrebuiltTheme,
 });
 
 /**
@@ -73,11 +73,11 @@ export class ThemeService {
   public mapThemeChanged = new EventEmitter<string>();
 
   // Current theme state
-  private currentTheme: PrebuiltTheme = 'deeppurple-amber';
+  private currentTheme: PrebuiltTheme = 'indigo-pink';
   private currentMapTheme: MapThemeType = 'auto';
 
   // Public properties for backward compatibility
-  public savedTheme: string = 'deeppurple-amber';
+  public savedTheme: string = 'indigo-pink';
   public savedMapTheme: string = 'auto';
 
   // All available prebuilt themes with MD3 palette colors
@@ -275,7 +275,7 @@ export class ThemeService {
    * @deprecated Use setTheme() instead
    */
   setDarkMode(isDark: boolean): void {
-    const targetTheme = isDark ? 'pink-bluegrey' : 'deeppurple-amber';
+    const targetTheme = isDark ? 'pink-bluegrey' : 'indigo-pink';
     this.setTheme(targetTheme);
   }
 
