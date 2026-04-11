@@ -37,7 +37,7 @@ import { OverlayContainer } from '@angular/cdk/overlay';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ChatInputAreaComponent implements OnInit, OnDestroy {
-  readonly placeholder = input('Type your message... (Ctrl+Enter to send)');
+  readonly placeholder = input('Message (Ctrl+Enter to send)');
   readonly disabled = input(false);
   readonly maxLength = input(4000);
   readonly showCharCount = input(false);
