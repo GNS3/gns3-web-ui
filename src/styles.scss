@@ -11,6 +11,12 @@
 @use 'styles/markdown' as *;
 
 /* =============================================
+// Prism.js Syntax Highlighting Theme
+// Using Tomorrow Night theme for dark mode compatibility
+// ============================================= */
+@import 'prismjs/themes/prism-tomorrow.css';
+
+/* =============================================
 // Global Scrollbar Styles
 // ============================================= */
 ::-webkit-scrollbar {

@@ -1,8 +1,24 @@
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, AfterViewInit } from '@angular/core';
 import { MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
+import 'prismjs';
+import 'prismjs/components/prism-typescript';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-python';
+import 'prismjs/components/prism-java';
+import 'prismjs/components/prism-bash';
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-scss';
+import 'prismjs/components/prism-markup';
+import 'prismjs/components/prism-json';
+import 'prismjs/components/prism-yaml';
+import 'prismjs/components/prism-go';
+import 'prismjs/components/prism-rust';
+import 'prismjs/components/prism-c';
+import 'prismjs/components/prism-cpp';
 
 /**
  * Code Block Dialog Data Interface
@@ -45,11 +61,18 @@ export interface CodeBlockDialogData {
   `,
   styleUrls: ['./code-block-dialog.component.scss'],
 })
-export class CodeBlockDialogComponent {
+export class CodeBlockDialogComponent implements AfterViewInit {
   constructor(
     private dialogRef: MatDialogRef<CodeBlockDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CodeBlockDialogData
   ) {}
+
+  ngAfterViewInit(): void {
+    // Apply Prism syntax highlighting after view init
+    if (typeof window !== 'undefined' && (window as any).Prism) {
+      (window as any).Prism.highlightAll();
+    }
+  }
 
   close(): void {
     this.dialogRef.close();
