@@ -8,6 +8,7 @@
 @use 'styles/dialogs' as *;
 @use 'styles/map' as *;
 @use 'styles/xterm-context-menu' as *;
+@use 'styles/markdown' as *;
 
 /* =============================================
 // Global Scrollbar Styles
@@ -57,20 +58,8 @@
 }
 
 /* =============================================
-// Global markdown list fix
+// Global markdown list fix (deprecated - moved to _markdown.scss)
 // ============================================= */
-app-chat-message-list markdown p,
-app-chat-message-list markdown ul,
-app-chat-message-list markdown ol,
-app-chat-message-list markdown li {
-  margin-top: 0.1em;
-  margin-bottom: 0.1em;
-  line-height: 1.2;
-}
-
-app-chat-message-list markdown li p {
-  margin: 0;
-}
 
 /* =============================================
 // Dialog Styles
