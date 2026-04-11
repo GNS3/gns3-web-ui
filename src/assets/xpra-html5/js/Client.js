@@ -128,7 +128,7 @@ class XpraClient {
     this.vrefresh = -1;
     this.bandwidth_limit = 0;
     this.reconnect = true;
-    this.reconnect_count = 5;
+    this.reconnect_count = 10;
     this.reconnect_in_progress = false;
     this.reconnect_delay = 1000; //wait 1 second before retrying
     this.reconnect_attempt = 0;
