@@ -16246,7 +16246,9 @@ $.widget( "ui.tooltip", {
 		// JAWS announces deletions even when aria-relevant="additions"
 		// Voiceover will sometimes re-read the entire log region's contents from the beginning
 		this.liveRegion.children().hide();
-		a11yContent = $( "<div>" ).html( tooltip.find( ".ui-tooltip-content" ).html() );
+		// Use .text() to safely copy tooltip content for accessibility
+		// This prevents XSS if tooltip content was set via .html()
+		a11yContent = $( "<div>" ).text( tooltip.find( ".ui-tooltip-content" ).text() );
 		a11yContent.removeAttr( "name" ).find( "[name]" ).removeAttr( "name" );
 		a11yContent.removeAttr( "id" ).find( "[id]" ).removeAttr( "id" );
 		a11yContent.appendTo( this.liveRegion );
