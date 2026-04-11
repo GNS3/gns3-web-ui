@@ -640,7 +640,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     CdkAccordionModule,
     CdkTreeModule,
     MarkdownModule.forRoot({
-      mermaid: false,
       prism: {
         languages: ['javascript', 'typescript', 'python', 'java', 'bash', 'shell', 'css', 'scss', 'html', 'json', 'yaml', 'xml', 'sql', 'go', 'rust', 'c', 'cpp', 'jinja2'],
       },
