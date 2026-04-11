@@ -1517,6 +1517,13 @@
         var _ = this,
             loadRange, cloneRange, rangeStart, rangeEnd;
 
+        // Validate image URL to prevent XSS
+        function isValidImageUrl(url) {
+            if (!url || typeof url !== 'string') return false;
+            // Only allow safe protocols for images
+            return /^(https?:|data:image\/)[\x00-\x7F]*$/i.test(url);
+        }
+
         function loadImages(imagesScope) {
 
             $('img[data-lazy]', imagesScope).each(function() {
@@ -1526,6 +1533,16 @@
                     imageSrcSet = $(this).attr('data-srcset'),
                     imageSizes  = $(this).attr('data-sizes') || _.$slider.attr('data-sizes'),
                     imageToLoad = document.createElement('img');
+
+                // Skip invalid URLs to prevent XSS
+                if (!isValidImageUrl(imageSource)) {
+                    image
+                        .removeAttr( 'data-lazy' )
+                        .removeClass( 'slick-loading' )
+                        .addClass( 'slick-lazyload-error' );
+                    _.$slider.trigger('lazyLoadError', [ _, image, imageSource ]);
+                    return;
+                }
 
                 imageToLoad.onload = function() {
 
@@ -1745,6 +1762,13 @@
             imageSizes,
             imageToLoad;
 
+        // Validate image URL to prevent XSS
+        function isValidImageUrl(url) {
+            if (!url || typeof url !== 'string') return false;
+            // Only allow safe protocols for images
+            return /^(https?:|data:image\/)[\x00-\x7F]*$/i.test(url);
+        }
+
         if ( $imgsToLoad.length ) {
 
             image = $imgsToLoad.first();
@@ -1752,6 +1776,16 @@
             imageSrcSet = image.attr('data-srcset');
             imageSizes  = image.attr('data-sizes') || _.$slider.attr('data-sizes');
             imageToLoad = document.createElement('img');
+
+            // Skip invalid URLs to prevent XSS
+            if (!isValidImageUrl(imageSource)) {
+                image
+                    .removeAttr( 'data-lazy' )
+                    .removeClass( 'slick-loading' )
+                    .addClass( 'slick-lazyload-error' );
+                _.$slider.trigger('lazyLoadError', [ _, image, imageSource ]);
+                return;
+            }
 
             imageToLoad.onload = function() {
 

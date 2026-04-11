@@ -551,6 +551,12 @@
           }
         }
         console.log("opening client url=", url);
+        // Validate URL to prevent open redirect and XSS
+        // Only allow safe protocols for navigation
+        if (!url.match(/^(xpra\+ws|xpra\+wss):\/\/[a-zA-Z0-9\-._~:\/?#\[\]@!$&'()*+,;=%]*$/)) {
+          Utilities.error("Invalid URL, rejecting:", url);
+          return;
+        }
         window.location = url;
       }
 
@@ -697,7 +703,7 @@
           return v;
         };
 
-        const ALLOWED_CHARS = "0-9A-Za-z _\+-:";
+        const ALLOWED_CHARS = "0-9A-Za-z _+\-:";
         const getstrparam = function(prop, allowed_chars) {
           const value = getparam(prop) || "";
           const chars = allowed_chars || ALLOWED_CHARS;
@@ -1029,6 +1035,11 @@
 
         function load_icon(icon, src) {
           const url = get_host_address(true) + src;
+          // Validate image URL to prevent XSS
+          if (!url.match(/^(https?:|data:image\/)[\x00-\x7F]*$/i)) {
+            Utilities.error("Invalid icon URL, rejecting:", url);
+            return;
+          }
           icon.onload = function() {
             Utilities.log("loaded icon", url);
           };
