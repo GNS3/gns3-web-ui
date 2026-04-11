@@ -35,7 +35,7 @@
       <div class="web-wireshark-inline-header__title">
         <mat-icon class="header-icon">analytics</mat-icon>
         <span>Web Wireshark</span>
-        <span class="link-info">Link {{ link().link_id?.substring(0, 8) }}</span>
+        <span class="link-info">{{ link().capture_file_name }}</span>
       </div>
       <div class="web-wireshark-inline-header__actions">
         <button mat-icon-button class="minimize-button" (click)="toggleMinimize()" title="Minimize">
