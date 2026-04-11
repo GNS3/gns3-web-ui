@@ -3141,7 +3141,7 @@ class XpraClient {
     } else if (this.toolbar_position === "top") {
       left = screen_width / 2 - toolbar_width / 2;
     } else if (this.toolbar_position === "top-right") {
-      left = screen_width - toolbar_width - 100;
+      left = screen_width - toolbar_width;
     } else if (this.toolbar_position === "novnc") {
       left = 0;
       top = screen_height / 2 - toolbar_height / 2 - 100;
