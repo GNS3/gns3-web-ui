@@ -227,28 +227,32 @@
   h6 {
     color: var(--mat-sys-on-surface);
     font-weight: 600;
-    margin: 8px 0 4px;
   }
 
   h1 {
     font-size: 18px;
+    margin: 12px 0 8px;
   }
 
   h2 {
     font-size: 16px;
+    margin: 10px 0 6px;
   }
 
   h3 {
     font-size: 15px;
+    margin: 8px 0 4px;
   }
 
   h4 {
     font-size: 14px;
+    margin: 8px 0 4px;
   }
 
   h5,
   h6 {
     font-size: 13px;
+    margin: 8px 0 4px;
   }
 
   p {
@@ -258,11 +262,25 @@
   a {
     color: var(--mat-sys-primary);
     text-decoration: underline;
+
+    &:hover {
+      color: var(--mat-sys-primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
   }
 
   ul,
   ol {
     padding-left: 24px;
+    margin: 4px 0;
+  }
+
+  // Nested lists spacing
+  ul ul,
+  ol ol,
+  ul ol,
+  ol ul {
     margin: 4px 0;
   }
 
@@ -295,6 +313,16 @@
     color: var(--mat-sys-on-surface);
   }
 
+  // Table row hover effect
+  tbody tr:hover {
+    background-color: var(--mat-sys-surface-container-low);
+  }
+
+  // Table zebra striping
+  tbody tr:nth-child(even) {
+    background-color: color-mix(in srgb, var(--mat-sys-surface-container-low) 50%, transparent);
+  }
+
   hr {
     border: none;
     border-top: 1px solid var(--mat-sys-outline);
@@ -321,6 +349,7 @@
     overflow-x: auto;
     margin: 8px 0;
     font-size: 14px;
+    position: relative;
 
     code {
       background-color: transparent;
