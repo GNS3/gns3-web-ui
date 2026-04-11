@@ -100,6 +100,42 @@
         color: var(--mat-sys-error);
       }
     }
+
+    .restart-button {
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        vertical-align: middle;
+        color: var(--mat-sys-primary);
+      }
+
+      &:hover:not(:disabled) {
+        background-color: var(--mat-sys-primary-container);
+        color: var(--mat-sys-on-primary-container);
+      }
+
+      &:hover mat-icon {
+        color: var(--mat-sys-on-primary-container);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .restart-icon.is-spinning {
+        animation: spin 1s linear infinite;
+      }
+    }
   }
 }
 

@@ -42,10 +42,10 @@
           mat-icon-button
           class="restart-button"
           (click)="restartWireshark()"
-          title="Restart"
+          title="Restart Web Wireshark"
           [disabled]="isRestarting()"
         >
-          <mat-icon>{{ isRestarting() ? 'loading' : 'refresh' }}</mat-icon>
+          <mat-icon class="restart-icon" [class.is-spinning]="isRestarting()">restart_alt</mat-icon>
         </button>
         <button mat-icon-button class="minimize-button" (click)="toggleMinimize()" title="Minimize">
           <mat-icon>remove</mat-icon>
