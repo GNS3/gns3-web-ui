@@ -343,7 +343,8 @@
   }
 
   pre {
-    background-color: var(--mat-sys-surface-container-highest);
+    background-color: var(--mat-sys-tertiary-container);
+    color: var(--mat-sys-on-tertiary-container);
     padding: 12px;
     border-radius: 4px;
     overflow-x: auto;
