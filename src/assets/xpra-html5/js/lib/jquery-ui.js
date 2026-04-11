@@ -9413,7 +9413,9 @@ $.widget( "ui.button", {
 			if ( this.isInput ) {
 				this.element.val( this.options.label );
 			} else {
-				this.element.html( this.options.label );
+				// Use .text() instead of .html() to prevent XSS
+				// If HTML content is needed, it should be explicitly escaped by the caller
+				this.element.text( this.options.label );
 			}
 		}
 		this._addClass( "ui-button", "ui-widget" );
@@ -11713,6 +11715,16 @@ $.extend( Datepicker.prototype, {
 			showMonthAfterYear = this._get( inst, "showMonthAfterYear" ),
 			selectMonthLabel = this._get( inst, "selectMonthLabel" ),
 			selectYearLabel = this._get( inst, "selectYearLabel" ),
+
+			// Escape HTML special characters in labels to prevent XSS
+			escapeHtml = function( str ) {
+				return String( str )
+					.replace( /&/g, "&amp;" )
+					.replace( /</g, "&lt;" )
+					.replace( />/g, "&gt;" )
+					.replace( /"/g, "&quot;" )
+					.replace( /'/g, "&#39;" );
+			},
 			html = "<div class='ui-datepicker-title'>",
 			monthHtml = "";
 
@@ -11722,12 +11734,12 @@ $.extend( Datepicker.prototype, {
 		} else {
 			inMinYear = ( minDate && minDate.getFullYear() === drawYear );
 			inMaxYear = ( maxDate && maxDate.getFullYear() === drawYear );
-			monthHtml += "<select class='ui-datepicker-month' aria-label='" + selectMonthLabel + "' data-handler='selectMonth' data-event='change'>";
+			monthHtml += "<select class='ui-datepicker-month' aria-label='" + escapeHtml( selectMonthLabel ) + "' data-handler='selectMonth' data-event='change'>";
 			for ( month = 0; month < 12; month++ ) {
 				if ( ( !inMinYear || month >= minDate.getMonth() ) && ( !inMaxYear || month <= maxDate.getMonth() ) ) {
 					monthHtml += "<option value='" + month + "'" +
 						( month === drawMonth ? " selected='selected'" : "" ) +
-						">" + monthNamesShort[ month ] + "</option>";
+						">" + escapeHtml( monthNamesShort[ month ] ) + "</option>";
 				}
 			}
 			monthHtml += "</select>";
@@ -11757,11 +11769,11 @@ $.extend( Datepicker.prototype, {
 				endYear = Math.max( year, determineYear( years[ 1 ] || "" ) );
 				year = ( minDate ? Math.max( year, minDate.getFullYear() ) : year );
 				endYear = ( maxDate ? Math.min( endYear, maxDate.getFullYear() ) : endYear );
-				inst.yearshtml += "<select class='ui-datepicker-year' aria-label='" + selectYearLabel + "' data-handler='selectYear' data-event='change'>";
+				inst.yearshtml += "<select class='ui-datepicker-year' aria-label='" + escapeHtml( selectYearLabel ) + "' data-handler='selectYear' data-event='change'>";
 				for ( ; year <= endYear; year++ ) {
 					inst.yearshtml += "<option value='" + year + "'" +
 						( year === drawYear ? " selected='selected'" : "" ) +
-						">" + year + "</option>";
+						">" + escapeHtml( year ) + "</option>";
 				}
 				inst.yearshtml += "</select>";
 
@@ -16188,7 +16200,12 @@ $.widget( "ui.tooltip", {
 		// exists, then just update the content and bail.
 		tooltipData = this._find( target );
 		if ( tooltipData ) {
-			tooltipData.tooltip.find( ".ui-tooltip-content" ).html( content );
+			// Use .text() to prevent XSS unless contentHtml option is true
+			if ( this.options.contentHtml ) {
+				tooltipData.tooltip.find( ".ui-tooltip-content" ).html( content );
+			} else {
+				tooltipData.tooltip.find( ".ui-tooltip-content" ).text( content );
+			}
 			return;
 		}
 
@@ -16210,7 +16227,12 @@ $.widget( "ui.tooltip", {
 		tooltipData = this._tooltip( target );
 		tooltip = tooltipData.tooltip;
 		this._addDescribedBy( target, tooltip.attr( "id" ) );
-		tooltip.find( ".ui-tooltip-content" ).html( content );
+		// Use .text() to prevent XSS unless contentHtml option is true
+		if ( this.options.contentHtml ) {
+			tooltip.find( ".ui-tooltip-content" ).html( content );
+		} else {
+			tooltip.find( ".ui-tooltip-content" ).text( content );
+		}
 
 		// Support: Voiceover on OS X, JAWS on IE <= 9
 		// JAWS announces deletions even when aria-relevant="additions"
