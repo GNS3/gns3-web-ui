@@ -343,7 +343,7 @@
   }
 
   pre {
-    background-color: color-mix(in srgb, var(--mat-sys-surface-container-high) 80%, transparent);
+    background-color: var(--mat-sys-surface-container-highest);
     padding: 12px;
     border-radius: 4px;
     overflow-x: auto;
