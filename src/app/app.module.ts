@@ -639,11 +639,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     MatButtonToggleModule,
     CdkAccordionModule,
     CdkTreeModule,
-    MarkdownModule.forRoot({
-      prism: {
-        languages: ['javascript', 'typescript', 'python', 'java', 'bash', 'shell', 'css', 'scss', 'html', 'json', 'yaml', 'xml', 'sql', 'go', 'rust', 'c', 'cpp', 'jinja2'],
-      },
-    }),
+    MarkdownModule.forRoot(),
   ],
   providers: [
     SettingsService,

@@ -11,13 +11,6 @@
 @use 'styles/markdown' as *;
 
 /* =============================================
-// Prism.js Syntax Highlighting Custom Theme
-// Only syntax colors, no background (background handled by Material theme)
-// ============================================= */
-@import 'prismjs/prism';
-@import 'prismjs/plugins/line-numbers/prism-line-numbers';
-
-/* =============================================
 // Global Scrollbar Styles
 // ============================================= */
 ::-webkit-scrollbar {
