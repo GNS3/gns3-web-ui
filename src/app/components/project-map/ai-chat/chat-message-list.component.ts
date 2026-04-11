@@ -61,9 +61,6 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
       this.scrollToBottom();
       this.shouldScrollToBottom = false;
     }
-
-    // Add copy buttons to code blocks
-    this.addCopyButtonsToCodeBlocks();
   }
 
   /**
@@ -212,72 +209,5 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
    */
   sendSuggestion(suggestion: string): void {
     this.suggestionClicked.emit(suggestion);
-  }
-
-  /**
-   * Add copy buttons to all code blocks
-   */
-  private addCopyButtonsToCodeBlocks(): void {
-    const container = this.messageContainer()?.nativeElement;
-    if (!container) return;
-
-    const codeBlocks = container.querySelectorAll('pre > code');
-
-    codeBlocks.forEach((codeBlock: HTMLElement) => {
-      const pre = codeBlock.parentElement;
-      if (!pre || pre.classList.contains('code-copy-button-added')) return;
-
-      // Mark as processed to avoid duplicate buttons
-      pre.classList.add('code-copy-button-added');
-
-      // Create copy button
-      const copyButton = document.createElement('button');
-      copyButton.className = 'code-copy-button';
-      copyButton.innerHTML = `
-        <mat-icon class="code-copy-icon">content_copy</mat-icon>
-        <span class="code-copy-text">Copy</span>
-      `;
-      copyButton.setAttribute('type', 'button');
-
-      // Add click handler
-      copyButton.addEventListener('click', () => {
-        this.copyCode(codeBlock.textContent || '', copyButton);
-      });
-
-      // Add button to pre element
-      pre.appendChild(copyButton);
-    });
-  }
-
-  /**
-   * Copy code to clipboard
-   * @param code Code text
-   * @param button Copy button element
-   */
-  private copyCode(code: string, button: HTMLElement): void {
-    // Remove trailing newline that markdown often adds
-    const codeToCopy = code.replace(/\n$/, '');
-
-    navigator.clipboard.writeText(codeToCopy).then(
-      () => {
-        // Success - show feedback
-        const icon = button.querySelector('.code-copy-icon');
-        const text = button.querySelector('.code-copy-text');
-
-        if (icon) icon.textContent = 'check';
-        if (text) text.textContent = 'Copied!';
-        button.classList.add('code-copy-button--copied');
-
-        // Reset after 2 seconds
-        setTimeout(() => {
-          if (icon) icon.textContent = 'content_copy';
-          if (text) text.textContent = 'Copy';
-          button.classList.remove('code-copy-button--copied');
-        }, 2000);
-      },
-      (err) => {
-        console.error('Failed to copy code:', err);
-      }
-    );
   }
 }
