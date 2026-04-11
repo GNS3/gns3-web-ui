@@ -133,6 +133,7 @@ loadData() {
 |------|-------------|
 | **No `!important`** | Use selector specificity |
 | **No `::ng-deep`** | Use ViewEncapsulation or global styles |
+| **No `:deep()`** | Use ViewEncapsulation or global styles (style penetration forbidden) |
 | **No `ViewEncapsulation.None`** | Causes style pollution |
 | **No hardcoded colors** | Use Material theme CSS variables (`--mat-sys-*`) |
 | **Dialog styles centralized** | All in `src/styles/_dialogs.scss` |

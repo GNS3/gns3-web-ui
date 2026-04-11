@@ -37,6 +37,16 @@ if [ -n "$STAGED_SCSS" ]; then
   fi
 fi
 
+# Check for :deep() in SCSS (FORBIDDEN)
+if [ -n "$STAGED_SCSS" ]; then
+  VIOLATIONS=$(grep -rn ":deep(" $STAGED_SCSS 2>/dev/null | grep -v "//.*:deep(" || true)
+  if [ -n "$VIOLATIONS" ]; then
+    echo "❌ FAIL: :deep() found in staged SCSS files (FORBIDDEN)"
+    echo "$VIOLATIONS"
+    exit 1
+  fi
+fi
+
 # Check for !important in SCSS (FORBIDDEN)
 if [ -n "$STAGED_SCSS" ]; then
   VIOLATIONS=$(grep -rn "!important" $STAGED_SCSS 2>/dev/null | grep -v "//.*!important" || true)

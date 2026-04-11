@@ -44,6 +44,16 @@ jobs:
           fi
           echo "✅ No ::ng-deep found"
 
+      - name: Check for :deep() in SCSS
+        run: |
+          FOUND=$(grep -r ":deep(" --include="*.scss" src/ || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ FORBIDDEN: :deep() found in SCSS files"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No :deep() found"
+
       - name: Check for !important in SCSS
         run: |
           FOUND=$(grep -rn "!important" --include="*.scss" src/ || true)
