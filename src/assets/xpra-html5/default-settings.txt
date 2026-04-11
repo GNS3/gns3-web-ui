@@ -17,6 +17,7 @@ file_transfer=false
 printing=false
 sound=false
 audio=false
+sound_button=false
 fullscreen_button=false
 keyboard_button=false
 cursor_lock_button=false
