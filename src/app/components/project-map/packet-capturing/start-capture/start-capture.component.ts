@@ -140,7 +140,24 @@ export class StartCaptureDialogComponent implements OnInit {
         },
         error: (err) => {
           this.isLoading.set(false);
-          this.errorMessage.set(`Failed to start Web Wireshark: ${err.message || 'Unknown error'}`);
+          // Provide user-friendly error messages based on HTTP status code
+          if (err.status === 409) {
+            this.errorMessage.set(
+              'A packet capture is already running on this link. Please stop the existing capture first.'
+            );
+          } else if (err.status === 404) {
+            this.errorMessage.set(
+              'The link or controller could not be found. Please refresh the page and try again.'
+            );
+          } else if (err.status === 403) {
+            this.errorMessage.set(
+              'You do not have permission to start packet capture on this link.'
+            );
+          } else {
+            this.errorMessage.set(
+              `Failed to start Web Wireshark: ${err.message || 'Unknown error'}`
+            );
+          }
         },
       });
     } else {
