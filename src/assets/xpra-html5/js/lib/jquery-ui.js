@@ -9127,11 +9127,13 @@ $.widget( "ui.checkboxradio", [ $.ui.formResetMixin, {
 		labelContents = this.label.contents().not( this.element[ 0 ] );
 
 		if ( labelContents.length ) {
+			// Use .text() to safely extract text content instead of .html()
+			// This prevents XSS by treating the content as plain text
 			this.originalLabel += labelContents
 				.clone()
 				.wrapAll( "<div></div>" )
 				.parent()
-				.html();
+				.text();
 		}
 
 		// Set the label option if we found label text
@@ -9387,7 +9389,9 @@ $.widget( "ui.button", {
 			options.disabled = disabled;
 		}
 
-		this.originalLabel = this.isInput ? this.element.val() : this.element.html();
+		// Use .text() instead of .html() to prevent XSS when reading label content
+		// .text() returns the text content only, not HTML, which is safer
+		this.originalLabel = this.isInput ? this.element.val() : this.element.text();
 		if ( this.originalLabel ) {
 			options.label = this.originalLabel;
 		}
@@ -10031,7 +10035,9 @@ $.extend( Datepicker.prototype, {
 				inst.trigger = $( "<button type='button'>" )
 					.addClass( this._triggerClass );
 				if ( buttonImage ) {
-					inst.trigger.html(
+					// Use .append() instead of .html() for better security
+					// The img element is created separately, not from user input
+					inst.trigger.append(
 						$( "<img>" )
 							.attr( {
 								src: buttonImage,
@@ -12434,7 +12440,9 @@ $.widget( "ui.dialog", {
 		if ( this.options.title ) {
 			title.text( this.options.title );
 		} else {
-			title.html( "&#160;" );
+			// Use .text() with non-breaking space character instead of .html()
+			// This prevents XSS while maintaining the same visual effect
+			title.text( "\u00A0" );
 		}
 	},
 
@@ -13429,7 +13437,9 @@ var widgetsSelectmenu = $.widget( "ui.selectmenu", [ $.ui.formResetMixin, {
 		if ( value ) {
 			element.text( value );
 		} else {
-			element.html( "&#160;" );
+			// Use .text() with non-breaking space character instead of .html()
+			// This prevents XSS while maintaining the same visual effect
+			element.text( "\u00A0" );
 		}
 	},
 
@@ -15077,6 +15087,7 @@ $.widget( "ui.tabs", {
 	delay: 300,
 	options: {
 		active: null,
+		allowHtml: false,
 		classes: {
 			"ui-tabs": "ui-corner-all",
 			"ui-tabs-nav": "ui-corner-all",
@@ -15995,6 +16006,7 @@ $.widget( "ui.tooltip", {
 			// Escape title, since we're going from an attribute to raw HTML
 			return $( "<a>" ).text( title ).html();
 		},
+		contentHtml: false,
 		hide: true,
 
 		// Disabled elements have inconsistent behavior across browsers (#8661)
