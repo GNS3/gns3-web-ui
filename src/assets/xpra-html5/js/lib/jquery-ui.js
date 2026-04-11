@@ -9571,7 +9571,8 @@ $.widget( "ui.button", {
 
 				// If there is an icon, append it, else nothing then append the value
 				// this avoids removal of the icon when setting label text
-				this.element.html( value );
+				// Use .text() to prevent XSS when label contains HTML
+				this.element.text( value );
 				if ( this.icon ) {
 					this._attachIcon( this.options.iconPosition );
 					this._attachIconSpace( this.options.iconPosition );
@@ -15902,7 +15903,14 @@ $.widget( "ui.tabs", {
 					// support: jQuery <1.8
 					// http://bugs.jquery.com/ticket/11778
 					setTimeout( function() {
-						panel.html( response );
+						// Use .text() to prevent XSS unless allowHtml option is true
+						// This prevents XSS from malicious AJAX responses while
+						// still allowing legitimate HTML content when explicitly enabled
+						if ( that.options.allowHtml ) {
+							panel.html( response );
+						} else {
+							panel.text( response );
+						}
 						that._trigger( "load", event, eventData );
 
 						complete( jqXHR, status );
