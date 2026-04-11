@@ -9316,7 +9316,8 @@ $.widget( "ui.checkboxradio", [ $.ui.formResetMixin, {
 		}
 		contents.remove();
 
-		this.label.append( this.options.label );
+		// Use .text() to prevent XSS when label contains HTML
+		this.label.text( this.options.label );
 	},
 
 	refresh: function() {
