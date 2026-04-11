@@ -26,6 +26,9 @@ mediasource=false
 aurora=false
 http-stream=false
 
+# Menu toolbar position: top-left, top, top-right, novnc
+toolbar_position=top-right
+
 # hide some menus:
 # xpramenu=false
 # cursor_lock_button=false
