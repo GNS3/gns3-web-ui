@@ -1070,24 +1070,3 @@ h2[mat-dialog-title] {
 }
 
 /* Web Wireshark Inline Window Styles are now in the component's own SCSS file */
-
-/* =============================================
-// Code Block Dialog Panel
-// Custom sized dialog for displaying long code blocks
-// Inherits from base-dialog-panel
-// ============================================= */
-.code-block-dialog-panel {
-  width: 90vw;
-  max-width: 1200px;
-  max-height: 90vh;
-
-  /* Override content padding for code display */
-  .mat-mdc-dialog-content {
-    padding: 0;
-  }
-
-  /* Add border top to actions */
-  .mat-mdc-dialog-actions {
-    border-top: 1px solid var(--mat-sys-outline-variant);
-  }
-}

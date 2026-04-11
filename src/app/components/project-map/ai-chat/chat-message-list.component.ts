@@ -143,7 +143,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked, Af
 
     this.dialog.open(CodeBlockDialogComponent, {
       data,
-      panelClass: ['base-dialog-panel', 'code-block-dialog-panel'],
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
     });
   }
 
