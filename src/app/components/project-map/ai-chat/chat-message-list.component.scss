@@ -239,17 +239,20 @@
   }
 
   h3 {
+    font-size: 15px;
+  }
+
+  h4 {
     font-size: 14px;
   }
 
-  h4,
   h5,
   h6 {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   p {
-    margin: 4px 0;
+    margin: 8px 0;
   }
 
   a {
@@ -259,12 +262,12 @@
 
   ul,
   ol {
-    padding-left: 20px;
+    padding-left: 24px;
     margin: 4px 0;
   }
 
   li {
-    margin: 2px 0;
+    margin: 4px 0;
   }
 
   blockquote {
@@ -283,7 +286,7 @@
   th,
   td {
     border: 1px solid var(--mat-sys-outline);
-    padding: 6px 10px;
+    padding: 8px 12px;
     text-align: left;
   }
 
@@ -313,10 +316,10 @@
 
   pre {
     background-color: color-mix(in srgb, var(--mat-sys-surface-container-high) 50%, transparent);
-    padding: 8px;
+    padding: 12px;
     border-radius: 4px;
     overflow-x: auto;
-    margin: 4px 0;
+    margin: 8px 0;
     font-size: 14px;
 
     code {
