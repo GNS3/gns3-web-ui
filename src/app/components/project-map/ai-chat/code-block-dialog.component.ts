@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject } from '@angular/core';
 import { MatDialogRef, MatDialogTitle, MatDialogContent, MatDialogActions } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -22,6 +22,7 @@ export interface CodeBlockDialogData {
   selector: 'app-code-block-dialog',
   standalone: true,
   imports: [MatDialogTitle, MatDialogContent, MatDialogActions, MatButtonModule, MatIconModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <h2 mat-dialog-title class="code-block-dialog__title">
       <mat-icon class="code-block-dialog__icon">code</mat-icon>
@@ -45,8 +46,10 @@ export interface CodeBlockDialogData {
   styleUrls: ['./code-block-dialog.component.scss'],
 })
 export class CodeBlockDialogComponent {
-  protected readonly data = inject<CodeBlockDialogData>(MAT_DIALOG_DATA);
-  private readonly dialogRef = inject(MatDialogRef<CodeBlockDialogComponent>);
+  constructor(
+    private dialogRef: MatDialogRef<CodeBlockDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: CodeBlockDialogData
+  ) {}
 
   close(): void {
     this.dialogRef.close();
