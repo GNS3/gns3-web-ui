@@ -54,6 +54,14 @@ jobs:
         # Details on CodeQL's query packs refer to : https://docs.github.com/en/code-security/code-scanning/automatically-scanning-your-code-for-vulnerabilities-and-errors/configuring-code-scanning#using-queries-in-ql-packs
         # queries: security-extended,security-and-quality
 
+        # Exclude specific third-party library files with known CodeQL false positives
+        # These files contain unused jQuery UI widgets that trigger "unsafe plugin" warnings
+        # but are not actually used by the application code
+        paths-ignore: |
+          'src/assets/xpra-html5/js/lib/jquery-ui.js'
+          'src/assets/xpra-html5/js/lib/slick.js'
+          'src/assets/xpra-html5/js/lib/jquery.js'
+
 
     # Autobuild attempts to build any compiled languages  (C/C++, C#, Go, or Java).
     # If this step fails, then you should remove it and run the build manually (see below)
