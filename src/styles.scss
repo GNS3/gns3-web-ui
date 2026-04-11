@@ -11,10 +11,11 @@
 @use 'styles/markdown' as *;
 
 /* =============================================
-// Prism.js Syntax Highlighting Theme
-// Using Tomorrow Night theme for dark mode compatibility
+// Prism.js Syntax Highlighting Custom Theme
+// Only syntax colors, no background (background handled by Material theme)
 // ============================================= */
-@import 'prismjs/themes/prism-tomorrow.css';
+@import 'prismjs/prism';
+@import 'prismjs/plugins/line-numbers/prism-line-numbers';
 
 /* =============================================
 // Global Scrollbar Styles
