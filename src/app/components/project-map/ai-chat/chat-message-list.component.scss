@@ -345,6 +345,7 @@
   pre {
     background-color: color-mix(in srgb, var(--mat-sys-surface-container-high) 50%, transparent);
     padding: 12px;
+    padding-top: 40px; // Extra padding for copy button
     border-radius: 4px;
     overflow-x: auto;
     margin: 8px 0;
@@ -357,6 +358,59 @@
       font-size: 14px;
     }
   }
+}
+
+// =============================================
+// Code Copy Button
+// =============================================
+.code-copy-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--mat-sys-surface-container);
+  border: 1px solid var(--mat-sys-outline);
+  border-radius: 4px;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 150ms ease;
+  opacity: 0.7;
+
+  &:hover {
+    background: var(--mat-sys-primary-container);
+    border-color: var(--mat-sys-primary);
+    color: var(--mat-sys-primary);
+    opacity: 1;
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &--copied {
+    background: var(--mat-sys-primary);
+    border-color: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+
+    .code-copy-icon {
+      color: var(--mat-sys-on-primary);
+    }
+  }
+
+  .code-copy-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+  }
+
+  .code-copy-text {
+    font-weight: 500;
+  }
+}
 }
 
 .gns3-chat-message-list__time {
