@@ -1275,6 +1275,12 @@ function setDocument( node ) {
 
 		var input;
 
+		// Validate expando contains only safe characters to prevent XSS
+		// expando is generated as "jQuery" + version number, e.g., "jQuery3.141592653589793"
+		if ( !/^[a-zA-Z0-9.]+$/.test( expando ) ) {
+			throw new Error( "Invalid expando value: " + expando );
+		}
+
 		documentElement.appendChild( el ).innerHTML =
 			"<a id='" + expando + "' href='' disabled='disabled'></a>" +
 			"<select id='" + expando + "-\r\\' disabled='disabled'>" +
