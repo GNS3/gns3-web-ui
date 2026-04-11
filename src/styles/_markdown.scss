@@ -149,8 +149,7 @@ app-chat-message-list {
 
     // Code blocks
     pre {
-      background-color: var(--mat-sys-tertiary-container);
-      color: var(--mat-sys-on-tertiary-container);
+      background-color: color-mix(in srgb, var(--mat-sys-surface-container-high) 50%, transparent);
       padding: 12px;
       border-radius: 4px;
       overflow-x: auto;
