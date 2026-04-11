@@ -47,13 +47,9 @@ SOFTWARE.
   display: none;
   position: fixed;
   height: 30px;
-  padding: 0 0 0 20px;
+  padding: 0 20px 0 0;
   z-index: 100000;
-  background: repeating-linear-gradient(90deg,
-      white,
-      white 1px,
-      black 1px,
-      black 2px);
+  background: white;
 
   border-color: grey;
   border-width: 1px;
