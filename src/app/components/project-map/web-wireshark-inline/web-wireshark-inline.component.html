@@ -64,6 +64,12 @@
         <span>Starting Web Wireshark...</span>
       </div>
       }
+      @if (isRestarting()) {
+      <div class="restart-overlay">
+        <mat-icon class="restart-icon">restart_alt</mat-icon>
+        <span>Restarting Web Wireshark...</span>
+      </div>
+      }
       <iframe
         [src]="wiresharkUrl"
         class="web-wireshark-inline__iframe"

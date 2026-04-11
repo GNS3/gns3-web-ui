@@ -186,6 +186,34 @@
   to { transform: rotate(360deg); }
 }
 
+.restart-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: color-mix(in srgb, var(--mat-sys-surface) 90%, transparent);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+
+  .restart-icon {
+    font-size: 48px;
+    color: var(--mat-sys-primary);
+    animation: spin 1s linear infinite;
+  }
+
+  span {
+    font-size: 14px;
+    color: var(--mat-sys-on-surface);
+    font-weight: 500;
+  }
+}
+
 .resize-handle {
   position: absolute;
   z-index: 100;
