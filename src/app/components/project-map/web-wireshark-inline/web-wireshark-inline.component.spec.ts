@@ -5,12 +5,14 @@ import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.se
 import { XpraConsoleService } from '@services/xpra-console.service';
 import { ToasterService } from '@services/toaster.service';
 import { WindowManagementService } from '@services/window-management.service';
+import { LinkService } from '@services/link.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ResizeEvent } from 'angular-resizable-element';
 import { Link } from '@models/link';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { ChangeDetectorRef } from '@angular/core';
+import { of } from 'rxjs';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 // Mock the resizable directives
@@ -29,6 +31,7 @@ describe('WebWiresharkInlineComponent', () => {
   let mockWindowManagementService: any;
   let mockSanitizer: any;
   let mockChangeDetector: any;
+  let mockLinkService: any;
 
   let mockController: Controller;
   let mockProject: Project;
@@ -80,6 +83,10 @@ describe('WebWiresharkInlineComponent', () => {
       markForCheck: vi.fn(),
       detectChanges: vi.fn(),
     };
+
+    mockLinkService = {
+      restartWiresharkCapture: vi.fn().mockReturnValue(of({ status: 'restarted', ws_url: 'ws://localhost:3080' })),
+    };
   };
 
   const createMockData = () => {
@@ -116,6 +123,7 @@ describe('WebWiresharkInlineComponent', () => {
         { provide: XpraConsoleService, useValue: mockXpraConsoleService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: WindowManagementService, useValue: mockWindowManagementService },
+        { provide: LinkService, useValue: mockLinkService },
         { provide: DomSanitizer, useValue: mockSanitizer },
       ],
     })
@@ -131,6 +139,7 @@ describe('WebWiresharkInlineComponent', () => {
     component['boundaryService'] = mockWindowBoundaryService;
     component['toasterService'] = mockToasterService;
     component['windowManagement'] = mockWindowManagementService;
+    component['linkService'] = mockLinkService;
     component['sanitizer'] = mockSanitizer;
 
     // Set inputs

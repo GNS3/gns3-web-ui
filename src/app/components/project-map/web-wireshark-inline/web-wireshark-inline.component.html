@@ -38,6 +38,15 @@
         <span class="link-info">{{ link().capture_file_name }}</span>
       </div>
       <div class="web-wireshark-inline-header__actions">
+        <button
+          mat-icon-button
+          class="restart-button"
+          (click)="restartWireshark()"
+          title="Restart"
+          [disabled]="isRestarting()"
+        >
+          <mat-icon>{{ isRestarting() ? 'loading' : 'refresh' }}</mat-icon>
+        </button>
         <button mat-icon-button class="minimize-button" (click)="toggleMinimize()" title="Minimize">
           <mat-icon>remove</mat-icon>
         </button>

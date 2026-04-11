@@ -30,6 +30,7 @@ import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.se
 import { XpraConsoleService } from '@services/xpra-console.service';
 import { ToasterService } from '@services/toaster.service';
 import { WindowManagementService } from '@services/window-management.service';
+import { LinkService } from '@services/link.service';
 
 @Component({
   selector: 'app-web-wireshark-inline',
@@ -79,11 +80,13 @@ export class WebWiresharkInlineComponent implements OnInit, OnDestroy {
   private isResizingSignal = signal(false);
   private isLoadingSignal = signal(true);
   private isMinimizedSignal = signal(false);
+  private isRestartingSignal = signal(false);
 
   public readonly isDragging = this.isDraggingSignal.asReadonly();
   public readonly isResizing = this.isResizingSignal.asReadonly();
   public readonly isLoading = this.isLoadingSignal.asReadonly();
   public readonly isMinimized = this.isMinimizedSignal.asReadonly();
+  public readonly isRestarting = this.isRestartingSignal.asReadonly();
 
   // Wireshark URL
   public wiresharkUrl: SafeResourceUrl = '';
@@ -95,6 +98,7 @@ export class WebWiresharkInlineComponent implements OnInit, OnDestroy {
   private renderer = inject(Renderer2);
   private sanitizer = inject(DomSanitizer);
   private windowManagement = inject(WindowManagementService);
+  private linkService = inject(LinkService);
 
   // Drag state
   private dragStartX = 0;
@@ -181,6 +185,36 @@ export class WebWiresharkInlineComponent implements OnInit, OnDestroy {
   toggleMinimize(): void {
     this.windowManagement.toggleMinimize(this.getWindowId(), 'wireshark', this.link().link_id);
     this.cdr.markForCheck();
+  }
+
+  /**
+   * Restart Web Wireshark capture
+   */
+  restartWireshark(): void {
+    if (this.isRestartingSignal()) {
+      return;
+    }
+
+    this.isRestartingSignal.set(true);
+    this.cdr.markForCheck();
+
+    this.linkService.restartWiresharkCapture(this.controller(), this.link()).subscribe({
+      next: (response) => {
+        console.log('[WebWiresharkInline] Wireshark restarted:', response);
+        this.isRestartingSignal.set(false);
+
+        // Reload the iframe by triggering a new URL build
+        this.wiresharkUrl = this.buildWiresharkUrl();
+        this.isLoadingSignal.set(true);
+        this.cdr.markForCheck();
+      },
+      error: (error) => {
+        console.error('[WebWiresharkInline] Failed to restart Wireshark:', error);
+        this.isRestartingSignal.set(false);
+        this.toasterService.error(`Failed to restart Web Wireshark: ${error.message || error.detail || 'Unknown error'}`);
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   /**

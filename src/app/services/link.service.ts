@@ -123,6 +123,14 @@ export class LinkService {
     return this.httpController.post(controller, `/projects/${link.project_id}/links/${link.link_id}/capture/stop`, {});
   }
 
+  restartWiresharkCapture(controller: Controller, link: Link) {
+    return this.httpController.post<{ status: string; ws_url: string }>(
+      controller,
+      `/projects/${link.project_id}/links/${link.link_id}/capture/wireshark/restart`,
+      {}
+    );
+  }
+
   resetLink(controller: Controller, link: Link) {
     return this.httpController.post(controller, `/projects/${link.project_id}/links/${link.link_id}/reset`, {});
   }
