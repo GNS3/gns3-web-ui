@@ -1074,27 +1074,20 @@ h2[mat-dialog-title] {
 /* =============================================
 // Code Block Dialog Panel
 // Custom sized dialog for displaying long code blocks
+// Inherits from base-dialog-panel
 // ============================================= */
 .code-block-dialog-panel {
   width: 90vw;
   max-width: 1200px;
   max-height: 90vh;
 
-  .mat-mdc-dialog-surface {
-    border-radius: 16px;
-  }
-
-  .mat-mdc-dialog-title {
-    padding: 16px 24px;
-    margin: 0;
-  }
-
+  /* Override content padding for code display */
   .mat-mdc-dialog-content {
     padding: 0;
   }
 
+  /* Add border top to actions */
   .mat-mdc-dialog-actions {
-    padding: 16px 24px;
     border-top: 1px solid var(--mat-sys-outline-variant);
   }
 }
