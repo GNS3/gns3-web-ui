@@ -470,3 +470,91 @@
     }
   }
 }
+
+// =============================================
+// Resize Handles
+// =============================================
+.resize-handle {
+  position: absolute;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+
+  .gns3-ai-chat:hover & {
+    opacity: 1;
+  }
+
+  // Edge handles - transparent
+  &.resize-handle-top {
+    top: -4px;
+    left: 12px;
+    right: 12px;
+    height: 12px;
+    cursor: ns-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-right {
+    top: 12px;
+    right: -4px;
+    bottom: 12px;
+    width: 12px;
+    cursor: ew-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-bottom {
+    bottom: -4px;
+    left: 12px;
+    right: 12px;
+    height: 12px;
+    cursor: ns-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-left {
+    top: 12px;
+    left: -4px;
+    bottom: 12px;
+    width: 12px;
+    cursor: ew-resize;
+    background: transparent;
+  }
+
+  // Corner handles - transparent
+  &.resize-handle-top-left {
+    top: -6px;
+    left: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nwse-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-top-right {
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nesw-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-bottom-left {
+    bottom: -6px;
+    left: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nesw-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-bottom-right {
+    bottom: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nwse-resize;
+    background: transparent;
+  }
+}
