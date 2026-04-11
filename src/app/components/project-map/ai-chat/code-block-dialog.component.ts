@@ -19,6 +19,7 @@ import 'prismjs/components/prism-go';
 import 'prismjs/components/prism-rust';
 import 'prismjs/components/prism-c';
 import 'prismjs/components/prism-cpp';
+import 'prismjs/components/prism-jinja2';
 
 /**
  * Code Block Dialog Data Interface
