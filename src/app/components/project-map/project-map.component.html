@@ -32,7 +32,11 @@
       }
       <div class="menu-button-group">
         <app-nodes-menu [controller]="controller" [project]="project"></app-nodes-menu>
-        <app-context-menu [project]="project" [controller]="controller"></app-context-menu>
+        <app-context-menu
+          [project]="project"
+          [controller]="controller"
+          (openWebWiresharkInline)="openWebWiresharkInline($event)"
+        ></app-context-menu>
       </div>
     </div>
     <div>
@@ -251,15 +255,68 @@
     <app-console-wrapper
       [controller]="controller"
       [project]="project"
+      [zIndex]="consoleZIndex"
       (closeConsole)="toggleShowConsole($event)"
+      (windowFocused)="bringConsoleToFront()"
     ></app-console-wrapper>
     }
   </div>
 
   <!-- AI Chat Panel -->
   @if (project && isAIChatVisible) {
-  <app-ai-chat [project]="project" [controller]="controller" (closed)="closeAIChat()"> </app-ai-chat>
+  <app-ai-chat
+    [project]="project"
+    [controller]="controller"
+    [zIndex]="aiChatZIndex"
+    (closed)="closeAIChat()"
+    (windowFocused)="bringAIChatToFront()"
+  ></app-ai-chat>
   }
+
+  <!-- Web Wireshark Inline Windows (multiple) -->
+  @if (project && webWiresharkInlineWindows.size > 0) {
+    @for (link of getWebWiresharkInlineWindows(); track link.link_id) {
+      <app-web-wireshark-inline
+        [link]="link"
+        [controller]="controller"
+        [project]="project"
+        [zIndex]="getWebWiresharkWindowZIndex(link.link_id)"
+        (closeWindow)="closeWebWiresharkInline(link.link_id)"
+        (windowFocused)="bringWebWiresharkWindowToFront(link.link_id)"
+      ></app-web-wireshark-inline>
+    }
+  }
+
+  <!-- Unified Taskbar for all open windows -->
+  <div class="inline-taskbar">
+    <!-- Console taskbar icon - always shown when console is open -->
+    @if (project && isConsoleVisible) {
+      <div
+        class="inline-taskbar__icon"
+        [class.inline-taskbar__icon--minimized]="windowManagement.minimizedWindows().some(w => w.id === 'console')"
+        [style.left.px]="getConsoleTaskbarLeft()"
+        (click)="toggleConsoleMinimize()"
+        [title]="windowManagement.minimizedWindows().some(w => w.id === 'console') ? 'Console - Click to restore' : 'Console - Click to minimize'"
+      >
+        <mat-icon class="inline-taskbar__icon-type">terminal</mat-icon>
+        <span class="inline-taskbar__label">Console</span>
+      </div>
+    }
+
+    <!-- Wireshark taskbar icons - shown for all open Wireshark windows -->
+    @for (link of getWebWiresharkInlineWindows(); track link.link_id) {
+      <div
+        class="inline-taskbar__icon"
+        [class.inline-taskbar__icon--minimized]="windowManagement.minimizedWindows().some(w => w.id === 'wireshark-' + link.link_id)"
+        [style.left.px]="getWiresharkTaskbarLeft(link.link_id)"
+        (click)="toggleWiresharkMinimize(link.link_id)"
+        [title]="windowManagement.minimizedWindows().some(w => w.id === 'wireshark-' + link.link_id) ? 'Web Wireshark - Click to restore' : 'Web Wireshark - Click to minimize'"
+      >
+        <mat-icon class="inline-taskbar__icon-type">analytics</mat-icon>
+        <span class="inline-taskbar__label">Wireshark {{ link.link_id?.substring(0, 6) }}</span>
+      </div>
+    }
+  </div>
 </div>
 
 <ng-template #topologySummaryContainer></ng-template>

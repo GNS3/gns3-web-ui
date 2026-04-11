@@ -1,0 +1,66 @@
+<!-- Main Window (hidden when minimized) -->
+<div
+  #windowWrapper
+  class="web-wireshark-inline"
+  [class.is-dragging]="isDragging()"
+  [class.is-resizing]="isResizing()"
+  [class.is-minimized]="isMinimized()"
+  [ngStyle]="style"
+  [style.z-index]="zIndex()"
+  (mousedown)="onWindowFocus()"
+  mwlResizable
+  [validateResize]="validate"
+  [enableGhostResize]="false"
+  (resizeStart)="onResizeStart()"
+  (resizeEnd)="onResizeEnd($event)"
+>
+  <!-- Resize handles - hidden when minimized -->
+  @if (!isMinimized()) {
+  <div class="resize-handle resize-handle-top" mwlResizeHandle [resizeEdges]="{ top: true }"></div>
+  <div class="resize-handle resize-handle-right" mwlResizeHandle [resizeEdges]="{ right: true }"></div>
+  <div class="resize-handle resize-handle-bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
+  <div class="resize-handle resize-handle-left" mwlResizeHandle [resizeEdges]="{ left: true }"></div>
+
+  <!-- Corner handles (more discoverable) -->
+  <div class="resize-handle resize-handle-top-left" mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
+  <div class="resize-handle resize-handle-top-right" mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
+  <div class="resize-handle resize-handle-bottom-left" mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
+  <div class="resize-handle resize-handle-bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
+  }
+
+  <!-- Window content -->
+  <div class="web-wireshark-inline__content">
+    <!-- Header -->
+    <div class="web-wireshark-inline-header">
+      <div class="web-wireshark-inline-header__title">
+        <mat-icon class="header-icon">analytics</mat-icon>
+        <span>Web Wireshark</span>
+        <span class="link-info">Link {{ link().link_id?.substring(0, 8) }}</span>
+      </div>
+      <div class="web-wireshark-inline-header__actions">
+        <button mat-icon-button class="minimize-button" (click)="toggleMinimize()" title="Minimize">
+          <mat-icon>remove</mat-icon>
+        </button>
+        <button mat-icon-button class="close-button" (click)="close()" title="Close">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Iframe container -->
+    <div class="web-wireshark-inline__iframe-container">
+      @if (isLoading()) {
+      <div class="loading-overlay">
+        <mat-icon class="loading-icon">loading</mat-icon>
+        <span>Starting Web Wireshark...</span>
+      </div>
+      }
+      <iframe
+        [src]="wiresharkUrl"
+        class="web-wireshark-inline__iframe"
+        allowfullscreen
+        (load)="onIframeLoad()"
+      ></iframe>
+    </div>
+  </div>
+</div>

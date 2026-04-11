@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewChild, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -38,6 +38,8 @@ import { BringToFrontActionComponent } from './actions/bring-to-front-action/bri
 import { StartCaptureActionComponent } from './actions/start-capture/start-capture-action.component';
 import { StopCaptureActionComponent } from './actions/stop-capture/stop-capture-action.component';
 import { StartCaptureOnStartedLinkActionComponent } from './actions/start-capture-on-started-link/start-capture-on-started-link.component';
+import { StartWebWiresharkActionComponent } from './actions/start-web-wireshark-action/start-web-wireshark-action.component';
+import { StartWebWiresharkInlineActionComponent } from './actions/start-web-wireshark-inline-action/start-web-wireshark-inline-action.component';
 import { PacketFiltersActionComponent } from './actions/packet-filters-action/packet-filters-action.component';
 import { ResumeLinkActionComponent } from './actions/resume-link-action/resume-link-action.component';
 import { SuspendLinkActionComponent } from './actions/suspend-link/suspend-link-action.component';
@@ -82,6 +84,8 @@ import { AlignVerticallyActionComponent } from './actions/align_vertically/align
     StartCaptureActionComponent,
     StopCaptureActionComponent,
     StartCaptureOnStartedLinkActionComponent,
+    StartWebWiresharkActionComponent,
+    StartWebWiresharkInlineActionComponent,
     PacketFiltersActionComponent,
     ResumeLinkActionComponent,
     SuspendLinkActionComponent,
@@ -101,6 +105,7 @@ export class ContextMenuComponent implements OnInit {
 
   @Input() project: Project;
   @Input() controller: Controller;
+  @Output() openWebWiresharkInline = new EventEmitter<{ link: Link; controller: Controller; project: Project }>();
 
   @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
 
@@ -195,5 +200,9 @@ export class ContextMenuComponent implements OnInit {
     this.linkNodes = [];
     this.links = [];
     this.hasTextCapabilities = false;
+  }
+
+  public onOpenWebWiresharkInline(data: { link: Link; controller: Controller; project: Project }) {
+    this.openWebWiresharkInline.emit(data);
   }
 }

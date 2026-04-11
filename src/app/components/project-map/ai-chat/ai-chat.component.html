@@ -12,6 +12,8 @@
   [class.gns3-ai-chat--maximized]="isMaximized"
   [class.gns3-ai-chat--minimized]="isMinimized"
   [ngStyle]="style"
+  [style.z-index]="zIndex()"
+  (mousedown)="onWindowFocus()"
   mwlResizable
   [validateResize]="validate"
   [enableGhostResize]="true"

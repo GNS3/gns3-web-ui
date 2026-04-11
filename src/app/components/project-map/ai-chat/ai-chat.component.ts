@@ -77,8 +77,10 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
   readonly project = input.required<Project>();
   @Input() controller!: Controller;
+  readonly zIndex = input<number>(1000);
 
   @Output() closed = new EventEmitter<void>();
+  @Output() windowFocused = new EventEmitter<void>();
 
   // UI state
   sidebarCollapsed = true;
@@ -812,6 +814,13 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.aiChatStore.closePanel();
     this.cleanup();
     this.closed.emit();
+  }
+
+  /**
+   * Handle window focus (bring to front)
+   */
+  onWindowFocus(): void {
+    this.windowFocused.emit();
   }
 
   /**

@@ -472,3 +472,67 @@ mat-menu-panel {
 .unmarked {
   color: var(--mat-sys-on-surface);
 }
+
+/* =============================================
+// Inline Taskbar for minimized windows
+// ============================================= */
+.inline-taskbar {
+  position: fixed;
+  bottom: 20px;
+  left: 0;
+  z-index: 999; // Below floating windows but above map
+  display: flex;
+  gap: 8px;
+
+  &__icon {
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    height: 48px;
+    width: 180px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 150ms var(--mat-sys-motion-easing-linear);
+    background: var(--mat-sys-surface);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
+      0 0 0 1px var(--mat-sys-outline-variant);
+
+    &:hover {
+      background: var(--mat-sys-hover-state-layer);
+    }
+
+    &:active {
+      background: var(--mat-sys-focus-state-layer);
+    }
+
+    // Minimized state - slightly different appearance
+    &--minimized {
+      opacity: 0.7;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+
+  &__icon-type {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: var(--mat-sys-primary);
+    flex-shrink: 0;
+  }
+
+  &__label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

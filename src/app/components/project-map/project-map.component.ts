@@ -84,6 +84,7 @@ import { SymbolService } from '@services/symbol.service';
 import { ToasterService } from '@services/toaster.service';
 import { ToolsService } from '@services/tools.service';
 import { ThemeService } from '@services/theme.service';
+import { WindowManagementService } from '@services/window-management.service';
 import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-dialog/add-blank-project-dialog.component';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { EditProjectDialogComponent } from '../projects/edit-project-dialog/edit-project-dialog.component';
@@ -105,6 +106,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { AiChatComponent } from './ai-chat/ai-chat.component';
 import { ConsoleWrapperComponent } from './console-wrapper/console-wrapper.component';
+import { WebWiresharkInlineComponent } from './web-wireshark-inline/web-wireshark-inline.component';
 import { DrawLinkToolComponent } from './draw-link-tool/draw-link-tool.component';
 import { ImportApplianceComponent } from './import-appliance/import-appliance.component';
 import { NodesMenuComponent } from './nodes-menu/nodes-menu.component';
@@ -143,6 +145,7 @@ import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edit
     ImportApplianceComponent,
     ConsoleWrapperComponent,
     AiChatComponent,
+    WebWiresharkInlineComponent,
     ProgressComponent,
     DrawingDraggedComponent,
     DrawingResizedComponent,
@@ -173,6 +176,26 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toolbarVisibility: boolean = true;
   public symbolScaling: boolean = true;
   public isAIChatVisible: boolean = false;
+
+  // Track multiple Web Wireshark inline windows
+  // Key is link_id, value is the Link object
+  public webWiresharkInlineWindows = new Map<string, Link>();
+  // Track z-index for each window
+  public webWiresharkInlineZIndex = new Map<string, number>();
+  // Base z-index for windows
+  private baseZIndex = 1000;
+  // Counter for generating unique z-indices
+  private zIndexCounter = 0;
+
+  // Z-index for console and AI chat windows
+  public consoleZIndex: number = this.baseZIndex;
+  public aiChatZIndex: number = this.baseZIndex;
+
+  // Taskbar icon positioning
+  private readonly TASKBAR_BASE_LEFT = 20;
+  private readonly TASKBAR_ICON_WIDTH = 180;
+  private readonly TASKBAR_ICON_GAP = 8;
+
   readonly mapBgClass = computed(() => {
     const mapTheme = this.themeService.savedMapTheme;
     const isDark = mapTheme === 'auto' ? this.themeService.isDarkMode() : mapTheme.startsWith('dark-');
@@ -260,6 +283,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   private themeService = inject(ThemeService);
   private cd = inject(ChangeDetectorRef);
   private aiChatStore = inject(AiChatStore);
+  public windowManagement = inject(WindowManagementService);
   private viewContainerRef = inject(ViewContainerRef);
   // private cfr: ComponentFactoryResolver,
   // private injector: Injector,
@@ -903,6 +927,150 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
    */
   public closeAIChat() {
     this.isAIChatVisible = false;
+  }
+
+  /**
+   * Open Web Wireshark inline window for a link
+   */
+  public openWebWiresharkInline(data: { link: Link; controller: Controller; project: Project }) {
+    // Check if window already open for this link
+    if (this.webWiresharkInlineWindows.has(data.link.link_id)) {
+      // Bring existing window to front
+      this.bringWebWiresharkWindowToFront(data.link.link_id);
+      this.toasterService.warning('Web Wireshark is already open for this link');
+      return;
+    }
+
+    // Assign z-index for new window (increment counter)
+    this.zIndexCounter++;
+    const windowZIndex = this.baseZIndex + this.zIndexCounter;
+
+    // Add the link to our Map of open windows
+    this.webWiresharkInlineWindows.set(data.link.link_id, data.link);
+    this.webWiresharkInlineZIndex.set(data.link.link_id, windowZIndex);
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Close Web Wireshark inline window for a specific link
+   */
+  public closeWebWiresharkInline(linkId: string) {
+    this.webWiresharkInlineWindows.delete(linkId);
+    this.webWiresharkInlineZIndex.delete(linkId);
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Bring a Web Wireshark window to front
+   */
+  public bringWebWiresharkWindowToFront(linkId: string) {
+    if (!this.webWiresharkInlineWindows.has(linkId)) {
+      return;
+    }
+
+    // Increment counter and assign higher z-index
+    this.zIndexCounter++;
+    const newZIndex = this.baseZIndex + this.zIndexCounter;
+    this.webWiresharkInlineZIndex.set(linkId, newZIndex);
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Get z-index for a specific window
+   */
+  public getWebWiresharkWindowZIndex(linkId: string): number {
+    return this.webWiresharkInlineZIndex.get(linkId) || this.baseZIndex;
+  }
+
+  /**
+   * Get all open Web Wireshark inline windows as an array
+   */
+  public getWebWiresharkInlineWindows(): Link[] {
+    return Array.from(this.webWiresharkInlineWindows.values());
+  }
+
+  /**
+   * Bring console window to front
+   */
+  public bringConsoleToFront() {
+    this.zIndexCounter++;
+    this.consoleZIndex = this.baseZIndex + this.zIndexCounter;
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Bring AI chat window to front
+   */
+  public bringAIChatToFront() {
+    this.zIndexCounter++;
+    this.aiChatZIndex = this.baseZIndex + this.zIndexCounter;
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Restore console window from minimized state
+   */
+  public restoreConsole(): void {
+    this.windowManagement.restoreWindow('console');
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Restore Wireshark window from minimized state
+   */
+  public restoreWiresharkWindow(linkId: string): void {
+    this.windowManagement.restoreWindow(`wireshark-${linkId}`);
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Get taskbar icon position for console
+   */
+  public getConsoleTaskbarLeft(): number {
+    return this.TASKBAR_BASE_LEFT;
+  }
+
+  /**
+   * Get taskbar icon position for Wireshark windows
+   * Icons are arranged by window open order, not minimized order
+   */
+  public getWiresharkTaskbarLeft(linkId: string | undefined): number {
+    if (!linkId) return this.TASKBAR_BASE_LEFT;
+
+    // Calculate index based on position in open windows list
+    const openWindows = this.getWebWiresharkInlineWindows();
+    const index = openWindows.findIndex(w => w.link_id === linkId);
+
+    // Console icon always takes first slot
+    let baseOffset = this.TASKBAR_ICON_WIDTH + this.TASKBAR_ICON_GAP;
+    return this.TASKBAR_BASE_LEFT + baseOffset + index * (this.TASKBAR_ICON_WIDTH + this.TASKBAR_ICON_GAP);
+  }
+
+  /**
+   * Toggle console minimize/restore
+   */
+  public toggleConsoleMinimize(): void {
+    const isMinimized = this.windowManagement.minimizedWindows().some(w => w.id === 'console');
+    if (isMinimized) {
+      this.windowManagement.restoreWindow('console');
+    } else {
+      this.windowManagement.minimizeWindow('console', 'console');
+    }
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Toggle Wireshark window minimize/restore
+   */
+  public toggleWiresharkMinimize(linkId: string): void {
+    const windowId = `wireshark-${linkId}`;
+    const isMinimized = this.windowManagement.minimizedWindows().some(w => w.id === windowId);
+    if (isMinimized) {
+      this.windowManagement.restoreWindow(windowId);
+    } else {
+      this.windowManagement.minimizeWindow(windowId, 'wireshark', linkId);
+    }
+    this.cd.markForCheck();
   }
 
   public toggleShowTopologySummary(visible: boolean) {

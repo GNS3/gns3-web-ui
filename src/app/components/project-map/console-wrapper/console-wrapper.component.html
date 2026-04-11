@@ -8,38 +8,29 @@
     'is-minimized': isMinimized(),
     'is-dragging': isDragging()
   }"
+  [style.z-index]="zIndex()"
+  (mousedown)="onWindowFocus()"
   mwlResizable
   [validateResize]="validate"
-  [enableGhostResize]="true"
+  [enableGhostResize]="false"
   (resizeEnd)="onResizeEnd($event)"
   tabindex="0"
   (click)="onConsoleActivate()"
   (focus)="onConsoleActivate()"
 >
-  <div
-    class="resize-handle resize-handle-top"
-    mwlResizeHandle
-    [resizeEdges]="{ top: true }"
-    [hidden]="isMinimized()"
-  ></div>
-  <div
-    class="resize-handle resize-handle-right"
-    mwlResizeHandle
-    [resizeEdges]="{ right: true }"
-    [hidden]="isMinimized()"
-  ></div>
-  <div
-    class="resize-handle resize-handle-bottom"
-    mwlResizeHandle
-    [resizeEdges]="{ bottom: true }"
-    [hidden]="isMinimized()"
-  ></div>
-  <div
-    class="resize-handle resize-handle-left"
-    mwlResizeHandle
-    [resizeEdges]="{ left: true }"
-    [hidden]="isMinimized()"
-  ></div>
+  @if (!isMinimized()) {
+  <!-- Edge handles -->
+  <div class="resize-handle resize-handle-top" mwlResizeHandle [resizeEdges]="{ top: true }"></div>
+  <div class="resize-handle resize-handle-right" mwlResizeHandle [resizeEdges]="{ right: true }"></div>
+  <div class="resize-handle resize-handle-bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
+  <div class="resize-handle resize-handle-left" mwlResizeHandle [resizeEdges]="{ left: true }"></div>
+
+  <!-- Corner handles -->
+  <div class="resize-handle resize-handle-top-left" mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
+  <div class="resize-handle resize-handle-top-right" mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
+  <div class="resize-handle resize-handle-bottom-left" mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
+  <div class="resize-handle resize-handle-bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
+  }
 
   <!-- Console Content -->
   <div class="console-content">
@@ -108,10 +99,4 @@
       }
     </div>
   </div>
-</div>
-
-<!-- Taskbar Icon (always visible, fixed in bottom-left corner) -->
-<div class="taskbar-icon" (click)="toggleMinimize()" [title]="isMinimized() ? 'Click to restore' : 'Click to minimize'">
-  <mat-icon class="taskbar-icon__icon">terminal</mat-icon>
-  <span class="taskbar-icon__label">{{ getActiveTabName() }}</span>
 </div>
