@@ -5,6 +5,7 @@ import {
   OnChanges,
   SimpleChanges,
   AfterViewChecked,
+  AfterViewInit,
   ElementRef,
   ChangeDetectionStrategy,
   inject,
@@ -19,6 +20,7 @@ import { MarkdownModule } from 'ngx-markdown';
 import { ChatMessage, ToolCall, ToolResult } from '@models/ai-chat.interface';
 import { ToolCallDisplayComponent } from './tool-call-display.component';
 import { ToolDetailsDialogComponent, ToolDetailsDialogData } from './tool-details-dialog.component';
+import { CodeBlockDialogComponent, CodeBlockDialogData } from './code-block-dialog.component';
 
 /**
  * AI Chat Message List Component
@@ -32,7 +34,7 @@ import { ToolDetailsDialogComponent, ToolDetailsDialogData } from './tool-detail
   styleUrls: ['./chat-message-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
+export class ChatMessageListComponent implements OnChanges, AfterViewChecked, AfterViewInit {
   readonly messages = input<ChatMessage[]>([]);
   readonly isStreaming = input(false);
   readonly autoScroll = input(true);
@@ -61,6 +63,88 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
       this.scrollToBottom();
       this.shouldScrollToBottom = false;
     }
+  }
+
+  ngAfterViewInit(): void {
+    // Setup code block collapse functionality
+    this.setupCodeBlockCollapse();
+  }
+
+  /**
+   * Setup code block collapse for long code blocks (>50 lines)
+   */
+  private setupCodeBlockCollapse(): void {
+    // Use event delegation for dynamically added markdown content
+    const messageContainer = this.messageContainer().nativeElement;
+
+    // Observer to detect new markdown content
+    const observer = new MutationObserver(() => {
+      this.processCodeBlocks(messageContainer);
+    });
+
+    observer.observe(messageContainer, {
+      childList: true,
+      subtree: true,
+    });
+
+    // Initial processing
+    this.processCodeBlocks(messageContainer);
+  }
+
+  /**
+   * Process all code blocks and add collapse functionality to long ones
+   */
+  private processCodeBlocks(container: HTMLElement): void {
+    const codeBlocks = container.querySelectorAll('markdown pre');
+
+    codeBlocks.forEach((pre, index) => {
+      // Skip if already processed
+      if (pre.hasAttribute('data-code-processed')) {
+        return;
+      }
+
+      const code = pre.querySelector('code');
+      if (!code) {
+        return;
+      }
+
+      // Count lines
+      const lines = code.textContent?.split('\n').length || 0;
+
+      // Mark as processed
+      pre.setAttribute('data-code-processed', 'true');
+
+      // If code block has more than 50 lines, add collapse functionality
+      if (lines > 50) {
+        pre.classList.add('code-block-collapsible');
+        pre.setAttribute('title', `Click to view full code (${lines} lines)`);
+
+        // Add click handler
+        pre.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          this.openCodeBlockDialog(code.innerHTML, code.className);
+        });
+      }
+    });
+  }
+
+  /**
+   * Open code block in dialog
+   */
+  private openCodeBlockDialog(code: string, languageClass: string): void {
+    // Extract language from className (e.g., "language-typescript" -> "typescript")
+    const language = languageClass.match(/language-(\w+)/)?.[1] || undefined;
+
+    const data: CodeBlockDialogData = {
+      code,
+      language,
+    };
+
+    this.dialog.open(CodeBlockDialogComponent, {
+      data,
+      panelClass: ['code-block-dialog-panel'],
+    });
   }
 
   /**

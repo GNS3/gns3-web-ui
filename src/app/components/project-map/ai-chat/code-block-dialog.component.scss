@@ -1,0 +1,79 @@
+/**
+ * Code Block Dialog Component Styles
+ * Using MD3 CSS variables and BEM naming convention
+ */
+
+.code-block-dialog__title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.code-block-dialog__icon {
+  color: var(--mat-sys-primary);
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.code-block-dialog__title-text {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
+
+.code-block-dialog__language {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--mat-sys-primary);
+  background: var(--mat-sys-primary-container);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.code-block-dialog__content {
+  padding: 0;
+  max-height: 70vh;
+  overflow: auto;
+}
+
+.code-block-dialog__code {
+  display: block;
+  background-color: var(--mat-sys-surface-container-highest);
+  color: var(--mat-sys-on-surface);
+  padding: 20px;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  border-radius: 0;
+  overflow-x: auto;
+  white-space: pre;
+
+  code {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+  }
+}
+
+.code-block-dialog__close-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--mat-sys-on-surface-variant);
+  font-weight: 500;
+
+  &:hover {
+    background-color: var(--mat-sys-surface-container-low);
+    color: var(--mat-sys-on-surface);
+  }
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
