@@ -19,8 +19,13 @@ docs/
 │   │   └── vnc-console-implementation.md
 │   ├── context-menu.md          # Context menu documentation
 │   ├── custom-adapters/         # Custom adapters feature
-│   └── symbols/                # Symbols documentation
-│       └── symbols-guide.md
+│   ├── symbols/                # Symbols documentation
+│   │   └── symbols-guide.md
+│   └── web-wireshark/          # Web Wireshark feature
+│       ├── overview.md         # ⭐ Complete Web Wireshark guide
+│       ├── business-flow.md    # Business flow & architecture
+│       └── diagrams/           # Architecture diagrams
+│           └── architecture-overview.md
 ├── framework/                   # Framework migration & architecture
 │   └── angular-21/             # Angular 21 Zoneless migration
 │       ├── zoneless-guide.md
@@ -58,6 +63,9 @@ docs/
 | [VNC Console](./features/console/vnc-console-implementation.md) | VNC console implementation |
 | [Custom Adapters](./features/custom-adapters/custom-adapters-implementation.md) | Custom adapters implementation |
 | [Symbols Guide](./features/symbols/symbols-guide.md) | Node symbols support (SVG/PNG/JPG/GIF) |
+| [Web Wireshark Overview](./features/web-wireshark/overview.md) | ⭐ Browser-based packet capture and analysis |
+| [Web Wireshark Business Flow](./features/web-wireshark/business-flow.md) | Detailed business flows and architecture |
+| [Web Wireshark Architecture](./features/web-wireshark/diagrams/architecture-overview.md) | System architecture diagrams |
 
 ---
 
@@ -119,6 +127,7 @@ docs/
 ### Featured Documentation
 
 - **AI Chat**: [features/ai-chat/ai-chat-guide.md](./features/ai-chat/ai-chat-guide.md)
+- **Web Wireshark**: [features/web-wireshark/overview.md](./features/web-wireshark/overview.md) ⭐ NEW
 - **Angular Zoneless**: [framework/angular-21/zoneless-guide.md](./framework/angular-21/zoneless-guide.md)
 - **Dialog Styling**: [guides/dialog-style-isolation.md](./guides/dialog-style-isolation.md)
 - **CSS Variables**: [guides/css/02-material3-variables.md](./guides/css/02-material3-variables.md)
@@ -200,4 +209,19 @@ docs/
 
 ---
 
-*Last Updated: 2026-03-31*
+### 2026-04-11
+
+- 📝 **Web Wireshark Documentation**: Complete feature documentation added
+  - Comprehensive overview of browser-based packet capture and analysis
+  - Detailed business flows with sequence diagrams
+  - Architecture diagrams and component interactions
+  - User guide and troubleshooting
+  - Documentation: [features/web-wireshark/](./features/web-wireshark/) ⭐ NEW
+    - [overview.md](./features/web-wireshark/overview.md) - Feature overview and guide
+    - [business-flow.md](./features/web-wireshark/business-flow.md) - Business flows and architecture
+    - [diagrams/architecture-overview.md](./features/web-wireshark/diagrams/architecture-overview.md) - Architecture diagrams
+    - [inline-display-implementation.md](./features/web-wireshark/inline-display-implementation.md) - Implementation progress
+
+---
+
+*Last Updated: 2026-04-11*
