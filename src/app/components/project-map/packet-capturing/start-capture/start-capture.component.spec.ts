@@ -281,6 +281,7 @@ describe('StartCaptureDialogComponent', () => {
       expect(mockLinkService.startCaptureOnLink).toHaveBeenCalledWith(mockController, link, {
         capture_file_name: 'test_capture',
         data_link_type: 'DLT_EN10MB',
+        wireshark: false,
       });
       expect(mockDialogRef.close).toHaveBeenCalled();
     });

@@ -91,7 +91,7 @@ describe('ChatInputAreaComponent', () => {
 
   describe('Inputs', () => {
     it('should have default placeholder', () => {
-      expect(component.placeholder()).toBe('Type your message... (Ctrl+Enter to send)');
+      expect(component.placeholder()).toBe('Message (Ctrl+Enter to send)');
     });
 
     it('should accept custom placeholder', () => {
@@ -414,7 +414,7 @@ describe('ChatInputAreaComponent', () => {
     it('should bind placeholder to textarea', () => {
       fixture.detectChanges();
       const textarea = fixture.nativeElement.querySelector('textarea');
-      expect(textarea.placeholder).toBe('Type your message... (Ctrl+Enter to send)');
+      expect(textarea.placeholder).toBe('Message (Ctrl+Enter to send)');
     });
 
     it('should bind disabled state to textarea', () => {
