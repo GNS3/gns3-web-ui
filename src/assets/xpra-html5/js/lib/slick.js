@@ -1529,18 +1529,21 @@
             $('img[data-lazy]', imagesScope).each(function() {
 
                 var image = $(this),
-                    imageSource = $(this).attr('data-lazy'),
+                    rawImageSource = $(this).attr('data-lazy'),
                     imageSrcSet = $(this).attr('data-srcset'),
                     imageSizes  = $(this).attr('data-sizes') || _.$slider.attr('data-sizes'),
                     imageToLoad = document.createElement('img');
 
+                // Sanitize and validate image source immediately to prevent XSS
+                var imageSource = isValidImageUrl(rawImageSource) ? rawImageSource : '';
+
                 // Skip invalid URLs to prevent XSS
-                if (!isValidImageUrl(imageSource)) {
+                if (!imageSource) {
                     image
                         .removeAttr( 'data-lazy' )
                         .removeClass( 'slick-loading' )
                         .addClass( 'slick-lazyload-error' );
-                    _.$slider.trigger('lazyLoadError', [ _, image, imageSource ]);
+                    _.$slider.trigger('lazyLoadError', [ _, image, rawImageSource ]);
                     return;
                 }
 
@@ -1772,18 +1775,20 @@
         if ( $imgsToLoad.length ) {
 
             image = $imgsToLoad.first();
-            imageSource = image.attr('data-lazy');
+            // Sanitize and validate image source immediately to prevent XSS
+            var rawImageSource = image.attr('data-lazy');
+            imageSource = isValidImageUrl(rawImageSource) ? rawImageSource : '';
             imageSrcSet = image.attr('data-srcset');
             imageSizes  = image.attr('data-sizes') || _.$slider.attr('data-sizes');
             imageToLoad = document.createElement('img');
 
             // Skip invalid URLs to prevent XSS
-            if (!isValidImageUrl(imageSource)) {
+            if (!imageSource) {
                 image
                     .removeAttr( 'data-lazy' )
                     .removeClass( 'slick-loading' )
                     .addClass( 'slick-lazyload-error' );
-                _.$slider.trigger('lazyLoadError', [ _, image, imageSource ]);
+                _.$slider.trigger('lazyLoadError', [ _, image, rawImageSource ]);
                 return;
             }
 
