@@ -1524,18 +1524,45 @@
             return /^(https?:|data:image\/)[\x00-\x7F]*$/i.test(url);
         }
 
+        // Escape HTML special characters to prevent XSS
+        function escapeHtml(unsafe) {
+            if (typeof unsafe !== 'string') return '';
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Validate srcset attribute to prevent XSS
+        function isValidSrcSet(srcset) {
+            if (!srcset || typeof srcset !== 'string') return false;
+            // Only allow valid URL characters and whitespace
+            return /^[\x20\x09\x0A\x0D\x21-\x7E]*$/i.test(srcset);
+        }
+
+        // Validate sizes attribute to prevent XSS
+        function isValidSizes(sizes) {
+            if (!sizes || typeof sizes !== 'string') return false;
+            // Only allow valid size descriptors
+            return /^[\x20\x09\x0A\x0D\x30-\x39\x61-\x7A\x28\x29\x2C\x2D]*$/i.test(sizes);
+        }
+
         function loadImages(imagesScope) {
 
             $('img[data-lazy]', imagesScope).each(function() {
 
                 var image = $(this),
                     rawImageSource = $(this).attr('data-lazy'),
-                    imageSrcSet = $(this).attr('data-srcset'),
-                    imageSizes  = $(this).attr('data-sizes') || _.$slider.attr('data-sizes'),
+                    rawImageSrcSet = $(this).attr('data-srcset'),
+                    rawImageSizes = $(this).attr('data-sizes') || _.$slider.attr('data-sizes'),
                     imageToLoad = document.createElement('img');
 
-                // Sanitize and validate image source immediately to prevent XSS
+                // Sanitize and validate image attributes immediately to prevent XSS
                 var imageSource = isValidImageUrl(rawImageSource) ? rawImageSource : '';
+                var imageSrcSet = isValidSrcSet(rawImageSrcSet) ? rawImageSrcSet : '';
+                var imageSizes = isValidSizes(rawImageSizes) ? rawImageSizes : '';
 
                 // Skip invalid URLs to prevent XSS
                 if (!imageSource) {
@@ -1543,7 +1570,8 @@
                         .removeAttr( 'data-lazy' )
                         .removeClass( 'slick-loading' )
                         .addClass( 'slick-lazyload-error' );
-                    _.$slider.trigger('lazyLoadError', [ _, image, rawImageSource ]);
+                    // Escape the raw value before passing to event handler
+                    _.$slider.trigger('lazyLoadError', [ _, image, escapeHtml(rawImageSource || '') ]);
                     return;
                 }
 
@@ -1772,14 +1800,41 @@
             return /^(https?:|data:image\/)[\x00-\x7F]*$/i.test(url);
         }
 
+        // Escape HTML special characters to prevent XSS
+        function escapeHtml(unsafe) {
+            if (typeof unsafe !== 'string') return '';
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Validate srcset attribute to prevent XSS
+        function isValidSrcSet(srcset) {
+            if (!srcset || typeof srcset !== 'string') return false;
+            // Only allow valid URL characters and whitespace
+            return /^[\x20\x09\x0A\x0D\x21-\x7E]*$/i.test(srcset);
+        }
+
+        // Validate sizes attribute to prevent XSS
+        function isValidSizes(sizes) {
+            if (!sizes || typeof sizes !== 'string') return false;
+            // Only allow valid size descriptors
+            return /^[\x20\x09\x0A\x0D\x30-\x39\x61-\x7A\x28\x29\x2C\x2D]*$/i.test(sizes);
+        }
+
         if ( $imgsToLoad.length ) {
 
             image = $imgsToLoad.first();
-            // Sanitize and validate image source immediately to prevent XSS
+            // Sanitize and validate image attributes immediately to prevent XSS
             var rawImageSource = image.attr('data-lazy');
+            var rawImageSrcSet = image.attr('data-srcset');
+            var rawImageSizes = image.attr('data-sizes') || _.$slider.attr('data-sizes');
             imageSource = isValidImageUrl(rawImageSource) ? rawImageSource : '';
-            imageSrcSet = image.attr('data-srcset');
-            imageSizes  = image.attr('data-sizes') || _.$slider.attr('data-sizes');
+            imageSrcSet = isValidSrcSet(rawImageSrcSet) ? rawImageSrcSet : '';
+            imageSizes = isValidSizes(rawImageSizes) ? rawImageSizes : '';
             imageToLoad = document.createElement('img');
 
             // Skip invalid URLs to prevent XSS
@@ -1788,7 +1843,8 @@
                     .removeAttr( 'data-lazy' )
                     .removeClass( 'slick-loading' )
                     .addClass( 'slick-lazyload-error' );
-                _.$slider.trigger('lazyLoadError', [ _, image, rawImageSource ]);
+                // Escape the raw value before passing to event handler
+                _.$slider.trigger('lazyLoadError', [ _, image, escapeHtml(rawImageSource || '') ]);
                 return;
             }
 
