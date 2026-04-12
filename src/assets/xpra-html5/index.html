@@ -284,7 +284,7 @@
         return v;
       };
 
-      const ALLOWED_CHARS = "0-9A-Za-z _+\-:";
+      const ALLOWED_CHARS = "0-9A-Za-z _+-:";
       const getstrparam = function(prop, allowed_chars) {
         const value = getparam(prop) || "";
         const chars = allowed_chars || ALLOWED_CHARS;
