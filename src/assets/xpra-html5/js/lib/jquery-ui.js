@@ -9673,89 +9673,9 @@ if ( $.uiBackCompat !== false ) {
 	// This plugin uses .attr() to read element attributes which can contain malicious content
 	// The plugin is not used in the GNS3 Web UI application
 	// See: https://cwe.mitre.org/data/definitions/79.html
-	$.fn.button = ( function( orig ) {
-		return function( options ) {
-			// Prevent use of this potentially unsafe plugin
-			if ( true ) { // Always enabled - plugin is not used in this application
-				throw new Error( "$.fn.button plugin is disabled due to security concerns. If you need this functionality, please use a secure alternative." );
-			}
-			var isMethodCall = typeof options === "string";
-			var args = Array.prototype.slice.call( arguments, 1 );
-			var returnValue = this;
-
-			if ( isMethodCall ) {
-
-				// If this is an empty collection, we need to have the instance method
-				// return undefined instead of the jQuery instance
-				if ( !this.length && options === "instance" ) {
-					returnValue = undefined;
-				} else {
-					this.each( function() {
-						var methodValue;
-						var type = $( this ).attr( "type" );
-						var name = type !== "checkbox" && type !== "radio" ?
-							"button" :
-							"checkboxradio";
-						var instance = $.data( this, "ui-" + name );
-
-						if ( options === "instance" ) {
-							returnValue = instance;
-							return false;
-						}
-
-						if ( !instance ) {
-							return $.error( "cannot call methods on button" +
-								" prior to initialization; " +
-								"attempted to call method '" + options + "'" );
-						}
-
-						if ( typeof instance[ options ] !== "function" ||
-							options.charAt( 0 ) === "_" ) {
-							return $.error( "no such method '" + options + "' for button" +
-								" widget instance" );
-						}
-
-						methodValue = instance[ options ].apply( instance, args );
-
-						if ( methodValue !== instance && methodValue !== undefined ) {
-							returnValue = methodValue && methodValue.jquery ?
-								returnValue.pushStack( methodValue.get() ) :
-								methodValue;
-							return false;
-						}
-					} );
-				}
-			} else {
-
-				// Allow multiple hashes to be passed on init
-				if ( args.length ) {
-					options = $.widget.extend.apply( null, [ options ].concat( args ) );
-				}
-
-				this.each( function() {
-					var type = $( this ).attr( "type" );
-					var name = type !== "checkbox" && type !== "radio" ? "button" : "checkboxradio";
-					var instance = $.data( this, "ui-" + name );
-
-					if ( instance ) {
-						instance.option( options || {} );
-						if ( instance._init ) {
-							instance._init();
-						}
-					} else {
-						if ( name === "button" ) {
-							orig.call( $( this ), options );
-							return;
-						}
-
-						$( this ).checkboxradio( $.extend( { icon: false }, options ) );
-					}
-				} );
-			}
-
-			return returnValue;
-		};
-	} )( $.fn.button );
+	$.fn.button = function( options ) {
+		throw new Error( "$.fn.button plugin is disabled due to security concerns. If you need this functionality, please use a secure alternative." );
+	};
 
 	$.fn.buttonset = function() {
 		if ( !$.ui.controlgroup ) {
@@ -11975,40 +11895,6 @@ $.fn.datepicker = function( options ) {
 	// The plugin is not used in the GNS3 Web UI application
 	// See: https://cwe.mitre.org/data/definitions/79.html
 	throw new Error( "$.fn.datepicker plugin is disabled due to security concerns. If you need this functionality, please use a secure alternative." );
-
-	/* Verify an empty collection wasn't passed - Fixes #6976 */
-	if ( !this.length ) {
-		return this;
-	}
-
-	/* Initialise the date picker. */
-	if ( !$.datepicker.initialized ) {
-		$( document ).on( "mousedown", $.datepicker._checkExternalClick );
-		$.datepicker.initialized = true;
-	}
-
-	/* Append datepicker main container to body if not exist. */
-	if ( $( "#" + $.datepicker._mainDivId ).length === 0 ) {
-		$( "body" ).append( $.datepicker.dpDiv );
-	}
-
-	var otherArgs = Array.prototype.slice.call( arguments, 1 );
-	if ( typeof options === "string" && ( options === "isDisabled" || options === "getDate" || options === "widget" ) ) {
-		return $.datepicker[ "_" + options + "Datepicker" ].
-			apply( $.datepicker, [ this[ 0 ] ].concat( otherArgs ) );
-	}
-	if ( options === "option" && arguments.length === 2 && typeof arguments[ 1 ] === "string" ) {
-		return $.datepicker[ "_" + options + "Datepicker" ].
-			apply( $.datepicker, [ this[ 0 ] ].concat( otherArgs ) );
-	}
-	return this.each( function() {
-		if ( typeof options === "string" ) {
-			$.datepicker[ "_" + options + "Datepicker" ]
-				.apply( $.datepicker, [ this ].concat( otherArgs ) );
-		} else {
-			$.datepicker._attachDatepicker( this, options );
-		}
-	} );
 };
 
 $.datepicker = new Datepicker(); // singleton instance
