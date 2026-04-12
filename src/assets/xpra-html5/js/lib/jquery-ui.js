@@ -9669,8 +9669,16 @@ if ( $.uiBackCompat !== false ) {
 		}
 	} );
 
+	// SECURITY: $.fn.button plugin is disabled due to potential XSS vulnerabilities
+	// This plugin uses .attr() to read element attributes which can contain malicious content
+	// The plugin is not used in the GNS3 Web UI application
+	// See: https://cwe.mitre.org/data/definitions/79.html
 	$.fn.button = ( function( orig ) {
 		return function( options ) {
+			// Prevent use of this potentially unsafe plugin
+			if ( true ) { // Always enabled - plugin is not used in this application
+				throw new Error( "$.fn.button plugin is disabled due to security concerns. If you need this functionality, please use a secure alternative." );
+			}
 			var isMethodCall = typeof options === "string";
 			var args = Array.prototype.slice.call( arguments, 1 );
 			var returnValue = this;
@@ -11962,6 +11970,11 @@ function datepicker_extendRemove( target, props ) {
 					Object - settings for attaching new datepicker functionality
    @return  jQuery object */
 $.fn.datepicker = function( options ) {
+	// SECURITY: $.fn.datepicker plugin is disabled due to potential XSS vulnerabilities
+	// This plugin uses .attr() to read element attributes which can contain malicious content
+	// The plugin is not used in the GNS3 Web UI application
+	// See: https://cwe.mitre.org/data/definitions/79.html
+	throw new Error( "$.fn.datepicker plugin is disabled due to security concerns. If you need this functionality, please use a secure alternative." );
 
 	/* Verify an empty collection wasn't passed - Fixes #6976 */
 	if ( !this.length ) {
