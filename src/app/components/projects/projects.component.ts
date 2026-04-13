@@ -30,6 +30,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
 import { version } from '../../version';
 
@@ -50,6 +51,7 @@ import { version } from '../../version';
     MatFormFieldModule,
     MatInputModule,
     MatCheckboxModule,
+    MatProgressSpinnerModule,
     ProjectsFilter,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -66,6 +68,7 @@ export class ProjectsComponent implements OnInit {
   selection = new SelectionModel(true, []);
   public readonly version = version;
   public readonly currentYear = new Date().getFullYear();
+  private loadingProjects = new Set<string>();
 
   readonly sort = viewChild(MatSort);
 
@@ -117,8 +120,17 @@ export class ProjectsComponent implements OnInit {
     });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
-        this.projectService.delete(this.controller, project.project_id).subscribe(() => {
-          this.refresh();
+        this.setProjectLoading(project.project_id, true);
+        this.projectService.delete(this.controller, project.project_id).subscribe({
+          next: () => {
+            this.refresh();
+          },
+          error: () => {
+            this.setProjectLoading(project.project_id, false);
+          },
+          complete: () => {
+            this.setProjectLoading(project.project_id, false);
+          },
         });
       }
     });
@@ -149,9 +161,19 @@ export class ProjectsComponent implements OnInit {
     });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
-        this.projectService.close(this.controller, project.project_id).subscribe(() => {
-          this.refresh();
-          this.progressService.deactivate();
+        this.setProjectLoading(project.project_id, true);
+        this.projectService.close(this.controller, project.project_id).subscribe({
+          next: () => {
+            this.refresh();
+            this.progressService.deactivate();
+          },
+          error: () => {
+            this.setProjectLoading(project.project_id, false);
+            this.progressService.deactivate();
+          },
+          complete: () => {
+            this.setProjectLoading(project.project_id, false);
+          },
         });
       }
     });
@@ -290,6 +312,25 @@ export class ProjectsComponent implements OnInit {
 
   isLightThemeEnabled() {
     return this.themeService.getActualTheme() === 'light';
+  }
+
+  /**
+   * Check if a project is currently being operated on (closing or deleting)
+   */
+  isProjectLoading(projectId: string): boolean {
+    return this.loadingProjects.has(projectId);
+  }
+
+  /**
+   * Set project loading state
+   */
+  private setProjectLoading(projectId: string, loading: boolean): void {
+    if (loading) {
+      this.loadingProjects.add(projectId);
+    } else {
+      this.loadingProjects.delete(projectId);
+    }
+    this.cdr.markForCheck();
   }
 }
 

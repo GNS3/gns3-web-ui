@@ -72,8 +72,17 @@
                 <mat-icon aria-label="Open project">play_arrow</mat-icon>
               </button>
               } @if (row.status === 'opened') {
-              <button mat-icon-button (click)="close(row)" matTooltip="Close project">
+              <button
+                mat-icon-button
+                (click)="close(row)"
+                matTooltip="Close project"
+                [disabled]="isProjectLoading(row.project_id)"
+              >
+                @if (isProjectLoading(row.project_id)) {
+                <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
+                } @else {
                 <mat-icon aria-label="Close project">pause</mat-icon>
+                }
               </button>
               }
               <button mat-icon-button (click)="editProject(row)" matTooltip="Rename/Edit project">
@@ -101,8 +110,18 @@
           </mat-header-cell>
           <mat-cell *matCellDef="let row" class="projects__cell--actions">
             @if (row.status === 'closed' && selection.isSelected(row)) {
-            <button mat-icon-button (click)="delete(row)" color="warn" matTooltip="Delete project">
+            <button
+              mat-icon-button
+              (click)="delete(row)"
+              color="warn"
+              matTooltip="Delete project"
+              [disabled]="isProjectLoading(row.project_id)"
+            >
+              @if (isProjectLoading(row.project_id)) {
+              <mat-progress-spinner diameter="20" mode="indeterminate"></mat-progress-spinner>
+              } @else {
               <mat-icon aria-label="Delete project">delete</mat-icon>
+              }
             </button>
             }
           </mat-cell>
