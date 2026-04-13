@@ -36,6 +36,12 @@
   transition: all 0.2s ease;
   box-sizing: border-box;
   overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+
+  &::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+  }
 
   &:focus {
     border-color: var(--mat-sys-primary);
