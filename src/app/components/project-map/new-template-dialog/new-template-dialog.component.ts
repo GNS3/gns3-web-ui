@@ -163,7 +163,7 @@ export class NewTemplateDialogComponent implements OnInit {
 
     this.computeService.getComputes(this.controller).subscribe((computes) => {
       computes.forEach((compute) => {
-        if (compute.capabilities.platform === 'linux') this.isLinuxPlatform = true;
+        if (compute.capabilities?.platform === 'linux') this.isLinuxPlatform = true;
       });
       this.changeDetectorRef.markForCheck();
     });
