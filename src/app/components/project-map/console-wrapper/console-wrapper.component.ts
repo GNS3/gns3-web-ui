@@ -331,14 +331,36 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
         setTimeout(() => {
           this.selected.setValue(newIndex);
           this.cdr.markForCheck();
+          // Manually trigger focus to ensure xterm is focused after tab switch
+          this.focusTerminalAfterRender(newIndex);
         }, 0);
       }
     }
   }
 
   removeTab(index: number) {
+    // Remove the node at the specified index
     this.nodes.splice(index, 1);
     this.consoleService.openConsoles--;
+
+    // Update selected index to prevent out-of-bounds or incorrect selection
+    const currentSelected = this.selected.value;
+    const newLength = this.nodes.length;
+
+    // If no more device tabs, select GNS3 console (last tab)
+    if (newLength === 0) {
+      this.selected.setValue(0);
+    }
+    // If removed tab was before or at the selected tab, adjust selection
+    else if (index <= currentSelected && currentSelected < newLength) {
+      this.selected.setValue(Math.max(0, currentSelected - 1));
+    }
+    // If selected index is now out of bounds, select the last device tab
+    else if (currentSelected >= newLength) {
+      this.selected.setValue(newLength - 1);
+    }
+
+    this.cdr.markForCheck();
   }
 
   /**

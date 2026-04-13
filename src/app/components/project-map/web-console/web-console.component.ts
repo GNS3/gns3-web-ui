@@ -54,6 +54,7 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   private resizeObserver: ResizeObserver | null = null;
   private contextMenuCleanup: (() => void) | null = null;
   private destroy$ = new Subject<void>();
+  private isDestroying = false;
 
   readonly terminal = viewChild<ElementRef>('terminal');
 
@@ -95,11 +96,14 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
       this.term.write('\r\n\x1b[31mConnection lost. Please check if the node is still running.\x1b[0m\r\n');
     };
     this.socket.onclose = () => {
-      console.log('[WebConsole] Socket closed');
-      this.term.write('\r\n\x1b[33mConnection closed.\x1b[0m\r\n');
-      const currentNode = this.node();
-      if (currentNode) {
-        this.consoleService.closeConsoleForNode(currentNode);
+      // Only log and write message if this is an unexpected disconnect (not during component destroy)
+      if (!this.isDestroying) {
+        console.log('[WebConsole] Socket closed unexpectedly');
+        this.term.write('\r\n\x1b[33mConnection closed.\x1b[0m\r\n');
+        const currentNode = this.node();
+        if (currentNode) {
+          this.consoleService.closeConsoleForNode(currentNode);
+        }
       }
     };
 
@@ -191,6 +195,9 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
    * Cleanup on component destroy
    */
   ngOnDestroy(): void {
+    // Set flag to prevent onclose from closing the tab
+    this.isDestroying = true;
+
     // Complete destroy$ to unsubscribe all takeUntil subscriptions
     this.destroy$.next();
     this.destroy$.complete();
