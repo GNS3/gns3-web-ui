@@ -112,7 +112,7 @@ export class LinkService {
   }
 
   startCaptureOnLink(controller: Controller, link: Link, settings: CapturingSettings) {
-    return this.httpController.post(
+    return this.httpController.post<Link>(
       controller,
       `/projects/${link.project_id}/links/${link.link_id}/capture/start`,
       settings

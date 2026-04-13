@@ -15,6 +15,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
+import { LinksDataSource } from '../../../../cartography/datasources/links-datasource';
 import { CapturingSettings } from '@models/capturingSettings';
 import { Link } from '@models/link';
 import { LinkNode } from '@models/link-node';
@@ -61,6 +62,7 @@ export class StartCaptureDialogComponent implements OnInit {
   private formBuilder = inject(UntypedFormBuilder);
   private toasterService = inject(ToasterService);
   private nodesDataSource = inject(NodesDataSource);
+  private linksDataSource = inject(LinksDataSource);
   private packetCaptureService = inject(PacketCaptureService);
 
   constructor() {
@@ -126,7 +128,9 @@ export class StartCaptureDialogComponent implements OnInit {
       this.loadingMessage.set('Starting Web Wireshark, please wait...');
 
       this.linkService.startCaptureOnLink(this.controller, this.link, captureSettings).subscribe({
-        next: () => {
+        next: (updatedLink: Link) => {
+          // Update the link in the data source with the response from server
+          this.linksDataSource.update(updatedLink);
           if (this.startProgram()) {
             this.packetCaptureService.startCapture(
               this.controller,
@@ -171,7 +175,9 @@ export class StartCaptureDialogComponent implements OnInit {
         );
       }
 
-      this.linkService.startCaptureOnLink(this.controller, this.link, captureSettings).subscribe(() => {
+      this.linkService.startCaptureOnLink(this.controller, this.link, captureSettings).subscribe((updatedLink: Link) => {
+        // Update the link in the data source with the response from server
+        this.linksDataSource.update(updatedLink);
         this.dialogRef.close();
       });
     }
