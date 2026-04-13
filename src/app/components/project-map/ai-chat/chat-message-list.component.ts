@@ -14,7 +14,6 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MarkdownModule } from 'ngx-markdown';
 import { ChatMessage, ToolCall, ToolResult } from '@models/ai-chat.interface';
@@ -29,7 +28,7 @@ import { CodeBlockDialogComponent, CodeBlockDialogData } from './code-block-dial
  */
 @Component({
   selector: 'app-chat-message-list',
-  imports: [CommonModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, MarkdownModule],
+  imports: [CommonModule, MatIconModule, MatDialogModule, MarkdownModule],
   templateUrl: './chat-message-list.component.html',
   styleUrls: ['./chat-message-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

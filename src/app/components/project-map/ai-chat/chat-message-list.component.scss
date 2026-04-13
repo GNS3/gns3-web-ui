@@ -152,18 +152,7 @@
     }
 
     &.gns3-chat-message-list__bubble--streaming {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      position: relative;
-
-      &::after {
-        content: '|';
-        animation: blink 1s infinite;
-        color: var(--mat-sys-primary);
-        font-weight: 700;
-        margin-left: 2px;
-      }
+      // Streaming state handled by spinner in template
     }
   }
 
@@ -221,13 +210,21 @@
   padding: 0 4px;
 }
 
-.gns3-chat-message-list__streaming-indicator {
+.gns3-chat-message-list__streaming-logo {
   flex-shrink: 0;
   margin-top: 4px;
+  width: 16px;
+  height: 16px;
   opacity: 0.9;
+  animation: rotate 1s linear infinite;
+}
 
-  mat-spinner circle {
-    stroke: var(--mat-sys-primary);
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
 
