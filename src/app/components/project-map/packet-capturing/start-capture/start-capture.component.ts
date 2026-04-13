@@ -142,9 +142,9 @@ export class StartCaptureDialogComponent implements OnInit {
           this.isLoading.set(false);
           // Provide user-friendly error messages based on HTTP status code
           if (err.status === 409) {
-            this.errorMessage.set(
-              'A packet capture is already running on this link. Please stop the existing capture first.'
-            );
+            // Use backend error message for 409 conflicts
+            const backendMessage = err.error?.message || err.error?.detail || err.message;
+            this.errorMessage.set(backendMessage || 'A packet capture is already running on this link. Please stop the existing capture first.');
           } else if (err.status === 404) {
             this.errorMessage.set(
               'The link or controller could not be found. Please refresh the page and try again.'
