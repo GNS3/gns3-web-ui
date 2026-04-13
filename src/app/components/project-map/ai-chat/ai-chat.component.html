@@ -161,12 +161,14 @@
     <div class="gns3-ai-chat__input">
       <app-chat-input-area
         [disabled]="isStreaming"
+        [isStreaming]="isStreaming"
         [modelConfigs]="modelConfigs"
         [currentModelId]="currentModelId"
         [currentCopilotMode]="currentCopilotMode"
         (messageSent)="onMessageSent($event)"
         (modelSelected)="onModelSelected($event)"
         (copilotModeSelected)="onCopilotModeSelected($event)"
+        (abortClicked)="onAbortClicked()"
       >
       </app-chat-input-area>
     </div>

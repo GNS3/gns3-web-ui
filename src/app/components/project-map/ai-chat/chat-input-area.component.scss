@@ -212,6 +212,25 @@
     transform: none;
   }
 
+  // Abort button style (when streaming)
+  &--abort:not(:disabled) {
+    background: linear-gradient(135deg, var(--mat-sys-error), var(--mat-sys-error-container));
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-error) 30%, transparent);
+
+    &:hover {
+      box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-error) 50%, transparent);
+      background: linear-gradient(
+        135deg,
+        var(--mat-sys-error),
+        color-mix(in srgb, var(--mat-sys-error) 80%, black)
+      );
+    }
+
+    &:active {
+      box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-error) 30%, transparent);
+    }
+  }
+
   mat-icon {
     width: 20px;
     height: 20px;

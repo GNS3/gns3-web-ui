@@ -39,6 +39,7 @@ import { OverlayContainer } from '@angular/cdk/overlay';
 export class ChatInputAreaComponent implements OnInit, OnDestroy {
   readonly placeholder = input('Message (Ctrl+Enter to send)');
   readonly disabled = input(false);
+  readonly isStreaming = input(false);
   readonly maxLength = input(4000);
   readonly showCharCount = input(false);
   readonly warningThreshold = input(0.9); // 90% length triggers warning
@@ -52,6 +53,7 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
   @Output() inputChanged = new EventEmitter<string>();
   @Output() modelSelected = new EventEmitter<LLMModelConfigWithSource>();
   @Output() copilotModeSelected = new EventEmitter<CopilotMode>();
+  @Output() abortClicked = new EventEmitter<void>();
 
   readonly messageInput = viewChild.required<ElementRef<HTMLTextAreaElement>>('messageInput');
   readonly menuTrigger = viewChild.required<MatMenuTrigger>('menuTrigger');
@@ -187,9 +189,16 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * Send message
+   * Send message or abort streaming
    */
   sendMessage(): void {
+    // If streaming, emit abort event
+    if (this.isStreaming()) {
+      this.abortClicked.emit();
+      return;
+    }
+
+    // Otherwise, send message
     if (!this.canSend || this.disabled()) {
       return;
     }

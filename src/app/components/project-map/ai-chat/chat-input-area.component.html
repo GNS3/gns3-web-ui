@@ -17,9 +17,12 @@
       class="gns3-chat-input-area__send-button"
       (click)="sendMessage()"
       [disabled]="!canSend || disabled()"
+      [class.gns3-chat-input-area__send-button--abort]="isStreaming()"
       matRipple
     >
-      @if (!disabled()) {
+      @if (isStreaming()) {
+      <mat-icon class="gns3-chat-input-area__loading-spinner">stop</mat-icon>
+      } @else if (!disabled()) {
       <mat-icon>send</mat-icon>
       } @else {
       <mat-icon class="gns3-chat-input-area__loading-spinner">refresh</mat-icon>

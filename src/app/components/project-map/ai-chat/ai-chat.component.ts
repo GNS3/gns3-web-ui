@@ -1414,4 +1414,40 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         this.showError('Failed to get user information');
       });
   }
+
+  /**
+   * Handle abort button click
+   * Aborts the current streaming session
+   */
+  onAbortClicked(): void {
+    if (!this.controller || !this.isStreaming) {
+      return;
+    }
+
+    // Get the current session ID
+    const sessionId = this.currentSessionId || this.aiChatService.getCurrentSessionId();
+    if (!sessionId) {
+      this.logError('No session ID to abort');
+      return;
+    }
+
+    // Get fresh controller
+    this.controllerService.get(this.controller.id).then((freshController: Controller) => {
+      this.controller = freshController;
+
+      this.aiChatService
+        .abortChat(this.controller, this.project().project_id, sessionId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            // Abort successful, streaming state will be updated by stream completion
+            this.logError('Chat aborted successfully');
+          },
+          error: (error) => {
+            this.logError('Failed to abort chat:', error);
+            this.showError('Failed to abort chat');
+          },
+        });
+    });
+  }
 }

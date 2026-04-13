@@ -312,6 +312,25 @@ export class AiChatService {
   }
 
   /**
+   * Abort chat session
+   * POST /v3/projects/{project_id}/chat/sessions/{session_id}/abort
+   * @param controller Controller
+   * @param projectId Project ID
+   * @param sessionId Session ID
+   * @returns void
+   */
+  abortChat(controller: Controller, projectId: string, sessionId: string): Observable<void> {
+    const url = `${this.getControllerUrl(controller)}/v3/projects/${projectId}/chat/sessions/${sessionId}/abort`;
+
+    return this.http.post<void>(url, null).pipe(
+      catchError((error) => {
+        console.error('Failed to abort chat:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  /**
    * Get current session ID
    * @returns Current session ID
    */
