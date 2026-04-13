@@ -14,6 +14,7 @@ export class Link {
   project_id: string;
   suspend: boolean;
   link_style?: LinkStyle;
+  wireshark: boolean; // true for Web Wireshark, false for traditional Wireshark
 
   distance: number; // this is not from controller
   length: number; // this is not from controller

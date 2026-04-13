@@ -1,4 +1,4 @@
-@if (link()?.capturing) {
+@if (link()?.capturing && link()?.wireshark) {
 <button mat-menu-item (click)="onOpenWebWiresharkInline()">
   <mat-icon>open_in_full</mat-icon>
   <span>Open Web Wireshark (Inline)</span>
