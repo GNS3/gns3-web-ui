@@ -1,5 +1,5 @@
 import { animate, state, style, transition, trigger } from '@angular/animations';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject, model, viewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, inject, model, viewChild } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -88,7 +88,7 @@ import { FileUploadModule } from 'ng2-file-upload';
     FileUploadModule,
   ],
 })
-export class NewTemplateDialogComponent implements OnInit {
+export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
   @Input() controller: Controller;
   @Input() project: Project;
 
@@ -152,8 +152,7 @@ export class NewTemplateDialogComponent implements OnInit {
       });
       this.allAppliances = appliances;
       this.dataSource = new MatTableDataSource(this.allAppliances);
-      this.dataSource.paginator = this.paginator();
-      this.changeDetectorRef.markForCheck();
+      this.setupPaginator();
     });
 
     this.templateService.list(this.controller).subscribe((templates) => {
@@ -193,8 +192,7 @@ export class NewTemplateDialogComponent implements OnInit {
       });
       this.allAppliances = appliances;
       this.dataSource = new MatTableDataSource(this.allAppliances);
-      this.dataSource.paginator = this.paginator();
-      this.changeDetectorRef.markForCheck();
+      this.setupPaginator();
     });
 
     this.uploader = new FileUploader({ url: '' });
@@ -261,6 +259,17 @@ export class NewTemplateDialogComponent implements OnInit {
         this.cancelUploading();
       }
     });
+  }
+
+  ngAfterViewInit() {
+    this.setupPaginator();
+  }
+
+  private setupPaginator() {
+    if (this.dataSource && this.paginator()) {
+      this.dataSource.paginator = this.paginator();
+      this.changeDetectorRef.markForCheck();
+    }
   }
 
   updateAppliances() {
@@ -343,7 +352,7 @@ export class NewTemplateDialogComponent implements OnInit {
     }
 
     this.dataSource = new MatTableDataSource(this.appliances);
-    this.dataSource.paginator = this.paginator();
+    this.setupPaginator();
   }
 
   onSearchTextChange(value: string) {
