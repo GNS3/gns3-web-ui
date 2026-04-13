@@ -19,7 +19,7 @@
   <!-- Device List -->
   @if (!collapsed()) {
   <div class="device-list">
-    @for (node of nodes(); track node.id) {
+    @for (node of nodes(); track node.node_id) {
     <div class="device-item" [class.started]="isDeviceStarted(node)" (click)="onDeviceClick(node)">
       <div class="device-info">
         <div class="device-status-indicator" [style.backgroundColor]="getStatusColor(node.status)"></div>

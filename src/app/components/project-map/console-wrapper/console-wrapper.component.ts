@@ -137,7 +137,8 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   nodes: Node[] = [];
-  selected = new UntypedFormControl(0);
+  selected = new UntypedFormControl(0); // Will be reset to -1 when no devices
+  private isInitialized = false;
 
   readonly webConsoleComponents = viewChildren(WebConsoleComponent);
   readonly logConsoleComponent = viewChild(LogConsoleComponent);
@@ -300,9 +301,7 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
 
   addTab(node: Node, selectAfterAdding: boolean) {
     // Skip VNC nodes - they use standalone windows, not embedded console
-    console.debug('[ConsoleWrapper] addTab called for node:', node.name, 'console_type:', node.console_type);
     if (node.console_type === 'vnc') {
-      console.debug('[ConsoleWrapper] Skipping VNC node:', node.name);
       return;
     }
 
@@ -314,17 +313,26 @@ export class ConsoleWrapperComponent implements OnInit, AfterViewInit, OnDestroy
     if (existingIndex >= 0) {
       // Node already exists, just switch to that tab
       if (selectAfterAdding) {
-        this.selected.setValue(existingIndex); // Device tabs are 0, 1, 2, ...
+        this.selected.setValue(existingIndex);
+        this.cdr.markForCheck();
       }
     } else {
       // Add new tab
       this.nodes.push(node);
+      this.consoleService.openConsoles++;
 
       if (selectAfterAdding) {
-        this.selected.setValue(this.nodes.length - 1);
-      }
+        const newIndex = this.nodes.length - 1;
+        // Force Material tab group to reset by setting to -1 first, then to the correct index
+        // This ensures tab indicator updates to the correct position
+        this.selected.setValue(-1);
+        this.cdr.markForCheck();
 
-      this.consoleService.openConsoles++;
+        setTimeout(() => {
+          this.selected.setValue(newIndex);
+          this.cdr.markForCheck();
+        }, 0);
+      }
     }
   }
 
