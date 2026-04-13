@@ -28,7 +28,7 @@
           [class.gns3-chat-message-list__bubble--streaming]="isStreaming() && message === lastAssistantMessage"
         >
           <markdown class="gns3-chat-message-list__text" [data]="message.content"></markdown>
-          @if (isStreaming() && message === lastAssistantMessage) {
+          @if (isStreaming() && message === lastAssistantMessage && message.content) {
           <svg class="gns3-chat-message-list__streaming-logo" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <linearGradient id="gns3LoadingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
