@@ -469,6 +469,9 @@ describe('ConfiguratorDialogIosComponent', () => {
     });
 
     it('should merge memory settings into node properties on save', () => {
+      // Use a platform that supports iomem (c3600) for this test
+      component.node.properties.platform = 'c3600';
+
       component.memoryForm.patchValue({
         ram: 1024,
         nvram: 512,
@@ -483,6 +486,30 @@ describe('ConfiguratorDialogIosComponent', () => {
       expect(component.node.properties.ram).toBe(1024);
       expect(component.node.properties.nvram).toBe(512);
       expect(component.node.properties.iomem).toBe(15);
+      expect(component.node.properties.disk0).toBe(512);
+      expect(component.node.properties.disk1).toBe(0);
+      expect(component.node.properties.auto_delete_disks).toBe(false);
+    });
+
+    it('should delete iomem property for unsupported platforms (e.g., c7200)', () => {
+      // c7200 does not support iomem - verify it gets deleted
+      component.node.properties.platform = 'c7200';
+      component.node.properties.iomem = 10; // Pre-existing value
+
+      component.memoryForm.patchValue({
+        ram: 1024,
+        nvram: 512,
+        iomem: 15,
+        disk0: 512,
+        disk1: 0,
+        auto_delete_disks: false,
+      });
+
+      component.onSaveClick();
+
+      expect(component.node.properties.ram).toBe(1024);
+      expect(component.node.properties.nvram).toBe(512);
+      expect(component.node.properties.iomem).toBeUndefined();
       expect(component.node.properties.disk0).toBe(512);
       expect(component.node.properties.disk1).toBe(0);
       expect(component.node.properties.auto_delete_disks).toBe(false);
