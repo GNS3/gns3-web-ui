@@ -320,9 +320,7 @@ export class AiChatService {
    * @returns void
    */
   abortChat(controller: Controller, projectId: string, sessionId: string): Observable<void> {
-    const url = `${this.getControllerUrl(controller)}/v3/projects/${projectId}/chat/sessions/${sessionId}/abort`;
-
-    return this.http.post<void>(url, null).pipe(
+    return this.httpController.post<void>(controller, `/projects/${projectId}/chat/sessions/${sessionId}/abort`, null).pipe(
       catchError((error) => {
         console.error('Failed to abort chat:', error);
         return throwError(() => error);

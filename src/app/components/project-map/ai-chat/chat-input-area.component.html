@@ -16,7 +16,7 @@
     <button
       class="gns3-chat-input-area__send-button"
       (click)="sendMessage()"
-      [disabled]="!canSend || disabled()"
+      [disabled]="(!canSend || disabled()) && !isStreaming()"
       [class.gns3-chat-input-area__send-button--abort]="isStreaming()"
       matRipple
     >
