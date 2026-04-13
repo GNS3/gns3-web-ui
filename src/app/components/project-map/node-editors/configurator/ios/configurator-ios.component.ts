@@ -244,7 +244,14 @@ export class ConfiguratorDialogIosComponent implements OnInit {
       // Update memory settings
       this.node.properties.ram = memoryFormValues.ram;
       this.node.properties.nvram = memoryFormValues.nvram;
-      this.node.properties.iomem = memoryFormValues.iomem;
+      // Only update iomem if it's supported by the platform (c1700, c2600, c2691, c3600, c3725, c3745)
+      const iomemSupportedPlatforms = ['c1700', 'c2600', 'c2691', 'c3600', 'c3725', 'c3745'];
+      if (iomemSupportedPlatforms.includes(this.node.properties.platform)) {
+        // Convert empty string to null (server expects integer or null, not empty string)
+        this.node.properties.iomem = memoryFormValues.iomem !== '' ? memoryFormValues.iomem : null;
+      } else {
+        delete this.node.properties.iomem;
+      }
       this.node.properties.disk0 = memoryFormValues.disk0;
       this.node.properties.disk1 = memoryFormValues.disk1;
       this.node.properties.auto_delete_disks = memoryFormValues.auto_delete_disks;
