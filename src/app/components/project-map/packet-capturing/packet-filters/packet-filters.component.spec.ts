@@ -35,6 +35,7 @@ const createMockLink = (filters?: Filter): Link => ({
   capture_file_path: '',
   nodes: [],
   suspend: false,
+  wireshark: false,
   distance: 0,
   length: 0,
   filters,

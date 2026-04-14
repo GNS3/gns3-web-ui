@@ -194,6 +194,7 @@ describe('ContextMenuComponent', () => {
     nodes: [],
     project_id: 'project-123',
     suspend: false,
+    wireshark: false,
     distance: 0,
     length: 0,
     source: createMockNode(),

@@ -69,6 +69,7 @@ describe('EditLinkStyleActionComponent', () => {
     capture_file_path: '',
     capturing: false,
     suspend: false,
+    wireshark: false,
     distance: 100,
     length: 100,
     source: null as any,

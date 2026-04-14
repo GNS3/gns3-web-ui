@@ -20,6 +20,7 @@ describe('ResumeLinkActionComponent', () => {
       capturing: false,
       link_type: 'ethernet',
       suspend: false,
+      wireshark: false,
       distance: 0,
       length: 0,
       source: null as any,

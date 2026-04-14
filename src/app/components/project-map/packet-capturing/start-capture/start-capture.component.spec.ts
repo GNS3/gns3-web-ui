@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatButtonModule } from '@angular/material/button';
 import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
+import { LinksDataSource } from '../../../../cartography/datasources/links-datasource';
 import { LinkService } from '@services/link.service';
 import { PacketCaptureService } from '@services/packet-capture.service';
 import { ToasterService } from '@services/toaster.service';
@@ -149,6 +150,7 @@ describe('StartCaptureDialogComponent', () => {
         { provide: PacketCaptureService, useValue: mockPacketCaptureService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: NodesDataSource, useValue: mockNodesDataSource },
+        { provide: LinksDataSource, useValue: { update: vi.fn() } },
       ],
     }).compileComponents();
 
@@ -159,7 +161,9 @@ describe('StartCaptureDialogComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   const setupWithEthernetLink = () => {
@@ -268,7 +272,7 @@ describe('StartCaptureDialogComponent', () => {
   });
 
   describe('onYesClick', () => {
-    it('should close the dialog when form is valid and devices are running', () => {
+    it('should close the dialog when form is valid and devices are running', async () => {
       const { link } = setupWithEthernetLink();
       fixture.componentInstance.inputForm.setValue({
         linkType: 'DLT_EN10MB',
@@ -277,6 +281,7 @@ describe('StartCaptureDialogComponent', () => {
       fixture.componentInstance.startProgram.set(false);
 
       fixture.componentInstance.onYesClick();
+      await vi.runAllTimersAsync();
 
       expect(mockLinkService.startCaptureOnLink).toHaveBeenCalledWith(mockController, link, {
         capture_file_name: 'test_capture',

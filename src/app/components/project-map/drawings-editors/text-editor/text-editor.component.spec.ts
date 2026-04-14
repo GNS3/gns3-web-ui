@@ -198,7 +198,9 @@ describe('TextEditorDialogComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('Dialog Lifecycle', () => {

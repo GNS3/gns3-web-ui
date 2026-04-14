@@ -20,6 +20,7 @@ describe('StartCaptureOnStartedLinkActionComponent', () => {
       nodes: [],
       project_id: 'proj-1',
       suspend: false,
+      wireshark: false,
       distance: 100,
       length: 100,
       source: {} as any,

@@ -69,6 +69,7 @@ describe('StartCaptureActionComponent', () => {
       nodes: [createMockLinkNode('node-1', 0), createMockLinkNode('node-2', 0)],
       project_id: 'proj-1',
       suspend: false,
+      wireshark: false,
       distance: 100,
       length: 100,
       source: null as never,

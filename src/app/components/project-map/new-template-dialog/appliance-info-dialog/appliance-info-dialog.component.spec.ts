@@ -35,6 +35,7 @@ describe('ApplianceInfoDialogComponent', () => {
     vendor_name: 'Test Vendor',
     vendor_url: 'https://example.com/vendor',
     versions: [],
+    tags: [],
     docker: { adapters: 1, console_type: 'vnc', image: 'test:latest' },
     dynamips: {
       chassis: 'c3725',

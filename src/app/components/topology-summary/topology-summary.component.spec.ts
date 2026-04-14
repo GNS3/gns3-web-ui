@@ -143,6 +143,7 @@ describe('TopologySummaryComponent', () => {
         label: { rotation: 0, style: '', text: '', x: 0, y: 0 },
       },
     ],
+    wireshark: false,
     filters: {
       bpf: [],
       corrupt: [],
