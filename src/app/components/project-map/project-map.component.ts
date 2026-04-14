@@ -1289,6 +1289,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;
     instance.project = this.project;
+
+    dialogRef.afterClosed().subscribe((updatedProject: Project) => {
+      if (updatedProject) {
+        this.project = updatedProject;
+        this.cd.markForCheck();
+      }
+    });
   }
 
   importProject() {

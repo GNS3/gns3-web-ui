@@ -156,12 +156,12 @@ export class EditProjectDialogComponent implements OnInit {
       this.project.auto_close = !this.auto_close();
       this.project.show_interface_labels = this.show_interface_labels();
 
-      this.projectService.update(this.controller, this.project).subscribe((project: Project) => {
+      this.projectService.update(this.controller, this.project).subscribe((updatedProject: Project) => {
         this.projectService
           .postReadmeFile(this.controller, this.project.project_id, this.editor().markdown())
           .subscribe((response) => {
-            this.toasterService.success(`Project ${project.name} updated.`);
-            this.onNoClick();
+            this.toasterService.success(`Project ${updatedProject.name} updated.`);
+            this.dialogRef.close(updatedProject);
           });
       });
     } else {

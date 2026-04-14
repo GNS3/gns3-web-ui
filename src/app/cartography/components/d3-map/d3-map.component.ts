@@ -116,6 +116,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
       const project = this.project();
       if (project && this.mapChangeDetectorRef.hasBeenDrawn) {
         this.updateGrid();
+        this.mapChangeDetectorRef.detectChanges();
       }
     });
   }
