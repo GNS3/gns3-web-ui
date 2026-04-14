@@ -51,8 +51,10 @@ export class WebWiresharkInlineComponent implements OnInit, OnDestroy {
   private readonly DEFAULT_HEIGHT = 600;
   private readonly DEFAULT_LEFT = '100px';
   private readonly DEFAULT_TOP = '100px';
-  private readonly MIN_WIDTH = 400;
-  private readonly MIN_HEIGHT = 300;
+  private readonly MIN_WIDTH = 800;
+  private readonly MIN_HEIGHT = 600;
+  private readonly MAX_WIDTH = 1920;
+  private readonly MAX_HEIGHT = 1080;
 
   private destroy$ = new Subject<void>();
   readonly link = input.required<Link>();
@@ -129,7 +131,13 @@ export class WebWiresharkInlineComponent implements OnInit, OnDestroy {
   ngOnInit() {
     // Set top offset to keep window below toolbar
     const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
-    this.boundaryService.setConfig({ topOffset: toolbarHeight });
+    this.boundaryService.setConfig({
+      topOffset: toolbarHeight,
+      minWidth: this.MIN_WIDTH,
+      minHeight: this.MIN_HEIGHT,
+      maxWidth: this.MAX_WIDTH,
+      maxHeight: this.MAX_HEIGHT,
+    });
 
     // Build Wireshark URL
     this.wiresharkUrl = this.buildWiresharkUrl();
@@ -231,7 +239,10 @@ export class WebWiresharkInlineComponent implements OnInit, OnDestroy {
     if (
       event.rectangle.width &&
       event.rectangle.height &&
-      (event.rectangle.width < this.MIN_WIDTH || event.rectangle.height < this.MIN_HEIGHT)
+      (event.rectangle.width < this.MIN_WIDTH ||
+        event.rectangle.height < this.MIN_HEIGHT ||
+        event.rectangle.width > this.MAX_WIDTH ||
+        event.rectangle.height > this.MAX_HEIGHT)
     ) {
       return false;
     }
