@@ -62,7 +62,10 @@ export class ConfigActionComponent {
     } else if (node.node_type === 'vmware') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogVmwareComponent, this.conf);
     } else if (node.node_type === 'docker') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogDockerComponent, this.conf);
+      this.dialogRef = this.dialog.open(ConfiguratorDialogDockerComponent, {
+        ...this.conf,
+        panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'docker-configurator-dialog-panel'],
+      });
     } else if (node.node_type === 'nat') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogNatComponent, this.conf);
     } else if (node.node_type === 'frame_relay_switch') {

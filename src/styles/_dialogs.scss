@@ -880,6 +880,18 @@ h2[mat-dialog-title] {
     width: 800px;
     max-width: 800px;
   }
+
+  /* Two column grid layout for form fields */
+  .two-column-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start;
+
+    .grid-span-2 {
+      grid-column: 1 / -1;
+    }
+  }
 }
 
 /* =============================================

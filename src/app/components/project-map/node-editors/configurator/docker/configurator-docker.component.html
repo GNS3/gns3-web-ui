@@ -37,71 +37,73 @@
                 <input matInput formControlName="startCommand" type="text" />
               </mat-form-field>
 
-              <mat-form-field class="form-field">
-                <mat-label>Adapters</mat-label>
-                <input formControlName="adapter" matInput type="number" />
-              </mat-form-field>
+              <div class="two-column-grid">
+                <mat-form-field class="form-field">
+                  <mat-label>Adapters</mat-label>
+                  <input formControlName="adapter" matInput type="number" />
+                </mat-form-field>
 
-              <mat-form-field class="form-field">
-                <mat-label>Base MAC</mat-label>
-                <input matInput formControlName="mac_address" type="text" />
-              </mat-form-field>
+                <mat-form-field class="form-field">
+                  <mat-label>Base MAC</mat-label>
+                  <input matInput formControlName="mac_address" type="text" />
+                </mat-form-field>
 
-              <mat-form-field class="form-field">
-                <mat-label>Maximum memory</mat-label>
-                <input formControlName="memory" matInput type="number" min="0" />
-                <span matSuffix>MB</span>
-              </mat-form-field>
+                <mat-form-field class="form-field">
+                  <mat-label>Maximum memory</mat-label>
+                  <input formControlName="memory" matInput type="number" min="0" />
+                  <span matSuffix>MB</span>
+                </mat-form-field>
 
-              <mat-form-field class="form-field">
-                <mat-label>Maximum CPUs</mat-label>
-                <input formControlName="cpus" matInput type="number" min="0" />
-              </mat-form-field>
+                <mat-form-field class="form-field">
+                  <mat-label>Maximum CPUs</mat-label>
+                  <input formControlName="cpus" matInput type="number" min="0" />
+                </mat-form-field>
 
-              <mat-form-field class="form-field">
-                <mat-label>Console type</mat-label>
-                <mat-select formControlName="console_type">
-                  @for (type of consoleTypes; track type) {
-                  <mat-option [value]="type">
-                    {{ type }}
-                  </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
+                <mat-form-field class="form-field">
+                  <mat-label>Console type</mat-label>
+                  <mat-select formControlName="console_type">
+                    @for (type of consoleTypes; track type) {
+                    <mat-option [value]="type">
+                      {{ type }}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
 
-              <mat-form-field class="form-field">
-                <mat-label>Auxiliary console type</mat-label>
-                <mat-select formControlName="aux_type">
-                  @for (type of auxConsoleTypes; track type) {
-                  <mat-option [value]="type">
-                    {{ type }}
-                  </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
+                <mat-form-field class="form-field">
+                  <mat-label>Auxiliary console type</mat-label>
+                  <mat-select formControlName="aux_type">
+                    @for (type of auxConsoleTypes; track type) {
+                    <mat-option [value]="type">
+                      {{ type }}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
 
-              <mat-checkbox formControlName="console_auto_start"> Auto start console </mat-checkbox>
+                <mat-form-field class="form-field">
+                  <mat-label>VNC console resolution</mat-label>
+                  <mat-select formControlName="console_resolution">
+                    @for (resolution of consoleResolutions; track resolution) {
+                    <mat-option [value]="resolution">
+                      {{ resolution }}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
 
-              <mat-form-field class="form-field">
-                <mat-label>VNC console resolution</mat-label>
-                <mat-select formControlName="console_resolution">
-                  @for (resolution of consoleResolutions; track resolution) {
-                  <mat-option [value]="resolution">
-                    {{ resolution }}
-                  </mat-option>
-                  }
-                </mat-select>
-              </mat-form-field>
+                <mat-form-field class="form-field">
+                  <mat-label>HTTP port in the container</mat-label>
+                  <input formControlName="consoleHttpPort" matInput type="number" />
+                </mat-form-field>
 
-              <mat-form-field class="form-field">
-                <mat-label>HTTP port in the container</mat-label>
-                <input formControlName="consoleHttpPort" matInput type="number" />
-              </mat-form-field>
+                <mat-form-field class="form-field grid-span-2">
+                  <mat-label>HTTP path</mat-label>
+                  <input matInput formControlName="consoleHttpPath" type="text" />
+                </mat-form-field>
 
-              <mat-form-field class="form-field">
-                <mat-label>HTTP path</mat-label>
-                <input matInput formControlName="consoleHttpPath" type="text" />
-              </mat-form-field>
+                <mat-checkbox formControlName="console_auto_start" class="grid-span-2"> Auto start console </mat-checkbox>
+              </div>
 
               <button mat-button class="form-field" (click)="editNetworkConfiguration()">
                 Edit network configuration
