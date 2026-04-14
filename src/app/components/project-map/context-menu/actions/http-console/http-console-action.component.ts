@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, inject, input, Output } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
+import { Project } from '@models/project';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { VncConsoleService } from '@services/vnc-console.service';
 import { ToasterService } from '@services/toaster.service';
@@ -25,48 +26,55 @@ export class HttpConsoleActionComponent {
   private cdr = inject(ChangeDetectorRef);
 
   readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
   readonly nodes = input<Node[]>(undefined);
 
+  @Output() openWebConsoleInline = new EventEmitter<{ node: Node; controller: Controller; project: Project }>();
+
   openConsole() {
-    let nodesToStart = '';
-    let nodesToStartCounter = 0;
+    // Only support single node for inline console
+    if (this.nodes().length !== 1) {
+      this.toasterService.error('Inline web console is only supported for a single node.');
+      return;
+    }
 
-    this.nodes().forEach((n) => {
-      if (n.console_type !== 'none') {
-        if (n.status === 'started') {
-          // Check console type to determine how to open the console
-          if (n.console_type === 'vnc') {
-            // VNC console: use standalone page in popup window
-            this.vncConsoleService.openVncConsole(this.controller(), n, false);
-          } else if (n.console_type && n.console_type.startsWith('http')) {
-            // HTTP/HTTPS console: open directly in popup window
-            if (n.console_host === '0.0.0.0' || n.console_host === '0:0:0:0:0:0:0:0' || n.console_host === '::') {
-              n.console_host = this.controller().host;
-            }
+    const node = this.nodes()[0];
+    const controller = this.controller();
+    const project = this.project();
 
-            const uri = `${n.console_type}://${n.console_host}:${n.console}`;
-            window.open(uri, `Console-${n.name}`, 'width=1024,height=768');
-          } else if (n.console_type === 'telnet') {
-            // Telnet console: open in embedded widget
-            this.mapSettingsService.logConsoleSubject.next(true);
-            setTimeout(() => {
-              this.nodeConsoleService.openConsoleForNode(n);
-              this.cdr.markForCheck();
-            }, 500);
-          } else {
-            this.toasterService.error(`Console type '${n.console_type}' is not supported for node ${n.name}.`);
-          }
-        } else {
-          nodesToStartCounter++;
-          nodesToStart += n.name + ' ';
-        }
-      }
-    });
+    if (!controller || !project) {
+      return;
+    }
 
-    if (nodesToStartCounter > 0) {
-      this.toasterService.error(
-        'Please start the following nodes if you want to open consoles for them: ' + nodesToStart
-      );
+    // Check if node is started
+    if (node.status !== 'started') {
+      this.toasterService.error(`Please start the node '${node.name}' before opening the console.`);
+      return;
+    }
+
+    // Check console type
+    if (node.console_type === 'none') {
+      this.toasterService.error(`Node '${node.name}' has no console configured.`);
+      return;
+    }
+
+    // For VNC and HTTP/HTTPS consoles, use inline window
+    if (node.console_type === 'vnc' || (node.console_type && node.console_type.startsWith('http'))) {
+      // Emit event to parent component to open inline window
+      this.openWebConsoleInline.emit({
+        node,
+        controller,
+        project,
+      });
+    } else if (node.console_type === 'telnet') {
+      // Telnet console: still use embedded widget (not inline window)
+      this.mapSettingsService.logConsoleSubject.next(true);
+      setTimeout(() => {
+        this.nodeConsoleService.openConsoleForNode(node);
+        this.cdr.markForCheck();
+      }, 500);
+    } else {
+      this.toasterService.error(`Console type '${node.console_type}' is not supported for inline web console.`);
     }
   }
 }

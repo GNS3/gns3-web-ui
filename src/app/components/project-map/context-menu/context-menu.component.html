@@ -14,7 +14,12 @@
     } @if (nodes.length) {
     <app-reload-node-action [controller]="controller" [nodes]="nodes"></app-reload-node-action>
     } @if (!projectService.isReadOnly(project) && nodes.length > 0) {
-    <app-http-console-action [controller]="controller" [nodes]="nodes"></app-http-console-action>
+    <app-http-console-action
+      [controller]="controller"
+      [project]="project"
+      [nodes]="nodes"
+      (openWebConsoleInline)="onOpenWebConsoleInline($event)"
+    ></app-http-console-action>
     } @if (!projectService.isReadOnly(project) && nodes.length > 0) {
     <app-http-console-new-tab-action [controller]="controller" [nodes]="nodes"></app-http-console-new-tab-action>
     } @if (!projectService.isReadOnly(project) && nodes.length === 1) {

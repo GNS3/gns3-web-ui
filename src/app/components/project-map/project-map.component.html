@@ -36,6 +36,7 @@
           [project]="project"
           [controller]="controller"
           (openWebWiresharkInline)="openWebWiresharkInline($event)"
+          (openWebConsoleInline)="onOpenWebConsoleInline($event)"
         ></app-context-menu>
       </div>
     </div>
@@ -287,6 +288,20 @@
     }
   }
 
+  <!-- Web Console Inline Windows (multiple) -->
+  @if (project && webConsoleInlineWindows.size > 0) {
+    @for (node of getWebConsoleInlineWindows(); track node.node_id) {
+      <app-web-console-inline
+        [node]="node"
+        [controller]="controller"
+        [project]="project"
+        [zIndex]="getWebConsoleWindowZIndex(node.node_id)"
+        (closeWindow)="closeWebConsoleInline(node.node_id)"
+        (windowFocused)="bringWebConsoleWindowToFront(node.node_id)"
+      ></app-web-console-inline>
+    }
+  }
+
   <!-- Unified Taskbar for all open windows -->
   <div class="inline-taskbar">
     <!-- Console taskbar icon - always shown when console is open -->
@@ -314,6 +329,20 @@
       >
         <mat-icon class="inline-taskbar__icon-type">analytics</mat-icon>
         <span class="inline-taskbar__label">{{ link.capture_file_name }}</span>
+      </div>
+    }
+
+    <!-- Web Console taskbar icons - shown for all open Web Console windows -->
+    @for (node of getWebConsoleInlineWindows(); track node.node_id) {
+      <div
+        class="inline-taskbar__icon"
+        [class.inline-taskbar__icon--minimized]="windowManagement.minimizedWindows().some(w => w.id === 'console-' + node.node_id)"
+        [style.left.px]="getWebConsoleTaskbarLeft(node.node_id)"
+        (click)="toggleWebConsoleMinimize(node.node_id)"
+        [title]="node.name"
+      >
+        <mat-icon class="inline-taskbar__icon-type">web</mat-icon>
+        <span class="inline-taskbar__label">{{ node.name }}</span>
       </div>
     }
   </div>
