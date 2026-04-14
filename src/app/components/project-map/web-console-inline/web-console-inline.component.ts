@@ -126,11 +126,56 @@ export class WebConsoleInlineComponent implements OnInit, OnDestroy {
     const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
     this.boundaryService.setConfig({ topOffset: toolbarHeight });
 
+    // Adjust window size based on node's console_resolution
+    this.adjustWindowSizeFromConsoleResolution();
+
     // Build console URL
     this.consoleUrl = this.buildConsoleUrl();
 
     // Setup drag handling
     this.setupDragHandling();
+  }
+
+  /**
+   * Adjust window size based on node's console_resolution property
+   * Follows the same pattern as VncConsoleService.openVncConsole()
+   */
+  private adjustWindowSizeFromConsoleResolution(): void {
+    const node = this.node();
+
+    // Add padding for browser chrome (title bar, borders, etc.)
+    const windowPadding = 10;
+    let windowWidth = this.DEFAULT_WIDTH;
+    let windowHeight = this.DEFAULT_HEIGHT;
+
+    if (node.properties) {
+      const props = node.properties as any;
+      if (props.console_resolution) {
+        const resolution = props.console_resolution;
+        const parts = resolution.split('x');
+        if (parts.length === 2) {
+          const width = parseInt(parts[0], 10);
+          const height = parseInt(parts[1], 10);
+
+          if (!isNaN(width) && !isNaN(height)) {
+            windowWidth = width + windowPadding;
+            windowHeight = height + windowPadding;
+
+            // Update window style and resized dimensions
+            this.style = {
+              position: 'fixed',
+              left: this.DEFAULT_LEFT,
+              top: this.DEFAULT_TOP,
+              width: `${windowWidth}px`,
+              height: `${windowHeight}px`,
+            };
+
+            this.resizedWidth = windowWidth;
+            this.resizedHeight = windowHeight;
+          }
+        }
+      }
+    }
   }
 
   /**
