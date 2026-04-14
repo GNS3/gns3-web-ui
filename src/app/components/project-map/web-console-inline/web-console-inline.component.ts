@@ -45,8 +45,8 @@ import { WindowManagementService } from '@services/window-management.service';
 })
 export class WebConsoleInlineComponent implements OnInit, OnDestroy {
   // Constants
-  private readonly DEFAULT_WIDTH = 800;
-  private readonly DEFAULT_HEIGHT = 600;
+  private readonly DEFAULT_WIDTH = 1024;
+  private readonly DEFAULT_HEIGHT = 768;
   private readonly DEFAULT_LEFT = '100px';
   private readonly DEFAULT_TOP = '100px';
   private readonly MIN_WIDTH = 400;
