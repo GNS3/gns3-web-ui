@@ -113,6 +113,12 @@
 
           <mat-tab label="Advanced">
             <form [formGroup]="generalSettingsForm">
+              <h6>Environment</h6>
+              <mat-form-field class="form-field">
+                <mat-label>Environment variables</mat-label>
+                <textarea matInput formControlName="environment" placeholder="KEY1=value1&#10;KEY2=value2"></textarea>
+              </mat-form-field>
+
               <h6>Extra hosts</h6>
               <mat-form-field class="form-field">
                 <mat-label>Extra hosts</mat-label>

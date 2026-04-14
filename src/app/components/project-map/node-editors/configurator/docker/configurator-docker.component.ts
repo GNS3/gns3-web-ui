@@ -100,6 +100,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
       console_resolution: new UntypedFormControl(''),
       consoleHttpPort: new UntypedFormControl('', Validators.required),
       consoleHttpPath: new UntypedFormControl('', Validators.required),
+      environment: new UntypedFormControl(''),
       extra_hosts: new UntypedFormControl(''),
       extra_volumes: new UntypedFormControl(''),
       usage: new UntypedFormControl(''),
@@ -125,6 +126,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
         console_resolution: node.properties.console_resolution || '',
         consoleHttpPort: node.properties.console_http_port || '',
         consoleHttpPath: node.properties.console_http_path || '',
+        environment: node.properties.environment || '',
         extra_hosts: node.properties.extra_hosts || '',
         extra_volumes: node.properties.extra_volumes || '',
         usage: node.properties.usage || '',
@@ -175,6 +177,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
       this.node.properties.console_resolution = formValues.console_resolution;
       this.node.properties.console_http_port = formValues.consoleHttpPort;
       this.node.properties.console_http_path = formValues.consoleHttpPath;
+      this.node.properties.environment = formValues.environment;
       this.node.properties.extra_hosts = formValues.extra_hosts;
       this.node.properties.extra_volumes = formValues.extra_volumes;
       this.node.properties.usage = formValues.usage;
