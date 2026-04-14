@@ -203,7 +203,7 @@ export class WebConsoleInlineComponent implements OnInit, OnDestroy {
   close(): void {
     // Remove from minimized list if present
     this.windowManagement.restoreWindow(this.getWindowId());
-    this.cdr.markForCheck();
+    this.closeWindow.emit();
   }
 
   /**
