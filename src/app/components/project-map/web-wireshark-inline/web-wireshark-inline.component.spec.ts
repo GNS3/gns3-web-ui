@@ -272,21 +272,49 @@ describe('WebWiresharkInlineComponent', () => {
   describe('validate()', () => {
     it('should return true for valid resize', () => {
       const event = {
-        rectangle: { width: 500, height: 400 },
+        rectangle: { width: 1000, height: 800 },
+      } as ResizeEvent;
+      expect(component.validate(event)).toBe(true);
+    });
+
+    it('should return true for resize at minimum dimensions', () => {
+      const event = {
+        rectangle: { width: 800, height: 600 },
+      } as ResizeEvent;
+      expect(component.validate(event)).toBe(true);
+    });
+
+    it('should return true for resize at maximum dimensions', () => {
+      const event = {
+        rectangle: { width: 1920, height: 1080 },
       } as ResizeEvent;
       expect(component.validate(event)).toBe(true);
     });
 
     it('should return false for width below minimum', () => {
       const event = {
-        rectangle: { width: 300, height: 400 },
+        rectangle: { width: 700, height: 800 },
       } as ResizeEvent;
       expect(component.validate(event)).toBe(false);
     });
 
     it('should return false for height below minimum', () => {
       const event = {
-        rectangle: { width: 500, height: 200 },
+        rectangle: { width: 1000, height: 500 },
+      } as ResizeEvent;
+      expect(component.validate(event)).toBe(false);
+    });
+
+    it('should return false for width above maximum', () => {
+      const event = {
+        rectangle: { width: 2000, height: 800 },
+      } as ResizeEvent;
+      expect(component.validate(event)).toBe(false);
+    });
+
+    it('should return false for height above maximum', () => {
+      const event = {
+        rectangle: { width: 1000, height: 1200 },
       } as ResizeEvent;
       expect(component.validate(event)).toBe(false);
     });
