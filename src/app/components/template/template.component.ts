@@ -131,6 +131,8 @@ export class TemplateComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.subscription = this.templateService.newTemplateCreated.subscribe((template: Template) => {
       this.templates.push(template);
+      // Load the symbol blob for the new template
+      this.loadTemplateSymbolBlobs([template]);
       this.cd.markForCheck();
     });
 

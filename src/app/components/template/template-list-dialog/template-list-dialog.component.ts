@@ -100,6 +100,13 @@ export class TemplateListDialogComponent implements OnInit {
       this.cd.markForCheck();
     });
 
+    // Listen for new template creation events to refresh the list
+    this.templateService.newTemplateCreated.subscribe((newTemplate: Template) => {
+      this.templates.push(newTemplate);
+      this.filteredTemplates = [...this.templates];
+      this.cd.markForCheck();
+    });
+
     // Load computes list for node controller selection
     this.computeService.getComputes(this.controller).subscribe({
       next: (computes: Compute[]) => {
