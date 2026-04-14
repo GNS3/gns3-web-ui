@@ -90,6 +90,7 @@ export interface Appliance {
   vendor_name: string;
   vendor_url: string;
   versions: Version[];
+  tags: string[];
 
   docker: Docker;
   dynamips: Dynamips;

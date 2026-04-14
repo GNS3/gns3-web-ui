@@ -591,6 +591,7 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
     iouTemplate.category = this.getCategory();
     iouTemplate.default_name_format = this.applianceToInstall.default_name_format;
     iouTemplate.symbol = this.applianceToInstall.symbol;
+    iouTemplate.tags = this.applianceToInstall.tags || [];
     iouTemplate.compute_id = 'local';
     iouTemplate.template_id = uuid();
     iouTemplate.path = iou_image;
@@ -645,6 +646,7 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
     iosTemplate.category = this.getCategory();
     iosTemplate.default_name_format = this.applianceToInstall.default_name_format;
     iosTemplate.symbol = this.applianceToInstall.symbol;
+    iosTemplate.tags = this.applianceToInstall.tags || [];
     iosTemplate.compute_id = 'local';
     iosTemplate.template_id = uuid();
     iosTemplate.image = ios_image;
@@ -682,6 +684,7 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
     dockerTemplate.category = this.getCategory();
     dockerTemplate.default_name_format = this.applianceToInstall.default_name_format;
     dockerTemplate.symbol = this.applianceToInstall.symbol;
+    dockerTemplate.tags = this.applianceToInstall.tags || [];
     dockerTemplate.compute_id = 'local';
     dockerTemplate.template_id = uuid();
     dockerTemplate.image = this.applianceToInstall.docker.image;
@@ -740,6 +743,7 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
     qemuTemplate.port_segment_size = this.applianceToInstall.port_segment_size;
     qemuTemplate.default_name_format = this.applianceToInstall.default_name_format;
     qemuTemplate.symbol = this.applianceToInstall.symbol;
+    qemuTemplate.tags = this.applianceToInstall.tags || [];
     qemuTemplate.compute_id = 'local';
     qemuTemplate.template_id = uuid();
     qemuTemplate.hda_disk_image = this.findControllerImageName(version.images.hda_disk_image);

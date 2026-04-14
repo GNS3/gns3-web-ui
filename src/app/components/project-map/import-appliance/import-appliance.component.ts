@@ -134,6 +134,7 @@ export class ImportApplianceComponent implements OnInit {
       template.category = appliance.category;
       template.builtin = false;
       template.default_name_format = '{name}-{0}';
+      template.tags = appliance.tags || [];
       template.compute_id = 'vm';
       // qemu - VM
       // iou - VM + main controller
