@@ -107,6 +107,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { AiChatComponent } from './ai-chat/ai-chat.component';
 import { ConsoleWrapperComponent } from './console-wrapper/console-wrapper.component';
 import { WebWiresharkInlineComponent } from './web-wireshark-inline/web-wireshark-inline.component';
+import { WebConsoleInlineComponent } from './web-console-inline/web-console-inline.component';
 import { DrawLinkToolComponent } from './draw-link-tool/draw-link-tool.component';
 import { ImportApplianceComponent } from './import-appliance/import-appliance.component';
 import { NodesMenuComponent } from './nodes-menu/nodes-menu.component';
@@ -146,6 +147,7 @@ import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edit
     ConsoleWrapperComponent,
     AiChatComponent,
     WebWiresharkInlineComponent,
+    WebConsoleInlineComponent,
     ProgressComponent,
     DrawingDraggedComponent,
     DrawingResizedComponent,
@@ -182,6 +184,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public webWiresharkInlineWindows = new Map<string, Link>();
   // Track z-index for each window
   public webWiresharkInlineZIndex = new Map<string, number>();
+  // Track multiple Web Console inline windows
+  // Key is node_id, value is the Node object
+  public webConsoleInlineWindows = new Map<string, Node>();
+  // Track z-index for each console window
+  public webConsoleInlineZIndex = new Map<string, number>();
   // Base z-index for windows
   private baseZIndex = 1000;
   // Counter for generating unique z-indices
@@ -990,6 +997,66 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Open Web Console inline window for a node
+   */
+  public onOpenWebConsoleInline(data: { node: Node; controller: Controller; project: Project }) {
+    // Check if window already open for this node
+    if (this.webConsoleInlineWindows.has(data.node.node_id)) {
+      // Bring existing window to front
+      this.bringWebConsoleWindowToFront(data.node.node_id);
+      this.toasterService.warning('Web Console is already open for this node');
+      return;
+    }
+
+    // Assign z-index for new window (increment counter)
+    this.zIndexCounter++;
+    const windowZIndex = this.baseZIndex + this.zIndexCounter;
+
+    // Add the node to our Map of open windows
+    this.webConsoleInlineWindows.set(data.node.node_id, data.node);
+    this.webConsoleInlineZIndex.set(data.node.node_id, windowZIndex);
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Close Web Console inline window for a specific node
+   */
+  public closeWebConsoleInline(nodeId: string) {
+    this.webConsoleInlineWindows.delete(nodeId);
+    this.webConsoleInlineZIndex.delete(nodeId);
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Bring a Web Console window to front
+   */
+  public bringWebConsoleWindowToFront(nodeId: string) {
+    if (!this.webConsoleInlineWindows.has(nodeId)) {
+      return;
+    }
+
+    // Increment counter and assign higher z-index
+    this.zIndexCounter++;
+    const newZIndex = this.baseZIndex + this.zIndexCounter;
+    this.webConsoleInlineZIndex.set(nodeId, newZIndex);
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Get z-index for a specific console window
+   */
+  public getWebConsoleWindowZIndex(nodeId: string): number {
+    return this.webConsoleInlineZIndex.get(nodeId) || this.baseZIndex;
+  }
+
+  /**
+   * Get all open Web Console inline windows as an array
+   */
+  public getWebConsoleInlineWindows(): Node[] {
+    return Array.from(this.webConsoleInlineWindows.values());
+  }
+
+  /**
    * Bring console window to front
    */
   public bringConsoleToFront() {
@@ -1044,6 +1111,41 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     // Console icon always takes first slot
     let baseOffset = this.TASKBAR_ICON_WIDTH + this.TASKBAR_ICON_GAP;
     return this.TASKBAR_BASE_LEFT + baseOffset + index * (this.TASKBAR_ICON_WIDTH + this.TASKBAR_ICON_GAP);
+  }
+
+  /**
+   * Get taskbar icon position for Web Console windows
+   * Icons are arranged after Wireshark windows
+   */
+  public getWebConsoleTaskbarLeft(nodeId: string | undefined): number {
+    if (!nodeId) return this.TASKBAR_BASE_LEFT;
+
+    // Calculate index based on position in open windows list
+    const openWindows = this.getWebConsoleInlineWindows();
+    const index = openWindows.findIndex(w => w.node_id === nodeId);
+
+    // Console icon always takes first slot
+    let baseOffset = this.TASKBAR_ICON_WIDTH + this.TASKBAR_ICON_GAP;
+
+    // Add space for Wireshark windows
+    const wiresharkCount = this.webWiresharkInlineWindows.size;
+    baseOffset += wiresharkCount * (this.TASKBAR_ICON_WIDTH + this.TASKBAR_ICON_GAP);
+
+    return this.TASKBAR_BASE_LEFT + baseOffset + index * (this.TASKBAR_ICON_WIDTH + this.TASKBAR_ICON_GAP);
+  }
+
+  /**
+   * Toggle Web Console window minimize/restore
+   */
+  public toggleWebConsoleMinimize(nodeId: string): void {
+    const windowId = `console-${nodeId}`;
+    const isMinimized = this.windowManagement.minimizedWindows().some(w => w.id === windowId);
+    if (isMinimized) {
+      this.windowManagement.restoreWindow(windowId);
+    } else {
+      this.windowManagement.minimizeWindow(windowId, 'console', nodeId);
+    }
+    this.cd.markForCheck();
   }
 
   /**

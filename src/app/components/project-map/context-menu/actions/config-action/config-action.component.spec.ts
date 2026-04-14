@@ -184,7 +184,10 @@ describe('ConfigActionComponent', () => {
 
       component.configureNode();
 
-      expect(mockDialog.open).toHaveBeenCalledWith(ConfiguratorDialogDockerComponent, baseDialogConfig);
+      expect(mockDialog.open).toHaveBeenCalledWith(ConfiguratorDialogDockerComponent, {
+        ...baseDialogConfig,
+        panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'docker-configurator-dialog-panel'],
+      });
     });
 
     it('should open NAT configurator for nat node type', () => {

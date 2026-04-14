@@ -9,10 +9,12 @@ import { ToasterService } from '@services/toaster.service';
 import { MapSettingsService } from '@services/mapsettings.service';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
+import { Project } from '@models/project';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('HttpConsoleActionComponent', () => {
   let fixture: ComponentFixture<HttpConsoleActionComponent>;
+  let component: HttpConsoleActionComponent;
   let mockNodeConsoleService: { openConsoleForNode: ReturnType<typeof vi.fn> };
   let mockVncConsoleService: { openVncConsole: ReturnType<typeof vi.fn> };
   let mockToasterService: { error: ReturnType<typeof vi.fn> };
@@ -32,6 +34,27 @@ describe('HttpConsoleActionComponent', () => {
     authToken: 'test-token',
     status: 'running',
     tokenExpired: false,
+  };
+
+  const mockProject: Project = {
+    project_id: 'proj-1',
+    name: 'Test Project',
+    filename: '',
+    path: '',
+    status: 'opened',
+    auto_start: false,
+    auto_close: false,
+    auto_open: false,
+    scene_height: 1000,
+    scene_width: 1000,
+    show_layers: false,
+    snap_to_grid: false,
+    show_grid: false,
+    grid_size: 75,
+    drawing_grid_size: 25,
+    show_interface_labels: false,
+    variables: [],
+    readonly: false,
   };
 
   const createMockNode = (overrides: Partial<Node> = {}): Node => {
@@ -82,12 +105,14 @@ describe('HttpConsoleActionComponent', () => {
       .compileComponents();
 
     fixture = TestBed.createComponent(HttpConsoleActionComponent);
-    fixture.detectChanges();
+    component = fixture.componentInstance;
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
-    fixture.destroy();
-    vi.clearAllMocks();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('button visibility', () => {
@@ -121,34 +146,78 @@ describe('HttpConsoleActionComponent', () => {
   });
 
   describe('openConsole', () => {
+    describe('single node requirement', () => {
+      it('should show error when multiple nodes are provided', () => {
+        const node1 = createMockNode({ name: 'Node1', status: 'started', console_type: 'telnet' });
+        const node2 = createMockNode({ name: 'Node2', status: 'started', console_type: 'telnet' });
+        fixture.componentRef.setInput('nodes', [node1, node2]);
+        fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('project', mockProject);
+        fixture.detectChanges();
+
+        fixture.nativeElement.querySelector('button').click();
+        fixture.detectChanges();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith(
+          'Inline web console is only supported for a single node.'
+        );
+      });
+
+      it('should show error when no nodes are provided', () => {
+        fixture.componentRef.setInput('nodes', []);
+        fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('project', mockProject);
+        fixture.detectChanges();
+
+        fixture.nativeElement.querySelector('button').click();
+        fixture.detectChanges();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith(
+          'Inline web console is only supported for a single node.'
+        );
+      });
+    });
+
     describe('VNC console', () => {
-      it('should open VNC console for started node with vnc console type', () => {
+      it('should emit openWebConsoleInline event for started node with vnc console type', () => {
+        const emitSpy = vi.spyOn(component.openWebConsoleInline, 'emit');
         const node = createMockNode({ console_type: 'vnc', status: 'started' });
         fixture.componentRef.setInput('nodes', [node]);
         fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('project', mockProject);
         fixture.detectChanges();
 
         fixture.nativeElement.querySelector('button').click();
         fixture.detectChanges();
 
-        expect(mockVncConsoleService.openVncConsole).toHaveBeenCalledWith(mockController, node, false);
+        expect(emitSpy).toHaveBeenCalledWith({
+          node,
+          controller: mockController,
+          project: mockProject,
+        });
       });
 
-      it('should not open VNC console for stopped node with vnc console type', () => {
+      it('should not emit event for stopped node with vnc console type', () => {
+        const emitSpy = vi.spyOn(component.openWebConsoleInline, 'emit');
         const node = createMockNode({ console_type: 'vnc', status: 'stopped' });
         fixture.componentRef.setInput('nodes', [node]);
         fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('project', mockProject);
         fixture.detectChanges();
 
         fixture.nativeElement.querySelector('button').click();
         fixture.detectChanges();
 
-        expect(mockVncConsoleService.openVncConsole).not.toHaveBeenCalled();
+        expect(emitSpy).not.toHaveBeenCalled();
+        expect(mockToasterService.error).toHaveBeenCalledWith(
+          "Please start the node 'Test Node' before opening the console."
+        );
       });
     });
 
     describe('HTTP/HTTPS console', () => {
-      it('should open HTTP console in popup window for started node', () => {
+      it('should emit openWebConsoleInline event for started node with http console type', () => {
+        const emitSpy = vi.spyOn(component.openWebConsoleInline, 'emit');
         const node = createMockNode({
           console_type: 'http',
           console_host: '192.168.1.1',
@@ -157,22 +226,21 @@ describe('HttpConsoleActionComponent', () => {
         });
         fixture.componentRef.setInput('nodes', [node]);
         fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('project', mockProject);
         fixture.detectChanges();
-
-        const popupWindow = { focus: vi.fn() };
-        const windowOpenSpy = vi.spyOn(window, 'open').mockReturnValue(popupWindow as any);
 
         fixture.nativeElement.querySelector('button').click();
         fixture.detectChanges();
 
-        expect(windowOpenSpy).toHaveBeenCalledWith(
-          'http://192.168.1.1:80',
-          'Console-Test Node',
-          'width=1024,height=768'
-        );
+        expect(emitSpy).toHaveBeenCalledWith({
+          node,
+          controller: mockController,
+          project: mockProject,
+        });
       });
 
-      it('should open HTTPS console in popup window for started node', () => {
+      it('should emit openWebConsoleInline event for started node with https console type', () => {
+        const emitSpy = vi.spyOn(component.openWebConsoleInline, 'emit');
         const node = createMockNode({
           console_type: 'https',
           console_host: '192.168.1.1',
@@ -181,110 +249,17 @@ describe('HttpConsoleActionComponent', () => {
         });
         fixture.componentRef.setInput('nodes', [node]);
         fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('project', mockProject);
         fixture.detectChanges();
-
-        const popupWindow = { focus: vi.fn() };
-        const windowOpenSpy = vi.spyOn(window, 'open').mockReturnValue(popupWindow as any);
 
         fixture.nativeElement.querySelector('button').click();
         fixture.detectChanges();
 
-        expect(windowOpenSpy).toHaveBeenCalledWith(
-          'https://192.168.1.1:443',
-          'Console-Test Node',
-          'width=1024,height=768'
-        );
-      });
-
-      it('should replace 0.0.0.0 console_host with controller host', () => {
-        const node = createMockNode({
-          console_type: 'http',
-          console_host: '0.0.0.0',
-          console: 8080,
-          status: 'started',
+        expect(emitSpy).toHaveBeenCalledWith({
+          node,
+          controller: mockController,
+          project: mockProject,
         });
-        fixture.componentRef.setInput('nodes', [node]);
-        fixture.componentRef.setInput('controller', mockController);
-        fixture.detectChanges();
-
-        const popupWindow = { focus: vi.fn() };
-        const windowOpenSpy = vi.spyOn(window, 'open').mockReturnValue(popupWindow as any);
-
-        fixture.nativeElement.querySelector('button').click();
-        fixture.detectChanges();
-
-        expect(windowOpenSpy).toHaveBeenCalledWith(
-          'http://192.168.1.100:8080',
-          'Console-Test Node',
-          'width=1024,height=768'
-        );
-      });
-
-      it('should replace :: console_host with controller host', () => {
-        const node = createMockNode({
-          console_type: 'http',
-          console_host: '::',
-          console: 8080,
-          status: 'started',
-        });
-        fixture.componentRef.setInput('nodes', [node]);
-        fixture.componentRef.setInput('controller', mockController);
-        fixture.detectChanges();
-
-        const popupWindow = { focus: vi.fn() };
-        const windowOpenSpy = vi.spyOn(window, 'open').mockReturnValue(popupWindow as any);
-
-        fixture.nativeElement.querySelector('button').click();
-        fixture.detectChanges();
-
-        expect(windowOpenSpy).toHaveBeenCalledWith(
-          'http://192.168.1.100:8080',
-          'Console-Test Node',
-          'width=1024,height=768'
-        );
-      });
-
-      it('should replace IPv6 loopback with controller host', () => {
-        const node = createMockNode({
-          console_type: 'http',
-          console_host: '0:0:0:0:0:0:0:0',
-          console: 8080,
-          status: 'started',
-        });
-        fixture.componentRef.setInput('nodes', [node]);
-        fixture.componentRef.setInput('controller', mockController);
-        fixture.detectChanges();
-
-        const popupWindow = { focus: vi.fn() };
-        const windowOpenSpy = vi.spyOn(window, 'open').mockReturnValue(popupWindow as any);
-
-        fixture.nativeElement.querySelector('button').click();
-        fixture.detectChanges();
-
-        expect(windowOpenSpy).toHaveBeenCalledWith(
-          'http://192.168.1.100:8080',
-          'Console-Test Node',
-          'width=1024,height=768'
-        );
-      });
-
-      it('should not open HTTP console for stopped node', () => {
-        const node = createMockNode({
-          console_type: 'http',
-          console_host: '192.168.1.1',
-          console: 80,
-          status: 'stopped',
-        });
-        fixture.componentRef.setInput('nodes', [node]);
-        fixture.componentRef.setInput('controller', mockController);
-        fixture.detectChanges();
-
-        const windowOpenSpy = vi.spyOn(window, 'open');
-
-        fixture.nativeElement.querySelector('button').click();
-        fixture.detectChanges();
-
-        expect(windowOpenSpy).not.toHaveBeenCalled();
       });
     });
 
@@ -293,26 +268,29 @@ describe('HttpConsoleActionComponent', () => {
         const node = createMockNode({ console_type: 'telnet', status: 'started' });
         fixture.componentRef.setInput('nodes', [node]);
         fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('project', mockProject);
         fixture.detectChanges();
 
         fixture.nativeElement.querySelector('button').click();
         fixture.detectChanges();
 
         expect(mockMapSettingsService.logConsoleSubject.next).toHaveBeenCalledWith(true);
-        // Verify setTimeout was called with 500ms delay (actual callback verification not possible without fake timers)
-        // The actual openConsoleForNode call happens after 500ms delay via setTimeout
       });
 
       it('should not open telnet console for stopped node', () => {
         const node = createMockNode({ console_type: 'telnet', status: 'stopped' });
         fixture.componentRef.setInput('nodes', [node]);
         fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('project', mockProject);
         fixture.detectChanges();
 
         fixture.nativeElement.querySelector('button').click();
         fixture.detectChanges();
 
         expect(mockNodeConsoleService.openConsoleForNode).not.toHaveBeenCalled();
+        expect(mockToasterService.error).toHaveBeenCalledWith(
+          "Please start the node 'Test Node' before opening the console."
+        );
       });
     });
 
@@ -321,107 +299,62 @@ describe('HttpConsoleActionComponent', () => {
         const node = createMockNode({ console_type: 'ssh', status: 'started' });
         fixture.componentRef.setInput('nodes', [node]);
         fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('project', mockProject);
         fixture.detectChanges();
 
         fixture.nativeElement.querySelector('button').click();
         fixture.detectChanges();
 
         expect(mockToasterService.error).toHaveBeenCalledWith(
-          "Console type 'ssh' is not supported for node Test Node."
+          "Console type 'ssh' is not supported for inline web console."
         );
       });
     });
 
     describe('nodes with console_type none', () => {
-      it('should skip nodes with console_type none', () => {
+      it('should show error for nodes with console_type none', () => {
         const node = createMockNode({ console_type: 'none', status: 'started' });
         fixture.componentRef.setInput('nodes', [node]);
         fixture.componentRef.setInput('controller', mockController);
-        fixture.detectChanges();
-
-        fixture.nativeElement.querySelector('button').click();
-        fixture.detectChanges();
-
-        expect(mockVncConsoleService.openVncConsole).not.toHaveBeenCalled();
-        expect(mockToasterService.error).not.toHaveBeenCalled();
-      });
-    });
-
-    describe('stopped nodes notification', () => {
-      it('should show error with node names when multiple stopped nodes are selected', () => {
-        const startedNode = createMockNode({ name: 'StartedNode', status: 'started', console_type: 'vnc' });
-        const stoppedNode = createMockNode({ name: 'StoppedNode', status: 'stopped', console_type: 'telnet' });
-        const stoppedNode2 = createMockNode({ name: 'StoppedNode2', status: 'stopped', console_type: 'vnc' });
-        fixture.componentRef.setInput('nodes', [startedNode, stoppedNode, stoppedNode2]);
-        fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('project', mockProject);
         fixture.detectChanges();
 
         fixture.nativeElement.querySelector('button').click();
         fixture.detectChanges();
 
         expect(mockToasterService.error).toHaveBeenCalledWith(
-          'Please start the following nodes if you want to open consoles for them: StoppedNode StoppedNode2 '
+          "Node 'Test Node' has no console configured."
         );
-      });
-
-      it('should show error when all nodes are stopped', () => {
-        const node1 = createMockNode({ name: 'Node1', status: 'stopped', console_type: 'vnc' });
-        const node2 = createMockNode({ name: 'Node2', status: 'stopped', console_type: 'telnet' });
-        fixture.componentRef.setInput('nodes', [node1, node2]);
-        fixture.componentRef.setInput('controller', mockController);
-        fixture.detectChanges();
-
-        fixture.nativeElement.querySelector('button').click();
-        fixture.detectChanges();
-
-        expect(mockToasterService.error).toHaveBeenCalledWith(
-          'Please start the following nodes if you want to open consoles for them: Node1 Node2 '
-        );
-      });
-
-      it('should not show stopped nodes error when only started nodes are present', () => {
-        const node1 = createMockNode({ name: 'Node1', status: 'started', console_type: 'vnc' });
-        const node2 = createMockNode({ name: 'Node2', status: 'started', console_type: 'telnet' });
-        fixture.componentRef.setInput('nodes', [node1, node2]);
-        fixture.componentRef.setInput('controller', mockController);
-        fixture.detectChanges();
-
-        fixture.nativeElement.querySelector('button').click();
-        fixture.detectChanges();
-
-        expect(mockToasterService.error).not.toHaveBeenCalled();
       });
     });
 
-    describe('mixed console types', () => {
-      it('should handle multiple nodes with different console types', () => {
-        const vncNode = createMockNode({ name: 'VNCNode', console_type: 'vnc', status: 'started' });
-        const httpNode = createMockNode({
-          name: 'HTTPNode',
-          console_type: 'http',
-          status: 'started',
-          console_host: '192.168.1.1',
-          console: 80,
-        });
-        const telnetNode = createMockNode({ name: 'TelnetNode', console_type: 'telnet', status: 'started' });
-        fixture.componentRef.setInput('nodes', [vncNode, httpNode, telnetNode]);
-        fixture.componentRef.setInput('controller', mockController);
+    describe('missing controller or project', () => {
+      it('should not open console when controller is undefined', () => {
+        const emitSpy = vi.spyOn(component.openWebConsoleInline, 'emit');
+        const node = createMockNode({ console_type: 'vnc', status: 'started' });
+        fixture.componentRef.setInput('nodes', [node]);
+        fixture.componentRef.setInput('controller', undefined);
+        fixture.componentRef.setInput('project', mockProject);
         fixture.detectChanges();
-
-        const popupWindow = { focus: vi.fn() };
-        const windowOpenSpy = vi.spyOn(window, 'open').mockReturnValue(popupWindow as any);
 
         fixture.nativeElement.querySelector('button').click();
         fixture.detectChanges();
 
-        expect(mockVncConsoleService.openVncConsole).toHaveBeenCalledWith(mockController, vncNode, false);
-        expect(windowOpenSpy).toHaveBeenCalledWith(
-          'http://192.168.1.1:80',
-          'Console-HTTPNode',
-          'width=1024,height=768'
-        );
-        expect(mockMapSettingsService.logConsoleSubject.next).toHaveBeenCalledWith(true);
-        // Telnet console uses setTimeout with 500ms delay, which triggers openConsoleForNode after the delay
+        expect(emitSpy).not.toHaveBeenCalled();
+      });
+
+      it('should not open console when project is undefined', () => {
+        const emitSpy = vi.spyOn(component.openWebConsoleInline, 'emit');
+        const node = createMockNode({ console_type: 'vnc', status: 'started' });
+        fixture.componentRef.setInput('nodes', [node]);
+        fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('project', undefined);
+        fixture.detectChanges();
+
+        fixture.nativeElement.querySelector('button').click();
+        fixture.detectChanges();
+
+        expect(emitSpy).not.toHaveBeenCalled();
       });
     });
   });
