@@ -33,7 +33,6 @@ import { ThemeService } from '@services/theme.service';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { AddControllerDialogComponent } from './add-controller-dialog/add-controller-dialog.component';
 import { EditControllerDialogComponent } from './edit-controller-dialog/edit-controller-dialog.component';
-import { ControllerDiscoveryComponent } from './controller-discovery/controller-discovery.component';
 import { version } from '../../version';
 
 @Component({
@@ -55,7 +54,6 @@ import { version } from '../../version';
     MatBottomSheetModule,
     MatMenuModule,
     MatTooltipModule,
-    ControllerDiscoveryComponent,
   ],
 })
 export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {

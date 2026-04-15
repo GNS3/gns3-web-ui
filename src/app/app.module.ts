@@ -197,7 +197,6 @@ import { NavigationDialogComponent } from '@components/projects/navigation-dialo
 import { ProjectsComponent } from '@components/projects/projects.component';
 import { SaveProjectDialogComponent } from '@components/projects/save-project-dialog/save-project-dialog.component';
 import { AddControllerDialogComponent } from '@components/controllers/add-controller-dialog/add-controller-dialog.component';
-import { ControllerDiscoveryComponent } from '@components/controllers/controller-discovery/controller-discovery.component';
 import { ControllersComponent } from '@components/controllers/controllers.component';
 import { ConsoleComponent } from '@components/settings/console/console.component';
 import { SettingsComponent } from '@components/settings/settings.component';
@@ -600,7 +599,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     SnapshotMenuItemComponent,
     AddControllerDialogComponent,
     DirectLinkComponent,
-    ControllerDiscoveryComponent,
     BuiltInPreferencesComponent,
     PreferencesComponent,
     DynamipsPreferencesComponent,

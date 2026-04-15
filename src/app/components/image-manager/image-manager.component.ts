@@ -25,7 +25,6 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatListModule } from '@angular/material/list';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { ControllerDiscoveryComponent } from '@components/controllers/controller-discovery/controller-discovery.component';
 
 @Component({
   selector: 'app-image-manager',
@@ -47,7 +46,6 @@ import { ControllerDiscoveryComponent } from '@components/controllers/controller
     MatProgressBarModule,
     MatListModule,
     MatTooltipModule,
-    ControllerDiscoveryComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
