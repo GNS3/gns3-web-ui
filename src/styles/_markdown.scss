@@ -9,9 +9,10 @@
 // ============================================= */
 app-chat-message-list {
   markdown {
+    display: block;
     line-height: 1.4;
     word-wrap: break-word;
-    white-space: pre-wrap;
+    white-space: pre-wrap; // Preserve whitespace in markdown
     font-size: 16px;
     color: var(--mat-sys-on-surface);
 
@@ -96,11 +97,17 @@ app-chat-message-list {
       color: var(--mat-sys-on-surface-variant);
     }
 
-    // Tables
+    // Tables - wrap in scrollable container
+    .markdown-table-wrapper {
+      overflow-x: auto;
+      margin: 8px 0;
+      border-radius: 4px;
+    }
+
     table {
       border-collapse: collapse;
-      width: 100%;
-      margin: 8px 0;
+      width: auto; // Let table determine natural width
+      margin: 0; // Remove margin since wrapper handles spacing
     }
 
     th,

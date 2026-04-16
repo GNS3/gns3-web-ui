@@ -79,6 +79,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked, Af
     // Observer to detect new markdown content
     const observer = new MutationObserver(() => {
       this.processCodeBlocks(messageContainer);
+      this.wrapTables(messageContainer);
     });
 
     observer.observe(messageContainer, {
@@ -88,6 +89,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked, Af
 
     // Initial processing
     this.processCodeBlocks(messageContainer);
+    this.wrapTables(messageContainer);
   }
 
   /**
@@ -96,7 +98,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked, Af
   private processCodeBlocks(container: HTMLElement): void {
     const codeBlocks = container.querySelectorAll('markdown pre');
 
-    codeBlocks.forEach((pre, index) => {
+    codeBlocks.forEach((pre) => {
       // Skip if already processed
       if (pre.hasAttribute('data-code-processed')) {
         return;
@@ -125,6 +127,30 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked, Af
           this.openCodeBlockDialog(code.innerHTML, code.className);
         });
       }
+    });
+  }
+
+  /**
+   * Wrap all tables in scrollable containers
+   */
+  private wrapTables(container: HTMLElement): void {
+    const tables = container.querySelectorAll('markdown table');
+
+    tables.forEach((table) => {
+      // Skip if already wrapped
+      if (table.parentElement?.classList.contains('markdown-table-wrapper')) {
+        return;
+      }
+
+      // Create wrapper div
+      const wrapper = document.createElement('div');
+      wrapper.className = 'markdown-table-wrapper';
+
+      // Insert wrapper before table
+      table.parentNode?.insertBefore(wrapper, table);
+
+      // Move table into wrapper
+      wrapper.appendChild(table);
     });
   }
 
