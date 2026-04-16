@@ -17,7 +17,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MarkdownModule } from 'ngx-markdown';
 import { ChatMessage, ToolCall, ToolResult } from '@models/ai-chat.interface';
-import { ToolCallDisplayComponent } from './tool-call-display.component';
 import { ToolDetailsDialogComponent, ToolDetailsDialogData } from './tool-details-dialog.component';
 import { CodeBlockDialogComponent, CodeBlockDialogData } from './code-block-dialog.component';
 

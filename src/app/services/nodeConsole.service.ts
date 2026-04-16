@@ -5,7 +5,6 @@ import { Node } from '../cartography/models/node';
 import { Router } from '@angular/router';
 import { ToasterService } from './toaster.service';
 import { MapSettingsService } from './mapsettings.service';
-import { node } from 'prop-types';
 import { environment } from 'environments/environment';
 
 @Injectable()
