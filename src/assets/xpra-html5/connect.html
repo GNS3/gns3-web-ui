@@ -523,7 +523,7 @@
           url += "/";
         }
         const url_action = get_URL_action();
-        console.log("url_action=", url_action);
+        // console.log("url_action=", url_action);
         let display = url_action.get("display");
         if (display) {
           if (display.startsWith(":")) {
@@ -550,7 +550,7 @@
             i++;
           }
         }
-        console.log("opening client url=", url);
+        // console.log("opening client url=", url);
         // Validate URL to prevent open redirect and XSS
         // Only allow safe protocols for navigation
         if (!url.match(/^(xpra\+ws|xpra\+wss):\/\/[a-zA-Z0-9._~:\/?#\[\]@!$&'()*+,;=%\-]*$/)) {
@@ -959,9 +959,9 @@
         action_elements.set("Start Command", action_start);
         action_elements.set("Connect", action_connect);
         for (const [action_label, action_element] of action_elements) {
-          console.log(`${action_label} = ${action_element}`);
+          // console.log(`${action_label} = ${action_element}`);
           action_element.addEventListener('click', function() {
-            console.log(action_label);
+            // console.log(action_label);
             main_action_button.text = action_label;
           }, false);
         }

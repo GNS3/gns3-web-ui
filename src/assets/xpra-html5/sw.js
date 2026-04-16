@@ -69,7 +69,7 @@ function createStream(port) {
       };
     },
     cancel(reason) {
-      console.log("user aborted", reason);
+      // console.log("user aborted", reason);
       port.postMessage({ abort: true });
     },
   });

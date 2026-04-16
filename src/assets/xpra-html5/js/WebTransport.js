@@ -54,7 +54,7 @@ class XpraWebTransportProtocol {
 
     // connect the socket
     try {
-      console.log("opening WebTransport connection to " + uri);
+      // console.log("opening WebTransport connection to " + uri);
       this.webtransport = new WebTransport(uri);
     } catch (error) {
       handle(["error", `${error}`, 0]);
@@ -62,7 +62,7 @@ class XpraWebTransportProtocol {
     }
 
     try {
-      console.log("waiting for connection");
+      // console.log("waiting for connection");
       await this.webtransport.ready;
       this.cancel_connected_timer();
     } catch (e) {
@@ -80,11 +80,11 @@ class XpraWebTransportProtocol {
         handle(["close", "error", e.toString()])
       });
 
-    console.log("creating stream");
+    // console.log("creating stream");
     this.stream = await this.webtransport.createBidirectionalStream();
-    console.log("starting read loop with stream=" + this.stream);
+    // console.log("starting read loop with stream=" + this.stream);
     this.read_loop().then(() => {
-        console.log("read loop ended, closing");
+        // console.log("read loop ended, closing");
         handle(["close", "read loop ended"])
       })
       .catch((e) => {
@@ -93,7 +93,7 @@ class XpraWebTransportProtocol {
       });
     this.writer = this.stream.writable.getWriter();
     handle(["open"]);
-    console.log("async open end");
+    // console.log("async open end");
   }
 
   async read_loop() {
@@ -123,11 +123,11 @@ class XpraWebTransportProtocol {
     const wt = this.webtransport;
     if (wt) {
       wt.closed.then(() => {
-          console.log("closed WebTransport connection");
+          // console.log("closed WebTransport connection");
           handle(["close", "WebTransport closed"])
         })
         .catch((e) => {
-          console.log("error closing WebTransport connection: " + e);
+          // console.log("error closing WebTransport connection: " + e);
           handle(["close", "error closing WebTransport connection", e.toString()])
         });
     }

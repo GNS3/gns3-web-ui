@@ -547,7 +547,7 @@ function rencode_selftest() {
 		return true;
 	}
 	catch (e) {
-		console.log("rencode failed its self test", e);
+		// console.log("rencode failed its self test", e);
 		return false;
 	}
 }

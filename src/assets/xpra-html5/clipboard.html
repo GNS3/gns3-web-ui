@@ -67,7 +67,7 @@
       const lines = [];
 
       function update_info(newtext) {
-        console.log(newtext);
+        // console.log(newtext);
         while (lines.length > 10) {
           lines.shift();
         }
@@ -158,8 +158,8 @@
       const format = document.getElementById("format");
 
       function show_event(e) {
-        console.log("show_event:", e);
-        console.log("event clipboard data:", (e.originalEvent || e).clipboardData);
+        // console.log("show_event:", e);
+        // console.log("event clipboard data:", (e.originalEvent || e).clipboardData);
       }
 
       read.onclick = function(e) {

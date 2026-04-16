@@ -315,7 +315,7 @@ onmessage = function(e) {
       }
       break;
     case "canvas":
-      console.log("canvas transfer for window", data.wid, ":", data.canvas, data.debug);
+      // console.log("canvas transfer for window", data.wid, ":", data.canvas, data.debug);
       if (data.canvas) {
         window_decoders.set(
           data.wid,

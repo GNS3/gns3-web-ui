@@ -6251,7 +6251,7 @@ var Utilities = /*#__PURE__*/function () {
       }
 
       if (options.debug) {
-        console.log("Caret at:", caretPosition);
+        // console.log("Caret at:", caretPosition);
       }
 
       return caretPosition;
@@ -6430,7 +6430,7 @@ var Utilities = /*#__PURE__*/function () {
 
       if (Number.isInteger(maxLength)) {
         if (options.debug) {
-          console.log("maxLength (num) reached:", condition);
+          // console.log("maxLength (num) reached:", condition);
         }
 
         if (condition) {
@@ -6449,7 +6449,7 @@ var Utilities = /*#__PURE__*/function () {
         var _condition = updatedInput.length - 1 >= maxLength[options.inputName || "default"];
 
         if (options.debug) {
-          console.log("maxLength (obj) reached:", _condition);
+          // console.log("maxLength (obj) reached:", _condition);
         }
 
         if (_condition) {
@@ -7427,10 +7427,10 @@ var SimpleKeyboard = /*#__PURE__*/function () {
 
         var newInputValue = this.utilities.getUpdatedInput(button, this.input[inputName], this.caretPosition, this.caretPositionEnd, true);
         this.setInput(newInputValue, this.options.inputName, true);
-        if (debug) console.log("Input changed:", this.getAllInputs());
+        if (debug) // console.log("Input changed:", this.getAllInputs());
 
         if (this.options.debug) {
-          console.log("Caret at: ", this.getCaretPosition(), this.getCaretPositionEnd(), "(".concat(this.keyboardDOMClass, ")"));
+          // console.log("Caret at: ", this.getCaretPosition(), this.getCaretPositionEnd(), "(".concat(this.keyboardDOMClass, ")"));
         }
         /**
          * Enforce syncInstanceInputs, if set
@@ -7468,7 +7468,7 @@ var SimpleKeyboard = /*#__PURE__*/function () {
       }
 
       if (debug) {
-        console.log("Key pressed:", button);
+        // console.log("Key pressed:", button);
       }
     }
     /**
@@ -7510,7 +7510,7 @@ var SimpleKeyboard = /*#__PURE__*/function () {
         this.holdTimeout = window.setTimeout(function () {
           if (_this4.isMouseHold && ( // TODO: This needs to be configurable through options
           !button.includes("{") && !button.includes("}") || button === "{delete}" || button === "{backspace}" || button === "{bksp}" || button === "{space}" || button === "{tab}") || button === "{arrowright}" || button === "{arrowleft}" || button === "{arrowup}" || button === "{arrowdown}") {
-            if (_this4.options.debug) console.log("Button held:", button);
+            if (_this4.options.debug) // console.log("Button held:", button);
 
             _this4.handleButtonHold(button);
           }
@@ -7716,7 +7716,7 @@ var SimpleKeyboard = /*#__PURE__*/function () {
 
       if (changedOptions.length) {
         if (this.options.debug) {
-          console.log("changedOptions", changedOptions);
+          // console.log("changedOptions", changedOptions);
         }
         /**
          * Some option changes require adjustments before re-render
@@ -7970,7 +7970,7 @@ var SimpleKeyboard = /*#__PURE__*/function () {
         var didInputMatch = inputPattern.test(inputVal);
 
         if (this.options.debug) {
-          console.log("inputPattern (\"".concat(inputPattern, "\"): ").concat(didInputMatch ? "passed" : "did not pass!"));
+          // console.log("inputPattern (\"".concat(inputPattern, "\"): ").concat(didInputMatch ? "passed" : "did not pass!"));
         }
 
         return didInputMatch;
@@ -7993,7 +7993,7 @@ var SimpleKeyboard = /*#__PURE__*/function () {
        */
       if (this.isFirstKeyboardInstance || !this.allKeyboardInstances) {
         if (this.options.debug) {
-          console.log("Caret handling started (".concat(this.keyboardDOMClass, ")"));
+          // console.log("Caret handling started (".concat(this.keyboardDOMClass, ")"));
         }
         /**
          * Event Listeners
@@ -8109,7 +8109,7 @@ var SimpleKeyboard = /*#__PURE__*/function () {
           _this12.activeInputElement = event.target;
 
           if (instance.options.debug) {
-            console.log("Caret at: ", instance.getCaretPosition(), instance.getCaretPositionEnd(), event && event.target.tagName.toLowerCase(), "(".concat(instance.keyboardDOMClass, ")"));
+            // console.log("Caret at: ", instance.getCaretPosition(), instance.getCaretPositionEnd(), event && event.target.tagName.toLowerCase(), "(".concat(instance.keyboardDOMClass, ")"));
           }
         } else if ((instance.options.disableCaretPositioning || !isKeyboard) && (event === null || event === void 0 ? void 0 : event.type) !== "selectionchange") {
           /**
@@ -8123,7 +8123,7 @@ var SimpleKeyboard = /*#__PURE__*/function () {
           _this12.activeInputElement = null;
 
           if (instance.options.debug) {
-            console.log("Caret position reset due to \"".concat(event === null || event === void 0 ? void 0 : event.type, "\" event"), event);
+            // console.log("Caret position reset due to \"".concat(event === null || event === void 0 ? void 0 : event.type, "\" event"), event);
           }
         }
       });
@@ -8149,7 +8149,7 @@ var SimpleKeyboard = /*#__PURE__*/function () {
   }, {
     key: "destroy",
     value: function destroy() {
-      if (this.options.debug) console.log("Destroying simple-keyboard instance: ".concat(this.currentInstanceName));
+      if (this.options.debug) // console.log("Destroying simple-keyboard instance: ".concat(this.currentInstanceName));
       /**
        * Remove document listeners
        */
@@ -8319,7 +8319,7 @@ var SimpleKeyboard = /*#__PURE__*/function () {
         this.options.useTouchEvents = true;
 
         if (this.options.debug) {
-          console.log("autoUseTouchEvents: Touch device detected, useTouchEvents enabled.");
+          // console.log("autoUseTouchEvents: Touch device detected, useTouchEvents enabled.");
         }
       }
     }
@@ -8331,7 +8331,7 @@ var SimpleKeyboard = /*#__PURE__*/function () {
     key: "onInit",
     value: function onInit() {
       if (this.options.debug) {
-        console.log("".concat(this.keyboardDOMClass, " Initialized"));
+        // console.log("".concat(this.keyboardDOMClass, " Initialized"));
       }
       /**
        * setEventListeners
@@ -8362,7 +8362,7 @@ var SimpleKeyboard = /*#__PURE__*/function () {
 
       if (this.isFirstKeyboardInstance && this.utilities.pointerEventsSupported() && !this.options.useTouchEvents && !this.options.useMouseEvents) {
         if (this.options.debug) {
-          console.log("Using PointerEvents as it is supported by this browser");
+          // console.log("Using PointerEvents as it is supported by this browser");
         }
       }
       /**
@@ -8372,7 +8372,7 @@ var SimpleKeyboard = /*#__PURE__*/function () {
 
       if (this.options.useTouchEvents) {
         if (this.options.debug) {
-          console.log("useTouchEvents has been enabled. Only touch events will be used.");
+          // console.log("useTouchEvents has been enabled. Only touch events will be used.");
         }
       }
     }
@@ -8517,7 +8517,7 @@ var SimpleKeyboard = /*#__PURE__*/function () {
           });
 
           if (_this15.options.debug) {
-            console.log("rowDOMContainer", containedElements, updated_startIndex, updated_endIndex, removedElements + 1);
+            // console.log("rowDOMContainer", containedElements, updated_startIndex, updated_endIndex, removedElements + 1);
           }
         });
       }

@@ -920,5 +920,5 @@ function console_warn_safe() {
 }
 
 function console_log_safe() {
-  if (console) console.log.apply(console, arguments);
+  if (console) // console.log.apply(console, arguments);
 }

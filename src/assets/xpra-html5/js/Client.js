@@ -647,7 +647,7 @@ class XpraClient {
     this.uri = uri;
     this.on_connection_progress("Opening WebSocket connection", uri, 50);
     this.protocol.open(uri);
-    console.log("open_protocol() done");
+    // console.log("open_protocol() done");
   }
 
   request_refresh(wid) {

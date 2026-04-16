@@ -54,7 +54,7 @@ class XpraProtocolWorkerHost {
             }
             break;
           case "l":
-            console.log(data.t);
+            // console.log(data.t);
             break;
           default:
             console.error("got unknown command from worker");
@@ -248,7 +248,7 @@ class XpraProtocol {
     console.error.apply(console, arguments);
   }
   log() {
-    console.log.apply(console, arguments);
+    // console.log.apply(console, arguments);
   }
 
   do_process_receive_queue() {
@@ -629,14 +629,14 @@ class XpraProtocol {
       iv: Utilities.u8(iv),
     }
 
-    console.log("importing", "PBKDF2", "key", "'" + key + "'");
+    // console.log("importing", "PBKDF2", "key", "'" + key + "'");
     crypto.subtle.importKey("raw", Utilities.u8(key), {
         name: "PBKDF2"
       }, false, ["deriveKey", "deriveBits"])
       .then(imported_key => {
-        console.log("imported key:", imported_key);
-        console.log("deriving", key_size * 8, "bits", mode, "key with:", iterations, key_hash);
-        console.log("salt=", salt);
+        // console.log("imported key:", imported_key);
+        // console.log("deriving", key_size * 8, "bits", mode, "key with:", iterations, key_hash);
+        // console.log("salt=", salt);
         // now stretch it to get the real key:
         crypto.subtle.deriveKey({
             name: "PBKDF2",
@@ -650,7 +650,7 @@ class XpraProtocol {
             length: key_size * 8,
           }, false, [usage], )
           .then(crypto_key => {
-            console.log("derived key for", usage, "usage:", crypto_key);
+            // console.log("derived key for", usage, "usage:", crypto_key);
             setup_function(block_size, params, crypto_key);
           })
           .catch(err => {

@@ -35,22 +35,22 @@ const XpraOffscreenWorker = {
 
   isAvailable(ssl) {
     if (Utilities.isSafari() && !this.isSafariVersionSupported()) {
-      console.log("offscreen canvas is not supported with this version of Safari");
+      // console.log("offscreen canvas is not supported with this version of Safari");
       return false;
     }
 
     if (Utilities.isWebkit() && !Utilities.isChrome()) {
-      console.log("offscreen canvas is not supported with this webkit browser");
+      // console.log("offscreen canvas is not supported with this webkit browser");
       return false;
     }
 
     if (Utilities.isFirefox() && !this.isFirefoxVersionSupported()) {
-      console.log("offscreen canvas is not supported with this version of Firefox");
+      // console.log("offscreen canvas is not supported with this version of Firefox");
       return false;
     }
 
     if (Utilities.isChrome() && !ssl) {
-      console.log("offscreen canvas requires https with Chrome");
+      // console.log("offscreen canvas requires https with Chrome");
       return false;
     }
 
@@ -58,7 +58,7 @@ const XpraOffscreenWorker = {
       //we also need the direct constructor:
       try {
         new OffscreenCanvas(256, 256);
-        console.log("offscreen canvas is available with", navigator.userAgent);
+        // console.log("offscreen canvas is available with", navigator.userAgent);
         return true;
       } catch (error) {
         console.warn("unable to instantiate an offscreen canvas:", error);

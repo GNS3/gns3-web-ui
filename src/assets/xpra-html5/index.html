@@ -920,7 +920,7 @@
           if (key) {
             client.encryption_key = key;
           }
-          console.log("encryption:", client.encryption);
+          // console.log("encryption:", client.encryption);
         }
 
         // attach a callback for when client closes
@@ -1189,14 +1189,14 @@
 
       function toggle_fullscreen() {
         const f_e = document.fullscreenEnabled;
-        console.log("toggle_fullscreen() fullscreenEnabled=", f_e);
+        // console.log("toggle_fullscreen() fullscreenEnabled=", f_e);
         if (!f_e) {
           return;
         }
         const elem = document.getElementById("fullscreen_button");
-        console.log("toggle_fullscreen() elem=", elem);
+        // console.log("toggle_fullscreen() elem=", elem);
         var is_fullscreen = document.fullscreen;
-        console.log("toggle_fullscreen() is_fullscreen=", is_fullscreen);
+        // console.log("toggle_fullscreen() is_fullscreen=", is_fullscreen);
         if (!is_fullscreen) {
           const req = elem.requestFullscreen;
           if (!req) {
@@ -1231,10 +1231,10 @@
             navigator.keyboard
               .lock(keys)
               .then(() => {
-                console.log("keyboard lock success");
+                // console.log("keyboard lock success");
               })
               .catch((e) => {
-                console.log("keyboard lock failed: ", e);
+                // console.log("keyboard lock failed: ", e);
               });
           }
 
@@ -1555,7 +1555,7 @@
             client.last_key_packet.length > 2 &&
             client.last_keycode_pressed > 0
           ) {
-            console.log("clearing keycode: " + client.last_keycode_pressed);
+            // console.log("clearing keycode: " + client.last_keycode_pressed);
             let key_packet = client.last_key_packet;
             // Set pressed = false to indicate key up.
             key_packet[3] = false;
