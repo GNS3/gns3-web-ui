@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+See LICENSE file for licensing information.
+-->
 # E2E Testing Decision: Why We Chose Not to Implement E2E Tests
 
 ## Overview

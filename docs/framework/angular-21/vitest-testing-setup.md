@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+See LICENSE file for licensing information.
+-->
 # Vitest Testing Environment Configuration
 
 > Documentation of Vitest setup for Angular 21 Zoneless testing in GNS3 Web UI.

@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+See LICENSE file for licensing information.
+-->
 # Project Map Context Menu
 
 > Right-click context menu functionality for nodes, drawings, links, and labels

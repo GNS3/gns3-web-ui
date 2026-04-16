@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+See LICENSE file for licensing information.
+-->
 # Map Backgrounds Guide
 
 **Last Updated**: 2026-03-31

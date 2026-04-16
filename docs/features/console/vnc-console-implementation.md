@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+See LICENSE file for licensing information.
+-->
 # VNC Console Implementation Documentation
 
 **Version**: 1.1.0 | **Updated**: 2026-03-30 | **Status**: ✅ Completed

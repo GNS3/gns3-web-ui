@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+See LICENSE file for licensing information.
+-->
 # Bug Fix: Text Drawing Position Offset on Add
 
 > Fix text drawings appearing with significant downward offset when created via "Add a Note"

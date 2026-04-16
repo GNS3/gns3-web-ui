@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+See LICENSE file for licensing information.
+-->
 # AI Chat - Complete Guide
 
 > Complete documentation for GNS3 Web UI AI Chat functionality

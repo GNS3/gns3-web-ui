@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+See LICENSE file for licensing information.
+-->
 # Dialog Style Isolation - Dialog Styling Architecture
 
 > Centralized Dialog Styling with Component-Specific Overrides

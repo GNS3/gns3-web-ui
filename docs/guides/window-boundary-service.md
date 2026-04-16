@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+See LICENSE file for licensing information.
+-->
 # WindowBoundaryService - Window Boundary Service
 
 > Ensures windows stay within viewport boundaries and avoid UI element overlap

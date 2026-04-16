@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+See LICENSE file for licensing information.
+-->
 # Unit Testing Best Practices
 
 > **Key Learnings** - Extracted from fixing test pollution

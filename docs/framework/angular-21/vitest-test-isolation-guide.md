@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+See LICENSE file for licensing information.
+-->
 # Vitest Test Isolation and Environment Pollution Guide
 
 > Comprehensive guide to solving test environment pollution issues in Angular 21 + Vitest

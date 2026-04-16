@@ -1,3 +1,7 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+See LICENSE file for licensing information.
+-->
 # Angular Zoneless Development Guide
 
 > This project uses Angular 21 Zoneless architecture. Zone.js is disabled, and all change detection is explicit.
