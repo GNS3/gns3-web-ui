@@ -84,6 +84,11 @@ export class StartCaptureDialogComponent implements OnInit {
       ];
     }
 
+    // Auto-select the first option in the dropdown
+    if (this.linkTypes.length > 0) {
+      this.inputForm.controls['linkType'].setValue(this.linkTypes[0][1]);
+    }
+
     const sourceNode = this.nodesDataSource.get(this.link.nodes[0].node_id);
     const targetNode = this.nodesDataSource.get(this.link.nodes[1].node_id);
     const sourcePort = sourceNode.ports[this.link.nodes[0].port_number];
