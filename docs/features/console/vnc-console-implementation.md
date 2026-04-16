@@ -172,3 +172,9 @@ ng build --configuration=production
 - [RFB Protocol](https://github.com/rfbproto/rfbproto)
 - [MediaRecorder API](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder)
 - [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

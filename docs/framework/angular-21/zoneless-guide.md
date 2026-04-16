@@ -102,3 +102,9 @@ In Zoneless mode, prefer `[checked]` over `[ngModel]` for display-only checkboxe
 ### Dynamic Component Loading
 
 `ViewContainerRef.createComponent` does not automatically trigger change detection in Zoneless mode. Must call `detectChanges()` after creating a component.
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

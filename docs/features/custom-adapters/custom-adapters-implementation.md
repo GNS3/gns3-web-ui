@@ -440,3 +440,9 @@ openCustomAdaptersDialog() {
 - [Desktop GUI Custom Adapters](https://github.com/GNS3/gns3-gui/blob/master/gns3/dialogs/custom_adapters_configuration_dialog.py)
 - [Model Input Signals](./model-input-signals.md)
 - [Component Migration Tracker](./component-migration-tracker.md)
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

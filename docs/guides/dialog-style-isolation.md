@@ -179,3 +179,9 @@ The dialog system follows an 8px base spacing grid:
 ---
 
 **Last Updated**: 2026-03-30
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

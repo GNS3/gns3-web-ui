@@ -249,3 +249,9 @@ this.dialog.open(MyDialogComponent, {
 - CLAUDE.md - "Use `panelClass` for dialog style scoping"
 
 All dialog sizes are now managed centrally in `src/styles/_dialogs.scss`.
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

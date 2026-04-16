@@ -94,3 +94,9 @@ POST /v3/computes
 1. Verify Controller's `host` is set to its actual IP, not `0.0.0.0`
 2. Ensure both machines are on the same network
 3. Check firewall rules allow UDP communication
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

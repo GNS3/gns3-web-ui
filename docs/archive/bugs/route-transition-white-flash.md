@@ -243,3 +243,9 @@ See `src/app/components/project-map/project-map.component.spec.ts` for detailed 
 - **Fixed**: 2026-04-06 (commit `c3b4794c`)
 - **Archived**: 2026-04-07
 - **Status**: Resolved
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

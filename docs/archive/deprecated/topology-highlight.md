@@ -165,3 +165,9 @@ The highlight feature has minimal performance impact:
 - Support for multiple selected devices
 - Add sound notification option
 - Add customizable glow intensity levels
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

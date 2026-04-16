@@ -259,3 +259,9 @@ This protection system ensures code quality standards remain effective even with
 - Large codebase evolution
 
 The multi-layer approach makes it difficult to bypass checks accidentally or intentionally, while still allowing authorized updates through a clear process.
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

@@ -6,6 +6,22 @@
 
 ---
 
+## License
+
+This documentation is licensed under the **Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)**.
+
+⚠️ **Important - ShareAlike Requirement**: If you create derivative works based on this documentation (including software that incorporates substantial portions of the documentation), your work must also be licensed under **CC BY-SA 4.0 or a compatible license** (such as GPLv3).
+
+- 📄 **Full License Text**: See [docs/LICENSE](./LICENSE)
+- 🔗 **License URL**: https://creativecommons.org/licenses/by-sa/4.0/
+- 📖 **Compatibility**: https://creativecommons.org/compatiblelicenses
+
+**Dual License Structure**:
+- 📚 **Documentation**: CC BY-SA 4.0 (this directory)
+- 💻 **Software Code**: GPLv3 (see root [LICENSE](../LICENSE))
+
+---
+
 ## Documentation Structure
 
 ```
@@ -225,3 +241,9 @@ docs/
 ---
 
 *Last Updated: 2026-04-11*
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

@@ -96,3 +96,9 @@ searchText = model('');
 - When migrating, ensure `FormsModule` is removed from imports if only using `model()` signals
 - Use `cd.markForCheck()` after async operations in `OnPush` change detection components
 - Some components may require `ReactiveFormsModule` instead if complex validation is needed
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

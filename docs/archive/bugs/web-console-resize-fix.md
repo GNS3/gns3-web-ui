@@ -120,3 +120,9 @@ requestAnimationFrame → fitTerminal()
 2. **Flex children need `flex: 1` AND `min-height: 0`** - Both are required for proper expansion
 3. **Test with OnPush change detection** - Issues may not appear in default mode
 4. **Use ResizeObserver for dynamic sizing** - Better than window resize events
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

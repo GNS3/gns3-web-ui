@@ -233,3 +233,9 @@ By detecting and preserving the original positioning mode during resize:
 2. ✅ Sidebar node clicks don't cause window jumping
 3. ✅ Consistent behavior throughout the user session
 4. ✅ Backward compatible with existing saved window states
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

@@ -140,3 +140,9 @@ This minor offset is within acceptable tolerance and does not significantly impa
 - **Previous fix**: Node label drag offset (`node-label-dragged.component.ts`)
   - Similar issue where drag delta was being double-applied
   - Fixed by synchronizing datum position during drag
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

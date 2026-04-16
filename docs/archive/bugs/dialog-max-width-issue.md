@@ -105,3 +105,9 @@ This approach is not ideal as it may cause a visual flash.
 - `src/styles/_dialogs.scss` - Global dialog styles
 - `src/app/components/acl-management/acl-management.component.ts` - Example usage
 - `node_modules/@angular/material/dialog/_m3-dialog.scss` - Material source
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

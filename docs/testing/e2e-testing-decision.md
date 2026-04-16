@@ -384,3 +384,9 @@ We might reconsider E2E testing if:
 **Document Version**: 1.0
 **Last Updated**: 2026-04-03
 **Next Review**: 2026-07-03 (Quarterly review)
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

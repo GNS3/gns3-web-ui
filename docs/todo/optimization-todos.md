@@ -139,3 +139,9 @@ private loadSessionMessages(sessionId: string): void {
 - Current implementation already has caching infrastructure (`messagesMap` in `AiChatStore`)
 - Just need to utilize it properly before making API calls
 - Consider localStorage persistence for scroll positions across page reloads
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

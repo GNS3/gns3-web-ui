@@ -581,3 +581,9 @@ Component Layer
 **Document Version**: 1.0.0  
 **Last Updated**: 2026-04-11  
 **Maintained By**: GNS3 Web UI Team
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

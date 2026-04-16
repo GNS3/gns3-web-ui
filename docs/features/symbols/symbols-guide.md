@@ -413,3 +413,9 @@ A: "Delete symbols" in the main view enters delete mode for batch deletion. Symb
 ---
 
 **Last Updated:** 2026-03-28 (updated with caching docs)
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).

@@ -543,3 +543,9 @@ For issues or questions about the testing setup:
 **Document Status**: ✅ Active
 **Last Reviewed**: 2026-04-02
 **Angular Version**: 21.0.0
+
+---
+
+## License
+
+This documentation is licensed under the [Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/).
