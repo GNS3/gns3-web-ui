@@ -67,6 +67,7 @@
           <span class="computes__stat computes__stat--offline">Offline</span>
           }
         </div>
+        @if (compute.compute_id !== 'local') {
         <button
           mat-icon-button
           [matMenuTriggerFor]="menu"
@@ -89,6 +90,7 @@
             <span>Delete</span>
           </button>
         </mat-menu>
+        }
       </div>
       }
     </nav>

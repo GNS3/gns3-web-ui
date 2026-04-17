@@ -4,6 +4,7 @@ import {
   Component,
   OnDestroy,
   OnInit,
+  computed,
   inject,
   signal,
 } from '@angular/core';
@@ -60,7 +61,16 @@ export class ComputesComponent implements OnInit, OnDestroy {
   private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
-  computes = signal<Compute[]>([]);
+  private _computes = signal<Compute[]>([]);
+  computes = computed(() => {
+    const computes = this._computes();
+    // Sort with local controller first, then by name
+    return [...computes].sort((a, b) => {
+      if (a.compute_id === 'local') return -1;
+      if (b.compute_id === 'local') return 1;
+      return (a.name || '').localeCompare(b.name || '');
+    });
+  });
   displayedColumns = ['status', 'name', 'host', 'connected', 'cpu', 'memory', 'disk', 'actions'];
   loading = signal(true);
   private subscription = new Subscription();
@@ -82,7 +92,7 @@ export class ComputesComponent implements OnInit, OnDestroy {
       // Try to load from cache first
       if (this.notificationService.hasCachedData()) {
         const cachedComputes = this.notificationService.getCachedComputes();
-        this.computes.set(cachedComputes);
+        this._computes.set(cachedComputes);
         this.loading.set(false);
         this.cd.markForCheck();
       } else {
@@ -100,7 +110,7 @@ export class ComputesComponent implements OnInit, OnDestroy {
       // Subscribe to cache updates
       this.subscription.add(
         this.notificationService.computeCacheUpdated.subscribe((computes) => {
-          this.computes.set(computes);
+          this._computes.set(computes);
           this.loading.set(false);
           this.cd.markForCheck();
         })
@@ -111,16 +121,16 @@ export class ComputesComponent implements OnInit, OnDestroy {
   handleComputeNotification(notification: { action: string; event: Compute }) {
     switch (notification.action) {
       case 'compute.created':
-        this.computes.update((computes) => [...computes, notification.event]);
+        this._computes.update((computes) => [...computes, notification.event]);
         this.toasterService.success(`Compute "${notification.event.name}" added`);
         break;
       case 'compute.updated':
-        this.computes.update((computes) =>
+        this._computes.update((computes) =>
           computes.map((c) => (c.compute_id === notification.event.compute_id ? notification.event : c))
         );
         break;
       case 'compute.deleted':
-        this.computes.update((computes) => computes.filter((c) => c.compute_id !== notification.event.compute_id));
+        this._computes.update((computes) => computes.filter((c) => c.compute_id !== notification.event.compute_id));
         this.toasterService.success(`Compute "${notification.event.name}" deleted`);
         break;
     }
@@ -133,7 +143,7 @@ export class ComputesComponent implements OnInit, OnDestroy {
       next: (computes) => {
         // Set to cache
         this.notificationService.setInitialComputes(computes);
-        this.computes.set(computes);
+        this._computes.set(computes);
         this.loading.set(false);
         this.cd.markForCheck();
       },
@@ -238,7 +248,7 @@ export class ComputesComponent implements OnInit, OnDestroy {
             const computes = this.computes().map((c) =>
               c.compute_id === updatedCompute.compute_id ? updatedCompute : c
             );
-            this.computes.set(computes);
+            this._computes.set(computes);
             this.cd.markForCheck();
           },
           error: () => {
