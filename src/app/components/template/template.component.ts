@@ -14,6 +14,7 @@ import {
   model,
   effect,
   ViewChild,
+  computed,
 } from '@angular/core';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { CommonModule } from '@angular/common';
@@ -132,6 +133,25 @@ export class TemplateComponent implements OnInit, OnDestroy {
   pendingNodePosition = signal<{ x: number; y: number } | null>(null);
   pendingTemplate = signal<Template | null>(null);
   cachedComputes = signal<Compute[]>([]);
+
+  // Ghost icon screen position: converts world coordinates to screen coordinates
+  ghostIconScreenPosition = computed(() => {
+    const pos = this.pendingNodePosition();
+    if (!pos) {
+      return { x: 0, y: 0 };
+    }
+
+    // Get transformation values
+    const k = this.context.transformation.k;
+    const zeroZero = this.context.getZeroZeroTransformationPoint();
+
+    // Convert world coordinates to screen coordinates
+    // screen = world * scale + center + offset
+    const screenX = pos.x * k + zeroZero.x + this.context.transformation.x;
+    const screenY = pos.y * k + zeroZero.y + this.context.transformation.y;
+
+    return { x: screenX, y: screenY };
+  });
 
   private subscription: Subscription;
   private themeSubscription: Subscription;

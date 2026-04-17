@@ -106,8 +106,8 @@
   <div class="template__selector-backdrop" (click)="onComputeSelectorCancelled()">
     <div
       class="template__ghost-icon"
-      [style.left.px]="lastPageX()"
-      [style.top.px]="lastPageY()"
+      [style.left.px]="ghostIconScreenPosition().x"
+      [style.top.px]="ghostIconScreenPosition().y"
     >
       @if (pendingTemplate()) {
       <img
