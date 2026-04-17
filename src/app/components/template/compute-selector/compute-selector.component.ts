@@ -19,7 +19,8 @@ export class ComputeSelectorComponent implements AfterViewInit {
   x = input.required<number>();
   y = input.required<number>();
 
-  private SELECTOR_WIDTH = 260;
+  private MIN_SELECTOR_WIDTH = 200;
+  private MAX_SELECTOR_WIDTH = 400;
   private SELECTOR_HEIGHT = 120; // 估算高度
   private MARGIN = 10; // 距离图标和屏幕边缘的间距
 
@@ -30,9 +31,12 @@ export class ComputeSelectorComponent implements AfterViewInit {
     const mouseX = this.x();
     const screenWidth = window.innerWidth;
 
+    // 使用最大宽度来计算，确保不会超出屏幕
+    const selectorWidth = this.MAX_SELECTOR_WIDTH;
+
     // 如果靠右边边缘，移到左边
-    if (mouseX + this.SELECTOR_WIDTH + this.MARGIN > screenWidth) {
-      return mouseX - this.SELECTOR_WIDTH - this.MARGIN; // 紧贴图标左边
+    if (mouseX + selectorWidth + this.MARGIN > screenWidth) {
+      return mouseX - selectorWidth - this.MARGIN; // 紧贴图标左边
     }
     return mouseX + this.MARGIN; // 紧贴图标右边
   });
