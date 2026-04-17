@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -130,6 +130,8 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
     } as Node);
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockNodeService = {
       getNode: vi.fn().mockReturnValue(of(createMockNode())),
     } as any;
@@ -162,7 +164,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
   describe('template rendering', () => {
     it('should render Console button', () => {
       fixture.componentRef.setInput('controller', mockController);
-      component.node.set(createMockNode());
+      fixture.componentRef.setInput('node', createMockNode());
       fixture.detectChanges();
 
       const buttons = fixture.nativeElement.querySelectorAll('button[mat-menu-item]');
@@ -172,7 +174,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
 
     it('should render Auxiliary console button for docker node', () => {
       fixture.componentRef.setInput('controller', mockController);
-      component.node.set(createMockNode({ node_type: 'docker' }));
+      fixture.componentRef.setInput('node', createMockNode({ node_type: 'docker' }));
       fixture.detectChanges();
 
       const buttons = fixture.nativeElement.querySelectorAll('button[mat-menu-item]');
@@ -182,7 +184,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
 
     it('should render Auxiliary console button for dynamips node', () => {
       fixture.componentRef.setInput('controller', mockController);
-      component.node.set(createMockNode({ node_type: 'dynamips' }));
+      fixture.componentRef.setInput('node', createMockNode({ node_type: 'dynamips' }));
       fixture.detectChanges();
 
       const buttons = fixture.nativeElement.querySelectorAll('button[mat-menu-item]');
@@ -192,7 +194,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
 
     it('should render Auxiliary console button for qemu node', () => {
       fixture.componentRef.setInput('controller', mockController);
-      component.node.set(createMockNode({ node_type: 'qemu' }));
+      fixture.componentRef.setInput('node', createMockNode({ node_type: 'qemu' }));
       fixture.detectChanges();
 
       const buttons = fixture.nativeElement.querySelectorAll('button[mat-menu-item]');
@@ -202,7 +204,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
 
     it('should not render Auxiliary console button for other node types', () => {
       fixture.componentRef.setInput('controller', mockController);
-      component.node.set(createMockNode({ node_type: 'virtualbox' }));
+      fixture.componentRef.setInput('node', createMockNode({ node_type: 'virtualbox' }));
       fixture.detectChanges();
 
       const buttons = fixture.nativeElement.querySelectorAll('button[mat-menu-item]');
@@ -214,7 +216,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
     it('should fetch node from NodeService when called', () => {
       const mockNode = createMockNode();
       fixture.componentRef.setInput('controller', mockController);
-      component.node.set(mockNode);
+      fixture.componentRef.setInput('node', mockNode);
       fixture.detectChanges();
 
       component.openConsole();
@@ -227,12 +229,22 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       (mockNodeService.getNode as any).mockReturnValue(of(mockNode));
 
       fixture.componentRef.setInput('controller', mockController);
-      component.node.set(mockNode);
+      fixture.componentRef.setInput('node', mockNode);
       fixture.detectChanges();
 
       component.openConsole();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('This node must be started before a console can be opened');
+    });
+
+    it('should return early if node input is undefined', () => {
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.componentRef.setInput('node', undefined);
+      fixture.detectChanges();
+
+      component.openConsole();
+
+      expect(mockNodeService.getNode).not.toHaveBeenCalled();
     });
   });
 
@@ -248,7 +260,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       });
 
       fixture.componentRef.setInput('controller', mockController);
-      component.node.set(mockNode);
+      fixture.componentRef.setInput('node', mockNode);
       fixture.detectChanges();
 
       component.startConsole(false);
@@ -270,7 +282,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       });
 
       fixture.componentRef.setInput('controller', mockController);
-      component.node.set(mockNode);
+      fixture.componentRef.setInput('node', mockNode);
       fixture.detectChanges();
 
       component.startConsole(true);
@@ -287,7 +299,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       });
 
       fixture.componentRef.setInput('controller', mockController);
-      component.node.set(mockNode);
+      fixture.componentRef.setInput('node', mockNode);
       fixture.detectChanges();
 
       component.startConsole(true);
@@ -308,7 +320,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       });
 
       fixture.componentRef.setInput('controller', mockController);
-      component.node.set(mockNode);
+      fixture.componentRef.setInput('node', mockNode);
       fixture.detectChanges();
 
       component.startConsole(false);
@@ -329,7 +341,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       });
 
       fixture.componentRef.setInput('controller', mockController);
-      component.node.set(mockNode);
+      fixture.componentRef.setInput('node', mockNode);
       fixture.detectChanges();
 
       component.startConsole(false);
@@ -350,7 +362,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       });
 
       fixture.componentRef.setInput('controller', mockController);
-      component.node.set(mockNode);
+      fixture.componentRef.setInput('node', mockNode);
       fixture.detectChanges();
 
       component.startConsole(false);
@@ -370,7 +382,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       });
 
       fixture.componentRef.setInput('controller', mockController);
-      component.node.set(mockNode);
+      fixture.componentRef.setInput('node', mockNode);
       fixture.detectChanges();
 
       component.startConsole(false);
@@ -392,7 +404,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       });
 
       fixture.componentRef.setInput('controller', mockController);
-      component.node.set(mockNode);
+      fixture.componentRef.setInput('node', mockNode);
       fixture.detectChanges();
 
       component.startConsole(false);
@@ -415,7 +427,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       const windowOpenSpy = vi.spyOn(window, 'open').mockReturnValue(null);
 
       fixture.componentRef.setInput('controller', mockController);
-      component.node.set(mockNode);
+      fixture.componentRef.setInput('node', mockNode);
       fixture.detectChanges();
 
       component.startConsole(false);
@@ -434,7 +446,7 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       });
 
       fixture.componentRef.setInput('controller', mockController);
-      component.node.set(mockNode);
+      fixture.componentRef.setInput('node', mockNode);
       fixture.detectChanges();
 
       component.startConsole(false);
@@ -443,5 +455,22 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
         'Supported console types are: telnet, vnc, spice and spice+agent.'
       );
     });
+
+    it('should return early if node is undefined', () => {
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.componentRef.setInput('node', undefined);
+      fixture.detectChanges();
+
+      component.startConsole(false);
+
+      expect(mockProtocolHandlerService.open).not.toHaveBeenCalled();
+      expect(mockToasterService.error).not.toHaveBeenCalled();
+    });
+  });
+
+  afterEach(() => {
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 });

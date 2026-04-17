@@ -27,11 +27,15 @@ export class ConsoleDeviceActionBrowserComponent {
   private cd = inject(ChangeDetectorRef);
 
   readonly controller = input<Controller>(undefined);
-  node = signal<Node | undefined>(undefined);
+  readonly node = input<Node>(undefined);
+  private updatedNode = signal<Node | undefined>(undefined);
 
   openConsole(auxiliary: boolean = false) {
-    this.nodeService.getNode(this.controller(), this.node()).subscribe((node: Node) => {
-      this.node.set(node);
+    const currentNode = this.node();
+    if (!currentNode) return;
+
+    this.nodeService.getNode(this.controller(), currentNode).subscribe((node: Node) => {
+      this.updatedNode.set(node);
       // In zoneless mode, mark for check after async data arrives
       this.cd.markForCheck();
       this.startConsole(auxiliary);
@@ -39,7 +43,7 @@ export class ConsoleDeviceActionBrowserComponent {
   }
 
   startConsole(auxiliary: boolean) {
-    let node = this.node();
+    let node = this.updatedNode() || this.node();
     if (!node) return;
 
     if (node.status !== 'started') {
@@ -47,7 +51,7 @@ export class ConsoleDeviceActionBrowserComponent {
     } else {
       if (node.console_host === '0.0.0.0' || node.console_host === '0:0:0:0:0:0:0:0' || node.console_host === '::') {
         node = { ...node, console_host: this.controller().host };
-        this.node.set(node);
+        this.updatedNode.set(node);
       }
 
       try {
