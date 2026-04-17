@@ -78,21 +78,34 @@ export class ComputesComponent implements OnInit, OnDestroy {
     this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
       this.controller = controller;
       this.cd.markForCheck();
-      this.loadComputes();
-      this.connectToGlobalNotifications();
+
+      // Try to load from cache first
+      if (this.notificationService.hasCachedData()) {
+        const cachedComputes = this.notificationService.getCachedComputes();
+        this.computes.set(cachedComputes);
+        this.loading.set(false);
+        this.cd.markForCheck();
+      } else {
+        // If no cache, load from HTTP
+        this.loadComputes();
+      }
+
+      // Subscribe to compute notifications
+      this.subscription.add(
+        this.notificationService.computeNotificationEmitter.subscribe((notification) => {
+          this.handleComputeNotification(notification);
+        })
+      );
+
+      // Subscribe to cache updates
+      this.subscription.add(
+        this.notificationService.computeCacheUpdated.subscribe((computes) => {
+          this.computes.set(computes);
+          this.loading.set(false);
+          this.cd.markForCheck();
+        })
+      );
     });
-  }
-
-  connectToGlobalNotifications() {
-    // Connect to global WebSocket
-    this.notificationService.connectToComputeNotifications(this.controller);
-
-    // Subscribe to compute notifications
-    this.subscription.add(
-      this.notificationService.computeNotificationEmitter.subscribe((notification) => {
-        this.handleComputeNotification(notification);
-      })
-    );
   }
 
   handleComputeNotification(notification: { action: string; event: Compute }) {
@@ -118,6 +131,8 @@ export class ComputesComponent implements OnInit, OnDestroy {
     this.loading.set(true);
     this.computeService.getComputes(this.controller).subscribe({
       next: (computes) => {
+        // Set to cache
+        this.notificationService.setInitialComputes(computes);
         this.computes.set(computes);
         this.loading.set(false);
         this.cd.markForCheck();

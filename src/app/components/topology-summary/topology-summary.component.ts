@@ -118,14 +118,36 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
       this.cd.markForCheck();
     });
 
-    this.computeService.getComputes(this.controller).subscribe((computes) => {
-      this.computes = computes;
-      // In zoneless mode, trigger change detection when async data arrives
+    // Try to load from cache first
+    if (this.notificationService.hasCachedData()) {
+      const cachedComputes = this.notificationService.getCachedComputes();
+      this.computes = cachedComputes;
       this.cd.markForCheck();
-    });
+    } else {
+      // If no cache, load from HTTP
+      this.computeService.getComputes(this.controller).subscribe((computes) => {
+        // Set to cache
+        this.notificationService.setInitialComputes(computes);
+        this.computes = computes;
+        // In zoneless mode, trigger change detection when async data arrives
+        this.cd.markForCheck();
+      });
+    }
 
-    // Connect to WebSocket notifications for real-time compute updates
-    this.connectToComputeNotifications();
+    // Subscribe to compute notifications for real-time updates
+    this.subscriptions.push(
+      this.notificationService.computeNotificationEmitter.subscribe((notification: ComputeNotification) => {
+        this.handleComputeNotification(notification);
+      })
+    );
+
+    // Subscribe to cache updates
+    this.subscriptions.push(
+      this.notificationService.computeCacheUpdated.subscribe((computes) => {
+        this.computes = computes;
+        this.cd.markForCheck();
+      })
+    );
   }
 
   revertPosition() {
@@ -229,18 +251,6 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
   compareDesc(first: Node, second: Node) {
     if (first.name < second.name) return 1;
     return -1;
-  }
-
-  connectToComputeNotifications() {
-    // Connect to global WebSocket for compute notifications
-    this.notificationService.connectToComputeNotifications(this.controller);
-
-    // Subscribe to compute notifications for real-time updates
-    this.subscriptions.push(
-      this.notificationService.computeNotificationEmitter.subscribe((notification: ComputeNotification) => {
-        this.handleComputeNotification(notification);
-      })
-    );
   }
 
   handleComputeNotification(notification: ComputeNotification) {

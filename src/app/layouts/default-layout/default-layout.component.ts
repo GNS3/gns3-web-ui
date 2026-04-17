@@ -19,6 +19,7 @@ import { ControllerManagementService } from '@services/controller-management.ser
 import { ControllerService } from '@services/controller.service';
 import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.service';
 import { ToasterService } from '@services/toaster.service';
+import { ConnectionManagerService } from '@services/connection-manager.service';
 import { ProgressComponent } from '../../common/progress/progress.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -69,6 +70,7 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
   private controllerService = inject(ControllerService);
   private projectService = inject(ProjectService);
   private cd = inject(ChangeDetectorRef);
+  private connectionManager = inject(ConnectionManagerService);
 
   ngOnInit() {
     // Use filter and proper subscription for NavigationEnd
@@ -147,7 +149,11 @@ export class DefaultLayoutComponent implements OnInit, OnDestroy {
       controller.authToken = null;
       this.controllerService
         .update(controller)
-        .then((val) => this.router.navigate(['/controller', controller.id, 'login']));
+        .then((val) => {
+          // Disconnect WebSocket connection on logout
+          this.connectionManager.disconnect();
+          this.router.navigate(['/controller', controller.id, 'login']);
+        });
     });
   }
 

@@ -245,6 +245,7 @@ import { MapSettingsService } from '@services/mapsettings.service';
 import { NodeService } from '@services/node.service';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { NotificationService } from '@services/notification.service';
+import { ConnectionManagerService } from '@services/connection-manager.service';
 import { VncConsoleService } from '@services/vnc-console.service';
 import { XpraConsoleService } from '@services/xpra-console.service';
 import { PacketCaptureService } from '@services/packet-capture.service';
@@ -704,6 +705,7 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     PacketCaptureService,
     ProtocolHandlerService,
     NotificationService,
+    ConnectionManagerService,
     ThemeService,
     GoogleAnalyticsService,
     NodeConsoleService,

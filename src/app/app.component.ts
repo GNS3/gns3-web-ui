@@ -9,6 +9,9 @@ import { ThemeService } from '@services/theme.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { GlobalUploadIndicatorComponent } from './components/global-upload-indicator/global-upload-indicator.component';
+import { ConnectionManagerService } from '@services/connection-manager.service';
+import { ControllerService } from '@services/controller.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -28,6 +31,8 @@ export class AppComponent implements OnInit {
   private themeService = inject(ThemeService);
   private router = inject(Router);
   private progressService = inject(ProgressService);
+  private connectionManager = inject(ConnectionManagerService);
+  private controllerService = inject(ControllerService);
 
   constructor() {
     this.iconReg.addSvgIcon('gns3', this.sanitizer.bypassSecurityTrustResourceUrl('./assets/gns3_icon.svg'));
@@ -43,6 +48,35 @@ export class AppComponent implements OnInit {
     this.themeService.themeChanged.subscribe((theme: string) => {
       this.applyTheme(theme);
     });
+
+    // Check for auto-login and establish WebSocket connection
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      this.checkAndEstablishConnection(event.url);
+    });
+  }
+
+  /**
+   * Check if user is auto-logged in and establish WebSocket connection
+   */
+  private async checkAndEstablishConnection(url: string) {
+    // Extract controller_id from URL
+    const controllerIdMatch = url.match(/\/controller\/(\d+)/);
+    if (!controllerIdMatch) return;
+
+    const controllerId = parseInt(controllerIdMatch[1], 10);
+
+    try {
+      const controller = await this.controllerService.get(controllerId);
+
+      // If controller has auth token, user is logged in - establish connection
+      if (controller && controller.authToken) {
+        this.connectionManager.establishConnection(controller);
+      }
+    } catch (error) {
+      console.error('Failed to check controller for auto-login:', error);
+    }
   }
 
   applyTheme(theme: string) {

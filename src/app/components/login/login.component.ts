@@ -27,6 +27,7 @@ import { ControllerService } from '@services/controller.service';
 import { ThemeService } from '@services/theme.service';
 import { ToasterService } from '@services/toaster.service';
 import { VersionService } from '@services/version.service';
+import { ConnectionManagerService } from '@services/connection-manager.service';
 
 interface RememberMeData {
   username: string;
@@ -60,6 +61,7 @@ export class LoginComponent implements OnInit {
   private toasterService = inject(ToasterService);
   private versionService = inject(VersionService);
   private themeService = inject(ThemeService);
+  private connectionManager = inject(ConnectionManagerService);
 
   private controller: Controller;
   readonly returnUrl = signal('');
@@ -160,6 +162,9 @@ export class LoginComponent implements OnInit {
         controller.password = password;
         controller.tokenExpired = false;
         await this.controllerService.update(controller);
+
+        // Establish global WebSocket connection
+        this.connectionManager.establishConnection(controller);
 
         // Handle remember me
         this.handleRememberMe(username);
