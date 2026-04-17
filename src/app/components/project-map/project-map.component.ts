@@ -14,6 +14,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, ParamMap, Router, RouterModule } from '@angular/router';
 import { ExportPortableProjectComponent } from '@components/export-portable-project/export-portable-project.component';
@@ -135,6 +136,7 @@ import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edit
     MatCheckboxModule,
     MatIconModule,
     MatMenuModule,
+    MatTooltipModule,
     RouterModule,
     D3MapComponent,
     ContextMenuComponent,

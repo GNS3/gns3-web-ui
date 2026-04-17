@@ -1,0 +1,18 @@
+/* =============================================
+// Custom Tooltip Styles
+// =============================================
+// Custom tooltip class for Angular Material tooltips
+// Used throughout the application with matTooltipClass="custom-tooltip"
+// ============================================= */
+
+.mat-tooltip.custom-tooltip {
+  // Ensure tooltip has proper z-index to appear above all content
+  // Default Material tooltip z-index is 1000, this ensures visibility
+  background-color: var(--mat-sys-inverse-surface);
+  color: var(--mat-sys-inverse-on-surface);
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  max-width: 200px;
+  word-wrap: break-word;
+}
