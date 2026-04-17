@@ -374,7 +374,13 @@ export class TemplateComponent implements OnInit, OnDestroy {
       // Multiple compute nodes, show selector
       this.pendingNodePosition.set({ x, y });
       this.pendingTemplate.set(template);
-      this.availableComputes.set(computes);
+      // Sort computes: local first, then by name
+      const sortedComputes = [...computes].sort((a, b) => {
+        if (a.compute_id === 'local') return -1;
+        if (b.compute_id === 'local') return 1;
+        return (a.name || '').localeCompare(b.name || '');
+      });
+      this.availableComputes.set(sortedComputes);
       this.showComputeSelector.set(true);
       this.cd.markForCheck();
     }
