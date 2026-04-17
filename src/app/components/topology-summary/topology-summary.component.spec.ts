@@ -190,6 +190,10 @@ describe('TopologySummaryComponent', () => {
     mockNotificationService = {
       computeNotificationEmitter: new Subject(),
       connectToComputeNotifications: vi.fn(),
+      hasCachedData: vi.fn().mockReturnValue(false),
+      getCachedComputes: vi.fn().mockReturnValue([]),
+      setInitialComputes: vi.fn(),
+      computeCacheUpdated: new Subject(),
     };
 
     mockChangeDetectorRef = {

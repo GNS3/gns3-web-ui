@@ -81,6 +81,10 @@ describe('ComputesComponent', () => {
     mockNotificationService = {
       connectToComputeNotifications: vi.fn(),
       computeNotificationEmitter: computeNotificationEmitter.asObservable(),
+      hasCachedData: vi.fn().mockReturnValue(false),
+      getCachedComputes: vi.fn().mockReturnValue([]),
+      setInitialComputes: vi.fn(),
+      computeCacheUpdated: new Subject(),
     } as any as NotificationService;
 
     mockToasterService = {
@@ -215,7 +219,7 @@ describe('ComputesComponent', () => {
       event: { compute_id: 'new-id', name: 'New Compute', host: 'localhost', port: 3080, protocol: 'http:' } as Compute,
     };
 
-    component.computes.set([]);
+    component['_computes'].set([]);
     component.handleComputeNotification(notification);
 
     expect(component.computes()).toHaveLength(1);
@@ -238,7 +242,7 @@ describe('ComputesComponent', () => {
       event: { compute_id: 'local', name: 'Local Compute' } as Compute,
     };
 
-    component.computes.set([...mockComputes]);
+    component['_computes'].set([...mockComputes]);
     component.handleComputeNotification(notification);
 
     expect(component.computes()).toHaveLength(0);

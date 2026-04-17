@@ -271,8 +271,9 @@ describe('NotificationService', () => {
 
       ws.onclose?.();
 
+      // ws is cleared but currentController is kept for potential reconnection
       expect(service['ws']).toBeNull();
-      expect(service['currentController']).toBeNull();
+      expect(service['currentController']).toBe(mockController);
     });
 
     it('should handle WebSocket onerror', () => {

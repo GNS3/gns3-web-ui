@@ -16,6 +16,7 @@ import { ControllerService } from '@services/controller.service';
 import { ThemeService } from '@services/theme.service';
 import { ToasterService } from '@services/toaster.service';
 import { VersionService } from '@services/version.service';
+import { ConnectionManagerService } from '@services/connection-manager.service';
 import { Controller } from '@models/controller';
 import { of, throwError } from 'rxjs';
 
@@ -28,6 +29,7 @@ describe('LoginComponent', () => {
   let mockToasterService: ToasterService;
   let mockVersionService: VersionService;
   let mockThemeService: ThemeService;
+  let mockConnectionManagerService: ConnectionManagerService;
   let mockRouter: Router;
   let mockActivatedRoute: ActivatedRoute;
 
@@ -69,6 +71,12 @@ describe('LoginComponent', () => {
     mockThemeService = {
       getActualTheme: vi.fn().mockReturnValue('light'),
     } as any as ThemeService;
+
+    mockConnectionManagerService = {
+      establishConnection: vi.fn(),
+      connect: vi.fn(),
+      disconnect: vi.fn(),
+    } as any as ConnectionManagerService;
 
     mockRouter = {
       navigate: vi.fn(),
@@ -122,6 +130,7 @@ describe('LoginComponent', () => {
         { provide: ToasterService, useValue: mockToasterService },
         { provide: VersionService, useValue: mockVersionService },
         { provide: ThemeService, useValue: mockThemeService },
+        { provide: ConnectionManagerService, useValue: mockConnectionManagerService },
         { provide: Router, useValue: mockRouter },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
       ],

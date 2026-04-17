@@ -6,6 +6,7 @@ import { TemplateComponent } from './template.component';
 import { TemplateService } from '@services/template.service';
 import { SymbolService } from '@services/symbol.service';
 import { ThemeService } from '@services/theme.service';
+import { NotificationService } from '@services/notification.service';
 import { ComputeService } from '@services/compute.service';
 import { ToasterService } from '@services/toaster.service';
 import { Context, Transformation } from '../../cartography/models/context';
@@ -91,6 +92,15 @@ describe('TemplateComponent', () => {
       success: vi.fn(),
     };
 
+    const mockNotificationService = {
+      computeNotificationEmitter: new Subject(),
+      connectToComputeNotifications: vi.fn(),
+      hasCachedData: vi.fn().mockReturnValue(false),
+      getCachedComputes: vi.fn().mockReturnValue([]),
+      setInitialComputes: vi.fn(),
+      computeCacheUpdated: new Subject(),
+    };
+
     mockController = {
       id: 1,
       authToken: '',
@@ -140,6 +150,7 @@ describe('TemplateComponent', () => {
         { provide: MatDialog, useValue: mockDialog },
         { provide: ComputeService, useValue: mockComputeService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: NotificationService, useValue: mockNotificationService },
       ],
     }).compileComponents();
 
@@ -412,6 +423,11 @@ describe('TemplateComponent', () => {
   });
 
   describe('dragEnd', () => {
+    beforeEach(() => {
+      // Set cached computes so dragEnd uses cache instead of making HTTP request
+      component['cachedComputes'].set([{ compute_id: 'local', name: 'Local', host: 'localhost', port: 3080, protocol: 'http:' } as any]);
+    });
+
     it('should emit nodeCreationChange event', () => {
       const emitSpy = vi.spyOn(component.nodeCreationChange, 'emit');
 
@@ -464,6 +480,9 @@ describe('TemplateComponent', () => {
 
     it('should use project scene dimensions as fallback when context size is 0', () => {
       const emitSpy = vi.spyOn(component.nodeCreationChange, 'emit');
+
+      // Set cached computes so dragEnd uses cache instead of making HTTP request
+      component['cachedComputes'].set([{ compute_id: 'local', name: 'Local', host: 'localhost', port: 3080, protocol: 'http:' } as any]);
 
       mockContext.size = new Size(0, 0);
       component['lastPageX'].set(500);
