@@ -125,6 +125,29 @@ export class ComputeSelectorComponent implements AfterViewInit, OnDestroy {
     return `${usagePercent}%`;
   }
 
+  getUsageColorClass(compute: Compute, type: 'cpu' | 'mem' | 'disk'): string {
+    let usage: number;
+    switch (type) {
+      case 'cpu':
+        usage = compute.cpu_usage_percent || 0;
+        break;
+      case 'mem':
+        usage = compute.memory_usage_percent || 0;
+        break;
+      case 'disk':
+        usage = compute.disk_usage_percent || 0;
+        break;
+    }
+
+    if (usage < 60) {
+      return 'compute-selector__usage--low';
+    } else if (usage < 85) {
+      return 'compute-selector__usage--medium';
+    } else {
+      return 'compute-selector__usage--high';
+    }
+  }
+
   private bytesToGB(bytes: number): number {
     return bytes / (1024 * 1024 * 1024);
   }

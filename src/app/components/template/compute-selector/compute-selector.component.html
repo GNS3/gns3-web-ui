@@ -1,8 +1,9 @@
 <div class="compute-selector" [style.left.px]="selectorX()" [style.top.px]="selectorY()" #selectorContainer tabindex="0">
   <div class="compute-selector__list">
-    @for (compute of computes(); track compute.compute_id) {
+    @for (compute of computes(); track compute.compute_id; let i = $index) {
     <button
       class="compute-selector__item"
+      [class.compute-selector__item--even]="i % 2 === 1"
       (click)="selectCompute(compute.compute_id)"
       mat-button
     >
@@ -15,9 +16,18 @@
         }
       </div>
       <div class="compute-selector__item-info">
-        <span class="compute-selector__info-item">CPU: {{ getCpuInfo(compute) }}</span>
-        <span class="compute-selector__info-item">MEM: {{ getMemoryInfo(compute) }}</span>
-        <span class="compute-selector__info-item">DISK: {{ getDiskInfo(compute) }}</span>
+        <span class="compute-selector__info-item">
+          <span class="compute-selector__label compute-selector__label--cpu">CPU:</span>
+          <span [class]="getUsageColorClass(compute, 'cpu')">{{ getCpuInfo(compute) }}</span>
+        </span>
+        <span class="compute-selector__info-item">
+          <span class="compute-selector__label compute-selector__label--mem">MEM:</span>
+          <span [class]="getUsageColorClass(compute, 'mem')">{{ getMemoryInfo(compute) }}</span>
+        </span>
+        <span class="compute-selector__info-item">
+          <span class="compute-selector__label compute-selector__label--disk">DISK:</span>
+          <span [class]="getUsageColorClass(compute, 'disk')">{{ getDiskInfo(compute) }}</span>
+        </span>
       </div>
     </button>
     }
