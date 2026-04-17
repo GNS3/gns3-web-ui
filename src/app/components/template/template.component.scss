@@ -172,3 +172,32 @@
     max-width: 70px;
   }
 }
+
+/* =============================================
+// Ghost Icon (during compute selection)
+// ============================================= */
+.template__ghost-icon {
+  position: fixed;
+  pointer-events: none;
+  z-index: 999;
+  transform: translate(-50%, -50%);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.template__ghost-icon-img {
+  width: 60px;
+  height: 60px;
+  opacity: 0.6;
+  filter: drop-shadow(0 4px 8px var(--mat-sys-shadow));
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
