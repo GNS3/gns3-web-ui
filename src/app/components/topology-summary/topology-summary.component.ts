@@ -402,8 +402,8 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
       `Name: ${compute.name || 'N/A'}`,
       `Host: ${compute.host}:${compute.port}`,
       `Connected: ${compute.connected ? 'Yes' : 'No'}`,
-      compute.cpu_usage_percent !== undefined ? `CPU: ${compute.cpu_usage_percent.toFixed(1)}%` : null,
-      compute.memory_usage_percent !== undefined ? `Memory: ${compute.memory_usage_percent.toFixed(1)}%` : null,
+      compute.cpu_usage_percent != null ? `CPU: ${compute.cpu_usage_percent.toFixed(1)}%` : null,
+      compute.memory_usage_percent != null ? `Memory: ${compute.memory_usage_percent.toFixed(1)}%` : null,
     ].filter(Boolean);
     return parts.join('\n');
   }

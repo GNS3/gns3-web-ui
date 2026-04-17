@@ -247,8 +247,8 @@ export class ComputesComponent implements OnInit, OnDestroy {
     return compute.connected ? 'var(--mat-sys-primary)' : 'var(--mat-sys-error)';
   }
 
-  formatPercent(value: number | undefined): string {
-    return value !== undefined ? `${value.toFixed(1)}%` : '--';
+  formatPercent(value: number | null | undefined): string {
+    return value != null ? `${value.toFixed(1)}%` : '--';
   }
 
   formatHost(compute: Compute): string {
