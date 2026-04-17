@@ -38,6 +38,10 @@ import { NodeAddedEvent, TemplateListDialogComponent } from './template-list-dia
 import { DomSanitizer } from '@angular/platform-browser';
 import { Context } from '../../cartography/models/context';
 import { DOCUMENT } from '@angular/common';
+import { ComputeService } from '@services/compute.service';
+import { Compute } from '@models/compute';
+import { ComputeSelectorComponent } from './compute-selector/compute-selector.component';
+import { NotificationService } from '@services/notification.service';
 
 @Component({
   selector: 'app-template',
@@ -56,6 +60,7 @@ import { DOCUMENT } from '@angular/common';
     MatOptionModule,
     MatListModule,
     DragAndDropModule,
+    ComputeSelectorComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -68,6 +73,8 @@ export class TemplateComponent implements OnInit, OnDestroy {
   private overlayContainer = inject(OverlayContainer);
   private context = inject(Context);
   private cd = inject(ChangeDetectorRef);
+  private computeService = inject(ComputeService);
+  private notificationService = inject(NotificationService);
 
   readonly controller = input<Controller>(undefined);
   readonly project = input<Project>(undefined);
@@ -116,6 +123,13 @@ export class TemplateComponent implements OnInit, OnDestroy {
   // Store the element being dragged to calculate offset
   private dragElement: HTMLElement | null = null;
 
+  // Compute selector state
+  showComputeSelector = signal<boolean>(false);
+  availableComputes = signal<Compute[]>([]);
+  pendingNodePosition = signal<{ x: number; y: number } | null>(null);
+  pendingTemplate = signal<Template | null>(null);
+  cachedComputes = signal<Compute[]>([]);
+
   private subscription: Subscription;
   private themeSubscription: Subscription;
   private isLightThemeEnabled: boolean = false;
@@ -135,6 +149,19 @@ export class TemplateComponent implements OnInit, OnDestroy {
       this.loadTemplateSymbolBlobs([template]);
       this.cd.markForCheck();
     });
+
+    // Subscribe to compute cache updates
+    this.subscription.add(
+      this.notificationService.computeCacheUpdated.subscribe((computes: Compute[]) => {
+        this.cachedComputes.set(computes);
+        this.cd.markForCheck();
+      })
+    );
+
+    // Load initial computes from cache
+    if (this.notificationService.hasCachedData()) {
+      this.cachedComputes.set(this.notificationService.getCachedComputes());
+    }
 
     // Only load templates if controller is available
     if (this.controller() && this.controller().id) {
@@ -271,15 +298,86 @@ export class TemplateComponent implements OnInit, OnDestroy {
     const finalX = Math.round(worldX - this.mouseOffsetX);
     const finalY = Math.round(worldY - this.mouseOffsetY);
 
-    const nodeAddedEvent: NodeAddedEvent = {
-      template: template,
-      controller: 'local',
-      numberOfNodes: 1,
-      x: finalX,
-      y: finalY,
-    };
+    // Get computes from cache (instant, no HTTP request)
+    const computes = this.cachedComputes();
 
-    this.nodeCreationChange.emit(nodeAddedEvent);
+    if (computes.length === 0) {
+      // No cached data, fallback to HTTP request
+      this.computeService.getComputes(this.controller()).subscribe({
+        next: (loadedComputes: Compute[]) => {
+          // Set to cache for future use
+          this.notificationService.setInitialComputes(loadedComputes);
+          this.cachedComputes.set(loadedComputes);
+
+          // Now process with loaded data
+          this.processNodeCreation(template, finalX, finalY, loadedComputes);
+        },
+        error: (error) => {
+          console.error('Failed to load computes:', error);
+          // Fallback to local on error
+          const nodeAddedEvent: NodeAddedEvent = {
+            template: template,
+            controller: 'local',
+            numberOfNodes: 1,
+            x: finalX,
+            y: finalY,
+          };
+          this.nodeCreationChange.emit(nodeAddedEvent);
+        }
+      });
+    } else {
+      // Use cached data (instant)
+      this.processNodeCreation(template, finalX, finalY, computes);
+    }
+  }
+
+  private processNodeCreation(template: Template, x: number, y: number, computes: Compute[]) {
+    if (computes.length === 1) {
+      // Only one compute node, proceed directly
+      const nodeAddedEvent: NodeAddedEvent = {
+        template: template,
+        controller: computes[0].compute_id,
+        numberOfNodes: 1,
+        x: x,
+        y: y,
+      };
+      this.nodeCreationChange.emit(nodeAddedEvent);
+    } else {
+      // Multiple compute nodes, show selector
+      this.pendingNodePosition.set({ x, y });
+      this.pendingTemplate.set(template);
+      this.availableComputes.set(computes);
+      this.showComputeSelector.set(true);
+      this.cd.markForCheck();
+    }
+  }
+
+  clearPendingState() {
+    this.showComputeSelector.set(false);
+    this.pendingNodePosition.set(null);
+    this.pendingTemplate.set(null);
+  }
+
+  onComputeSelected(computeId: string) {
+    const position = this.pendingNodePosition();
+    const template = this.pendingTemplate();
+
+    if (position && template) {
+      const nodeAddedEvent: NodeAddedEvent = {
+        template: template,
+        controller: computeId,
+        numberOfNodes: 1,
+        x: position.x,
+        y: position.y,
+      };
+      this.nodeCreationChange.emit(nodeAddedEvent);
+    }
+
+    this.clearPendingState();
+  }
+
+  onComputeSelectorCancelled() {
+    this.clearPendingState();
   }
 
   openDialog() {

@@ -1,0 +1,26 @@
+<div class="compute-selector" [style.left.px]="x()" [style.top.px]="y()">
+  <div class="compute-selector__header">
+    <mat-icon class="compute-selector__icon">server</mat-icon>
+    <span class="compute-selector__title">选择计算节点</span>
+  </div>
+  <div class="compute-selector__list">
+    @for (compute of computes(); track compute.compute_id) {
+    <button
+      class="compute-selector__item"
+      (click)="selectCompute(compute.compute_id)"
+      mat-button
+    >
+      <mat-icon class="compute-selector__item-icon">dns</mat-icon>
+      <span class="compute-selector__item-name">{{ getComputeDisplayName(compute) }}</span>
+      @if (compute.connected) {
+      <mat-icon class="compute-selector__status compute-selector__status--connected">check_circle</mat-icon>
+      } @else {
+      <mat-icon class="compute-selector__status compute-selector__status--disconnected">cancel</mat-icon>
+      }
+    </button>
+    }
+  </div>
+  <div class="compute-selector__footer">
+    <button class="compute-selector__cancel" (click)="cancel()" mat-button size="small">取消</button>
+  </div>
+</div>

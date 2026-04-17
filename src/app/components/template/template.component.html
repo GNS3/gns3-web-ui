@@ -100,3 +100,13 @@
     } }
   </div>
 </mat-menu>
+
+@if (showComputeSelector()) {
+  <app-compute-selector
+    [computes]="availableComputes()"
+    [x]="lastPageX()"
+    [y]="lastPageY()"
+    (computeSelected)="onComputeSelected($event)"
+    (cancelled)="onComputeSelectorCancelled()"
+  />
+}
