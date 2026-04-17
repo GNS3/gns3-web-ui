@@ -6,12 +6,19 @@
       (click)="selectCompute(compute.compute_id)"
       mat-button
     >
-      <span class="compute-selector__item-name">{{ getComputeDisplayName(compute) }}</span>
-      @if (compute.connected) {
-      <mat-icon class="compute-selector__status compute-selector__status--connected">check_circle</mat-icon>
-      } @else {
-      <mat-icon class="compute-selector__status compute-selector__status--disconnected">cancel</mat-icon>
-      }
+      <div class="compute-selector__item-main">
+        <span class="compute-selector__item-name">{{ getComputeDisplayName(compute) }}</span>
+        @if (compute.connected) {
+        <mat-icon class="compute-selector__status compute-selector__status--connected">check_circle</mat-icon>
+        } @else {
+        <mat-icon class="compute-selector__status compute-selector__status--disconnected">cancel</mat-icon>
+        }
+      </div>
+      <div class="compute-selector__item-info">
+        <span class="compute-selector__info-item">CPU: {{ getCpuInfo(compute) }}</span>
+        <span class="compute-selector__info-item">MEM: {{ getMemoryInfo(compute) }}</span>
+        <span class="compute-selector__info-item">DISK: {{ getDiskInfo(compute) }}</span>
+      </div>
     </button>
     }
   </div>

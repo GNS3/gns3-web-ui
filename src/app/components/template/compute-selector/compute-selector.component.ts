@@ -105,4 +105,27 @@ export class ComputeSelectorComponent implements AfterViewInit, OnDestroy {
     }
     return `${compute.name} (${compute.host}:${compute.port})`;
   }
+
+  getCpuInfo(compute: Compute): string {
+    const cpus = compute.capabilities?.cpus || 0;
+    const usage = compute.cpu_usage_percent || 0;
+    return `${usage}% / ${cpus}c`;
+  }
+
+  getMemoryInfo(compute: Compute): string {
+    const totalBytes = compute.capabilities?.memory || 0;
+    const usagePercent = compute.memory_usage_percent || 0;
+    const totalGB = this.bytesToGB(totalBytes);
+    const usedGB = (totalGB * usagePercent) / 100;
+    return `${usedGB.toFixed(1)}/${totalGB.toFixed(0)} GB`;
+  }
+
+  getDiskInfo(compute: Compute): string {
+    const usagePercent = compute.disk_usage_percent || 0;
+    return `${usagePercent}%`;
+  }
+
+  private bytesToGB(bytes: number): number {
+    return bytes / (1024 * 1024 * 1024);
+  }
 }
