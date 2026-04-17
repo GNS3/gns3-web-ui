@@ -256,10 +256,13 @@ describe('StartCaptureDialogComponent', () => {
       expect(fileNameControl?.value).toBe('Router1_Eth00_to_Router2_Eth00');
     });
 
-    it('should set linkType to required field', () => {
+    it('should auto-select first linkType option and be valid', () => {
       setupWithEthernetLink();
       const linkTypeControl = fixture.componentInstance.inputForm.get('linkType');
-      expect(linkTypeControl?.hasError('required')).toBe(true);
+      // After ngOnInit, linkType should have a value (auto-selected) and be valid
+      expect(linkTypeControl?.value).toBe('DLT_EN10MB');
+      expect(linkTypeControl?.valid).toBe(true);
+      expect(linkTypeControl?.hasError('required')).toBe(false);
     });
   });
 
