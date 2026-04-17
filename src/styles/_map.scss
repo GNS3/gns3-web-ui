@@ -72,6 +72,11 @@
   --gns3-map-bg: var(--gns3-map-bg-dark-4);
 }
 
+/* Map background - applies to entire SVG element regardless of size */
+svg#map {
+  background: var(--gns3-map-bg, var(--mat-sys-surface));
+}
+
 /* Node/Link selection grayscale effect */
 svg#map g.selected {
   filter: grayscale(100%);
