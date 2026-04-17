@@ -20,7 +20,7 @@ export class ComputeSelectorComponent {
 
   private SELECTOR_WIDTH = 260;
   private SELECTOR_HEIGHT = 120; // 估算高度
-  private MARGIN = 10;
+  private MARGIN = 10; // 距离图标和屏幕边缘的间距
 
   @Output() computeSelected = new EventEmitter<string>();
 
@@ -31,9 +31,9 @@ export class ComputeSelectorComponent {
 
     // 如果靠右边边缘，移到左边
     if (mouseX + this.SELECTOR_WIDTH + this.MARGIN > screenWidth) {
-      return mouseX - this.SELECTOR_WIDTH - 60; // 移到图标左边
+      return mouseX - this.SELECTOR_WIDTH - this.MARGIN; // 紧贴图标左边
     }
-    return mouseX + 60; // 默认在图标右边
+    return mouseX + this.MARGIN; // 紧贴图标右边
   });
 
   selectorY = computed(() => {
@@ -42,9 +42,9 @@ export class ComputeSelectorComponent {
 
     // 如果靠下边边缘，移到上边
     if (mouseY + this.SELECTOR_HEIGHT + this.MARGIN > screenHeight) {
-      return mouseY - this.SELECTOR_HEIGHT - 60; // 移到图标上边
+      return mouseY - this.SELECTOR_HEIGHT - this.MARGIN; // 紧贴图标上边
     }
-    return mouseY + 60; // 默认在图标下边
+    return mouseY + this.MARGIN; // 紧贴图标下边
   });
 
   selectCompute(computeId: string) {
