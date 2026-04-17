@@ -4,7 +4,7 @@
   background: var(--mat-sys-surface);
   border: 1px solid var(--mat-sys-outline-variant);
   border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px var(--mat-sys-shadow);
   z-index: 1000;
   overflow: hidden;
 }
