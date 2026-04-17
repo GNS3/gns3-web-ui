@@ -102,24 +102,25 @@
 </mat-menu>
 
 @if (showComputeSelector()) {
-  <div
-    class="template__ghost-icon"
-    [style.left.px]="lastPageX()"
-    [style.top.px]="lastPageY()"
-  >
-    @if (pendingTemplate()) {
-    <img
-      class="template__ghost-icon-img"
-      [src]="getImageSourceForTemplate(pendingTemplate())"
-      draggable="false"
+  <div class="template__selector-backdrop" (click)="onComputeSelectorCancelled()">
+    <div
+      class="template__ghost-icon"
+      [style.left.px]="lastPageX()"
+      [style.top.px]="lastPageY()"
+    >
+      @if (pendingTemplate()) {
+      <img
+        class="template__ghost-icon-img"
+        [src]="getImageSourceForTemplate(pendingTemplate())"
+        draggable="false"
+      />
+      }
+    </div>
+    <app-compute-selector
+      [computes]="availableComputes()"
+      [x]="lastPageX() + 60"
+      [y]="lastPageY() + 60"
+      (computeSelected)="onComputeSelected($event)"
     />
-    }
   </div>
-  <app-compute-selector
-    [computes]="availableComputes()"
-    [x]="lastPageX() + 60"
-    [y]="lastPageY() + 60"
-    (computeSelected)="onComputeSelected($event)"
-    (cancelled)="onComputeSelectorCancelled()"
-  />
 }

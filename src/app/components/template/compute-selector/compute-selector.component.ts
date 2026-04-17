@@ -18,14 +18,9 @@ export class ComputeSelectorComponent {
   y = input.required<number>();
 
   @Output() computeSelected = new EventEmitter<string>();
-  @Output() cancelled = new EventEmitter<void>();
 
   selectCompute(computeId: string) {
     this.computeSelected.emit(computeId);
-  }
-
-  cancel() {
-    this.cancelled.emit();
   }
 
   getComputeDisplayName(compute: Compute): string {
