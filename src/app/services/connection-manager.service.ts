@@ -13,7 +13,7 @@ import { NotificationService } from '@services/notification.service';
  */
 @Injectable()
 export class ConnectionManagerService {
-  private currentController: Controller = null;
+  private currentController: Controller | null = null;
 
   constructor(private notificationService: NotificationService) {}
 
