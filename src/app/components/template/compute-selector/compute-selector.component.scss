@@ -8,6 +8,11 @@
   z-index: 1000;
   overflow: hidden;
   padding: 4px;
+  outline: none;
+}
+
+.compute-selector:focus {
+  outline: none;
 }
 
 .compute-selector__list {

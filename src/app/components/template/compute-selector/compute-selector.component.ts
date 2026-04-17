@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, input, Output, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Compute } from '@models/compute';
 import { MatIconModule } from '@angular/material/icon';
@@ -13,7 +13,8 @@ import { computed } from '@angular/core';
   imports: [CommonModule, MatIconModule, MatButtonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ComputeSelectorComponent {
+export class ComputeSelectorComponent implements AfterViewInit {
+  @ViewChild('selectorContainer') selectorContainer!: ElementRef<HTMLDivElement>;
   computes = input.required<Compute[]>();
   x = input.required<number>();
   y = input.required<number>();
@@ -46,6 +47,15 @@ export class ComputeSelectorComponent {
     }
     return mouseY + this.MARGIN; // 紧贴图标下边
   });
+
+  ngAfterViewInit() {
+    // 自动聚焦容器，使选择列表成为当前焦点目标
+    setTimeout(() => {
+      if (this.selectorContainer?.nativeElement) {
+        this.selectorContainer.nativeElement.focus();
+      }
+    }, 0);
+  }
 
   selectCompute(computeId: string) {
     this.computeSelected.emit(computeId);

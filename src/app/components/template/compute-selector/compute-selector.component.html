@@ -1,4 +1,4 @@
-<div class="compute-selector" [style.left.px]="selectorX()" [style.top.px]="selectorY()">
+<div class="compute-selector" [style.left.px]="selectorX()" [style.top.px]="selectorY()" #selectorContainer tabindex="0">
   <div class="compute-selector__list">
     @for (compute of computes(); track compute.compute_id) {
     <button

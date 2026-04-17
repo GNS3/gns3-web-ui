@@ -4,11 +4,12 @@
   matTooltipClass="custom-tooltip"
   mat-icon-button
   [matMenuTriggerFor]="mainMenu"
+  #menuTrigger="matMenuTrigger"
 >
   <mat-icon>add</mat-icon>
 </button>
 
-<mat-menu #mainMenu="matMenu" class="template-menu">
+<mat-menu #mainMenu="matMenu" class="template-menu" (closed)="onMenuClosed()">
   <button mat-menu-item (click)="openDialog()" class="template__dialog-btn">
     <mat-icon>add_to_queue</mat-icon>
     <span>Open dialog to configure</span>

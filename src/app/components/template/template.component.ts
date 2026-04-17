@@ -13,7 +13,9 @@ import {
   signal,
   model,
   effect,
+  ViewChild,
 } from '@angular/core';
+import { MatMenuTrigger } from '@angular/material/menu';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -79,6 +81,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
   readonly controller = input<Controller>(undefined);
   readonly project = input<Project>(undefined);
   @Output() nodeCreationChange = new EventEmitter<any>();
+  @ViewChild('menuTrigger') menuTrigger!: MatMenuTrigger;
   overlay;
   templates: Template[] = [];
   filteredTemplates: Template[] = [];
@@ -239,6 +242,11 @@ export class TemplateComponent implements OnInit, OnDestroy {
   }
 
   dragStart(ev: any, template: Template) {
+    // Close the mat-menu to remove its overlay that blocks focus
+    if (this.menuTrigger) {
+      this.menuTrigger.closeMenu();
+    }
+
     // mwlDraggable's DragStartEvent doesn't contain mouse position data
     // Use window.event (the browser's global event) to access mouse position
     const mouseEvent = window.event as MouseEvent | undefined;
@@ -399,6 +407,10 @@ export class TemplateComponent implements OnInit, OnDestroy {
 
   getImageSourceForTemplate(template: Template): string {
     return this.templateSymbolBlobUrls.get(template.symbol) || '';
+  }
+
+  onMenuClosed() {
+    // Menu closed event handler - can be used for cleanup if needed
   }
 
   ngOnDestroy() {
