@@ -21,28 +21,28 @@ export class ComputeSelectorComponent implements AfterViewInit, OnDestroy {
   x = input.required<number>();
   y = input.required<number>();
 
-  private MARGIN = 10; // 距离图标和屏幕边缘的间距
+  private MARGIN = 10; // Distance from icon and screen edges
 
-  // 实际测量到的尺寸
+  // Actual measured dimensions
   private actualWidth = signal(200);
   private actualHeight = signal(120);
 
-  // ResizeObserver 实例
+  // ResizeObserver instance
   private resizeObserver: ResizeObserver;
 
   @Output() computeSelected = new EventEmitter<string>();
 
-  // 智能定位：使用实际测量到的尺寸
+  // Smart positioning: use actual measured dimensions
   selectorX = computed(() => {
     const mouseX = this.x();
     const screenWidth = window.innerWidth;
     const selectorWidth = this.actualWidth();
 
-    // 如果靠右边边缘，移到左边
+    // If near right edge, position to the left
     if (mouseX + selectorWidth + this.MARGIN > screenWidth) {
-      return mouseX - selectorWidth - this.MARGIN; // 紧贴图标左边
+      return mouseX - selectorWidth - this.MARGIN; // Flush with left side of icon
     }
-    return mouseX + this.MARGIN; // 紧贴图标右边
+    return mouseX + this.MARGIN; // Flush with right side of icon
   });
 
   selectorY = computed(() => {
@@ -50,15 +50,15 @@ export class ComputeSelectorComponent implements AfterViewInit, OnDestroy {
     const screenHeight = window.innerHeight;
     const selectorHeight = this.actualHeight();
 
-    // 如果靠下边边缘，移到上边
+    // If near bottom edge, position above
     if (mouseY + selectorHeight + this.MARGIN > screenHeight) {
-      return mouseY - selectorHeight - this.MARGIN; // 紧贴图标上边
+      return mouseY - selectorHeight - this.MARGIN; // Flush with top side of icon
     }
-    return mouseY + this.MARGIN; // 紧贴图标下边
+    return mouseY + this.MARGIN; // Flush with bottom side of icon
   });
 
   constructor() {
-    // 初始化 ResizeObserver
+    // Initialize ResizeObserver
     this.resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         this.actualWidth.set(entry.contentRect.width);
@@ -69,18 +69,18 @@ export class ComputeSelectorComponent implements AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    // 测量实际尺寸
+    // Measure actual dimensions
     if (this.selectorContainer?.nativeElement) {
       const rect = this.selectorContainer.nativeElement.getBoundingClientRect();
       this.actualWidth.set(rect.width);
       this.actualHeight.set(rect.height);
       this.cd.markForCheck();
 
-      // 开始观察尺寸变化
+      // Start observing dimension changes
       this.resizeObserver.observe(this.selectorContainer.nativeElement);
     }
 
-    // 自动聚焦容器，使选择列表成为当前焦点目标
+    // Auto-focus container to make selector the focus target
     setTimeout(() => {
       if (this.selectorContainer?.nativeElement) {
         this.selectorContainer.nativeElement.focus();
@@ -89,7 +89,7 @@ export class ComputeSelectorComponent implements AfterViewInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    // 清理 ResizeObserver
+    // Cleanup ResizeObserver
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();
     }
