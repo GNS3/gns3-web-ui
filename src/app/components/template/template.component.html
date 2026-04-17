@@ -118,8 +118,8 @@
     </div>
     <app-compute-selector
       [computes]="availableComputes()"
-      [x]="lastPageX() + 60"
-      [y]="lastPageY() + 60"
+      [x]="lastPageX()"
+      [y]="lastPageY()"
       (computeSelected)="onComputeSelected($event)"
     />
   </div>
