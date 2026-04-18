@@ -4,7 +4,7 @@ See LICENSE file for licensing information.
 -->
 # VNC Console Implementation Documentation
 
-**Version**: 1.1.0 | **Updated**: 2026-03-30 | **Status**: ✅ Completed
+**Version**: 1.2.0 | **Updated**: 2026-04-18 | **Status**: ✅ Completed
 
 ---
 
@@ -40,7 +40,7 @@ VncConsoleService ──► /assets/vnc-console/index.html
 | Method | Description |
 |--------|-------------|
 | `buildVncWebSocketUrl()` | Builds WebSocket URL: `wss://host:port/v3/projects/{id}/nodes/{id}/console/vnc?token=xxx` |
-| `buildVncConsolePageUrl()` | Builds console page URL with query params (`ws_url`, `node_name`, `autoconnect=1`) |
+| `buildVncConsolePageUrl()` | Builds console page URL with query params (`ws_url`, `node_name`, `node_id`, `project_id`, `autoconnect=1`) |
 | `openVncConsole()` | Opens VNC console via `window.open()` with popup blocker detection |
 
 **Key Features**:
