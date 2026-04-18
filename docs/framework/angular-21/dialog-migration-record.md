@@ -2,7 +2,7 @@
 SPDX-License-Identifier: CC-BY-SA-4.0
 See LICENSE file for licensing information.
 -->
-# Migrated Dialogs List
+# Dialog Style Migration Record
 
 **Migration Date**: 2026-03-29
 **Branch**: refactor/move-dialog-styles-to-css
@@ -10,192 +10,238 @@ See LICENSE file for licensing information.
 
 ---
 
-## Dialogs Organized by Component
+## Architecture Overview
 
-### 1. dialog-config.service.ts (P0 - Highest Priority)
+```mermaid
+graph TD
+    subgraph "Layer 0: Base Styles"
+        BASE[base-dialog-panel<br/>border-radius, shadow,<br/>title, content, actions]
+        BASE_CONF[base-confirmation-dialog-panel<br/>confirm/cancel button styles]
+    end
 
-| CSS Class | Size | Purpose | Original Config Key |
-|-----------|------|---------|---------------------|
-| `configurator-dialog-panel` | 800px × 80vh | Main configuration page | `configuratorConfig` |
-| `simple-dialog-panel` | 500px × 80vh | Simple dialog | `simpleConfig` |
-| `custom-adapters-dialog-panel` | 1000px | Custom adapters | `customAdapters` |
-| `edit-project-dialog-panel` | 700px × 600px | Edit project | `editProject` |
-| `add-ace-dialog-panel` | 1000px | Add ACE | `addAce` |
-| `nodes-menu-confirmation-dialog-panel` | 500px × 200px | Node menu confirmation | `nodesMenuConfirmation` |
+    subgraph "Layer 1: Size Presets"
+        CONFIG[configurator-dialog-panel<br/>800px x 80vh]
+        SIMPLE[simple-dialog-panel<br/>500px x 80vh]
+    end
 
-**Impact**: Global centralized configuration service
+    subgraph "Layer 2: Confirmation Variants"
+        DANGER[confirmation-danger-panel<br/>error border + red confirm]
+        WARNING[confirmation-warning-panel<br/>tertiary border + amber confirm]
+        INFO[confirmation-info-panel<br/>primary border + blue confirm]
+    end
 
----
+    subgraph "Layer 3: Specific Overrides"
+        EDIT_PROJ[edit-project-dialog-panel<br/>700px x 600px]
+        NEW_TPL[new-template-dialog-panel<br/>800px]
+        CHANGE_SYM[change-symbol-dialog-panel<br/>800px x 600px]
+        CUSTOM_ADV[custom-adapters-dialog-panel<br/>1000px]
+        ADD_ACE[add-ace-dialog-panel<br/>1000px]
+        NODES_CONF[nodes-menu-confirmation-dialog-panel<br/>500px, content 200px]
+        AI_PROFILE[ai-profile-dialog-panel<br/>700px x 80vh]
+        CODE_BLOCK[code-block-dialog-panel<br/>1200px]
+    end
 
-### 2. Project Management Components (P1)
+    BASE --> CONFIG
+    BASE --> SIMPLE
+    BASE_CONF --> DANGER
+    BASE_CONF --> WARNING
+    BASE_CONF --> INFO
+    CONFIG --> EDIT_PROJ
+    CONFIG --> NEW_TPL
+    CONFIG --> CHANGE_SYM
+    BASE --> CUSTOM_ADV
+    CONFIG --> ADD_ACE
+    SIMPLE --> NODES_CONF
+    BASE --> AI_PROFILE
+    BASE --> CODE_BLOCK
+```
 
-#### projects.component.ts
+### Class Inheritance Model
 
-| CSS Class | Size | Component | Method |
-|-----------|------|-----------|--------|
-| `choose-name-dialog-panel` | 400px | ChooseNameDialogComponent | `duplicate()` |
-| `add-blank-project-dialog-panel` | 400px | AddBlankProjectDialogComponent | `addBlankProject()` |
-| `import-project-dialog-panel` | 400px | ImportProjectDialogComponent | `importProject()` |
-| `delete-all-projects-dialog-panel` | 550px × 650px | ConfirmationDeleteAllProjectsComponent | `deleteAllFiles()` |
-| `export-portable-project-dialog-panel` | 700px × 850px | ExportPortableProjectComponent | `exportPortableProjectDialog()` |
+All dialogs use a layered panelClass array. Each layer adds styling:
 
-#### image-manager.component.ts
-
-| CSS Class | Size | Component | Method |
-|-----------|------|-----------|--------|
-| `question-dialog-panel` | 450px | QuestionDialogComponent | `deleteFile()`, `installAllImages()`, `pruneImages()` |
-| `add-image-dialog-panel` | 600px × 550px | AddImageDialogComponent | `addImage()` |
-| `delete-all-images-dialog-panel` | 550px × 650px | DeleteAllImageFilesDialogComponent | `deleteAllFiles()` |
-
----
-
-### 3. User/Role/Group Management Components (P2)
-
-#### user-management.component.ts
-
-| CSS Class | Size | Component | Method |
-|-----------|------|-----------|--------|
-| `add-user-dialog-panel` | 400px | AddUserDialogComponent | `addUser()` |
-
-#### user-detail.component.ts
-
-| CSS Class | Size | Component | Method |
-|-----------|------|-----------|--------|
-| `change-user-password-dialog-panel` | 400px × 300px | ChangeUserPasswordComponent | `onChangePassword()` |
-
-#### user-detail/ai-profile-tab.component.ts
-
-| CSS Class | Size | Component | Method |
-|-----------|------|-----------|--------|
-| `ai-profile-dialog-panel` | 700px | AiProfileDialogComponent | `openCreateDialog()`, `openEditDialog()` |
-
-#### group-details/group-ai-profile-tab.component.ts
-
-| CSS Class | Size | Component | Method |
-|-----------|------|-----------|--------|
-| `ai-profile-dialog-panel` | 700px | AiProfileDialogComponent | `openCreateDialog()`, `openEditDialog()` |
-
-#### acl-management.component.ts
-
-| CSS Class | Size | Component | Method |
-|-----------|------|-----------|--------|
-| `add-ace-dialog-panel` | 1000px | AddAceDialogComponent | `addACE()` |
+| Layer | Responsibility | Example |
+|-------|---------------|---------|
+| **Base** | Typography, spacing, shadows | `base-dialog-panel` |
+| **Size Preset** | Width, height, max dimensions | `configurator-dialog-panel` or `simple-dialog-panel` |
+| **Confirmation Variant** | Color theme for confirm dialogs | `confirmation-danger-panel` |
+| **Specific Override** | Unique sizing for a single dialog | `edit-project-dialog-panel` |
 
 ---
 
-### 4. Node Editors (P3)
+## Flow Description
 
-#### configurator/qemu/configurator-qemu.component.ts
+```mermaid
+flowchart LR
+    A[Component opens dialog] --> B{Dialog type?}
 
-| CSS Class | Size | Purpose |
-|-----------|------|---------|
-| `qemu-configurator-dialog-panel` | 500px | QEMU VM configuration dialog |
+    B -->|Standard dialog| C[panelClass:<br/>base-dialog-panel<br/>+ size preset<br/>+ specific override]
+    B -->|Confirmation| D[panelClass:<br/>base-confirmation-dialog-panel<br/>+ variant]
+    B -->|Bottom sheet| E[panelClass:<br/>confirmation-bottom-sheet]
+    B -->|Snackbar| F[panelClass:<br/>*-snackbar]
 
-#### configurator/docker/configurator-docker.component.ts
+    C --> G[_dialogs.scss<br/>applies styles via<br/>CSS cascade]
+    D --> G
+    E --> G
+    F --> G
+```
 
-| CSS Class | Size | Purpose |
-|-----------|------|---------|
-| `docker-configurator-dialog-panel` | 800px | Docker container configuration dialog |
+### Style Resolution Flow
 
----
-
-### 5. Context Menu Actions (P3)
-
-| CSS Class | Size | Component | Menu Item |
-|-----------|------|-----------|-----------|
-| `idle-pc-action-dialog-panel` | 500px | IdlePCDialogComponent | Idle PC |
-| `export-config-action-dialog-panel` | 500px | ConfigDialogComponent | Export Config |
-| `import-config-action-dialog-panel` | 500px | ConfigDialogComponent | Import Config |
-| `show-node-action-dialog-panel` | 600px × 600px | InfoDialogComponent | Show Node |
-| `edit-text-action-dialog-panel` | 300px | TextEditorDialogComponent | Edit Text |
-| `edit-config-action-dialog-panel` | 600px × 500px | ConfigEditorDialogComponent | Edit Config |
-| `edit-style-action-dialog-panel` | 500px | StyleEditorDialogComponent | Edit Style |
+1. Component calls `dialog.open()` with `panelClass` array
+2. Angular Material applies each CSS class to the overlay container
+3. `_dialogs.scss` selectors match via `.panel-class .mat-mdc-dialog-container`
+4. CSS cascade applies styles from base to specific (left to right in array)
+5. Later classes override earlier ones when conflicts exist
 
 ---
 
-### 6. Other Components (P3)
+## Implementation Logic
 
-#### preferences/common/delete-template-component
+### DialogConfigService (P0)
 
-| CSS Class | Size | Component | Method |
-|-----------|------|-----------|--------|
-| `delete-template-dialog-panel` | 300px × 250px | DeleteConfirmationDialogComponent | `deleteItem()` |
+Centralized configuration service in `src/app/services/dialog-config.service.ts`. Pre-registers named dialog configs that combine base + preset + override classes.
 
-#### preferences/common/symbols
+| Config Name | panelClass Chain | Size |
+|-------------|-----------------|------|
+| `changeSymbol` | base + configurator + change-symbol | 800px x 600px |
+| `templateSymbol` | base + configurator + change-symbol | 800px x 600px |
+| `symbolsManager` | base + configurator | 800px x 80vh |
+| `confirmation` | base-confirmation + danger | Auto |
+| `editController` | base + edit-controller | 400px |
+| `addController` | base + add-controller | 350px |
+| `customAdapters` | base + custom-adapters | 1000px |
+| `editProject` | base + configurator + edit-project | 700px x 600px |
+| `addAce` | base + configurator + add-ace | 1000px |
+| `newTemplate` | base + configurator + new-template | 800px |
+| `nodesMenuConfirmation` | base + simple + nodes-menu-confirmation | 500px x 200px |
+| `startCapture` | base + simple | 500px x 80vh |
+| `linkStyleEditor` | base + simple | 500px x 80vh |
+| `packetFilters` | base + simple | 500px x 80vh |
+| `helpDialog` | base + simple | 500px x 80vh |
 
-| CSS Class | Size | Component | Note |
-|-----------|------|-----------|-------|
-| `symbols-dialog-panel` | 400px | ConfirmationDialogComponent | Removed redundant width, uses confirmation panel |
-
-#### users/logged-user
-
-| CSS Class | Size | Component | Method |
-|-----------|------|-----------|--------|
-| `change-user-password-dialog-panel` | 400px × 300px | ChangeUserPasswordComponent | `changePassword()` |
-
-#### template
-
-| CSS Class | Size | Component | Method |
-|-----------|------|-----------|--------|
-| `template-dialog-panel` | 600px | TemplateListDialogComponent | `openDialog()` |
-
-#### controllers
-
-| CSS Class | Size | Component | Method |
-|-----------|------|-----------|--------|
-| `controller-small-dialog-panel` | 350px | AddControllerDialogComponent | `createModal()` |
-| `controller-dialog-panel` | 400px | EditControllerDialogComponent | `editController()` |
+**Note**: Most components still call `dialog.open()` directly with inline panelClass arrays rather than using `DialogConfigService.getConfig()`. Only `DialogConfigService` test coverage exercises these configs currently.
 
 ---
 
-## Size-based Classification
+### Project Management
 
-### 300px Series
-- delete-template-dialog-panel: 300px × 250px
-- edit-text-action-dialog-panel: 300px
+| CSS Class | Size | Component File | Method |
+|-----------|------|---------------|--------|
+| `choose-name-dialog-panel` | 400px | projects.component.ts | `duplicate()` |
+| `add-blank-project-dialog-panel` | 400px | projects.component.ts | `addBlankProject()` |
+| `import-project-dialog-panel` | 400px | projects.component.ts | `importProject()` |
+| `delete-all-projects-dialog-panel` | 550px x 650px | projects.component.ts | `confirmDeleteAllProjects()` |
+| `simple-dialog-panel` | 500px x 80vh | projects.component.ts | `exportPortableProjectDialog()` |
 
-### 350px Series
-- controller-small-dialog-panel: 350px
+| CSS Class | Size | Component File | Method |
+|-----------|------|---------------|--------|
+| `configurator-dialog-panel` + `edit-project-dialog-panel` | 700px x 600px | projects.component.ts | `editProject()` |
+| `configurator-dialog-panel` + `edit-project-dialog-panel` | 700px x 600px | project-map.component.ts | `editProject()` |
 
-### 400px Series
-- add-user-dialog-panel: 400px
-- add-blank-project-dialog-panel: 400px
-- change-user-password-dialog-panel: 400px × 300px
-- choose-name-dialog-panel: 400px
-- controller-dialog-panel: 400px
-- import-project-dialog-panel: 400px
-- symbols-dialog-panel: 400px (redundant width removed)
+---
 
-### 450px Series
-- question-dialog-panel: 450px
+### Image Manager
 
-### 500px Series
-- delete-all-projects-dialog-panel: 550px × 650px
-- delete-all-images-dialog-panel: 550px × 650px
-- idle-pc-action-dialog-panel: 500px
-- qemu-configurator-dialog-panel: 500px
-- simple-dialog-panel: 500px × 80vh
-- export-config-action-dialog-panel: 500px
-- import-config-action-dialog-panel: 500px
-- edit-style-action-dialog-panel: 500px
+| CSS Class | Size | Component File | Methods |
+|-----------|------|---------------|---------|
+| `question-dialog-panel` | 450px | image-manager.component.ts | `deleteFile()`, `installAllImages()` |
+| `question-dialog-panel` (info variant) | 450px | image-manager.component.ts | `pruneImages()` |
+| `add-image-dialog-panel` | 600px x 550px | image-manager.component.ts | `addImage()` |
+| `delete-all-images-dialog-panel` | 550px x 650px | image-manager.component.ts | `deleteAllFiles()` |
 
-### 600px Series
-- edit-config-action-dialog-panel: 600px × 500px
-- show-node-action-dialog-panel: 600px × 600px
-- template-dialog-panel: 600px
+---
 
-### 700px Series
-- ai-profile-dialog-panel: 700px
-- edit-project-dialog-panel: 700px × 600px
-- export-portable-project-dialog-panel: 700px × 850px
+### User / Role / Group Management
 
-### 800px Series
-- configurator-dialog-panel: 800px × 80vh
-- docker-configurator-dialog-panel: 800px
+| CSS Class | Size | Component File | Method |
+|-----------|------|---------------|--------|
+| `add-user-dialog-panel` | 400px | user-management.component.ts | `addUser()` |
+| `change-user-password-dialog-panel` | 400px x 400px | logged-user.component.ts | `changePassword()` |
+| `change-user-password-dialog-panel` | 400px x 400px | user-detail-dialog.component.ts | password change |
+| `ai-profile-dialog-panel` | 700px x 80vh | ai-profile-tab.component.ts | `openCreateDialog()`, `openEditDialog()` |
+| `ai-profile-dialog-panel` | 700px x 80vh | group-ai-profile-tab.component.ts | `openCreateDialog()`, `openEditDialog()` |
+| `add-user-to-group-dialog-panel` | 700px x 500px | group-detail-dialog.component.ts | `addUserToGroup()` |
 
-### 1000px Series
-- add-ace-dialog-panel: 1000px
-- custom-adapters-dialog-panel: 1000px
+---
+
+### Node Editors
+
+| CSS Class | Size | Component File | Method |
+|-----------|------|---------------|--------|
+| `qemu-configurator-dialog-panel` | 500px | configurator-qemu.component.ts | `openCustomAdaptersDialog()` |
+| `docker-configurator-dialog-panel` | 800px | configurator-docker.component.ts | `openCustomAdaptersDialog()` |
+| `docker-configurator-dialog-panel` | 800px | config-action.component.ts | `openDockerConfigurator()` |
+| `custom-adapters-dialog-panel` | 1000px | configurator-qemu/virtualbox/vmware components | `openCustomAdaptersDialog()` |
+
+**Note**: All node configurators (QEMU, Docker, VirtualBox, VMware, IOU, VPCS, Cloud, Ethernet Switch, Ethernet Hub, NAT, ATM Switch) open their main dialog with `configurator-dialog-panel` (800px x 80vh).
+
+---
+
+### Context Menu Actions
+
+| CSS Class | Size | Component File | Menu Action |
+|-----------|------|---------------|-------------|
+| `idle-pc-action-dialog-panel` | 500px | idle-pc-action.component.ts | Idle PC |
+| `export-config-action-dialog-panel` | 500px | export-config-action.component.ts | Export Config |
+| `import-config-action-dialog-panel` | 500px | import-config-action.component.ts | Import Config |
+| `show-node-action-dialog-panel` | 600px x 600px | show-node-action.component.ts | Show Node |
+| `edit-text-action-dialog-panel` | 300px | edit-text-action.component.ts | Edit Text |
+| `edit-config-action-dialog-panel` | 600px x 500px | edit-config-action.component.ts | Edit Config |
+| `edit-style-action-dialog-panel` | 500px | edit-style-action.component.ts | Edit Style |
+
+---
+
+### Controllers
+
+| CSS Class Chain | Size | Component File | Method |
+|----------------|------|---------------|--------|
+| `controller-small-dialog-panel` + `add-controller-dialog-panel` | 350px | controllers.component.ts | `createModal()` |
+| `controller-dialog-panel` + `edit-controller-dialog-panel` | 400px | controllers.component.ts | `editController()` |
+
+---
+
+### Template Management
+
+| CSS Class | Size | Component File | Method |
+|-----------|------|---------------|--------|
+| `template-dialog-panel` | 600px | template.component.ts | `openDialog()` |
+| `template-name-dialog-panel` | 400px | new-template-dialog.component.ts | import/create/edit template name |
+| `new-template-dialog-panel` | 800px | default-layout.component.ts | `openNewTemplateDialog()` |
+
+---
+
+### Confirmation Dialogs
+
+Used across all management components for delete/warning confirmations.
+
+| Variant | panelClass | Color Theme |
+|---------|-----------|-------------|
+| **Danger** | base-confirmation + confirmation-danger | Error red |
+| **Warning** | base-confirmation + confirmation-warning | Tertiary amber |
+| **Info** | base-confirmation + confirmation-info | Primary blue |
+| **Info (with size)** | base-confirmation + information-dialog | Primary, 500px |
+
+Components using confirmations: user-management, acl-management, computes, group-management, resource-pools, role-management, snapshots, projects, image-manager, preferences.
+
+---
+
+### AI Chat
+
+| CSS Class | Size | Component File | Method |
+|-----------|------|---------------|--------|
+| `code-block-dialog-panel` | 1200px | chat-message-list.component.ts | `openCodeBlockDialog()` |
+| `tool-details-dialog` | Auto | chat-message-list.component.ts | `openToolDetailsDialog()`, `openToolDocumentation()` |
+
+---
+
+### Bottom Sheets & Snackbars
+
+| Type | CSS Class | Used In |
+|------|-----------|---------|
+| Bottom sheet | `confirmation-bottom-sheet` | controllers, projects, project-map delete actions |
+| Upload snackbar | `uplaoding-file-snackabar` | import-project, add-ios/iou/qemu templates |
+| AI chat error | `ai-chat-snack-error` | ai-chat.component.ts |
 
 ---
 
@@ -203,56 +249,20 @@ See LICENSE file for licensing information.
 
 | Category | Count |
 |----------|-------|
-| **Total Dialogs** | 42 |
-| **Unique CSS Classes** | 35 |
-| **Migrated Component Files** | 23 |
-| **New SCSS Code** | ~360 lines |
-| **Removed TS Code** | ~70 lines |
+| **Unique CSS Panel Classes** | 45 |
+| **Total CSS Lines** | 1108 |
+| **Registered DialogConfig Names** | 15 |
+| **Component Files Using panelClass** | 78 |
 
 ---
 
-## Migration Pattern
-
-### Before Migration
-```typescript
-this.dialog.open(MyDialogComponent, {
-  width: '400px',
-  height: '250px',
-  maxWidth: '95vw',
-  maxHeight: '85vh'
-});
-```
-
-### After Migration
-```typescript
-// TypeScript
-this.dialog.open(MyDialogComponent, {
-  panelClass: 'my-dialog-panel'
-});
-```
-
-```scss
-// src/styles/_dialogs.scss
-.my-dialog-panel {
-  mat-dialog-container,
-  .mat-mdc-dialog-container {
-    width: 400px;
-    height: 250px;
-    max-width: 95vw;
-    max-height: 85vh;
-  }
-}
-```
-
----
-
-## Standards Compliant
+## Standards Compliance
 
 - CLAUDE.md - "No style overrides in TS"
 - CLAUDE.md - "Dialog styles centralized"
 - CLAUDE.md - "Use `panelClass` for dialog style scoping"
 
-All dialog sizes are now managed centrally in `src/styles/_dialogs.scss`.
+All dialog sizing is managed centrally in `src/styles/_dialogs.scss`.
 
 ---
 
