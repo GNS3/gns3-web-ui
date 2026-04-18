@@ -9,10 +9,11 @@ See LICENSE file for licensing information.
 GNS3 Web UI supports multiple image formats for node symbols, rendered on the project map using SVG `<image>` elements.
 
 **Supported Formats:**
-- ✅ SVG (vector graphics, scalable)
+- ✅ SVG/SVGZ (vector graphics, scalable)
 - ✅ PNG (transparency support)
 - ✅ JPG/JPEG (photographic images)
 - ✅ GIF (including animated GIFs)
+- ✅ Other formats (fallback to binary upload)
 
 ---
 
@@ -35,7 +36,7 @@ GNS3 Web UI supports multiple image formats for node symbols, rendered on the pr
 2. Click **Symbols Manager**
 3. Go to **Add Symbol** tab
 4. Click **Choose File to Upload**
-5. Select file (SVG/PNG/JPG/GIF)
+5. Select file (SVG/SVGZ/PNG/JPG/GIF)
 6. Symbol appears in list
 
 ### Use a Symbol
@@ -61,12 +62,14 @@ GNS3 Web UI supports multiple image formats for node symbols, rendered on the pr
 
 | Format | Extension | Animation | Best For | Max Size |
 |--------|-----------|-----------|----------|----------|
-| **SVG** | `.svg` | Yes (SMIL) | Icons, diagrams | 50 KB |
+| **SVG** | `.svg`, `.svgz` | Yes (SMIL) | Icons, diagrams | 50 KB |
 | **PNG** | `.png` | No | Transparency | 500 KB |
-| **JPG** | `.jpg` | No | Photos | 200 KB |
+| **JPG** | `.jpg`, `.jpeg` | No | Photos | 200 KB |
 | **GIF** | `.gif` | Yes | Simple animations | 1 MB |
 
 **Recommended Dimensions:** 128×128 pixels (GNS3 scales to max 80px)
+
+**Theme Grouping:** Symbols are organized by `theme` property (from the Symbol model). In the UI, symbols are grouped and displayed under collapsible theme headers (e.g., "Classic", "Networking"). Symbols without a theme appear under "Other".
 
 ---
 
@@ -82,7 +85,8 @@ The Symbols Manager is a centralized dialog for managing your symbol library.
 
 #### Add Symbol Tab
 
-- Upload new symbols in SVG, PNG, JPG, JPEG, or GIF format
+- Upload new symbols in SVG, SVGZ, PNG, JPG, JPEG, or GIF format
+- Unknown file extensions fall back to binary upload
 - Shows upload status with success/error messages
 - Automatically refreshes the symbols list after successful upload
 
@@ -106,10 +110,10 @@ The Symbols Manager is a centralized dialog for managing your symbol library.
 
 ## Upload Process
 
-### SVG Files (Text-based)
+### SVG/SVGZ Files (Text-based)
 
 ```
-SVG File → readAsText() → POST as text → Server
+SVG/SVGZ File → readAsText() → POST as text → Server
 ```
 
 ### PNG/JPG/GIF Files (Binary)
@@ -117,6 +121,10 @@ SVG File → readAsText() → POST as text → Server
 ```
 Image File → Create Blob → POST as binary → Server
 ```
+
+### Other Formats (Fallback)
+
+Unknown file extensions are uploaded as binary (`application/octet-stream`).
 
 **❌ Previous (Wrong) Approach:**
 ```typescript
@@ -141,17 +149,24 @@ this.symbolService.addFile(controller, fileName, blob);
 ### Data Flow
 
 ```
-1. Node needs symbol
+1. Nodes loaded from server API (each has node.symbol, node.width, node.height)
    ↓
-2. GET /v3/symbols/{symbol_id}/raw
+2. Symbol change detection: if node.symbol changed since last render,
+   clear node.symbol_url to force reload
    ↓
-3. GNS3 server returns binary data
+3. For nodes with unknown dimensions (width=0, height=0):
+   GET /symbols/{symbol_id}/dimensions → set node.width/height
    ↓
-4. Create Blob → URL.createObjectURL(blob)
+4. For nodes without symbol_url:
+   GET /symbols/{symbol_id}/raw → Blob → URL.createObjectURL(blob)
    ↓
-5. blob:http://localhost:4200/xxx-xxx-xxx
+5. On blob fetch failure (fallback):
+   Construct direct URL: {protocol}://{host}:{port}/v3/symbols/{id}/raw
    ↓
-6. SVG <image href="blob:..." width="80" height="80"/>
+6. node.symbol_url = blob:http://... (or direct URL on fallback)
+   ↓
+7. SVG <image href="blob:..." width="{node.width}" height="{node.height}"/>
+   Default dimensions: 60×60 when node.width/height are missing
 ```
 
 ### Symbol URL Format
@@ -159,11 +174,20 @@ this.symbolService.addFile(controller, fileName, blob);
 ```
 node.symbol = ':/symbols/my-symbol.png'
 
-Request URL:
-/v3/symbols/:/symbols/my-symbol.png/raw
+Request path (used by SymbolService):
+/symbols/:/symbols/my-symbol.png/raw
 
-Note: The :/symbols/ prefix is intentional (built-in symbol marker)
+Full URL (constructed by HttpController):
+{protocol}://{host}:{port}/v3/symbols/:/symbols/my-symbol.png/raw
+
+Note: The :/symbols/ prefix is intentional (built-in symbol marker).
+The /v3 prefix comes from environment.current_version, not hardcoded.
+Symbol IDs are URI-encoded via encodeURI() to handle special characters.
 ```
+
+### Symbol Dimensions
+
+Node dimensions come from the server's `/symbols/{id}/dimensions` endpoint. The `maximumSymbolSize` constant is 80px, used by `scaleDimensionsForNode()` to scale nodes proportionally. The SVG `<image>` element uses actual node dimensions (from the dimensions API), not a fixed size. When dimensions are unavailable, the default fallback is 60×60.
 
 ---
 
@@ -215,15 +239,15 @@ Use SMIL in SVG:
    const img = document.querySelector('g.node_body image');
    console.log('URL:', img?.getAttribute('href'));
    ```
-   Should be: `blob:http://...`
+   Should be: `blob:http://...` or a direct server URL (fallback when blob fetch fails)
 
-2. **Direct Access**
+2. **Direct Access** — verify the server serves the image:
    ```
    http://localhost:3080/v3/symbols/{your-symbol}/raw
    ```
-   Should display image
+   Should display image in browser.
 
-3. **Dimensions**
+3. **Dimensions** — verify dimensions are returned:
    ```bash
    curl http://localhost:3080/v3/symbols/{your-symbol}/dimensions
    ```
@@ -313,14 +337,19 @@ Upload via **Preferences → Symbols**, not as drawing.
 
 | File | Purpose |
 |------|---------|
-| `src/app/services/http-controller.service.ts` | Added `postBlob()` for binary upload |
-| `src/app/services/symbol.service.ts` | Symbol list caching with `listBuiltinSymbols()` / `listCustomSymbols()` |
+| `src/app/services/http-controller.service.ts` | `postBlob()` for binary upload, `getBlob()` for fetching symbol images |
+| `src/app/services/symbol.service.ts` | Symbol CRUD, caching (`listBuiltinSymbols()` / `listCustomSymbols()`), blob URL management |
+| `src/app/models/symbol.ts` | Symbol model (`builtin`, `filename`, `symbol_id`, `raw`, `theme`) |
 | `src/app/services/dialog-config.service.ts` | Centralized dialog configuration |
-| `src/app/components/preferences/common/symbols/symbols.component.ts` | Main symbols browsing and selection interface |
+| `src/app/components/preferences/common/symbols/symbols.component.ts` | Main symbols browsing, selection, delete mode, theme grouping |
 | `src/app/components/preferences/common/symbols/symbols-manager-dialog/` | Symbols Manager dialog for adding/managing symbols |
 | `src/app/components/project-map/template-symbol-dialog/` | Template symbol selection dialog |
-| `src/app/cartography/widgets/node.ts` | Renders symbols on canvas |
+| `src/app/components/project-map/change-symbol-dialog/` | Change symbol dialog for nodes |
+| `src/app/components/project-map/project-map.component.ts` | Core symbol loading: blob URL conversion, fallback, change detection, dimension fetching |
+| `src/app/cartography/widgets/node.ts` | Renders node symbols on canvas as SVG `<image>` |
 | `src/app/cartography/widgets/drawings/image-drawing.ts` | Renders drawing images |
+| `src/app/cartography/converters/map/node-to-map-node-converter.ts` | Converts `Node.symbol_url` → `MapNode.symbolUrl` for D3 rendering |
+| `src/app/cartography/datasources/symbols-datasource.ts` | Symbol data source for cartography module |
 | `src/styles/_dialogs.scss` | Centralized dialog styles |
 
 ### Caching Mechanism
@@ -329,11 +358,13 @@ The `SymbolService` implements a caching strategy to reduce network requests:
 
 | Method | Description | Cache |
 |--------|-------------|-------|
-| `list(controller)` | Full symbol list | Cached, invalidated on add/delete |
-| `listBuiltinSymbols(controller)` | Built-in symbols only | **Permanently cached** |
+| `list(controller)` | Full symbol list | Cached per controller (`host:port`), invalidated on add/delete |
+| `listBuiltinSymbols(controller)` | Built-in symbols only | **Permanently cached** per controller (built-in symbols never change) |
 | `listCustomSymbols(controller)` | Custom symbols only | No cache (always fresh) |
-| `getSymbolBlobUrl(controller, url)` | Symbol image blob URL | Cached with `shareReplay(1)` |
-| `getDimensions(controller, id)` | Symbol dimensions | Cached with `shareReplay(1)` |
+| `getSymbolBlobUrl(controller, url)` | Symbol image blob URL | Cached with `shareReplay(1)` per URL |
+| `getDimensions(controller, id)` | Symbol dimensions | Cached with `shareReplay(1)` per controller+symbol_id |
+
+**Cache invalidation on add/delete:** Only the regular `list()` cache is cleared (`this.cache = null`). The builtin cache is never cleared because built-in symbols are immutable.
 
 **Benefits:**
 - Built-in symbols load once per session
@@ -343,8 +374,8 @@ The `SymbolService` implements a caching strategy to reduce network requests:
 ### Upload Code
 
 ```typescript
-// SVG (text)
-if (extension === 'svg') {
+// SVG/SVGZ (text)
+if (extension === 'svg' || extension === 'svgz') {
   fileReader.readAsText(file);
   fileReader.onloadend = () => {
     const content = fileReader.result as string;
@@ -352,8 +383,13 @@ if (extension === 'svg') {
   };
 }
 // PNG/JPG/GIF (binary)
-else {
+else if (['png','jpg','jpeg','gif'].includes(extension)) {
   const blob = new Blob([file], { type: file.type });
+  this.symbolService.addFile(controller, filename, blob);
+}
+// Other formats (fallback to binary)
+else {
+  const blob = new Blob([file], { type: file.type || 'application/octet-stream' });
   this.symbolService.addFile(controller, filename, blob);
 }
 ```
@@ -403,7 +439,7 @@ A: No hard limit, but recommend < 500 KB for performance.
 A: Binary is smaller (no 33% overhead) and correct format.
 
 **Q: Do symbols scale?**
-A: Yes, GNS3 auto-scales to max 80px.
+A: Yes, `scaleDimensionsForNode()` scales symbols proportionally to max 80px. Actual render dimensions come from the `/dimensions` API; default fallback is 60×60.
 
 **Q: Can I delete built-in symbols?**
 A: No, only custom symbols can be deleted.
@@ -416,7 +452,7 @@ A: "Delete symbols" in the main view enters delete mode for batch deletion. Symb
 
 ---
 
-**Last Updated:** 2026-03-28 (updated with caching docs)
+**Last Updated:** 2026-04-18 (reviewed and corrected against actual codebase)
 
 ---
 
