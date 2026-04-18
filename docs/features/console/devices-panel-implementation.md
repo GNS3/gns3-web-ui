@@ -7,272 +7,13 @@ See LICENSE file for licensing information.
 ## Document Information
 
 **Created**: 2026-03-10
-**Updated**: 2026-03-30 (updated 2026-03-30)
+**Updated**: 2026-04-18
 **Status**: ✅ **Completed**
-**Version**: 2.1.0
+**Version**: 2.2.0
 **Author**: Development Team
 
 ---
 
-## Version History
-
-### v2.0.0 (2026-03-30)
-
-**Major Refactor: Angular 17+ Zoneless & Signal Migration**
-
-**Breaking Changes**:
-- ✅ Complete migration to signals for all UI state
-- ✅ Template updated to use signal function calls
-- ✅ RxJS-based drag handling (Zoneless best practice)
-
-**New Features**:
-- ✅ **Taskbar Icon**: Fixed icon in bottom-left corner for quick console access
-  - Always visible (even when console is closed)
-  - Click to toggle minimize/restore
-  - Shows active tab name
-  - Fixed position (left: 20px, bottom: 20px)
-  - Size: 180px width × 48px height
-  - z-index: 901 (above console window)
-
-- ✅ **Auto-Focus on Restore**: Automatically focus terminal when restoring from minimized
-  - Device console → focus xterm terminal
-  - GNS3 console → focus input field
-  - Improves workflow efficiency
-
-- ✅ **Position Restoration**: Console window position preserved across minimize/restore cycles
-  - Saves position before minimizing
-  - Restores to exact position on unminimize
-  - Works with both normal and maximized states
-
-**Performance Improvements**:
-- ✅ **RxJS Drag Handling**: Smooth 60fps dragging using Zoneless patterns
-  ```
-  mousedown  → 1 CD (update is-dragging class)
-  mousemove  → 0 CD (direct DOM manipulation)
-  mouseup    → 1 CD (remove is-dragging class)
-  Total:     2 CD per drag (vs. 60+ at 60fps before)
-  ```
-  - `auditTime(0, animationFrameScheduler)` - Sync with browser paint
-  - Direct DOM manipulation during drag - Bypass Angular change detection
-  - `pointer-events: none` on iframes - Prevent event capture
-  - `contain: layout style` - Isolate repaint scope
-  - `will-change: left, bottom` - GPU layer promotion
-
-**Bug Fixes**:
-- ✅ Fix severe drag performance issues ("非常卡顿不流畅")
-- ✅ Fix black screen during drag (removed `visibility: hidden`)
-- ✅ Fix position lost after minimize/restore
-- ✅ Fix dragging window behind top toolbar (boundary constraint)
-- ✅ Fix low z-index layering (now 900, was lower)
-- ✅ Fix console window not displaying after signal migration
-
-**Code Quality**:
-- ✅ Add constants for magic numbers (`CONSOLE_HEADER_HEIGHT = 53`, `DEFAULT_WIDTH = 848`, `DEFAULT_HEIGHT = 600`)
-- ✅ Fix type annotations (`enableScroll(e: Event): void`)
-- ✅ Remove type assertions (use proper `WindowStyle` type)
-- ✅ Fix duplicate comment
-- ✅ Fix CSS `font-weight: 700` (was 1200, non-standard)
-- ✅ Fix DOM Node type conflict (`globalThis.Node`)
-
-**Signal Migration**:
-- Converted boolean properties to signals: `private isDraggingSignal = signal(false)`
-- Public readonly access via `.asReadonly()` pattern
-- Template bindings updated to signal function calls: `isMinimized()` → `isMinimized()`
-
-**Template Updates**:
-- All signal accesses require function call: `isMinimized` → `isMinimized()`
-
-**Z-Index Hierarchy**:
-- Page content: 1-10
-- Console wrapper: 900
-- Taskbar icon: 901
-- AI Chat: 1000-1001
-- Context menu: 10000
-
-**Performance Metrics**:
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Drag FPS | ~15-20 | 60 | 3-4x smoother |
-| CD cycles per drag | 60+ | 2 | 30x reduction |
-| Input lag | Visible | None | Eliminated |
-| Black screen | Yes | No | Fixed |
-
-**Files Modified**:
-- `src/app/components/project-map/console-wrapper/console-wrapper.component.ts`
-  - Migrate to signals
-  - Implement RxJS drag handling
-  - Add auto-focus on restore
-  - Add constants and type annotations
-- `src/app/components/project-map/console-wrapper/console-wrapper.component.html`
-  - Add taskbar icon element
-  - Update signal access to function calls
-- `src/app/components/project-map/console-wrapper/console-wrapper.component.scss`
-  - Add taskbar icon styles
-  - Fix font-weight to standard value
-  - Add GPU acceleration hints
-
-**Technical Details**:
-- **RxJS Drag Pattern**: `fromEvent() + auditTime(animationFrameScheduler) + switchMap()`
-- **Signal Pattern**: Private writable + public readonly (immutable state)
-- **GPU Acceleration**: `will-change`, `contain`, `pointer-events: none`
-- **Boundary Constraints**: `topOffset` from `WindowBoundaryService` (64px desktop, 56px mobile)
-
-**Commit**: `d6a81498` - "refactor(console): migrate UI state to signals and add auto-focus on restore"
-
-### v2.1.0 (2026-03-30)
-
-**Documentation Update**: Align documentation with actual code implementation
-
-**Changes**:
-- ✅ Update status colors to use CSS variables (`--mat-sys-*`) instead of hardcoded hex values
-- ✅ Correct initial console position (`bottom: 40px`, not `20px`)
-- ✅ Update transition timings to match code (`100ms` instead of `0.2s`)
-- ✅ Update SCSS code samples to use correct MD3 variable names (`--mat-sys-*`)
-- ✅ Add taskbar icon dimensions (`180px × 48px`)
-- ✅ Simplify console activation box-shadow description to match actual implementation
-
-### v1.9.0 (2026-03-18)
-
-**Bug Fixes**:
-- ✅ Fix sidebar light theme not applying due to `isolation: isolate` blocking `:host-context()`
-- ✅ Fix project map background always showing light color due to fixed `body` background in global styles
-
-**Improvements**:
-- ✅ Refactor sidebar theme implementation to use direct property binding (like header)
-- ✅ Replace `:host-context(.lightTheme)` with `[ngClass]="{ lightTheme: isLightTheme }"`
-- ✅ Add `@Input() isLightTheme` to `ConsoleDevicesPanelComponent`
-- ✅ Remove `isolation: isolate` from `.console-area` to allow theme propagation
-- ✅ Remove fixed `body { background-color: #e8ecef }` from global styles
-- ✅ Background color now controlled dynamically by `ThemeService` and `applyMapBackground()`
-
-**Technical Details**:
-- **Old Implementation**: Sidebar used `:host-context(.lightTheme)` which was blocked by `isolation: isolate`
-- **New Implementation**: Sidebar uses `[ngClass]="{ lightTheme: isLightTheme }"` with explicit `@Input` property
-- **Consistency**: Sidebar now matches header implementation pattern
-- **Reliability**: Theme switching works reliably regardless of DOM structure
-
-**Files Modified**:
-- `src/styles.scss` - Removed fixed body background-color
-- `src/app/components/project-map/console-wrapper/console-devices-panel.component.ts` - Added `@Input() isLightTheme`
-- `src/app/components/project-map/console-wrapper/console-devices-panel.component.html` - Added `ngClass` bindings
-- `src/app/components/project-map/console-wrapper/console-devices-panel.component.scss` - Changed from `:host-context()` to class selectors
-- `src/app/components/project-map/console-wrapper/console-wrapper.component.html` - Pass `isLightThemeEnabled` to sidebar
-- `src/app/components/project-map/console-wrapper/console-wrapper.component.scss` - Removed `isolation: isolate`
-
-### v1.8.0 (2026-03-14)
-
-**Breaking Changes**:
-- ✅ Remove Electron desktop application support
-- ✅ Application is now web-only (browser-based)
-
-**Improvements**:
-- ✅ Simplify codebase by removing Electron-specific code paths
-- ✅ Reduce bundle size and dependency count
-- ✅ Improve build performance and security posture
-
-**Notes**:
-- All features now work through browser console only
-- Keyboard shortcuts (Alt+1-9) fully supported in web browsers
-- Local controller management no longer available
-
-### v1.7.0 (2026-03-10)
-
-**Bug Fixes**:
-- ✅ Fix AI Chat Tool Details Dialog light theme colors
-- ✅ Fix AI Chat JSON expansion defaults (Tool Call expanded, Result collapsed)
-- ✅ Fix Firefox tab labels being covered by xterm black background
-
-**Improvements**:
-- ✅ Add light theme JSON syntax highlighting for tool details dialogs
-- ✅ Pass theme class to dialog panelClass dynamically
-- ✅ Add Firefox-specific tab label fixes with proper stacking context
-
-### v1.6.0 (2026-03-10)
-
-**Improvements**:
-- ✅ Move GNS3 console tab to last position (after all device tabs)
-- ✅ Device tabs now: Alt+1-8 (tab 0-7)
-- ✅ GNS3 console: Alt+9 (last tab)
-- ✅ More intuitive tab ordering with devices first
-
-### v1.5.0 (2026-03-10)
-
-**New Features**:
-- ✅ Add localStorage to save/restore window state
-- ✅ Window size and position persist across sessions
-- ✅ Maximize state persists across sessions
-
-**Improvements**:
-- ✅ xterm automatically resizes when restoring maximized window
-- ✅ Window state saved on resize, drag, and maximize
-- ✅ Use ngAfterViewInit to ensure xterm is ready before sending resize events
-
-### v1.4.0 (2026-03-10)
-
-**New Features**:
-- ✅ Add height maximize button (fullscreen icon)
-- ✅ Add restore button (fullscreen_exit icon)
-
-**Improvements**:
-- ✅ xterm automatically resizes when window is maximized/restored
-- ✅ Maximize keeps width unchanged (848px), only height changes
-
-### v1.3.0 (2026-03-10)
-
-**New Features**:
-- ✅ Add ResizeObserver to WebConsole for automatic terminal resizing
-- ✅ Initial xterm size set to cols: 100, rows: 32
-
-**Improvements**:
-- ✅ Update GNS3 console styles to match xterm appearance
-- ✅ GNS3 console initial size: 848x477
-- ✅ Increase default console window size to 848x600
-- ✅ GNS3 console responds to window resize events
-- ✅ GNS3 console header/input styling with dark theme (#1a1a1a)
-- ✅ GNS3 console font: Menlo, Monaco, Courier New (13px)
-
-**Bug Fixes**:
-- ✅ Fix GNS3 console height calculation (header + input = 60px offset)
-
-### v1.2.0 (2026-03-10)
-
-**New Features**:
-- ✅ Move GNS3 console to independent floating window
-- ✅ Add toggle button (terminal icon) to header
-- ✅ Add F12 shortcut to show/hide GNS3 console
-- ✅ GNS3 console defaults to hidden
-
-**Improvements**:
-- ✅ Update keyboard shortcuts: Alt+1-9 now for devices only
-- ✅ Support up to 9 device consoles (was 8)
-- ✅ Simplified tab indexing (0-8 = devices)
-
-### v1.1.0 (2026-03-10)
-
-**New Features**:
-- ✅ Add collapse/expand functionality to devices panel
-- ✅ Add panel header with devices icon and title
-- ✅ Implement togglePanel() method for collapse/expand
-- ✅ Panel width: 200px (expanded) / 48px (collapsed)
-- ✅ Default state: collapsed
-- ✅ Smooth transition animation (0.2s)
-- ✅ Icon scale effect on hover/active
-
-**Improvements**:
-- ✅ Increase default console window size to 800x600 (from 720x460)
-
-### v1.0.0 (2026-03-10)
-
-**Initial Release**:
-- Device list sidebar with status indicators
-- Device sorting (running first, alphabetical)
-- Click to open console
-- Alt+1-9 keyboard shortcuts
-- Device status color differentiation
-- Custom scrollbar styling
-- Theme adaptation
-
----
 
 ## Overview
 
@@ -297,7 +38,7 @@ A sidebar displayed on the left side of the Console window showing all console-c
 - **Default State**: Collapsed
 - **Height**: Matches Console window height
 - **Position**: Left side of Console window
-- **Scroll**: Custom styled scrollbar (8px width, cyan accent)
+- **Scroll**: Custom styled scrollbar (8px width, themed accent)
 
 **Collapse/Expand**:
 - Click the panel header to toggle between collapsed and expanded states
@@ -371,10 +112,9 @@ Clicking on any device in the sidebar:
 - Works even when xterm has focus (intercepts Alt+1-9)
 
 **GNS3 Console**:
-- Independent floating window (default hidden)
-- Toggle with F12 or terminal icon button in header
-- Draggable and resizable
-- Does not occupy a tab position
+- Embedded as the last tab in console window
+- Always available as the final tab position
+- Shares the console window with device consoles
 
 **Activation States**:
 ```
@@ -392,7 +132,7 @@ Clicking on any device in the sidebar:
 **Default Size**:
 - **Width**: 848px
 - **Height**: 600px
-- **Initial Position**: bottom: 40px, left: 80px
+- **Initial Position**: bottom: 100px, left: 80px
 
 **Window Features**:
 - Draggable by header
@@ -400,30 +140,25 @@ Clicking on any device in the sidebar:
 - Minimizable (56px height bar)
 - Maximizable (height only, width stays 848px)
 - Boundary constrained (stays within viewport)
-- Terminal icon button to toggle GNS3 console
+- Maximize/restore buttons (fullscreen/fullscreen_exit icons)
 
 ### 7. GNS3 Console (Log Output)
 
-**Independent Floating Window**:
-- **Default State**: Hidden
-- **Position**: Top-right corner (top: 100px, right: 20px)
-- **Default Size**: 600px x 400px
-- **Toggle Methods**:
-  - F12 keyboard shortcut (global)
-  - Terminal icon button in console header
+**Embedded Tab Panel**:
+- **Position**: Last tab in console window tab group
+- **Behavior**: Always available as the final tab
+- **Access**: Click "GNS3 console" tab or press Alt+9
 
 **Features**:
-- Draggable by header
-- Resizable from all edges
-- Close button to hide
-- Does not interfere with device console tabs
 - Shows project log events, errors, warnings, etc.
+- Filterable log output (all, errors, warnings, info, etc.)
+- Command input for project-level operations
+- Does not interfere with device console tabs
 
 ### 8. Hover Effects
 
 **Device Items**:
-- Background color change
-- 4px slide to the right
+- Background color change (`--mat-sys-surface-container`)
 - Smooth 100ms transition
 
 **Console Window** (when activated):
@@ -505,7 +240,7 @@ ConsoleWrapperComponent.addTab()
 All styles follow Material Design 3 guidelines using CSS custom properties (`--mat-sys-*`) for theme consistency and accessibility.
 
 **Key Styling Files**:
-- `console-wrapper.component.scss` - Console window and taskbar icon styles
+- `console-wrapper.component.scss` - Console window styles
 - `console-devices-panel.component.scss` - Device sidebar panel styles
 
 **Key Design Decisions**:
@@ -513,7 +248,7 @@ All styles follow Material Design 3 guidelines using CSS custom properties (`--m
 | Element | Styling Approach |
 |---------|------------------|
 | Colors | CSS variables (`--mat-sys-*`) for automatic theme adaptation |
-| Transitions | 100ms for micro-interactions, 150ms for taskbar |
+| Transitions | 100ms for micro-interactions, 200ms for box-shadow |
 | Shadows | `color-mix()` with theme shadow color for depth |
 | GPU Acceleration | `will-change` and `contain:layout style` for drag performance |
 | Status Indicators | 4px circles using `--mat-sys-primary` (running) or `--mat-sys-outline` (stopped) |
@@ -568,18 +303,18 @@ All styles follow Material Design 3 guidelines using CSS custom properties (`--m
 **New Components**:
 - `ConsoleDevicesPanelComponent`: Device list sidebar
 
-### Module Registration
+### Component Imports
 
 ```typescript
-// app.module.ts
-import { ConsoleDevicesPanelComponent } from '@components/project-map/console-wrapper/console-devices-panel.component';
+// console-wrapper.component.ts (standalone)
+import { ConsoleDevicesPanelComponent } from './console-devices-panel.component';
 
-@NgModule({
-  declarations: [
-    ConsoleWrapperComponent,
+@Component({
+  standalone: true,
+  imports: [
     ConsoleDevicesPanelComponent,
     // ...
-  ]
+  ],
 })
 ```
 
@@ -716,47 +451,6 @@ ngOnDestroy(): void {
 
 ---
 
-## Recent Bug Fixes (v1.7.0)
-
-### 1. AI Chat Tool Details Dialog Light Theme Fix
-
-**Problem**: Tool call details and execution result details dialogs displayed with dark theme colors in light mode.
-
-**Solution**:
-- Added light theme JSON syntax highlighting colors to `tool-details-dialog.component.ts`
-- Injected `ThemeService` into `ChatMessageListComponent`
-- Pass current theme class (`light-theme` or `dark-theme`) to dialog `panelClass`
-
-**Files Modified**:
-- `src/app/components/project-map/ai-chat/tool-details-dialog.component.ts`
-- `src/app/components/project-map/ai-chat/chat-message-list.component.ts`
-
-### 2. JSON Expansion Defaults
-
-**Problem**: All JSON in tool details dialogs was expanded by default, making large outputs difficult to navigate.
-
-**Solution**:
-- Set `[expanded]="true"` for Tool Call Details (Arguments)
-- Set `[expanded]="false"` for Execution Result Details (Output)
-
-**Files Modified**:
-- `src/app/components/project-map/ai-chat/tool-details-dialog.component.ts`
-
-### 3. Firefox Tab Labels Covered by Xterm
-
-**Problem**: In Firefox browser, device console tab labels were partially hidden by xterm's black background.
-
-**Solution**:
-- Added `position: relative` and `z-index: 10` to `.consoleHeader`
-- Added `flex-shrink: 0` to `.mat-tab-label` to prevent compression
-- Added Firefox-specific tab fixes using `@-moz-document url-prefix()`
-- Added `isolation: isolate` to `.console-area` for proper stacking context
-
-**Files Modified**:
-- `src/app/components/project-map/console-wrapper/console-wrapper.component.scss`
-
----
-
 ## References
 
 ### Related Documentation
@@ -776,8 +470,8 @@ ngOnDestroy(): void {
 
 ---
 
-**Document Version**: 2.1.0
-**Last Updated**: 2026-03-30
+**Document Version**: 2.2.0
+**Last Updated**: 2026-04-18
 **Maintainer**: Development Team
 
 ---
