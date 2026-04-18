@@ -95,8 +95,9 @@ export class XpraConsoleService {
     params.set('clipboard', 'true');
     params.set('encoding', 'h264');
 
-    // Return path to standalone HTML page
-    return `/assets/xpra-html5/index.html?${params.toString()}`;
+    // Return path to standalone HTML page (relative to base href)
+    const baseHref = document.querySelector('base')?.getAttribute('href') || '/';
+    return `${baseHref}assets/xpra-html5/index.html?${params.toString()}`;
   }
 
   /**
