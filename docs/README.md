@@ -2,7 +2,7 @@
 
 > Complete documentation index for GNS3 Web UI project
 
-**Last Updated**: 2026-03-31
+**Last Updated**: 2026-04-18
 
 ---
 
@@ -30,6 +30,8 @@ docs/
 │   ├── ai-chat/                # AI Chat feature
 │   │   ├── ai-chat-guide.md    # ⭐ Complete AI Chat guide
 │   │   └── profile-management.md
+│   ├── compute-selector/       # Compute node selector feature
+│   │   └── implementation.md    # ⭐ Technical implementation and architecture
 │   ├── console/                # Console-related docs
 │   │   ├── devices-panel-implementation.md
 │   │   └── vnc-console-implementation.md
@@ -37,6 +39,8 @@ docs/
 │   ├── custom-adapters/         # Custom adapters feature
 │   ├── symbols/                # Symbols documentation
 │   │   └── symbols-guide.md
+│   ├── websocket/              # WebSocket connection management
+│   │   └── connection-management.md  # Simple controller connection service
 │   └── web-wireshark/          # Web Wireshark feature
 │       ├── overview.md         # ⭐ Complete Web Wireshark guide
 │       ├── business-flow.md    # Business flow & architecture
@@ -74,11 +78,13 @@ docs/
 |----------|-------------|
 | [AI Chat Guide](./features/ai-chat/ai-chat-guide.md) | ⭐ Complete AI Chat implementation guide |
 | [AI Profile Management](./features/ai-chat/profile-management.md) | AI Profile / LLM Model Configuration |
+| [Compute Selector Implementation](./features/compute-selector/implementation.md) | ⭐ Compute node selector: technical implementation and architecture |
 | [Context Menu](./features/context-menu.md) | Context menu implementation (38 actions) |
 | [Console Devices Panel](./features/console/devices-panel-implementation.md) | Console devices panel (v2.0.0) |
 | [VNC Console](./features/console/vnc-console-implementation.md) | VNC console implementation |
 | [Custom Adapters](./features/custom-adapters/custom-adapters-implementation.md) | Custom adapters implementation |
 | [Symbols Guide](./features/symbols/symbols-guide.md) | Node symbols support (SVG/PNG/JPG/GIF) |
+| [WebSocket Connection Management](./features/websocket/connection-management.md) | Simple controller connection management service |
 | [Web Wireshark Overview](./features/web-wireshark/overview.md) | ⭐ Browser-based packet capture and analysis |
 | [Web Wireshark Business Flow](./features/web-wireshark/business-flow.md) | Detailed business flows and architecture |
 | [Web Wireshark Architecture](./features/web-wireshark/diagrams/architecture-overview.md) | System architecture diagrams |
@@ -162,6 +168,23 @@ docs/
 
 ## Recent Changes
 
+### 2026-04-18
+
+- ✅ **Compute Selector Feature**: Complete drag-and-drop node creation feature
+  - Smart positioning with collision detection and ResizeObserver
+  - Resource usage display with color coding (CPU/Memory/Disk)
+  - Ghost icon for visual feedback during drag operations
+  - Responsive design with Material Design 3 variables
+  - 13 commits iterating from initial implementation to polished UX
+  - Documentation: [features/compute-selector/implementation.md](./features/compute-selector/implementation.md) ⭐ NEW
+
+- ✅ **WebSocket Connection Management**: Simple controller connection service
+  - ConnectionManagerService for controller lifecycle
+  - Prevents duplicate connections
+  - Handles controller switching
+  - Delegates to NotificationService for WebSocket
+  - Documentation: [features/websocket/connection-management.md](./features/websocket/connection-management.md) ⭐ NEW
+
 ### 2026-04-06
 
 - 📝 **Known Issues Documentation**: Added route transition white flash issue
@@ -240,7 +263,7 @@ docs/
 
 ---
 
-*Last Updated: 2026-04-11*
+*Last Updated: 2026-04-18*
 
 ---
 
