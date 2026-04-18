@@ -40,7 +40,7 @@ VncConsoleService ──► /assets/vnc-console/index.html
 | Method | Description |
 |--------|-------------|
 | `buildVncWebSocketUrl()` | Builds WebSocket URL: `wss://host:port/v3/projects/{id}/nodes/{id}/console/vnc?token=xxx` |
-| `buildVncConsolePageUrl()` | Builds console page URL with query params (`ws_url`, `node_name`, `node_id`, `project_id`, `autoconnect=1`) |
+| `buildVncConsolePageUrl()` | Builds console page URL with query params (`ws_url`, `node_name`, `autoconnect=1`). Also passes `node_id` and `project_id` for reference, though they are not consumed by the standalone page |
 | `openVncConsole()` | Opens VNC console via `window.open()` with popup blocker detection |
 
 **Key Features**:
@@ -55,14 +55,14 @@ VncConsoleService ──► /assets/vnc-console/index.html
 | Feature | Description |
 |---------|-------------|
 | **Initialization** | Parses URL params, creates RFB instance, auto-connects |
-| **Connection States** | connecting → connected → disconnected, with 15s timeout |
+| **Connection States** | connecting → connect → disconnect, with 15s timeout |
 | **Authentication** | VNC password prompt via `rfb.sendCredentials()` |
 | **Send Keys** | Ctrl+Alt+Del, Ctrl+Alt+Backspace, F1-F12, Tab, Esc, PrintScreen |
 | **Modifier Support** | Ctrl/Alt/Shift combinations with function keys |
 | **Screen Scaling** | Scale up/down (0.3x-3.0x), fit to window |
 | **Fullscreen** | F11 or button toggle |
 | **Screenshot** | PNG download via canvas `toDataURL()` |
-| **Recording** | WebM capture via `MediaRecorder` with 3 modes: VNC, VNC+Camera, Camera |
+| **Recording** | WebM capture via `MediaRecorder` (VP9 preferred, WebM fallback) with 3 modes: VNC, VNC+Camera, Camera |
 | **Recording Effects** | Timestamp overlay, mouse cursor, click ripples, GNS3 watermark |
 | **Clipboard** | Send/receive via `rfb.clipboardPasteFrom()` |
 | **Keyboard Handling** | Blocks Ctrl+S, Ctrl+P, allows F5, F11 |
@@ -108,7 +108,7 @@ Displays connection errors, authentication failures
 | Screen Scaling | Scale up/down/fit |
 | Fullscreen Mode | F11 or button |
 | Screenshot | PNG format |
-| Screen Recording | WebM format (VNC/VNC+Camera/Camera) |
+| Screen Recording | WebM format, VP9 codec preferred with WebM fallback (VNC/VNC+Camera/Camera) |
 | Recording Pause | Pause/Resume |
 | Audio Recording | Microphone with mute |
 | Mouse Tracking | Cursor visible in recording |
@@ -118,6 +118,8 @@ Displays connection errors, authentication failures
 | Clipboard | Send/Receive |
 | Toolbar | Collapsible |
 | Keyboard Shortcuts | Browser shortcut handling |
+| Visibility Handling | VNC connection paused/resumed on tab visibility change |
+| Cleanup | VNC disconnected on page unload (beforeunload) |
 
 ## Technical Highlights
 
@@ -141,17 +143,6 @@ Displays connection errors, authentication failures
 | 5 | Pause time counted in duration | Track paused time separately, exclude from elapsed |
 | 6 | Click coordinates off on scaled display | Scale click position to canvas resolution |
 | 7 | noVNC canvas retrieval compatibility | Try `rfb.get_canvas()`, `rfb.canvas`, then `querySelector()` |
-
-## Build and Deployment
-
-```bash
-# Development
-ng serve
-
-# Production
-ng build --configuration=production
-# Output: dist/assets/vnc-console/
-```
 
 ## Dependencies
 

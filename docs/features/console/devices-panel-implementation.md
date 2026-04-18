@@ -9,7 +9,7 @@ See LICENSE file for licensing information.
 **Created**: 2026-03-10
 **Updated**: 2026-04-18
 **Status**: ✅ **Completed**
-**Version**: 2.2.0
+**Version**: 2.3.0
 **Author**: Development Team
 
 ---
@@ -29,7 +29,7 @@ A sidebar displayed on the left side of the Console window showing all console-c
 
 **Device Filtering**:
 - Only shows devices with embedded console support
-- Excludes devices with `console_type === 'none'` (no console)
+- Excludes devices with `console_type === 'none'` or falsy/undefined `console_type` (no console)
 - Excludes devices with `console_type === 'vnc'` (uses standalone VNC viewer window)
 - Excludes devices with `console_type.startsWith('http')` (HTTP/HTTPS browsers use popup windows)
 
@@ -38,7 +38,7 @@ A sidebar displayed on the left side of the Console window showing all console-c
 - **Default State**: Collapsed
 - **Height**: Matches Console window height
 - **Position**: Left side of Console window
-- **Scroll**: Custom styled scrollbar (8px width, themed accent)
+- **Scroll**: Native scrollbar via `overflow-y: auto`
 
 **Collapse/Expand**:
 - Click the panel header to toggle between collapsed and expanded states
@@ -70,17 +70,17 @@ Each device displays a colored status indicator dot. Colors use Material Design 
 
 Devices are automatically sorted with two levels of priority:
 
-1. **Primary Sort**: Running devices first, stopped devices after
+1. **Primary Sort**: Started devices (`status === 'started'`) first, all non-started statuses after
 2. **Secondary Sort**: Alphabetical by name within each group
 
 **Example**:
 ```
-Running Devices:
+Started Devices:
   ●  PC1       🖥
   ●  R1        🖥
   ●  R2        🖥
 
-Stopped Devices:
+Non-Started Devices (stopped/starting/suspended/errored):
   ○  S1        🖥
   ○  Switch1   🖥
 ```
@@ -108,8 +108,8 @@ Clicking on any device in the sidebar:
 **Behavior**:
 - Shortcuts only work when Console window is **activated** (clicked)
 - Clicking outside Console window deactivates shortcuts
-- Visual feedback (cyan glow) indicates active state
-- Works even when xterm has focus (intercepts Alt+1-9)
+- Visual feedback via `console-active` CSS class (currently no visual styling applied — pending implementation)
+- Works even when xterm has focus (intercepts Alt+1-9 via `consoleTabShortcut` custom event)
 
 **GNS3 Console**:
 - Embedded as the last tab in console window
@@ -119,7 +119,7 @@ Clicking on any device in the sidebar:
 **Activation States**:
 ```
 ┌─────────────────────────────┐
-│ [R1] [R2] [S1]              │ ← Cyan glow = Active
+│ [R1] [R2] [S1]              │ ← console-active class toggled
 ├─────────────────────────────┤
 │ ●  R1        🖥            │
 │ ●  R2        🖥            │
@@ -137,8 +137,8 @@ Clicking on any device in the sidebar:
 **Window Features**:
 - Draggable by header
 - Resizable from all edges
-- Minimizable (56px height bar)
-- Maximizable (height only, width stays 848px)
+- Minimizable (window hidden via `display: none`, taskbar icon shown at 48px height)
+- Maximizable (height only, width stays at current resized width)
 - Boundary constrained (stays within viewport)
 - Maximize/restore buttons (fullscreen/fullscreen_exit icons)
 
@@ -162,7 +162,7 @@ Clicking on any device in the sidebar:
 - Smooth 100ms transition
 
 **Console Window** (when activated):
-- Subtle box-shadow enhancement using Material theme variables
+- `console-active` CSS class toggled (visual styling pending implementation)
 
 ---
 
@@ -186,8 +186,8 @@ console-wrapper/
 NodesDataSource (all project nodes)
     ↓
 ConsoleDevicesPanelComponent
-    ↓ Filters: console_type !== 'none' && !== 'vnc' && !startsWith('http')
-    ↓ (Exclude VNC and HTTP/HTTPS - they use standalone windows)
+    ↓ Filters: console_type !== 'none' && !== undefined && !== 'vnc' && !startsWith('http')
+    ↓ (Exclude VNC, HTTP/HTTPS, and undefined console types - they use standalone windows)
     ↓ Sort: started first, then alphabetically
     ↓ Display: Device list with status indicators
     ↓ User clicks device
@@ -207,11 +207,11 @@ ConsoleWrapperComponent.addTab()
 
 **Responsibilities**:
 - Subscribe to `NodesDataSource.changes` and `itemChanged` for node updates
-- Filter console-capable devices (exclude `none`, `vnc`, `http` types)
-- Sort devices (running first, alphabetical)
+- Filter console-capable devices (exclude `none`, undefined, `vnc`, `http` types)
+- Sort devices (started first, alphabetical)
 - Emit `deviceSelected` event on click
 
-**Key Methods**: `ngOnInit()`, `isDeviceStarted()`, `getStatusColor()`, `togglePanel()`, `sortNodes()`
+**Key Methods**: `ngOnInit()`, `isDeviceStarted()`, `getStatusColor()`, `getStatusLabel()`, `onDeviceClick()`, `togglePanel()`, `sortNodes()`
 
 #### ConsoleWrapperComponent (Enhancements)
 
@@ -228,8 +228,8 @@ ConsoleWrapperComponent.addTab()
 
 #### WebConsoleComponent (Enhancement)
 
-- `focusTerminal()` - Focus xterm terminal
-- `attachCustomKeyEventHandler()` - Intercept Alt+1-9 for tab switching
+- `focusTerminal()` - Public method to focus xterm terminal, called by parent after tab switch
+- xterm `attachCustomKeyEventHandler()` - Called in `ngAfterViewInit()` to intercept Alt+1-9 and dispatch `consoleTabShortcut` custom event to parent
 
 ---
 
@@ -255,41 +255,6 @@ All styles follow Material Design 3 guidelines using CSS custom properties (`--m
 
 ---
 
-## User Experience
-
-### Workflow Examples
-
-#### Example 1: Open and Switch Between Device Consoles
-
-1. **Open Console Window**
-   - Console window opens with devices panel visible
-   - See all devices sorted by status
-
-2. **Click Device R1**
-   - New tab "R1" appears
-   - xterm terminal auto-focuses
-   - Can immediately type commands
-
-3. **Click Device R2**
-   - New tab "R2" appears
-   - xterm auto-focuses to R2
-
-4. **Press Alt+2**
-   - Switches back to R1 tab
-   - xterm auto-focuses to R1
-
-5. **Press Alt+3**
-   - Switches to R2 tab
-   - xterm auto-focuses to R2
-
-#### Example 2: Reusing Existing Tabs
-
-1. **Click Device R1** → Tab "R1" created
-2. **Click Device R2** → Tab "R2" created
-3. **Click Device R1 again** → Switches to existing "R1" tab (no duplicate)
-
----
-
 ## Integration Points
 
 ### Dependencies
@@ -302,21 +267,6 @@ All styles follow Material Design 3 guidelines using CSS custom properties (`--m
 
 **New Components**:
 - `ConsoleDevicesPanelComponent`: Device list sidebar
-
-### Component Imports
-
-```typescript
-// console-wrapper.component.ts (standalone)
-import { ConsoleDevicesPanelComponent } from './console-devices-panel.component';
-
-@Component({
-  standalone: true,
-  imports: [
-    ConsoleDevicesPanelComponent,
-    // ...
-  ],
-})
-```
 
 ---
 
@@ -338,17 +288,12 @@ import { ConsoleDevicesPanelComponent } from './console-devices-panel.component'
 
 1. **Change Detection**: `ChangeDetectorRef.markForCheck()` for manual updates
 2. **Subscription Cleanup**: `takeUntil(this.destroy$)` pattern
-3. **Delayed Focus**: `setTimeout(100ms)` for DOM updates
-4. **Efficient Filtering**: `console_type !== 'none'` before adding to array
+3. **Delayed Focus**: Double-nested `requestAnimationFrame` to wait for Angular rendering cycle
+4. **Efficient Filtering**: `console_type` checks before adding to array
 
 ### Memory Management
 
-```typescript
-ngOnDestroy(): void {
-  this.destroy$.next();
-  this.destroy$.complete();
-}
-```
+All components use the `takeUntil(this.destroy$)` pattern with `Subject<void>` for subscription cleanup on destroy.
 
 ---
 
@@ -375,82 +320,6 @@ ngOnDestroy(): void {
 
 ---
 
-## Testing Checklist
-
-### Manual Testing
-
-#### Device Panel Display
-- [x] Panel displays on left side of Console window
-- [x] Width is 200px
-- [x] Scrollbar appears when devices exceed height
-- [x] Scrollbar styling matches theme
-
-#### Device List
-- [x] Only console-capable devices shown
-- [x] Running devices displayed first
-- [x] Stopped devices displayed after
-- [x] Alphabetical sort within groups
-- [x] Status colors display correctly
-- [x] Hover effects work smoothly
-
-#### Device Interaction
-- [x] Click device creates new tab
-- [x] Click same device switches to existing tab
-- [x] No duplicate tabs created
-- [x] xterm auto-focuses on tab creation
-
-#### Keyboard Shortcuts
-- [x] Alt+1-8 switch to device console tabs
-- [x] Alt+9 switches to GNS3 console
-- [x] Shortcuts work when console is active
-- [x] Shortcuts don't work when console is inactive
-- [x] Visual feedback shows active state
-- [x] Click outside deactivates shortcuts
-- [x] Shortcuts work when xterm has focus
-- [x] xterm auto-focuses after shortcut
-
-#### Visual Feedback
-- [x] Console active state shows shadow enhancement
-- [x] Active state disappears when clicking outside
-- [x] Device items have hover effects
-- [x] No jitter or white dots on hover
-
----
-
-## Troubleshooting
-
-### Issue: Keyboard shortcuts not working
-
-**Possible Causes**:
-1. Console window is not activated (no visual highlight)
-2. Click outside console window deactivated it
-3. Browser tab is not focused
-
-**Solutions**:
-1. Click anywhere in Console window to activate
-2. Ensure browser window has focus
-3. Check if console is minimized (expand it first)
-
-### Issue: Duplicate tabs appearing
-
-**Possible Cause**: Old code before fix
-
-**Solution**: Ensure running latest version with `addTab()` duplicate check
-
-### Issue: xterm not auto-focusing
-
-**Possible Causes**:
-1. GNS3 console tab selected (not device console)
-2. DOM not updated when focus called
-3. WebConsoleComponent not loaded
-
-**Solutions**:
-1. Switch to device console tab (Alt+2-9)
-2. Click device directly from sidebar
-3. Check browser console for errors
-
----
-
 ## References
 
 ### Related Documentation
@@ -470,7 +339,7 @@ ngOnDestroy(): void {
 
 ---
 
-**Document Version**: 2.2.0
+**Document Version**: 2.3.0
 **Last Updated**: 2026-04-18
 **Maintainer**: Development Team
 

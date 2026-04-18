@@ -181,23 +181,26 @@ Input Signals (required)
 **Implementation Strategy**:
 
 ```
-┌─────────────────────────────────────────────────────────┐
-│                  ResizeObserver Setup                   │
-├─────────────────────────────────────────────────────────┤
-│  1. Create ResizeObserver in constructor                │
-│  2. In ngAfterViewInit:                                 │
-│     a. Measure initial dimensions via getBoundingClientRect │
-│     b. Update actualWidth/actualHeight signals           │
-│     c. Start observing the panel element                 │
-│     d. Auto-focus container (setTimeout) for immediate   │
-│        keyboard interaction                              │
-│  3. On resize callback:                                 │
-│     a. Extract width/height from entry.contentRect       │
-│     b. Update actualWidth/actualHeight signals           │
-│     c. Trigger selectorX/selectorY recomputation         │
-│     d. Call cd.markForCheck()                            │
-│  4. Cleanup: disconnect() in ngOnDestroy                │
-└─────────────────────────────────────────────────────────┘
+Constructor
+    │
+    └─→ Create ResizeObserver
+         └─ Callback: update actualWidth/actualHeight → cd.markForCheck()
+              │
+              ▼
+ngAfterViewInit
+    ├─→ Measure initial dimensions (getBoundingClientRect)
+    ├─→ Update actualWidth/actualHeight signals
+    ├─→ Start observing panel element
+    └─→ Auto-focus container (setTimeout)
+
+ResizeObserver Callback (on content change)
+    ├─→ Extract width/height from entry.contentRect
+    ├─→ Update actualWidth/actualHeight signals
+    └─→ cd.markForCheck()
+         └─→ Triggers selectorX/selectorY recomputation
+
+ngOnDestroy
+    └─→ ResizeObserver.disconnect()
 ```
 
 **Benefits**:
@@ -281,7 +284,7 @@ Input Position (mouse cursor location)
 
 ### Text-Based Resource Info
 
-Resources are displayed as **inline text values** with color-coded CSS classes. There are no progress bar elements.
+Resources are displayed as **inline text values** with color-coded CSS classes. There are no progress bar elements. Each compute item is rendered as an Angular Material `mat-button` for consistent click handling and ripple effects. Odd-indexed rows (1, 3, 5...) receive a darker background via the `compute-selector__item--even` CSS class for zebra striping readability.
 
 **Layout**:
 
@@ -337,11 +340,13 @@ Resource Usage Levels
 1. **CPU Usage** (`getCpuInfo()`)
    - Format: `{usage_percent}% / {cpu_count}c`
    - Example: `35% / 4c`
+   - CPU count sourced from `capabilities.cpus` (nested field)
    - Color-coded by usage threshold
 
 2. **Memory Usage** (`getMemoryInfo()`)
    - Format: `{used_GB}/{total_GB} GB`
-   - Converts bytes to GB via `bytesToGB()`
+   - Total memory sourced from `capabilities.memory` (bytes), converted to GB
+   - Used memory calculated as `totalGB * usagePercent / 100`
    - Example: `8.2/16 GB`
    - Color-coded by `memory_usage_percent` threshold
 
@@ -396,9 +401,9 @@ Compute List Sorting Algorithm
 Before Sorting:          After Sorting:
 ─────────────────        ─────────────────
 • Remote Server 2        • Local (controller)
-• Remote Server 1  →     • Remote Server 1
-• Local                  • Remote Server 2
-• Cloud Compute          • Cloud Compute
+• Remote Server 1  →     • Cloud Compute
+• Local                  • Remote Server 1
+• Cloud Compute          • Remote Server 2
 ```
 
 ### 2. Compute Caching
@@ -408,14 +413,20 @@ Before Sorting:          After Sorting:
 ```
 Compute Data Flow
     │
-    ├── Primary: cachedComputes() signal
-    │     └─ Populated by notificationService.setInitialComputes()
-    │     └─ Updated via WebSocket notifications
+    ├── Primary Path (no HTTP needed):
+    │     ├─ On init: notificationService.getCachedComputes()
+    │     │           if notificationService.hasCachedData()
+    │     │
+    │     └─ On WebSocket update: notificationService.computeCacheUpdated
+    │           → cachedComputes.set(computes)
+    │           → cd.markForCheck()
     │
-    └── Fallback: computeService.getComputes() HTTP request
-          └─ Only when cache is empty
-          └─ On success: populates cache for future use
-          └─ On error: falls back to 'local' compute
+    └── Fallback Path (cache empty):
+          └─ computeService.getComputes() HTTP request
+          └─ On success: notificationService.setInitialComputes()
+               → triggers computeCacheUpdated subscription
+               → cachedComputes.set(loadedComputes)
+          └─ On error: emit NodeAddedEvent with controller='local'
 ```
 
 ### 3. Change Detection Strategy
@@ -450,40 +461,46 @@ Change Detection Flow
 
 ## Implementation Details
 
-### Template Integration (template.component.html)
+### Template Integration
 
-```html
-@if (showComputeSelector()) {
-  <div class="template__selector-backdrop" (click)="onComputeSelectorCancelled()">
-    <div class="template__ghost-icon"
-         [style.left.px]="ghostIconScreenPosition().x"
-         [style.top.px]="ghostIconScreenPosition().y">
-      @if (pendingTemplate()) {
-        <img class="template__ghost-icon-img"
-             [src]="getImageSourceForTemplate(pendingTemplate())"
-             draggable="false" />
-      }
-    </div>
-    <app-compute-selector
-      [computes]="availableComputes()"
-      [x]="lastPageX()"
-      [y]="lastPageY()"
-      (computeSelected)="onComputeSelected($event)" />
-  </div>
-}
+The selector is embedded in the TemplateComponent template within a full-screen backdrop overlay. The backdrop is conditionally rendered when `showComputeSelector()` is true. It contains a ghost icon positioned at the screen-converted world coordinates (`ghostIconScreenPosition()`), and the `app-compute-selector` component which receives the sorted compute list and cursor position as inputs.
+
+**Template Structure**:
+
+```
+┌─────────────────────────────────────────────────┐
+│  @if (showComputeSelector())                    │
+│  ┌───────────────────────────────────────────┐  │
+│  │  .template__selector-backdrop (click →    │  │
+│  │    onComputeSelectorCancelled)             │  │
+│  │  ┌─────────────────────────────────────┐  │  │
+│  │  │  .template__ghost-icon              │  │  │
+│  │  │  └─ <img> template icon             │  │  │
+│  │  │     positioned at ghostIconScreen   │  │  │
+│  │  └─────────────────────────────────────┘  │  │
+│  │  ┌─────────────────────────────────────┐  │  │
+│  │  │  <app-compute-selector>             │  │  │
+│  │  │  [computes] ← availableComputes()   │  │  │
+│  │  │  [x] ← lastPageX()                 │  │  │
+│  │  │  [y] ← lastPageY()                 │  │  │
+│  │  │  (computeSelected) → onComputeSelect│  │  │
+│  │  └─────────────────────────────────────┘  │  │
+│  └───────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────┘
 ```
 
 ### Key Signals in TemplateComponent
 
-| Signal | Type | Purpose |
-|--------|------|---------|
-| `showComputeSelector` | `signal<boolean>` | Controls selector visibility |
-| `availableComputes` | `signal<Compute[]>` | Sorted compute list |
-| `pendingNodePosition` | `signal<{x,y} \| null>` | World coordinates for node |
-| `pendingTemplate` | `signal<Template \| null>` | Template being dropped |
-| `lastPageX` / `lastPageY` | `signal<number>` | Mouse screen position |
-| `cachedComputes` | `signal<Compute[]>` | Cached compute data |
-| `isDragging` | `signal<boolean>` | Active drag tracking |
+| Signal | Visibility | Type | Purpose |
+|--------|------------|------|---------|
+| `showComputeSelector` | public | `signal<boolean>` | Controls selector visibility |
+| `availableComputes` | public | `signal<Compute[]>` | Sorted compute list |
+| `pendingNodePosition` | public | `signal<{x,y} \| null>` | World coordinates for node |
+| `pendingTemplate` | public | `signal<Template \| null>` | Template being dropped |
+| `ghostIconScreenPosition` | public | `computed<{x,y}>` | Converts world → screen coordinates for ghost icon |
+| `lastPageX` / `lastPageY` | private | `signal<number>` | Mouse screen position |
+| `cachedComputes` | private | `signal<Compute[]>` | Cached compute data |
+| `isDragging` | private | `signal<boolean>` | Active drag tracking |
 
 ### Component File Structure
 
@@ -498,9 +515,9 @@ src/app/components/template/compute-selector/
 
 ## Testing
 
-### Unit Test Coverage
+> **Status**: No test files currently exist. The following categories are planned.
 
-**Test Categories**:
+### Planned Unit Test Categories
 
 1. **Positioning Logic**
    - Right edge detection and flip
@@ -526,52 +543,6 @@ src/app/components/template/compute-selector/
 5. **Display Name Formatting**
    - Local compute: `{name} (controller)`
    - Remote compute: `{name} ({host}:{port})`
-
-### Integration Test Scenarios
-
-**End-to-End Flows**:
-
-```
-Test Scenario 1: Drag and Drop with Selection
-    │
-    ├── 1. User drags node from template panel
-    ├── 2. Mouse position tracked via document listeners
-    ├── 3. On drop: compute selector backdrop appears
-    ├── 4. Ghost icon shown at drop position
-    ├── 5. Compute selector displays near cursor
-    ├── 6. Resource info (CPU/MEM/DISK) shown with colors
-    ├── 7. User clicks a compute
-    └── 8. NodeAddedEvent emitted with selected compute_id
-
-Test Scenario 2: Backdrop Click Dismissal
-    │
-    ├── 1. Compute selector is visible
-    ├── 2. User clicks outside selector (on backdrop)
-    ├── 3. onComputeSelectorCancelled() called
-    ├── 4. clearPendingState() resets all pending signals
-    └── 5. Selector and ghost icon disappear
-
-Test Scenario 3: Single Compute (No Selector)
-    │
-    ├── 1. Only one compute available
-    ├── 2. User drops template on canvas
-    ├── 3. NodeCreated directly without showing selector
-    └── 4. Uses the single compute's compute_id
-
-Test Scenario 4: Edge Avoidance
-    │
-    ├── 1. User drops near screen edge
-    ├── 2. Selector auto-flips to avoid clipping
-    ├── 3. Entire selector remains visible
-    └── 4. User can still interact with selector
-
-Test Scenario 5: Resource Color Coding
-    │
-    ├── 1. Compute with low usage (< 60%) → primary color
-    ├── 2. Compute with medium usage (60-85%) → tertiary color
-    ├── 3. Compute with high usage (> 85%) → error color
-    └── 4. Colors applied via CSS classes
-```
 
 ---
 
@@ -599,7 +570,7 @@ Test Scenario 5: Resource Color Coding
 
 4. **Small Screen Truncation**
    - **Issue**: Selector may be truncated on screens < 320px wide
-   - **Cause**: Minimum width of 200px for content readability
+   - **Cause**: `min-width: 200px` for content readability, `max-width: 400px` to prevent excessive width
    - **Impact**: Partial content hidden on very small screens
    - **Workaround**: Responsive design handles most cases
 

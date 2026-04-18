@@ -18,19 +18,9 @@ See LICENSE file for licensing information.
 
 ---
 
-## Service Overview
+## Architecture Overview
 
-`ConnectionManagerService` is a lightweight service that manages controller connections at the application level. It prevents duplicate connections to the same controller and handles controller switching.
-
-**Key Characteristics:**
-- Simple: Only 62 lines of code
-- Single Responsibility: Track current controller
-- Delegate: Actual WebSocket managed by `NotificationService`
-- Duplicate Prevention: Avoids redundant connections
-
----
-
-## Architecture
+`ConnectionManagerService` is a lightweight service (~62 lines) that manages controller connections at the application level. It prevents duplicate connections to the same controller and handles controller switching. Actual WebSocket management is delegated to `NotificationService`.
 
 ### Service Design
 
@@ -62,12 +52,54 @@ See LICENSE file for licensing information.
 │           (Actual WebSocket Manager)                     │
 │  • WebSocket connection management                      │
 │  • Compute notifications handling                       │
-│  • Compute caching                                      │
-│  • Project-level notification path                      │
+│  • Compute caching (Map<compute_id, Compute>)           │
+│  • Controller-level & project-level notification paths  │
+│  • Token-based authentication in WebSocket URL          │
 └─────────────────────────────────────────────────────────┘
 ```
 
-### Connection Flow
+### Component Integration
+
+`ConnectionManagerService` is used by three components. `NotificationService` is additionally used directly by `ProjectMapComponent` for project-level WebSocket connections.
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                       Integration Points                              │
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                       │
+│  ConnectionManagerService consumers:                                  │
+│                                                                       │
+│  ┌─────────────────┐   Trigger: Login success                         │
+│  │  LoginComponent  │─────────────────────────────────────────────┐   │
+│  └─────────────────┘                                              │   │
+│                                                                    │   │
+│  ┌─────────────────┐   Trigger: Auto-login via URL                 │   │
+│  │  AppComponent    │──────────────────────────────────────────┐   │   │
+│  └─────────────────┘                                         │   │   │
+│                                                               ▼  ▼   │
+│                                                  establishConnection() │
+│                                                    (with controller)  │
+│                                                               ▲  ▲   │
+│  ┌─────────────────┐   Trigger: Logout                        │   │   │
+│  │ DefaultLayout    │──────────────────────────────────────────┘   │   │
+│  │  Component       │   calls disconnect()                          │   │
+│  └─────────────────┘                                               │   │
+│                                                                     │   │
+│  NotificationService consumers (direct):                            │   │
+│                                                                     │   │
+│  ┌──────────────────┐   Trigger: Open project                       │   │
+│  │ ProjectMap        │   uses projectNotificationsPath()            │   │
+│  │  Component        │   to create project-level WebSocket          │   │
+│  └──────────────────┘                                               │   │
+│                                                                     │   │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Flow Description
+
+### Connection Lifecycle
 
 ```
 User Action         ConnectionManagerService      NotificationService
@@ -95,85 +127,6 @@ Logout          →   │                                │
                     │      which closes WS,          │
                     │      clears controller + cache │
                     │                                │
-```
-
----
-
-## API Reference
-
-### Methods
-
-#### establishConnection(controller)
-
-Establishes a connection to the specified controller.
-
-**Behavior:**
-
-| Condition                      | Action                              |
-|-------------------------------|-------------------------------------|
-| Already connected to same controller | Skip (no-op)                     |
-| Switching to different controller    | Disconnect old, establish new    |
-| First connection                     | Establish new connection         |
-
-**Delegates to:** `NotificationService.connectToComputeNotifications(controller)`
-
-#### disconnect()
-
-Disconnects from the current controller.
-
-**Behavior:**
-
-| Step | Performed by                | Action                        |
-|------|-----------------------------|-------------------------------|
-| 1    | ConnectionManagerService    | Call `NotificationService.disconnect()` |
-| 2    | NotificationService         | Close WebSocket connection    |
-| 3    | NotificationService         | Clear compute cache           |
-| 4    | ConnectionManagerService    | Clear controller reference    |
-
-If not connected, this is a no-op.
-
-#### getCurrentController()
-
-Returns the currently connected controller. Returns `null` when not connected.
-
-> **Note:** The actual return type annotation is `Controller`, but the value can be `null`. Consumers should handle the null case.
-
-#### isConnectedTo(controller)
-
-Checks if currently connected to the specified controller by comparing controller IDs.
-
-**Returns:** `true` if connected to the given controller, `false` otherwise.
-
----
-
-## Component Integration
-
-### Integration Points
-
-The service is used by three components in the application:
-
-```
-┌──────────────────────────────────────────────────────────────┐
-│                     Integration Points                        │
-├──────────────────────────────────────────────────────────────┤
-│                                                               │
-│  ┌─────────────────┐   Trigger: Login success                 │
-│  │  LoginComponent  │─────────────────────────────────────┐   │
-│  └─────────────────┘                                      │   │
-│                                                            │   │
-│  ┌─────────────────┐   Trigger: Auto-login via URL         │   │
-│  │  AppComponent    │──────────────────────────────────┐   │   │
-│  └─────────────────┘                                   │   │   │
-│                                                         ▼  ▼   │
-│                                            establishConnection()│
-│                                              (with controller) │
-│                                                         ▲  ▲   │
-│  ┌─────────────────┐   Trigger: Logout                  │   │   │
-│  │ DefaultLayout    │───────────────────────────────────┘   │   │
-│  │  Component       │   calls disconnect()                    │   │
-│  └─────────────────┘                                         │   │
-│                                                               │
-└──────────────────────────────────────────────────────────────┘
 ```
 
 ### Flow: Login (LoginComponent)
@@ -217,8 +170,6 @@ Controller has auth token?  ─── No → Stop
 connectionManager.establishConnection(controller)
 ```
 
-This handles the case where a user has previously authenticated and revisits the application via a bookmarked URL.
-
 ### Flow: Logout (DefaultLayoutComponent)
 
 ```
@@ -237,59 +188,57 @@ connectionManager.disconnect()
 Navigate to login page
 ```
 
----
+### Flow: Project WebSocket (ProjectMapComponent)
 
-## Design Decisions
+`ProjectMapComponent` directly injects `NotificationService` to create a separate project-level WebSocket connection, independent of `ConnectionManagerService`.
 
-### Why Simple State Management?
-
-**Rationale:**
-- Application only connects to one controller at a time
-- No need for complex connection pooling
-- Single source of truth for current controller
-- Easy to understand and maintain
-
-### Why Delegate to NotificationService?
-
-**Rationale:**
-- `NotificationService` already manages WebSocket connections
-- Clear separation of concerns:
-  - `ConnectionManagerService` — Controller lifecycle
-  - `NotificationService` — WebSocket and notifications
-- Avoids code duplication
-- NotificationService owns compute caching logic
-
-### No Automatic Reconnection
-
-**Decision:** ConnectionManagerService does NOT implement auto-reconnection.
-
-**Rationale:**
-- Controller connections are user-initiated (login/switch)
-- Reconnection should be explicit user action
-- NotificationService handles WebSocket-level close/error events
-- Application can show "disconnected" state and prompt user
-
-> **Note:** When the WebSocket closes unexpectedly, `NotificationService` keeps the controller reference internally (does not clear it). This preserves state in case a future reconnection feature is added, but currently no automatic reconnection occurs.
+```
+Open project in map
+    │
+    ▼
+Create WebSocket via
+notificationService.projectNotificationsPath(controller, project_id)
+    │
+    ▼
+Receive project-level notifications
+(node/link/drawing events)
+    │
+    ▼
+Close on component destroy
+```
 
 ---
 
-## NotificationService Detail
+## Implementation Logic
 
-`NotificationService` is the actual WebSocket manager. Below is a summary of its responsibilities beyond what `ConnectionManagerService` delegates to.
+### ConnectionManagerService Responsibilities
 
-### WebSocket Connection Management
+The service maintains a single `currentController` reference and exposes four methods:
 
-| Capability                         | Description                                           |
-|------------------------------------|-------------------------------------------------------|
-| Create WebSocket                   | Opens connection to controller notifications endpoint |
-| Protocol selection                 | `ws://` for http, `wss://` for https                  |
-| Token-based authentication         | Auth token passed as URL query parameter              |
-| Error handling                     | Logs errors to console                                |
-| Close handling                     | Clears WebSocket reference, preserves controller      |
+- **establishConnection(controller)**: Skips if already connected to the same controller (compared by ID). Disconnects existing connection before establishing a new one when switching controllers. Delegates to `NotificationService.connectToComputeNotifications()`.
+- **disconnect()**: Calls `NotificationService.disconnect()` (which closes WebSocket, clears controller reference and compute cache), then clears its own `currentController` reference. No-op when not connected.
+- **getCurrentController()**: Returns the currently connected controller. The return type annotation is `Controller` but the value can be `null` — consumers must handle this.
+- **isConnectedTo(controller)**: Compares controller IDs to check connectivity.
 
-### Compute Notification Events
+### NotificationService Responsibilities
 
-The service listens for three types of compute notifications from the server:
+`NotificationService` is the actual WebSocket manager with the following capabilities:
+
+**WebSocket Connection Management:**
+- Opens WebSocket connection to controller notifications endpoint
+- Protocol selection: `ws://` for `http:`, `wss://` for `https:`
+- Token-based authentication via URL query parameter
+- Error handling: logs to console
+- Close handling: clears WebSocket reference, preserves controller reference for potential future reconnection
+
+**Two Notification Path Builders:**
+
+| Method                          | URL Pattern                                                                              |
+|---------------------------------|------------------------------------------------------------------------------------------|
+| `notificationsPath`             | `{ws/wss}://{host}:{port}/{version}/notifications/ws?token={token}`                     |
+| `projectNotificationsPath`      | `{ws/wss}://{host}:{port}/{version}/projects/{id}/notifications/ws?token={token}`       |
+
+**Compute Notification Events:**
 
 | Event               | Cache Action        | Emitted via                      |
 |----------------------|---------------------|----------------------------------|
@@ -297,9 +246,9 @@ The service listens for three types of compute notifications from the server:
 | `compute.updated`    | Update in cache     | `computeNotificationEmitter`     |
 | `compute.deleted`    | Remove from cache   | `computeNotificationEmitter`     |
 
-After each cache mutation, the `computeCacheUpdated` emitter fires with the full updated compute list.
+After each cache mutation, `computeCacheUpdated` emits the full updated compute list.
 
-### Compute Caching
+**Compute Cache:**
 
 ```
 ┌───────────────────────────────────────────────────┐
@@ -324,86 +273,22 @@ After each cache mutation, the `computeCacheUpdated` emitter fires with the full
 └───────────────────────────────────────────────────┘
 ```
 
-### Notification Path Builders
+### Design Decisions
 
-The service builds two types of WebSocket URLs:
+**Simple State Management:** The application only connects to one controller at a time, so no complex connection pooling is needed. A single `currentController` reference provides a clear source of truth.
 
-| Method                          | Purpose                        | URL Pattern                                        |
-|---------------------------------|--------------------------------|----------------------------------------------------|
-| `notificationsPath`             | Controller-level notifications | `{ws/wss}://{host}:{port}/{version}/notifications/ws?token={token}` |
-| `projectNotificationsPath`      | Project-level notifications    | `{ws/wss}://{host}:{port}/{version}/projects/{id}/notifications/ws?token={token}` |
+**Delegation to NotificationService:** `NotificationService` already manages WebSocket connections. Separating concerns — `ConnectionManagerService` for controller lifecycle, `NotificationService` for WebSocket and notifications — avoids duplication and keeps each service focused.
 
-Protocol is determined by `controller.protocol`: `https:` maps to `wss`, otherwise `ws`.
+**No Automatic Reconnection:** Controller connections are user-initiated (login/switch). `NotificationService` handles WebSocket-level close/error events but does not auto-reconnect. When the WebSocket closes unexpectedly, `NotificationService` preserves the controller reference internally for potential future reconnection support, but currently no automatic reconnection occurs.
 
-### Key Emitters
+### Testing
 
-| Emitter                       | Type                        | Purpose                                   |
-|-------------------------------|-----------------------------|-------------------------------------------|
-| `computeNotificationEmitter`  | `EventEmitter<ComputeNotification>` | Emits individual compute events   |
-| `computeCacheUpdated`         | `EventEmitter<Compute[]>`   | Emits full compute list after cache change |
+| Service                    | Status     | Details                                                                      |
+|----------------------------|------------|------------------------------------------------------------------------------|
+| NotificationService        | ✅ Tested  | `notification.service.spec.ts` — URL building, lifecycle, events, cache      |
+| ConnectionManagerService   | ❌ Pending | No spec file exists yet                                                      |
 
-**Source file:** `src/app/services/notification.service.ts`
-
----
-
-## Testing
-
-> **Status:** Unit tests have not been implemented yet.
-
-### Planned Test Scenarios
-
-| Scenario                        | Given                        | When                                | Expected                                    |
-|---------------------------------|------------------------------|-------------------------------------|---------------------------------------------|
-| Establish new connection        | No current controller        | `establishConnection(controller)`   | Connection established, controller stored   |
-| Skip duplicate connection       | Connected to controller A    | `establishConnection(controller A)` | No new connection created                   |
-| Switch controllers              | Connected to controller A    | `establishConnection(controller B)` | Old connection closed, new one established  |
-| Disconnect                      | Connected to a controller    | `disconnect()`                      | WS closed, controller cleared, cache cleared |
-| Get current controller          | Connected to controller A    | `getCurrentController()`            | Returns controller A                        |
-| Is connected (matching)         | Connected to controller A    | `isConnectedTo(controller A)`       | Returns `true`                              |
-| Is connected (non-matching)     | Connected to controller A    | `isConnectedTo(controller B)`       | Returns `false`                             |
-
----
-
-## Security Considerations
-
-### WebSocket Protocol Selection
-
-| Controller Protocol | WebSocket Protocol |
-|---------------------|--------------------|
-| `http:`             | `ws://`            |
-| `https:`            | `wss://`           |
-
-### Authentication
-
-WebSocket connections use token-based authentication. The auth token is included as a query parameter in the WebSocket URL. The server validates the token before accepting the connection.
-
-**URL format:** `{ws/wss}://{host}:{port}/{version}/notifications/ws?token={AUTH_TOKEN}`
-
----
-
-## Related Documentation
-
-| Document                                    | Description                    |
-|---------------------------------------------|--------------------------------|
-| `src/app/services/notification.service.ts`  | Actual WebSocket implementation|
-| `src/app/services/connection-manager.service.ts` | This service's source code |
-| `src/app/models/controller.ts`              | Controller data structure      |
-| `src/app/models/compute.ts`                 | Compute data structure         |
-
----
-
-## Summary
-
-**ConnectionManagerService** is a simple, focused service that:
-- Tracks the current controller
-- Prevents duplicate connections
-- Handles controller switching
-- Delegates WebSocket management to NotificationService
-
-**Not responsible for:**
-- WebSocket connection lifecycle (NotificationService)
-- Auto-reconnection logic
-- Connection pooling/caching
-- Complex state management
-
-**Design Philosophy:** Simple, single-responsibility service that does one thing well.
+**Source files:**
+- `src/app/services/connection-manager.service.ts`
+- `src/app/services/notification.service.ts`
+- `src/app/services/notification.service.spec.ts`
