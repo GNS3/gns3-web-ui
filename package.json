@@ -15,7 +15,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "buildforproduction": "ng build --source-map=false --build-optimizer --configuration=production --base-href /static/web-ui/",
+    "buildforproduction": "ng build --source-map=false --configuration=production --base-href /static/web-ui/",
     "buildforgithub": "ng build --configuration=githubProd",
     "test": "ng test",
     "test:run": "ng test --watch=false",
