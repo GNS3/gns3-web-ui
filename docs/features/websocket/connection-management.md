@@ -23,10 +23,10 @@ See LICENSE file for licensing information.
 `ConnectionManagerService` is a lightweight service that manages controller connections at the application level. It prevents duplicate connections to the same controller and handles controller switching.
 
 **Key Characteristics:**
-- 📋 **Simple**: Only 63 lines of code
-- 🎯 **Single Responsibility**: Track current controller
-- 🔄 **Delegate**: Actual WebSocket managed by `NotificationService`
-- 🛡️ **Duplicate Prevention**: Avoids redundant connections
+- Simple: Only 62 lines of code
+- Single Responsibility: Track current controller
+- Delegate: Actual WebSocket managed by `NotificationService`
+- Duplicate Prevention: Avoids redundant connections
 
 ---
 
@@ -62,7 +62,8 @@ See LICENSE file for licensing information.
 │           (Actual WebSocket Manager)                     │
 │  • WebSocket connection management                      │
 │  • Compute notifications handling                       │
-│  • Cache management                                     │
+│  • Compute caching                                      │
+│  • Project-level notification path                      │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -80,7 +81,7 @@ Login           →   │                                │
                     │                                │
                     │                                │   WebSocket created
                     │                                │
-Switch Controller→   │                                │
+Switch Controller→  │                                │
                     │   establishConnection(new)     │
                     │   ├─ Check: same controller?   │
                     │   │   └─ No → continue         │
@@ -90,7 +91,9 @@ Switch Controller→   │                                │
                     │                                │
 Logout          →   │                                │
                     │   disconnect()                 │
-                    │   └─ clears controller         │
+                    │   └─ delegates to NS.disconnect()
+                    │      which closes WS,          │
+                    │      clears controller + cache │
                     │                                │
 ```
 
@@ -100,98 +103,138 @@ Logout          →   │                                │
 
 ### Methods
 
-#### establishConnection(controller: Controller): void
+#### establishConnection(controller)
 
 Establishes a connection to the specified controller.
 
 **Behavior:**
-```
-If already connected to same controller:
-    └─ Skip (no-op)
 
-If switching to different controller:
-    ├─ Disconnect from current controller
-    └─ Establish new connection
+| Condition                      | Action                              |
+|-------------------------------|-------------------------------------|
+| Already connected to same controller | Skip (no-op)                     |
+| Switching to different controller    | Disconnect old, establish new    |
+| First connection                     | Establish new connection         |
 
-If first connection:
-    └─ Establish new connection
-```
+**Delegates to:** `NotificationService.connectToComputeNotifications(controller)`
 
-**Implementation:**
-- Checks if already connected to the same controller (prevents duplicates)
-- Disconnects existing connection if switching controllers
-- Delegates to `NotificationService.connectToComputeNotifications()`
-- Stores controller reference
-
-#### disconnect(): void
+#### disconnect()
 
 Disconnects from the current controller.
 
 **Behavior:**
-```
-If connected:
-    ├─ Call NotificationService.disconnect()
-    ├─ Clear controller reference
-    └─ Clear compute cache
 
-If not connected:
-    └─ No-op
-```
+| Step | Performed by                | Action                        |
+|------|-----------------------------|-------------------------------|
+| 1    | ConnectionManagerService    | Call `NotificationService.disconnect()` |
+| 2    | NotificationService         | Close WebSocket connection    |
+| 3    | NotificationService         | Clear compute cache           |
+| 4    | ConnectionManagerService    | Clear controller reference    |
 
-#### getCurrentController(): Controller
+If not connected, this is a no-op.
 
-Returns the currently connected controller.
+#### getCurrentController()
 
-**Returns:** `Controller | null`
+Returns the currently connected controller. Returns `null` when not connected.
 
-#### isConnectedTo(controller: Controller): boolean
+> **Note:** The actual return type annotation is `Controller`, but the value can be `null`. Consumers should handle the null case.
 
-Checks if connected to a specific controller.
+#### isConnectedTo(controller)
 
-**Returns:** `boolean`
+Checks if currently connected to the specified controller by comparing controller IDs.
+
+**Returns:** `true` if connected to the given controller, `false` otherwise.
 
 ---
 
 ## Component Integration
 
-### Usage Pattern
+### Integration Points
+
+The service is used by three components in the application:
 
 ```
-Component Initialization
-    │
-    ├→ Inject ConnectionManagerService
-    │
-    ├→ On successful login:
-    │   └─ connectionManager.establishConnection(controller)
-    │
-    ├→ On controller switch:
-    │   └─ connectionManager.establishConnection(newController)
-    │
-    └→ On logout:
-        └─ connectionManager.disconnect()
+┌──────────────────────────────────────────────────────────────┐
+│                     Integration Points                        │
+├──────────────────────────────────────────────────────────────┤
+│                                                               │
+│  ┌─────────────────┐   Trigger: Login success                 │
+│  │  LoginComponent  │─────────────────────────────────────┐   │
+│  └─────────────────┘                                      │   │
+│                                                            │   │
+│  ┌─────────────────┐   Trigger: Auto-login via URL         │   │
+│  │  AppComponent    │──────────────────────────────────┐   │   │
+│  └─────────────────┘                                   │   │   │
+│                                                         ▼  ▼   │
+│                                            establishConnection()│
+│                                              (with controller) │
+│                                                         ▲  ▲   │
+│  ┌─────────────────┐   Trigger: Logout                  │   │   │
+│  │ DefaultLayout    │───────────────────────────────────┘   │   │
+│  │  Component       │   calls disconnect()                    │   │
+│  └─────────────────┘                                         │   │
+│                                                               │
+└──────────────────────────────────────────────────────────────┘
 ```
 
-### Example: LoginComponent
+### Flow: Login (LoginComponent)
 
 ```
-Login Flow:
+User enters credentials
     │
-    ├→ User enters credentials
-    ├→ Authentication successful
-    ├→ Receive controller object
-    └→ connectionManager.establishConnection(controller)
-```
-
-### Example: ComputesComponent
-
-```
-Controller Switch Flow:
+    ▼
+Authentication request
     │
-    ├→ User selects different controller
-    ├→ Confirm switch
-    └→ connectionManager.establishConnection(newController)
-        ├─ Automatically disconnects old controller
-        └─ Connects to new controller
+    ▼
+Receive access token
+    │
+    ▼
+Store token on controller object
+    │
+    ▼
+connectionManager.establishConnection(controller)
+    │
+    ▼
+Navigate to projects page
+```
+
+### Flow: Auto-login (AppComponent)
+
+When the application loads or the URL changes, `AppComponent` checks for auto-login:
+
+```
+Route navigation ends
+    │
+    ▼
+Extract controller_id from URL  ─── No match → Stop
+    │
+    ▼ (has controller_id)
+Fetch controller from database
+    │
+    ▼
+Controller has auth token?  ─── No → Stop
+    │
+    ▼ (yes)
+connectionManager.establishConnection(controller)
+```
+
+This handles the case where a user has previously authenticated and revisits the application via a bookmarked URL.
+
+### Flow: Logout (DefaultLayoutComponent)
+
+```
+User clicks logout
+    │
+    ▼
+Clear auth token on controller
+    │
+    ▼
+Persist updated controller (no token)
+    │
+    ▼
+connectionManager.disconnect()
+    │
+    ▼
+Navigate to login page
 ```
 
 ---
@@ -210,11 +253,11 @@ Controller Switch Flow:
 
 **Rationale:**
 - `NotificationService` already manages WebSocket connections
-- Separation of concerns:
-  - `ConnectionManagerService` → Controller lifecycle
-  - `NotificationService` → WebSocket and notifications
+- Clear separation of concerns:
+  - `ConnectionManagerService` — Controller lifecycle
+  - `NotificationService` — WebSocket and notifications
 - Avoids code duplication
-- NotificationService has compute caching logic
+- NotificationService owns compute caching logic
 
 ### No Automatic Reconnection
 
@@ -223,132 +266,101 @@ Controller Switch Flow:
 **Rationale:**
 - Controller connections are user-initiated (login/switch)
 - Reconnection should be explicit user action
-- NotificationService handles WebSocket-level events
+- NotificationService handles WebSocket-level close/error events
 - Application can show "disconnected" state and prompt user
+
+> **Note:** When the WebSocket closes unexpectedly, `NotificationService` keeps the controller reference internally (does not clear it). This preserves state in case a future reconnection feature is added, but currently no automatic reconnection occurs.
 
 ---
 
-## Actual WebSocket Management
+## NotificationService Detail
 
-### NotificationService Responsibilities
+`NotificationService` is the actual WebSocket manager. Below is a summary of its responsibilities beyond what `ConnectionManagerService` delegates to.
 
-The actual WebSocket connection is managed by `NotificationService`:
+### WebSocket Connection Management
+
+| Capability                         | Description                                           |
+|------------------------------------|-------------------------------------------------------|
+| Create WebSocket                   | Opens connection to controller notifications endpoint |
+| Protocol selection                 | `ws://` for http, `wss://` for https                  |
+| Token-based authentication         | Auth token passed as URL query parameter              |
+| Error handling                     | Logs errors to console                                |
+| Close handling                     | Clears WebSocket reference, preserves controller      |
+
+### Compute Notification Events
+
+The service listens for three types of compute notifications from the server:
+
+| Event               | Cache Action        | Emitted via                      |
+|----------------------|---------------------|----------------------------------|
+| `compute.created`    | Add to cache        | `computeNotificationEmitter`     |
+| `compute.updated`    | Update in cache     | `computeNotificationEmitter`     |
+| `compute.deleted`    | Remove from cache   | `computeNotificationEmitter`     |
+
+After each cache mutation, the `computeCacheUpdated` emitter fires with the full updated compute list.
+
+### Compute Caching
 
 ```
-NotificationService Features:
-    │
-    ├── WebSocket connection management
-    │     ├─ Create WebSocket
-    │     ├─ Handle connection events
-    │     └─ Close connection
-    │
-    ├── Compute notifications
-    │     ├─ Listen for compute updates
-    │     ├─ Emit events to subscribers
-    │     └─ Update compute cache
-    │
-    └── Compute caching
-          ├─ Store latest compute states
-          ├─ Provide cached data
-          └─ Clear cache on disconnect
+┌───────────────────────────────────────────────────┐
+│              Compute Cache                         │
+│             (Map<compute_id, Compute>)             │
+├───────────────────────────────────────────────────┤
+│                                                    │
+│  setInitialComputes(computes)                      │
+│     └─ Initialize cache from HTTP response         │
+│                                                    │
+│  getCachedComputes()                               │
+│     └─ Returns all cached computes as array        │
+│                                                    │
+│  hasCachedData()                                   │
+│     └─ Check if cache contains data                │
+│                                                    │
+│  computeCacheUpdated                               │
+│     └─ EventEmitter, fires on every cache change   │
+│                                                    │
+│  Cleared on: disconnect()                          │
+│                                                    │
+└───────────────────────────────────────────────────┘
 ```
 
-**See Also:** `src/app/services/notification.service.ts`
+### Notification Path Builders
+
+The service builds two types of WebSocket URLs:
+
+| Method                          | Purpose                        | URL Pattern                                        |
+|---------------------------------|--------------------------------|----------------------------------------------------|
+| `notificationsPath`             | Controller-level notifications | `{ws/wss}://{host}:{port}/{version}/notifications/ws?token={token}` |
+| `projectNotificationsPath`      | Project-level notifications    | `{ws/wss}://{host}:{port}/{version}/projects/{id}/notifications/ws?token={token}` |
+
+Protocol is determined by `controller.protocol`: `https:` maps to `wss`, otherwise `ws`.
+
+### Key Emitters
+
+| Emitter                       | Type                        | Purpose                                   |
+|-------------------------------|-----------------------------|-------------------------------------------|
+| `computeNotificationEmitter`  | `EventEmitter<ComputeNotification>` | Emits individual compute events   |
+| `computeCacheUpdated`         | `EventEmitter<Compute[]>`   | Emits full compute list after cache change |
+
+**Source file:** `src/app/services/notification.service.ts`
 
 ---
 
 ## Testing
 
-### Unit Test Coverage
+> **Status:** Unit tests have not been implemented yet.
 
-**Test Scenarios:**
+### Planned Test Scenarios
 
-```
-Test: Establish Connection to New Controller
-    ├─ Given: No current controller
-    ├─ When: establishConnection(controller)
-    └─ Then: Connection established, controller stored
-
-Test: Skip Duplicate Connection
-    ├─ Given: Connected to controller A
-    ├─ When: establishConnection(controller A)
-    └─ Then: No new connection created
-
-Test: Switch Controllers
-    ├─ Given: Connected to controller A
-    ├─ When: establishConnection(controller B)
-    └─ Then:
-        ├─ Old connection disconnected
-        └─ New connection established
-
-Test: Disconnect
-    ├─ Given: Connected to controller
-    ├─ When: disconnect()
-    └─ Then:
-        ├─ Connection closed
-        ├─ Controller cleared
-        └─ Compute cache cleared
-
-Test: Get Current Controller
-    ├─ Given: Connected to controller A
-    ├─ When: getCurrentController()
-    └─ Then: Returns controller A
-
-Test: Is Connected To
-    ├─ Given: Connected to controller A
-    ├─ When: isConnectedTo(controller A)
-    └─ Then: Returns true
-    ├─ When: isConnectedTo(controller B)
-    └─ Then: Returns false
-```
-
----
-
-## Code Examples
-
-### Basic Usage
-
-```typescript
-export class MyComponent {
-  constructor(
-    private connectionManager: ConnectionManagerService,
-    private controllerService: ControllerService
-  ) {}
-
-  async onLogin(credentials: Credentials) {
-    const controller = await this.controllerService.login(credentials);
-    this.connectionManager.establishConnection(controller);
-  }
-
-  onLogout() {
-    this.connectionManager.disconnect();
-  }
-}
-```
-
-### Controller Switch
-
-```typescript
-export class ControllerSelectorComponent {
-  onControllerSwitch(newController: Controller) {
-    // Automatically handles disconnect and reconnect
-    this.connectionManager.establishConnection(newController);
-  }
-}
-```
-
-### Check Connection Status
-
-```typescript
-export class StatusComponent {
-  constructor(private connectionManager: ConnectionManagerService) {}
-
-  getConnectionStatus(): string {
-    const controller = this.connectionManager.getCurrentController();
-    return controller ? `Connected to ${controller.name}` : 'Not connected';
-  }
-}
-```
+| Scenario                        | Given                        | When                                | Expected                                    |
+|---------------------------------|------------------------------|-------------------------------------|---------------------------------------------|
+| Establish new connection        | No current controller        | `establishConnection(controller)`   | Connection established, controller stored   |
+| Skip duplicate connection       | Connected to controller A    | `establishConnection(controller A)` | No new connection created                   |
+| Switch controllers              | Connected to controller A    | `establishConnection(controller B)` | Old connection closed, new one established  |
+| Disconnect                      | Connected to a controller    | `disconnect()`                      | WS closed, controller cleared, cache cleared |
+| Get current controller          | Connected to controller A    | `getCurrentController()`            | Returns controller A                        |
+| Is connected (matching)         | Connected to controller A    | `isConnectedTo(controller A)`       | Returns `true`                              |
+| Is connected (non-matching)     | Connected to controller A    | `isConnectedTo(controller B)`       | Returns `false`                             |
 
 ---
 
@@ -356,109 +368,42 @@ export class StatusComponent {
 
 ### WebSocket Protocol Selection
 
-**Protocol Logic:**
-
-```
-Controller Protocol    WebSocket Protocol
-─────────────────      ───────────────────
-http:                  ws://
-https:                 wss://
-
-Decision based on controller.protocol property
-```
-
-**Implementation:** (in NotificationService)
-
-```
-notificationsPath(controller: Controller): string {
-  const protocol = controller.protocol === 'https:' ? 'wss' : 'ws';
-  return `${protocol}://${controller.host}:${controller.port}/...`;
-}
-```
+| Controller Protocol | WebSocket Protocol |
+|---------------------|--------------------|
+| `http:`             | `ws://`            |
+| `https:`            | `wss://`           |
 
 ### Authentication
 
-**Token-based Authentication:**
+WebSocket connections use token-based authentication. The auth token is included as a query parameter in the WebSocket URL. The server validates the token before accepting the connection.
 
-```
-WebSocket URL includes auth token:
-    ws://host:port/version/notifications/ws?token=AUTH_TOKEN
-
-Benefits:
-    ├─ Secure connection
-    ├─ No additional auth step
-    └─ Token validated by server
-```
-
----
-
-## Migration Guide
-
-### Before: Direct NotificationService Calls
-
-**Old Pattern:**
-
-```
-Components directly called NotificationService:
-    │
-    ├→ Multiple components could create duplicate connections
-    ├→ No central tracking of current controller
-    └→ Hard to manage controller lifecycle
-```
-
-### After: ConnectionManagerService
-
-**New Pattern:**
-
-```
-Components use ConnectionManagerService:
-    │
-    ├→ Single point of connection management
-    ├→ Automatic duplicate prevention
-    ├→ Centralized controller tracking
-    └→ Cleaner component code
-```
-
-**Migration Steps:**
-
-```
-Step 1: Inject ConnectionManagerService
-    │
-    └─ constructor(private connectionManager: ConnectionManagerService)
-
-Step 2: Replace direct connection calls
-    │
-    ├─ OLD: this.notificationService.connectToComputeNotifications(controller)
-    └─ NEW: this.connectionManager.establishConnection(controller)
-
-Step 3: Update disconnect logic
-    │
-    ├─ OLD: this.notificationService.disconnect()
-    └─ NEW: this.connectionManager.disconnect()
-```
+**URL format:** `{ws/wss}://{host}:{port}/{version}/notifications/ws?token={AUTH_TOKEN}`
 
 ---
 
 ## Related Documentation
 
-- [NotificationService](../../services/notification/) - Actual WebSocket implementation
-- [Controller Model](../../models/controller/) - Controller data structure
-- [Compute Service](../../services/compute/) - Compute management
+| Document                                    | Description                    |
+|---------------------------------------------|--------------------------------|
+| `src/app/services/notification.service.ts`  | Actual WebSocket implementation|
+| `src/app/services/connection-manager.service.ts` | This service's source code |
+| `src/app/models/controller.ts`              | Controller data structure      |
+| `src/app/models/compute.ts`                 | Compute data structure         |
 
 ---
 
 ## Summary
 
 **ConnectionManagerService** is a simple, focused service that:
-- ✅ Tracks the current controller
-- ✅ Prevents duplicate connections
-- ✅ Handles controller switching
-- ✅ Delegates WebSocket management to NotificationService
+- Tracks the current controller
+- Prevents duplicate connections
+- Handles controller switching
+- Delegates WebSocket management to NotificationService
 
 **Not responsible for:**
-- ❌ WebSocket connection lifecycle (NotificationService)
-- ❌ Auto-reconnection logic
-- ❌ Connection pooling/caching
-- ❌ Complex state management
+- WebSocket connection lifecycle (NotificationService)
+- Auto-reconnection logic
+- Connection pooling/caching
+- Complex state management
 
 **Design Philosophy:** Simple, single-responsibility service that does one thing well.
