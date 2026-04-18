@@ -213,7 +213,7 @@ const Utilities = {
       return navigator.oscpu;
     }
     //ie:
-    if (Object.hasOwn((navigator, "cpuClass"))) {
+    if (Object.hasOwn(navigator, "cpuClass")) {
       return navigator.cpuClass;
     }
     return "unknown";
@@ -920,5 +920,5 @@ function console_warn_safe() {
 }
 
 function console_log_safe() {
-  if (console) // console.log.apply(console, arguments);
+  if (console) console.log.apply(console, arguments);
 }

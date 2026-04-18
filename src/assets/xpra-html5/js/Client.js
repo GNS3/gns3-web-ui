@@ -130,7 +130,7 @@ class XpraClient {
     this.reconnect = true;
     this.reconnect_count = 10;
     this.reconnect_in_progress = false;
-    this.reconnect_delay = 1000; //wait 1 second before retrying
+    this.reconnect_delay = 2000; //wait 2 seconds before retrying
     this.reconnect_attempt = 0;
     this.swap_keys = Utilities.isMacOS();
     this.HELLO_TIMEOUT = 30_000;
