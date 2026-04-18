@@ -35,29 +35,28 @@ See LICENSE file for licensing information.
 │           │                     │                             │
 │           ▼                     ▼                             │
 │  ┌─────────────────────────────────────────┐                │
-│  │         Ghost Icon (Visual Feedback)     │                │
-│  │         Positioned at drop target        │                │
-│  └───────────────────┬─────────────────────┘                │
-│                      │                                      │
-│                      ▼                                      │
-│  ┌─────────────────────────────────────────┐                │
-│  │       ComputeSelectorComponent          │                │
+│  │  Selector Backdrop (full-screen overlay) │                │
 │  │  ┌─────────────────────────────────┐    │                │
-│  │  │    Compute List (Virtual)       │    │                │
-│  │  │  • Local Compute (first)        │    │                │
-│  │  │  • Remote Compute 1             │    │                │
-│  │  │  • Remote Compute 2             │    │                │
+│  │  │  Ghost Icon (at drop position)  │    │                │
 │  │  └─────────────────────────────────┘    │                │
 │  │  ┌─────────────────────────────────┐    │                │
-│  │  │   Resource Usage Display        │    │                │
-│  │  │   • CPU Usage (color-coded)     │    │                │
-│  │  │   • Memory Usage                │    │                │
-│  │  │   • Disk Usage                  │    │                │
-│  │  └─────────────────────────────────┘    │                │
-│  │  ┌─────────────────────────────────┐    │                │
-│  │  │   Smart Positioning Logic       │    │                │
-│  │  │   • Collision Detection         │    │                │
-│  │  │   • ResizeObserver Tracking     │    │                │
+│  │  │   ComputeSelectorComponent      │    │                │
+│  │  │  ┌─────────────────────────┐    │    │                │
+│  │  │  │  Compute List (@for)    │    │    │                │
+│  │  │  │  • Local (controller)   │    │    │                │
+│  │  │  │  • Remote Compute 1     │    │    │                │
+│  │  │  └─────────────────────────┘    │    │                │
+│  │  │  ┌─────────────────────────┐    │    │                │
+│  │  │  │  Resource Info (text)   │    │    │                │
+│  │  │  │  • CPU: 35% / 4c       │    │    │                │
+│  │  │  │  • MEM: 8.2/16 GB      │    │    │                │
+│  │  │  │  • DISK: 45%           │    │    │                │
+│  │  │  └─────────────────────────┘    │    │                │
+│  │  │  ┌─────────────────────────┐    │    │                │
+│  │  │  │  Smart Positioning      │    │    │                │
+│  │  │  │  • Edge detection       │    │    │                │
+│  │  │  │  • ResizeObserver       │    │    │                │
+│  │  │  └─────────────────────────┘    │    │                │
 │  │  └─────────────────────────────────┘    │                │
 │  └─────────────────────────────────────────┘                │
 └─────────────────────────────────────────────────────────────┘
@@ -74,43 +73,51 @@ See LICENSE file for licensing information.
 ```
 User Action          Component           State              Visual
 ─────────────────    ──────────────     ──────────────     ──────────────
-Drag Start      →   TemplateComponent → draggedNode set   →   Drag cursor
+Drag Start      →   TemplateComponent → isDragging=true   →   Drag cursor
                         │                                   appearing
-                        ├→ Store node data
-                        ├→ Set drag data transfer
-                        └→ Show ghost icon
-                            (at node position)
+                        ├→ Capture mouse offset via window.event
+                        ├→ Add document-level mousemove listener
+                        └→ Track lastPageX / lastPageY
 
-Drag Move      →   TemplateComponent → Update position   →   Ghost icon
-                        │                                   follows mouse
-                        └→ Calculate ghost position
-                            (node-based, not mouse-based)
+Drag Move       →   TemplateComponent → Update position   →   (No ghost icon
+                        │                                   during drag)
+                        └→ Update lastPageX / lastPageY
+                            via document mousemove listener
 
-Drag End       →   TemplateComponent → Clear state       →   Ghost icon
-                        │                                   disappears
-                        ├→ Hide ghost icon
-                        └→ Close compute selector
+Drop End       →    TemplateComponent → Check computes    →   If single:
+                        │                                   create node
+                        ├→ Convert screen → world coords   →   If multiple:
+                        ├→ Use cached computes (or HTTP)       show selector
+                        └→ processNodeCreation()
+                            ├→ 1 compute: emit directly
+                            └→ N computes: show backdrop + selector
+                                ├→ Show ghost icon at drop position
+                                ├→ Show compute selector near cursor
+                                └→ Sort computes (local first)
 ```
 
 #### Ghost Icon Implementation
 
-The ghost icon serves as visual feedback during drag operations. Key design decisions:
+The ghost icon appears **after the drop** when multiple computes are available, positioned inside the selector backdrop overlay.
 
 **Positioning Strategy**:
-- Icon appears at the **node element's position**, not the mouse cursor
-- Provides accurate visual representation of where the node will be created
-- Eliminates visual disconnect between drag source and drop target
+- Icon appears at the **ghost icon screen position** derived from the drop coordinates
+- Shown only when the compute selector backdrop is visible
+- Displayed alongside the compute selector, not during the drag itself
 
 **Visual Properties**:
-- Semi-transparent (50% opacity) to indicate temporary state
-- Same dimensions as the actual node being dragged
-- Centered on the drop target position
-- Uses Material Design elevation shadows for depth
+- Shows the template's icon image (`pendingTemplate()`)
+- Positioned using `ghostIconScreenPosition()` signal
+- Inside a full-screen backdrop overlay (`.template__selector-backdrop`)
 
 **Lifecycle Management**:
-1. **Creation**: Triggered on `dragstart` event
-2. **Position Update**: During `dragmove` event
-3. **Cleanup**: Removed on `dragend` or drop completion
+1. **Creation**: When `showComputeSelector` is set to `true` after a drop with multiple computes
+2. **Cleanup**: Removed when `clearPendingState()` is called (on compute selection or backdrop click)
+
+**Backdrop Overlay**:
+- Full-screen invisible overlay (`.template__selector-backdrop`)
+- Click handler calls `onComputeSelectorCancelled()` to dismiss the selector
+- Contains both the ghost icon and the compute selector component
 
 ---
 
@@ -121,27 +128,33 @@ The ghost icon serves as visual feedback during drag operations. Key design deci
 The component uses Angular Signals for reactive state management:
 
 ```
-Input Signals
+Input Signals (required)
     │
-    ├── position (required)     → Screen coordinates for placement
-    ├── computes (required)     → List of available compute nodes (pre-sorted)
-    └── isVisible               → Panel visibility state
+    ├── x (required)              → Mouse X screen coordinate
+    ├── y (required)              → Mouse Y screen coordinate
+    └── computes (required)       → List of available compute nodes (pre-sorted)
+                                   │
+                                   ▼
+                            Writable Signals (internal)
+                                   │
+                                   ├── actualWidth (default 200)
+                                   │    └── Measured panel width via ResizeObserver
+                                   │
+                                   └── actualHeight (default 120)
+                                        └── Measured panel height via ResizeObserver
                                    │
                                    ▼
                             Computed Signals
                                    │
                                    ├── selectorX
-                                   │    └── Collision-detected X coordinate
+                                   │    └── Edge-adjusted X coordinate
                                    │
-                                   ├── selectorY
-                                   │    └── Collision-detected Y coordinate
-                                   │
-                                   ├── actualWidth
-                                   │    └── Current rendered width
-                                   │
-                                   └── actualHeight
-                                        └─ Current rendered height
+                                   └── selectorY
+                                        └── Edge-adjusted Y coordinate
 ```
+
+**Output**:
+- `computeSelected: EventEmitter<string>` — Emits the selected `compute_id`
 
 **State Flow Diagram**:
 
@@ -155,8 +168,9 @@ Input Signals
                             │
                     ┌──────────────┐
                     │ ResizeObserver│
-                    │  (Dimension   │
-                    │   Tracking)  │
+                    │  (updates    │
+                    │  actualWidth/ │
+                    │  actualHeight)│
                     └──────────────┘
 ```
 
@@ -170,14 +184,19 @@ Input Signals
 ┌─────────────────────────────────────────────────────────┐
 │                  ResizeObserver Setup                   │
 ├─────────────────────────────────────────────────────────┤
-│  1. Create ResizeObserver instance on component init    │
-│  2. Observe panel element for dimension changes         │
-│  3. On resize event:                                    │
-│     a. Extract new width/height from content rect       │
-│     b. Update panelWidth/panelHeight signals            │
-│     c. Trigger adjustedPosition recalculation           │
-│     d. Mark for check (change detection)                │
-│  4. Cleanup observer on component destroy               │
+│  1. Create ResizeObserver in constructor                │
+│  2. In ngAfterViewInit:                                 │
+│     a. Measure initial dimensions via getBoundingClientRect │
+│     b. Update actualWidth/actualHeight signals           │
+│     c. Start observing the panel element                 │
+│     d. Auto-focus container (setTimeout) for immediate   │
+│        keyboard interaction                              │
+│  3. On resize callback:                                 │
+│     a. Extract width/height from entry.contentRect       │
+│     b. Update actualWidth/actualHeight signals           │
+│     c. Trigger selectorX/selectorY recomputation         │
+│     d. Call cd.markForCheck()                            │
+│  4. Cleanup: disconnect() in ngOnDestroy                │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -189,43 +208,41 @@ Input Signals
 
 #### Smart Positioning Algorithm
 
-**Collision Detection Logic**:
+**Edge Detection Logic**:
+
+The algorithm uses a `MARGIN` of **10px** and checks **right and bottom edges only**. For the default case, the selector is placed at `mouse + MARGIN`.
 
 ```
 ┌──────────────────────────────────────────────────────────┐
-│           Screen Boundary Collision Detection            │
+│           Screen Boundary Edge Detection                  │
 ├──────────────────────────────────────────────────────────┤
 │                                                          │
-│  Screen Canvas                                           │
+│  Screen                                                  │
 │  ┌────────────────────────────────────────────────┐     │
-│  │  Padding Zone (16px from edges)                │     │
-│  │  ┌──────────────────────────────────────────┐  │     │
-│  │  │                                          │  │     │
-│  │  │   Safe Zone                             │  │     │
-│  │  │   (Selector can be positioned here)      │  │     │
-│  │  │                                          │  │     │
-│  │  │           ┌──────────────┐              │  │     │
-│  │  │           │   Selector   │              │  │     │
-│  │  │           │   (300px)    │              │  │     │
-│  │  │           └──────────────┘              │  │     │
-│  │  │                                          │  │     │
-│  │  └──────────────────────────────────────────┘  │     │
+│  │                                                │     │
+│  │   Default: selector at (mouseX + 10, mouseY + 10)   │
+│  │                                                │     │
+│  │       mouse_cursor ──→ ┌──────────────┐       │     │
+│  │                        │   Selector   │       │     │
+│  │                        │              │       │     │
+│  │                        └──────────────┘       │     │
 │  │                                                │     │
 │  └────────────────────────────────────────────────┘     │
 │                                                          │
-│  Collision Scenarios:                                   │
+│  Edge Scenarios (MARGIN = 10):                          │
 │  ─────────────────────                                   │
-│  1. Right Edge:  x + width > screenWidth - padding      │
-│     → Reposition: x = screenWidth - width - padding     │
+│  1. Right Edge:  mouseX + width + MARGIN > screenWidth  │
+│     → Reposition: mouseX - width - MARGIN               │
+│     (selector flips to left side of cursor)              │
 │                                                          │
-│  2. Left Edge:   x < padding                            │
-│     → Reposition: x = padding                           │
+│  2. Bottom Edge: mouseY + height + MARGIN > screenHeight│
+│     → Reposition: mouseY - height - MARGIN              │
+│     (selector flips above cursor)                        │
 │                                                          │
-│  3. Bottom Edge: y + height > screenHeight - padding    │
-│     → Reposition: y = screenHeight - height - padding   │
-│                                                          │
-│  4. Top Edge:    y < padding                            │
-│     → Reposition: y = padding                           │
+│  Note: No explicit left/top edge checks.                │
+│  The default position (mouseX + MARGIN) inherently      │
+│  avoids left/top clipping since mouse is already        │
+│  within the viewport.                                    │
 │                                                          │
 └──────────────────────────────────────────────────────────┘
 ```
@@ -233,135 +250,118 @@ Input Signals
 **Position Calculation Flow**:
 
 ```
-Input Position (ghost icon location)
+Input Position (mouse cursor location)
             │
             ▼
    ┌─────────────────┐
-   │ Calculate       │
-   │ Raw Position    │
+   │ Default:        │
+   │ x = mouseX + 10 │
+   │ y = mouseY + 10 │
    └────────┬────────┘
             │
             ▼
    ┌─────────────────┐
-   │ Check Right     │──→ Collision? ──→ Adjust Left
-   │ Edge Collision  │
+   │ Check Right     │──→ Overflow? ──→ x = mouseX - width - 10
+   │ Edge            │                   (flip left)
    └────────┬────────┘
             │
             ▼
    ┌─────────────────┐
-   │ Check Left      │──→ Collision? ──→ Adjust Right
-   │ Edge Collision  │
+   │ Check Bottom    │──→ Overflow? ──→ y = mouseY - height - 10
+   │ Edge            │                   (flip up)
    └────────┬────────┘
             │
             ▼
-   ┌─────────────────┐
-   │ Check Bottom    │──→ Collision? ──→ Adjust Up
-   │ Edge Collision  │
-   └────────┬────────┘
-            │
-            ▼
-   ┌─────────────────┐
-   │ Check Top       │──→ Collision? ──→ Adjust Down
-   │ Edge Collision  │
-   └────────┬────────┘
-            │
-            ▼
-   Final Adjusted Position
+   Final Position
 ```
 
 ---
 
 ## Resource Usage Display
 
+### Text-Based Resource Info
+
+Resources are displayed as **inline text values** with color-coded CSS classes. There are no progress bar elements.
+
+**Layout**:
+
+```
+┌──────────────────────────────────────────────────┐
+│  Compute Name (host:port)         [Status Icon]  │
+├──────────────────────────────────────────────────┤
+│  CPU: 35% / 4c   MEM: 8.2/16 GB   DISK: 45%    │
+└──────────────────────────────────────────────────┘
+```
+
+**Rendered Output Examples**:
+
+```
+┌───────────────────────────────────────────────────┐
+│  Local (controller)                    ✓ (green)  │
+│  CPU: 35% / 4c   MEM: 5.2/16 GB   DISK: 45%     │
+├───────────────────────────────────────────────────┤
+│  Remote Server (192.168.1.10:3080)    ✗ (red)    │
+│  CPU: 90% / 8c   MEM: 12.5/32 GB   DISK: 88%    │
+└───────────────────────────────────────────────────┘
+```
+
 ### Color Coding System
 
-**Visual Hierarchy**:
+**Threshold-Based CSS Classes**:
 
 ```
 Resource Usage Levels
     │
-    ├── Low (0-60%)      → Low Usage Color  (Green/Teal)
-    │                    └─ Indicates: Healthy capacity
+    ├── Low (0-60%)      → compute-selector__usage--low
+    │                    └─ CSS: var(--mat-sys-primary)
     │
-    ├── Medium (60-85%)  → Medium Usage Color (Yellow/Orange)
-    │                    └─ Indicates: Moderate usage
+    ├── Medium (60-85%)  → compute-selector__usage--medium
+    │                    └─ CSS: var(--mat-sys-tertiary)
     │
-    └── High (85-100%)   → High Usage Color  (Red)
-                         └─ Indicates: Near capacity
+    └── High (85-100%)   → compute-selector__usage--high
+                         └─ CSS: var(--mat-sys-error)
 ```
 
-**Implementation Approach**:
-
-The color coding uses a threshold-based system:
-
-1. **Determine Usage Level**: Calculate percentage of used resources
-2. **Select CSS Class**:
+**Implementation** (`getUsageColorClass()`):
+1. Determine usage percentage from `cpu_usage_percent`, `memory_usage_percent`, or `disk_usage_percent`
+2. Select CSS class:
    - Below 60%: `compute-selector__usage--low`
    - 60-85%: `compute-selector__usage--medium`
    - Above 85%: `compute-selector__usage--high`
-3. **Apply to Progress Bar**: CSS class on resource fill element
-4. **Add Animation**: Smooth transitions (300ms) for visual feedback
-
-**Visual Representation**:
-
-```
-┌─────────────────────────────────────────────────────┐
-│  Resource Card: "Local Compute"                     │
-├─────────────────────────────────────────────────────┤
-│                                                     │
-│  CPU    ████░░░░░░░░░░░░░  35%  (Low)              │
-│  Memory ██████░░░░░░░░░░░░  55%  (Low)              │
-│  Disk   ████████████░░░░░░  75%  (Medium)           │
-│                                                     │
-│  ┌─────────────────────────────────────────────┐   │
-│  │  High Usage Example: "Remote Compute 1"    │   │
-│  ├─────────────────────────────────────────────┤   │
-│  │                                             │   │
-│  │  CPU    ████████████████░░░  90% (High)    │   │
-│  │  Memory ██████████████░░░░░  78% (Medium)  │   │
-│  │  Disk   ████░░░░░░░░░░░░░░░  40% (Low)     │   │
-│  │                                             │   │
-│  └─────────────────────────────────────────────┘   │
-│                                                     │
-└─────────────────────────────────────────────────────┘
-```
+3. Apply class to the text `<span>` element (not a progress bar)
 
 ### Resource Metrics Display
 
 **Displayed Information**:
 
-1. **CPU Usage**
-   - Current utilization percentage
-   - Visual progress bar with color coding
-   - Numeric value for precision
+1. **CPU Usage** (`getCpuInfo()`)
+   - Format: `{usage_percent}% / {cpu_count}c`
+   - Example: `35% / 4c`
+   - Color-coded by usage threshold
 
-2. **Memory Usage**
-   - RAM consumption vs total capacity
-   - Same visual treatment as CPU
-   - Helps identify memory-intensive computes
+2. **Memory Usage** (`getMemoryInfo()`)
+   - Format: `{used_GB}/{total_GB} GB`
+   - Converts bytes to GB via `bytesToGB()`
+   - Example: `8.2/16 GB`
+   - Color-coded by `memory_usage_percent` threshold
 
-3. **Disk Usage**
-   - Storage consumption vs total capacity
-   - Important for disk-intensive operations
-   - Color-coded for quick assessment
+3. **Disk Usage** (`getDiskInfo()`)
+   - Format: `{usage_percent}%`
+   - Only shows percentage, no total capacity
+   - Example: `45%`
+   - Color-coded by usage threshold
 
-**Layout Structure**:
+### Connection Status
 
-```
-┌──────────────────────────────────┐
-│  Compute Name    [Badge: Local]  │
-├──────────────────────────────────┤
-│                                  │
-│  ┌────────────────────────────┐ │
-│  │ Resource Label  Progress   % │
-│  ├────────────────────────────┤ │
-│  │ CPU           ████░░░░   35 │ │
-│  │ Memory       ██████░░░░   55 │ │
-│  │ Disk         ██████░░░░   65 │ │
-│  └────────────────────────────┘ │
-│                                  │
-└──────────────────────────────────┘
-```
+Each compute item shows a connection status icon:
+- **Connected**: `check_circle` icon with `--mat-sys-primary` color
+- **Disconnected**: `cancel` icon with `--mat-sys-error` color
+
+### Display Name Format
+
+**`getComputeDisplayName()`**:
+- Local compute: `{name} (controller)` — e.g., `Local (controller)`
+- Remote compute: `{name} ({host}:{port})` — e.g., `Remote Server (192.168.1.10:3080)`
 
 ---
 
@@ -369,19 +369,19 @@ The color coding uses a threshold-based system:
 
 ### 1. Compute List Sorting
 
-**Sorting Location**: TemplateComponent (not in ComputeSelectorComponent)
+**Sorting Location**: `TemplateComponent.processNodeCreation()` (not in ComputeSelectorComponent)
 
 **Sorting Priority**:
 
 ```
 Compute List Sorting Algorithm
     │
-    ├── First Priority: Is Local?
-    │     ├── Yes → Place at top
+    ├── First Priority: compute_id === 'local'?
+    │     ├── Yes → Place at top (return -1)
     │     └── No  → Continue to next priority
     │
     └── Second Priority: Alphabetical
-          └── Sort by name (A-Z)
+          └── Sort by name via localeCompare (A-Z)
 ```
 
 **Rationale**:
@@ -395,58 +395,103 @@ Compute List Sorting Algorithm
 ```
 Before Sorting:          After Sorting:
 ─────────────────        ─────────────────
-• Remote Server 2        • Local (Local)
+• Remote Server 2        • Local (controller)
 • Remote Server 1  →     • Remote Server 1
 • Local                  • Remote Server 2
 • Cloud Compute          • Cloud Compute
 ```
 
-### 2. Change Detection Strategy
+### 2. Compute Caching
+
+**Caching Strategy**: Computes are cached in `TemplateComponent` to avoid redundant HTTP requests.
+
+```
+Compute Data Flow
+    │
+    ├── Primary: cachedComputes() signal
+    │     └─ Populated by notificationService.setInitialComputes()
+    │     └─ Updated via WebSocket notifications
+    │
+    └── Fallback: computeService.getComputes() HTTP request
+          └─ Only when cache is empty
+          └─ On success: populates cache for future use
+          └─ On error: falls back to 'local' compute
+```
+
+### 3. Change Detection Strategy
 
 **OnPush Strategy Benefits**:
 
 ```
 Change Detection Flow
     │
-    ├── Input Changes
-    │     ├── Position update ──→ Mark for check
-    │     ├── Computes update  ──→ Mark for check
-    │     └─ Visibility update ──→ Mark for check
+    ├── Input Changes (x, y, computes)
+    │     └── Signal-based → automatic propagation
     │
     ├── Internal State Changes
-    │     ├── Signal updates ──→ Automatic propagation
-    │     └─ Computed recalc ──→ View update
+    │     ├── Writable signal updates (actualWidth/actualHeight)
+    │     └── Computed recalculation (selectorX/selectorY)
     │
-    └── Async Operations
-          └─ Network/data ──→ Explicit markForCheck()
+    └── ResizeObserver Callback
+          └── Explicit cd.markForCheck()
 ```
 
 **Performance Characteristics**:
-- **Reduced Checks**: Only checks on input changes
+- **Reduced Checks**: Only checks on input/signal changes
 - **Signal Efficiency**: Computed values update reactively
-- **Explicit Control**: Async operations require manual trigger
+- **Explicit Control**: ResizeObserver requires manual `markForCheck()`
 - **Zoneless Compatible**: No Zone.js overhead
 
-### 3. Virtual Scrolling (Future Enhancement)
+### 4. Drag Event Tracking
 
-**When to Use**:
-- Compute node count exceeds 20 items
-- Performance degradation observed
-- Memory footprint becomes significant
+**`window.event` Workaround**: The `dragStart()` method uses `window.event as MouseEvent` because mwlDraggable's `DragStartEvent` doesn't contain mouse position data. Document-level `mousemove`/`mouseup` listeners track position during drag.
 
-**Implementation Strategy**:
+---
+
+## Implementation Details
+
+### Template Integration (template.component.html)
+
+```html
+@if (showComputeSelector()) {
+  <div class="template__selector-backdrop" (click)="onComputeSelectorCancelled()">
+    <div class="template__ghost-icon"
+         [style.left.px]="ghostIconScreenPosition().x"
+         [style.top.px]="ghostIconScreenPosition().y">
+      @if (pendingTemplate()) {
+        <img class="template__ghost-icon-img"
+             [src]="getImageSourceForTemplate(pendingTemplate())"
+             draggable="false" />
+      }
+    </div>
+    <app-compute-selector
+      [computes]="availableComputes()"
+      [x]="lastPageX()"
+      [y]="lastPageY()"
+      (computeSelected)="onComputeSelected($event)" />
+  </div>
+}
+```
+
+### Key Signals in TemplateComponent
+
+| Signal | Type | Purpose |
+|--------|------|---------|
+| `showComputeSelector` | `signal<boolean>` | Controls selector visibility |
+| `availableComputes` | `signal<Compute[]>` | Sorted compute list |
+| `pendingNodePosition` | `signal<{x,y} \| null>` | World coordinates for node |
+| `pendingTemplate` | `signal<Template \| null>` | Template being dropped |
+| `lastPageX` / `lastPageY` | `signal<number>` | Mouse screen position |
+| `cachedComputes` | `signal<Compute[]>` | Cached compute data |
+| `isDragging` | `signal<boolean>` | Active drag tracking |
+
+### Component File Structure
 
 ```
-Virtual Scrolling Architecture
-    │
-    ├── Viewport Management
-    │     └─ Only render visible items (+ buffer)
-    │
-    ├── Item Pool
-    │     └─ Reuse DOM elements
-    │
-    └── Scroll Position
-          └─ Calculate visible range
+src/app/components/template/compute-selector/
+├── compute-selector.component.ts      # Component logic
+├── compute-selector.component.html    # Template
+└── compute-selector.component.scss    # Styles (BEM naming)
 ```
 
 ---
@@ -458,9 +503,10 @@ Virtual Scrolling Architecture
 **Test Categories**:
 
 1. **Positioning Logic**
-   - Screen edge collision detection
-   - Position adjustment calculations
-   - Boundary conditions (corners, edges)
+   - Right edge detection and flip
+   - Bottom edge detection and flip
+   - Default position (mouseX + MARGIN)
+   - Boundary conditions
 
 2. **Compute Sorting**
    - Local compute priority
@@ -468,14 +514,18 @@ Virtual Scrolling Architecture
    - Empty list handling
 
 3. **Resource Color Mapping**
-   - Usage level thresholds
-   - Color variable selection
+   - Usage level thresholds (60%, 85%)
+   - CSS class selection for cpu/mem/disk
    - Edge case handling (0%, 100%)
 
 4. **ResizeObserver Integration**
    - Dimension tracking accuracy
    - Signal updates on resize
    - Cleanup on destroy
+
+5. **Display Name Formatting**
+   - Local compute: `{name} (controller)`
+   - Remote compute: `{name} ({host}:{port})`
 
 ### Integration Test Scenarios
 
@@ -484,68 +534,43 @@ Virtual Scrolling Architecture
 ```
 Test Scenario 1: Drag and Drop with Selection
     │
-    ├── 1. User drags node from template
-    ├── 2. Ghost icon appears at node position
-    ├── 3. Compute selector displays near ghost
-    ├── 4. User hovers over compute options
-    ├── 5. Resource usage displays correctly
-    ├── 6. User selects compute
-    └── 7. Node created on selected compute
+    ├── 1. User drags node from template panel
+    ├── 2. Mouse position tracked via document listeners
+    ├── 3. On drop: compute selector backdrop appears
+    ├── 4. Ghost icon shown at drop position
+    ├── 5. Compute selector displays near cursor
+    ├── 6. Resource info (CPU/MEM/DISK) shown with colors
+    ├── 7. User clicks a compute
+    └── 8. NodeAddedEvent emitted with selected compute_id
 
-Test Scenario 2: Screen Edge Avoidance
+Test Scenario 2: Backdrop Click Dismissal
     │
-    ├── 1. User drags node near screen edge
-    ├── 2. Ghost icon positioned at edge
-    ├── 3. Selector auto-adjusts to avoid clipping
-    ├── 4. Entire selector remains visible
-    └── 5. User can still interact with selector
+    ├── 1. Compute selector is visible
+    ├── 2. User clicks outside selector (on backdrop)
+    ├── 3. onComputeSelectorCancelled() called
+    ├── 4. clearPendingState() resets all pending signals
+    └── 5. Selector and ghost icon disappear
 
-Test Scenario 3: Resource Color Coding
+Test Scenario 3: Single Compute (No Selector)
     │
-    ├── 1. Compute with low usage (< 60%)
-    ├── 2. Compute with medium usage (60-85%)
-    ├── 3. Compute with high usage (> 85%)
-    └── 4. Colors match expected thresholds
-```
+    ├── 1. Only one compute available
+    ├── 2. User drops template on canvas
+    ├── 3. NodeCreated directly without showing selector
+    └── 4. Uses the single compute's compute_id
 
----
+Test Scenario 4: Edge Avoidance
+    │
+    ├── 1. User drops near screen edge
+    ├── 2. Selector auto-flips to avoid clipping
+    ├── 3. Entire selector remains visible
+    └── 4. User can still interact with selector
 
-## Accessibility Features
-
-### Keyboard Navigation
-
-**Supported Keyboard Actions**:
-
-```
-Key          Action                    Description
-─────────    ──────────────────        ───────────────────────────
-Escape       Close selector            Immediate dismissal
-Arrow Down   Next compute              Move selection down
-Arrow Up     Previous compute          Move selection up
-Enter        Confirm selection         Create node on selected compute
-Tab          Navigate forward          Move to next focusable element
-Shift+Tab    Navigate backward         Move to previous focusable element
-```
-
-### ARIA Labels
-
-**Accessibility Attributes**:
-
-```
-Element              ARIA Attributes          Purpose
-─────────────────    ──────────────────        ───────────────────────────
-Compute Card         role="button"            Identifies interactive element
-                     tabindex="0"             Enables keyboard focus
-                     aria-label               Describes compute name
-                     aria-describedby         Points to resource info
-
-Resource Display     id="compute-resources-*"  Target for aria-describedby
-                     aria-label               Describes resource type
-
-Progress Bar         role="progressbar"       Identifies progress indicator
-                     aria-valuenow            Current value
-                     aria-valuemin            Minimum value (0)
-                     aria-valuemax            Maximum value (100)
+Test Scenario 5: Resource Color Coding
+    │
+    ├── 1. Compute with low usage (< 60%) → primary color
+    ├── 2. Compute with medium usage (60-85%) → tertiary color
+    ├── 3. Compute with high usage (> 85%) → error color
+    └── 4. Colors applied via CSS classes
 ```
 
 ---
@@ -554,25 +579,42 @@ Progress Bar         role="progressbar"       Identifies progress indicator
 
 ### Current Limitations
 
-1. **Touch Device Accuracy**
-   - **Issue**: Ghost icon positioning less accurate on touch devices
-   - **Cause**: Touch events provide less precise coordinates
-   - **Impact**: Minor visual offset during drag operations
-   - **Workaround**: None currently, acceptable for touch use case
+1. **No Keyboard Navigation**
+   - **Issue**: No keyboard event handlers for arrow keys, Enter, or Escape
+   - **Current State**: Only `tabindex="0"` and auto-focus on mount
+   - **Impact**: Selector cannot be navigated via keyboard
+   - **Planned Fix**: Add keydown handlers for Escape, Arrow Up/Down, Enter
 
-2. **Small Screen Truncation**
+2. **No ARIA Attributes**
+   - **Issue**: Missing ARIA labels, roles, and descriptions
+   - **Current State**: Only basic HTML structure
+   - **Impact**: Screen reader accessibility is limited
+   - **Planned Fix**: Add `role`, `aria-label`, `aria-describedby` attributes
+
+3. **No Left/Top Edge Checks**
+   - **Issue**: Positioning only checks right and bottom edges
+   - **Current State**: Default position is always `mouse + MARGIN`
+   - **Impact**: Selector may clip if mouse is near left/top edge with a flipped selector
+   - **Workaround**: Rare in practice since mouse is typically within viewport
+
+4. **Small Screen Truncation**
    - **Issue**: Selector may be truncated on screens < 320px wide
-   - **Cause**: Fixed minimum width for content readability
+   - **Cause**: Minimum width of 200px for content readability
    - **Impact**: Partial content hidden on very small screens
    - **Workaround**: Responsive design handles most cases
 
-3. **Large Compute Lists**
-   - **Issue**: Performance degrades with > 50 compute nodes
-   - **Cause**: No virtual scrolling implementation
-   - **Impact**: Slower rendering and interaction
-   - **Planned Fix**: Virtual scrolling for large lists
+5. **Large Compute Lists**
+   - **Issue**: Performance may degrade with many compute nodes
+   - **Cause**: No virtual scrolling; full list rendered via `@for`
+   - **Impact**: Slower rendering with very large compute counts
+   - **Planned Fix**: Virtual scrolling for lists exceeding 20 items
+
+6. **`window.event` Dependency**
+   - **Issue**: `dragStart()` relies on `window.event` for mouse position
+   - **Cause**: mwlDraggable's DragStartEvent doesn't include mouse coordinates
+   - **Impact**: Browser compatibility concern (deprecated in some contexts)
+   - **Workaround**: Currently functional in all target browsers
 
 ## Related Documentation
 
 - [Material Design 3 Variables](../../guides/css/02-material3-variables.md) - CSS variable reference
-- [Window Boundary Service](../../guides/window-boundary-service.md) - Screen edge detection
