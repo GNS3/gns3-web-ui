@@ -4,7 +4,7 @@ See LICENSE file for licensing information.
 -->
 # Custom Adapters Implementation
 
-**Last Updated**: 2026-03-26
+**Last Updated**: 2026-04-18
 
 ## Overview
 
@@ -13,9 +13,9 @@ This document describes the implementation of the Custom Adapters feature in GNS
 Custom adapters are supported in two contexts:
 
 1. **Template Configuration** - Configure default adapter settings for templates (QEMU, VMware, VirtualBox)
-2. **Node Configuration** - Modify adapter settings for individual running nodes
+2. **Node Configuration** - Modify adapter settings for individual running nodes (QEMU, VMware, VirtualBox, Docker)
 
-Both contexts use the same `CustomAdaptersComponent` dialog and implement incremental save logic to only store non-default configurations.
+QEMU, VMware, and VirtualBox use the same `CustomAdaptersComponent` dialog with incremental save logic. Docker nodes use a separate `ConfigureCustomAdaptersDialogComponent` with a simplified adapter model (see [Docker Node Support](#docker-node-support)).
 
 ## Architecture
 
@@ -23,36 +23,49 @@ Both contexts use the same `CustomAdaptersComponent` dialog and implement increm
 
 | Component | Path | Purpose |
 |-----------|------|---------|
-| **Custom Adapters Dialog** | `src/app/components/preferences/common/custom-adapters/` | Reusable dialog for configuring adapters |
+| **Custom Adapters Dialog** | `src/app/components/preferences/common/custom-adapters/` | Reusable dialog for configuring adapters (QEMU/VMware/VirtualBox) |
+| **Custom Adapters Table** | `src/app/components/preferences/common/custom-adapters-table/` | MatTable-based adapter editor (currently unused, alternative to dialog) |
 | **QEMU Template Details** | `src/app/components/preferences/qemu/qemu-vm-template-details/` | QEMU template management |
 | **VMware Template Details** | `src/app/components/preferences/vmware/vmware-template-details/` | VMware template management |
 | **VirtualBox Template Details** | `src/app/components/preferences/virtual-box/virtual-box-template-details/` | VirtualBox template management |
 | **QEMU Node Configurator** | `src/app/components/project-map/node-editors/configurator/qemu/` | QEMU node configuration |
 | **VMware Node Configurator** | `src/app/components/project-map/node-editors/configurator/vmware/` | VMware node configuration |
 | **VirtualBox Node Configurator** | `src/app/components/project-map/node-editors/configurator/virtualbox/` | VirtualBox node configuration |
+| **Docker Node Custom Adapters** | `src/app/components/project-map/node-editors/configurator/docker/configure-custom-adapters/` | Simplified Docker node adapter configuration |
 
 ### Data Model
 
+**File:** `src/app/models/qemu/qemu-custom-adapter.ts`
+
 ```typescript
-interface CustomAdapter {
-  adapter_number: number;      // Adapter index (0-based)
-  port_name: string;           // Custom port name (e.g., "Gi0/0")
-  adapter_type: string;        // Network adapter type (e.g., "e1000", "virtio")
-  mac_address: string | null;  // MAC address (optional)
+class CustomAdapter {
+  adapter_number: number;
+  adapter_type: string;
+  port_name?: string;           // Custom port name (e.g., "Gi0/0")
+  mac_address?: string;         // MAC address (optional)
+}
+```
+
+**File:** `src/app/components/preferences/common/custom-adapters/custom-adapters.component.ts`
+
+```typescript
+interface NetworkType {
+  value: string;
+  name: string;
 }
 
 interface CustomAdaptersDialogData {
-  adapters: CustomAdapter[];           // Complete adapter list for display
-  networkTypes: NetworkType[];         // Available adapter types
-  portNameFormat: string;              // Port name format (e.g., "Ethernet{0}")
-  portSegmentSize: number;             // Port segment size for naming
-  defaultAdapterType: string;          // Default adapter type
-  currentAdapters: number;             // Total adapter count
+  adapters: CustomAdapter[];
+  networkTypes: NetworkType[];
+  portNameFormat?: string;              // Port name format (e.g., "Ethernet{0}"), defaults to "Ethernet{0}"
+  portSegmentSize?: number;             // Port segment size for naming, defaults to 0
+  defaultAdapterType?: string;          // Default adapter type for incremental save, defaults to "e1000"
+  currentAdapters?: number;             // Total adapter count
 }
 
 interface CustomAdaptersDialogResult {
   adapters: CustomAdapter[];      // Only non-default adapters (incremental save)
-  requiredAdapters: number;       // Minimum adapter count required
+  requiredAdapters?: number;      // Minimum adapter count required
 }
 ```
 
@@ -71,9 +84,25 @@ This approach:
 
 | Field | Default Value | Calculation |
 |-------|--------------|-------------|
-| **port_name** | Based on format | `portNameFormat.replace('{0}', adapter_number)` |
-| **adapter_type** | From template | `defaultAdapterType` (form's networkType field) |
+| **port_name** | Based on format | `portNameFormat.replace('{0}', adapter_number)` (with segment logic if `portSegmentSize > 0`) |
+| **adapter_type** | From template | `defaultAdapterType` (form's networkType field, defaults to `"e1000"`) |
 | **mac_address** | Empty | `null` or empty string |
+
+#### Port Name Generation (Segment-Based)
+
+When `portSegmentSize > 0`, port names use a segment-based calculation:
+
+```typescript
+const segment = Math.floor(adapter_number / portSegmentSize);
+const portInSegment = adapter_number % portSegmentSize;
+const portName = portNameFormat.replace('{0}', String(segment * portSegmentSize + portInSegment));
+```
+
+When `portSegmentSize` is 0 (default), port names use simple replacement:
+
+```typescript
+const portName = portNameFormat.replace('{0}', String(adapter_number));
+```
 
 ### Example Scenario
 
@@ -141,24 +170,45 @@ this.qemuService.getTemplate(this.controller, template_id).subscribe((template) 
 
 ```typescript
 openCustomAdaptersDialog() {
+  // Get configuration values
+  const portNameFormat = this.portNameFormat() || 'Ethernet{0}';
+  const segmentSize = this.portSegmentSize() || 0;
+  const defaultAdapterType = this.networkType() || 'e1000';
+  const adapterCount = this.adapters();
+
   // Get server's custom adapters (may be sparse)
-  const serverCustomAdapters = this.template.custom_adapters || [];
+  const serverCustomAdapters = this.qemuTemplate.custom_adapters || [];
 
   // Build complete adapter list for display
   const adaptersForDialog: CustomAdapter[] = [];
 
-  for (let i = 0; i < this.adapters(); i++) {
+  for (let i = 0; i < adapterCount; i++) {
     const customAdapter = serverCustomAdapters.find(a => a.adapter_number === i);
 
     if (customAdapter) {
       // Use server's custom configuration
-      adaptersForDialog.push(customAdapter);
+      adaptersForDialog.push({
+        adapter_number: customAdapter.adapter_number,
+        adapter_type: customAdapter.adapter_type,
+        port_name: customAdapter.port_name,
+        mac_address: customAdapter.mac_address || '',
+      });
     } else {
+      // Generate default port name
+      let portName: string;
+      if (segmentSize > 0) {
+        const segment = Math.floor(i / segmentSize);
+        const portInSegment = i % segmentSize;
+        portName = portNameFormat.replace('{0}', String(segment * segmentSize + portInSegment));
+      } else {
+        portName = portNameFormat.replace('{0}', String(i));
+      }
+
       // Use default configuration
       adaptersForDialog.push({
         adapter_number: i,
         adapter_type: defaultAdapterType,
-        port_name: generateDefaultPortName(i),
+        port_name: portName,
         mac_address: '',
       });
     }
@@ -166,7 +216,15 @@ openCustomAdaptersDialog() {
 
   // Open dialog with complete list
   this.dialog.open(CustomAdaptersComponent, {
-    data: { adapters: adaptersForDialog, ... }
+    panelClass: 'custom-adapters-dialog-panel',
+    data: {
+      adapters: adaptersForDialog,
+      networkTypes: this.networkTypes,
+      portNameFormat: portNameFormat,
+      portSegmentSize: segmentSize,
+      defaultAdapterType: defaultAdapterType,
+      currentAdapters: adapterCount,
+    } as CustomAdaptersDialogData,
   });
 }
 ```
@@ -174,42 +232,68 @@ openCustomAdaptersDialog() {
 **Key Points:**
 - Generate complete adapter list (0 to adapters-1)
 - Merge server custom adapters with default adapters
+- Port name generation supports segment-based naming via `portSegmentSize`
 - User sees all adapters, can edit any of them
+- Dialog uses `panelClass: 'custom-adapters-dialog-panel'` for styling isolation
 
 ### 3. Save (Incremental)
 
 ```typescript
 configureCustomAdapters() {
+  // Check for invalid MAC addresses before submitting
+  if (this.hasInvalidMacAddresses()) {
+    // Show error toast and abort
+    return;
+  }
+
+  const portNameFormat = this.data.portNameFormat || 'Ethernet{0}';
+  const segmentSize = this.data.portSegmentSize || 0;
+  const defaultAdapterType = this.data.defaultAdapterType || 'e1000';
+
+  // Incremental save: only keep adapters with non-default values
   const customAdapters: CustomAdapter[] = [];
 
-  for (const adapter of this.adapters) {
-    // Calculate default values for this adapter
-    const defaultPortName = generateDefaultPortName(adapter.adapter_number);
-    const defaultType = this.data.defaultAdapterType;
+  for (const adapter of this.adapters()) {
+    // Calculate default port name for this adapter_number
+    let defaultPortName: string;
+    if (segmentSize > 0) {
+      const segment = Math.floor(adapter.adapter_number / segmentSize);
+      const portInSegment = adapter.adapter_number % segmentSize;
+      defaultPortName = portNameFormat.replace('{0}', String(segment * segmentSize + portInSegment));
+    } else {
+      defaultPortName = portNameFormat.replace('{0}', String(adapter.adapter_number));
+    }
 
-    // Check if any field differs from default
+    // Check if this adapter has any custom (non-default) values
     const hasCustomPortName = adapter.port_name !== defaultPortName;
-    const hasCustomType = adapter.adapter_type !== defaultType;
+    const hasCustomType = adapter.adapter_type !== defaultAdapterType;
     const hasCustomMac = adapter.mac_address && adapter.mac_address.length > 0;
 
     // Only save if at least one field is custom
     if (hasCustomPortName || hasCustomType || hasCustomMac) {
-      customAdapters.push(adapter);
+      customAdapters.push({
+        adapter_number: adapter.adapter_number,
+        port_name: hasCustomPortName ? adapter.port_name : defaultPortName,
+        adapter_type: adapter.adapter_type,
+        mac_address: adapter.mac_address || null,
+      });
     }
   }
 
   // Return only non-default adapters
   this.dialogRef.close({
     adapters: customAdapters,
-    requiredAdapters: calculateRequiredAdapters()
+    requiredAdapters: this.adapters().length,
   });
 }
 ```
 
 **Key Points:**
+- MAC address validation runs before save; invalid MACs abort the operation
+- Port name calculation matches the segment-based logic used in `onAdd()` and `openCustomAdaptersDialog()`
 - Filter out adapters that match default values
 - Only save adapters with at least one custom field
-- Reduces server storage and maintains consistency
+- When `hasCustomPortName` is false, the default port name is still included in the saved adapter (ensures consistency)
 
 ## User Interaction Scenarios
 
@@ -276,10 +360,15 @@ configureCustomAdapters() {
 **File:** `src/app/components/preferences/common/custom-adapters/custom-adapters.component.ts`
 
 **Key Methods:**
-- `constructor()` - Receives and copies adapter data
-- `onAdd()` - Adds new adapter with next available `adapter_number`
+- `constructor()` - Receives `CustomAdaptersDialogData` via `MAT_DIALOG_DATA`, copies adapter list via `model()` signal
+- `onAdd()` - Adds new adapter with `adapter_number = max(existing) + 1`, generates default port name (supports `portSegmentSize`), defaults adapter type to first available `networkType`
 - `delete()` - Removes adapter from display list
-- `configureCustomAdapters()` - Implements incremental save logic
+- `configureCustomAdapters()` - Validates MAC addresses, implements incremental save logic
+- `onPortNameChange()` / `onAdapterTypeChange()` / `onMacAddressChange()` - Update individual adapter fields immutably via `model().update()`
+- `formatMacAddress()` - Auto-formats MAC input (strips non-hex, formats as `XX:XX:XX:XX:XX:XX`)
+- `isValidMacAddress()` - Validates MAC regex (`^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$`); empty string is valid
+- `hasInvalidMacAddresses()` - Checks if any adapter has an invalid MAC
+- `getMacErrorMessage()` - Returns specific error: "Too short (N/12)", "Too long (N/12)", or "Invalid format"
 
 ### Template Details Components
 
@@ -292,6 +381,14 @@ configureCustomAdapters() {
 - `ngOnInit()` - Loads template without modifying custom_adapters
 - `openCustomAdaptersDialog()` - Generates complete adapter list for display
 - `onSave()` - Saves template without pre-filling custom_adapters
+
+### Custom Adapters Table Component
+
+**File:** `src/app/components/preferences/common/custom-adapters-table/custom-adapters-table.component.ts`
+
+A MatTable-based alternative adapter editor. Uses `input()` and `model()` signals for `networkTypes`, `displayedColumns`, and `adapters`. Provides the same core methods as the dialog (`onAdd`, `delete`, `onPortNameChange`, `onAdapterTypeChange`, `onMacAddressChange`) but renders as an inline table instead of a dialog.
+
+**Note:** This component is currently **not used** by any template details or node configurator component. The dialog-based `CustomAdaptersComponent` is the active implementation.
 
 ### Node Configurator Components
 
@@ -322,13 +419,27 @@ openCustomAdaptersDialog() {
 
     if (customAdapter) {
       // Use server's custom configuration
-      adaptersForDialog.push(customAdapter);
+      adaptersForDialog.push({
+        adapter_number: customAdapter.adapter_number,
+        adapter_type: customAdapter.adapter_type,
+        port_name: customAdapter.port_name,
+        mac_address: customAdapter.mac_address || '',
+      });
     } else {
-      // Use default configuration
+      // Generate default configuration
+      let portName: string;
+      if (segmentSize > 0) {
+        const segment = Math.floor(i / segmentSize);
+        const portInSegment = i % segmentSize;
+        portName = portNameFormat.replace('{0}', String(segment * segmentSize + portInSegment));
+      } else {
+        portName = portNameFormat.replace('{0}', String(i));
+      }
+
       adaptersForDialog.push({
         adapter_number: i,
         adapter_type: defaultAdapterType,
-        port_name: generateDefaultPortName(i),
+        port_name: portName,
         mac_address: '',
       });
     }
@@ -336,7 +447,15 @@ openCustomAdaptersDialog() {
 
   // Open dialog with complete list
   const dialogRef = this.dialog.open(CustomAdaptersComponent, {
-    data: { adapters: adaptersForDialog, ... }
+    panelClass: 'custom-adapters-dialog-panel',
+    data: {
+      adapters: adaptersForDialog,
+      networkTypes: this.networkTypes,
+      portNameFormat: portNameFormat,
+      portSegmentSize: segmentSize,
+      defaultAdapterType: defaultAdapterType,
+      currentAdapters: this.node.properties.adapters,
+    } as CustomAdaptersDialogData,
   });
 
   dialogRef.afterClosed().subscribe((result) => {
@@ -349,6 +468,41 @@ openCustomAdaptersDialog() {
 }
 ```
 
+### Node Service
+
+**File:** `src/app/services/node.service.ts`
+
+The `updateNodeWithCustomAdapters()` method filters null values from custom adapters before sending to the server:
+
+```typescript
+updateNodeWithCustomAdapters(controller: Controller, node: Node): Observable<Node> {
+  const filtered_custom_adapters = node.custom_adapters
+    ? node.custom_adapters.map((adapter) => {
+        const filteredAdapter: any = {
+          adapter_number: adapter.adapter_number,
+          adapter_type: adapter.adapter_type,
+        };
+        if (adapter.port_name !== null && adapter.port_name !== undefined) {
+          filteredAdapter.port_name = adapter.port_name;
+        }
+        if (adapter.mac_address !== null && adapter.mac_address !== undefined) {
+          filteredAdapter.mac_address = adapter.mac_address;
+        }
+        return filteredAdapter;
+      })
+    : [];
+
+  return this.httpController.put<Node>(controller, `/projects/${node.project_id}/nodes/${node.node_id}`, {
+    console_type: node.console_type,
+    console_auto_start: node.console_auto_start,
+    custom_adapters: filtered_custom_adapters,
+    name: node.name,
+    properties: node.properties,
+    tags: node.tags,
+  });
+}
+```
+
 **Key Differences from Template Configuration:**
 
 | Aspect | Template Configuration | Node Configuration |
@@ -357,13 +511,32 @@ openCustomAdaptersDialog() {
 | **Adapter Count** | `template.adapters` | `node.properties.adapters` |
 | **Save Method** | `saveTemplate()` | `updateNodeWithCustomAdapters()` |
 | **Impact** | Affects new nodes from template | Affects running node immediately |
-| **Incremental Save** | ✅ Yes | ✅ Yes |
+| **Incremental Save** | Yes | Yes |
+| **Null Filtering** | N/A | Service filters null `port_name`/`mac_address` before PUT |
 
 **Similarities:**
 - Both use the same `CustomAdaptersComponent` dialog
 - Both implement incremental save strategy
 - Both generate complete adapter list for display
 - Both preserve server data on load
+
+### Docker Node Support
+
+Docker nodes use a **different component** from QEMU/VMware/VirtualBox:
+
+**File:** `src/app/components/project-map/node-editors/configurator/docker/configure-custom-adapters/configure-custom-adapters.component.ts`
+
+| Aspect | QEMU/VMware/VirtualBox | Docker |
+|--------|----------------------|--------|
+| **Component** | `CustomAdaptersComponent` | `ConfigureCustomAdaptersDialogComponent` |
+| **Adapter Fields** | `adapter_number`, `adapter_type`, `port_name`, `mac_address` | `adapter_number`, `port_name` only |
+| **Adapter Type Selection** | Yes (network types dropdown) | No |
+| **MAC Address** | Yes (with validation) | No |
+| **Incremental Save** | Yes | No (saves all adapters) |
+| **Data Source** | `node.custom_adapters` or `template.custom_adapters` | `node.ports` |
+| **Port Name Generation** | Based on `portNameFormat` + `portSegmentSize` | N/A |
+
+Docker adapters are simpler because Docker containers only support port name customization, not adapter type or MAC address changes.
 
 ## Migration Notes
 
@@ -384,6 +557,23 @@ openCustomAdaptersDialog() {
 3. **Flexibility** - Default values can be changed globally
 4. **Clarity** - Custom adapters are truly "custom" (non-default)
 5. **Maintainability** - Clearer separation between default and custom
+
+## MAC Address Validation
+
+The dialog validates MAC addresses before saving. The validation flow:
+
+1. **Auto-formatting** (`formatMacAddress`): As the user types, non-hex characters are stripped. Once 12 hex digits are entered, the value is formatted as `XX:XX:XX:XX:XX:XX`.
+
+2. **Per-field validation** (`isValidMacAddress`): Each adapter's MAC is checked against regex `^([0-9A-Fa-f]{2}[:]){5}([0-9A-Fa-f]{2})$`. Empty values are valid (optional field). Invalid MACs show inline errors in the template via `mat-error`.
+
+3. **Pre-save check** (`hasInvalidMacAddresses`): Before closing the dialog, `configureCustomAdapters()` checks all adapters. If any have invalid MACs, an error toast is shown with adapter-specific messages and the save is aborted.
+
+**Error Messages:**
+| Condition | Message |
+|-----------|---------|
+| Too few hex digits | `Too short (N/12 hex digits)` |
+| Too many hex digits | `Too long (N/12 hex digits)` |
+| Invalid format | `Invalid MAC address format (12 hex digits required)` |
 
 ## Testing
 
@@ -438,6 +628,44 @@ openCustomAdaptersDialog() {
    - Open Custom Adapters dialog, delete adapter 3
    - Apply changes
    - **Expected:** `node.custom_adapters` becomes empty or adapter 3 removed
+
+### MAC Address Validation Test Cases
+
+1. **Valid MAC Address**
+   - Enter `00:11:22:33:44:55`
+   - **Expected:** No error, accepted on save
+
+2. **Auto-Formatted MAC**
+   - Paste `001122334455`
+   - **Expected:** Auto-formatted to `00:11:22:33:44:55`
+
+3. **Too Short MAC**
+   - Enter `00:11:22`
+   - **Expected:** Inline error `Too short (6/12 hex digits)`, save blocked
+
+4. **Empty MAC**
+   - Leave MAC field empty
+   - **Expected:** Valid (optional field), no error
+
+5. **Invalid MAC on Save**
+   - Set one adapter with invalid MAC, another valid
+   - Click Apply
+   - **Expected:** Error toast listing the invalid adapter, dialog stays open
+
+### Docker Node Test Cases
+
+1. **Docker Node Adapter Configuration**
+   - Right-click Docker node → Configure → Custom Adapters
+   - **Expected:** Simplified dialog showing only `adapter_number` and `port_name`
+
+2. **Docker No Type/MAC Fields**
+   - Open Docker custom adapters dialog
+   - **Expected:** No adapter type dropdown, no MAC address field
+
+3. **Docker Save**
+   - Modify port names in Docker dialog
+   - Apply changes
+   - **Expected:** All adapters saved (no incremental save for Docker)
 
 ## Related Documentation
 
