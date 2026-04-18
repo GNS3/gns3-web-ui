@@ -4,8 +4,8 @@ See LICENSE file for licensing information.
 -->
 # AI Profile Management - Complete Guide
 
-**Version**: v1.3
-**Last Updated**: 2026-03-30
+**Version**: v1.4
+**Last Updated**: 2026-04-18
 **Status**: ✅ Implemented
 
 ---
@@ -53,6 +53,9 @@ The AI Profile Management feature allows users and groups to manage LLM (Large L
 | Group Config | Group | No (for members) | Group's configurations |
 | Inherited Config | Group | No | Available to group members |
 
+> **Note**: Although `model_type` supports multiple values, the UI table currently hides the `model_type` column
+> because only `text` type is actively supported in this phase.
+
 ### Model Types
 
 | Type | Label | Description |
@@ -75,21 +78,28 @@ The AI Profile Management feature allows users and groups to manage LLM (Large L
 ```
 src/app/
 ├── components/
-│   ├── user-management/user-detail/ai-profile-tab/
-│   │   ├── ai-profile-tab.component.*        # User config list
-│   │   └── ai-profile-dialog/
-│   │       └── ai-profile-dialog.component.* # Create/Edit dialog
+│   ├── user-management/
+│   │   ├── ai-profile-dialog/
+│   │   │   └── ai-profile-dialog.component.*        # Wrapper dialog (embeds tab)
+│   │   └── user-detail/ai-profile-tab/
+│   │       ├── ai-profile-tab.component.*            # User config list
+│   │       └── ai-profile-dialog/
+│   │           ├── ai-profile-dialog.component.*     # Create/Edit form dialog
+│   │           ├── confirm-dialog/                    # Delete confirmation dialog
+│   │           │   └── confirm-dialog.component.*
+│   │           └── model-type-help-dialog/            # Model type help dialog
+│   │               └── model-type-help-dialog.component.*
 │   ├── group-management/group-detail-dialog/
 │   │   └── group-ai-profile-dialog/
-│   │       └── (reuses user dialog)         # Shared dialog
+│   │       └── group-ai-profile-dialog.component.*   # Wrapper dialog (embeds tab)
 │   └── group-details/group-ai-profile-tab/
-│       └── group-ai-profile-tab.component.* # Group config list
+│       └── group-ai-profile-tab.component.*          # Group config list
 ├── services/
-│   └── ai-profiles.service.ts              # API service
+│   └── ai-profiles.service.ts                        # API service
 ├── models/
-│   └── ai-profile.ts                       # Data models
+│   └── ai-profile.ts                                 # Data models
 └── utils/
-    └── ai-profile.util.ts                  # Display helpers
+    └── ai-profile.util.ts                            # Display helpers
 ```
 
 ### Component Overview
@@ -98,13 +108,20 @@ src/app/
 |-----------|----------|---------|
 | `AiProfileTabComponent` | User detail tab | Display/manage user's configs (own + inherited) |
 | `GroupAiProfileTabComponent` | Group detail tab | Display/manage group's configs |
-| `AiProfileDialogComponent` | Shared dialog | Create/Edit configuration form |
+| `AiProfileDialogComponent` (form) | User detail sub-dialog | Create/Edit configuration form (shared by both tabs) |
+| `AiProfileDialogComponent` (wrapper) | User management | MatDialog wrapper embedding `AiProfileTabComponent` |
+| `GroupAiProfileDialogComponent` | Group detail dialog | MatDialog wrapper embedding `GroupAiProfileTabComponent` |
+| `ConfirmDialogComponent` | User detail sub-dialog | Delete confirmation dialog (shared by both tabs) |
 | `AiProfilesService` | Services | API communication layer |
 | `ai-profile.util.ts` | Utils | `getModelDisplayName()`, `shortenModelName()` |
 
 ---
 
 ## 4. API Integration
+
+> **Note**: All API paths below are relative. The `HttpController` service automatically prepends
+> `/{current_version}` (configured as `v3` in `environment.ts`) to all requests.
+> The paths shown here omit that prefix for clarity.
 
 ### User Endpoints
 
@@ -116,6 +133,7 @@ POST   /access/users/{user_id}/llm-model-configs        # Create config
 PUT    /access/users/{user_id}/llm-model-configs/{id}   # Update config
 DELETE /access/users/{user_id}/llm-model-configs/{id}   # Delete config
 PUT    /access/users/{user_id}/llm-model-configs/default/{id}  # Set default
+PUT    /access/users/{user_id}/llm-model-configs/{id}   # Unset default (body: {is_default: false})
 ```
 
 ### Group Endpoints
@@ -127,9 +145,12 @@ POST   /access/groups/{group_id}/llm-model-configs        # Create config
 PUT    /access/groups/{group_id}/llm-model-configs/{id}   # Update config
 DELETE /access/groups/{group_id}/llm-model-configs/{id}   # Delete config
 PUT    /access/groups/{group_id}/llm-model-configs/default/{id}  # Set default
+PUT    /access/groups/{group_id}/llm-model-configs/{id}   # Unset default (body: {is_default: false})
 ```
 
 ### Response Format
+
+#### LLMModelConfigResponse (single config)
 
 ```
 LLMModelConfigResponse
@@ -151,10 +172,37 @@ LLMModelConfigResponse
 ├── group_id: string | null   # Owner group ID
 ├── is_default: boolean        # Default flag
 ├── version: number            # Optimistic locking
-├── source: 'user' | 'group'   # Only in inherited responses
-├── group_name: string | null # Only in inherited responses
 ├── created_at: string
 └── updated_at: string
+```
+
+#### LLMModelConfigWithSource (inherited configs)
+
+Extends `LLMModelConfigResponse` with inheritance metadata:
+
+```
+LLMModelConfigWithSource extends LLMModelConfigResponse
+├── source: 'user' | 'group'   # Origin of the configuration
+└── group_name: string | null  # Group name if source is "group"
+```
+
+#### API Response Wrappers
+
+List endpoints return wrapper objects, not bare arrays:
+
+```
+# User effective configs (GET /access/users/{user_id}/llm-model-configs)
+LLMModelConfigInheritedResponse
+├── configs: LLMModelConfigWithSource[]  # Effective configurations (own + inherited)
+├── default_config: LLMModelConfigWithSource | null
+└── total: number
+
+# Group configs (GET /access/groups/{group_id}/llm-model-configs)
+# User own configs (GET /access/users/{user_id}/llm-model-configs/own)
+LLMModelConfigListResponse
+├── configs: LLMModelConfigResponse[]
+├── default_config: LLMModelConfigResponse | null
+└── total: number
 ```
 
 ---
@@ -199,11 +247,13 @@ Manually configure provider and model:
 
 ### Provider Presets
 
-| Preset | Provider | Base URL | Models |
+| Preset | Provider | Base URL | Models (full ID) |
 |--------|----------|----------|--------|
-| OpenRouter | openai | `https://openrouter.ai/api/v1` | deepseek-v3.2, grok-3, claude-sonnet-4, glm-4.7, gpt-4o, gemini-2.5-flash |
-| DeepSeek | deepseek | `https://api.deepseek.com/v1` | deepseek-chat |
-| Custom | - | User defined | User defined |
+| OpenRouter | openai | `https://openrouter.ai/api/v1` | `deepseek/deepseek-v3.2`, `x-ai/grok-3`, `anthropic/claude-sonnet-4`, `z-ai/glm-4.7`, `openai/gpt-4o`, `google/gemini-2.5-flash` |
+| DeepSeek | deepseek | `https://api.deepseek.com/v1` | `deepseek-chat` |
+| Custom | openai (default) | User defined | User defined |
+
+> **Note**: OpenRouter models use provider-prefixed IDs (e.g., `deepseek/deepseek-v3.2`). The `shortenModelName()` utility function strips the prefix for display (e.g., "Deepseek V3.2").
 
 ---
 
@@ -299,6 +349,15 @@ When a version mismatch occurs:
 2. Client automatically reloads configuration list
 3. User sees: "Data has been modified by another user, auto-refreshed"
 
+### Optimistic UI Updates (Default Toggle)
+
+The default config toggle uses an optimistic update pattern to avoid UI lag:
+
+1. UI updates immediately when user clicks the toggle
+2. API request is sent in the background
+3. On success: a silent background refresh ensures server state is in sync
+4. On error: UI rolls back to the previous state, then shows the error message
+
 ---
 
 ## 9. Security
@@ -337,19 +396,36 @@ When a version mismatch occurs:
 | User Config Management | Create, edit, delete own configurations |
 | Group Config Management | Create, edit, delete group configurations |
 | Configuration Inheritance | Users see group configs with source badge |
-| Default Config | Set/unset default for quick access |
+| Default Config | Set/unset default (toggle) for quick access |
 | Provider Presets | OpenRouter, DeepSeek with pre-configured models |
 | Custom Mode | Manual provider configuration |
 | Form Validation | Client-side validation with error messages |
 | Name Uniqueness | Prevent duplicate names within scope |
-| Optimistic Locking | Prevent concurrent edit conflicts |
+| Optimistic Locking | Prevent concurrent edit conflicts via `version` field |
+| Optimistic UI Updates | Default toggle updates UI immediately, rolls back on error |
 | Custom Fields | Add provider-specific parameters |
 | Context Strategy | Control context window usage |
 | Copilot Mode | Teaching vs Lab Automation modes |
+| Delete Confirmation | `ConfirmDialogComponent` for destructive actions |
+| Provider Display | `getProviderDisplay()` extracts clean domain from `base_url` |
 
 ---
 
 ## 11. Changelog
+
+### v1.4 (2026-04-18)
+
+**Documentation Fixes (based on code review)**:
+- Fixed file structure: added wrapper dialog components (`AiProfileDialogComponent`, `GroupAiProfileDialogComponent`)
+- Fixed file structure: added `ConfirmDialogComponent` and `ModelTypeHelpDialogComponent`
+- Fixed group dialog description: it embeds `GroupAiProfileTabComponent`, not the user dialog
+- Fixed provider preset model IDs: added provider prefixes (e.g., `deepseek/deepseek-v3.2` instead of `deepseek-v3.2`)
+- Added note about `/v3` prefix being auto-prepended by `HttpController`
+- Added `unsetDefault` API endpoints documentation
+- Added `LLMModelConfigInheritedResponse` and `LLMModelConfigListResponse` wrapper formats
+- Added note about `model_type` column hidden in UI (only `text` supported)
+- Added optimistic UI update pattern for default config toggle
+- Added `getProviderDisplay()` and delete confirmation to feature summary
 
 ### v1.3 (2026-03-30)
 
@@ -383,7 +459,7 @@ When a version mismatch occurs:
 ---
 
 **Maintained By**: Development Team
-**Last Updated**: 2026-03-30 (v1.3)
+**Last Updated**: 2026-04-18 (v1.4)
 
 ---
 

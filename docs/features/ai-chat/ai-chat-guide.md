@@ -6,8 +6,8 @@ See LICENSE file for licensing information.
 
 > Complete documentation for GNS3 Web UI AI Chat functionality
 
-**Version**: v1.3
-**Last Updated**: 2026-03-30
+**Version**: v1.5
+**Last Updated**: 2026-04-18
 **Status**: ✅ Implemented
 
 ---
@@ -39,17 +39,18 @@ src/app/
 │   ├── chat-message-list.component.*    # Message list (standalone)
 │   ├── chat-input-area.component.*      # Input area with model selector
 │   ├── chat-session-list.component.*    # Session sidebar (standalone)
-│   ├── tool-call-display.component.*    # Tool call display
-│   └── tool-details-dialog.component.*  # JSON details dialog
+│   ├── tool-details-dialog.component.*  # JSON details dialog
+│   └── code-block-dialog.component.*    # Full-size code block dialog
 ├── services/
-│   ├── ai-chat.service.ts               # API interaction
+│   ├── ai-chat.service.ts               # API interaction & SSE streaming
 │   └── ai-profiles.service.ts           # Profile management
 ├── stores/
 │   └── ai-chat.store.ts                 # RxJS state (BehaviorSubject)
 ├── utils/
 │   └── ai-profile.util.ts               # Model name formatting
 └── models/
-    └── ai-chat.interface.ts            # Data interfaces
+    ├── ai-chat.interface.ts             # Chat data interfaces
+    └── ai-profile.ts                    # LLM config & profile interfaces
 ```
 
 ---
@@ -92,8 +93,8 @@ project-map.component
 ai-chat.component (Main container)
     ├─→ chat-session-list.component (Session sidebar)
     ├─→ chat-message-list.component (Message display)
-    │       ├─→ tool-call-display.component
-    │       └─→ tool-details-dialog.component
+    │       ├─→ tool-details-dialog.component (JSON details)
+    │       └─→ code-block-dialog.component (Code block viewer)
     └─→ chat-input-area.component (Input + Model selector)
 ```
 
@@ -110,9 +111,9 @@ User Input → ChatInputArea
               ↓
       ChatMessageList (Render)
               ↓
-         ToolCallDisplay (Tool Display)
-              ↓
       ToolDetailsDialog (JSON Details)
+              ↓
+      CodeBlockDialog (Code Block Viewer)
 ```
 
 ### Tech Stack
@@ -123,7 +124,7 @@ User Input → ChatInputArea
 | RxJS | Reactive state (BehaviorSubject) |
 | Material 21 | UI components |
 | ngx-markdown | Markdown rendering |
-| ngx-json-viewer | JSON display |
+| Custom JSON Viewer | JSON display (Material-based) |
 | SSE (Fetch API) | Server-sent events streaming |
 
 ---
@@ -134,11 +135,19 @@ User Input → ChatInputArea
 
 Main container managing panel state, SSE events, and child coordination.
 
-**Window States**: Normal (800×900px), Maximized, Minimized (hidden), Collapsed (sidebar)
+**Window States**: Normal (800×900px), Maximized, Minimized (hidden)
 
 ### ChatMessageListComponent
 
-Renders messages with Markdown, handles auto-scroll, triggers tool dialogs.
+Renders messages with Markdown, handles auto-scroll, triggers tool dialogs, displays tool calls inline.
+
+**Features**:
+- Message rendering with Markdown support
+- Auto-scroll to latest message
+- Inline tool call display (clickable)
+- Code block collapse for long blocks (>50 lines)
+- Opens ToolDetailsDialog for JSON inspection
+- Opens CodeBlockDialog for full-size code viewing
 
 **Styling**: User (right purple), Assistant (left gray), Tool calls (blue), Tool results (green)
 
@@ -156,6 +165,12 @@ Auto-resizing textarea, model selector chip, copilot mode selector.
 Modal dialog showing JSON for tool calls/results.
 
 **Features**: Syntax highlighting, collapsible nodes, copy to clipboard, theme support
+
+### CodeBlockDialogComponent
+
+Modal dialog for displaying long code blocks with better readability.
+
+**Features**: Language display, Material Design styling, scrollable content
 
 ### AI Profile Utilities
 
@@ -183,18 +198,23 @@ RxJS BehaviorSubject-based centralized store.
 | Streaming | `isStreaming$` |
 | Tool Calls | `currentToolCalls$` |
 | Panel | `panelState$` |
+| Session UI | `sessionUIStates$` (editing/expanded per session) |
 | Error | `error$` |
 
 ### Panel State (localStorage: `ai-chat-panel-state`)
 
 ```typescript
 interface ChatPanelState {
-  width: number;      // Default: 800
-  height: number;      // Default: 900
-  position: { top: number; right?: number; left?: number };
-  isMaximized: boolean;
-  isMinimized: boolean;
-  isOpen: boolean;    // Always false on load
+  isOpen: boolean;        // Always false on load
+  width: number;          // Default: 800
+  height: number;         // Default: 900
+  isMaximized?: boolean;  // Reset to false on load
+  isMinimized?: boolean;  // Reset to false on load
+  position?: {
+    top?: number;
+    right?: number;
+    left?: number;
+  };
 }
 ```
 
@@ -223,8 +243,8 @@ interface ChatPanelState {
 ### Multi-Round Pattern
 
 ```
-Round 1: POST /chat/stream {session_id: "uuid-1"} → SSE response → Connection closes
-Round 2: POST /chat/stream {session_id: "uuid-1"} → SSE response → Connection closes
+Round 1: POST /v3/projects/{pid}/chat/stream {session_id: "uuid-1"} → SSE response → Connection closes
+Round 2: POST /v3/projects/{pid}/chat/stream {session_id: "uuid-1"} → SSE response → Connection closes
 ```
 
 Each request creates new SSE connection but uses same `session_id` for context.
@@ -239,13 +259,13 @@ Keeps AI Chat within viewport bounds.
 
 **Constraints**:
 - Min size: 500×400px
-- Top offset: 64px (desktop), 56px (mobile)
+- Top offset: configurable via `topOffset` parameter (set by caller)
 - Auto-adjusts on window resize
 
 ### State Persistence
 
 - Saved on drag end, resize end, maximize/minimize
-- Debounced save (300ms)
+- Immediate save to `localStorage` (no debounce)
 - Reset on page load: `isOpen`, `isMaximized`, `isMinimized` → false
 
 ---
@@ -279,13 +299,14 @@ AI Chat uses `theme-*` prefixed classes (e.g., `theme-deeppurple-amber`).
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/projects/{project_id}/chat/stream` | SSE stream |
+| POST | `/v3/projects/{project_id}/chat/stream` | SSE stream |
 | GET | `/projects/{project_id}/chat/sessions` | List sessions |
 | GET | `/projects/{project_id}/chat/sessions/{session_id}/history` | Get history |
 | PATCH | `/projects/{project_id}/chat/sessions/{session_id}` | Rename |
 | DELETE | `/projects/{project_id}/chat/sessions/{session_id}` | Delete |
 | PUT | `/projects/{project_id}/chat/sessions/{session_id}/pin` | Pin |
 | DELETE | `/projects/{project_id}/chat/sessions/{session_id}/pin` | Unpin |
+| POST | `/v3/projects/{project_id}/chat/sessions/{session_id}/abort` | Abort streaming |
 
 ### AI Profiles
 
@@ -301,28 +322,78 @@ AI Chat uses `theme-*` prefixed classes (e.g., `theme-deeppurple-amber`).
 
 ### Adding New Components
 
-1. Use standalone pattern
-2. Use Material components when available
-3. Follow size guidelines: inline (<100 lines), external (>300 lines)
-4. Document in this file
+1. **Use standalone pattern**: All components must be standalone with explicit imports
+2. **Use Material components**: Leverage Angular Material 21 components when available
+3. **Follow file organization**: Each component in its own directory with component file, template, styles, and spec
+4. **Apply OnPush change detection**: All components must use `ChangeDetectionStrategy.OnPush`
+5. **Use inject() for DI**: Prefer `inject()` over constructor injection for consistency
+6. **Write tests**: All components require corresponding `.spec.ts` files
+7. **Document changes**: Update this guide when adding new components or changing architecture
 
-### Code Review
+### Component Size Guidelines
 
-- [ ] Standalone component
-- [ ] No unused imports
-- [ ] No duplicate functionality
-- [ ] Uses signals/BehaviorSubject appropriately
-- [ ] Zoneless compliant (no NgZone)
+Based on actual AI Chat component sizes:
+
+| Component Type | Typical Lines | Example |
+|----------------|---------------|---------|
+| Simple dialogs | 50-200 lines | `code-block-dialog.component.ts` (57 lines) |
+| Medium components | 200-400 lines | `chat-session-list.component.ts` (279 lines), `chat-message-list.component.ts` (321 lines), `chat-input-area.component.ts` (303 lines) |
+| Complex components | 400+ lines | `ai-chat.component.ts` (1453 lines) |
+
+**Note**: All components should be in separate files regardless of size for maintainability.
+
+### Code Review Checklist
+
+Use this checklist when reviewing AI Chat components:
+
+- [ ] **Standalone component** with explicit imports (standalone is default in Angular 21)
+- [ ] **No unused imports** (check imports array)
+- [ ] **No duplicate functionality** (verify against existing components)
+- [ ] **State management**: Uses signals (inputs) or BehaviorSubject (store) appropriately
+- [ ] **Zoneless compliant**: No `NgZone`, `ApplicationRef.tick()`, or `[(ngModel)]`
+- [ ] **Change detection**: `ChangeDetectionStrategy.OnPush` applied
+- [ ] **Manual change detection**: Uses `markForCheck()` after async operations
+- [ ] **Styling**: Uses Material theme variables (`--mat-sys-*`), no hardcoded colors
+- [ ] **No style penetration**: No `::ng-deep`, `:deep()`, or `ViewEncapsulation.None`
+- [ ] **Tests included**: Component has corresponding `.spec.ts` file
+- [ ] **Documentation**: Complex logic has JSDoc comments
+
+### Architecture Principles
+
+1. **Separation of Concerns**
+   - Components handle UI and user interactions
+   - Services handle API calls and business logic
+   - Store (AiChatStore) manages shared state
+   - Utils contain pure functions
+
+2. **Data Flow**
+   - Unidirectional data flow: Store → Component → View
+   - Events flow up: View → Component → Store/Service
+   - Avoid two-way binding except for `model()` signals
+
+3. **Error Handling**
+   - Services emit errors via RxJS `error`
+   - Components display user-friendly messages via MatSnackBar
+   - Store maintains error state for recovery
 
 ### Future Improvements
 
-- [ ] Virtual scrolling for large message lists
-- [ ] Message pagination/caching
-- [ ] Lazy loading of historical messages
+Known technical debt and optimization opportunities:
+
+- [ ] **Virtual scrolling** for large message lists (>100 messages)
+- [ ] **Message pagination** to limit initial load (currently loads all)
+- [ ] **Lazy loading** for historical messages when scrolling up
+- [ ] **Message caching** to reduce API calls when switching sessions
+- [ ] **Optimize markdown rendering** for large code blocks
+- [ ] **Add message search** functionality
+- [ ] **Implement message editing** for user messages
+- [ ] **Add message reactions** (thumbs up/down for AI responses)
+- [ ] **Streaming cancellation** improvement (better abort handling)
+- [ ] **Offline mode support** for drafting messages without connection
 
 ---
 
-**Last Updated**: 2026-03-30
+**Last Updated**: 2026-04-18
 
 ---
 
