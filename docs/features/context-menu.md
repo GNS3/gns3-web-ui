@@ -2,256 +2,191 @@
 SPDX-License-Identifier: CC-BY-SA-4.0
 See LICENSE file for licensing information.
 -->
-# Project Map Context Menu
+# Context Menu System
 
-> Right-click context menu functionality for nodes, drawings, links, and labels
+> Right-click context menus for topology elements and terminal widgets
 
-**Version**: v1.0
-**Updated**: 2026-03-30
-**Status**: ✅ Implemented
-
----
-
-## Overview
-
-The context menu provides quick access to operations on selected topology elements. Menu options are dynamically shown/hidden based on selection type and project permissions.
-
-### Selection Types
-
-```
-┌─────────────────────────────────────────────────────────┐
-│                  Context Menu Types                      │
-├───────────────┬─────────────────────────────────────────┤
-│  Single Node  │  Show, Config, Console, Isolate, etc. │
-│  Multi Node   │  Start, Stop, Suspend, Align, etc.    │
-│  Single Link  │  Capture, Filter, Reset, Style, etc.    │
-│  Drawings     │  Edit Style, Edit Text, Duplicate, etc.  │
-└───────────────┴─────────────────────────────────────────┘
-```
+**Version**: v2.0
+**Updated**: 2026-04-19
+**Status**: Implemented
 
 ---
 
-## Menu Options Reference
+## Architecture Overview
 
-### Node Operations
+```mermaid
+graph TB
+    subgraph "Context Menu Components"
+        CMC[ContextMenuComponent]
+        CCMS[ContextConsoleMenuComponent]
+        XCMS[XtermContextMenuService]
+    end
 
-| Menu Option | Action | Condition | Layer |
-|-------------|--------|----------|-------|
-| Show node | Display node info panel | Single node | - |
-| Config node | Open node configuration | Single node | - |
-| Start node | Start selected nodes | 1+ nodes | - |
-| Suspend node | Suspend selected nodes | 1+ nodes | - |
-| Stop node | Stop selected nodes | 1+ nodes | - |
-| Reload node | Reload selected nodes | 1+ nodes | - |
-| Console (browser) | Open telnet in embedded widget | Single node | - |
-| HTTP console | Open via HTTP/HTTPS/VNC protocol | 1+ nodes | - |
-| HTTP console (new tab) | Open in new browser tab | 1+ nodes | - |
-| Isolate node | Disconnect all links | Single node | - |
-| Unisolate node | Remove isolation | Single node | - |
+    subgraph "Trigger Sources"
+        NW[NodeWidget]
+        DW[DrawingsWidget]
+        LW[LabelWidget]
+        LKW[LinkWidget]
+        ILW[InterfaceLabelWidget]
+        ST[SelectionTool]
+        DC[Double-Click on Node]
+        XT[xterm.js Terminal]
+    end
 
-### Node Customization
+    subgraph "Action Components"
+        A1[Node Actions]
+        A2[Drawing Actions]
+        A3[Link Actions]
+        A4[Layer Actions]
+        A5[Multi-Select Actions]
+    end
 
-| Menu Option | Action | Condition | Layer |
-|-------------|--------|----------|-------|
-| Change hostname | Modify node hostname | Single node | - |
-| Change symbol | Open symbol picker | Single node | - |
-| Edit config | Edit VPCS configuration | VPCS node | - |
-| Export config | Export to file | VPCS/IOU/Dynamips | - |
-| Import config | Import from file | VPCS/IOU/Dynamips | - |
-| Idle PC | Set Dynamips idle PC | Dynamips | - |
-| Auto idle PC | Auto-calculate idle PC | Dynamips | - |
+    NW -->|onContextMenu| CMC
+    DW -->|onContextMenu| CMC
+    LW -->|onContextMenu| CMC
+    LKW -->|onContextMenu| CMC
+    ST -->|contextMenuOpened| CMC
+    DC -->|openMenu| CCMS
+    XT -->|contextmenu| XCMS
 
-### Drawing/Label Operations
+    CMC --> A1
+    CMC --> A2
+    CMC --> A3
+    CMC --> A4
+    CMC --> A5
 
-| Menu Option | Action | Condition | Layer |
-|-------------|--------|----------|-------|
-| Edit style | Change color, border, etc. | Single drawing | - |
-| Edit text | Modify text content | Text element | - |
-
-### Layer Operations
-
-| Menu Option | Action | z-value Change | Visual |
-|-------------|--------|---------------|--------|
-| Move layer up | Move up one layer | `z = z + 1` | ⬆️ |
-| Move layer down | Move down one layer | `z = z - 1` | ⬇️ |
-| Bring to front | Move to topmost layer | `z = max(z) + 1` | ⬆️⬆️ |
-
-```
-z-value layering (higher = on top):
-
-    ┌─────────────────┐
-    │  Bring to front │  ← z = max + 1
-    ├─────────────────┤
-    │  Move layer up  │  ← z = z + 1
-    ├─────────────────┤
-    │    Normal       │  ← original z
-    ├─────────────────┤
-    │ Move layer down  │  ← z = z - 1
-    └─────────────────┘
+    CCMS --> MSS[MapSettingsService]
+    CCMS --> NCS[NodeConsoleService]
+    CCMS --> VCS[VncConsoleService]
 ```
 
-**Note**: No "Send to back" (move to bottom) functionality exists.
+### Component Responsibilities
 
-### Link Operations
-
-| Menu Option | Action | Condition |
-|-------------|--------|-----------|
-| Start capture | Begin packet capture | Single link |
-| Stop capture | Stop packet capture | Single link |
-| Start capture on started link | Capture on active link | Single link |
-| Packet filters | Configure capture filters | Single link |
-| Resume link | Resume suspended link | Single link |
-| Suspend link | Suspend link | Single link |
-| Reset link | Reset link | Single link |
-| Edit link style | Change link appearance | Single link |
-
-### Alignment Operations
-
-| Menu Option | Action | Visual |
-|-------------|--------|--------|
-| Align horizontally | Align nodes horizontally | ═══ |
-| Align vertically | Align nodes vertically | ║║║ |
-
-### Multi-Select Operations
-
-| Menu Option | Action | Condition |
-|-------------|--------|-----------|
-| Duplicate | Copy nodes/drawings | Selection exists |
-| Lock/Unlock | Prevent deletion | Selection exists |
-| Delete | Remove elements | Selection exists |
+| Component | Responsibility |
+|-----------|---------------|
+| `ContextMenuComponent` | Main topology context menu; manages positioning, selection state, and action visibility |
+| `ContextConsoleMenuComponent` | Console selection menu on node double-click; persists user's default console preference |
+| `XtermContextMenuService` | Terminal widget context menu providing copy, paste, select all, and clear selection |
 
 ---
 
-## Architecture
+## Flow Description
 
-### Component Structure
+### Context Menu Open Flow
 
+```mermaid
+sequenceDiagram
+    participant User
+    participant Widget as D3 Widget
+    participant PM as ProjectMapComponent
+    participant CM as ContextMenuComponent
+
+    User->>Widget: Right-click on element
+    Widget->>PM: Emits contextMenu event
+    PM->>CM: Calls openMenuFor*(element, y, x)
+
+    alt Node selected
+        PM->>CM: openMenuForNode(node, y, x)
+    else Drawing selected
+        PM->>CM: openMenuForDrawing(drawing, y, x)
+    else Label selected
+        PM->>CM: openMenuForLabel(label, node, y, x)
+    else Link selected
+        PM->>CM: openMenuForInterfaceLabel(linkNode, link, y, x)
+    else Multi-select
+        PM->>CM: openMenuForListOfElements(drawings, nodes, labels, links, y, x)
+    end
+
+    CM->>CM: resetCapabilities() clears previous state
+    CM->>CM: Sets selection arrays (nodes, drawings, labels, links, linkNodes)
+    CM->>CM: setPosition(y, x) via DomSanitizer
+    CM->>CM: Opens Angular Material mat-menu
 ```
-context-menu/
-├── context-menu.component.ts      # Main component, handles positioning
-├── context-menu.component.html    # Template with conditional menu items
-└── actions/                       # Individual action components
-    ├── show-node-action/
-    ├── config-node-action/
-    ├── start-node-action/
-    ├── stop-node-action/
-    ├── move-layer-up-action/
-    ├── bring-to-front-action/
-    └── ... (38 total actions)
-```
 
-### Menu Trigger Sources
+### Console Menu Flow
 
-```
-project-map.component.ts
-    │
-    ├── nodeWidget.onContextMenu      → Node selected
-    ├── drawingsWidget.onContextMenu  → Drawing selected
-    ├── labelWidget.onContextMenu     → Label selected
-    ├── interfaceLabelWidget...        → Interface label selected
-    └── linkWidget.onContextMenu       → Link selected
-```
+```mermaid
+sequenceDiagram
+    participant User
+    participant PM as ProjectMapComponent
+    participant CCM as ContextConsoleMenuComponent
+    participant MSS as MapSettingsService
 
-### Dynamic Visibility Pattern
+    User->>PM: Double-click on node
+    PM->>CCM: openMenu(node, y, x)
+    CCM->>MSS: getConsoleContextMenuAction()
 
-```html
-<!-- Angular 17+ @if syntax for conditional display -->
-@if (nodes.length === 1) {
-  <app-show-node-action ... />
-}
-
-@if (!projectService.isReadOnly(project) && nodes.length === 1) {
-  <app-change-symbol-action ... />
-}
+    alt Saved preference exists
+        MSS-->>CCM: action type
+        CCM->>CCM: Executes saved action directly
+    else No preference
+        CCM->>CCM: Shows menu for user to choose
+        User->>CCM: Selects console type
+        CCM->>MSS: setConsoleContextMenuAction(type)
+    end
 ```
 
 ---
 
-## Layer Management
+## Implementation Logic
 
-### Z-Value System
+### Selection State Management
 
-```
-Visual Stack (top to bottom):
+`ContextMenuComponent` maintains five parallel selection arrays that determine which menu items appear. When a context menu opens, all arrays are cleared via `resetCapabilities()`, then only the relevant arrays are populated based on the element type:
 
-┌────────────────────────────────┐
-│  Highest z                      │  ← bringToFront()
-├────────────────────────────────┤
-│                                 │
-├────────────────────────────────┤
-│                                 │
-├────────────────────────────────┤
-│  Lowest z                       │
-└────────────────────────────────┘
-```
+- **Node context**: populates `nodes[]` (single or multiple)
+- **Drawing context**: populates `drawings[]`, detects `hasTextCapabilities` for TextElement instances
+- **Label context**: populates `labels[]` and `nodes[]` (label's parent node)
+- **Interface label context**: populates `linkNodes[]` and `links[]`
+- **Multi-select**: populates all applicable arrays from the current selection
 
-### Bring to Front Logic
+### Action Visibility Rules
 
-```
-1. Get max z from all selected nodes/drawings
-2. Set selected elements to maxZ + 1
-3. Update NodesDataSource + DrawingsDataSource
-4. Persist via API
-```
+Each action component is conditionally rendered based on the selection state. The key rules are:
 
----
+**Node actions** — require nodes in selection:
+- Single-node actions (show, config, console, isolate/unisolate, hostname, symbol) require `nodes.length === 1`
+- Multi-node actions (start, stop, suspend, reload) require `nodes.length >= 1`
+- Type-specific actions (edit config, idle PC) additionally check `node_type`
+- HTTP console and browser console require a non-read-only project
+- Console device browser requires both non-read-only and single node
 
-## File Structure
+**Drawing actions** — require drawings or specific drawing capabilities:
+- Edit style requires single drawing without text capabilities
+- Edit text activates when a single text-capable drawing, label, or linkNode is the sole selection
 
-### Core Files
+**Link actions** — require exactly one link with no drawings or nodes selected, and no linkNodes. All link actions additionally require a non-read-only project. There are 10 link actions: start/stop capture, capture on started link, web Wireshark (new tab and inline), packet filters, resume, suspend, reset, and edit style.
 
-| File | Purpose |
-|------|---------|
-| `context-menu.component.ts` | Menu positioning, trigger handling |
-| `context-menu.component.html` | Menu template with conditional items |
-| `actions/*/` | Individual action components |
+**Layer actions** — require drawings or nodes in a non-read-only project. All three layer operations (move up, move down, bring to front) share the same visibility condition.
 
-### Actions Directory (38 actions)
+**Multi-select actions** — alignment requires `nodes.length > 1` in a non-read-only project. Duplicate requires drawings or nodes. Lock requires drawings or nodes. Delete requires drawings, nodes, or links (but not linkNodes).
 
-```
-actions/
-├── align-horizontally/      align-vertically/
-├── auto-idle-pc-action/     bring-to-front-action/
-├── change-hostname/         change-symbol/
-├── config-action/           console-device-action/
-├── console-device-action-browser/
-├── delete-action/           duplicate-action/
-├── edit-config/             edit-link-style-action/
-├── edit-style-action/       edit-text-action/
-├── export-config/          http-console/
-├── http-console-new-tab/    idle-pc-action/
-├── import-config/           isolate-node-action/
-├── lock-action/            move-layer-down-action/
-├── move-layer-up-action/    open-file-explorer/
-├── packet-filters-action/   reload-node-action/
-├── reset-link/             resume-link-action/
-├── show-node-action/        start-capture/
-├── start-capture-on-started-link/
-├── start-node-action/       stop-capture/
-├── stop-node-action/        suspend-link/
-├── suspend-node-action/     unisolate-node-action/
-└── ... (38 total)
-```
+### Z-Value Layer System
+
+Layer management uses a numeric z-value system where higher values appear on top. Three operations are available:
+
+- **Move layer up**: increments z-value by 1
+- **Move layer down**: decrements z-value by 1
+- **Bring to front**: sets z-value to `max(all z-values) + 1`
+
+There is no "send to back" operation. Layer changes persist to nodes and drawings data sources, then are saved via API calls.
+
+### Action Components
+
+There are 38 active action components organized under `context-menu/actions/`. Each is a standalone Angular component with `ChangeDetectionStrategy.OnPush`. Two additional directories (`console-device-action`, `open-file-explorer`) exist but are not imported or used by the context menu.
+
+### Console Preference Persistence
+
+`ContextConsoleMenuComponent` stores the user's default console action via `MapSettingsService`. Once set, double-clicking a node bypasses the menu and directly executes the saved action. Supported actions are: open console (embedded telnet), open web console, and open web console in new tab. Console routing varies by node `console_type`: telnet opens inline, VNC opens a standalone page, and SPICE is not yet supported.
+
+### Terminal Context Menu
+
+`XtermContextMenuService` provides a DOM-based context menu for xterm.js terminal widgets. It offers copy, paste, select all, and clear selection operations. The service attaches to the terminal element's `contextmenu` event and returns a cleanup function for proper event listener removal.
 
 ---
 
-## Visibility Conditions Summary
-
-| Condition | Shown When |
-|-----------|------------|
-| `nodes.length === 1` | Single node selected |
-| `nodes.length` | 1+ nodes selected |
-| `nodes.length > 1` | 2+ nodes selected |
-| `links.length === 1` | Single link selected |
-| `drawings.length === 1` | Single drawing selected |
-| `!isReadOnly && ...` | Project is editable |
-| `nodes[0].node_type === 'vpcs'` | VPCS node type |
-| `nodes[0].node_type === 'dynamips'` | Dynamips node type |
-
----
-
-**Last Updated**: 2026-03-30
-**Document Version**: 1.0
+**Last Updated**: 2026-04-19
+**Document Version**: 2.0
 
 ---
 
