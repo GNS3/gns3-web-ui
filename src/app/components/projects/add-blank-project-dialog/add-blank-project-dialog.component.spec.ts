@@ -193,12 +193,6 @@ describe('AddBlankProjectDialogComponent', () => {
 
       expect(mockProjectService.add).toHaveBeenCalled();
     });
-
-    // Note: Testing openConfirmationDialog requires full MatDialog dependency graph
-    // which is not suitable for unit testing. This behavior is tested in integration tests.
-    it('should openConfirmationDialog be defined as a method', () => {
-      expect(typeof component.openConfirmationDialog).toBe('function');
-    });
   });
 
   describe('addProject', () => {
