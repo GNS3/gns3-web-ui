@@ -2,104 +2,125 @@
 SPDX-License-Identifier: CC-BY-SA-4.0
 See LICENSE file for licensing information.
 -->
-# Angular 21 ngModel Migration Guide
+# Angular 21 ngModel Migration
 
-## Overview
+## Architecture Overview
 
-This document tracks the migration from deprecated `[(ngModel)]` two-way binding to Angular 17+ `model()` signals in accordance with the Angular 21 Zoneless architecture requirements.
+```mermaid
+graph TB
+    subgraph "Deprecated Pattern (Zone.js dependent)"
+        NM["ngModel directive"]
+        FD["FormsModule"]
+        NM --> FD
+    end
 
-## Background
+    subgraph "Target Pattern (Zoneless compatible)"
+        MS["model() signal"]
+        VB["[value] binding"]
+        IE["(input) / (selectionChange) events"]
+        MS --> VB
+        IE --> MS
+    end
 
-Angular 21 (Zoneless) does not support `ngModel` as it relies on Zone.js for change detection. All components must migrate to using `model()` signals for two-way binding patterns.
+    subgraph "Alternative Pattern (Complex forms)"
+        RF["ReactiveFormsModule"]
+        FG["FormGroup / FormControl"]
+        RF --> FG
+    end
 
-## Migration Pattern
-
-### Before (Deprecated)
-
-```html
-<input [(ngModel)]="searchText" />
+    NM -.->|"migrate to"| MS
+    NM -.->|"or migrate to"| RF
 ```
 
-### After (Angular 21 Compatible)
+## Migration Flow
 
-```typescript
-// Component (TypeScript)
-searchText = model('');
+```mermaid
+flowchart TD
+    A[Identify ngModel usage in template] --> B{Binding type?}
+    B -->|Simple two-way| C[Replace with model signal + value/input events]
+    B -->|Complex form| D[Replace with Reactive Forms]
+    A --> E[Remove FormsModule import from component]
+    C --> F[Add markForCheck after async updates]
+    D --> F
+    F --> G[Verify OnPush change detection works]
 ```
 
-```html
-<input [value]="searchText()" (input)="searchText.set($event.target.value)" />
-```
+## Implementation Logic
+
+Angular 21 Zoneless architecture does not support `ngModel` because it relies on Zone.js for change detection. All two-way binding must migrate to either `model()` signals or Reactive Forms.
+
+The migration replaces `ngModel`-based bindings with `model()` signals in the component class, using explicit `[value]` property binding and `(input)` / `(selectionChange)` event handlers in templates. After any asynchronous state update, `ChangeDetectorRef.markForCheck()` must be called to trigger change detection under `OnPush` strategy.
+
+Components with complex form validation should use `ReactiveFormsModule` with `FormGroup` and `FormControl` instead of `model()` signals.
 
 ## Migration Progress
 
-**Total: 38 files | Completed: 38 | Pending: 0**
+**Total: 38 files | Completed: 36 | Pending: 2**
 
-## Files Requiring Migration
+### Pending Files
 
-### Template Components
+| File | Remaining Issue |
+|------|-----------------|
+| `src/app/components/template/template.component.html` | Still uses `[ngModel]` + `(ngModelChange)` with `FormsModule` import |
+| `src/app/components/preferences/dynamips/ios-template-details/ios-template-details.component.html` | Still uses `[ngModelOptions]` with `FormsModule` import |
 
-| File | Status |
-|------|--------|
-| `src/app/components/template/template.component.html` | Completed |
-| `src/app/components/template/template-list-dialog/template-list-dialog.component.html` | Completed |
+### Completed Files
 
-### Preferences Components
+#### Template Components
 
-| File | Status |
-|------|--------|
-| `src/app/components/preferences/qemu/qemu-preferences/qemu-preferences.component.html` | Completed |
-| `src/app/components/preferences/vpcs/vpcs-preferences/vpcs-preferences.component.html` | Completed |
-| `src/app/components/preferences/vmware/vmware-preferences/vmware-preferences.component.html` | Completed |
-| `src/app/components/preferences/virtual-box/virtual-box-preferences/virtual-box-preferences.component.html` | Completed |
-| `src/app/components/preferences/dynamips/dynamips-preferences/dynamips-preferences.component.html` | Completed |
-| `src/app/components/preferences/dynamips/ios-template-details/ios-template-details.component.html` | Completed |
-| `src/app/components/preferences/common/symbols/symbols.component.html` | Completed |
-| `src/app/components/preferences/common/udp-tunnels/udp-tunnels.component.html` | Completed |
-| `src/app/components/preferences/common/ports/ports.component.html` | Completed |
-| `src/app/components/preferences/common/custom-adapters-table/custom-adapters-table.component.html` | Completed |
-| `src/app/components/preferences/common/custom-adapters/custom-adapters.component.html` | Completed |
+| File |
+|------|
+| `src/app/components/template/template-list-dialog/template-list-dialog.component.html` |
 
-### Project-Map Components
+#### Preferences Components
 
-| File | Status |
-|------|--------|
-| `src/app/components/project-map/drawings-editors/style-editor/style-editor.component.html` | Completed |
-| `src/app/components/project-map/drawings-editors/text-editor/text-editor.component.html` | Completed |
-| `src/app/components/project-map/ai-chat/chat-input-area.component.html` | Completed |
-| `src/app/components/project-map/packet-capturing/packet-filters/packet-filters.component.html` | Completed |
-| `src/app/components/project-map/packet-capturing/start-capture/start-capture.component.html` | Completed |
-| `src/app/components/project-map/node-editors/configurator/docker/edit-network-configuration/edit-network-configuration.component.html` | Completed |
-| `src/app/components/project-map/node-editors/configurator/docker/configure-custom-adapters/configure-custom-adapters.component.html` | Completed |
-| `src/app/components/project-map/node-editors/config-editor/config-editor.component.html` | Completed |
-| `src/app/components/project-map/node-editors/configurator/cloud/configurator-cloud.component.html` | Completed |
-| `src/app/components/project-map/new-template-dialog/new-template-dialog.component.html` | Completed |
-| `src/app/components/project-map/log-console/log-console.component.html` | Completed |
-| `src/app/components/project-map/context-menu/dialogs/idle-pc-dialog/idle-pc-dialog.component.html` | Completed |
+| File |
+|------|
+| `src/app/components/preferences/qemu/qemu-preferences/qemu-preferences.component.html` |
+| `src/app/components/preferences/vpcs/vpcs-preferences/vpcs-preferences.component.html` |
+| `src/app/components/preferences/vmware/vmware-preferences/vmware-preferences.component.html` |
+| `src/app/components/preferences/virtual-box/virtual-box-preferences/virtual-box-preferences.component.html` |
+| `src/app/components/preferences/dynamips/dynamips-preferences/dynamips-preferences.component.html` |
+| `src/app/components/preferences/common/symbols/symbols.component.html` |
+| `src/app/components/preferences/common/udp-tunnels/udp-tunnels.component.html` |
+| `src/app/components/preferences/common/ports/ports.component.html` |
+| `src/app/components/preferences/common/custom-adapters-table/custom-adapters-table.component.html` |
+| `src/app/components/preferences/common/custom-adapters/custom-adapters.component.html` |
 
-### Management Components
+#### Project-Map Components
 
-| File | Status |
-|------|--------|
-| `src/app/components/controllers/controllers.component.html` | Completed |
-| `src/app/components/projects/projects.component.html` | Completed |
-| `src/app/components/projects/edit-project-dialog/edit-project-dialog.component.html` | Completed |
-| `src/app/components/projects/choose-name-dialog/choose-name-dialog.component.html` | Completed |
-| `src/app/components/user-management/user-management.component.html` | Completed |
-| `src/app/components/role-management/role-management.component.html` | Completed |
-| `src/app/components/settings/settings.component.html` | Completed |
-| `src/app/components/resource-pools-management/resource-pools-management.component.html` | Completed |
-| `src/app/components/image-manager/image-manager.component.html` | Completed |
-| `src/app/components/group-management/group-detail-dialog/group-detail-dialog.component.html` | Completed |
-| `src/app/components/group-management/group-management.component.html` | Completed |
-| `src/app/components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component.html` | Completed |
-| `src/app/components/acl-management/acl-management.component.html` | Completed |
+| File |
+|------|
+| `src/app/components/project-map/drawings-editors/style-editor/style-editor.component.html` |
+| `src/app/components/project-map/drawings-editors/text-editor/text-editor.component.html` |
+| `src/app/components/project-map/ai-chat/chat-input-area.component.html` |
+| `src/app/components/project-map/packet-capturing/packet-filters/packet-filters.component.html` |
+| `src/app/components/project-map/packet-capturing/start-capture/start-capture.component.html` |
+| `src/app/components/project-map/node-editors/configurator/docker/edit-network-configuration/edit-network-configuration.component.html` |
+| `src/app/components/project-map/node-editors/configurator/docker/configure-custom-adapters/configure-custom-adapters.component.html` |
+| `src/app/components/project-map/node-editors/config-editor/config-editor.component.html` |
+| `src/app/components/project-map/node-editors/configurator/cloud/configurator-cloud.component.html` |
+| `src/app/components/project-map/new-template-dialog/new-template-dialog.component.html` |
+| `src/app/components/project-map/log-console/log-console.component.html` |
+| `src/app/components/project-map/context-menu/dialogs/idle-pc-dialog/idle-pc-dialog.component.html` |
 
-## Notes
+#### Management Components
 
-- When migrating, ensure `FormsModule` is removed from imports if only using `model()` signals
-- Use `cd.markForCheck()` after async operations in `OnPush` change detection components
-- Some components may require `ReactiveFormsModule` instead if complex validation is needed
+| File |
+|------|
+| `src/app/components/controllers/controllers.component.html` |
+| `src/app/components/projects/projects.component.html` |
+| `src/app/components/projects/edit-project-dialog/edit-project-dialog.component.html` |
+| `src/app/components/projects/choose-name-dialog/choose-name-dialog.component.html` |
+| `src/app/components/user-management/user-management.component.html` |
+| `src/app/components/role-management/role-management.component.html` |
+| `src/app/components/settings/settings.component.html` |
+| `src/app/components/resource-pools-management/resource-pools-management.component.html` |
+| `src/app/components/image-manager/image-manager.component.html` |
+| `src/app/components/group-management/group-detail-dialog/group-detail-dialog.component.html` |
+| `src/app/components/group-management/group-management.component.html` |
+| `src/app/components/group-details/add-user-to-group-dialog/add-user-to-group-dialog.component.html` |
+| `src/app/components/acl-management/acl-management.component.html` |
 
 ---
 
