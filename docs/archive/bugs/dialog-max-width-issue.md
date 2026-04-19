@@ -2,6 +2,9 @@
 SPDX-License-Identifier: CC-BY-SA-4.0
 See LICENSE file for licensing information.
 -->
+
+  > AI-assisted documentation. [See disclaimer](../../README.md). 
+
 # Angular Material Dialog Max-Width Issue
 
 ## Problem

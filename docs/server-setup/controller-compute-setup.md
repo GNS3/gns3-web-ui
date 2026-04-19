@@ -2,6 +2,10 @@
 SPDX-License-Identifier: CC-BY-SA-4.0
 See LICENSE file for licensing information.
 -->
+
+  > AI-assisted documentation. [See disclaimer](../README.md). 
+
+
 # Controller + Compute Setup
 
 This document describes the minimum configuration required to set up a GNS3 Controller with remote Compute nodes.

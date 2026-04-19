@@ -1,5 +1,7 @@
 # GNS3 Web UI - Documentation Index
 
+> This documentation is organized by AI with reference to actual code. AI can make mistakes — please verify against the source code when in doubt.
+
 > Complete documentation index for GNS3 Web UI project
 
 **Last Updated**: 2026-04-18

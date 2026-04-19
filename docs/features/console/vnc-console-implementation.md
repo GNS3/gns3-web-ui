@@ -2,6 +2,11 @@
 SPDX-License-Identifier: CC-BY-SA-4.0
 See LICENSE file for licensing information.
 -->
+
+  > AI-assisted documentation. [See disclaimer](../../README.md). 
+
+
+
 # VNC Console Implementation Documentation
 
 **Version**: 1.2.0 | **Updated**: 2026-04-18 | **Status**: ✅ Completed

@@ -2,6 +2,9 @@
 SPDX-License-Identifier: CC-BY-SA-4.0
 See LICENSE file for licensing information.
 -->
+
+  > AI-assisted documentation. [See disclaimer](../../README.md). 
+
 # Dialog Style Migration Record
 
 **Migration Date**: 2026-03-29

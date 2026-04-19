@@ -2,6 +2,10 @@
 SPDX-License-Identifier: CC-BY-SA-4.0
 See LICENSE file for licensing information.
 -->
+
+  > AI-assisted documentation. [See disclaimer](../../README.md). 
+
+
 # Bug Fix: White Flash During Route Transition
 
 > Fix white screen flash during Projects → ProjectMap navigation caused by conditional rendering blocking page display

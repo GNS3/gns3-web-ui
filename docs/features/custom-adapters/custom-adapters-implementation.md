@@ -2,6 +2,11 @@
 SPDX-License-Identifier: CC-BY-SA-4.0
 See LICENSE file for licensing information.
 -->
+
+  > AI-assisted documentation. [See disclaimer](../../README.md). 
+
+
+
 # Custom Adapters Implementation
 
 **Last Updated**: 2026-04-18

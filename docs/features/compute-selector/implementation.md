@@ -1,5 +1,9 @@
 # Compute Selector - Implementation Guide
 
+  > AI-assisted documentation. [See disclaimer](../../README.md). 
+
+
+
 > **Technical Implementation Details and Architecture**
 
 **Version**: 3.1.0-dev.1

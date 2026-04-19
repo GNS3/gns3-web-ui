@@ -1,5 +1,8 @@
 # ConnectionManagerService
 
+  > AI-assisted documentation. [See disclaimer](../../README.md). 
+
+
 > **Simple Controller Connection Management**
 
 **Version**: 3.1.0-dev.1

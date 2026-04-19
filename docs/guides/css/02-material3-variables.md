@@ -2,6 +2,10 @@
 SPDX-License-Identifier: CC-BY-SA-4.0
 See LICENSE file for licensing information.
 -->
+
+  > AI-assisted documentation. [See disclaimer](../../README.md). 
+
+
 # Material Design 3 CSS Variables Reference
 
 > Based on Angular Material 21 MD3 Sass Mixin System

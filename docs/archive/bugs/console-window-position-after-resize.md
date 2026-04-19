@@ -2,6 +2,10 @@
 SPDX-License-Identifier: CC-BY-SA-4.0
 See LICENSE file for licensing information.
 -->
+
+  > AI-assisted documentation. [See disclaimer](../../README.md). 
+
+
 # Bug Fix: Console Window Position After Resize
 
 > Fix console window jumping to bottom when opened from sidebar after resize

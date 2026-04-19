@@ -2,6 +2,10 @@
 SPDX-License-Identifier: CC-BY-SA-4.0
 See LICENSE file for licensing information.
 -->
+
+  > AI-assisted documentation. [See disclaimer](../README.md). 
+
+
 # Context Menu System
 
 > Right-click context menus for topology elements and terminal widgets

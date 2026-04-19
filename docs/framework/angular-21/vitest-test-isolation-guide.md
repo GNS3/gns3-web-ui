@@ -2,6 +2,10 @@
 SPDX-License-Identifier: CC-BY-SA-4.0
 See LICENSE file for licensing information.
 -->
+
+  > AI-assisted documentation. [See disclaimer](../../README.md). 
+
+
 # Vitest Test Isolation and Environment Pollution Guide
 
 > Architecture and flow documentation for test isolation in Angular 21 + Vitest
