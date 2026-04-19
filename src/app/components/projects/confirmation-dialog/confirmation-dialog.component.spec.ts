@@ -52,7 +52,7 @@ describe('ConfirmationDialogComponent', () => {
     });
 
     it('should set overwrite message when project status is not opened', () => {
-      expect(fixture.componentInstance.confirmationMessage()).toBe('Project Test Project already exist, overwrite it?');
+      expect(fixture.componentInstance.confirmationMessage()).toBe('Project Test Project already exists, overwrite it?');
       expect(fixture.componentInstance.isOpen()).toBe(false);
     });
   });

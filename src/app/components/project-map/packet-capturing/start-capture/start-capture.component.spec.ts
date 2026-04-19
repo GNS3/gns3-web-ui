@@ -77,12 +77,12 @@ describe('StartCaptureDialogComponent', () => {
       node_id: `node-${name}`,
     } as unknown as Node);
 
-  const createMockLinkNode = (nodeId: string, portNumber: number): LinkNode =>
+  const createMockLinkNode = (nodeId: string, portNumber: number, labelText: string = ''): LinkNode =>
     ({
       node_id: nodeId,
       adapter_number: 0,
       port_number: portNumber,
-      label: { text: '' },
+      label: { text: labelText },
     } as LinkNode);
 
   const createMockLink = (linkType: string, linkNodes: LinkNode[]): Link =>
@@ -169,7 +169,10 @@ describe('StartCaptureDialogComponent', () => {
   const setupWithEthernetLink = () => {
     const sourceNode = createMockNode('Router1', [{ name: 'Eth0/0' }, { name: 'Eth0/1' }]);
     const targetNode = createMockNode('Router2', [{ name: 'Eth0/0' }, { name: 'Eth0/1' }]);
-    const linkNodes = [createMockLinkNode('node-Router1', 0), createMockLinkNode('node-Router2', 0)];
+    const linkNodes = [
+      createMockLinkNode('node-Router1', 0, 'Eth0/0'),
+      createMockLinkNode('node-Router2', 0, 'Eth0/0')
+    ];
     const link = createMockLink('ethernet', linkNodes);
 
     // Use mockReturnValue to return proper nodes for each call
@@ -252,8 +255,8 @@ describe('StartCaptureDialogComponent', () => {
     it('should generate filename from source and target node/port names', () => {
       setupWithEthernetLink();
       const fileNameControl = fixture.componentInstance.inputForm.get('fileName');
-      // The regex removes non-alphanumeric chars except _ and -, so Eth0/0 becomes Eth00
-      expect(fileNameControl?.value).toBe('Router1_Eth00_to_Router2_Eth00');
+      // Slashes are replaced with hyphens, so Eth0/0 becomes Eth0-0
+      expect(fileNameControl?.value).toBe('Router1_Eth0-0_to_Router2_Eth0-0');
     });
 
     it('should auto-select first linkType option and be valid', () => {

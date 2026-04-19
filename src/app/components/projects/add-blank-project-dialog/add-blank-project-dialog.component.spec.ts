@@ -176,16 +176,7 @@ describe('AddBlankProjectDialogComponent', () => {
       expect(mockProjectService.add).not.toHaveBeenCalled();
     });
 
-    it('should list projects when form is valid', () => {
-      component.projectNameForm.controls['projectName'].setValue('ValidProject');
-      fixture.detectChanges();
-
-      component.onAddClick();
-
-      expect(mockProjectService.list).toHaveBeenCalledWith(mockController);
-    });
-
-    it('should call addProject when no duplicate project exists', () => {
+    it('should call addProject when form is valid', () => {
       component.projectNameForm.controls['projectName'].setValue('NewProject');
       fixture.detectChanges();
 
