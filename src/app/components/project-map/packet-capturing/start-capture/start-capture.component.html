@@ -19,7 +19,8 @@
   <div class="modal-form-container">
     <form [formGroup]="inputForm">
       <mat-form-field class="input-field">
-        <mat-select placeholder="Link type" formControlName="linkType" ngDefaultControl>
+        <mat-label>Link type</mat-label>
+        <mat-select formControlName="linkType" ngDefaultControl>
           @for (type of linkTypes; track type[1]) {
           <mat-option [value]="type[1]">
             {{ type[0] }}
@@ -28,7 +29,8 @@
         </mat-select>
       </mat-form-field>
       <mat-form-field class="input-field">
-        <input placeholder="File name" formControlName="fileName" matInput type="text" />
+        <mat-label>Capture file name</mat-label>
+        <input matInput formControlName="fileName" type="text" />
       </mat-form-field>
       <mat-checkbox [checked]="startProgram()" (change)="startProgram.set($event.checked)">
         Start the capture visualization program
