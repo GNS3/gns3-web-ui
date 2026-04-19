@@ -332,16 +332,6 @@ Export PNG/SVG with correct colors ✅
 
 ---
 
-### 4.2 ToolCallDisplayComponent (AI Chat)
-
-**File**: `src/app/components/project-map/ai-chat/tool-call-display.component.ts`
-
-| Line | Code | Issue | Status |
-|------|------|-------|--------|
-| 44 | `border-left: 3px solid #0ea5e9` | Border color | ⏳ Pending |
-| 54 | `border-color: #0ea5e9` | Border color | ⏳ Pending |
-| 63 | `color: #0ea5e9` | Text color | ⏳ Pending |
-
 ---
 
 ## Acceptable Exceptions
