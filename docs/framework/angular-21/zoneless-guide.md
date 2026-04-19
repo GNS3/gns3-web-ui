@@ -8,77 +8,141 @@ See LICENSE file for licensing information.
 
 ---
 
-## Core Requirements
+## Architecture Overview
 
-| Rule | Description |
-|------|-------------|
-| **OnPush** | All components must use `ChangeDetectionStrategy.OnPush` |
-| **Standalone** | All components must be standalone (Angular 21 default) |
-| **Signals** | Prefer signals for state management |
-| **markForCheck** | Must call `cd.markForCheck()` after async operations |
+```mermaid
+graph TB
+    subgraph Bootstrap["Bootstrap Layer (main.ts)"]
+        PZCD["provideZonelessChangeDetection()"]
+    end
+
+    subgraph Component["Component Layer"]
+        ONP["ChangeDetectionStrategy.OnPush<br/>(249/249 components)"]
+        STANDALONE["Standalone Components"]
+    end
+
+    subgraph StateMgmt["State Management"]
+        SIGNAL["Signals<br/>WritableSignal / ComputedSignal"]
+        RXJS["RxJS + markForCheck()<br/>(125 files, 383 calls)"]
+        RFORMS["Reactive Forms<br/>(81 files)"]
+    end
+
+    subgraph Binding["Data Binding"]
+        SINPUT["Signal Input<br/>input()"]
+        MINPUT["Model Signal<br/>model()"]
+        AINPUT["@Input() + Signal<br/>(18 files, legacy)"]
+    end
+
+    subgraph Forbidden["Forbidden APIs (Zero Usage)"]
+        F1["Zone.run()"]
+        F2["NgZone"]
+        F3["[(ngModel)]"]
+        F4["ApplicationRef.tick()"]
+    end
+
+    PZCD --> ONP
+    ONP --> STANDALONE
+
+    SIGNAL --> SINPUT
+    SIGNAL --> MINPUT
+    RXJS --> AINPUT
+    RFORMS -.->|replaces ngModel| Forbidden
+
+    style Forbidden fill:#ffebee,stroke:#c62828,color:#c62828
+    style PZCD fill:#e8f5e9,stroke:#2e7d32,color:#2e7d32
+    style ONP fill:#e8f5e9,stroke:#2e7d32,color:#2e7d32
+```
+
+### Component Responsibilities
+
+| Layer | Responsibility | Current Status |
+|-------|---------------|----------------|
+| **Bootstrap** | Zoneless provider registration | `provideZonelessChangeDetection()` in `main.ts` |
+| **Component** | All components standalone + OnPush | 249/249 (100%) |
+| **State Management** | Explicit change notification | `markForCheck()` as primary mechanism |
+| **Data Binding** | Input/Output signal-based | Legacy `@Input()` migration in progress |
 
 ---
 
-## Forbidden APIs
+## Flow Description
 
-| API | Alternative |
-|-----|-------------|
-| `Zone.run()` | `effect()` or direct state updates |
-| `NgZone` | `ChangeDetectorRef.markForCheck()` |
-| `[(ngModel)]` | `model()` signals or Reactive Forms |
-| `ApplicationRef.tick()` | `cd.markForCheck()` |
+### Change Detection Trigger Flow
+
+```mermaid
+flowchart TD
+    START([Async Event Occurs]) --> TYPE{Event Type}
+
+    TYPE -->|HTTP Response| HTTP["Observable subscribe()"]
+    TYPE -->|Timer| TIMER["setTimeout / setInterval"]
+    TYPE -->|User Input| INPUT["DOM Event"]
+
+    HTTP --> UPDATE["Update Signal State"]
+    TIMER --> UPDATE
+    INPUT --> SIGNAL_CHECK{Signal Bound?}
+
+    SIGNAL_CHECK -->|Yes| AUTO["Angular auto-detects<br/>signal change"]
+    SIGNAL_CHECK -->|No| MANUAL["Call markForCheck()"]
+
+    UPDATE --> MFC["Call markForCheck()"]
+    MFC --> DETECT["Angular schedules<br/>change detection"]
+    MANUAL --> DETECT
+    AUTO --> DETECT
+
+    DETECT --> RENDER([View Updated])
+
+    style START fill:#e3f2fd,stroke:#1565c0
+    style RENDER fill:#e8f5e9,stroke:#2e7d32
+    style MFC fill:#fff3e0,stroke:#e65100
+    style MANUAL fill:#fff3e0,stroke:#e65100
+```
+
+### Dynamic Component Loading Flow
+
+```mermaid
+flowchart LR
+    CREATE["createComponent()"] --> INSTANCE["Component Instance"]
+    INSTANCE --> PROPS["Set @Input properties"]
+    PROPS --> DETECT["detectChanges()"]
+    DETECT --> READY([Component Rendered])
+
+    style DETECT fill:#fff3e0,stroke:#e65100
+    style READY fill:#e8f5e9,stroke:#2e7d32
+```
 
 ---
 
-## Key Patterns
+## Implementation Logic
 
-### 1. Signal Inputs
+### Zoneless Architecture Principle
 
-```typescript
-// ✅ Use signal input
-readonly myValue = input<string>('');
-readonly count = input<number>(0);
+The application bootstraps with `provideZonelessChangeDetection()` which removes Zone.js monkey-patching entirely. Angular no longer auto-detects changes from async operations (HTTP, timers, events). Every state change must explicitly notify Angular's change detector.
 
-// ❌ Avoid setter
-@Input() set value(v: string) { this._value.set(v); }
-```
+### Forbidden APIs and Alternatives
 
-### 2. Model Signals (Two-Way Binding)
+Four APIs are strictly prohibited because they rely on Zone.js infrastructure:
 
-```typescript
-// ✅ Text input
-name = model('');
-<input [value]="name()" (input)="name.set($event.target.value)" />
+| Forbidden API | Reason | Replacement |
+|---------------|--------|-------------|
+| `Zone.run()` | Requires Zone.js runtime | `effect()` or direct signal updates |
+| `NgZone` | Zone.js dependency | `ChangeDetectorRef.markForCheck()` |
+| `[(ngModel)]` | Depends on FormsModule + Zone.js | `model()` signals or Reactive Forms |
+| `ApplicationRef.tick()` | Manual full-tree check | `cd.markForCheck()` per component |
 
-// ✅ Checkbox
-active = model(false);
-<mat-checkbox [checked]="active()" (change)="active.set($event.checked)">
+### Current Codebase Patterns
 
-// ✅ Select
-type = model('');
-<mat-select [value]="type()" (selectionChange)="type.set($event.value)">
-```
+The codebase uses three primary patterns for zoneless compatibility:
 
-### 3. Mark Check After Async Operations
+**Pattern 1: markForCheck() after async operations** — The dominant pattern (383 calls across 125 files). After any Observable subscription callback or timer callback, the component calls `cd.markForCheck()` to notify Angular. This is the most widely adopted mechanism because it integrates naturally with existing RxJS-based services (137 service files).
 
-```typescript
-constructor(private cd: ChangeDetectorRef) {}
+**Pattern 2: Reactive Forms** — Used in 81 files as the replacement for `ngModel`. Reactive Forms are inherently zoneless-compatible because form control value changes can be subscribed to explicitly, and `markForCheck()` can be called in the subscription.
 
-ngOnInit() {
-  this.http.get('/api/data').subscribe(data => {
-    this.data.set(data);
-    this.cd.markForCheck();  // Required
-  });
-}
-```
+**Pattern 3: Signal-based inputs** — Adopted in 4 files using `input()` and `model()`. This is the Angular-recommended modern approach. Signal input changes automatically trigger change detection without manual notification. Adoption is limited but growing.
 
-### 4. Dynamic Component Loading
+### Known Issues
 
-```typescript
-// Must call detectChanges() after creating component
-this.instance = this.container.createComponent(MyComponent);
-this.instance.changeDetectorRef.detectChanges();
-```
+**Dynamic Component Loading**: `ViewContainerRef.createComponent()` does not automatically trigger change detection in zoneless mode. After creating a component and setting its inputs, `detectChanges()` must be called explicitly on the component's `changeDetectorRef`.
+
+**mat-checkbox Binding**: In zoneless mode, prefer `[checked]` property binding with `(change)` event over `ngModel` for checkboxes. This avoids FormsModule dependency entirely.
 
 ---
 
@@ -87,25 +151,6 @@ this.instance.changeDetectorRef.detectChanges();
 - [Angular Zoneless Official Docs](https://angular.dev/guide/zoneless)
 - [Model Input Signals](https://angular.dev/tutorials/signals/6-two-way-binding-with-model-signals)
 - [ChangeDetectorRef](https://angular.dev/api/core/ChangeDetectorRef)
-
----
-
-## Known Issues
-
-### mat-checkbox with FormsModule
-
-In Zoneless mode, prefer `[checked]` over `[ngModel]` for display-only checkboxes:
-
-```html
-<!-- ✅ Recommended: display-only checkbox -->
-<mat-checkbox [checked]="isVisible" (change)="toggle($event.checked)">
-
-<!-- ⚠️ Only use ngModel when two-way binding is needed -->
-```
-
-### Dynamic Component Loading
-
-`ViewContainerRef.createComponent` does not automatically trigger change detection in Zoneless mode. Must call `detectChanges()` after creating a component.
 
 ---
 
