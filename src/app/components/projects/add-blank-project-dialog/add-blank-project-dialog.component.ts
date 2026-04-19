@@ -8,7 +8,7 @@ import {
   UntypedFormGroup,
   Validators,
 } from '@angular/forms';
-import { MatDialog, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -19,7 +19,6 @@ import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
 import { ToasterService } from '@services/toaster.service';
 import { projectNameAsyncValidator } from '../../../validators/project-name-async-validator';
-import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { ProjectNameValidator } from '../models/projectNameValidator';
 
 @Component({
@@ -42,7 +41,6 @@ import { ProjectNameValidator } from '../models/projectNameValidator';
 export class AddBlankProjectDialogComponent implements OnInit {
   private dialogRef = inject(MatDialogRef<AddBlankProjectDialogComponent>);
   private router = inject(Router);
-  private dialog = inject(MatDialog);
   private projectService = inject(ProjectService);
   private toasterService = inject(ToasterService);
   private formBuilder = inject(UntypedFormBuilder);
@@ -72,17 +70,7 @@ export class AddBlankProjectDialogComponent implements OnInit {
     if (this.projectNameForm.invalid) {
       return;
     }
-    this.projectService.list(this.controller).subscribe((projects: Project[]) => {
-      const projectName = this.projectNameForm.controls['projectName'].value;
-      let existingProject = projects.find((project) => project.name === projectName);
-
-      if (existingProject) {
-        this.openConfirmationDialog(existingProject);
-      } else {
-        this.addProject();
-      }
-      this.cd.markForCheck();
-    });
+    this.addProject();
   }
 
   onNoClick(): void {
@@ -108,29 +96,5 @@ export class AddBlankProjectDialogComponent implements OnInit {
     if (event.key === 'Enter') {
       this.onAddClick();
     }
-  }
-
-  openConfirmationDialog(existingProject: Project) {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-      width: '300px',
-      height: '150px',
-      panelClass: ['base-confirmation-dialog-panel', 'confirmation-warning-panel'],
-      data: {
-        existingProject: existingProject,
-      },
-      autoFocus: false,
-      disableClose: true,
-    });
-
-    dialogRef.afterClosed().subscribe((answer: boolean) => {
-      if (answer) {
-        this.projectService.close(this.controller, existingProject.project_id).subscribe(() => {
-          this.projectService.delete(this.controller, existingProject.project_id).subscribe(() => {
-            this.addProject();
-          });
-        });
-      }
-      this.cd.markForCheck();
-    });
   }
 }

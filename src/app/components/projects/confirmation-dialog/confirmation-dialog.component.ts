@@ -29,7 +29,7 @@ export class ConfirmationDialogComponent implements OnInit {
       this.confirmationMessage.set(`Project ${this.existingProject.name} is open. You can not overwrite it.`);
       this.isOpen.set(true);
     } else {
-      this.confirmationMessage.set(`Project ${this.existingProject.name} already exist, overwrite it?`);
+      this.confirmationMessage.set(`Project ${this.existingProject.name} already exists, overwrite it?`);
     }
   }
 
