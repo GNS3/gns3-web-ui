@@ -6,7 +6,7 @@ See LICENSE file for licensing information.
 
 > Documentation of Vitest setup for Angular 21 Zoneless testing in GNS3 Web UI.
 
-**Last Updated**: 2026-04-02
+**Last Updated**: 2026-04-19
 **Angular Version**: 21.0.0
 **Testing Framework**: Vitest 4.1.2
 **Change Detection**: Zoneless
@@ -32,7 +32,7 @@ This document describes the Vitest testing environment configuration for the GNS
 
 ### Key Design Decisions
 
-1. **No Custom Vitest Config**: The `@angular/build:unit-test` builder handles all Angular-specific configuration
+1. **Vitest Config for Isolation**: `vitest.config.ts` configures `forks` pool and serial execution for test isolation; Angular CLI handles all other configuration
 2. **Minimal Dependencies**: Only `vitest` and `jsdom` are required
 3. **Zoneless by Default**: All tests run with Zoneless change detection
 4. **Native Integration**: Uses Angular CLI's `ng test` command instead of direct Vitest execution
@@ -80,7 +80,7 @@ The test builder configuration in `angular.json`:
           "options": {
             "buildTarget": "gns3-web-ui:build:development",
             "tsConfig": "src/tsconfig.spec.json",
-            "setupFiles": ["src/test-setup.ts"]
+            "setupFiles": ["src/test-cdk-setup.ts", "src/test-setup.ts"]
           }
         }
       }
@@ -92,32 +92,28 @@ The test builder configuration in `angular.json`:
 **Key Points**:
 - Uses `@angular/build:unit-test` builder
 - Specifies `buildTarget` to use development build configuration
-- `setupFiles` points to global test setup file
-- No custom `vitest.config.ts` needed (Angular CLI handles it)
+- `setupFiles` loads CDK polyfills first, then global test setup
+- `vitest.config.ts` provides additional pool/isolation settings (see isolation guide)
 
-### 2. src/test-setup.ts
+### 2. src/test-cdk-setup.ts
 
-Global test setup for Zoneless change detection:
+CDK polyfill setup for Angular CDK components (MediaMatcher, FocusMonitor, HighContrastModeDetector) that require browser APIs not fully available in JSDOM. Ensures `document.body` exists with `querySelector`, `querySelectorAll`, and `classList` methods, and provides `window.addEventListener`/`removeEventListener` stubs.
 
-```typescript
-import '@angular/compiler';
-import { TestBed } from '@angular/core/testing';
-import { provideZonelessChangeDetection } from '@angular/core';
+### 3. src/test-setup.ts
 
-// Configure global Zoneless providers
-TestBed.configureTestingModule({
-  providers: [provideZonelessChangeDetection()],
-});
+Global test setup that initializes the Angular test environment and configures cleanup hooks:
 
-console.log('✓ Test setup loaded for Angular 21 Zoneless testing');
-```
+- **Initialization**: Calls `TestBed.initTestEnvironment()` with `BrowserDynamicTestingModule` and `destroyAfterEach: true`, guarded by `if (!TestBed.platform)` to prevent duplicate initialization
+- **beforeEach**: Installs fake timers via `vi.useFakeTimers()` to prevent timer pollution
+- **afterEach**: Restores real timers, clears all mocks via `vi.clearAllMocks()`, and clears DOM residuals via `document.body.innerHTML = ''`
 
-**Important Notes**:
-- Do NOT call `TestBed.initTestEnvironment()` - Angular CLI does this automatically
-- Only configure global providers here
-- Zoneless provider is essential for Angular 21 Zoneless applications
+See [Vitest Test Isolation Guide](./vitest-test-isolation-guide.md) for the full architecture details.
 
-### 3. package.json Scripts
+### 4. vitest.config.ts
+
+Provides process-level isolation settings: `pool: 'forks'` creates a separate child process per test file, `fileParallelism: false` and `concurrent: false` ensure serial execution. See [Vitest Test Isolation Guide](./vitest-test-isolation-guide.md) for details.
+
+### 5. package.json Scripts
 
 Test scripts in `package.json`:
 
@@ -134,7 +130,7 @@ Test scripts in `package.json`:
 - `yarn test` - Run tests in watch mode
 - `yarn test:run` - Run tests once (CI mode)
 
-### 4. tsconfig.base.json
+### 6. tsconfig.base.json
 
 Clean TypeScript configuration for testing:
 
@@ -149,7 +145,7 @@ Clean TypeScript configuration for testing:
 **Removed** (no longer needed):
 - `jasmine`, `jest`, `mocha` types - Legacy test framework types
 
-### 5. src/tsconfig.spec.json
+### 7. src/tsconfig.spec.json
 
 Test-specific TypeScript configuration:
 
@@ -302,27 +298,11 @@ describe('MyComponent', () => {
 
 ## Common Issues and Solutions
 
-### ⭐ Test Environment Pollution (Flaky Tests)
+### Test Environment Pollution (Flaky Tests)
 
 **Problem**: Tests pass individually but fail randomly when run together
 
-**Solution**: See [Vitest Test Isolation Guide](./vitest-test-isolation-guide.md) for comprehensive solutions
-
-**Quick Fix**:
-```typescript
-// vitest.config.ts - Use forks pool
-export default defineConfig({
-  test: {
-    pool: 'forks',
-    fileParallelism: false,
-  },
-});
-
-// src/test-setup.ts - Add cleanup
-afterEach(() => {
-  TestBed.resetTestingModule();
-});
-```
+**Solution**: See [Vitest Test Isolation Guide](./vitest-test-isolation-guide.md) for the full architecture
 
 ### Issue 1: Platform Already Created
 
@@ -331,9 +311,9 @@ afterEach(() => {
 NG0400: A platform with a different configuration has been created
 ```
 
-**Cause**: Calling `TestBed.initTestEnvironment()` manually when Angular CLI already does it.
+**Cause**: Calling `TestBed.initTestEnvironment()` without the `if (!TestBed.platform)` guard, or calling it multiple times.
 
-**Solution**: Remove `initTestEnvironment()` call from `test-setup.ts`.
+**Solution**: Wrap the call in `if (!TestBed.platform)` to prevent duplicate initialization.
 
 ### Issue 2: Component Not Resolved
 
@@ -348,11 +328,11 @@ Component 'MyComponent' is not resolved
 
 ### Issue 3: Vitest Config Interference
 
-**Error**: Tests not running with Angular CLI
+**Error**: Tests not running with expected isolation
 
-**Cause**: `vitest.config.ts` file exists and interferes with Angular CLI.
+**Cause**: `vitest.config.ts` is required for process isolation settings (`pool: 'forks'`). It works alongside the Angular CLI builder, not against it.
 
-**Solution**: Delete or rename `vitest.config.ts` (Angular CLI handles config).
+**Solution**: Ensure `vitest.config.ts` exists with the correct pool settings. See [Vitest Test Isolation Guide](./vitest-test-isolation-guide.md).
 
 ### Issue 4: Unknown Elements/Properties
 
@@ -494,6 +474,14 @@ rm -rf dist out-tsc node_modules/.vite
 
 ## Changelog
 
+### 2026-04-19
+
+- Fixed `angular.json` setupFiles to include `src/test-cdk-setup.ts`
+- Fixed `test-setup.ts` description to match actual code (initTestEnvironment + hooks, not Zoneless provider)
+- Added `vitest.config.ts` as a configuration file (it exists and is needed for isolation)
+- Fixed misleading Issue 1 (initTestEnvironment is used with guard, not forbidden)
+- Fixed misleading Issue 3 (vitest.config.ts is required, not to be deleted)
+
 ### 2026-04-03
 
 - ✅ **Added test isolation guide**: Comprehensive Flaky Tests solution documentation
@@ -545,7 +533,7 @@ For issues or questions about the testing setup:
 ---
 
 **Document Status**: ✅ Active
-**Last Reviewed**: 2026-04-02
+**Last Reviewed**: 2026-04-19
 **Angular Version**: 21.0.0
 
 ---

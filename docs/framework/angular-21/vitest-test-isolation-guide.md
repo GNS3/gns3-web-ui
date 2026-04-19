@@ -4,400 +4,180 @@ See LICENSE file for licensing information.
 -->
 # Vitest Test Isolation and Environment Pollution Guide
 
-> Comprehensive guide to solving test environment pollution issues in Angular 21 + Vitest
+> Architecture and flow documentation for test isolation in Angular 21 + Vitest
 
-**Last Updated**: 2026-04-03
+**Last Updated**: 2026-04-19
 **Angular Version**: 21.0.0 (Zoneless)
 **Testing Framework**: Vitest 4.1.2
-**Status**: ✅ Production Ready
+**Status**: Production Ready
 
 ---
 
-## Overview
+## Architecture Overview
 
-This document addresses **test environment pollution** (Flaky Tests) issues in Angular 21 + Vitest environments. Test isolation is critical for reliable CI/CD pipelines and developer confidence in test suites.
+Test environment pollution occurs when multiple test files share mutable global state across test boundaries. The isolation architecture uses a three-layer defense: process-level isolation via Vitest configuration, global cleanup hooks in test setup files, and per-test-file cleanup patterns.
 
-### The Problem
+```mermaid
+graph TB
+    subgraph "CI Pipeline"
+        CI["yarn ng test --watch=false"]
+    end
 
-When running tests together, they would **pass/fail randomly** depending on execution order:
-- ✅ **Services alone**: Stable pass
-- ✅ **Components alone**: Stable results (some known failures)
-- ❌ **All tests together**: Random failures due to cross-category pollution
+    subgraph "Vitest Configuration"
+        VC["vitest.config.ts<br/>pool: forks<br/>fileParallelism: false<br/>concurrent: false"]
+    end
 
-### Root Cause
+    subgraph "Setup Files (angular.json)"
+        CDK["src/test-cdk-setup.ts<br/>CDK polyfills"]
+        TS["src/test-setup.ts<br/>Angular init + global hooks"]
+    end
 
-**Parallel test环境污染** occurs when multiple test files share global state:
-- **Singleton Services**: Angular DI creates single instances across tests
-- **DOM Residuals**: Dynamic elements (Dialogs, Overlays, Toasts) persist
-- **Mock Objects**: Global mocks modified by one test affect others
-- **Async Leaks**: Unsubscribed Observables or timers fire in later tests
+    subgraph "Global Hooks (test-setup.ts)"
+        BE["beforeEach<br/>vi.useFakeTimers()"]
+        AE["afterEach<br/>vi.useRealTimers()<br/>vi.clearAllMocks()<br/>document.body.innerHTML = ''"]
+    end
 
----
+    subgraph "Per-File Patterns"
+        PF1["beforeEach: fresh mocks"]
+        PF2["afterEach: vi.restoreAllMocks()<br/>vi.unstubAllGlobals()<br/>fixture.destroy()"]
+    end
 
-## Solution Architecture
-
-### 1. Process-Level Isolation (`forks` pool)
-
-**vitest.config.ts**:
-```typescript
-import { defineConfig } from 'vitest/config';
-
-export default defineConfig({
-  test: {
-    // Use forks instead of threads for process isolation
-    // Creates separate child processes for each test file
-    // Prevents singleton service pollution at memory level
-    pool: 'forks',
-    // Disable parallel test file execution (run serially)
-    fileParallelism: false,
-    sequence: {
-      concurrent: false,
-    },
-    maxConcurrency: 1,
-  },
-});
+    CI --> VC
+    VC -->|"forks: separate process per file"| CDK
+    CDK --> TS
+    TS --> BE
+    TS --> AE
+    AE --> PF1
+    BE --> PF1
+    PF1 --> PF2
 ```
 
-**Why `forks` vs `threads`?**
+### Setup File Load Order
 
-| Aspect | threads | forks |
-|--------|---------|-------|
-| Isolation | Shared memory | Separate process memory |
-| Singleton Safety | ❌ Unsafe | ✅ Safe |
-| Performance | Faster | Slower (but acceptable) |
-| Angular DI | ❌ Pollutes | ✅ Isolated |
+The `angular.json` test builder loads setup files in sequence:
+
+1. **`src/test-cdk-setup.ts`** — Polyfills for Angular CDK (MediaMatcher, FocusMonitor, HighContrastModeDetector) that require browser APIs not available in JSDOM
+2. **`src/test-setup.ts`** — Angular TestBed initialization and global cleanup hooks
 
 ---
 
-### 2. Angular TestBed Cleanup
+## Pollution Source Flow
 
-**src/test-setup.ts**:
-```typescript
-import { TestBed, getTestBed } from '@angular/core/testing';
-import { BrowserDynamicTestingModule, platformBrowserDynamicTesting } from '@angular/platform-browser-dynamic/testing';
-import { beforeEach, afterEach, vi } from 'vitest';
+```mermaid
+graph LR
+    subgraph "Pollution Sources"
+        S1["Singleton Services"]
+        S2["DOM Residuals"]
+        S3["Mock Accumulation"]
+        S4["Timer/Async Leaks"]
+        S5["Global Stubs"]
+    end
 
-// Initialize Angular test environment (once)
-if (!TestBed.platform) {
-  TestBed.initTestEnvironment(
-    BrowserDynamicTestingModule,
-    platformBrowserDynamicTesting(),
-    { teardown: { destroyAfterEach: true } }
-  );
-}
+    subgraph "Isolation Layer 1: Process"
+        F["forks pool"]
+    end
 
-// Global fake timers for RxJS timer pollution prevention
-beforeEach(() => {
-  vi.useFakeTimers();
-});
+    subgraph "Isolation Layer 2: Global Cleanup"
+        C1["vi.useRealTimers()"]
+        C2["vi.clearAllMocks()"]
+        C3["document.body.innerHTML = ''"]
+    end
 
-afterEach(() => {
-  vi.runAllTimers();
-  vi.useRealTimers();
-  // Reset Angular TestBed to clean up singleton services
-  // Using forks pool + resetTestingModule ensures Angular singletons
-  // are properly cleaned up after each test
-  TestBed.resetTestingModule();
-});
+    subgraph "Isolation Layer 3: Per-File Cleanup"
+        P1["vi.restoreAllMocks()"]
+        P2["vi.unstubAllGlobals()"]
+        P3["fixture.destroy()"]
+    end
+
+    S1 -->|"prevented by"| F
+    S2 -->|"prevented by"| C3
+    S3 -->|"prevented by"| C2
+    S3 -->|"prevented by"| P1
+    S4 -->|"prevented by"| C1
+    S5 -->|"prevented by"| P2
 ```
 
-**Key Points**:
-- `destroyAfterEach: true` - Automatically destroys fixtures
-- `TestBed.resetTestingModule()` - Resets all DI singletons
-- `vi.useFakeTimers()` - Prevents real setTimeout/setInterval pollution
+### Pollution Source Descriptions
+
+| Source | Mechanism | Prevention Layer |
+|--------|-----------|-----------------|
+| **Singleton Services** | Angular DI creates single instances that persist across tests within the same process | `forks` pool gives each test file its own process |
+| **DOM Residuals** | Dialogs, overlays, toasts remain in `document.body` after test completes | Global `afterEach` clears `document.body.innerHTML` |
+| **Mock Accumulation** | Call counts and return values on `vi.fn()` mocks persist across tests | Global `vi.clearAllMocks()` in `afterEach`; per-file `vi.restoreAllMocks()` |
+| **Timer/Async Leaks** | Unsubscribed Observables or `setTimeout` callbacks fire in later tests | Global `vi.useFakeTimers()` in `beforeEach`; `vi.useRealTimers()` in `afterEach` |
+| **Global Stubs** | `vi.stubGlobal()` modifications (WebSocket, localStorage) leak across tests | Per-file `vi.unstubAllGlobals()` in `afterEach` |
 
 ---
 
-### 3. CI/CD Test Categorization
+## Test Lifecycle Flow
 
-**.github/workflows/main.yml**:
-```yaml
-jobs:
-  build:
-    # ... build steps ...
+```mermaid
+sequenceDiagram
+    participant Vitest
+    participant TestFile as Test File Process (fork)
+    participant Setup as test-setup.ts
+    participant Test as Individual Test
 
-    # Split tests by category to prevent cross-category pollution
-    - name: Test Services
-      run: yarn test --include="**/services/**/*.spec.ts"
+    Vitest->>TestFile: Spawn forked process
+    TestFile->>Setup: Load CDK polyfills
+    TestFile->>Setup: Init Angular TestBed (once)
 
-    - name: Test Components
-      run: yarn test --include="**/components/**/*.spec.ts"
-```
+    loop Each Test
+        TestFile->>Setup: beforeEach
+        Setup->>Test: vi.useFakeTimers()
+        TestFile->>Test: Run test
+        TestFile->>Setup: afterEach
+        Setup->>Test: vi.useRealTimers()
+        Setup->>Test: vi.clearAllMocks()
+        Setup->>Test: document.body.innerHTML = ''
+        TestFile->>Test: Per-file afterEach
+        Test->>Test: vi.restoreAllMocks()
+        Test->>Test: vi.unstubAllGlobals()
+    end
 
-**Why Separate?**
-- **Services**: Pure logic, minimal DOM, stable
-- **Components**: DOM manipulation, complex DI, prone to pollution
-- **Separation**: Ensures clean environment for each category
-
----
-
-## Common Pollution Patterns
-
-### Pattern 1: DOM Residuals
-
-**Problem**:
-```typescript
-// Test A creates a dialog
-const dialogRef = dialog.open(MyDialogComponent);
-
-// Test B runs and finds the dialog still in DOM
-const buttons = document.querySelectorAll('button'); // ❌ Includes Test A's buttons!
-```
-
-**Solution**: Global cleanup in `afterEach`:
-```typescript
-afterEach(() => {
-  // Clear DOM residuals (Dialogs, Overlays, Toasts)
-  if (typeof document !== 'undefined' && document.body) {
-    document.body.innerHTML = '';
-  }
-});
+    Vitest->>TestFile: Process exits (all state destroyed)
 ```
 
 ---
 
-### Pattern 2: Singleton Mock Pollution
+## Implementation Logic
 
-**Problem**:
-```typescript
-// Defined at module level (global!)
-const mockService = {
-  getData: vi.fn(),
-} as any;
+### Process-Level Isolation
 
-describe('Test A', () => {
-  it('modifies mock', () => {
-    mockService.getData.mockReturnValue('A');
-  });
-});
+The `vitest.config.ts` configures Vitest to use the `forks` pool instead of the default `threads` pool. This means each test file runs in a separate child process with its own memory space. When a test file finishes, its process exits and all in-memory state (Angular DI singletons, global variables, module cache) is destroyed. The configuration also disables file parallelism and concurrency to ensure tests run serially, eliminating race conditions from parallel execution.
 
-describe('Test B', () => {
-  it('reads polluted mock', () => {
-    // ❌ Still returns 'A' from Test A!
-    expect(mockService.getData()).toBe('???');
-  });
-});
-```
+### Global Setup and Cleanup
 
-**Solution**: Create fresh mocks in `beforeEach`:
-```typescript
-describe('Test B', () => {
-  let mockService: any;
+The `src/test-setup.ts` file performs two responsibilities:
 
-  beforeEach(() => {
-    // ✅ Fresh mock for each test
-    mockService = {
-      getData: vi.fn().mockReturnValue('B'),
-    } as any;
-  });
-});
-```
+**Initialization** — Calls `TestBed.initTestEnvironment()` with `BrowserDynamicTestingModule` and enables `destroyAfterEach: true` so Angular automatically destroys component fixtures between tests. This is guarded by `if (!TestBed.platform)` to prevent duplicate initialization when the Angular CLI has already set up the environment.
+
+**Global hooks** — Installs fake timers in `beforeEach` to intercept all `setTimeout`/`setInterval` calls, preventing real async operations from leaking between tests. The `afterEach` hook restores real timers, clears all mock call counts and implementations, and removes any leftover DOM elements by clearing `document.body.innerHTML`.
+
+### CDK Polyfills
+
+The `src/test-cdk-setup.ts` runs before the main setup and patches JSDOM environments for Angular CDK components that expect browser APIs. It ensures `document.body` exists with `querySelector`, `querySelectorAll`, and `classList` methods, and provides `window.addEventListener`/`removeEventListener` stubs.
+
+### Per-File Isolation Patterns
+
+Individual test files apply additional cleanup on top of the global hooks:
+
+- **Fresh mocks in `beforeEach`** — Services and dependencies are recreated as new `vi.fn()` instances rather than being reused from module scope
+- **`vi.restoreAllMocks()`** in `afterEach` — Restores original implementations of spied methods
+- **`vi.unstubAllGlobals()`** in `afterEach` — Removes any `vi.stubGlobal()` modifications (WebSocket, localStorage, etc.)
+- **`fixture.destroy()` with error handling** — Complex components with child components may throw during destruction; try-catch wrappers prevent cleanup errors from masking real test failures
+- **Explicit `TestBed.resetTestingModule()`** — Used selectively within individual tests that need a completely fresh Angular DI context (e.g., testing service initialization with different configurations)
 
 ---
 
-### Pattern 3: Async Leaks
+## Key Configuration Files
 
-**Problem**:
-```typescript
-it('triggers async operation', () => {
-  component.ngOnInit();
-  // ❌ Observable subscription not cleaned up!
-  // Async callback fires in NEXT test
-});
-
-it('fails due to leak', () => {
-  // Previous test's callback fires here!
-  expect(component.value).toBe(undefined); // ❌ Fails randomly
-});
-```
-
-**Solution**:
-```typescript
-it('handles async correctly', async () => {
-  component.ngOnInit();
-
-  // ✅ Use fake timers to control async
-  vi.advanceTimersByTime(500);
-  await vi.runAllTimersAsync();
-
-  expect(component.value).toBe('expected');
-});
-
-afterEach(() => {
-  // ✅ Cleanup subscriptions in component
-  component.ngOnDestroy();
-});
-```
-
----
-
-### Pattern 4: TestBed Configuration Conflicts
-
-**Problem**:
-```typescript
-// Global afterEach calls TestBed.resetTestingModule()
-// But beforeEach tries to reconfigure:
-beforeEach(async () => {
-  await TestBed.configureTestingModule({ // ❌ Error: already instantiated!
-    imports: [MyComponent],
-  });
-});
-```
-
-**Solution**: Reset before configuring:
-```typescript
-beforeEach(async () => {
-  TestBed.resetTestingModule(); // ✅ Reset first
-  await TestBed.configureTestingModule({
-    imports: [MyComponent],
-  });
-});
-```
-
----
-
-## Testing Best Practices
-
-### ✅ DO
-
-1. **Use `forks` pool** for process isolation
-2. **Create mocks in `beforeEach`** - never at module level
-3. **Clean up subscriptions** in `afterEach` or `ngOnDestroy`
-4. **Use fake timers** to control async operations
-5. **Reset TestBed** in `afterEach` (global setup)
-6. **Separate test categories** in CI pipelines
-
-### ❌ DON'T
-
-1. **Don't use global mock objects** - they pollute across tests
-2. **Don't use real `setTimeout`** - use `vi.advanceTimersByTime()`
-3. **Don't skip cleanup** - always unsubscribe and destroy
-4. **Don't assume execution order** - tests must be independent
-5. **Don't mix test categories** - separate services from components
-6. **Don't share state** between describe blocks
-
----
-
-## Diagnostic Checklist
-
-When tests fail randomly, check:
-
-- [ ] **Service mocks**: Are they recreated in `beforeEach`?
-- [ ] **Async cleanup**: Are subscriptions unsubscribed?
-- [ ] **Timers**: Are fake timers enabled globally?
-- [ ] **DOM cleanup**: Is `document.body.innerHTML` cleared?
-- [ ] **TestBed reset**: Is `resetTestingModule()` called?
-- [ ] **Pool type**: Is `pool: 'forks'` set?
-- [ ] **Test separation**: Are service/component tests split in CI?
-- [ ] **Module-level state**: Are there global variables?
-
----
-
-## Performance Considerations
-
-### Trade-offs
-
-| Approach | Isolation | Speed | Complexity |
-|----------|-----------|-------|------------|
-| **All tests together** | ❌ Poor | ⚡ Fast | 🟢 Low |
-| **Forks pool** | ✅ Good | 🐌 Slower | 🟢 Low |
-| **Test categorization** | ✅ Excellent | ⚡ Fast | 🟡 Medium |
-| **Process isolation** | ✅ Perfect | 🐌 Very Slow | 🔴 High |
-
-### Recommended Balance
-
-1. **Development**: Run test files individually (fast feedback)
-2. **CI/CD**: Split by category (services vs components)
-3. **Pipeline**: Use `forks` pool + cleanup + categorization
-
----
-
-## Troubleshooting
-
-### Issue: Tests Pass Individually, Fail Together
-
-**Symptoms**:
-```bash
-yarn test --include="**/services/**/*.spec.ts"  # ✅ Pass
-yarn test --include="**/components/**/*.spec.ts"  # ✅ Pass
-yarn test  # ❌ Random failures
-```
-
-**Diagnosis**: Cross-category pollution
-
-**Solution**: Split in CI:
-```yaml
-- name: Test Services
-  run: yarn test --include="**/services/**/*.spec.ts"
-- name: Test Components
-  run: yarn test --include="**/components/**/*.spec.ts"
-```
-
----
-
-### Issue: "already instantiated" Error
-
-**Symptoms**:
-```
-Error: Cannot configure the test module when the test module has already been instantiated
-```
-
-**Diagnosis**: `TestBed.resetTestingModule()` conflict
-
-**Solution**: Reset before configuring:
-```typescript
-beforeEach(async () => {
-  TestBed.resetTestingModule();
-  await TestBed.configureTestingModule({...});
-});
-```
-
----
-
-### Issue: Test Timeout
-
-**Symptoms**:
-```
-Error: Test timed out in 5000ms
-```
-
-**Diagnosis**: Real setTimeout blocked by fake timers
-
-**Solution**: Use Vitest timer APIs:
-```typescript
-// ❌ DON'T
-await new Promise(resolve => setTimeout(resolve, 10));
-
-// ✅ DO
-vi.advanceTimersByTime(10);
-await vi.runAllTimersAsync();
-```
-
----
-
-## Results
-
-### Before Fix
-
-```
-Test Files:  4 failed | 154 passed (158)
-Tests:       26 failed | 952 passed (978)
-Status:      ❌ Random failures
-```
-
-### After Fix
-
-```
-Test Files:  2 failed | 156 passed (158)
-Tests:       3 failed | 975 passed (978)
-Status:      ✅ Stable results
-```
-
-**Improvements**:
-- ✅ Random failures eliminated
-- ✅ Test stability: 98.7% pass rate
-- ✅ Consistent results across runs
-- ✅ CI/CD reliability improved
+| File | Responsibility |
+|------|---------------|
+| `vitest.config.ts` | Process isolation: `forks` pool, serial execution |
+| `src/test-cdk-setup.ts` | JSDOM polyfills for Angular CDK |
+| `src/test-setup.ts` | Angular TestBed init, fake timers, mock/DOM cleanup |
+| `angular.json` | Wires setup files to test builder via `setupFiles` array |
 
 ---
 
@@ -405,58 +185,32 @@ Status:      ✅ Stable results
 
 ### Internal Documentation
 
-- [Vitest Testing Setup](./vitest-testing-setup.md) - Base configuration
-- [Angular Zoneless Guide](./zoneless-guide.md) - Zoneless patterns
-- [CLAUDE.md](../../../CLAUDE.md) - Development standards
+- [Vitest Testing Setup](./vitest-testing-setup.md) — Base configuration
+- [Angular Zoneless Guide](./zoneless-guide.md) — Zoneless patterns
+- [CLAUDE.md](../../../CLAUDE.md) — Development standards
 
 ### External Resources
 
 - [Vitest Pool Options](https://vitest.dev/guide/cli.html#options)
 - [Angular TestBed API](https://angular.dev/api/core/testing/TestBed)
-- [Flaky Tests Pattern Guide](https://javascript-conference.com/blog/angular-21-vitest-testing/)
 
 ---
 
 ## Changelog
 
+### 2026-04-19
+
+- Rewritten to match actual codebase: corrected global cleanup hooks, added CDK setup file, removed fabricated CI section
+- Restructured to documentation standard: architecture diagrams, flow diagrams, text descriptions only
+
 ### 2026-04-03
 
-- ✅ **Initial documentation**: Test isolation and environment pollution guide
-- ✅ **Add `forks` pool**: Process-level isolation for test files
-- ✅ **Global cleanup**: `TestBed.resetTestingModule()` in `afterEach`
-- ✅ **CI categorization**: Split service and component tests
-- ✅ **Fix component tests**: Resolve 2 failing component tests
-- ✅ **Stability achieved**: 98.7% pass rate, no random failures
+- Initial documentation
 
 ---
 
-## Maintenance Notes
-
-### When Adding New Tests
-
-1. **Follow isolation patterns** - create mocks in `beforeEach`
-2. **Use fake timers** - don't rely on real `setTimeout`
-3. **Clean up subscriptions** - implement `ngOnDestroy`
-4. **Test independently** - verify test passes alone first
-
-### When Debugging Flaky Tests
-
-1. **Check pollution sources** - use diagnostic checklist
-2. **Isolate test file** - run with `--include` flag
-3. **Enable verbose output** - add `--verbose` to test command
-4. **Review test order** - check if execution order matters
-
-### When Updating Dependencies
-
-1. **Test after upgrade** - run full suite immediately
-2. **Check breaking changes** - review Vitest changelog
-3. **Verify pool compatibility** - ensure `forks` still works
-4. **Monitor CI results** - watch for new flaky tests
-
----
-
-**Document Status**: ✅ Active
-**Last Reviewed**: 2026-04-03
+**Document Status**: Active
+**Last Reviewed**: 2026-04-19
 **Angular Version**: 21.0.0
 **Vitest Version**: 4.1.2
 
