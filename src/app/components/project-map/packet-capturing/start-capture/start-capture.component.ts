@@ -91,14 +91,21 @@ export class StartCaptureDialogComponent implements OnInit {
 
     const sourceNode = this.nodesDataSource.get(this.link.nodes[0].node_id);
     const targetNode = this.nodesDataSource.get(this.link.nodes[1].node_id);
-    const sourcePort = sourceNode.ports[this.link.nodes[0].port_number];
-    const targetPort = targetNode.ports[this.link.nodes[1].port_number];
-    this.inputForm.controls['fileName'].setValue(
-      `${sourceNode.name}_${sourcePort.name}_to_${targetNode.name}_${targetPort.name}`.replace(
-        new RegExp('[^0-9A-Za-z_-]', 'g'),
-        ''
-      )
-    );
+
+    // Use interface label text instead of port name for correct display
+    const sourceInterfaceLabel = this.link.nodes[0].label.text;
+    const targetInterfaceLabel = this.link.nodes[1].label.text;
+
+    // Generate filename with proper character replacement (方案3)
+    // 1. Replace spaces with underscores
+    // 2. Replace slashes with hyphens (Linux doesn't allow / in filenames)
+    // 3. Remove other special characters except alphanumeric, underscore, and hyphen
+    const fileName = `${sourceNode.name}_${sourceInterfaceLabel}_to_${targetNode.name}_${targetInterfaceLabel}`
+      .replace(/\s+/g, '_')
+      .replace(/[/\\]/g, '-')
+      .replace(/[^0-9A-Za-z_-]/g, '');
+
+    this.inputForm.controls['fileName'].setValue(fileName);
   }
 
   onYesClick() {
