@@ -1,49 +1,48 @@
-<svg id="map" #svg class="map" preserveAspectRatio="none" movingCanvas zoomingCanvas>
-  <filter id="grayscale"><feColorMatrix id="feGrayscale" type="saturate" values="0" /></filter>
-  <defs>
-    <pattern
-      attr.x="{{ drawingGridX }}"
-      attr.y="{{ drawingGridY }}"
-      id="gridDrawing"
-      attr.width="{{ project.drawing_grid_size }}"
-      attr.height="{{ project.drawing_grid_size }}"
-      patternUnits="userSpaceOnUse"
-    >
-      <path
-        class="drawing-grid-line"
-        attr.d="M {{ project.drawing_grid_size }} 0 L 0 0 0 {{ project.drawing_grid_size }}"
-        fill="none"
-        attr.stroke-width="{{ gridVisibility }}"
-      />
-    </pattern>
-  </defs>
+<svg id="map" #svg class="map" preserveAspectRatio="none" appMovingCanvas appZoomingCanvas>
+  @if (gridVisibility() > 0 && project()) {
+    <defs>
+      <pattern
+        [attr.x]="drawingGridX"
+        [attr.y]="drawingGridY"
+        id="gridDrawing"
+        [attr.width]="project().drawing_grid_size"
+        [attr.height]="project().drawing_grid_size"
+        patternUnits="userSpaceOnUse"
+      >
+        <path
+          [attr.d]="'M ' + project().drawing_grid_size + ' 0 L 0 0 0 ' + project().drawing_grid_size"
+          fill="none"
+          [attr.stroke]="'var(--gns3-grid-drawing-color)'"
+          [attr.stroke-width]="1"
+        />
+      </pattern>
+      <pattern
+        [attr.x]="nodeGridX"
+        [attr.y]="nodeGridY"
+        id="gridNode"
+        [attr.width]="project().grid_size"
+        [attr.height]="project().grid_size"
+        patternUnits="userSpaceOnUse"
+      >
+        <path
+          [attr.d]="'M ' + project().grid_size + ' 0 L 0 0 0 ' + project().grid_size"
+          fill="none"
+          [attr.stroke]="'var(--gns3-grid-node-color)'"
+          [attr.stroke-width]="1"
+        />
+      </pattern>
+    </defs>
 
-  <defs>
-    <pattern
-      attr.x="{{ nodeGridX }}"
-      attr.y="{{ nodeGridY }}"
-      id="gridNode"
-      attr.width="{{ project.grid_size }}"
-      attr.height="{{ project.grid_size }}"
-      patternUnits="userSpaceOnUse"
-    >
-      <path
-        class="node-grid-line"
-        attr.d="M {{ project.grid_size }} 0 L 0 0 0 {{ project.grid_size }}"
-        fill="none"
-        attr.stroke-width="{{ gridVisibility }}"
-      />
-    </pattern>
-  </defs>
-
-  <rect width="100%" height="100%" fill="url(#gridDrawing)" />
-  <rect width="100%" height="100%" fill="url(#gridNode)" />
+    <rect width="100%" height="100%" fill="url(#gridDrawing)" />
+    <rect width="100%" height="100%" fill="url(#gridNode)" />
+  }
 </svg>
 
 <app-drawing-adding [svg]="svg"></app-drawing-adding>
+<app-curve-drawing [svg]="svg" [controller]="controller()" [project]="project()"></app-curve-drawing>
 <app-drawing-resizing></app-drawing-resizing>
 <app-selection-control></app-selection-control>
 <app-selection-select></app-selection-select>
-<app-text-editor #textEditor [controller]="controller" [svg]="svg"></app-text-editor>
+<app-text-editor #textEditor [controller]="controller()" [svg]="svg"></app-text-editor>
 <app-draggable-selection [svg]="svg"></app-draggable-selection>
-<app-link-editing [svg]="svg"></app-link-editing>
+<app-link-editing [svg]="svg" [controller]="controller()"></app-link-editing>

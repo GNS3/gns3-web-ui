@@ -1,0 +1,145 @@
+/* =============================================
+// D3 Map Selection Styles
+// =============================================
+// These styles target dynamically created DOM elements
+// (via D3.js) that Angular's view encapsulation cannot
+// scope. The styles are applied globally but use specific
+// selectors to avoid affecting other components.
+// ============================================= */
+
+/* =============================================
+// Map Background Presets
+// =============================================
+// Maps to availableMapBackgrounds in ThemeService.
+// Usage: add class .gns3-map-bg-{key} to .project-map.
+// The CSS variable --gns3-map-bg is used by .project-map.
+// ============================================= */
+
+:root {
+  // Default backgrounds (auto mode follows global theme)
+  --gns3-map-bg-auto: #fafafa; // light fallback
+  --gns3-map-bg-light: #fafafa;
+  --gns3-map-bg-dark: #424242;
+
+  // Light presets
+  --gns3-map-bg-light-1: radial-gradient(ellipse at 20% 20%, #b2ebf2 0%, #e0f7fa 70%);
+  --gns3-map-bg-light-2: radial-gradient(ellipse at 20% 20%, #bbdefb 0%, #e3f2fd 70%);
+  --gns3-map-bg-light-3: radial-gradient(ellipse at 20% 20%, #f5f5f5 0%, #fafafa 70%);
+  --gns3-map-bg-light-4: radial-gradient(ellipse at 20% 20%, #e1bee7 0%, #f3e5f5 70%);
+
+  // Dark presets
+  --gns3-map-bg-dark-1: linear-gradient(135deg, #006064 0%, #00838f 50%, #006064 100%);
+  --gns3-map-bg-dark-2: linear-gradient(135deg, #1565c0 0%, #1976d2 50%, #1565c0 100%);
+  --gns3-map-bg-dark-3: linear-gradient(135deg, #424242 0%, #616161 50%, #424242 100%);
+  --gns3-map-bg-dark-4: linear-gradient(135deg, #4a148c 0%, #6a1b9a 50%, #4a148c 100%);
+}
+
+/* Light theme backgrounds (auto resolves to these) */
+.gns3-map-bg-light {
+  --gns3-map-bg: var(--gns3-map-bg-light);
+}
+
+/* Dark theme backgrounds (auto resolves to these when global theme is dark) */
+.gns3-map-bg-dark {
+  --gns3-map-bg: var(--gns3-map-bg-dark);
+}
+
+/* Named light presets */
+.gns3-map-bg-light-1 {
+  --gns3-map-bg: var(--gns3-map-bg-light-1);
+}
+.gns3-map-bg-light-2 {
+  --gns3-map-bg: var(--gns3-map-bg-light-2);
+}
+.gns3-map-bg-light-3 {
+  --gns3-map-bg: var(--gns3-map-bg-light-3);
+}
+.gns3-map-bg-light-4 {
+  --gns3-map-bg: var(--gns3-map-bg-light-4);
+}
+
+/* Named dark presets */
+.gns3-map-bg-dark-1 {
+  --gns3-map-bg: var(--gns3-map-bg-dark-1);
+}
+.gns3-map-bg-dark-2 {
+  --gns3-map-bg: var(--gns3-map-bg-dark-2);
+}
+.gns3-map-bg-dark-3 {
+  --gns3-map-bg: var(--gns3-map-bg-dark-3);
+}
+.gns3-map-bg-dark-4 {
+  --gns3-map-bg: var(--gns3-map-bg-dark-4);
+}
+
+/* Map background - applies to entire SVG element regardless of size */
+svg#map {
+  background: var(--gns3-map-bg, var(--mat-sys-surface));
+}
+
+/* Node/Link selection grayscale effect */
+svg#map g.selected {
+  filter: grayscale(100%);
+  -webkit-filter: grayscale(100%);
+}
+
+/* Drag selection rectangle */
+svg#map g.selection-line-tool path.selection {
+  fill: var(--mat-sys-primary);
+  stroke: var(--mat-sys-primary);
+  fill-opacity: 0.3;
+  stroke-opacity: 0.7;
+  stroke-width: 1;
+}
+
+/* =============================================
+// Canvas Element Colors
+// =============================================
+// Colors for text labels and links that adapt to
+// the canvas background (light vs dark).
+// Usage: .project-map--light-bg or .project-map--dark-bg
+// ============================================= */
+
+.project-map {
+  /* Default (light) colors */
+  --gns3-canvas-label-color: #000000;
+  --gns3-canvas-link-color: #000000;
+  --gns3-grid-drawing-color: #c0c0c0; // silver
+  --gns3-grid-node-color: #2f4f4f; // DarkSlateGray
+
+  /* Light background colors */
+  &--light-bg {
+    --gns3-canvas-label-color: #000000;
+    --gns3-canvas-link-color: #000000;
+    --gns3-grid-drawing-color: #c0c0c0;
+    --gns3-grid-node-color: #2f4f4f;
+  }
+
+  /* Dark background colors */
+  &--dark-bg {
+    --gns3-canvas-label-color: #ffffff;
+    --gns3-canvas-link-color: #ffffff;
+    --gns3-grid-drawing-color: #888888;
+    --gns3-grid-node-color: #b0b0b0; // lighter for dark bg - more visible
+  }
+}
+
+/* Node labels */
+svg#map text.label {
+  fill: var(--gns3-canvas-label-color);
+}
+
+/* Ethernet links */
+svg#map path.ethernet_link:hover {
+  stroke: var(--mat-sys-error);
+}
+
+/* Drawing lines */
+svg#map line.line_element:hover {
+  stroke: var(--mat-sys-error);
+}
+
+/* Drawing curves */
+svg#map path.curve_element:hover {
+  stroke: var(--mat-sys-error);
+}

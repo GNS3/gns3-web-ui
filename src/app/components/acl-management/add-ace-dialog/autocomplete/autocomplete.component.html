@@ -1,12 +1,15 @@
 <mat-form-field class="input-field">
-  <mat-label>{{eltType}}</mat-label>
-  <input type="text"
-         matInput
-         [matAutocomplete]="auto"
-         [formControl]="autocompleteControl">
-  <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)='onSelection.emit($event.option.value)'>
-    <mat-option *ngFor="let elt of filteredData | async" [value]="elt" >
-      {{displayFn(elt)}}
+  <mat-label>{{ eltType() }}</mat-label>
+  <input type="text" matInput [matAutocomplete]="auto" [formControl]="autocompleteControl" />
+  <mat-autocomplete
+    #auto="matAutocomplete"
+    [displayWith]="displayFn()"
+    (optionSelected)="selectionChange.emit($event.option.value)"
+  >
+    @for (elt of filteredData | async; track elt) {
+    <mat-option [value]="elt">
+      {{ displayFn()(elt) }}
     </mat-option>
+    }
   </mat-autocomplete>
 </mat-form-field>

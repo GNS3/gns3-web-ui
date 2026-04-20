@@ -1,9 +1,9 @@
 export enum AceType {
-  group= "group",
-  user = "user"
+  group = 'group',
+  user = 'user',
 }
 
-export interface ACEDetailed extends ACE{
+export interface ACEDetailed extends ACE {
   endpoint_name: string;
   role_name: string;
 }

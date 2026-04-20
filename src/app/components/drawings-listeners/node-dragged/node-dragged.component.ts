@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
@@ -12,18 +12,18 @@ import { NodeService } from '@services/node.service';
 @Component({
   selector: 'app-node-dragged',
   templateUrl: './node-dragged.component.html',
-  styleUrls: ['./node-dragged.component.scss'],
+  styleUrl: './node-dragged.component.scss',
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodeDraggedComponent implements OnInit, OnDestroy {
-  @Input() controller: Controller;
-  @Input() project: Project;
+  readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
   private nodeDragged: Subscription;
 
-  constructor(
-    private nodesDataSource: NodesDataSource,
-    private nodeService: NodeService,
-    private nodesEventSource: NodesEventSource
-  ) {}
+  private nodesDataSource = inject(NodesDataSource);
+  private nodeService = inject(NodeService);
+  private nodesEventSource = inject(NodesEventSource);
 
   ngOnInit() {
     this.nodeDragged = this.nodesEventSource.dragged.subscribe((evt) => this.onNodeDragged(evt));
@@ -34,9 +34,11 @@ export class NodeDraggedComponent implements OnInit, OnDestroy {
     node.x += draggedEvent.dx;
     node.y += draggedEvent.dy;
 
-    this.nodeService.updatePosition(this.controller, this.project, node, node.x, node.y).subscribe((controllerNode: Node) => {
-      this.nodesDataSource.update(controllerNode);
-    });
+    this.nodeService
+      .updatePosition(this.controller(), this.project(), node, node.x, node.y)
+      .subscribe((controllerNode: Node) => {
+        this.nodesDataSource.update(controllerNode);
+      });
   }
 
   ngOnDestroy() {

@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { DrawingElement } from '../models/drawings/drawing-element';
+import { CurveConverter } from './svg-to-drawing-converter/curve-converter';
 import { EllipseConverter } from './svg-to-drawing-converter/ellipse-converter';
 import { ImageConverter } from './svg-to-drawing-converter/image-converter';
 import { LineConverter } from './svg-to-drawing-converter/line-converter';
@@ -20,6 +21,7 @@ export class SvgToDrawingConverter {
       rect: new RectConverter(),
       line: new LineConverter(),
       ellipse: new EllipseConverter(),
+      path: new CurveConverter(),
     };
   }
 

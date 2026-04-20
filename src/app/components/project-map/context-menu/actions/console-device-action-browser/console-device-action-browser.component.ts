@@ -1,4 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, inject, input, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { DeviceDetectorService } from 'ngx-device-detector';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
@@ -12,75 +15,80 @@ import * as ipaddr from 'ipaddr.js';
 @Component({
   selector: 'app-console-device-action-browser',
   templateUrl: './console-device-action-browser.component.html',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConsoleDeviceActionBrowserComponent {
-  @Input() controller: Controller;
-  @Input() node: Node;
+  private toasterService = inject(ToasterService);
+  private nodeService = inject(NodeService);
+  private deviceService = inject(DeviceDetectorService);
+  private protocolHandlerService = inject(ProtocolHandlerService);
+  private vncConsoleService = inject(VncConsoleService);
+  private cd = inject(ChangeDetectorRef);
 
-  constructor(
-  private toasterService: ToasterService,
-  private nodeService: NodeService,
-  private deviceService: DeviceDetectorService,
-  private protocolHandlerService: ProtocolHandlerService,
-  private vncConsoleService: VncConsoleService
-  ) {}
+  readonly controller = input<Controller>(undefined);
+  readonly node = input<Node>(undefined);
+  private updatedNode = signal<Node | undefined>(undefined);
 
   openConsole(auxiliary: boolean = false) {
-    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
-      this.node = node;
+    const currentNode = this.node();
+    if (!currentNode) return;
+
+    this.nodeService.getNode(this.controller(), currentNode).subscribe((node: Node) => {
+      this.updatedNode.set(node);
+      // In zoneless mode, mark for check after async data arrives
+      this.cd.markForCheck();
       this.startConsole(auxiliary);
     });
   }
 
   startConsole(auxiliary: boolean) {
-    if (this.node.status !== 'started') {
+    let node = this.updatedNode() || this.node();
+    if (!node) return;
+
+    if (node.status !== 'started') {
       this.toasterService.error('This node must be started before a console can be opened');
     } else {
-      if (
-        this.node.console_host === '0.0.0.0' ||
-        this.node.console_host === '0:0:0:0:0:0:0:0' ||
-        this.node.console_host === '::'
-      ) {
-        this.node.console_host = this.controller.host;
+      if (node.console_host === '0.0.0.0' || node.console_host === '0:0:0:0:0:0:0:0' || node.console_host === '::') {
+        node = { ...node, console_host: this.controller().host };
+        this.updatedNode.set(node);
       }
 
       try {
         var uri;
-        var host = this.node.console_host;
+        var host = node.console_host;
         if (ipaddr.IPv6.isValid(host)) {
-           host = `[${host}]`;
+          host = `[${host}]`;
         }
-        if (this.node.console_type === 'telnet') {
-
+        if (node.console_type === 'telnet') {
           var console_port;
           if (auxiliary === true) {
-            console_port = this.node.properties.aux;
+            console_port = node.properties.aux;
             if (console_port === undefined) {
               this.toasterService.error('Auxiliary console port is not set.');
               return;
             }
           } else {
-            console_port = this.node.console;
+            console_port = node.console;
           }
-          uri = `gns3+telnet://${host}:${console_port}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`;
-        } else if (this.node.console_type === 'vnc') {
+          uri = `gns3+telnet://${host}:${console_port}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`;
+        } else if (node.console_type === 'vnc') {
           // Open VNC console in standalone page via WebSocket API
-          this.vncConsoleService.openVncConsole(this.controller, this.node);
-          return;  // Return early, don't use protocol handler
-        } else if (this.node.console_type && this.node.console_type.startsWith('spice')) {
-          uri = `gns3+spice://${host}:${this.node.console}?name=${this.node.name}&project_id=${this.node.project_id}&node_id=${this.node.node_id}`
-        } else if (this.node.console_type && this.node.console_type.startsWith('http')) {
-          uri = `${this.node.console_type}://${host}:${this.node.console}`
-          return window.open(uri);  // open an http console directly in a new window/tab
+          this.vncConsoleService.openVncConsole(this.controller(), node);
+          return; // Return early, don't use protocol handler
+        } else if (node.console_type && node.console_type.startsWith('spice')) {
+          uri = `gns3+spice://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`;
+        } else if (node.console_type && node.console_type.startsWith('http')) {
+          uri = `${node.console_type}://${host}:${node.console}`;
+          return window.open(uri); // open an http console directly in a new window/tab
         } else {
           this.toasterService.error('Supported console types are: telnet, vnc, spice and spice+agent.');
           return;
         }
 
         this.protocolHandlerService.open(uri);
-
       } catch (e) {
-          this.toasterService.error(e);
+        this.toasterService.error(e);
       }
     }
   }

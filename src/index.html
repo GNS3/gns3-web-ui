@@ -35,11 +35,11 @@
     </script>
   </head>
   <!-- <body class="mat-app-background" oncontextmenu="return false;"> -->
-  <body class="mat-app-background" oncontextmenu="return false;">
+  <body oncontextmenu="return false;">
     <app-root></app-root>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script>
-      (function() {
+      (function () {
         'use strict';
 
         /**
@@ -79,15 +79,15 @@
           window.dataLayer = window.dataLayer || [];
 
           // Define gtag function
-          window.gtag = function() {
+          window.gtag = function () {
             window.dataLayer.push(arguments);
           };
 
           // Configure Google Analytics
           window.gtag('js', new Date());
           window.gtag('config', 'G-0BT7QQV1W1', {
-            send_page_view: false,  // Manual page view control
-            anonymize_ip: true      // Anonymize IP addresses
+            send_page_view: false, // Manual page view control
+            anonymize_ip: true, // Anonymize IP addresses
           });
 
           // Dynamically load script
@@ -95,11 +95,11 @@
           script.async = true;
           script.src = 'https://www.googletagmanager.com/gtag/js?id=G-0BT7QQV1W1';
 
-          script.onload = function() {
+          script.onload = function () {
             console.info('[Analytics] Google Analytics loaded successfully');
           };
 
-          script.onerror = function() {
+          script.onerror = function () {
             console.warn('[Analytics] Failed to load Google Analytics');
           };
 

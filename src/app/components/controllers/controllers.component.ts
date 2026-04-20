@@ -1,55 +1,98 @@
 import { DataSource } from '@angular/cdk/collections';
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSort, MatSortable } from '@angular/material/sort';
-import { ActivatedRoute, Router } from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  AfterViewInit,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  inject,
+  model,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSort, MatSortable, MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BehaviorSubject, interval, merge, Observable, Subscription } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Controller, ControllerProtocol } from '@models/controller';
 import { ControllerManagementService } from '@services/controller-management.service';
 import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
+import { ThemeService } from '@services/theme.service';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { AddControllerDialogComponent } from './add-controller-dialog/add-controller-dialog.component';
+import { EditControllerDialogComponent } from './edit-controller-dialog/edit-controller-dialog.component';
+import { version } from '../../version';
 
 @Component({
   selector: 'app-controller-list',
   templateUrl: './controllers.component.html',
-  styleUrls: ['./controllers.component.scss'],
+  styleUrl: './controllers.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatDialogModule,
+    MatSortModule,
+    MatTableModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatButtonModule,
+    MatBottomSheetModule,
+    MatMenuModule,
+    MatTooltipModule,
+  ],
 })
-export class ControllersComponent implements OnInit, OnDestroy {
-  dataSource: ControllerDataSource;
+export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
+  private dialog = inject(MatDialog);
+  private controllerService = inject(ControllerService);
+  protected controllerDatabase = inject(ControllerDatabase);
+  private controllerManagement = inject(ControllerManagementService);
+  private changeDetector = inject(ChangeDetectorRef);
+  private bottomSheet = inject(MatBottomSheet);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private themeService = inject(ThemeService);
+
+  dataSource: ControllerDataSource | null = null;
   displayedColumns = ['id', 'name', 'status', 'location', 'ip', 'port', 'actions'];
   controllerStatusSubscription: Subscription;
-  searchText: string = '';
+  readonly searchText = model('');
   private readonly minStartingDisplayMs = 700;
   private readonly statusRefreshIntervalMs = 5000;
   private startingTimestamps: Map<string, number> = new Map();
   private startingTimeouts: Map<string, ReturnType<typeof setTimeout>> = new Map();
   private statusRefreshSubscription: Subscription;
+  public readonly version = version;
+  public readonly currentYear = new Date().getFullYear();
 
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
 
-  constructor(
-    private dialog: MatDialog,
-    private controllerService: ControllerService,
-    private controllerDatabase: ControllerDatabase,
-    private controllerManagement: ControllerManagementService,
-    private changeDetector: ChangeDetectorRef,
-    private bottomSheet: MatBottomSheet,
-    private route: ActivatedRoute,
-    private router: Router
-  ) { }
+  constructor() {}
 
   getControllers() {
     const runningControllerNames = this.controllerManagement.getRunningControllers();
 
-    this.controllerService.findAll().then((controllers: Controller []) => {
+    this.controllerService.findAll().then((controllers: Controller[]) => {
       controllers.forEach((controller) => {
         controller.status = 'stopped';
 
-        const controllerIndex = runningControllerNames.findIndex((controllerName) => controller.name === controllerName);
+        const controllerIndex = runningControllerNames.findIndex(
+          (controllerName) => controller.name === controllerName
+        );
         if (controllerIndex >= 0) {
           controller.status = 'running';
         }
@@ -60,6 +103,7 @@ export class ControllersComponent implements OnInit, OnDestroy {
       });
 
       this.controllerDatabase.addControllers(controllers);
+      this.changeDetector.markForCheck();
 
       controllers.forEach((controller) => {
         this.updateControllerOnlineStatus(controller);
@@ -68,9 +112,9 @@ export class ControllersComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    if (this.controllerService && this.controllerService.isServiceInitialized) this.getControllers();
-
     if (this.controllerService && this.controllerService.isServiceInitialized) {
+      this.getControllers();
+    } else {
       this.controllerService.serviceInitialized.subscribe(async (value: boolean) => {
         if (value) {
           this.getControllers();
@@ -78,60 +122,72 @@ export class ControllersComponent implements OnInit, OnDestroy {
       });
     }
 
-    this.sort.sort(<MatSortable>{
-      id: 'id',
-      start: 'asc',
-    });
-    this.dataSource = new ControllerDataSource(this.controllerDatabase, this.sort);
     this.startStatusAutoRefresh();
 
-    this.controllerStatusSubscription = this.controllerManagement.controllerStatusChanged.subscribe((controllerStatus) => {
-      const controller = this.controllerDatabase.find(controllerStatus.controllerName);
-      if (!controller) {
-        return;
-      }
-
-      const pendingTimeout = this.startingTimeouts.get(controller.name);
-      if (pendingTimeout && controllerStatus.status !== 'started') {
-        clearTimeout(pendingTimeout);
-        this.startingTimeouts.delete(controller.name);
-      }
-
-      if (controllerStatus.status === 'starting') {
-        controller.status = 'starting';
-        this.startingTimestamps.set(controller.name, Date.now());
-      }
-      if (controllerStatus.status === 'stopped') {
-        controller.status = 'stopped';
-        this.startingTimestamps.delete(controller.name);
-      }
-      if (controllerStatus.status === 'errored') {
-        controller.status = 'stopped';
-        this.startingTimestamps.delete(controller.name);
-      }
-      if (controllerStatus.status === 'started') {
-        const startedAt = this.startingTimestamps.get(controller.name) || Date.now();
-        const elapsed = Date.now() - startedAt;
-        const delay = Math.max(0, this.minStartingDisplayMs - elapsed);
-
-        if (delay > 0) {
-          const timeout = setTimeout(() => {
-            controller.status = 'running';
-            this.controllerDatabase.update(controller);
-            this.changeDetector.detectChanges();
-            this.startingTimeouts.delete(controller.name);
-            this.startingTimestamps.delete(controller.name);
-          }, delay);
-          this.startingTimeouts.set(controller.name, timeout);
+    this.controllerStatusSubscription = this.controllerManagement.controllerStatusChanged.subscribe(
+      (controllerStatus) => {
+        const controller = this.controllerDatabase.find(controllerStatus.controllerName);
+        if (!controller) {
           return;
         }
 
-        controller.status = 'running';
-        this.startingTimestamps.delete(controller.name);
+        const pendingTimeout = this.startingTimeouts.get(controller.name);
+        if (pendingTimeout && controllerStatus.status !== 'started') {
+          clearTimeout(pendingTimeout);
+          this.startingTimeouts.delete(controller.name);
+        }
+
+        if (controllerStatus.status === 'starting') {
+          controller.status = 'starting';
+          this.startingTimestamps.set(controller.name, Date.now());
+          this.changeDetector.markForCheck();
+        }
+        if (controllerStatus.status === 'stopped') {
+          controller.status = 'stopped';
+          this.startingTimestamps.delete(controller.name);
+          this.changeDetector.markForCheck();
+        }
+        if (controllerStatus.status === 'errored') {
+          controller.status = 'stopped';
+          this.startingTimestamps.delete(controller.name);
+          this.changeDetector.markForCheck();
+        }
+        if (controllerStatus.status === 'started') {
+          const startedAt = this.startingTimestamps.get(controller.name) || Date.now();
+          const elapsed = Date.now() - startedAt;
+          const delay = Math.max(0, this.minStartingDisplayMs - elapsed);
+
+          if (delay > 0) {
+            const timeout = setTimeout(() => {
+              controller.status = 'running';
+              this.controllerDatabase.update(controller);
+              this.startingTimeouts.delete(controller.name);
+              this.startingTimestamps.delete(controller.name);
+              this.changeDetector.markForCheck();
+            }, delay);
+            this.startingTimeouts.set(controller.name, timeout);
+            return;
+          }
+
+          controller.status = 'running';
+          this.startingTimestamps.delete(controller.name);
+          this.controllerDatabase.update(controller);
+          this.changeDetector.markForCheck();
+        }
       }
-      this.controllerDatabase.update(controller);
-      this.changeDetector.detectChanges();
-    });
+    );
+  }
+
+  ngAfterViewInit(): void {
+    if (this.sort) {
+      this.sort.sort(<MatSortable>{
+        id: 'id',
+        start: 'asc',
+      });
+      // Always create dataSource when MatSort is available
+      this.dataSource = new ControllerDataSource(this.controllerDatabase, this.sort);
+      this.changeDetector.markForCheck();
+    }
   }
 
   ngOnDestroy() {
@@ -143,32 +199,30 @@ export class ControllersComponent implements OnInit, OnDestroy {
     }
   }
 
-  startLocalController() {
-    const controller = this.controllerDatabase.data.find((n) => n.location === 'bundled' || n.location === 'local');
-    if (!controller) {
-      return;
-    }
-    this.startController(controller);
-  }
-
   openProjects(controller) {
     this.router.navigate(['/controller', controller.id, 'projects']);
   }
 
   createModal() {
     const dialogRef = this.dialog.open(AddControllerDialogComponent, {
-      width: '350px',
+      panelClass: ['base-dialog-panel', 'controller-small-dialog-panel', 'add-controller-dialog-panel'],
       autoFocus: false,
       disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((controller) => {
       if (controller) {
-        this.controllerService.create(controller).then((created: Controller ) => {
-          created.status = 'stopped';
-          this.controllerDatabase.addController(created);
-          this.updateControllerOnlineStatus(created);
-        });
+        this.controllerService
+          .create(controller)
+          .then((created: Controller) => {
+            created.status = 'stopped';
+            this.controllerDatabase.addController(created);
+            this.updateControllerOnlineStatus(created);
+            this.changeDetector.markForCheck();
+          })
+          .catch((error) => {
+            this.changeDetector.markForCheck();
+          });
       }
     });
   }
@@ -193,54 +247,67 @@ export class ControllersComponent implements OnInit, OnDestroy {
       (controllerInfo) => {
         controller.status = controllerInfo.version.split('.')[0] >= 3 ? 'running' : 'stopped';
         this.controllerDatabase.update(controller);
+        this.changeDetector.markForCheck();
       },
       () => {
         controller.status = 'stopped';
         this.controllerDatabase.update(controller);
+        this.changeDetector.markForCheck();
       }
     );
   }
 
-  getControllerStatus(controller: Controller ) {
+  getControllerStatus(controller: Controller) {
     if (controller.status === undefined) {
       return 'stopped';
     }
     return controller.status;
   }
 
-  deleteController(controller: Controller ) {
-    this.bottomSheet.open(ConfirmationBottomSheetComponent);
-    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
-    bottomSheetRef.instance.message = 'Do you want to delete the controller?';
+  deleteController(controller: Controller) {
+    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
+      data: { message: 'Do you want to delete the controller?' },
+      panelClass: 'confirmation-bottom-sheet',
+    });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
         this.controllerService.delete(controller).then(() => {
           this.controllerDatabase.remove(controller);
+          this.changeDetector.markForCheck();
         });
       }
     });
   }
 
-  async startController(controller: Controller ) {
-    if (!controller) {
-      return;
-    }
+  editController(controller: Controller) {
+    const dialogRef = this.dialog.open(EditControllerDialogComponent, {
+      panelClass: ['base-dialog-panel', 'controller-dialog-panel', 'edit-controller-dialog-panel'],
+      autoFocus: false,
+      disableClose: true,
+      data: { controller: controller },
+    });
 
-    controller.status = 'starting';
-    this.controllerDatabase.update(controller);
-    this.changeDetector.detectChanges();
+    // Pass the controller to the dialog component
+    dialogRef.componentRef.instance.controller = controller;
 
-    await this.controllerManagement.start(controller);
-  }
-
-  async stopController(controller: Controller ) {
-    await this.controllerManagement.stop(controller);
+    dialogRef.afterClosed().subscribe((updatedController: Controller) => {
+      if (updatedController) {
+        // Update the controller in the database
+        this.controllerDatabase.update(updatedController);
+        this.changeDetector.markForCheck();
+      }
+    });
   }
 
   onSearchChange(value: string) {
+    this.searchText.set(value);
     if (this.dataSource) {
       this.dataSource.setFilter(value);
     }
+  }
+
+  isLightThemeEnabled() {
+    return this.themeService.getActualTheme() === 'light';
   }
 }
 
@@ -255,7 +322,7 @@ export class ControllerDataSource extends DataSource<Controller> {
     this.filterChange.next((filter || '').trim().toLowerCase());
   }
 
-  connect(): Observable< Controller[] > {
+  connect(): Observable<Controller[]> {
     return merge(this.controllerDatabase.dataChange, this.sort.sortChange, this.filterChange).pipe(
       map(() => {
         let data = this.controllerDatabase.data.slice();
@@ -294,5 +361,5 @@ export class ControllerDataSource extends DataSource<Controller> {
     );
   }
 
-  disconnect() { }
+  disconnect() {}
 }

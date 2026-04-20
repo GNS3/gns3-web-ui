@@ -1,20 +1,13 @@
+/**
+ * GNS3 Context Console Menu Component Styles
+ * Using MD3 CSS variables
+ */
+
 .context-menu {
   position: absolute;
-  min-height: 0px;
-}
-
-.mat-menu-panel
-  ng-trigger
-  ng-trigger-transformMenu
-  ng-tns-c7-5
-  context-menu-items
-  mat-menu-after
-  mat-menu-below
-  ng-star-inserted
-  mat-elevation-z4 {
-  min-height: 0px !important;
+  min-height: 0;
 }
 
 .title {
-  margin: 10px;
+  margin: 8px;
 }

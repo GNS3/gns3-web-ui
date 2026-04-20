@@ -8,4 +8,5 @@ export class Template {
   node_type: string;
   symbol: string;
   template_type: string;
+  tags?: string[];
 }

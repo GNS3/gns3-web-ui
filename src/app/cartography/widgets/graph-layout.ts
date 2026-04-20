@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 import { Injectable } from '@angular/core';
 import { SelectionManager } from '../managers/selection-manager';
 import { LayersManager } from '../managers/layers-manager';
@@ -9,6 +10,8 @@ import { DrawingLineWidget } from './drawing-line';
 import { LayersWidget } from './layers';
 import { NodesWidget } from './nodes';
 import { Widget } from './widget';
+import { CurveElement } from '../models/drawings/curve-element';
+import { MapDrawing } from '../models/map/map-drawing';
 
 @Injectable()
 export class GraphLayout implements Widget {
@@ -61,12 +64,50 @@ export class GraphLayout implements Widget {
 
   public updateSelectionHighlights(view: SVGSelection) {
     const canvas = view.select<SVGGElement>('g.canvas');
-    canvas.selectAll<SVGGElement, any>('g.node_body')
-      .classed('selected', (n) => this.selectionManager.isSelected(n));
-    canvas.selectAll<SVGGElement, any>('g.link_body')
-      .classed('selected', (l) => this.selectionManager.isSelected(l));
-    canvas.selectAll<SVGGElement, any>('g.drawing_body')
-      .classed('drawing_selected', (d) => this.selectionManager.isSelected(d));
+    const defs = view.select('defs');
+
+    canvas.selectAll<SVGGElement, any>('g.node_body').classed('selected', (n) => this.selectionManager.isSelected(n));
+    canvas.selectAll<SVGGElement, any>('g.link_body').classed('selected', (l) => this.selectionManager.isSelected(l));
+
+    const drawingBodies = canvas.selectAll<SVGGElement, MapDrawing>('g.drawing_body');
+    drawingBodies.classed('drawing_selected', (d) => this.selectionManager.isSelected(d));
+
+    // Update curve selection state and arrow colors
+    const errorColor = getComputedStyle(document.documentElement)
+      .getPropertyValue('--mat-sys-error')
+      .trim();
+
+    drawingBodies.each(function (drawing: MapDrawing, index, elements) {
+      const groupElement = elements[index];
+      const isSelected = drawing.element && this.selectionManager.isSelected(drawing);
+      const group = d3.select(groupElement);
+
+      // Update curve path selection state
+      group.selectAll<SVGPathElement, any>('path.curve_element').classed('selected', () => this.selectionManager.isSelected(drawing));
+
+      // Update arrow marker colors based on selection state
+      if (drawing.element instanceof CurveElement) {
+        const curve = drawing.element as CurveElement;
+        const originalColor = curve.stroke || getComputedStyle(document.documentElement)
+          .getPropertyValue('--gns3-canvas-link-color')
+          .trim();
+        const isCurveSelected = this.selectionManager.isSelected(drawing);
+
+        // Update arrow markers for this curve
+        if (curve.arrow_end) {
+          const endMarker = defs.select(`#arrow-end-${drawing.id} path`);
+          if (!endMarker.empty()) {
+            endMarker.attr('fill', isCurveSelected ? errorColor : originalColor);
+          }
+        }
+        if (curve.arrow_start) {
+          const startMarker = defs.select(`#arrow-start-${drawing.id} path`);
+          if (!startMarker.empty()) {
+            startMarker.attr('fill', isCurveSelected ? errorColor : originalColor);
+          }
+        }
+      }
+    }.bind(this));
   }
 
   disconnect(view: SVGSelection) {

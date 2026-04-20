@@ -1,76 +1,133 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { Router } from '@angular/router';
+import { ConsoleComponent } from './console.component';
 import { ConsoleService } from '@services/settings/console.service';
 import { ToasterService } from '@services/toaster.service';
-import { MockedToasterService } from '@services/toaster.service.spec';
-import { ConsoleComponent } from './console.component';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('ConsoleComponent', () => {
   let component: ConsoleComponent;
   let fixture: ComponentFixture<ConsoleComponent>;
-  let consoleService;
-  let router;
-  let toaster: MockedToasterService;
+
+  let mockConsoleService: any;
+  let mockToasterService: any;
+  let mockRouter: any;
 
   beforeEach(async () => {
-    consoleService = {
-      command: 'command',
+    mockConsoleService = {
+      command: 'gns3',
     };
 
-    router = {
-      navigate: jasmine.createSpy('navigate'),
+    mockToasterService = {
+      success: vi.fn(),
     };
 
-    toaster = new MockedToasterService();
+    mockRouter = {
+      navigate: vi.fn(),
+    };
 
     await TestBed.configureTestingModule({
+      imports: [ConsoleComponent],
       providers: [
-        { provide: ConsoleService, useValue: consoleService },
-        { provide: ToasterService, useValue: toaster },
-        { provide: Router, useValue: router },
+        { provide: ConsoleService, useValue: mockConsoleService },
+        { provide: ToasterService, useValue: mockToasterService },
+        { provide: Router, useValue: mockRouter },
       ],
-      imports: [
-        FormsModule,
-        ReactiveFormsModule,
-        MatFormFieldModule,
-        MatCardModule,
-        MatInputModule,
-        NoopAnimationsModule,
-      ],
-      declarations: [ConsoleComponent],
     }).compileComponents();
+
+    fixture = TestBed.createComponent(ConsoleComponent);
+    component = fixture.componentInstance;
   });
 
-beforeEach(() => {
-  fixture = TestBed.createComponent(ConsoleComponent);
-  component = fixture.componentInstance;
-  fixture.detectChanges();
-});
+  afterEach(() => {
+    fixture.destroy();
+  });
 
-it('should create', () => {
-  expect(component).toBeTruthy();
-});
+  describe('Creation', () => {
+    it('should create the component', () => {
+      expect(component).toBeTruthy();
+    });
 
-it('should set default command', () => {
-  component.ngOnInit();
-  expect(component.consoleForm.value.command).toEqual('command');
-});
+    it('should have a consoleForm', () => {
+      expect(component.consoleForm).toBeTruthy();
+    });
 
-it('should go back', () => {
-  component.goBack();
-  expect(router.navigate).toHaveBeenCalledWith(['/settings']);
-});
+    it('should have command FormControl in the form', () => {
+      expect(component.consoleForm.get('command')).toBeTruthy();
+    });
+  });
 
-it('should update console command', () => {
-  component.consoleForm.get('command').setValue('newCommand');
-  spyOn(component, 'goBack');
-  component.save();
-  expect(toaster.success.length).toEqual(1);
-  expect(component.goBack).toHaveBeenCalled();
-});
+  describe('ngOnInit', () => {
+    it('should load command from consoleService into form', () => {
+      mockConsoleService.command = 'my-custom-command';
+
+      component.ngOnInit();
+
+      expect(component.consoleForm.get('command')?.value).toBe('my-custom-command');
+    });
+
+    it('should use default command when consoleService returns undefined', () => {
+      Object.defineProperty(mockConsoleService, 'command', {
+        get: () => undefined,
+        set: vi.fn(),
+      });
+
+      component.ngOnInit();
+
+      // Form should be initialized (value will be null/undefined since service returns undefined)
+      expect(component.consoleForm.get('command')?.value).toBeUndefined();
+    });
+  });
+
+  describe('goBack', () => {
+    it('should navigate to /settings', () => {
+      component.goBack();
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/settings']);
+    });
+
+    it('should be called during ngOnInit for default navigation', () => {
+      // goBack is not called automatically in ngOnInit, it's a manual action
+      expect(mockRouter.navigate).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('save', () => {
+    it('should save form value to consoleService', () => {
+      component.consoleForm.get('command')?.setValue('new-command');
+
+      component.save();
+
+      expect(mockConsoleService.command).toBe('new-command');
+    });
+
+    it('should show success toast message', () => {
+      component.save();
+
+      expect(mockToasterService.success).toHaveBeenCalledWith('Console command has been updated.');
+    });
+
+    it('should navigate to /settings after saving', () => {
+      component.save();
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/settings']);
+    });
+
+    it('should navigate after saving even if command is empty', () => {
+      component.consoleForm.get('command')?.setValue('');
+
+      component.save();
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/settings']);
+    });
+
+    it('should save special characters in command', () => {
+      const specialCommand = 'screen /dev/ttyUSB0 9600';
+      component.consoleForm.get('command')?.setValue(specialCommand);
+
+      component.save();
+
+      expect(mockConsoleService.command).toBe(specialCommand);
+    });
+  });
 });

@@ -1,4 +1,6 @@
-<button mat-menu-item *ngIf="!link.capturing" (click)="startCapture()">
+@if (link()?.capturing === false) {
+<button mat-menu-item (click)="startCapture()">
   <mat-icon>loupe</mat-icon>
   <span>Start capture</span>
 </button>
+}

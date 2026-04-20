@@ -1,41 +1,44 @@
-<div class="content">
-  <div class="default-header">
-    <div class="row">
-      <div class="col col-md-1">
-        <button
-        *ngIf="controller"
-        class="top-button"
-        class="cancel-button col"
-        (click)="goBack()"
-        mat-button>
-        <mat-icon>arrow_back</mat-icon>
-      </button>
-      </div>
-      <div class="col-md-11">
-        <h1 class="col">New Ethernet switch template</h1>
-      </div>
-    </div>
-  </div>
-  <div class="default-content">
-    <mat-card class="matCard">
-      <mat-radio-group class="radio-group">
-        <mat-radio-button class="radio-button" value="1" (click)="setControllerType('local')" checked
-          >Run the Ethernet switch locally</mat-radio-button
+<div class="ethernet-switch-add">
+  <header class="ethernet-switch-add__header">
+    @if (controller) {
+    <button class="ethernet-switch-add__back-btn" (click)="goBack()" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    }
+    <h1 class="ethernet-switch-add__title">New Ethernet switch template</h1>
+  </header>
+
+  <main class="ethernet-switch-add__content">
+    <section class="ethernet-switch-add__form-card">
+      <mat-radio-group class="ethernet-switch-add__radio-group">
+        <mat-radio-button
+          class="ethernet-switch-add__radio"
+          value="1"
+          (click)="setControllerType('local')"
+          [checked]="true"
         >
+          Run the Ethernet switch locally
+        </mat-radio-button>
       </mat-radio-group>
 
-      <form [formGroup]="formGroup">
-        <mat-form-field class="form-field">
+      <form [formGroup]="formGroup" class="ethernet-switch-add__form">
+        <mat-form-field appearance="fill" class="ethernet-switch-add__field">
+          <mat-label>Template name</mat-label>
           <input formControlName="templateName" matInput type="text" placeholder="Template name" />
         </mat-form-field>
-        <mat-form-field class="form-field">
+
+        <mat-form-field appearance="fill" class="ethernet-switch-add__field">
+          <mat-label>Number of ports</mat-label>
           <input formControlName="numberOfPorts" matInput type="number" min="0" placeholder="Number of ports" />
         </mat-form-field>
       </form>
-    </mat-card>
-    <div class="buttons-bar">
-      <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
-      <button mat-raised-button color="primary" (click)="addTemplate()">Add template</button>
+    </section>
+
+    <div class="ethernet-switch-add__actions">
+      <button mat-button class="ethernet-switch-add__cancel-btn" (click)="goBack()">Cancel</button>
+      <button mat-raised-button color="primary" class="ethernet-switch-add__submit-btn" (click)="addTemplate()">
+        Add template
+      </button>
     </div>
-  </div>
+  </main>
 </div>

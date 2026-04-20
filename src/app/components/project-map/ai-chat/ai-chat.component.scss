@@ -1,31 +1,23 @@
-// CSS Variables for AI Chat Component
-:root {
-  // Layout dimensions
-  --ai-chat-sidebar-width: 280px;
-  --ai-chat-sidebar-collapsed-width: 48px;
-  --ai-chat-header-height: 48px;
-  --ai-chat-button-size: 40px;
-  --ai-chat-icon-size: 20px;
-  --ai-chat-minimized-size: 56px;
+/**
+ * AI Chat Component Styles
+ * Using MD3 CSS variables and BEM naming convention
+ */
 
-  // Spacing
-  --ai-chat-spacing-xs: 4px;
-  --ai-chat-spacing-sm: 8px;
-  --ai-chat-spacing-md: 12px;
-  --ai-chat-spacing-lg: 16px;
-}
+@use '@angular/material' as mat;
 
-.ai-chat-container {
+// =============================================
+// AI Chat Container (Root)
+// =============================================
+.gns3-ai-chat {
   position: fixed;
-  background-color: rgba(250, 250, 250, 1);
-  border-radius: 12px;
+  background-color: var(--mat-sys-surface-container-low);
+  border-radius: 16px;
   overflow: hidden;
   display: flex;
   z-index: 1000;
-  color: var(--mat-app-on-surface);
-  border: 1px solid var(--mat-app-outline-variant);
-  // Performance optimized: fully opaque, no backdrop-filter
-  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+  color: var(--mat-sys-on-surface);
+  border: 1px solid var(--mat-sys-outline-variant);
+  transition: box-shadow 200ms ease, border-color 200ms ease;
 
   // GNS3 cyan gradient border effect
   &::before {
@@ -35,37 +27,61 @@
     left: 0;
     right: 0;
     bottom: 0;
-    border-radius: 12px;
+    border-radius: 16px;
     padding: 1px;
-    background: linear-gradient(135deg, rgba(0, 151, 167, 0.4), rgba(0, 188, 212, 0.2), rgba(0, 151, 167, 0.4));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--mat-sys-primary) 40%, transparent),
+      color-mix(in srgb, var(--mat-sys-primary) 20%, transparent),
+      color-mix(in srgb, var(--mat-sys-primary) 40%, transparent)
+    );
+    -webkit-mask: linear-gradient(var(--mat-sys-white) 0 0) content-box, linear-gradient(var(--mat-sys-white) 0 0);
+    mask: linear-gradient(var(--mat-sys-white) 0 0) content-box, linear-gradient(var(--mat-sys-white) 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     pointer-events: none;
     opacity: 0.8;
-    transition: opacity 0.3s ease;
+    transition: opacity 200ms ease;
   }
 
-  // Enhanced hover effect
   &:hover::before {
     opacity: 1;
   }
 
-  // Minimized state override - make it perfectly circular and clean
-  &.minimized {
+  // Minimized state - make it perfectly circular
+  &--minimized {
     border-radius: 50%;
     border: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 15px rgba(0, 151, 167, 0.4);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent), 0 0 8px var(--mat-sys-primary);
     backdrop-filter: none;
 
     &::before {
       display: none;
     }
   }
+
+  // Maximized state
+  &--maximized {
+    border-radius: 0;
+
+    .gns3-ai-chat__sidebar {
+      height: 100vh;
+    }
+
+    .gns3-ai-chat__header {
+      cursor: default;
+    }
+
+    .gns3-ai-chat__sidebar-header {
+      cursor: default;
+    }
+  }
+
+  // Theme-specific override
+  background-color: var(--mat-sys-surface);
 }
 
-.drag-overlay {
+.gns3-ai-chat__drag-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -76,59 +92,63 @@
   cursor: grabbing;
 }
 
-.chat-sidebar {
+// =============================================
+// Chat Sidebar
+// =============================================
+.gns3-ai-chat__sidebar {
   width: 280px;
-  background-color: var(--mat-app-background);
+  background-color: color-mix(in srgb, var(--mat-sys-surface-container) 70%, transparent);
   display: flex;
   flex-direction: column;
-  transition: width 0.3s;
+  transition: width 200ms ease;
   flex-shrink: 0;
+
+  &--collapsed {
+    width: 60px;
+  }
 }
 
-.chat-sidebar.collapsed {
-  width: 48px;
-}
-
-.sidebar-header {
+.gns3-ai-chat__sidebar-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px;
-  // border-bottom removed for cleaner look
+  padding: 16px;
   cursor: grab;
   user-select: none;
-  height: 48px;
+  height: 56px;
   box-sizing: border-box;
+
+  &:active {
+    cursor: grabbing;
+  }
 }
 
-.sidebar-header:active {
-  cursor: grabbing;
-}
-
-// Collapsed new chat button
-.collapsed-new-chat-btn {
+// =============================================
+// New Chat Button (shown when collapsed)
+// =============================================
+.gns3-ai-chat__new-chat-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 48px;
+  height: 56px;
   background: transparent;
   border-radius: 0;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 200ms ease;
   margin: 8px 0;
 
   mat-icon {
     font-size: 24px;
     width: 24px;
     height: 24px;
-    color: var(--mat-app-primary);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--mat-sys-primary);
+    transition: all 200ms ease;
   }
 
   &:hover {
     mat-icon {
       transform: scale(1.2);
-      filter: drop-shadow(0 0 6px rgba(0, 151, 167, 0.6));
+      filter: drop-shadow(0 0 6px var(--mat-sys-primary));
     }
   }
 
@@ -137,58 +157,64 @@
       transform: scale(0.95);
     }
   }
+
+  // Show button when sidebar is collapsed
+  .gns3-ai-chat__sidebar--collapsed & {
+    display: flex;
+  }
+
+  // Hide button when sidebar is not collapsed
+  .gns3-ai-chat__sidebar:not(--collapsed) & {
+    display: none;
+  }
 }
 
-// Show button when sidebar is collapsed
-.chat-sidebar.collapsed .collapsed-new-chat-btn {
-  display: flex;
-}
-
-// Hide button when sidebar is not collapsed
-.chat-sidebar:not(.collapsed) .collapsed-new-chat-btn {
-  display: none;
-}
-
-.sidebar-title {
+// =============================================
+// Sidebar Title
+// =============================================
+.gns3-ai-chat__sidebar-title {
   margin: 0;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
-  color: var(--mat-app-on-surface);
+  color: var(--mat-sys-on-surface);
   display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
   justify-content: center;
+
+  &--clickable {
+    cursor: pointer;
+    transition: all 100ms ease;
+
+    &:hover {
+      opacity: 0.9;
+    }
+
+    &:active {
+      opacity: 0.8;
+    }
+  }
 }
 
-.sidebar-title.clickable {
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.sidebar-title.clickable:hover {
-  opacity: 0.9;
-}
-
-.sidebar-title.clickable:active {
-  opacity: 0.8;
-}
-
-.ai-logo {
+// =============================================
+// AI Logo
+// =============================================
+.gns3-ai-chat__logo {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: bold;
-  font-family: 'Roboto', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  font-family: system-ui, -apple-system, sans-serif;
   letter-spacing: -0.5px;
-  background: linear-gradient(135deg, var(--mat-app-primary), var(--mat-app-primary));
-  color: var(--mat-app-on-primary);
+  background: linear-gradient(135deg, var(--mat-sys-primary), var(--mat-sys-primary));
+  color: var(--mat-sys-on-primary);
   padding: 6px 10px;
-  border-radius: 6px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 4px;
+  transition: all 200ms ease;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0, 151, 167, 0.3);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
   position: relative;
   overflow: hidden;
 
@@ -202,112 +228,99 @@
     background: linear-gradient(
       45deg,
       transparent 30%,
-      rgba(255, 255, 255, 0.1) 50%,
+      color-mix(in srgb, var(--mat-sys-surface) 10%, transparent) 50%,
       transparent 70%
     );
     transform: translateX(-100%);
-    transition: transform 0.6s ease;
+    transition: transform 200ms ease;
+  }
+
+  .gns3-ai-chat__sidebar-title--clickable:hover & {
+    transform: scale(1.08);
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-primary) 40%, transparent);
+
+    &::after {
+      transform: translateX(100%);
+    }
+  }
+
+  .gns3-ai-chat__sidebar-title--clickable:active & {
+    transform: scale(0.95);
   }
 }
 
-.sidebar-title.clickable:hover .ai-logo {
-  transform: scale(1.08);
-  box-shadow: 0 4px 15px rgba(0, 151, 167, 0.5);
-
-  &::after {
-    transform: translateX(100%);
-  }
-}
-
-.sidebar-title.clickable:active .ai-logo {
-  transform: scale(0.95);
-}
-
-.sidebar-content {
+.gns3-ai-chat__sidebar-content {
   flex: 1;
   overflow: hidden;
 }
 
-.chat-main {
+// =============================================
+// Chat Main Area
+// =============================================
+.gns3-ai-chat__main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background-color: var(--mat-app-background);
+  background-color: color-mix(in srgb, var(--mat-sys-surface) 60%, transparent);
   min-width: 0;
 }
 
-.chat-header {
+.gns3-ai-chat__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px;
+  padding: 16px;
   flex-shrink: 0;
   cursor: grab;
   user-select: none;
-  transition: background 0.3s ease;
+  transition: background 200ms ease;
   position: relative;
-  height: 48px;
+  height: 56px;
   box-sizing: border-box;
+
+  &:active {
+    cursor: grabbing;
+  }
 }
 
-.chat-header:active {
-  cursor: grabbing;
-}
-
-.chat-title {
+.gns3-ai-chat__title {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
-  color: var(--mat-app-on-surface);
+  color: var(--mat-sys-on-surface);
 }
 
-.chat-messages {
+.gns3-ai-chat__messages {
   flex: 1;
   overflow: hidden;
   min-height: 0;
 }
 
-.chat-input {
-  border-top: 1px solid var(--mat-app-outline-variant);
+.gns3-ai-chat__input {
+  border-top: 1px solid transparent;
   flex-shrink: 0;
-}
+  position: relative;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
 
-// Custom Snackbar styles for AI Chat errors
-::ng-deep .ai-chat-snack-error {
-  background-color: #d32f2f;
-  color: white;
-  font-weight: 500;
-
-  .mat-simple-snackbar-action {
-    color: white;
-    font-weight: 600;
+  &:focus-within {
+    border-top-color: var(--mat-sys-primary);
+    box-shadow: 0 -2px 10px color-mix(in srgb, var(--mat-sys-primary) 20%, transparent);
   }
 }
 
-@media (max-width: 768px) {
-  .chat-sidebar {
-    position: absolute;
-    z-index: 100;
-    height: 100%;
-  }
-
-  .chat-sidebar.collapsed {
-    width: 0;
-  }
-}
-
-// Header actions button group
-.header-actions {
+// =============================================
+// Header Actions Button Group
+// =============================================
+.gns3-ai-chat__header-actions {
   display: flex;
   align-items: center;
   gap: 4px;
 
-  // Icon button color and sizing
   .mat-icon-button {
-    color: var(--mat-app-on-surface);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: var(--mat-sys-on-surface);
+    transition: all 200ms ease;
     width: 40px;
     height: 40px;
     min-width: 40px;
@@ -319,7 +332,6 @@
     position: relative;
     overflow: hidden;
 
-    // Ripple effect enhancement
     &::before {
       content: '';
       position: absolute;
@@ -328,70 +340,56 @@
       width: 0;
       height: 0;
       border-radius: 50%;
-      background: rgba(0, 151, 167, 0.3);
+      background: var(--mat-sys-primary);
       transform: translate(-50%, -50%);
-      transition: width 0.4s ease, height 0.4s ease;
+      transition: width 200ms ease, height 200ms ease;
+    }
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--mat-sys-primary) 15%, transparent);
+      border-radius: 50%;
+      transform: scale(1.15);
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent);
+
+      &::before {
+        width: 100%;
+        height: 100%;
+      }
+    }
+
+    &:active {
+      transform: scale(0.95);
     }
   }
 
-  // Header icon SVG styling
-  .header-icon {
-    fill: var(--mat-app-on-surface);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 20px;
-    height: 20px;
+  .gns3-ai-chat__header-icon {
+    fill: var(--mat-sys-on-surface);
+    transition: all 200ms ease;
+    width: 24px;
+    height: 24px;
     position: relative;
     z-index: 1;
   }
 
-  // Enhanced hover effect for header buttons
-  .mat-icon-button:hover {
-    background-color: rgba(0, 151, 167, 0.15);
-    border-radius: 50%;
-    transform: scale(1.15);
-    box-shadow: 0 4px 12px rgba(0, 151, 167, 0.3);
-
-    &::before {
-      width: 100%;
-      height: 100%;
-    }
-
-    .header-icon {
-      fill: var(--mat-app-primary);
-      filter: drop-shadow(0 0 6px rgba(0, 151, 167, 0.8));
-    }
+  .mat-icon-button:hover .gns3-ai-chat__header-icon {
+    fill: var(--mat-sys-primary);
+    filter: drop-shadow(0 0 3px var(--mat-sys-primary));
   }
 
-  .mat-icon-button:active {
-    transform: scale(0.95);
-  }
-
-  // Close button hover effect (red tint with cyan glow)
   .close-button:hover {
-    background-color: rgba(244, 67, 54, 0.2);
-    box-shadow: 0 0 10px rgba(244, 67, 54, 0.4);
+    background-color: color-mix(in srgb, var(--mat-sys-error) 20%, transparent);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--mat-sys-error) 40%, transparent);
 
-    .header-icon {
-      fill: #ff8a80;
+    .gns3-ai-chat__header-icon {
+      fill: var(--mat-sys-error);
     }
   }
 }
 
-// Chat input focus effects
-.chat-input {
-  border-top: 1px solid var(--mat-app-outline-variant);
-  flex-shrink: 0;
-  position: relative;
-  transition: border-color 0.3s ease;
-
-  &:focus-within {
-    border-top-color: var(--mat-app-primary);
-    box-shadow: 0 -2px 10px rgba(0, 151, 167, 0.2);
-  }
-}
-
-// Minimized state - floating circular button with GNS3 cyan glow
-.minimized-bar {
+// =============================================
+// Minimized Bar
+// =============================================
+.gns3-ai-chat__minimized-bar {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -400,14 +398,26 @@
   cursor: pointer;
   user-select: none;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--mat-app-background), var(--mat-app-surface));
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 151, 167, 0.3);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  animation: bounceIn 0.3s ease-out;
+  background: linear-gradient(135deg, var(--mat-sys-surface), var(--mat-sys-surface));
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent), 0 0 10px var(--mat-sys-primary);
+  transition: all 200ms ease;
   position: relative;
   overflow: hidden;
 
-  // Pulsing glow effect
+  &:hover {
+    transform: scale(1.15);
+    box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-surface) 60%, transparent), 0 0 15px var(--mat-sys-primary);
+
+    &::before {
+      background: radial-gradient(circle, var(--mat-sys-primary) 0%, transparent 70%);
+      opacity: 0.5;
+    }
+  }
+
+  &:active {
+    transform: scale(1.05);
+  }
+
   &::before {
     content: '';
     position: absolute;
@@ -415,91 +425,136 @@
     left: 50%;
     width: 100%;
     height: 100%;
-    transform: translate(-50%, -50%);
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(0, 151, 167, 0.3) 0%, transparent 70%);
-    animation: pulse 2s ease-in-out infinite;
-  }
-
-  &:hover {
-    transform: scale(1.15);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), 0 0 30px rgba(0, 151, 167, 0.5);
-
-    &::before {
-      background: radial-gradient(circle, rgba(0, 151, 167, 0.5) 0%, transparent 70%);
-    }
-  }
-
-  &:active {
-    transform: scale(1.05);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 0.5;
-    transform: translate(-50%, -50%) scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: translate(-50%, -50%) scale(1.1);
-  }
-}
-
-// Maximized state
-.ai-chat-container.maximized {
-  border-radius: 0;
-
-  .chat-sidebar {
-    height: 100vh;
-  }
-
-  .chat-header {
-    cursor: default;
-  }
-
-  .sidebar-header,
-  .collapsed-hint {
-    cursor: default;
-  }
-}
-
-@keyframes bounceIn {
-  0% {
-    transform: scale(0);
+    background: radial-gradient(circle, var(--mat-sys-primary) 0%, transparent 70%);
     opacity: 0;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
+    transform: translate(-50%, -50%);
+    transition: opacity 200ms ease;
   }
 }
 
-.minimized-icon {
+.gns3-ai-chat__minimized-icon {
   font-size: 28px;
   width: 28px;
   height: 28px;
-  color: #b0bec5;
+  color: var(--mat-sys-outline);
   position: relative;
   z-index: 1;
 }
 
-// NOTE: Menu and sidebar icon styles are in global styles.scss
-// Menu panels are rendered to body, and component styles are encapsulated
-// So all icon color overrides are defined globally
+// =============================================
+// Snackbar Error Styles
+// =============================================
+.gns3-ai-chat__snack-error {
+  background-color: var(--mat-sys-error);
+  color: var(--mat-sys-on-error);
+  font-weight: 500;
 
-// Dark theme - match GNS3 toolbar color #20313b
-.dark-theme .ai-chat-container {
-  background-color: rgba(32, 49, 59, 1);
-  // Performance optimized: fully opaque, no backdrop-filter
+  .mat-simple-snackbar-action {
+    color: var(--mat-sys-on-error);
+    font-weight: 600;
+  }
 }
-.dark-theme .chat-sidebar {
-  background-color: rgba(26, 37, 44, 0.70);
+
+// =============================================
+// Responsive Design
+// =============================================
+@media (max-width: 768px) {
+  .gns3-ai-chat__sidebar {
+    position: absolute;
+    z-index: 100;
+    height: 100%;
+
+    &--collapsed {
+      width: 0;
+    }
+  }
 }
-.dark-theme .chat-main {
-  background-color: rgba(32, 49, 59, 0.60);
+
+// =============================================
+// Resize Handles
+// =============================================
+.resize-handle {
+  position: absolute;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+
+  .gns3-ai-chat:hover & {
+    opacity: 1;
+  }
+
+  // Edge handles - transparent
+  &.resize-handle-top {
+    top: -4px;
+    left: 12px;
+    right: 12px;
+    height: 12px;
+    cursor: ns-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-right {
+    top: 12px;
+    right: -4px;
+    bottom: 12px;
+    width: 12px;
+    cursor: ew-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-bottom {
+    bottom: -4px;
+    left: 12px;
+    right: 12px;
+    height: 12px;
+    cursor: ns-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-left {
+    top: 12px;
+    left: -4px;
+    bottom: 12px;
+    width: 12px;
+    cursor: ew-resize;
+    background: transparent;
+  }
+
+  // Corner handles - transparent
+  &.resize-handle-top-left {
+    top: -6px;
+    left: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nwse-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-top-right {
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nesw-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-bottom-left {
+    bottom: -6px;
+    left: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nesw-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-bottom-right {
+    bottom: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nwse-resize;
+    background: transparent;
+  }
 }

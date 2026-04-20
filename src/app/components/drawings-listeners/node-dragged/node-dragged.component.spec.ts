@@ -1,79 +1,216 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Observable } from 'rxjs';
-import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
-import { DraggedDataEvent } from '../../../cartography/events/event-source';
-import { NodesEventSource } from '../../../cartography/events/nodes-event-source';
-import { MapLabel } from '../../../cartography/models/map/map-label';
-import { MapNode } from '../../../cartography/models/map/map-node';
-import { NodeService } from '@services/node.service';
-import { MockedNodesDataSource, MockedNodeService } from '../../project-map/project-map.component.spec';
+import { of } from 'rxjs';
 import { NodeDraggedComponent } from './node-dragged.component';
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { NodesEventSource } from '../../../cartography/events/nodes-event-source';
+import { NodeService } from '@services/node.service';
+import { DraggedDataEvent } from '../../../cartography/events/event-source';
+import { MapNode } from '../../../cartography/models/map/map-node';
+import { Node } from '../../../cartography/models/node';
+import { Project } from '@models/project';
+import { Controller } from '@models/controller';
 
 describe('NodeDraggedComponent', () => {
-  let component: NodeDraggedComponent;
   let fixture: ComponentFixture<NodeDraggedComponent>;
-  let mockedNodesDataSource = new MockedNodesDataSource();
-  let mockedNodeService = new MockedNodeService();
-  let mockedNodesEventSource = new NodesEventSource();
+  let mockNodesDataSource: any;
+  let mockNodeService: any;
+  let mockNodesEventSource: any;
+  let mockSubscription: any;
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
+  const mockController: Controller = {
+    id: 1,
+    name: 'Test Controller',
+    host: 'localhost',
+    port: 3080,
+    protocol: 'http:',
+    authToken: 'test-token',
+    tokenExpired: false,
+    location: 'local' as const,
+    path: '/',
+    ubridge_path: '/usr/local/bin/ubridge',
+    status: 'running' as const,
+    username: 'admin',
+    password: 'password',
+  };
+
+  const mockProject: Project = {
+    auto_close: false,
+    auto_open: false,
+    auto_start: false,
+    drawing_grid_size: 25,
+    filename: 'test.gns3',
+    grid_size: 25,
+    name: 'Test Project',
+    path: '/projects/test',
+    project_id: 'project-1',
+    scene_height: 1000,
+    scene_width: 1000,
+    status: 'opened',
+    readonly: false,
+    show_interface_labels: true,
+    show_layers: true,
+    show_grid: true,
+    snap_to_grid: true,
+    variables: [],
+  };
+
+  const createMockMapNode = (overrides: Partial<MapNode> = {}): MapNode =>
+    ({
+      id: 'node-1',
+      x: 100,
+      y: 200,
+      ...overrides,
+    } as MapNode);
+
+  const createMockNode = (overrides: Partial<Node> = {}): Node =>
+    ({
+      node_id: 'node-1',
+      x: 100,
+      y: 200,
+      ...overrides,
+    } as Node);
+
+  beforeEach(async () => {
+    mockSubscription = { unsubscribe: vi.fn() };
+
+    mockNodeService = {
+      updatePosition: vi.fn().mockReturnValue(of(createMockNode())),
+    };
+
+    mockNodesDataSource = {
+      get: vi.fn(),
+      update: vi.fn(),
+    };
+
+    mockNodesEventSource = {
+      dragged: {
+        subscribe: vi.fn().mockReturnValue(mockSubscription),
+      },
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [NodeDraggedComponent],
       providers: [
-        { provide: NodesDataSource, useValue: mockedNodesDataSource },
-        { provide: NodeService, useValue: mockedNodeService },
-        { provide: NodesEventSource, useValue: mockedNodesEventSource },
+        { provide: NodesDataSource, useValue: mockNodesDataSource },
+        { provide: NodeService, useValue: mockNodeService },
+        { provide: NodesEventSource, useValue: mockNodesEventSource },
       ],
-      declarations: [NodeDraggedComponent],
     }).compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(NodeDraggedComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
   afterEach(() => {
-    component.ngOnDestroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  describe('component creation', () => {
+    it('should create', () => {
+      fixture.detectChanges();
+      expect(fixture.componentInstance).toBeTruthy();
+    });
+
+    it('should have controller and project as inputs', () => {
+      fixture.detectChanges();
+      expect(fixture.componentInstance.controller).toBeDefined();
+      expect(fixture.componentInstance.project).toBeDefined();
+    });
   });
 
-  it('should call node service when node dragged', () => {
-    const mapNode: MapNode = {
-      id: 'sampleId',
-      commandLine: 'sampleCommandLine',
-      computeId: 'sampleComputeId',
-      console: 0,
-      consoleHost: 'sampleConsoleHost',
-      consoleType: 'sampleConsoleType',
-      firstPortName: 'sampleFirstPortName',
-      height: 0,
-      label: {} as MapLabel,
-      locked: false,
-      name: 'sampleName',
-      nodeDirectory: 'sampleNodeDirectory',
-      nodeType: 'sampleNodeType',
-      portNameFormat: 'samplePortNameFormat',
-      portSegmentSize: 0,
-      ports: [],
-      properties: undefined,
-      projectId: 'sampleProjectId',
-      status: 'sampleStatus',
-      symbol: 'sampleSymbol',
-      symbolUrl: 'sampleUrl',
-      width: 0,
-      x: 0,
-      y: 0,
-      z: 0,
-    };
-    const draggedDataEvent = new DraggedDataEvent<MapNode>(mapNode, 0, 0);
-    spyOn(mockedNodeService, 'updatePosition').and.returnValue(Observable.of());
+  describe('initialization', () => {
+    it('should subscribe to nodesEventSource.dragged on init', () => {
+      fixture.detectChanges();
+      expect(mockNodesEventSource.dragged.subscribe).toHaveBeenCalled();
+    });
+  });
 
-    mockedNodesEventSource.dragged.emit(draggedDataEvent);
+  describe('onNodeDragged', () => {
+    it('should update node position when drag event occurs', () => {
+      fixture.detectChanges();
 
-    expect(mockedNodeService.updatePosition).toHaveBeenCalled();
+      const mockNode = createMockMapNode({ id: 'node-1', x: 100, y: 200 });
+      const dragEvent = new DraggedDataEvent(mockNode, 50, 30);
+      mockNodesDataSource.get.mockReturnValue({ ...mockNode });
+
+      const subscribeCallback = mockNodesEventSource.dragged.subscribe.mock.calls[0][0];
+      subscribeCallback(dragEvent);
+
+      expect(mockNodesDataSource.get).toHaveBeenCalledWith('node-1');
+    });
+
+    it('should calculate new position by adding dx and dy to node coordinates', () => {
+      fixture.detectChanges();
+
+      const mockNode = createMockMapNode({ id: 'node-1', x: 100, y: 200 });
+      const dragEvent = new DraggedDataEvent(mockNode, 50, 30);
+
+      const nodeWithPosition = { ...mockNode };
+      mockNodesDataSource.get.mockReturnValue(nodeWithPosition);
+
+      const subscribeCallback = mockNodesEventSource.dragged.subscribe.mock.calls[0][0];
+      subscribeCallback(dragEvent);
+
+      expect(nodeWithPosition.x).toBe(150);
+      expect(nodeWithPosition.y).toBe(230);
+    });
+
+    it('should call nodeService.updatePosition with correct parameters', () => {
+      fixture.detectChanges();
+
+      const mockNode = createMockMapNode({ id: 'node-1', x: 100, y: 200 });
+      const dragEvent = new DraggedDataEvent(mockNode, 50, 30);
+
+      const nodeWithPosition = { ...mockNode };
+      mockNodesDataSource.get.mockReturnValue(nodeWithPosition);
+
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.componentRef.setInput('project', mockProject);
+
+      const subscribeCallback = mockNodesEventSource.dragged.subscribe.mock.calls[0][0];
+      subscribeCallback(dragEvent);
+
+      expect(mockNodeService.updatePosition).toHaveBeenCalledWith(
+        mockController,
+        mockProject,
+        nodeWithPosition,
+        150,
+        230
+      );
+    });
+
+    it('should update nodesDataSource when nodeService returns updated node', () => {
+      const updatedNode = createMockNode({ node_id: 'node-1', x: 150, y: 230 });
+      mockNodeService.updatePosition.mockReturnValue(of(updatedNode));
+
+      fixture.detectChanges();
+
+      const mockNode = createMockMapNode({ id: 'node-1', x: 100, y: 200 });
+      const dragEvent = new DraggedDataEvent(mockNode, 50, 30);
+
+      const nodeWithPosition = { ...mockNode };
+      mockNodesDataSource.get.mockReturnValue(nodeWithPosition);
+
+      const subscribeCallback = mockNodesEventSource.dragged.subscribe.mock.calls[0][0];
+      subscribeCallback(dragEvent);
+
+      expect(mockNodesDataSource.update).toHaveBeenCalledWith(updatedNode);
+    });
+  });
+
+  describe('cleanup', () => {
+    it('should unsubscribe on destroy', () => {
+      fixture.detectChanges();
+
+      // Subscription was already set up in ngOnInit, now verify it unsubscribes on destroy
+      expect(mockSubscription.unsubscribe).not.toHaveBeenCalled();
+
+      fixture.destroy();
+      fixture = null; // Prevent afterEach from trying to destroy again
+
+      expect(mockSubscription.unsubscribe).toHaveBeenCalled();
+    });
   });
 });

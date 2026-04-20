@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
@@ -13,18 +13,18 @@ import { DrawingService } from '@services/drawing.service';
 @Component({
   selector: 'app-text-edited',
   templateUrl: './text-edited.component.html',
-  styleUrls: ['./text-edited.component.scss'],
+  styleUrl: './text-edited.component.scss',
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TextEditedComponent implements OnInit, OnDestroy {
-  @Input() controller: Controller;
+  readonly controller = input<Controller>(undefined);
   private textEdited: Subscription;
 
-  constructor(
-    private drawingService: DrawingService,
-    private drawingsDataSource: DrawingsDataSource,
-    private drawingsEventSource: DrawingsEventSource,
-    private mapDrawingToSvgConverter: MapDrawingToSvgConverter
-  ) {}
+  private drawingService = inject(DrawingService);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private drawingsEventSource = inject(DrawingsEventSource);
+  private mapDrawingToSvgConverter = inject(MapDrawingToSvgConverter);
 
   ngOnInit() {
     this.textEdited = this.drawingsEventSource.textEdited.subscribe((evt) => this.onTextEdited(evt));
@@ -38,7 +38,7 @@ export class TextEditedComponent implements OnInit, OnDestroy {
 
     let drawing = this.drawingsDataSource.get(evt.textDrawingId);
 
-    this.drawingService.updateText(this.controller, drawing, svgString).subscribe((controllerDrawing: Drawing) => {
+    this.drawingService.updateText(this.controller(), drawing, svgString).subscribe((controllerDrawing: Drawing) => {
       this.drawingsDataSource.update(controllerDrawing);
       this.drawingsEventSource.textSaved.emit(true);
     });

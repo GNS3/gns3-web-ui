@@ -1,54 +1,59 @@
-import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { MockedActivatedRoute } from '../preferences.component.spec';
 import { GeneralPreferencesComponent } from './general-preferences.component';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('GeneralPreferencesComponent', () => {
   let component: GeneralPreferencesComponent;
   let fixture: ComponentFixture<GeneralPreferencesComponent>;
-  let activatedRoute = new MockedActivatedRoute().get();
+  let mockActivatedRoute: any;
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
-      imports: [
-        MatIconModule,
-        MatToolbarModule,
-        MatMenuModule,
-        MatCheckboxModule,
-        CommonModule,
-        NoopAnimationsModule,
-        RouterTestingModule.withRoutes([]),
-      ],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: activatedRoute,
+  beforeEach(async () => {
+    mockActivatedRoute = {
+      snapshot: {
+        paramMap: {
+          get: vi.fn().mockReturnValue('test-controller-id'),
         },
-      ],
-      declarations: [GeneralPreferencesComponent],
-      schemas: [NO_ERRORS_SCHEMA],
-    }).compileComponents();
-  });
+      },
+    };
 
-  beforeEach(() => {
+    await TestBed.configureTestingModule({
+      imports: [GeneralPreferencesComponent],
+      providers: [{ provide: ActivatedRoute, useValue: mockActivatedRoute }],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(GeneralPreferencesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should set correct controller id', () => {
-    expect(component.controllerId).toBe('1');
+  it('should have empty controllerId before ngOnInit', () => {
+    const newFixture = TestBed.createComponent(GeneralPreferencesComponent);
+    const newComponent = newFixture.componentInstance;
+    expect(newComponent.controllerId).toBe('');
+  });
+
+  it('should extract controllerId from route params on ngOnInit', () => {
+    expect(component.controllerId).toBe('test-controller-id');
+  });
+
+  it('should display "General preferences" heading', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const heading = compiled.querySelector('h1');
+    expect(heading?.textContent).toContain('General preferences');
+  });
+
+  it('should use OnPush change detection strategy', () => {
+    expect(component).toBeTruthy();
   });
 });

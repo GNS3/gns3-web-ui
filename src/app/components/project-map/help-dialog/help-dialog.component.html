@@ -1,7 +1,8 @@
 <h1 mat-dialog-title>{{ title }}</h1>
 
 <div class="modal-form-container">
-  <div class="message" *ngFor="let message of messages; let i = index">
+  @for (message of messages; track $index; let i = $index) {
+  <div class="message">
     <h6>
       {{ message.name }}
     </h6>
@@ -9,6 +10,7 @@
       {{ message.description }}
     </span>
   </div>
+  }
 </div>
 
 <div mat-dialog-actions>

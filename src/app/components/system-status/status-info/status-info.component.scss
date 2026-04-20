@@ -1,0 +1,16 @@
+.status-info {
+  &__summary {
+    margin-bottom: 24px;
+  }
+
+  &__compute {
+    margin-bottom: 24px;
+  }
+
+  &__compute-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--mat-sys-on-surface);
+  }
+}

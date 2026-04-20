@@ -1,0 +1,40 @@
+/**
+ * IOS Router Configurator Component Styles
+ *
+ * IOS-SPECIFIC FUNCTIONALITY:
+ * These styles are specific to IOS router Slots (network adapters) and WICs modules.
+ * Other node types (QEMU, Docker, VirtualBox, etc.) do not have this functionality.
+ *
+ * Using BEM naming convention and Material Design 3 CSS variables.
+ *
+ * NOTE: Card styles (disk-card, disk-cards-grid) are centralized in
+ * src/styles/_dialogs.scss and are shared with QEMU configurator.
+ */
+
+// Slots section styling (IOS-specific)
+// IOS routers have configurable network adapter slots (0-6) and WICs (0-2)
+// These are physical hardware components that can be inserted/removed
+.ios-configurator__slots-section {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.ios-configurator__slots-group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ios-configurator__slots-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin: 0;
+}
+
+.ios-configurator__slots-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}

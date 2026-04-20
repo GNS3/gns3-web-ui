@@ -4,7 +4,8 @@
   <div class="content">
     <div class="default-content">
       <mat-card>
-        <table *ngIf="nodeMappingsDataSource.length" mat-table [dataSource]="nodeMappingsDataSource">
+        @if (nodeMappingsDataSource.length) {
+        <table mat-table [dataSource]="nodeMappingsDataSource">
           <ng-container matColumnDef="portIn">
             <th mat-header-cell *matHeaderCellDef>Port : VPI : VCI</th>
             <td mat-cell *matCellDef="let element">{{ element.portIn }}</td>
@@ -32,65 +33,52 @@
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
+        }
         <br />
 
         <form [formGroup]="nameForm">
           <mat-form-field class="form-field">
-            <input matInput type="text" [(ngModel)]="node.name" formControlName="name" placeholder="Name" />
+            <mat-label>Name</mat-label>
+            <input matInput type="text" formControlName="name" />
           </mat-form-field>
         </form>
 
-        <mat-checkbox [(ngModel)]="useVpiOnly"> Use VPI only (VP tunnel) </mat-checkbox>
+        <form [formGroup]="nameForm">
+          <mat-checkbox formControlName="useVpiOnly"> Use VPI only (VP tunnel) </mat-checkbox>
+        </form>
 
         <form [formGroup]="inputForm">
-          Source
           <mat-form-field class="form-field">
-            <input matInput type="number" min="0" [(ngModel)]="sourcePort" formControlName="sourcePort" placeholder="Port" />
+            <mat-label>Source Port</mat-label>
+            <input matInput type="number" min="0" formControlName="sourcePort" />
           </mat-form-field>
         </form>
         <form [formGroup]="abstractForm">
           <mat-form-field class="form-field">
-            <input matInput type="number" min="1" [(ngModel)]="sourceVpi" formControlName="sourceVpi" placeholder="VPI" />
+            <mat-label>Source VPI</mat-label>
+            <input matInput type="number" min="1" formControlName="sourceVpi" />
           </mat-form-field>
         </form>
         <form [formGroup]="inputForm">
           <mat-form-field class="form-field">
-            <input matInput type="number" min="1" [(ngModel)]="sourceVci" formControlName="sourceVci" placeholder="VCI" />
+            <mat-label>Source VCI</mat-label>
+            <input matInput type="number" min="1" formControlName="sourceVci" />
           </mat-form-field>
-          Destination
           <mat-form-field class="form-field">
-            <input
-              matInput
-              type="number"
-              min="0"
-              [(ngModel)]="destinationPort"
-              formControlName="destinationPort"
-              placeholder="Port"
-            />
+            <mat-label>Destination Port</mat-label>
+            <input matInput type="number" min="0" formControlName="destinationPort" />
           </mat-form-field>
         </form>
         <form [formGroup]="abstractForm">
           <mat-form-field class="form-field">
-            <input
-              matInput
-              type="number"
-              min="1"
-              [(ngModel)]="destinationVpi"
-              formControlName="destinationVpi"
-              placeholder="VPI"
-            />
+            <mat-label>Destination VPI</mat-label>
+            <input matInput type="number" min="1" formControlName="destinationVpi" />
           </mat-form-field>
         </form>
         <form [formGroup]="inputForm">
           <mat-form-field class="form-field">
-            <input
-              matInput
-              type="number"
-              min="1"
-              [(ngModel)]="destinationVci"
-              formControlName="destinationVci"
-              placeholder="VCI"
-            />
+            <mat-label>Destination VCI</mat-label>
+            <input matInput type="number" min="1" formControlName="destinationVci" />
           </mat-form-field>
         </form>
 

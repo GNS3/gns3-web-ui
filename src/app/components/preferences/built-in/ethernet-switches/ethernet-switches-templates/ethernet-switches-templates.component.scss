@@ -1,0 +1,156 @@
+/**
+ * GNS3 Ethernet Switches Templates Component Styles
+ * BEM naming applied, Material theme variables used
+ * Design language unified with management pages
+ */
+
+:host {
+  display: block;
+  width: 100%;
+  // Background moved to default-layout, keep transparent here
+  background: transparent;
+}
+
+/* =============================================
+// Header
+// ============================================= */
+.ethernet-switches__header {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 20px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  animation: fadeInSlideIn 0.4s ease-out;
+}
+
+.ethernet-switches__back-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  color: var(--mat-sys-on-surface);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+  }
+}
+
+.ethernet-switches__title {
+  flex: 1;
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin: 0;
+  padding-bottom: 8px;
+}
+
+.ethernet-switches__add-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  color: var(--mat-sys-primary);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+  }
+}
+
+/* =============================================
+// Content
+// ============================================= */
+.ethernet-switches__content {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px 20px;
+  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+}
+
+/* =============================================
+// List
+// ============================================= */
+.ethernet-switches__list {
+  background: var(--mat-sys-surface);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+}
+
+.ethernet-switches__list-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--mat-sys-on-surface);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 5%, transparent);
+  }
+}
+
+.ethernet-switches__list-icon {
+  color: var(--mat-sys-primary);
+}
+
+.ethernet-switches__list-name {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.ethernet-switches__menu-btn {
+  color: var(--mat-sys-on-surface-variant);
+  flex-shrink: 0;
+}
+
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 768px) {
+  .ethernet-switches__header {
+    padding: 24px 16px 12px;
+    gap: 12px;
+  }
+
+  .ethernet-switches__back-btn,
+  .ethernet-switches__add-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .ethernet-switches__title {
+    font-size: 24px;
+  }
+
+  .ethernet-switches__content {
+    padding: 0 16px 16px;
+  }
+
+  .ethernet-switches__list-item {
+    padding: 14px 16px;
+  }
+}

@@ -1,0 +1,108 @@
+/**
+ * GNS3 Management Component Styles
+ * BEM naming applied, Material theme variables used
+ * Design language unified with controllers page
+ */
+
+:host {
+  display: block;
+  width: 100%;
+  // Background moved to default-layout, keep transparent here
+  background: transparent;
+}
+
+/* =============================================
+// Header
+// ============================================= */
+.management__header {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 20px 16px;
+  animation: fadeInSlideIn 0.4s ease-out;
+}
+
+.management__header-content {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 16px;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.management__title {
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin: 0;
+  padding-bottom: 8px;
+}
+
+/* =============================================
+// Tab Navigation
+// ============================================= */
+.management__tab-nav {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px;
+  animation: fadeInSlideIn 0.4s ease-out 0.05s both;
+}
+
+.management__tab-link {
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: color 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* =============================================
+// Content Area
+// ============================================= */
+.management__content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px 20px;
+  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+}
+
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 768px) {
+  .management__header {
+    padding: 24px 16px 12px;
+  }
+
+  .management__title {
+    font-size: 24px;
+  }
+
+  .management__tab-nav {
+    padding: 0 16px;
+  }
+
+  .management__content {
+    padding: 0 16px 16px;
+  }
+}

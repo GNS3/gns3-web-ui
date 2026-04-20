@@ -1,54 +1,68 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {Privilege} from "@models/api/Privilege";
-import {PrivilegeChange} from "@components/role-management/role-detail/privilege/privilegeChange";
-import {IPrivilegesChange} from "@components/role-management/role-detail/privilege/IPrivilegesChange";
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, input, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Privilege } from '@models/api/Privilege';
+import { PrivilegeChange } from '@components/role-management/role-detail/privilege/privilegeChange';
+import { IPrivilegesChange } from '@components/role-management/role-detail/privilege/IPrivilegesChange';
+import { GroupPrivilegesPipe } from '@components/role-management/role-detail/privilege/group-privileges.pipe';
 
 @Component({
   selector: 'app-privilege',
   templateUrl: './privilege.component.html',
-  styleUrls: ['./privilege.component.scss']
+  styleUrl: './privilege.component.scss',
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatCheckboxModule, MatTooltipModule, GroupPrivilegesPipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PrivilegeComponent implements OnInit {
-
-  @Input() disable = true;
-  @Input() privileges: Privilege[] = [];
+export class PrivilegeComponent {
+  readonly disable = input(true);
+  readonly privileges = input<Privilege[]>([]);
   @Input() set ownedPrivilege(privileges: Privilege[]) {
-    if(privileges) {
-      this.ownedPrivilegesName = privileges.map((p: Privilege) => p.name.split(".")[0])
-      this.ownedPrivilegesList = privileges.map((p: Privilege) => p.privilege_id);
+    if (privileges) {
+      this.ownedPrivilegesName.set(privileges.map((p: Privilege) => p.name.split('.')[0]));
+      this.ownedPrivilegesList.set(privileges.map((p: Privilege) => p.privilege_id));
     }
   }
   @Output() update: EventEmitter<IPrivilegesChange> = new EventEmitter<IPrivilegesChange>();
 
-  ownedPrivilegesName: string[] = [];
-  ownedPrivilegesList: string[] = [];
-  changer = new PrivilegeChange(this.ownedPrivilegesList);
-  private editModeState = false;
+  ownedPrivilegesName = signal<string[]>([]);
+  ownedPrivilegesList = signal<string[]>([]);
+  changer = new PrivilegeChange([]);
+  private editModeState = signal(false);
+  private collapsedState = signal(true);
 
   get editMode(): boolean {
-    return this.editModeState;
-  };
-  set editMode(state: boolean) {
-    if(state) {
-      this.changer = new PrivilegeChange(this.ownedPrivilegesList);
-    }
-    this.editModeState = state;
-  };
-  constructor() { }
-
-  ngOnInit(): void {
+    return this.editModeState();
   }
+  set editMode(state: boolean) {
+    if (state) {
+      this.changer = new PrivilegeChange(this.ownedPrivilegesList());
+    }
+    this.editModeState.set(state);
+  }
+
+  get collapsed(): boolean {
+    return this.collapsedState();
+  }
+
+  toggleCollapsed(): void {
+    this.collapsedState.set(!this.collapsedState());
+  }
+
+  constructor() {}
 
   onPrivilegeChange(checked: boolean, privilege: Privilege) {
-      const id = privilege.privilege_id
-      if(checked) {
-        this.changer.add(id);
-      } else {
-        this.changer.delete(id);
-      }
+    const id = privilege.privilege_id;
+    if (checked) {
+      this.changer.add(id);
+    } else {
+      this.changer.delete(id);
+    }
   }
   close() {
-    this.update.emit(this.changer.get())
+    this.update.emit(this.changer.get());
     this.editMode = false;
   }
 }

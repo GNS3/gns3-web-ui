@@ -1,111 +1,277 @@
 # GNS3 Web UI - Documentation Index
 
+> This documentation is organized by AI with reference to actual code. AI can make mistakes — please verify against the source code when in doubt.
+
 > Complete documentation index for GNS3 Web UI project
 
-**Last Updated**: 2026-03-18
+**Last Updated**: 2026-04-18
 
 ---
 
-## 📁 Documentation Structure
+## License
+
+This documentation is licensed under the **Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)**.
+
+⚠️ **Important - ShareAlike Requirement**: If you create derivative works based on this documentation (including software that incorporates substantial portions of the documentation), your work must also be licensed under **CC BY-SA 4.0 or a compatible license** (such as GPLv3).
+
+- 📄 **Full License Text**: See [docs/LICENSE](./LICENSE)
+- 🔗 **License URL**: https://creativecommons.org/licenses/by-sa/4.0/
+- 📖 **Compatibility**: https://creativecommons.org/compatiblelicenses
+
+**Dual License Structure**:
+- 📚 **Documentation**: CC BY-SA 4.0 (this directory)
+- 💻 **Software Code**: GPLv3 (see root [LICENSE](../LICENSE))
+
+---
+
+## Documentation Structure
 
 ```
 docs/
-├── ai-chat-complete-guide.md             # ⭐ Complete AI Chat implementation guide
-├── ai-profile-management.md              # AI Profile / LLM Model Configuration management
-├── console-devices-panel-implementation.md # Console devices panel docs (v1.9.0)
-├── dialog-style-isolation-guide.md       # Dialog style isolation using panelClass
-├── electron-removal-migration-guide.md   # Electron removal and migration guide
-├── window-boundary-service.md            # Window boundary service documentation
-└── README.md                             # This file
+├── features/                    # Feature implementation documentation
+│   ├── ai-chat/                # AI Chat feature
+│   │   ├── ai-chat-guide.md    # ⭐ Complete AI Chat guide
+│   │   └── profile-management.md
+│   ├── compute-selector/       # Compute node selector feature
+│   │   └── implementation.md    # ⭐ Technical implementation and architecture
+│   ├── console/                # Console-related docs
+│   │   ├── devices-panel-implementation.md
+│   │   └── vnc-console-implementation.md
+│   ├── context-menu.md          # Context menu documentation
+│   ├── custom-adapters/         # Custom adapters feature
+│   ├── symbols/                # Symbols documentation
+│   │   └── symbols-guide.md
+│   ├── websocket/              # WebSocket connection management
+│   │   └── connection-management.md  # Simple controller connection service
+│   └── web-wireshark/          # Web Wireshark feature
+│       ├── overview.md         # ⭐ Complete Web Wireshark guide
+│       ├── business-flow.md    # Business flow & architecture
+│       └── diagrams/           # Architecture diagrams
+│           └── architecture-overview.md
+├── framework/                   # Framework migration & architecture
+│   └── angular-21/             # Angular 21 Zoneless migration
+│       ├── zoneless-guide.md
+│       ├── dialog-migration-record.md
+│       └── migration-progress.md
+├── guides/                      # Development standards & best practices
+│   ├── css/
+│   │   ├── 02-material3-variables.md
+│   │   ├── hardcoded-colors-inventory.md
+│   │   ├── hardcoded-color-protection.md
+│   │   └── map-backgrounds.md
+│   ├── dialog-style-isolation.md
+│   └── window-boundary-service.md
+├── known-issues/               # Known issues (won't fix)
+│   └── route-transition-white-flash.md
+├── todo/                        # Optimization tasks
+│   └── optimization-todos.md
+└── archive/                     # Historical & deprecated docs
+    ├── bugs/                   # Fixed bug reports
+    └── deprecated/             # Outdated documentation
 ```
 
 ---
 
-## 📚 Documentation Index
+## Documentation Index
 
-### Core Feature Documentation
+### Features Documentation
 
 | Document | Description |
 |----------|-------------|
-| [ai-chat-complete-guide.md](./ai-chat-complete-guide.md) | ⭐ Complete AI Chat implementation guide |
-| [ai-profile-management.md](./ai-profile-management.md) | AI Profile / LLM Model Configuration management |
-| [console-devices-panel-implementation.md](./console-devices-panel-implementation.md) | Console devices panel (v1.9.0) |
-| [dialog-style-isolation-guide.md](./dialog-style-isolation-guide.md) | Dialog style isolation using panelClass |
-| [electron-removal-migration-guide.md](./electron-removal-migration-guide.md) | Electron removal and migration guide |
-| [window-boundary-service.md](./window-boundary-service.md) | Window boundary service |
+| [AI Chat Guide](./features/ai-chat/ai-chat-guide.md) | ⭐ Complete AI Chat implementation guide |
+| [AI Profile Management](./features/ai-chat/profile-management.md) | AI Profile / LLM Model Configuration |
+| [Compute Selector Implementation](./features/compute-selector/implementation.md) | ⭐ Compute node selector: technical implementation and architecture |
+| [Context Menu](./features/context-menu.md) | Context menu implementation (38 actions) |
+| [Console Devices Panel](./features/console/devices-panel-implementation.md) | Console devices panel (v2.0.0) |
+| [VNC Console](./features/console/vnc-console-implementation.md) | VNC console implementation |
+| [Custom Adapters](./features/custom-adapters/custom-adapters-implementation.md) | Custom adapters implementation |
+| [Symbols Guide](./features/symbols/symbols-guide.md) | Node symbols support (SVG/PNG/JPG/GIF) |
+| [WebSocket Connection Management](./features/websocket/connection-management.md) | Simple controller connection management service |
+| [Web Wireshark Overview](./features/web-wireshark/overview.md) | ⭐ Browser-based packet capture and analysis |
+| [Web Wireshark Business Flow](./features/web-wireshark/business-flow.md) | Detailed business flows and architecture |
+| [Web Wireshark Architecture](./features/web-wireshark/diagrams/architecture-overview.md) | System architecture diagrams |
 
 ---
 
-## 🔑 Quick Links
+### Framework Documentation
+
+#### Angular 21 Migration
+
+| Document | Description |
+|----------|-------------|
+| [Zoneless Guide](./framework/angular-21/zoneless-guide.md) | ⭐ Angular Zoneless best practices |
+| [Vitest Testing Setup](./framework/angular-21/vitest-testing-setup.md) | Vitest configuration for Angular 21 Zoneless |
+| [Vitest Test Isolation Guide](./framework/angular-21/vitest-test-isolation-guide.md) | ⭐ Solving test environment pollution (Flaky Tests) |
+| [Migration Progress](./framework/angular-21/migration-progress.md) | Migration status tracking |
+| [Dialog Migration Record](./framework/angular-21/dialog-migration-record.md) | Dialog style migration (42 dialogs) |
+
+---
+
+### Development Guides
+
+| Document | Description |
+|----------|-------------|
+| [Dialog Style Isolation](./guides/dialog-style-isolation.md) | ⭐ Dialog styling with panelClass |
+| [Material 3 Variables](./guides/css/02-material3-variables.md) | Material Design 3 CSS variables |
+| [Hardcoded Color Inventory](./guides/css/hardcoded-colors-inventory.md) | All hardcoded color violations in codebase |
+| [Hardcoded Color Protection](./guides/css/hardcoded-color-protection.md) | ⭐ Multi-layer protection mechanism for code quality |
+| [Map Backgrounds](./guides/css/map-backgrounds.md) | Project map background & screenshot export |
+| [Window Boundary Service](./guides/window-boundary-service.md) | Window boundary management |
+
+---
+
+### Known Issues
+
+| Document | Description |
+|----------|-------------|
+| [Route Transition White Flash](./known-issues/route-transition-white-flash.md) | White flash during Projects → ProjectMap navigation |
+
+---
+
+### Archive
+
+#### Bug Fixes
+
+| Document | Description |
+|----------|-------------|
+| [Console Position Fix](./archive/bugs/console-window-position-after-resize.md) | Console window position after resize |
+| [Web Console Resize Fix](./archive/bugs/web-console-resize-fix.md) | Web console resize issue |
+| [Dialog Max Width Issue](./archive/bugs/dialog-max-width-issue.md) | Dialog max-width CSS variable fix |
+
+#### Deprecated
+
+| Document | Description |
+|----------|-------------|
+| [Topology Highlight](./archive/deprecated/topology-highlight.md) | Feature never implemented (deprecated) |
+
+---
+
+## Quick Links
 
 ### Featured Documentation
 
-- **AI Chat Feature**: [ai-chat-complete-guide.md](./ai-chat-complete-guide.md) - Complete AI Chat implementation guide
-- **AI Profile Management**: [ai-profile-management.md](./ai-profile-management.md) - LLM Model Configuration management
-- **Console Devices Panel**: [console-devices-panel-implementation.md](./console-devices-panel-implementation.md) - Multi-device console management
-- **Dialog Style Isolation**: [dialog-style-isolation-guide.md](./dialog-style-isolation-guide.md) - Using panelClass to prevent style pollution
-- **Window Boundary Service**: [window-boundary-service.md](./window-boundary-service.md) - Window boundary management
+- **AI Chat**: [features/ai-chat/ai-chat-guide.md](./features/ai-chat/ai-chat-guide.md)
+- **Web Wireshark**: [features/web-wireshark/overview.md](./features/web-wireshark/overview.md) ⭐ NEW
+- **Angular Zoneless**: [framework/angular-21/zoneless-guide.md](./framework/angular-21/zoneless-guide.md)
+- **Dialog Styling**: [guides/dialog-style-isolation.md](./guides/dialog-style-isolation.md)
+- **CSS Variables**: [guides/css/02-material3-variables.md](./guides/css/02-material3-variables.md)
+- **Color Protection**: [guides/css/hardcoded-color-protection.md](./guides/css/hardcoded-color-protection.md) ⭐
+- **Map Backgrounds**: [guides/css/map-backgrounds.md](./guides/css/map-backgrounds.md)
 
 ### Getting Started
 
-1. **New to AI Chat?** Start with [ai-chat-complete-guide.md](./ai-chat-complete-guide.md)
-2. **AI Profile Management?** See [ai-profile-management.md](./ai-profile-management.md)
-3. **Console Management?** See [console-devices-panel-implementation.md](./console-devices-panel-implementation.md)
-4. **Dialog Styling?** Check [dialog-style-isolation-guide.md](./dialog-style-isolation-guide.md)
-5. **Service Integration?** Check [window-boundary-service.md](./window-boundary-service.md)
+1. **New to the project?** Start with [CLAUDE.md](../CLAUDE.md) for development standards
+2. **AI Chat Feature?** See [features/ai-chat/ai-chat-guide.md](./features/ai-chat/ai-chat-guide.md)
+3. **Angular Zoneless?** See [framework/angular-21/zoneless-guide.md](./framework/angular-21/zoneless-guide.md)
+4. **Dialog Styling?** See [guides/dialog-style-isolation.md](./guides/dialog-style-isolation.md)
+5. **Code Quality?** See [guides/css/hardcoded-color-protection.md](./guides/css/hardcoded-color-protection.md)
 
 ---
 
-## 📝 Recent Updates
+## Recent Changes
 
-### 2026-03-18
-- ✅ **Console Devices Panel v1.9.0**: Fix light theme and project map background issues
-  - Fix sidebar light theme not applying due to `isolation: isolate` blocking `:host-context()`
-  - Refactor sidebar theme implementation to use direct property binding (like header)
-  - Replace `:host-context(.lightTheme)` with `[ngClass]="{ lightTheme: isLightTheme }"`
-  - Add `@Input() isLightTheme` to `ConsoleDevicesPanelComponent`
-  - Remove `isolation: isolate` from `.console-area` to allow theme propagation
-  - Fix project map background always showing light color
-  - Remove fixed `body { background-color: #e8ecef }` from global styles
-  - Background color now controlled dynamically by `ThemeService` and `applyMapBackground()`
-- ✅ **Window Boundary Service Documentation**: Fixed documentation consistency with code implementation
-  - Added missing `resetConfig()` method documentation
-  - Updated `isValidSize()` method signature to use `unknown` type (matches actual implementation)
-  - Documented type conversion behavior for unknown inputs
-  - Verified service usage in 2 components: AI Chat and Console Wrapper
+### 2026-04-18
 
-### 2026-03-14
-- ✅ **Electron Removal**: Removed Electron desktop application support
-  - Application is now web-only (browser-based)
-  - Removed 5 Electron dependencies: electron, electron-builder, @sentry/electron, ngx-electron, ngx-childprocess
-  - Reduced package count from 1647 to 1430 (-13%)
-  - Fixed 11 Electron-related security vulnerabilities
-  - Simplified codebase and improved build performance
-  - Updated Console Devices Panel documentation (v1.8.0) to reflect web-only nature
-- ✅ **AI Profile Management**: New documentation for LLM Model Configuration management
-  - Complete feature overview and component structure
-  - API integration documentation for user and group endpoints
-  - Form validation rules (conditional API key validation)
-  - Provider presets (OpenRouter, DeepSeek, Custom)
-  - Custom field support
-  - Security considerations (API key encryption)
-  - Configuration inheritance model
+- ✅ **Compute Selector Feature**: Complete drag-and-drop node creation feature
+  - Smart positioning with collision detection and ResizeObserver
+  - Resource usage display with color coding (CPU/Memory/Disk)
+  - Ghost icon for visual feedback during drag operations
+  - Responsive design with Material Design 3 variables
+  - 13 commits iterating from initial implementation to polished UX
+  - Documentation: [features/compute-selector/implementation.md](./features/compute-selector/implementation.md) ⭐ NEW
 
-### 2026-03-13
-- ✅ **Dialog Style Isolation Guide**: New documentation for using panelClass to scope dialog styles
-  - Explains how to prevent `.mat-dialog-container` style pollution
-  - Provides complete example with `tool-details-dialog` component
-  - Includes theme-specific styling patterns
+- ✅ **WebSocket Connection Management**: Simple controller connection service
+  - ConnectionManagerService for controller lifecycle
+  - Prevents duplicate connections
+  - Handles controller switching
+  - Delegates to NotificationService for WebSocket
+  - Documentation: [features/websocket/connection-management.md](./features/websocket/connection-management.md) ⭐ NEW
 
-### 2026-03-10
-- ✅ **Documentation Restructuring**: Flattened documentation structure
-  - Moved `ai-chat-complete-guide.md` to root docs directory
-  - Moved `window-boundary-service.md` to root docs directory
-  - Removed nested `ai-chat/` and `services/` subdirectories
-  - Simplified navigation and file organization
-- ✅ **AI Chat v1.0**: Complete AI Chat functionality with multi-session management
-- ✅ **Console Panel v1.8.0**: Enhanced device console management with window persistence
+### 2026-04-06
+
+- 📝 **Known Issues Documentation**: Added route transition white flash issue
+  - Documented white flash during Projects → ProjectMap navigation
+  - Root cause analysis: Layout discontinuity between DefaultLayout and ProjectMap
+  - Assessment: Known issue, won't fix due to high cost/low benefit
+  - Documentation: [known-issues/route-transition-white-flash.md](./known-issues/route-transition-white-flash.md)
+
+### 2026-04-03
+
+- ✅ **Test Environment Pollution Fix**: Resolved Flaky Tests issue
+  - Implemented `forks` pool for process-level test isolation
+  - Added global `TestBed.resetTestingModule()` cleanup in `afterEach`
+  - Split CI/CD tests by category (services vs components)
+  - Achieved 98.7% stable pass rate (from random failures)
+  - Documentation: [framework/angular-21/vitest-test-isolation-guide.md](./framework/angular-21/vitest-test-isolation-guide.md) ⭐
+
+- ✅ **Component Test Fixes**: Resolved 2 failing component tests
+  - Fixed `computes.component.spec.ts` timeout with fake timers
+  - Fixed `help.component.spec.ts` mock subscription issues
+  - Implemented proper component lifecycle in tests
+
+### 2026-03-31
+
+- ✅ **Hardcoded Color Protection**: Added comprehensive protection mechanism
+  - Multi-layer security: SHA256 self-check, pre-commit warning, CI label check
+  - Configuration separated to JSON file for maintainability
+  - Prevents AI and developers from bypassing code quality standards
+  - Documentation: [guides/css/hardcoded-color-protection.md](./guides/css/hardcoded-color-protection.md)
+
+- ✅ **AI Chat CSS Standards**: Complete refactoring of AI Chat components
+  - Fixed 27 hardcoded color violations across 6 components
+  - Applied BEM naming convention with `gns3-` prefix
+  - Extracted inline templates and styles to separate files
+  - All components now use Material Design 3 CSS variables
+
+### 2026-03-30
+
+- ✅ **Map Backgrounds Guide**: Added comprehensive documentation
+  - CSS variable architecture and data flow diagrams
+  - Reactive pattern with computed signals
+  - Screenshot export implementation (background capture + embedded images)
+  - Common pitfalls and best practices
+
+- ✅ **Documentation Cleanup**: Consolidated guides directory
+  - Archived duplicate docs (css-coding-standards, angular-material-usage, etc.)
+  - Reduced code blocks, added diagrams
+  - 3 core guides retained with improved formatting
+
+- ✅ **Documentation Translation**: dialog-migration-record.md translated to English
+
+- ✅ **Documentation Renaming**: complete-guide.md files renamed
+  - `ai-chat/complete-guide.md` → `ai-chat/ai-chat-guide.md`
+  - `symbols/complete-guide.md` → `symbols/symbols-guide.md`
+
+### 2026-03-29
+
+- ✅ **Dialog Migration**: 42 dialogs migrated to centralized styles
+  - All dialog sizes now in `src/styles/_dialogs.scss`
+  - ~360 lines SCSS added, ~70 lines TS removed
 
 ---
 
-*Last Updated: 2026-03-18*
+### 2026-04-11
+
+- 📝 **Web Wireshark Documentation**: Complete feature documentation added
+  - Comprehensive overview of browser-based packet capture and analysis
+  - Detailed business flows with sequence diagrams
+  - Architecture diagrams and component interactions
+  - User guide and troubleshooting
+  - Documentation: [features/web-wireshark/](./features/web-wireshark/) ⭐ NEW
+    - [overview.md](./features/web-wireshark/overview.md) - Feature overview and guide
+    - [business-flow.md](./features/web-wireshark/business-flow.md) - Business flows and architecture
+    - [diagrams/architecture-overview.md](./features/web-wireshark/diagrams/architecture-overview.md) - Architecture diagrams
+    - [inline-display-implementation.md](./features/web-wireshark/inline-display-implementation.md) - Implementation progress
+
+---
+
+*Last Updated: 2026-04-18*
+
+---
+
+## License
+
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+See LICENSE file for licensing information.
+-->

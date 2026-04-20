@@ -1,31 +1,40 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { AdButlerResponse } from '@models/adbutler';
 import { ThemeService } from '@services/theme.service';
 import { Location } from '@angular/common';
 
-const adButlerResponseBodyRegex: RegExp = /<a href="(.*)">(.*)<\/a><br\/>(.*)<br\/>\s*<button><a .*>(.*)<\/a>\s*<\/button>/i;
+const adButlerResponseBodyRegex: RegExp =
+  /<a href="(.*)">(.*)<\/a><br\/>(.*)<br\/>\s*<button><a .*>(.*)<\/a>\s*<\/button>/i;
 
 @Component({
   selector: 'app-adbutler',
   templateUrl: './adbutler.component.html',
-  styleUrls: ['./adbutler.component.scss'],
+  styleUrl: './adbutler.component.scss',
+  imports: [CommonModule, MatIconModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdbutlerComponent implements OnInit {
-  isVisible: boolean = false;
-  isLightThemeEnabled: boolean = false;
+  private httpClient = inject(HttpClient);
+  private themeService = inject(ThemeService);
+  private location = inject(Location);
+
+  readonly isVisible = signal(false);
+  readonly isLightThemeEnabled = signal(false);
 
   // Default ad props in case adbutler request fails
-  adUrl: string =
-    'https://try.solarwinds.com/gns3-free-toolset-giveaway?CMP=LEC-HAD-GNS3-SW_NA_X_NP_X_X_EN_STSGA_SW-ST-20200901_ST_OF1_TRY-NWSLTR';
-  adBody: string =
-    'Network Config Generator makes it easy configure network devices, including VLANs without opening the CLI';
-  buttonLabel: string = 'Check it out!';
-
-  constructor(private httpClient: HttpClient, private themeService: ThemeService, private location: Location) {}
+  readonly adUrl = signal(
+    'https://try.solarwinds.com/gns3-free-toolset-giveaway?CMP=LEC-HAD-GNS3-SW_NA_X_NP_X_X_EN_STSGA_SW-ST-20200901_ST_OF1_TRY-NWSLTR'
+  );
+  readonly adBody = signal(
+    'Network Config Generator makes it easy configure network devices, including VLANs without opening the CLI'
+  );
+  readonly buttonLabel = signal('Check it out!');
 
   hide() {
-    this.isVisible = false;
+    this.isVisible.set(false);
   }
 
   ngOnInit() {
@@ -44,25 +53,25 @@ export class AdbutlerComponent implements OnInit {
               const parsedAdResponseParts = adButlerResponseBodyRegex.exec(htmlWithoutNewlines);
 
               // Ad title (2nd capture group) currently not used
-              this.adUrl = parsedAdResponseParts[1].trim();
-              this.adBody = parsedAdResponseParts[3].trim();
-              this.buttonLabel = parsedAdResponseParts[4].trim();
+              this.adUrl.set(parsedAdResponseParts[1].trim());
+              this.adBody.set(parsedAdResponseParts[3].trim());
+              this.buttonLabel.set(parsedAdResponseParts[4].trim());
             } catch (e) {}
           }
 
-          this.isVisible = true;
+          this.isVisible.set(true);
         },
         (error) => {}
       );
 
     this.themeService.getActualTheme() === 'light'
-      ? (this.isLightThemeEnabled = true)
-      : (this.isLightThemeEnabled = false);
+      ? this.isLightThemeEnabled.set(true)
+      : this.isLightThemeEnabled.set(false);
 
     this.themeService.themeChanged.subscribe(() => {
       this.themeService.getActualTheme() === 'light'
-        ? (this.isLightThemeEnabled = true)
-        : (this.isLightThemeEnabled = false);
+        ? this.isLightThemeEnabled.set(true)
+        : this.isLightThemeEnabled.set(false);
     });
   }
 }

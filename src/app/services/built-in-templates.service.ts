@@ -7,7 +7,7 @@ import { HttpController } from './http-controller.service';
 export class BuiltInTemplatesService {
   constructor(private httpController: HttpController) {}
 
-  getTemplates(controller: Controller ): Observable<any[]> {
+  getTemplates(controller: Controller): Observable<any[]> {
     return this.httpController.get<any[]>(controller, '/templates') as Observable<any[]>;
   }
 

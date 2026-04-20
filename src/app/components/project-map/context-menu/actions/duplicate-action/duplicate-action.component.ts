@@ -1,4 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, inject, input, signal } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../../../cartography/models/drawing';
@@ -12,24 +15,24 @@ import { ToasterService } from '@services/toaster.service';
 @Component({
   selector: 'app-duplicate-action',
   templateUrl: './duplicate-action.component.html',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DuplicateActionComponent {
-  @Input() controller: Controller;
-  @Input() project: Project;
-  @Input() drawings: Drawing[];
-  @Input() nodes: Node[];
+  private nodeService = inject(NodeService);
+  private nodesDataSource = inject(NodesDataSource);
+  private drawingService = inject(DrawingService);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private toasterService = inject(ToasterService);
 
-  constructor(
-    private nodeService: NodeService,
-    private nodesDataSource: NodesDataSource,
-    private drawingService: DrawingService,
-    private drawingsDataSource: DrawingsDataSource,
-    private toasterService: ToasterService
-  ) {}
+  readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
+  readonly drawings = input<Drawing[]>([]);
+  readonly nodes = input<Node[]>([]);
 
   duplicate() {
-    for (let node of this.nodes) {
-      this.nodeService.duplicate(this.controller, node).subscribe(
+    for (let node of this.nodes()) {
+      this.nodeService.duplicate(this.controller(), node).subscribe(
         (node: Node) => {
           this.nodesDataSource.add(node);
         },
@@ -43,8 +46,8 @@ export class DuplicateActionComponent {
       );
     }
 
-    for (let drawing of this.drawings) {
-      this.drawingService.duplicate(this.controller, drawing.project_id, drawing).subscribe((drawing: Drawing) => {
+    for (let drawing of this.drawings()) {
+      this.drawingService.duplicate(this.controller(), drawing.project_id, drawing).subscribe((drawing: Drawing) => {
         this.drawingsDataSource.add(drawing);
       });
     }

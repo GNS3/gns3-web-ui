@@ -1,0 +1,115 @@
+.compute-selector {
+  position: fixed;
+  width: fit-content;
+  min-width: 200px;
+  max-width: 400px;
+  background: var(--mat-sys-surface);
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 8px;
+  box-shadow: var(--mat-sys-shadow);
+  z-index: 1000;
+  overflow: hidden;
+  padding: 4px;
+  outline: none;
+}
+
+.compute-selector:focus {
+  outline: none;
+}
+
+.compute-selector__list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.compute-selector__item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  text-align: left;
+  transition: background-color 150ms ease;
+}
+
+.compute-selector__item-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+}
+
+.compute-selector__item-info {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.compute-selector__info-item {
+  display: flex;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--mat-sys-on-surface-variant);
+  white-space: nowrap;
+}
+
+// Label colors - all use primary
+.compute-selector__label {
+  font-weight: 500;
+  color: var(--mat-sys-primary);
+}
+
+// Usage value colors by threshold
+.compute-selector__usage {
+  font-weight: 500;
+
+  &--low {
+    color: var(--mat-sys-primary);
+  }
+
+  &--medium {
+    color: var(--mat-sys-tertiary);
+  }
+
+  &--high {
+    color: var(--mat-sys-error);
+  }
+}
+
+.compute-selector__item:hover {
+  background: var(--mat-sys-surface-container-highest);
+}
+
+// Zebra striping - even rows have darker background
+.compute-selector__item--even {
+  background: var(--mat-sys-surface-container-highest);
+}
+
+.compute-selector__item-name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--mat-sys-on-surface);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.compute-selector__status {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+
+  &--connected {
+    color: var(--mat-sys-primary);
+  }
+
+  &--disconnected {
+    color: var(--mat-sys-error);
+  }
+}

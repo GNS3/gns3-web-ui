@@ -12,4 +12,5 @@ export interface EthernetSwitchTemplate {
   template_id: string;
   template_type: string;
   tags?: string[];
+  usage?: string;
 }

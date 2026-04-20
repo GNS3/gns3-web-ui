@@ -3,25 +3,19 @@
   "compilerOptions": {
     "outDir": "../out-tsc/spec",
     "baseUrl": "./",
-    "target": "es2020",
     "paths": {
       "@components/*": ["app/components/*"],
       "@services/*": ["app/services/*"],
       "@resolvers/*": ["app/resolvers/*"],
       "@filters/*": ["app/filters/*"],
-      "@models/*": ["app/models/*"]
+      "@models/*": ["app/models/*"],
+      "@utils/*": ["app/utils/*"]
     },
-    "types": [
-      "jasmine",
-      "node"
-    ]
+    "types": ["node"]
   },
-  "files": [
-    "test.ts",
-    "polyfills.ts"
-  ],
   "include": [
     "**/*.spec.ts",
-    "**/*.d.ts"
+    "**/*.d.ts",
+    "test-setup.ts"
   ]
 }

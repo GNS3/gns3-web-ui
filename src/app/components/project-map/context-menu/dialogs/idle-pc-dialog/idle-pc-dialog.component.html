@@ -1,25 +1,31 @@
-<div *ngIf="isComputing">
+@if (isComputing) {
+<div>
   <h6 align="center">Computing Idle-PC values, please wait...</h6>
   <div mat-dialog-content align="center">
     <mat-spinner color="accent"></mat-spinner>
   </div>
 </div>
-<div *ngIf="!isComputing">
+} @if (!isComputing) {
 <h1 mat-dialog-title>Choose an Idle-PC value</h1>
-  <mat-form-field class="form-field">
-    <mat-select
-      placeholder="Idle-PC"
-      [ngModelOptions]="{standalone: true}"
-      [(ngModel)]="idlePC"
-      [matTooltip]="getTooltip()"
-      matTooltipClass="multiline-tooltip"
-    >
-      <mat-option *ngFor="let idlepc of idlepcs" [value]="idlepc.key"> {{ idlepc.name }} </mat-option>
-    </mat-select>
-  </mat-form-field>
-</div>
+<mat-form-field class="form-field">
+  <mat-select
+    placeholder="Idle-PC"
+    [value]="idlePC()"
+    (selectionChange)="idlePC.set($event.value)"
+    [matTooltip]="getTooltip()"
+    matTooltipClass="multiline-tooltip"
+  >
+    @for (idlepc of idlepcs; track idlepc.key) {
+    <mat-option [value]="idlepc.key"> {{ idlepc.name }} </mat-option>
+    }
+  </mat-select>
+</mat-form-field>
+}
 <div mat-dialog-actions>
-  <button mat-button *ngIf="!isComputing" (click)="onCompute()" color="accent">Compute</button>
-  <button mat-button *ngIf="!isComputing" (click)="onApply()" color="accent">Apply</button>
+  @if (!isComputing) {
+  <button mat-button (click)="onCompute()" color="accent">Compute</button>
+  } @if (!isComputing) {
+  <button mat-button (click)="onApply()" color="accent">Apply</button>
+  }
   <button mat-button (click)="onClose()" color="accent">Close</button>
 </div>

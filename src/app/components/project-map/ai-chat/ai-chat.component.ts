@@ -1,8 +1,25 @@
-import { Component, Input, Output, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewEncapsulation, EventEmitter, ChangeDetectionStrategy, ChangeDetectorRef, HostListener } from '@angular/core';
+import {
+  Component,
+  Input,
+  Output,
+  OnInit,
+  OnDestroy,
+  OnChanges,
+  SimpleChanges,
+  EventEmitter,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  HostListener,
+  inject,
+  input,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
-import { ResizeEvent } from 'angular-resizable-element';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { ResizeEvent, ResizableDirective, ResizeHandleDirective } from 'angular-resizable-element';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { environment } from '../../../../environments/environment';
 
 import { Project } from '@models/project';
@@ -14,9 +31,20 @@ import { ControllerService } from '@services/controller.service';
 import { AiProfilesService } from '@services/ai-profiles.service';
 import { LoginService } from '@services/login.service';
 import { AiChatStore } from '../../../stores/ai-chat.store';
-import { ThemeService } from '@services/theme.service';
 import { WindowBoundaryService, WindowStyle } from '@services/window-boundary.service';
 import { getModelDisplayName, shortenModelName } from '@utils/ai-profile.util';
+import { ChatSessionListComponent } from './chat-session-list.component';
+import { ChatMessageListComponent } from './chat-message-list.component';
+import { ChatInputAreaComponent } from './chat-input-area.component';
+
+/**
+ * HTTP Error response shape (simplified for type safety)
+ */
+interface HttpErrorLike {
+  error?: { message?: string };
+  message?: string;
+  statusText?: string;
+}
 
 /**
  * AI Chat Main Component
@@ -26,20 +54,38 @@ import { getModelDisplayName, shortenModelName } from '@utils/ai-profile.util';
   selector: 'app-ai-chat',
   templateUrl: './ai-chat.component.html',
   styleUrls: ['./ai-chat.component.scss'],
-  encapsulation: ViewEncapsulation.None,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    ResizableDirective,
+    ResizeHandleDirective,
+    MatSnackBarModule,
+    MatIconModule,
+    MatButtonModule,
+    ChatSessionListComponent,
+    ChatMessageListComponent,
+    ChatInputAreaComponent,
+  ],
 })
 export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
-  @Input() project!: Project;
+  // Layout constants
+  private static readonly TOOLBAR_HEIGHT_DESKTOP = 64;
+  private static readonly TOOLBAR_HEIGHT_MOBILE = 56;
+  private static readonly MOBILE_BREAKPOINT = 768;
+  private static readonly MIN_PANEL_WIDTH = 500;
+  private static readonly MIN_PANEL_HEIGHT = 400;
+
+  readonly project = input.required<Project>();
   @Input() controller!: Controller;
+  readonly zIndex = input<number>(1000);
 
   @Output() closed = new EventEmitter<void>();
+  @Output() windowFocused = new EventEmitter<void>();
 
   // UI state
   sidebarCollapsed = true;
   isStreaming = false;
   isDraggingEnabled = false;
-  isLightThemeEnabled = false;
   isMaximized = false;
   isMinimized = false;
 
@@ -70,17 +116,16 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   private saveStateTimer: any = null;
   private dragRafId: number | null = null;
 
-  constructor(
-    private aiChatService: AiChatService,
-    private controllerService: ControllerService,
-    private aiProfilesService: AiProfilesService,
-    private loginService: LoginService,
-    private aiChatStore: AiChatStore,
-    private snackBar: MatSnackBar,
-    private cdr: ChangeDetectorRef,
-    private themeService: ThemeService,
-    private boundaryService: WindowBoundaryService
-  ) {}
+  private aiChatService = inject(AiChatService);
+  private controllerService = inject(ControllerService);
+  private aiProfilesService = inject(AiProfilesService);
+  private loginService = inject(LoginService);
+  private aiChatStore = inject(AiChatStore);
+  private snackBar = inject(MatSnackBar);
+  private cdr = inject(ChangeDetectorRef);
+  private boundaryService = inject(WindowBoundaryService);
+
+  constructor() {}
 
   /**
    * Error logger - always enabled
@@ -90,13 +135,11 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnInit() {
-    // Initialize theme
-    this.themeService.getActualTheme() === 'light'
-      ? (this.isLightThemeEnabled = true)
-      : (this.isLightThemeEnabled = false);
-
-    // Set top offset to keep AI Chat below toolbar (64px for desktop, 56px for mobile)
-    const toolbarHeight = window.innerWidth <= 768 ? 56 : 64;
+    // Set top offset to keep AI Chat below toolbar
+    const toolbarHeight =
+      window.innerWidth <= AiChatComponent.MOBILE_BREAKPOINT
+        ? AiChatComponent.TOOLBAR_HEIGHT_MOBILE
+        : AiChatComponent.TOOLBAR_HEIGHT_DESKTOP;
     this.boundaryService.setConfig({ topOffset: toolbarHeight });
 
     this.initializeChat();
@@ -119,7 +162,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    * Handle window resize events to keep AI Chat within viewport boundaries
    * This ensures the window stays visible when browser window is resized
    */
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onWindowResize(): void {
     // Skip if minimized or maximized
     if (this.isMinimized || this.isMaximized) {
@@ -134,12 +177,9 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   /**
    * Initialize chat
    */
-
-  /**
-   * Initialize chat
-   */
   private initializeChat(): void {
-    if (!this.project || !this.controller) {
+    const project = this.project();
+    if (!project || !this.controller) {
       return;
     }
 
@@ -147,7 +187,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.aiChatService.resetCurrentSession();
 
     // Set current project
-    this.aiChatStore.setCurrentProjectId(this.project.project_id);
+    this.aiChatStore.setCurrentProjectId(project.project_id);
 
     // Load saved panel state
     this.loadPanelState();
@@ -202,85 +242,89 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    */
   private subscribeToStateChanges(): void {
     // Subscribe to sessions list
-    this.aiChatStore.getSessions().pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(sessions => {
-      this.sessions = sessions;
-      this.cdr.markForCheck(); // Trigger change detection
-    });
+    this.aiChatStore
+      .getSessions()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((sessions) => {
+        this.sessions = sessions;
+        this.cdr.markForCheck(); // Trigger change detection
+      });
 
     // Subscribe to current session
-    this.aiChatStore.getCurrentSessionId().pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(sessionId => {
-      this.currentSessionId = sessionId;
-      // Only load session messages if not currently streaming
-      // This prevents clearing the current conversation while streaming is active
-      if (sessionId && !this.isStreaming) {
-        this.loadSessionMessages(sessionId);
-      }
-      this.cdr.markForCheck(); // Trigger change detection
-    });
+    this.aiChatStore
+      .getCurrentSessionId()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((sessionId) => {
+        this.currentSessionId = sessionId;
+        // Only load session messages if not currently streaming
+        // This prevents clearing the current conversation while streaming is active
+        if (sessionId && !this.isStreaming) {
+          this.loadSessionMessages(sessionId);
+        }
+        this.cdr.markForCheck(); // Trigger change detection
+      });
 
     // Subscribe to streaming state
-    this.aiChatStore.getStreamingState().pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(streaming => {
-      this.isStreaming = streaming;
-      this.cdr.markForCheck(); // Trigger change detection
-    });
+    this.aiChatStore
+      .getStreamingState()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((streaming) => {
+        this.isStreaming = streaming;
+        this.cdr.markForCheck(); // Trigger change detection
+      });
 
     // Subscribe to panel state changes
-    this.aiChatStore.getPanelState().pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(panelState => {
-      const wasMinimized = this.isMinimized;
-      const wasMaximized = this.isMaximized;
-      this.isMinimized = panelState.isMinimized;
-      this.isMaximized = panelState.isMaximized;
+    this.aiChatStore
+      .getPanelState()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((panelState) => {
+        const wasMinimized = this.isMinimized;
+        const wasMaximized = this.isMaximized;
+        this.isMinimized = panelState.isMinimized;
+        this.isMaximized = panelState.isMaximized;
 
-      // If was minimized and now is not minimized, restore the chat
-      if (wasMinimized && !panelState.isMinimized) {
-        // Restore previous style
-        if (Object.keys(this.previousStyle).length > 0) {
-          this.style = { ...this.previousStyle };
+        // If was minimized and now is not minimized, restore the chat
+        if (wasMinimized && !panelState.isMinimized) {
+          // Restore previous style
+          if (Object.keys(this.previousStyle).length > 0) {
+            this.style = { ...this.previousStyle };
+          }
+          this.cdr.markForCheck();
         }
-        this.cdr.markForCheck();
-      }
-      // If was not minimized and now is minimized, apply minimized style
-      else if (!wasMinimized && panelState.isMinimized) {
-        // Save current style before minimizing
-        this.previousStyle = { ...this.style };
-        // Apply minimized style (move off-screen)
-        this.style = {
-          position: 'fixed',
-          left: '-9999px',
-          top: '-9999px',
-          width: '0px',
-          height: '0px',
-        };
-        this.cdr.markForCheck();
-      }
+        // If was not minimized and now is minimized, apply minimized style
+        else if (!wasMinimized && panelState.isMinimized) {
+          // Save current style before minimizing
+          this.previousStyle = { ...this.style };
+          // Apply minimized style (move off-screen)
+          this.style = {
+            position: 'fixed',
+            left: '-9999px',
+            top: '-9999px',
+            width: '0px',
+            height: '0px',
+          };
+          this.cdr.markForCheck();
+        }
 
-      // If was maximized and now is not maximized, restore the previous size
-      if (wasMaximized && !panelState.isMaximized && !panelState.isMinimized) {
-        // Restore previous style with boundary check
-        if (Object.keys(this.previousStyle).length > 0) {
-          const constrainedStyle = this.boundaryService.constrainWindowPosition(this.previousStyle);
-          this.style = constrainedStyle;
-          // Update resizedWidth and resizedHeight from previous style
-          const width = constrainedStyle['width'] as string;
-          const height = constrainedStyle['height'] as string;
-          if (width) {
-            this.resizedWidth = Number(width.split('px')[0]);
+        // If was maximized and now is not maximized, restore the previous size
+        if (wasMaximized && !panelState.isMaximized && !panelState.isMinimized) {
+          // Restore previous style with boundary check
+          if (Object.keys(this.previousStyle).length > 0) {
+            const constrainedStyle = this.boundaryService.constrainWindowPosition(this.previousStyle);
+            this.style = constrainedStyle;
+            // Update resizedWidth and resizedHeight from previous style
+            const width = constrainedStyle['width'] as string;
+            const height = constrainedStyle['height'] as string;
+            if (width) {
+              this.resizedWidth = Number(width.split('px')[0]);
+            }
+            if (height) {
+              this.resizedHeight = Number(height.split('px')[0]);
+            }
           }
-          if (height) {
-            this.resizedHeight = Number(height.split('px')[0]);
-          }
+          this.cdr.markForCheck();
         }
-        this.cdr.markForCheck();
-      }
-    });
+      });
   }
 
   /**
@@ -294,18 +338,21 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.controllerService.get(this.controller.id).then((freshController: Controller) => {
       this.controller = freshController;
 
-      this.aiChatService.getSessions(this.controller, this.project.project_id).pipe(
-        tap(sessions => {
-          this.aiChatStore.setSessions(sessions);
-        }),
-        takeUntil(this.destroy$)
-      ).subscribe({
-        error: (error) => {
-          this.logError('Failed to load sessions:', error);
-          // Display the actual error message from server
-          this.showError(error || 'Failed to load sessions');
-        }
-      });
+      this.aiChatService
+        .getSessions(this.controller, this.project().project_id)
+        .pipe(
+          tap((sessions) => {
+            this.aiChatStore.setSessions(sessions);
+          }),
+          takeUntil(this.destroy$)
+        )
+        .subscribe({
+          error: (error) => {
+            this.logError('Failed to load sessions:', error);
+            // Display the actual error message from server
+            this.showError(error || 'Failed to load sessions');
+          },
+        });
     });
   }
 
@@ -321,21 +368,24 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.controllerService.get(this.controller.id).then((freshController: Controller) => {
       this.controller = freshController;
 
-      this.aiChatService.getSessionHistory(this.controller, this.project.project_id, sessionId).pipe(
-        tap(history => {
-          // Convert legacy role:tool messages to assistant.tool_result format
-          const convertedMessages = this.convertLegacyToolMessages(history.messages);
-          this.aiChatStore.setMessages(sessionId, convertedMessages);
-          this.currentMessages = convertedMessages;
-          this.cdr.markForCheck(); // Trigger change detection immediately
-        }),
-        takeUntil(this.destroy$)
-      ).subscribe({
-        error: (error) => {
-          this.logError('Failed to load session history:', error);
-          this.showError('Failed to load session history');
-        }
-      });
+      this.aiChatService
+        .getSessionHistory(this.controller, this.project().project_id, sessionId)
+        .pipe(
+          tap((history) => {
+            // Convert legacy role:tool messages to assistant.tool_result format
+            const convertedMessages = this.convertLegacyToolMessages(history.messages);
+            this.aiChatStore.setMessages(sessionId, convertedMessages);
+            this.currentMessages = convertedMessages;
+            this.cdr.markForCheck(); // Trigger change detection immediately
+          }),
+          takeUntil(this.destroy$)
+        )
+        .subscribe({
+          error: (error) => {
+            this.logError('Failed to load session history:', error);
+            this.showError('Failed to load session history');
+          },
+        });
     });
   }
 
@@ -370,22 +420,20 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.controllerService.get(this.controller.id).then((freshController: Controller) => {
       this.controller = freshController;
 
-      this.aiChatService.renameSession(
-        this.controller,
-        this.project.project_id,
-        event.sessionId,
-        event.title
-      ).pipe(
-        tap(updatedSession => {
-          this.aiChatStore.updateSession(updatedSession);
-        }),
-        takeUntil(this.destroy$)
-      ).subscribe({
-        error: (error) => {
-          this.logError('Failed to rename session:', error);
-          this.showError('Failed to rename session');
-        }
-      });
+      this.aiChatService
+        .renameSession(this.controller, this.project().project_id, event.sessionId, event.title)
+        .pipe(
+          tap((updatedSession) => {
+            this.aiChatStore.updateSession(updatedSession);
+          }),
+          takeUntil(this.destroy$)
+        )
+        .subscribe({
+          error: (error) => {
+            this.logError('Failed to rename session:', error);
+            this.showError('Failed to rename session');
+          },
+        });
     });
   }
 
@@ -415,21 +463,20 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.controllerService.get(this.controller.id).then((freshController: Controller) => {
       this.controller = freshController;
 
-      this.aiChatService.pinSession(
-        this.controller,
-        this.project.project_id,
-        sessionId
-      ).pipe(
-        tap(updatedSession => {
-          this.aiChatStore.updateSession(updatedSession);
-        }),
-        takeUntil(this.destroy$)
-      ).subscribe({
-        error: (error) => {
-          this.logError('Failed to pin session:', error);
-          this.showError('Failed to pin session');
-        }
-      });
+      this.aiChatService
+        .pinSession(this.controller, this.project().project_id, sessionId)
+        .pipe(
+          tap((updatedSession) => {
+            this.aiChatStore.updateSession(updatedSession);
+          }),
+          takeUntil(this.destroy$)
+        )
+        .subscribe({
+          error: (error) => {
+            this.logError('Failed to pin session:', error);
+            this.showError('Failed to pin session');
+          },
+        });
     });
   }
 
@@ -445,21 +492,20 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.controllerService.get(this.controller.id).then((freshController: Controller) => {
       this.controller = freshController;
 
-      this.aiChatService.unpinSession(
-        this.controller,
-        this.project.project_id,
-        sessionId
-      ).pipe(
-        tap(updatedSession => {
-          this.aiChatStore.updateSession(updatedSession);
-        }),
-        takeUntil(this.destroy$)
-      ).subscribe({
-        error: (error) => {
-          this.logError('Failed to unpin session:', error);
-          this.showError('Failed to unpin session');
-        }
-      });
+      this.aiChatService
+        .unpinSession(this.controller, this.project().project_id, sessionId)
+        .pipe(
+          tap((updatedSession) => {
+            this.aiChatStore.updateSession(updatedSession);
+          }),
+          takeUntil(this.destroy$)
+        )
+        .subscribe({
+          error: (error) => {
+            this.logError('Failed to unpin session:', error);
+            this.showError('Failed to unpin session');
+          },
+        });
     });
   }
 
@@ -477,7 +523,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       id: this.generateMessageId(),
       role: 'user',
       content: message,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     };
 
     // Add to message list
@@ -528,39 +574,43 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.currentAssistantMessage = null;
 
     // Get fresh controller from localStorage to ensure we have the latest authToken
-    this.controllerService.get(this.controller.id).then((freshController: Controller) => {
-      // Update the controller reference
-      this.controller = freshController;
+    this.controllerService
+      .get(this.controller.id)
+      .then((freshController: Controller) => {
+        // Update the controller reference
+        this.controller = freshController;
 
-      this.aiChatStore.setStreamingState(true);
-      this.aiChatStore.clearError();
+        this.aiChatStore.setStreamingState(true);
+        this.aiChatStore.clearError();
 
-      this.aiChatService.streamChat(this.controller, this.project.project_id, {
-        message,
-        session_id: sessionId,
-        stream: true
-      }).pipe(
-        takeUntil(this.destroy$)
-      ).subscribe({
-        next: (event: ChatEvent) => {
-          this.handleChatEvent(event);
-        },
-        error: (error) => {
-          this.logError('Chat stream error:', error);
-          this.aiChatStore.setStreamingState(false);
-          // Display the actual error message from server
-          this.showError(error || 'Chat error occurred');
-        },
-        complete: () => {
-          this.aiChatStore.setStreamingState(false);
-          this.currentToolCalls.clear();
-          this.currentAssistantMessage = null;
-        }
+        this.aiChatService
+          .streamChat(this.controller, this.project().project_id, {
+            message,
+            session_id: sessionId,
+            stream: true,
+          })
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (event: ChatEvent) => {
+              this.handleChatEvent(event);
+            },
+            error: (error) => {
+              this.logError('Chat stream error:', error);
+              this.aiChatStore.setStreamingState(false);
+              // Display the actual error message from server
+              this.showError(error || 'Chat error occurred');
+            },
+            complete: () => {
+              this.aiChatStore.setStreamingState(false);
+              this.currentToolCalls.clear();
+              this.currentAssistantMessage = null;
+            },
+          });
+      })
+      .catch((error) => {
+        this.logError('Failed to get fresh controller:', error);
+        this.showError('Failed to authenticate');
       });
-    }).catch((error) => {
-      this.logError('Failed to get fresh controller:', error);
-      this.showError('Failed to authenticate');
-    });
   }
 
   /**
@@ -604,7 +654,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         id: event.message_id || this.generateMessageId(),
         role: 'assistant',
         content: event.content || '',
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       };
       this.currentMessages = [...this.currentMessages, this.currentAssistantMessage];
       this.cdr.markForCheck(); // Trigger change detection
@@ -638,7 +688,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         role: 'assistant',
         content: '',
         created_at: new Date().toISOString(),
-        tool_calls: []
+        tool_calls: [],
       };
       this.currentMessages = [...this.currentMessages, this.currentAssistantMessage];
     }
@@ -648,7 +698,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       this.currentAssistantMessage.tool_calls = [];
     }
 
-    const existingCall = this.currentAssistantMessage.tool_calls.find(tc => tc.id === toolCall.id);
+    const existingCall = this.currentAssistantMessage.tool_calls.find((tc) => tc.id === toolCall.id);
     if (!existingCall) {
       this.currentAssistantMessage.tool_calls.push({ ...toolCall });
     } else {
@@ -669,7 +719,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
   private handleToolStartEvent(event: ChatEvent): void {
     // Mark the tool call as executing
     if (event.tool_call_id && this.currentAssistantMessage?.tool_calls) {
-      const toolCall = this.currentAssistantMessage.tool_calls.find(tc => tc.id === event.tool_call_id);
+      const toolCall = this.currentAssistantMessage.tool_calls.find((tc) => tc.id === event.tool_call_id);
       if (toolCall) {
         // Mark as executing (will be used to show executing status)
         (toolCall as any).isExecuting = true;
@@ -692,7 +742,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       for (let i = this.currentMessages.length - 1; i >= 0; i--) {
         const msg = this.currentMessages[i];
         if (msg.role === 'assistant' && msg.tool_calls) {
-          const found = msg.tool_calls.find(tc => tc.id === event.tool_call_id);
+          const found = msg.tool_calls.find((tc) => tc.id === event.tool_call_id);
           if (found) {
             targetAssistant = msg;
             break;
@@ -714,7 +764,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       targetAssistant.tool_result.push({
         toolName: event.tool_name || '',
         toolOutput: event.tool_output || '',
-        tool_call_id: event.tool_call_id
+        tool_call_id: event.tool_call_id,
       });
       // Trigger change detection
       this.currentMessages = [...this.currentMessages];
@@ -729,11 +779,13 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         role: 'assistant',
         content: '',
         created_at: new Date().toISOString(),
-        tool_result: [{
-          toolName: event.tool_name || '',
-          toolOutput: event.tool_output || '',
-          tool_call_id: event.tool_call_id
-        }]
+        tool_result: [
+          {
+            toolName: event.tool_name || '',
+            toolOutput: event.tool_output || '',
+            tool_call_id: event.tool_call_id,
+          },
+        ],
       };
       this.currentMessages = [...this.currentMessages, assistantMessage];
     }
@@ -744,7 +796,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    * Get current session title
    */
   get currentSessionTitle(): string {
-    const currentSession = this.sessions.find(s => s.thread_id === this.currentSessionId);
+    const currentSession = this.sessions.find((s) => s.thread_id === this.currentSessionId);
     return currentSession?.title || 'New chat';
   }
 
@@ -762,6 +814,13 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.aiChatStore.closePanel();
     this.cleanup();
     this.closed.emit();
+  }
+
+  /**
+   * Handle window focus (bring to front)
+   */
+  onWindowFocus(): void {
+    this.windowFocused.emit();
   }
 
   /**
@@ -858,10 +917,12 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
    * Show error using Material Snackbar
    * @param error Error message or error object
    */
-  private showError(error: string | any): void {
+  private showError(error: string | HttpErrorLike): void {
     // Extract error message if it's an object
-    let errorMessage = error;
-    if (typeof error !== 'string') {
+    let errorMessage: string;
+    if (typeof error === 'string') {
+      errorMessage = error;
+    } else {
       // It's an object (HttpErrorResponse), extract the message
       // Prioritize server response body message
       if (error.error?.message) {
@@ -878,7 +939,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     // Truncate error message if too long (max 300 characters)
     const maxLength = 300;
     let displayMessage = errorMessage;
-    if (typeof displayMessage === 'string' && displayMessage.length > maxLength) {
+    if (displayMessage.length > maxLength) {
       displayMessage = displayMessage.substring(0, maxLength) + '...';
     }
 
@@ -893,7 +954,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       panelClass: ['ai-chat-snack-error'],
       horizontalPosition: 'center',
       verticalPosition: 'bottom',
-      politeness: 'assertive'
+      politeness: 'assertive',
     });
   }
 
@@ -916,11 +977,11 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
       // Map common error codes to friendly messages
       const friendlyMessages: Record<string, string> = {
         '401': 'Authentication failed. Please check your API key or login again.',
-        '403': 'Access denied. You don\'t have permission to perform this action.',
+        '403': "Access denied. You don't have permission to perform this action.",
         '404': 'Resource not found. The requested resource may have been deleted.',
         '429': 'Too many requests. Please wait a moment and try again.',
         '500': 'Server error. Please try again later.',
-        '503': 'Service temporarily unavailable. Please try again later.'
+        '503': 'Service temporarily unavailable. Please try again later.',
       };
 
       // Use friendly message if available, otherwise use the original message
@@ -949,11 +1010,11 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
 
     // Handle common Python exception messages
     const pythonExceptions: Record<string, string> = {
-      'AuthenticationError': 'Authentication failed. Please check your credentials.',
-      'PermissionDenied': 'You don\'t have permission to access this resource.',
-      'ConnectionError': 'Failed to connect to the server. Please check your network.',
-      'TimeoutError': 'Request timed out. Please try again.',
-      'ValidationError': 'Invalid input. Please check your data and try again.'
+      AuthenticationError: 'Authentication failed. Please check your credentials.',
+      PermissionDenied: "You don't have permission to access this resource.",
+      ConnectionError: 'Failed to connect to the server. Please check your network.',
+      TimeoutError: 'Request timed out. Please try again.',
+      ValidationError: 'Invalid input. Please check your data and try again.',
     };
 
     for (const [exception, friendly] of Object.entries(pythonExceptions)) {
@@ -987,7 +1048,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
         randomBytes[i] = Math.floor(Math.random() * 256);
       }
     }
-    const randomStr = Array.from(randomBytes, b => b.toString(16).padStart(2, '0')).join('');
+    const randomStr = Array.from(randomBytes, (b) => b.toString(16).padStart(2, '0')).join('');
     return `msg_${Date.now()}_${randomStr}`;
   }
 
@@ -1011,7 +1072,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
           lastAssistant.tool_result.push({
             toolName: msg.name || '',
             toolOutput: msg.content || '',
-            tool_call_id: msg.tool_call_id
+            tool_call_id: msg.tool_call_id,
           });
         } else {
           // No assistant message before, create one with tool_result
@@ -1020,11 +1081,13 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
             role: 'assistant',
             content: '',
             created_at: msg.created_at,
-            tool_result: [{
-              toolName: msg.name || '',
-              toolOutput: msg.content || '',
-              tool_call_id: msg.tool_call_id
-            }]
+            tool_result: [
+              {
+                toolName: msg.name || '',
+                toolOutput: msg.content || '',
+                tool_call_id: msg.tool_call_id,
+              },
+            ],
           };
           converted.push(newAssistant);
           lastAssistantIndex = converted.length - 1;
@@ -1061,13 +1124,13 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     bytes[8] = (bytes[8]! & 0x3f) | 0x80; // Variant
 
     // Format as UUID string
-    const hex = Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('');
+    const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join('');
     return [
       hex.substring(0, 8),
       hex.substring(8, 12),
       hex.substring(12, 16),
       hex.substring(16, 20),
-      hex.substring(20, 32)
+      hex.substring(20, 32),
     ].join('-');
   }
 
@@ -1096,11 +1159,7 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     // Schedule update on next animation frame
     this.dragRafId = requestAnimationFrame(() => {
       // Use boundary service to constrain position
-      this.style = this.boundaryService.constrainDragPosition(
-        this.style,
-        event.movementX,
-        event.movementY
-      );
+      this.style = this.boundaryService.constrainDragPosition(this.style, event.movementX, event.movementY);
 
       // Trigger change detection manually
       this.cdr.markForCheck();
@@ -1116,7 +1175,8 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     if (
       event.rectangle.width &&
       event.rectangle.height &&
-      (event.rectangle.width < 500 || event.rectangle.height < 400)
+      (event.rectangle.width < AiChatComponent.MIN_PANEL_WIDTH ||
+        event.rectangle.height < AiChatComponent.MIN_PANEL_HEIGHT)
     ) {
       return false;
     }
@@ -1223,37 +1283,41 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.cdr.markForCheck();
 
     // Get current user
-    this.loginService.getLoggedUser(this.controller).then((user: any) => {
-      if (!user) {
+    this.loginService
+      .getLoggedUser(this.controller)
+      .then((user: any) => {
+        if (!user) {
+          this.isLoadingModels = false;
+          this.cdr.markForCheck();
+          return;
+        }
+
+        this.aiProfilesService
+          .getConfigs(this.controller, user.user_id)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (response) => {
+              this.modelConfigs = response.configs || [];
+              this.currentModelId = response.default_config?.config_id || null;
+              // Load copilot mode from default config
+              this.currentCopilotMode = response.default_config?.config?.copilot_mode || 'teaching_assistant';
+              this.isLoadingModels = false;
+              this.cdr.markForCheck();
+            },
+            error: (error) => {
+              this.logError('Failed to load model configs:', error);
+              this.modelConfigs = [];
+              this.currentModelId = null;
+              this.isLoadingModels = false;
+              this.cdr.markForCheck();
+            },
+          });
+      })
+      .catch((error) => {
+        this.logError('Failed to get logged user:', error);
         this.isLoadingModels = false;
         this.cdr.markForCheck();
-        return;
-      }
-
-      this.aiProfilesService.getConfigs(this.controller, user.user_id).pipe(
-        takeUntil(this.destroy$)
-      ).subscribe({
-        next: (response) => {
-          this.modelConfigs = response.configs || [];
-          this.currentModelId = response.default_config?.config_id || null;
-          // Load copilot mode from default config
-          this.currentCopilotMode = response.default_config?.config?.copilot_mode || 'teaching_assistant';
-          this.isLoadingModels = false;
-          this.cdr.markForCheck();
-        },
-        error: (error) => {
-          this.logError('Failed to load model configs:', error);
-          this.modelConfigs = [];
-          this.currentModelId = null;
-          this.isLoadingModels = false;
-          this.cdr.markForCheck();
-        }
       });
-    }).catch((error) => {
-      this.logError('Failed to get logged user:', error);
-      this.isLoadingModels = false;
-      this.cdr.markForCheck();
-    });
   }
 
   /**
@@ -1266,42 +1330,42 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     // Get current user
-    this.loginService.getLoggedUser(this.controller).then((user: any) => {
-      if (!user) {
-        this.showError('Failed to get user information');
-        return;
-      }
-
-      this.aiProfilesService.setDefaultConfig(
-        this.controller,
-        user.user_id,
-        config.config_id
-      ).pipe(
-        takeUntil(this.destroy$)
-      ).subscribe({
-        next: (updatedConfig) => {
-          this.currentModelId = updatedConfig.config_id;
-          // Update copilot mode from the newly set default config
-          this.currentCopilotMode = updatedConfig.config?.copilot_mode || 'teaching_assistant';
-          this.cdr.markForCheck();
-
-          // Show success message
-          const modelName = shortenModelName(config.config.model);
-          this.snackBar.open(`Switched to ${modelName}`, 'Close', {
-            duration: 3000,
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom'
-          });
-        },
-        error: (error) => {
-          this.logError('Failed to set default model:', error);
-          this.showError('Failed to switch model');
+    this.loginService
+      .getLoggedUser(this.controller)
+      .then((user: any) => {
+        if (!user) {
+          this.showError('Failed to get user information');
+          return;
         }
+
+        this.aiProfilesService
+          .setDefaultConfig(this.controller, user.user_id, config.config_id)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (updatedConfig) => {
+              this.currentModelId = updatedConfig.config_id;
+              // Update copilot mode from the newly set default config
+              this.currentCopilotMode = updatedConfig.config?.copilot_mode || 'teaching_assistant';
+              this.cdr.markForCheck();
+
+              // Show success message
+              const modelName = shortenModelName(config.config.model);
+              this.snackBar.open(`Switched to ${modelName}`, 'Close', {
+                duration: 3000,
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+              });
+            },
+            error: (error) => {
+              this.logError('Failed to set default model:', error);
+              this.showError('Failed to switch model');
+            },
+          });
+      })
+      .catch((error) => {
+        this.logError('Failed to get logged user:', error);
+        this.showError('Failed to get user information');
       });
-    }).catch((error) => {
-      this.logError('Failed to get logged user:', error);
-      this.showError('Failed to get user information');
-    });
   }
 
   /**
@@ -1314,41 +1378,76 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     }
 
     // Get current user
-    this.loginService.getLoggedUser(this.controller).then((user: any) => {
-      if (!user) {
-        this.showError('Failed to get user information');
-        return;
-      }
-
-      // Update the current default config with new copilot mode
-      this.aiProfilesService.updateConfig(
-        this.controller,
-        user.user_id,
-        this.currentModelId,
-        { copilot_mode: mode }
-      ).pipe(
-        takeUntil(this.destroy$)
-      ).subscribe({
-        next: (updatedConfig) => {
-          this.currentCopilotMode = updatedConfig.config?.copilot_mode || 'teaching_assistant';
-          this.cdr.markForCheck();
-
-          // Show success message
-          const modeName = mode === 'teaching_assistant' ? 'Teaching Assistant' : 'Lab Automation';
-          this.snackBar.open(`Switched to ${modeName} mode`, 'Close', {
-            duration: 3000,
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom'
-          });
-        },
-        error: (error) => {
-          this.logError('Failed to update copilot mode:', error);
-          this.showError('Failed to switch copilot mode');
+    this.loginService
+      .getLoggedUser(this.controller)
+      .then((user: any) => {
+        if (!user) {
+          this.showError('Failed to get user information');
+          return;
         }
+
+        // Update the current default config with new copilot mode
+        this.aiProfilesService
+          .updateConfig(this.controller, user.user_id, this.currentModelId, { copilot_mode: mode })
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (updatedConfig) => {
+              this.currentCopilotMode = updatedConfig.config?.copilot_mode || 'teaching_assistant';
+              this.cdr.markForCheck();
+
+              // Show success message
+              const modeName = mode === 'teaching_assistant' ? 'Teaching Assistant' : 'Lab Automation';
+              this.snackBar.open(`Switched to ${modeName} mode`, 'Close', {
+                duration: 3000,
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom',
+              });
+            },
+            error: (error) => {
+              this.logError('Failed to update copilot mode:', error);
+              this.showError('Failed to switch copilot mode');
+            },
+          });
+      })
+      .catch((error) => {
+        this.logError('Failed to get logged user:', error);
+        this.showError('Failed to get user information');
       });
-    }).catch((error) => {
-      this.logError('Failed to get logged user:', error);
-      this.showError('Failed to get user information');
+  }
+
+  /**
+   * Handle abort button click
+   * Aborts the current streaming session
+   */
+  onAbortClicked(): void {
+    if (!this.controller || !this.isStreaming) {
+      return;
+    }
+
+    // Get the current session ID
+    const sessionId = this.currentSessionId || this.aiChatService.getCurrentSessionId();
+    if (!sessionId) {
+      this.logError('No session ID to abort');
+      return;
+    }
+
+    // Get fresh controller
+    this.controllerService.get(this.controller.id).then((freshController: Controller) => {
+      this.controller = freshController;
+
+      this.aiChatService
+        .abortChat(this.controller, this.project().project_id, sessionId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: () => {
+            // Abort successful, streaming state will be updated by stream completion
+            this.logError('Chat aborted successfully');
+          },
+          error: (error) => {
+            this.logError('Failed to abort chat:', error);
+            this.showError('Failed to abort chat');
+          },
+        });
     });
   }
 }

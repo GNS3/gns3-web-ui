@@ -2,8 +2,8 @@
   <div class="default-header">
     <div class="row">
       <h1 class="col">QEMU preferences</h1>
+      @if (controller) {
       <button
-        *ngIf="controller"
         class="top-button"
         routerLink="/controller/{{ controller.id }}/preferences/qemu/templates"
         mat-raised-button
@@ -11,22 +11,33 @@
       >
         QEMU VM templates
       </button>
+      }
     </div>
   </div>
   <div class="default-content">
     <div class="container mat-elevation-z8">
-      <mat-nav-list *ngIf="settings">
+      @if (settings) {
+      <mat-nav-list>
         <mat-list-item>
-          <mat-checkbox [(ngModel)]="settings.enable_hardware_acceleration">
+          <mat-checkbox
+            [checked]="settings.enable_hardware_acceleration"
+            (change)="settings.enable_hardware_acceleration = $event.checked; cd.markForCheck()"
+          >
             Enable Hardware Acceleration (KVM/HAXM)
           </mat-checkbox>
         </mat-list-item>
-        <mat-list-item *ngIf="settings.enable_hardware_acceleration">
-          <mat-checkbox [(ngModel)]="settings.require_hardware_acceleration">
+        @if (settings.enable_hardware_acceleration) {
+        <mat-list-item>
+          <mat-checkbox
+            [checked]="settings.require_hardware_acceleration"
+            (change)="settings.require_hardware_acceleration = $event.checked; cd.markForCheck()"
+          >
             Require Hardware Acceleration (KVM/HAXM)
           </mat-checkbox>
         </mat-list-item>
+        }
       </mat-nav-list>
+      }
     </div>
 
     <div class="buttons-bar">

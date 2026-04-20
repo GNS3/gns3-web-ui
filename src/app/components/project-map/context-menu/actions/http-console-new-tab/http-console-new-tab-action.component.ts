@@ -1,4 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { VncConsoleService } from '@services/vnc-console.service';
 import { ToasterService } from '@services/toaster.service';
@@ -9,39 +12,33 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-http-console-new-tab-action',
   templateUrl: './http-console-new-tab-action.component.html',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HttpConsoleNewTabActionComponent implements OnInit {
-  @Input() controller: Controller;
-  @Input() nodes: Node[];
+export class HttpConsoleNewTabActionComponent {
+  private nodeConsoleService = inject(NodeConsoleService);
+  private vncConsoleService = inject(VncConsoleService);
+  private toasterService = inject(ToasterService);
+  private router = inject(Router);
 
-  constructor(
-    private nodeConsoleService: NodeConsoleService,
-    private vncConsoleService: VncConsoleService,
-    private toasterService: ToasterService,
-    private router: Router
-  ) {}
-
-  ngOnInit() {}
+  readonly controller = input<Controller>(undefined);
+  readonly nodes = input<Node[]>(undefined);
 
   openConsole() {
     let nodesToStart = '';
     let nodesToStartCounter = 0;
 
-    this.nodes.forEach((n) => {
+    this.nodes().forEach((n) => {
       if (n.console_type !== 'none') {
         if (n.status === 'started') {
           // Check console type to determine how to open the console
           if (n.console_type === 'vnc') {
             // VNC console: use standalone page in new tab
-            this.vncConsoleService.openVncConsole(this.controller, n, true);
+            this.vncConsoleService.openVncConsole(this.controller(), n, true);
           } else if (n.console_type && n.console_type.startsWith('http')) {
             // HTTP/HTTPS console: open directly in new tab
-            if (
-              n.console_host === '0.0.0.0' ||
-              n.console_host === '0:0:0:0:0:0:0:0' ||
-              n.console_host === '::'
-            ) {
-              n.console_host = this.controller.host;
+            if (n.console_host === '0.0.0.0' || n.console_host === '0:0:0:0:0:0:0:0' || n.console_host === '::') {
+              n.console_host = this.controller().host;
             }
 
             const uri = `${n.console_type}://${n.console_host}:${n.console}`;
@@ -62,7 +59,9 @@ export class HttpConsoleNewTabActionComponent implements OnInit {
     });
 
     if (nodesToStartCounter > 0) {
-      this.toasterService.error('Please start the following nodes if you want to open consoles in new tabs: ' + nodesToStart);
+      this.toasterService.error(
+        'Please start the following nodes if you want to open consoles in new tabs: ' + nodesToStart
+      );
     }
   }
 }

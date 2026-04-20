@@ -1,5 +1,5 @@
-<div class="title">delete resource {{data.resource_type}}/{{data.name}} ?</div>
-<div class="button">
-    <button mat-raised-button color="warn" (click)="dialogRef.close()">Cancel</button>
-    <button mat-raised-button color="primary" (click)="dialogRef.close(data)">Update</button>
+<h2 mat-dialog-title>Delete resource {{ data.resource_type }}/{{ data.name }}?</h2>
+<div mat-dialog-actions>
+  <button mat-button (click)="dialogRef.close()">No, cancel</button>
+  <button mat-button (click)="dialogRef.close(data)" mat-raised-button color="primary">Yes, delete!</button>
 </div>

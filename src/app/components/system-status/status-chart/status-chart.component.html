@@ -1,163 +1,109 @@
-<mat-card>
-  <div class="wrapper">
-    <circle-progress
-      [percent]="computeStatistics.statistics.cpu_usage_percent"
-      [radius]="100"
-      [outerStrokeWidth]="8"
-      [innerStrokeWidth]="6"
-      [outerStrokeColor]="'#0097a7'"
-      [innerStrokeColor]="'#007380'"
-      [animation]="true"
-      [animationDuration]="300"
-      [unitsColor]="'#C0C0C0'"
-      [unitsFontSize]="20"
-      [titleColor]="'#C0C0C0'"
-      [titleFontSize]="30"
-      [subtitle]="'CPU usage'"
-      [subtitleColor]="'#C0C0C0'"
-      [subtitleFontSize]="15"
-    ></circle-progress>
-
-    <circle-progress
-      [percent]="computeStatistics.statistics.disk_usage_percent"
-      [radius]="100"
-      [outerStrokeWidth]="8"
-      [innerStrokeWidth]="6"
-      [outerStrokeColor]="'#0097a7'"
-      [innerStrokeColor]="'#007380'"
-      [animation]="true"
-      [animationDuration]="300"
-      [unitsColor]="'#C0C0C0'"
-      [unitsFontSize]="20"
-      [titleColor]="'#C0C0C0'"
-      [titleFontSize]="30"
-      [subtitle]="'Disk usage'"
-      [subtitleColor]="'#C0C0C0'"
-      [subtitleFontSize]="15"
-    ></circle-progress>
-
-    <circle-progress
-      [percent]="computeStatistics.statistics.memory_usage_percent"
-      [radius]="100"
-      [outerStrokeWidth]="8"
-      [innerStrokeWidth]="6"
-      [outerStrokeColor]="'#0097a7'"
-      [innerStrokeColor]="'#007380'"
-      [animation]="true"
-      [animationDuration]="300"
-      [unitsColor]="'#C0C0C0'"
-      [unitsFontSize]="20"
-      [titleColor]="'#C0C0C0'"
-      [titleFontSize]="30"
-      [subtitle]="'Memory usage'"
-      [subtitleColor]="'#C0C0C0'"
-      [subtitleFontSize]="15"
-    ></circle-progress>
-
-    <circle-progress
-      [percent]="computeStatistics.statistics.swap_usage_percent"
-      [radius]="100"
-      [outerStrokeWidth]="8"
-      [innerStrokeWidth]="6"
-      [outerStrokeColor]="'#0097a7'"
-      [innerStrokeColor]="'#007380'"
-      [animation]="true"
-      [animationDuration]="300"
-      [unitsColor]="'#C0C0C0'"
-      [unitsFontSize]="20"
-      [titleColor]="'#C0C0C0'"
-      [titleFontSize]="30"
-      [subtitle]="'SWAP usage'"
-      [subtitleColor]="'#C0C0C0'"
-      [subtitleFontSize]="15"
-    ></circle-progress>
+<mat-card class="status-chart">
+  @if (projectStats()) {
+  <div class="status-chart__section">
+    <h3 class="status-chart__section-title">Projects & Nodes</h3>
+    <div class="status-chart__stats-grid">
+      <div class="stat-card">
+        <span class="stat-card__value">{{ projectStats().total }}</span>
+        <span class="stat-card__label">Total Projects</span>
+      </div>
+      <div class="stat-card stat-card--opened">
+        <span class="stat-card__value">{{ projectStats().opened }}</span>
+        <span class="stat-card__label">Open Projects</span>
+      </div>
+      <div class="stat-card stat-card--closed">
+        <span class="stat-card__value">{{ projectStats().closed }}</span>
+        <span class="stat-card__label">Closed Projects</span>
+      </div>
+      <div class="stat-card stat-card--nodes">
+        <span class="stat-card__value">{{ nodeStats().total }}</span>
+        <span class="stat-card__label">Total Nodes</span>
+      </div>
+      <div class="stat-card stat-card--links">
+        <span class="stat-card__value">{{ linkStats().total }}</span>
+        <span class="stat-card__label">Total Links</span>
+      </div>
+      <div class="stat-card stat-card--capturing">
+        <span class="stat-card__value">{{ linkStats().capturing }}</span>
+        <span class="stat-card__label">Capturing</span>
+      </div>
+    </div>
   </div>
 
-  <div class="wrapper">
-    <circle-progress
-      [percent]="computeStatistics.statistics.load_average_percent[0]"
-      [radius]="100"
-      [outerStrokeWidth]="8"
-      [innerStrokeWidth]="6"
-      [outerStrokeColor]="'#0097a7'"
-      [innerStrokeColor]="'#007380'"
-      [animation]="true"
-      [animationDuration]="300"
-      [unitsColor]="'#C0C0C0'"
-      [unitsFontSize]="20"
-      [titleColor]="'#C0C0C0'"
-      [titleFontSize]="30"
-      [subtitle]="['Load average', '(last 1 minute)']"
-      [subtitleColor]="'#C0C0C0'"
-      [subtitleFontSize]="15"
-    ></circle-progress>
-
-    <circle-progress
-      [percent]="computeStatistics.statistics.load_average_percent[1]"
-      [radius]="100"
-      [outerStrokeWidth]="8"
-      [innerStrokeWidth]="6"
-      [outerStrokeColor]="'#0097a7'"
-      [innerStrokeColor]="'#007380'"
-      [animation]="true"
-      [animationDuration]="300"
-      [unitsColor]="'#C0C0C0'"
-      [unitsFontSize]="20"
-      [titleColor]="'#C0C0C0'"
-      [titleFontSize]="30"
-      [subtitle]="['Load average', '(last 5 minutes)']"
-      [subtitleColor]="'#C0C0C0'"
-      [subtitleFontSize]="15"
-    ></circle-progress>
-
-    <circle-progress
-      [percent]="computeStatistics.statistics.load_average_percent[2]"
-      [radius]="100"
-      [outerStrokeWidth]="8"
-      [innerStrokeWidth]="6"
-      [outerStrokeColor]="'#0097a7'"
-      [innerStrokeColor]="'#007380'"
-      [animation]="true"
-      [animationDuration]="300"
-      [unitsColor]="'#C0C0C0'"
-      [unitsFontSize]="20"
-      [titleColor]="'#C0C0C0'"
-      [titleFontSize]="30"
-      [subtitle]="['Load average', '(last 15 minutes)']"
-      [subtitleColor]="'#C0C0C0'"
-      [subtitleFontSize]="15"
-    ></circle-progress>
+  <div class="status-chart__section">
+    <h3 class="status-chart__section-title">Nodes by Type</h3>
+    <div class="status-chart__breakdown">
+      @for (entry of getNodeTypeEntries(); track entry[0]) {
+      <div class="breakdown-item">
+        <span class="breakdown-item__label">{{ entry[0] }}</span>
+        <span class="breakdown-item__value">{{ entry[1] }}</span>
+      </div>
+      } @empty {
+      <span class="status-chart__empty">No nodes</span>
+      }
+    </div>
   </div>
 
-  <div class="chips-wrapper">
-    <mat-chip-list>
-      <mat-chip color="primary" selected
-        >Memory total: {{ formatBytes(computeStatistics.statistics.memory_total) }}</mat-chip
-      >
-    </mat-chip-list>
-    <mat-chip-list>
-      <mat-chip color="primary" selected
-        >Memory used: {{ formatBytes(computeStatistics.statistics.memory_used) }}</mat-chip
-      >
-    </mat-chip-list>
-    <mat-chip-list>
-      <mat-chip color="primary" selected
-        >Memory free: {{ formatBytes(computeStatistics.statistics.memory_free) }}</mat-chip
-      >
-    </mat-chip-list>
+  @if (getNodeStatusEntries().length > 0) {
+  <div class="status-chart__section">
+    <h3 class="status-chart__section-title">Nodes by Status</h3>
+    <div class="status-chart__breakdown">
+      @for (entry of getNodeStatusEntries(); track entry[0]) {
+      <div class="breakdown-item">
+        <span class="breakdown-item__label">{{ entry[0] }}</span>
+        <span class="breakdown-item__value">{{ entry[1] }}</span>
+      </div>
+      }
+    </div>
   </div>
+  } } @if (computeStatistics()) {
+  <div class="status-chart__section">
+    <h3 class="status-chart__section-title">Compute: {{ computeStatistics().compute_name }}</h3>
+    <div class="status-chart__compute-grid">
+      <div class="stat-card">
+        <span class="stat-card__value">{{ computeStatistics().statistics.cpu_usage_percent }}%</span>
+        <span class="stat-card__label">CPU Usage</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__value">{{ computeStatistics().statistics.disk_usage_percent }}%</span>
+        <span class="stat-card__label">Disk Usage</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__value">{{ computeStatistics().statistics.memory_usage_percent }}%</span>
+        <span class="stat-card__label">Memory Usage</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-card__value">{{ computeStatistics().statistics.swap_usage_percent }}%</span>
+        <span class="stat-card__label">SWAP Usage</span>
+      </div>
+    </div>
 
-  <div class="chips-wrapper">
-    <mat-chip-list>
-      <mat-chip color="primary" selected
-        >Swap total: {{ formatBytes(computeStatistics.statistics.swap_total) }}</mat-chip
-      >
-    </mat-chip-list>
-    <mat-chip-list>
-      <mat-chip color="primary" selected>Swap used: {{ formatBytes(computeStatistics.statistics.swap_used) }}</mat-chip>
-    </mat-chip-list>
-    <mat-chip-list>
-      <mat-chip color="primary" selected>Swap free: {{ formatBytes(computeStatistics.statistics.swap_free) }}</mat-chip>
-    </mat-chip-list>
+    <div class="status-chart__info-table">
+      <div class="info-row">
+        <span class="info-row__label">Load Average (1m / 5m / 15m)</span>
+        <span class="info-row__value">
+          {{ computeStatistics().statistics.load_average_percent[0] }} /
+          {{ computeStatistics().statistics.load_average_percent[1] }} /
+          {{ computeStatistics().statistics.load_average_percent[2] }}
+        </span>
+      </div>
+      <div class="info-row">
+        <span class="info-row__label">Memory</span>
+        <span class="info-row__value">
+          {{ formatBytes(computeStatistics().statistics.memory_used) }} /
+          {{ formatBytes(computeStatistics().statistics.memory_total) }}
+          ({{ formatBytes(computeStatistics().statistics.memory_free) }} free)
+        </span>
+      </div>
+      <div class="info-row">
+        <span class="info-row__label">SWAP</span>
+        <span class="info-row__value">
+          {{ formatBytes(computeStatistics().statistics.swap_used) }} /
+          {{ formatBytes(computeStatistics().statistics.swap_total) }}
+          ({{ formatBytes(computeStatistics().statistics.swap_free) }} free)
+        </span>
+      </div>
+    </div>
   </div>
+  }
 </mat-card>

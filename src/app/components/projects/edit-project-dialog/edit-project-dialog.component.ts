@@ -1,20 +1,71 @@
-import { Component, OnInit, Injectable, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  Injectable,
+  inject,
+  viewChild,
+  model,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
+import { MatDialogRef, MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatTableModule } from '@angular/material/table';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatTabsModule } from '@angular/material/tabs';
 import { Project, ProjectVariable } from '@models/project';
 import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
 import { ToasterService } from '@services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
 import { ReadmeEditorComponent } from './readme-editor/readme-editor.component';
+import { DeleteConfirmationDialogComponent } from '../../preferences/common/delete-confirmation-dialog/delete-confirmation-dialog.component';
 
 @Component({
+  standalone: true,
   selector: 'app-edit-project-dialog',
   templateUrl: './edit-project-dialog.component.html',
   styleUrls: ['./edit-project-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCheckboxModule,
+    MatTableModule,
+    MatIconModule,
+    MatTooltipModule,
+    MatTabsModule,
+    ReadmeEditorComponent,
+  ],
 })
 export class EditProjectDialogComponent implements OnInit {
-  @ViewChild('editor') editor: ReadmeEditorComponent;
+  readonly editor = viewChild<ReadmeEditorComponent>('editor');
+
+  private dialogRef = inject(MatDialogRef<EditProjectDialogComponent>);
+  private dialog = inject(MatDialog);
+  private formBuilder = inject(UntypedFormBuilder);
+  private projectService = inject(ProjectService);
+  private toasterService = inject(ToasterService);
+  private nonNegativeValidator = inject(NonNegativeValidator);
+  private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
   project: Project;
@@ -25,21 +76,18 @@ export class EditProjectDialogComponent implements OnInit {
   displayedColumns: string[] = ['name', 'value', 'actions'];
   variables: ProjectVariable[] = [];
 
-  auto_close: boolean;
+  readonly auto_open = model(false);
+  readonly auto_start = model(false);
+  readonly auto_close = model(false);
+  readonly show_interface_labels = model(false);
 
-  constructor(
-    public dialogRef: MatDialogRef<EditProjectDialogComponent>,
-    private formBuilder: UntypedFormBuilder,
-    private projectService: ProjectService,
-    private toasterService: ToasterService,
-    private nonNegativeValidator: NonNegativeValidator
-  ) {
+  constructor() {
     this.formGroup = this.formBuilder.group({
       projectName: new UntypedFormControl('', [Validators.required]),
-      width: new UntypedFormControl('', [Validators.required, nonNegativeValidator.get]),
-      height: new UntypedFormControl('', [Validators.required, nonNegativeValidator.get]),
-      nodeGridSize: new UntypedFormControl('', [Validators.required, nonNegativeValidator.get]),
-      drawingGridSize: new UntypedFormControl('', [Validators.required, nonNegativeValidator.get]),
+      width: new UntypedFormControl('', [Validators.required, this.nonNegativeValidator.get]),
+      height: new UntypedFormControl('', [Validators.required, this.nonNegativeValidator.get]),
+      nodeGridSize: new UntypedFormControl('', [Validators.required, this.nonNegativeValidator.get]),
+      drawingGridSize: new UntypedFormControl('', [Validators.required, this.nonNegativeValidator.get]),
     });
 
     this.variableFormGroup = this.formBuilder.group({
@@ -57,7 +105,11 @@ export class EditProjectDialogComponent implements OnInit {
     if (this.project.variables) {
       this.project.variables.forEach((n) => this.variables.push(n));
     }
-    this.auto_close = !this.project.auto_close;
+    this.auto_open.set(this.project.auto_open);
+    this.auto_start.set(this.project.auto_start);
+    this.auto_close.set(!this.project.auto_close);
+    this.show_interface_labels.set(this.project.show_interface_labels);
+    this.cd.markForCheck();
   }
 
   addVariable() {
@@ -67,13 +119,23 @@ export class EditProjectDialogComponent implements OnInit {
         value: this.variableFormGroup.get('value').value,
       };
       this.variables = this.variables.concat([variable]);
+      this.cd.markForCheck();
     } else {
       this.toasterService.error(`Fill all required fields with correct values.`);
     }
   }
 
   deleteVariable(variable: ProjectVariable) {
-    this.variables = this.variables.filter((elem) => elem !== variable);
+    const dialogRef = this.dialog.open(DeleteConfirmationDialogComponent, {
+      data: { templateName: variable.name },
+      panelClass: 'base-dialog-panel',
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.variables = this.variables.filter((elem) => elem !== variable);
+        this.cd.markForCheck();
+      }
+    });
   }
 
   onNoClick() {
@@ -89,14 +151,19 @@ export class EditProjectDialogComponent implements OnInit {
       this.project.grid_size = this.formGroup.get('nodeGridSize').value;
       this.project.variables = this.variables;
 
-      this.project.auto_close = !this.auto_close;
+      this.project.auto_open = this.auto_open();
+      this.project.auto_start = this.auto_start();
+      this.project.auto_close = !this.auto_close();
+      this.project.show_interface_labels = this.show_interface_labels();
 
-      this.projectService.update(this.controller, this.project).subscribe((project: Project) => {
-        this.projectService.postReadmeFile(this.controller, this.project.project_id, this.editor.markdown).subscribe((response) => {
-          this.toasterService.success(`Project ${project.name} updated.`);
-          this.onNoClick();
-        });
-      })
+      this.projectService.update(this.controller, this.project).subscribe((updatedProject: Project) => {
+        this.projectService
+          .postReadmeFile(this.controller, this.project.project_id, this.editor().markdown())
+          .subscribe((response) => {
+            this.toasterService.success(`Project ${updatedProject.name} updated.`);
+            this.dialogRef.close(updatedProject);
+          });
+      });
     } else {
       this.toasterService.error(`Fill all required fields with correct values.`);
     }

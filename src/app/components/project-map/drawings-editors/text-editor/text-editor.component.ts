@@ -1,6 +1,25 @@
-import { Component, ElementRef, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  OnInit,
+  Renderer2,
+  inject,
+  viewChild,
+  ChangeDetectorRef,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 import { DrawingToMapDrawingConverter } from '../../../../cartography/converters/map/drawing-to-map-drawing-converter';
 import { MapDrawingToSvgConverter } from '../../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../../cartography/datasources/drawings-datasource';
@@ -25,10 +44,35 @@ import { RotationValidator } from '../../../../validators/rotation-validator';
 @Component({
   selector: 'app-text-editor',
   templateUrl: './text-editor.component.html',
-  styleUrls: ['./text-editor.component.scss'],
+  styleUrl: './text-editor.component.scss',
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TextEditorDialogComponent implements OnInit {
-  @ViewChild('textArea', { static: true }) textArea: ElementRef;
+  readonly textArea = viewChild<ElementRef>('textArea');
+
+  private dialogRef = inject(MatDialogRef<TextEditorDialogComponent>);
+  private drawingToMapDrawingConverter = inject(DrawingToMapDrawingConverter);
+  private mapDrawingToSvgConverter = inject(MapDrawingToSvgConverter);
+  private drawingService = inject(DrawingService);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private renderer = inject(Renderer2);
+  private nodeService = inject(NodeService);
+  private nodesDataSource = inject(NodesDataSource);
+  private linkService = inject(LinkService);
+  private linksDataSource = inject(LinksDataSource);
+  private formBuilder = inject(UntypedFormBuilder);
+  private toasterService = inject(ToasterService);
+  private rotationValidator = inject(RotationValidator);
+  private fontFixer = inject(FontFixer);
+  private cdr = inject(ChangeDetectorRef);
 
   controller: Controller;
   project: Project;
@@ -42,22 +86,7 @@ export class TextEditorDialogComponent implements OnInit {
   isTextEditable: boolean;
   formGroup: UntypedFormGroup;
 
-  constructor(
-    private dialogRef: MatDialogRef<TextEditorDialogComponent>,
-    private drawingToMapDrawingConverter: DrawingToMapDrawingConverter,
-    private mapDrawingToSvgConverter: MapDrawingToSvgConverter,
-    private drawingService: DrawingService,
-    private drawingsDataSource: DrawingsDataSource,
-    private renderer: Renderer2,
-    private nodeService: NodeService,
-    private nodesDataSource: NodesDataSource,
-    private linkService: LinkService,
-    private linksDataSource: LinksDataSource,
-    private formBuilder: UntypedFormBuilder,
-    private toasterService: ToasterService,
-    private rotationValidator: RotationValidator,
-    private fontFixer: FontFixer
-  ) {}
+  constructor() {}
 
   ngOnInit() {
     this.formGroup = this.formBuilder.group({
@@ -87,10 +116,11 @@ export class TextEditorDialogComponent implements OnInit {
     font = this.fontFixer.fix(font);
 
     this.formGroup.controls['rotation'].setValue(this.rotation);
-    this.renderer.setStyle(this.textArea.nativeElement, 'color', this.element.fill);
-    this.renderer.setStyle(this.textArea.nativeElement, 'font-family', font.font_family);
-    this.renderer.setStyle(this.textArea.nativeElement, 'font-size', `${font.font_size}pt`);
-    this.renderer.setStyle(this.textArea.nativeElement, 'font-weight', font.font_weight);
+    const textArea = this.textArea();
+    this.renderer.setStyle(textArea.nativeElement, 'color', this.element.fill);
+    this.renderer.setStyle(textArea.nativeElement, 'font-family', font.font_family);
+    this.renderer.setStyle(textArea.nativeElement, 'font-size', `${font.font_size}pt`);
+    this.renderer.setStyle(textArea.nativeElement, 'font-weight', font.font_weight);
   }
 
   getTextElementFromLabel(): TextElement {
@@ -172,8 +202,15 @@ export class TextEditorDialogComponent implements OnInit {
     }
   }
 
-  changeTextColor(changedColor) {
-    this.renderer.setStyle(this.textArea.nativeElement, 'color', changedColor);
+  changeTextColor(changedColor: string) {
+    this.element.fill = changedColor;
+    this.renderer.setStyle(this.textArea().nativeElement, 'color', changedColor);
+    this.cdr.markForCheck();
+  }
+
+  onTextChange(value: string) {
+    this.element.text = value;
+    this.cdr.markForCheck();
   }
 }
 

@@ -1,19 +1,22 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ComponentRef,
-  NgZone,
-  HostListener,
   OnDestroy,
   OnInit,
-  ViewChild,
   ViewContainerRef,
-  ViewEncapsulation,
+  computed,
+  inject,
+  viewChild,
+  signal,
 } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { MatDialog } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Title } from '@angular/platform-browser';
-import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router, RouterModule } from '@angular/router';
 import { ExportPortableProjectComponent } from '@components/export-portable-project/export-portable-project.component';
 import { environment } from 'environments/environment';
 import * as Mousetrap from 'mousetrap';
@@ -79,9 +82,10 @@ import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.se
 import { ControllerService } from '@services/controller.service';
 import { Settings, SettingsService } from '@services/settings.service';
 import { SymbolService } from '@services/symbol.service';
-import { ThemeService } from '@services/theme.service';
 import { ToasterService } from '@services/toaster.service';
 import { ToolsService } from '@services/tools.service';
+import { ThemeService } from '@services/theme.service';
+import { WindowManagementService } from '@services/window-management.service';
 import { AddBlankProjectDialogComponent } from '../projects/add-blank-project-dialog/add-blank-project-dialog.component';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { EditProjectDialogComponent } from '../projects/edit-project-dialog/edit-project-dialog.component';
@@ -96,20 +100,74 @@ import { NewTemplateDialogComponent } from './new-template-dialog/new-template-d
 import { ProjectMapMenuComponent } from './project-map-menu/project-map-menu.component';
 import { ProjectReadmeComponent } from './project-readme/project-readme.component';
 import { AiChatStore } from '../../stores/ai-chat.store';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { AiChatComponent } from './ai-chat/ai-chat.component';
+import { ConsoleWrapperComponent } from './console-wrapper/console-wrapper.component';
+import { WebWiresharkInlineComponent } from './web-wireshark-inline/web-wireshark-inline.component';
+import { WebConsoleInlineComponent } from './web-console-inline/web-console-inline.component';
+import { DrawLinkToolComponent } from './draw-link-tool/draw-link-tool.component';
+import { ImportApplianceComponent } from './import-appliance/import-appliance.component';
+import { NodesMenuComponent } from './nodes-menu/nodes-menu.component';
+import { ProgressComponent } from '../../common/progress/progress.component';
+import { TemplateComponent } from '../template/template.component';
+import { SnapshotMenuItemComponent } from '../snapshots/snapshot-menu-item/snapshot-menu-item.component';
+import { DrawingDraggedComponent } from '../drawings-listeners/drawing-dragged/drawing-dragged.component';
+import { DrawingResizedComponent } from '../drawings-listeners/drawing-resized/drawing-resized.component';
+import { InterfaceLabelDraggedComponent } from '../drawings-listeners/interface-label-dragged/interface-label-dragged.component';
+import { LinkCreatedComponent } from '../drawings-listeners/link-created/link-created.component';
+import { NodeDraggedComponent } from '../drawings-listeners/node-dragged/node-dragged.component';
+import { NodeLabelDraggedComponent } from '../drawings-listeners/node-label-dragged/node-label-dragged.component';
+import { TextAddedComponent } from '../drawings-listeners/text-added/text-added.component';
+import { TextEditedComponent } from '../drawings-listeners/text-edited/text-edited.component';
 
 @Component({
   selector: 'app-project-map',
-  encapsulation: ViewEncapsulation.None,
   templateUrl: './project-map.component.html',
   styleUrls: ['./project-map.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatIconModule,
+    MatMenuModule,
+    MatTooltipModule,
+    RouterModule,
+    D3MapComponent,
+    ContextMenuComponent,
+    ProjectMapMenuComponent,
+    DrawLinkToolComponent,
+    NodesMenuComponent,
+    SnapshotMenuItemComponent,
+    TemplateComponent,
+    ImportApplianceComponent,
+    ConsoleWrapperComponent,
+    AiChatComponent,
+    WebWiresharkInlineComponent,
+    WebConsoleInlineComponent,
+    ProgressComponent,
+    DrawingDraggedComponent,
+    DrawingResizedComponent,
+    InterfaceLabelDraggedComponent,
+    LinkCreatedComponent,
+    NodeDraggedComponent,
+    NodeLabelDraggedComponent,
+    TextAddedComponent,
+    TextEditedComponent,
+  ],
 })
 export class ProjectMapComponent implements OnInit, OnDestroy {
-  public nodes: Node[] = [];
+  public nodes = signal<Node[]>([]);
   public links: Link[] = [];
   public drawings: Drawing[] = [];
   public symbols: Symbol[] = [];
-  public project: Project;
-  public controller: Controller;
+  public project: Project = {} as Project;
+  public controller: Controller = {} as Controller;
   public projectws: WebSocket;
   public ws: WebSocket;
   public isProjectMapMenuVisible: boolean = false;
@@ -122,6 +180,51 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toolbarVisibility: boolean = true;
   public symbolScaling: boolean = true;
   public isAIChatVisible: boolean = false;
+
+  // Track multiple Web Wireshark inline windows
+  // Key is link_id, value is the Link object
+  public webWiresharkInlineWindows = new Map<string, Link>();
+  // Track z-index for each window
+  public webWiresharkInlineZIndex = new Map<string, number>();
+  // Track multiple Web Console inline windows
+  // Key is node_id, value is the Node object
+  public webConsoleInlineWindows = new Map<string, Node>();
+  // Track z-index for each console window
+  public webConsoleInlineZIndex = new Map<string, number>();
+  // Base z-index for windows
+  private baseZIndex = 1000;
+  // Counter for generating unique z-indices
+  private zIndexCounter = 0;
+
+  // Z-index for console and AI chat windows
+  public consoleZIndex: number = this.baseZIndex;
+  public aiChatZIndex: number = this.baseZIndex;
+
+  // Taskbar icon positioning
+  private readonly TASKBAR_BASE_LEFT = 20;
+  private readonly TASKBAR_ICON_WIDTH = 180;
+  private readonly TASKBAR_ICON_GAP = 8;
+
+  readonly mapBgClass = computed(() => {
+    const mapTheme = this.themeService.savedMapTheme;
+    const isDark = mapTheme === 'auto' ? this.themeService.isDarkMode() : mapTheme.startsWith('dark-');
+
+    // Auto mode: use light/dark class instead of auto class
+    if (mapTheme === 'auto') {
+      const themeType = this.themeService.isDarkMode() ? 'dark' : 'light';
+      return {
+        [`gns3-map-bg-${themeType}`]: true,
+        'project-map--light-bg': !isDark,
+        'project-map--dark-bg': isDark,
+      };
+    }
+
+    return {
+      [`gns3-map-bg-${mapTheme}`]: true,
+      'project-map--light-bg': !isDark,
+      'project-map--dark-bg': isDark,
+    };
+  });
   private instance: ComponentRef<TopologySummaryComponent>;
   // private instance: any
 
@@ -133,72 +236,66 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   };
 
   protected settings: Settings;
-  private inReadOnlyMode = false;
-  public isLightThemeEnabled: boolean = false;
-  private highlightedNodeId: string = null;
-  public isGlobalLightTheme: boolean = false;
-
-  @ViewChild(ContextMenuComponent) contextMenu: ContextMenuComponent;
-  @ViewChild(D3MapComponent) mapChild: D3MapComponent;
-  @ViewChild(ProjectMapMenuComponent) projectMapMenuComponent: ProjectMapMenuComponent;
-  @ViewChild('topologySummaryContainer', { read: ViewContainerRef }) topologySummaryContainer: ViewContainerRef;
+  inReadOnlyMode = false;
+  readonly contextMenu = viewChild(ContextMenuComponent);
+  readonly mapChild = viewChild(D3MapComponent);
+  readonly projectMapMenuComponent = viewChild.required(ProjectMapMenuComponent);
+  readonly topologySummaryContainer = viewChild.required('topologySummaryContainer', { read: ViewContainerRef });
 
   private projectMapSubscription: Subscription = new Subscription();
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private projectService: ProjectService,
-    private nodeService: NodeService,
-    private linkService: LinkService,
-    public drawingService: DrawingService,
-    private progressService: ProgressService,
-    private projectWebServiceHandler: ProjectWebServiceHandler,
-    private mapChangeDetectorRef: MapChangeDetectorRef,
-    private nodeWidget: NodeWidget,
-    private drawingsWidget: DrawingsWidget,
-    private linkWidget: LinkWidget,
-    private labelWidget: LabelWidget,
-    private interfaceLabelWidget: InterfaceLabelWidget,
-    private mapNodeToNode: MapNodeToNodeConverter,
-    private mapDrawingToDrawing: MapDrawingToDrawingConverter,
-    private mapLabelToLabel: MapLabelToLabelConverter,
-    private mapLinkToLink: MapLinkToLinkConverter,
-    private mapLinkNodeToLinkNode: MapLinkNodeToLinkNodeConverter,
-    private nodesDataSource: NodesDataSource,
-    private linksDataSource: LinksDataSource,
-    private drawingsDataSource: DrawingsDataSource,
-    private settingsService: SettingsService,
-    private toolsService: ToolsService,
-    private selectionManager: SelectionManager,
-    private selectionTool: SelectionTool,
-    private recentlyOpenedProjectService: RecentlyOpenedProjectService,
-    private movingEventSource: MovingEventSource,
-    private mapScaleService: MapScaleService,
-    private nodeCreatedLabelStylesFixer: NodeCreatedLabelStylesFixer,
-    private toasterService: ToasterService,
-    private dialog: MatDialog,
-    private router: Router,
-    private mapNodesDataSource: MapNodesDataSource,
-    private mapLinksDataSource: MapLinksDataSource,
-    private mapDrawingsDataSource: MapDrawingsDataSource,
-    private mapSymbolsDataSource: MapSymbolsDataSource,
-    private mapSettingsService: MapSettingsService,
-    private ethernetLinkWidget: EthernetLinkWidget,
-    private serialLinkWidget: SerialLinkWidget,
-    private bottomSheet: MatBottomSheet,
-    private notificationService: NotificationService,
-    private themeService: ThemeService,
-    private title: Title,
-    private nodeConsoleService: NodeConsoleService,
-    private symbolService: SymbolService,
-    private cd: ChangeDetectorRef,
-    private aiChatStore: AiChatStore,
-    // private cfr: ComponentFactoryResolver,
-    // private injector: Injector,
-    private viewContainerRef: ViewContainerRef,
-    private ngZone: NgZone
-  ) {}
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private projectService = inject(ProjectService);
+  private nodeService = inject(NodeService);
+  private linkService = inject(LinkService);
+  public drawingService = inject(DrawingService);
+  private progressService = inject(ProgressService);
+  private projectWebServiceHandler = inject(ProjectWebServiceHandler);
+  private mapChangeDetectorRef = inject(MapChangeDetectorRef);
+  private nodeWidget = inject(NodeWidget);
+  private drawingsWidget = inject(DrawingsWidget);
+  private linkWidget = inject(LinkWidget);
+  private labelWidget = inject(LabelWidget);
+  private interfaceLabelWidget = inject(InterfaceLabelWidget);
+  private mapNodeToNode = inject(MapNodeToNodeConverter);
+  private mapDrawingToDrawing = inject(MapDrawingToDrawingConverter);
+  private mapLabelToLabel = inject(MapLabelToLabelConverter);
+  private mapLinkToLink = inject(MapLinkToLinkConverter);
+  private mapLinkNodeToLinkNode = inject(MapLinkNodeToLinkNodeConverter);
+  private nodesDataSource = inject(NodesDataSource);
+  private linksDataSource = inject(LinksDataSource);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private settingsService = inject(SettingsService);
+  private toolsService = inject(ToolsService);
+  private selectionManager = inject(SelectionManager);
+  private selectionTool = inject(SelectionTool);
+  private recentlyOpenedProjectService = inject(RecentlyOpenedProjectService);
+  private movingEventSource = inject(MovingEventSource);
+  private mapScaleService = inject(MapScaleService);
+  private nodeCreatedLabelStylesFixer = inject(NodeCreatedLabelStylesFixer);
+  private toasterService = inject(ToasterService);
+  private dialog = inject(MatDialog);
+  private router = inject(Router);
+  private mapNodesDataSource = inject(MapNodesDataSource);
+  private mapLinksDataSource = inject(MapLinksDataSource);
+  private mapDrawingsDataSource = inject(MapDrawingsDataSource);
+  private mapSymbolsDataSource = inject(MapSymbolsDataSource);
+  private mapSettingsService = inject(MapSettingsService);
+  private ethernetLinkWidget = inject(EthernetLinkWidget);
+  private serialLinkWidget = inject(SerialLinkWidget);
+  private bottomSheet = inject(MatBottomSheet);
+  private notificationService = inject(NotificationService);
+  private title = inject(Title);
+  private nodeConsoleService = inject(NodeConsoleService);
+  private symbolService = inject(SymbolService);
+  private themeService = inject(ThemeService);
+  private cd = inject(ChangeDetectorRef);
+  private aiChatStore = inject(AiChatStore);
+  public windowManagement = inject(WindowManagementService);
+  private viewContainerRef = inject(ViewContainerRef);
+  // private cfr: ComponentFactoryResolver,
+  // private injector: Injector,
 
   // constructor(private viewContainerRef: ViewContainerRef) {}
   // createMyComponent() {this.viewContainerRef.createComponent(MyComponent);}
@@ -219,25 +316,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     this.addSubscriptions();
     this.addKeyboardListeners();
-
-    this.themeService.mapThemeChanged.subscribe((value: string) => {
-      this.isLightThemeEnabled = value === 'light';
-      this.applyMapBackground(this.isLightThemeEnabled);
-    });
-
-    this.themeService.themeChanged.subscribe((value: string) => {
-      this.isGlobalLightTheme = value === 'light-theme';
-    });
   }
 
   getSettings() {
-    this.isLightThemeEnabled = this.themeService.getActualMapTheme() === 'light';
-    this.isGlobalLightTheme = this.themeService.getActualTheme() === 'light';
-    this.applyMapBackground(this.isLightThemeEnabled);
-    this.cd.detectChanges();
-
     this.settings = this.settingsService.getAll();
     this.symbolScaling = this.mapSettingsService.getSymbolScaling();
+    this.cd.markForCheck();
     this.isConsoleVisible = this.mapSettingsService.isLogConsoleVisible;
     this.mapSettingsService.logConsoleSubject.subscribe((value) => (this.isConsoleVisible = value));
     this.notificationsVisibility = localStorage.getItem('notificationsVisibility') === 'true' ? true : false;
@@ -247,17 +331,22 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   async lazyLoadTopologySummary() {
     if (this.isTopologySummaryVisible) {
+      // In zoneless mode, we need to explicitly notify Angular after async operations
       const { TopologySummaryComponent } = await import('../topology-summary/topology-summary.component');
-      this.instance = this.viewContainerRef.createComponent(TopologySummaryComponent);
+      this.instance = this.topologySummaryContainer().createComponent(TopologySummaryComponent);
 
       // const componentFactory = this.cfr.resolveComponentFactory(TopologySummaryComponent);
-      // this.instance = this.topologySummaryContainer.createComponent(componentFactory, null, this.injector);
+      // this.instance = this.topologySummaryContainer().createComponent(componentFactory, null, this.injector);
       this.instance.instance.controller = this.controller;
       this.instance.instance.project = this.project;
+      // In zoneless mode, createComponent doesn't automatically trigger change detection
+      // We need to explicitly detect changes to ensure the component is rendered
+      this.instance.changeDetectorRef.detectChanges();
     } else if (this.instance) {
       if (this.instance.instance) {
         this.instance.instance.ngOnDestroy();
         this.instance.destroy();
+        this.instance = null;
       }
     }
   }
@@ -270,9 +359,22 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       })
     );
 
+    // Track previous symbol for each node to detect symbol changes
+    const nodeSymbolCache = new Map<string, string>();
+
     this.projectMapSubscription.add(
       this.nodesDataSource.changes.subscribe((nodes: Node[]) => {
         if (!this.controller) return;
+
+        // Check if symbol changed for any node and invalidate symbol_url if so
+        for (const node of nodes) {
+          const cachedSymbol = nodeSymbolCache.get(node.node_id);
+          if (cachedSymbol !== undefined && cachedSymbol !== node.symbol) {
+            // Symbol changed, clear symbol_url so it will be recalculated
+            node.symbol_url = null;
+          }
+          nodeSymbolCache.set(node.node_id, node.symbol);
+        }
 
         const nodesToLoad = nodes.filter((node: Node) => !node.symbol_url);
 
@@ -287,7 +389,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         });
 
         if (nodesToLoad.length === 0) {
-          this.nodes = nodes;
+          this.nodes.set(nodes);
           if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
           this.mapChangeDetectorRef.detectChanges();
           return;
@@ -296,30 +398,29 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         // Build a map from node -> rawUrl for all nodes that need loading
         const nodeRawUrlMap = new Map<Node, string>();
         nodesToLoad.forEach((node: Node) => {
-          nodeRawUrlMap.set(
-            node,
-            `/symbols/${node.symbol}/raw`
-          );
+          nodeRawUrlMap.set(node, `/symbols/${node.symbol}/raw`);
         });
 
         // Deduplicate: only 1 fetch per unique symbol URL (shareReplay(1) in getSymbolBlobUrl handles concurrent callers)
-        const uniqueRawUrls = [...new Set(nodeRawUrlMap.values())];
+        const uniqueRawUrls = Array.from(new Set(nodeRawUrlMap.values()));
         forkJoin(uniqueRawUrls.map((url) => this.symbolService.getSymbolBlobUrl(this.controller, url))).subscribe(
           (blobUrls: string[]) => {
             const blobUrlMap = new Map(uniqueRawUrls.map((url, i) => [url, blobUrls[i]]));
             nodesToLoad.forEach((node: Node) => {
               node.symbol_url = blobUrlMap.get(nodeRawUrlMap.get(node));
             });
-            this.nodes = nodes;
+            this.nodes.set(nodes);
             if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
             this.mapChangeDetectorRef.detectChanges();
           },
           () => {
             // Fallback to raw URLs if blob fetch fails
             nodesToLoad.forEach((node: Node) => {
-              node.symbol_url = `${this.controller.protocol}//${this.controller.host}:${this.controller.port}/${environment.current_version}${nodeRawUrlMap.get(node)}`;
+              node.symbol_url = `${this.controller.protocol}//${this.controller.host}:${this.controller.port}/${
+                environment.current_version
+              }${nodeRawUrlMap.get(node)}`;
             });
-            this.nodes = nodes;
+            this.nodes.set(nodes);
             if (this.mapSettingsService.getSymbolScaling()) this.applyScalingOfNodeSymbols();
             this.mapChangeDetectorRef.detectChanges();
           }
@@ -372,13 +473,20 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   getData() {
     const routeSub = this.route.paramMap.subscribe((paramMap: ParamMap) => {
       const controller_id = parseInt(paramMap.get('controller_id'), 10);
+      const project_id = paramMap.get('project_id');
+
+      if (!project_id) {
+        this.router.navigate(['/controllers']);
+        return;
+      }
 
       from(this.controllerService.get(controller_id))
         .pipe(
-          mergeMap((controller: Controller ) => {
+          mergeMap((controller: Controller) => {
             if (!controller) this.router.navigate(['/controllers']);
             this.controller = controller;
-            return this.projectService.get(controller, paramMap.get('project_id')).pipe(
+            this.cd.markForCheck();
+            return this.projectService.get(controller, project_id).pipe(
               map((project) => {
                 return project;
               })
@@ -386,7 +494,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           }),
           mergeMap((project: Project) => {
             this.project = project;
-            if (!project) this.router.navigate(['/controllers']);
+            this.cd.markForCheck();
+            if (!project || !project.project_id) {
+              this.router.navigate(['/controllers']);
+              return new Observable<Project>((observer) => observer.complete());
+            }
 
             this.projectService.open(this.controller, this.project.project_id);
             this.title.setTitle(this.project.name);
@@ -406,14 +518,19 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         )
         .subscribe(
           (project: Project) => {
-            this.onProjectLoad(project);
+            if (project && project.project_id) {
+              this.onProjectLoad(project);
+            }
+            this.cd.markForCheck();
             if (this.mapSettingsService.openReadme) this.showReadme();
           },
           (error) => {
             this.progressService.setError(error);
+            this.cd.markForCheck();
           },
           () => {
             this.progressService.deactivate();
+            this.cd.markForCheck();
           }
         );
     });
@@ -463,14 +580,16 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     Mousetrap.bind('del', (event: Event) => {
       event.preventDefault();
-      this.ngZone.run(() => this.deleteItems());
+      // Note: In zoneless mode, explicit change detection is required
+      this.deleteItems();
     });
   }
 
   deleteItems() {
-    this.bottomSheet.open(ConfirmationBottomSheetComponent);
-    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
-    bottomSheetRef.instance.message = 'Do you want to delete all selected objects?';
+    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
+      data: { message: 'Do you want to delete all selected objects?' },
+      panelClass: 'confirmation-bottom-sheet',
+    });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
         const selected = this.selectionManager.getSelected();
@@ -506,6 +625,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   onProjectLoad(project: Project) {
+    if (!project || !project.project_id) {
+      this.progressService.setError('Invalid project data');
+      this.router.navigate(['/controllers']);
+      return;
+    }
+
     this.readonly = this.projectService.isReadOnly(project);
     this.recentlyOpenedProjectService.setProjectId(this.project.project_id);
 
@@ -533,7 +658,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   setUpProjectWS(project: Project) {
-    this.projectws = new WebSocket(this.notificationService.projectNotificationsPath(this.controller, project.project_id));
+    this.projectws = new WebSocket(
+      this.notificationService.projectNotificationsPath(this.controller, project.project_id)
+    );
 
     this.projectws.onmessage = (event: MessageEvent) => {
       this.projectWebServiceHandler.handleMessage(JSON.parse(event.data));
@@ -555,40 +682,61 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
     const onLinkContextMenu = this.linkWidget.onContextMenu.subscribe((eventLink: LinkContextMenu) => {
       const link = this.mapLinkToLink.convert(eventLink.link);
-      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.clientY, eventLink.event.clientX);
+      this.contextMenu().openMenuForListOfElements(
+        [],
+        [],
+        [],
+        [link],
+        eventLink.event.clientY,
+        eventLink.event.clientX
+      );
     });
 
     const onEthernetLinkContextMenu = this.ethernetLinkWidget.onContextMenu.subscribe((eventLink: LinkContextMenu) => {
       const link = this.mapLinkToLink.convert(eventLink.link);
-      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.clientY, eventLink.event.clientX);
+      this.contextMenu().openMenuForListOfElements(
+        [],
+        [],
+        [],
+        [link],
+        eventLink.event.clientY,
+        eventLink.event.clientX
+      );
     });
 
     const onSerialLinkContextMenu = this.serialLinkWidget.onContextMenu.subscribe((eventLink: LinkContextMenu) => {
       const link = this.mapLinkToLink.convert(eventLink.link);
-      this.contextMenu.openMenuForListOfElements([], [], [], [link], eventLink.event.clientY, eventLink.event.clientX);
+      this.contextMenu().openMenuForListOfElements(
+        [],
+        [],
+        [],
+        [link],
+        eventLink.event.clientY,
+        eventLink.event.clientX
+      );
     });
 
     const onNodeContextMenu = this.nodeWidget.onContextMenu.subscribe((eventNode: NodeContextMenu) => {
       const node = this.mapNodeToNode.convert(eventNode.node);
-      this.contextMenu.openMenuForNode(node, eventNode.event.clientY, eventNode.event.clientX);
+      this.contextMenu().openMenuForNode(node, eventNode.event.clientY, eventNode.event.clientX);
     });
 
     const onDrawingContextMenu = this.drawingsWidget.onContextMenu.subscribe((eventDrawing: DrawingContextMenu) => {
       const drawing = this.mapDrawingToDrawing.convert(eventDrawing.drawing);
-      this.contextMenu.openMenuForDrawing(drawing, eventDrawing.event.clientY, eventDrawing.event.clientX);
+      this.contextMenu().openMenuForDrawing(drawing, eventDrawing.event.clientY, eventDrawing.event.clientX);
     });
 
     const onLabelContextMenu = this.labelWidget.onContextMenu.subscribe((eventLabel: LabelContextMenu) => {
       const label = this.mapLabelToLabel.convert(eventLabel.label);
-      const node = this.nodes.find((n) => n.node_id === eventLabel.label.nodeId);
-      this.contextMenu.openMenuForLabel(label, node, eventLabel.event.clientY, eventLabel.event.clientX);
+      const node = this.nodes().find((n) => n.node_id === eventLabel.label.nodeId);
+      this.contextMenu().openMenuForLabel(label, node, eventLabel.event.clientY, eventLabel.event.clientX);
     });
 
     const onInterfaceLabelContextMenu = this.interfaceLabelWidget.onContextMenu.subscribe(
       (eventInterfaceLabel: InterfaceLabelContextMenu) => {
         const linkNode = this.mapLinkNodeToLinkNode.convert(eventInterfaceLabel.interfaceLabel);
         const link = this.links.find((l) => l.link_id === eventInterfaceLabel.interfaceLabel.linkId);
-        this.contextMenu.openMenuForInterfaceLabel(
+        this.contextMenu().openMenuForInterfaceLabel(
           linkNode,
           link,
           eventInterfaceLabel.event.clientY,
@@ -618,7 +766,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         }
       });
 
-      this.contextMenu.openMenuForListOfElements(drawings, nodes, labels, links, event.clientY, event.clientX);
+      this.contextMenu().openMenuForListOfElements(drawings, nodes, labels, links, event.clientY, event.clientX);
     });
 
     this.projectMapSubscription.add(onLinkContextMenu);
@@ -637,7 +785,6 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.progressService.activate();
     this.nodeService
       .createFromTemplate(
         this.controller,
@@ -669,29 +816,30 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
               nodeAddedEvent.y =
                 nodeAddedEvent.y + 50 < this.project.scene_height / 2 ? nodeAddedEvent.y + 50 : nodeAddedEvent.y;
               this.onNodeCreation(nodeAddedEvent);
-            } else {
-              this.progressService.deactivate();
             }
           });
         },
         (error) => {
           this.toasterService.error(error.error.message);
-          this.progressService.deactivate();
         }
       );
   }
 
   public centerView() {
     if (this.project) {
-      const ctx = this.mapChild?.context;
-      const viewportWidth  = document.documentElement.clientWidth;
+      const ctx = this.mapChild()?.context;
+      const viewportWidth = document.documentElement.clientWidth;
       const viewportHeight = document.documentElement.clientHeight;
       // With an asymmetric canvas the scene origin sits at (centerX, centerY)
       // in SVG space. Scrolling to centerX - halfViewport puts the origin in
       // the middle of the screen, which is the natural "home" position.
-      const svgCenterX = ctx ? (ctx.centerX !== null ? ctx.centerX : ctx.size.width  / 2) : this.project.scene_width  / 2;
-      const svgCenterY = ctx ? (ctx.centerY !== null ? ctx.centerY : ctx.size.height / 2) : this.project.scene_height / 2;
-      const scrollX = Math.max(0, svgCenterX - viewportWidth  / 2);
+      const svgCenterX = ctx ? (ctx.centerX !== null ? ctx.centerX : ctx.size.width / 2) : this.project.scene_width / 2;
+      const svgCenterY = ctx
+        ? ctx.centerY !== null
+          ? ctx.centerY
+          : ctx.size.height / 2
+        : this.project.scene_height / 2;
+      const scrollX = Math.max(0, svgCenterX - viewportWidth / 2);
       const scrollY = Math.max(0, svgCenterY - viewportHeight / 2);
 
       window.scrollTo(scrollX, scrollY);
@@ -701,7 +849,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public onDrawingSaved() {
-    this.projectMapMenuComponent.resetDrawToolChoice();
+    this.projectMapMenuComponent().resetDrawToolChoice();
   }
 
   public set readonly(value) {
@@ -779,7 +927,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.aiChatStore.setPanelState({
       isOpen: false,
       isMinimized: false,
-      isMaximized: false
+      isMaximized: false,
     });
   }
 
@@ -790,10 +938,250 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     this.isAIChatVisible = false;
   }
 
+  /**
+   * Open Web Wireshark inline window for a link
+   */
+  public openWebWiresharkInline(data: { link: Link; controller: Controller; project: Project }) {
+    // Check if window already open for this link
+    if (this.webWiresharkInlineWindows.has(data.link.link_id)) {
+      // Bring existing window to front
+      this.bringWebWiresharkWindowToFront(data.link.link_id);
+      this.toasterService.warning('Web Wireshark is already open for this link');
+      return;
+    }
+
+    // Assign z-index for new window (increment counter)
+    this.zIndexCounter++;
+    const windowZIndex = this.baseZIndex + this.zIndexCounter;
+
+    // Add the link to our Map of open windows
+    this.webWiresharkInlineWindows.set(data.link.link_id, data.link);
+    this.webWiresharkInlineZIndex.set(data.link.link_id, windowZIndex);
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Close Web Wireshark inline window for a specific link
+   */
+  public closeWebWiresharkInline(linkId: string) {
+    this.webWiresharkInlineWindows.delete(linkId);
+    this.webWiresharkInlineZIndex.delete(linkId);
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Bring a Web Wireshark window to front
+   */
+  public bringWebWiresharkWindowToFront(linkId: string) {
+    if (!this.webWiresharkInlineWindows.has(linkId)) {
+      return;
+    }
+
+    // Increment counter and assign higher z-index
+    this.zIndexCounter++;
+    const newZIndex = this.baseZIndex + this.zIndexCounter;
+    this.webWiresharkInlineZIndex.set(linkId, newZIndex);
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Get z-index for a specific window
+   */
+  public getWebWiresharkWindowZIndex(linkId: string): number {
+    return this.webWiresharkInlineZIndex.get(linkId) || this.baseZIndex;
+  }
+
+  /**
+   * Get all open Web Wireshark inline windows as an array
+   */
+  public getWebWiresharkInlineWindows(): Link[] {
+    return Array.from(this.webWiresharkInlineWindows.values());
+  }
+
+  /**
+   * Open Web Console inline window for a node
+   */
+  public onOpenWebConsoleInline(data: { node: Node; controller: Controller; project: Project }) {
+    // Check if window already open for this node
+    if (this.webConsoleInlineWindows.has(data.node.node_id)) {
+      // Bring existing window to front
+      this.bringWebConsoleWindowToFront(data.node.node_id);
+      this.toasterService.warning('Web Console is already open for this node');
+      return;
+    }
+
+    // Assign z-index for new window (increment counter)
+    this.zIndexCounter++;
+    const windowZIndex = this.baseZIndex + this.zIndexCounter;
+
+    // Add the node to our Map of open windows
+    this.webConsoleInlineWindows.set(data.node.node_id, data.node);
+    this.webConsoleInlineZIndex.set(data.node.node_id, windowZIndex);
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Close Web Console inline window for a specific node
+   */
+  public closeWebConsoleInline(nodeId: string) {
+    this.webConsoleInlineWindows.delete(nodeId);
+    this.webConsoleInlineZIndex.delete(nodeId);
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Bring a Web Console window to front
+   */
+  public bringWebConsoleWindowToFront(nodeId: string) {
+    if (!this.webConsoleInlineWindows.has(nodeId)) {
+      return;
+    }
+
+    // Increment counter and assign higher z-index
+    this.zIndexCounter++;
+    const newZIndex = this.baseZIndex + this.zIndexCounter;
+    this.webConsoleInlineZIndex.set(nodeId, newZIndex);
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Get z-index for a specific console window
+   */
+  public getWebConsoleWindowZIndex(nodeId: string): number {
+    return this.webConsoleInlineZIndex.get(nodeId) || this.baseZIndex;
+  }
+
+  /**
+   * Get all open Web Console inline windows as an array
+   */
+  public getWebConsoleInlineWindows(): Node[] {
+    return Array.from(this.webConsoleInlineWindows.values());
+  }
+
+  /**
+   * Bring console window to front
+   */
+  public bringConsoleToFront() {
+    this.zIndexCounter++;
+    this.consoleZIndex = this.baseZIndex + this.zIndexCounter;
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Bring AI chat window to front
+   */
+  public bringAIChatToFront() {
+    this.zIndexCounter++;
+    this.aiChatZIndex = this.baseZIndex + this.zIndexCounter;
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Restore console window from minimized state
+   */
+  public restoreConsole(): void {
+    this.windowManagement.restoreWindow('console');
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Restore Wireshark window from minimized state
+   */
+  public restoreWiresharkWindow(linkId: string): void {
+    this.windowManagement.restoreWindow(`wireshark-${linkId}`);
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Get taskbar icon position for console
+   */
+  public getConsoleTaskbarLeft(): number {
+    return this.TASKBAR_BASE_LEFT;
+  }
+
+  /**
+   * Get taskbar icon position for Wireshark windows
+   * Icons are arranged by window open order, not minimized order
+   */
+  public getWiresharkTaskbarLeft(linkId: string | undefined): number {
+    if (!linkId) return this.TASKBAR_BASE_LEFT;
+
+    // Calculate index based on position in open windows list
+    const openWindows = this.getWebWiresharkInlineWindows();
+    const index = openWindows.findIndex(w => w.link_id === linkId);
+
+    // Console icon always takes first slot
+    let baseOffset = this.TASKBAR_ICON_WIDTH + this.TASKBAR_ICON_GAP;
+    return this.TASKBAR_BASE_LEFT + baseOffset + index * (this.TASKBAR_ICON_WIDTH + this.TASKBAR_ICON_GAP);
+  }
+
+  /**
+   * Get taskbar icon position for Web Console windows
+   * Icons are arranged after Wireshark windows
+   */
+  public getWebConsoleTaskbarLeft(nodeId: string | undefined): number {
+    if (!nodeId) return this.TASKBAR_BASE_LEFT;
+
+    // Calculate index based on position in open windows list
+    const openWindows = this.getWebConsoleInlineWindows();
+    const index = openWindows.findIndex(w => w.node_id === nodeId);
+
+    // Console icon always takes first slot
+    let baseOffset = this.TASKBAR_ICON_WIDTH + this.TASKBAR_ICON_GAP;
+
+    // Add space for Wireshark windows
+    const wiresharkCount = this.webWiresharkInlineWindows.size;
+    baseOffset += wiresharkCount * (this.TASKBAR_ICON_WIDTH + this.TASKBAR_ICON_GAP);
+
+    return this.TASKBAR_BASE_LEFT + baseOffset + index * (this.TASKBAR_ICON_WIDTH + this.TASKBAR_ICON_GAP);
+  }
+
+  /**
+   * Toggle Web Console window minimize/restore
+   */
+  public toggleWebConsoleMinimize(nodeId: string): void {
+    const windowId = `console-${nodeId}`;
+    const isMinimized = this.windowManagement.minimizedWindows().some(w => w.id === windowId);
+    if (isMinimized) {
+      this.windowManagement.restoreWindow(windowId);
+    } else {
+      this.windowManagement.minimizeWindow(windowId, 'console', nodeId);
+    }
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Toggle console minimize/restore
+   */
+  public toggleConsoleMinimize(): void {
+    const isMinimized = this.windowManagement.minimizedWindows().some(w => w.id === 'console');
+    if (isMinimized) {
+      this.windowManagement.restoreWindow('console');
+    } else {
+      this.windowManagement.minimizeWindow('console', 'console');
+    }
+    this.cd.markForCheck();
+  }
+
+  /**
+   * Toggle Wireshark window minimize/restore
+   */
+  public toggleWiresharkMinimize(linkId: string): void {
+    const windowId = `wireshark-${linkId}`;
+    const isMinimized = this.windowManagement.minimizedWindows().some(w => w.id === windowId);
+    if (isMinimized) {
+      this.windowManagement.restoreWindow(windowId);
+    } else {
+      this.windowManagement.minimizeWindow(windowId, 'wireshark', linkId);
+    }
+    this.cd.markForCheck();
+  }
+
   public toggleShowTopologySummary(visible: boolean) {
     this.isTopologySummaryVisible = visible;
     this.mapSettingsService.toggleTopologySummary(this.isTopologySummaryVisible);
     this.lazyLoadTopologySummary();
+    this.cd.markForCheck();
   }
 
   public toggleNotifications(visible: boolean) {
@@ -813,7 +1201,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     } else {
       localStorage.removeItem('layersVisibility');
     }
-    this.mapChild.applyMapSettingsChanges();
+    this.mapChild().applyMapSettingsChanges();
   }
 
   public toggleGrid(visible: boolean) {
@@ -823,7 +1211,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     } else {
       localStorage.removeItem('gridVisibility');
     }
-    this.mapChild.gridVisibility = this.gridVisibility ? 1 : 0;
+    this.mapChild().gridVisibility.set(this.gridVisibility ? 1 : 0);
+    this.mapChild().applyMapSettingsChanges();
   }
 
   public toggleSnapToGrid(enabled: boolean) {
@@ -848,7 +1237,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public hideMenu() {
-    this.projectMapMenuComponent.resetDrawToolChoice();
+    this.projectMapMenuComponent().resetDrawToolChoice();
     this.isProjectMapMenuVisible = false;
   }
 
@@ -895,13 +1284,20 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   editProject() {
     const dialogRef = this.dialog.open(EditProjectDialogComponent, {
-      width: '600px',
       autoFocus: false,
       disableClose: true,
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'edit-project-dialog-panel'],
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;
     instance.project = this.project;
+
+    dialogRef.afterClosed().subscribe((updatedProject: Project) => {
+      if (updatedProject) {
+        this.project = updatedProject;
+        this.cd.markForCheck();
+      }
+    });
   }
 
   importProject() {
@@ -917,7 +1313,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       uuid = projectId;
     });
 
-    dialogRef.afterClosed().subscribe((isCancel:boolean) => {
+    dialogRef.afterClosed().subscribe((isCancel: boolean) => {
       subscription.unsubscribe();
       if (uuid && !isCancel) {
         this.bottomSheet.open(NavigationDialogComponent);
@@ -936,10 +1332,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   exportProject() {
-    if (this.nodes.filter((node) => node.node_type === 'virtualbox').length > 0) {
+    if (this.nodes().filter((node) => node.node_type === 'virtualbox').length > 0) {
       this.toasterService.error('Map with VirtualBox machines cannot be exported.');
     } else if (
-      this.nodes.filter(
+      this.nodes().filter(
         (node) =>
           (node.status === 'started' && node.node_type === 'vpcs') ||
           (node.status === 'started' && node.node_type === 'virtualbox') ||
@@ -955,11 +1351,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   exportPortableProjectDialog() {
     const dialogRef = this.dialog.open(ExportPortableProjectComponent, {
-      width: '700px',
-      maxHeight: '850px',
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
       autoFocus: false,
       disableClose: true,
-      data: {controllerDetails:this.controller,projectDetails:this.project},
+      data: { controllerDetails: this.controller, projectDetails: this.project },
     });
 
     dialogRef.afterClosed().subscribe((isAddes: boolean) => {});
@@ -991,9 +1386,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public closeProject() {
-    this.bottomSheet.open(ConfirmationBottomSheetComponent);
-    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
-    bottomSheetRef.instance.message = 'Do you want to close the project?';
+    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
+      data: { message: 'Do you want to close the project?' },
+      panelClass: 'confirmation-bottom-sheet',
+    });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
         this.projectService.close(this.controller, this.project.project_id).subscribe(() => {
@@ -1004,9 +1400,10 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   }
 
   public deleteProject() {
-    this.bottomSheet.open(ConfirmationBottomSheetComponent);
-    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
-    bottomSheetRef.instance.message = 'Do you want to delete the project?';
+    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
+      data: { message: 'Do you want to delete the project?' },
+      panelClass: 'confirmation-bottom-sheet',
+    });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
         this.projectService.delete(this.controller, this.project.project_id).subscribe(() => {
@@ -1018,10 +1415,11 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
   public addNewTemplate() {
     const dialogRef = this.dialog.open(NewTemplateDialogComponent, {
-      width: '1000px',
-      maxHeight: '700px',
+      width: '800px',
+      maxHeight: '800px',
       autoFocus: false,
       disableClose: true,
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'new-template-dialog-panel'],
     });
     let instance = dialogRef.componentInstance;
     instance.controller = this.controller;
@@ -1040,96 +1438,9 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     instance.project = this.project;
   }
 
-  /**
-   * Handle device selection from console devices panel
-   * Highlights the selected node and its connected links in the topology
-   */
-  public onDeviceSelected(nodeId: string): void {
-    // Clear previous highlight first
-    this.clearConsoleHighlight();
-
-    this.highlightedNodeId = nodeId;
-
-    // Highlight the selected node
-    const nodeElement = d3.select(`g.node[node_id="${nodeId}"]`);
-    if (!nodeElement.empty()) {
-      nodeElement.classed('console-highlight', true);
-    }
-
-    // Highlight connected links and their connected nodes
-    d3.selectAll('g.link_body').each(function(link: any) {
-      if (link && (link.source?.id === nodeId || link.target?.id === nodeId)) {
-        d3.select(this).classed('console-highlight', true);
-
-        // Highlight the other node connected by this link
-        const otherNodeId = link.source?.id === nodeId ? link.target?.id : link.source?.id;
-        if (otherNodeId) {
-          const otherNodeElement = d3.select(`g.node[node_id="${otherNodeId}"]`);
-          if (!otherNodeElement.empty()) {
-            otherNodeElement.classed('console-highlight-connected', true);
-          }
-        }
-      }
-    });
-  }
-
-  /**
-   * Clear console device highlight
-   */
-  public clearConsoleHighlight(): void {
-    const nodeId = this.highlightedNodeId;
-    if (nodeId) {
-      // Remove highlight from selected node
-      const nodeElement = d3.select(`g.node[node_id="${nodeId}"]`);
-      if (!nodeElement.empty()) {
-        nodeElement.classed('console-highlight', false);
-      }
-
-      // Remove highlight from connected links and their nodes
-      d3.selectAll('g.link_body').each(function(link: any) {
-        if (link && (link.source?.id === nodeId || link.target?.id === nodeId)) {
-          d3.select(this).classed('console-highlight', false);
-
-          // Remove highlight from the other connected node
-          const otherNodeId = link.source?.id === nodeId ? link.target?.id : link.source?.id;
-          if (otherNodeId) {
-            const otherNodeElement = d3.select(`g.node[node_id="${otherNodeId}"]`);
-            if (!otherNodeElement.empty()) {
-              otherNodeElement.classed('console-highlight-connected', false);
-            }
-          }
-        }
-      });
-
-      this.highlightedNodeId = null;
-    }
-  }
-
-  /**
-   * Handle ESC key to clear highlight
-   */
-  @HostListener('window:keydown.escape')
-  onEscapeKey(): void {
-    this.clearConsoleHighlight();
-  }
-
-  /**
-   * Apply map background color based on theme
-   */
-  private applyMapBackground(isLight: boolean): void {
-    const color = isLight ? '#e8ecef' : '#18242b';
-    document.body.style.backgroundColor = color;
-    document.documentElement.style.backgroundColor = color;
-  }
-
   public ngOnDestroy(): void {
     // Close AI Chat when leaving project
     this.onLeaveProject();
-
-    // Reset background color
-    const globalColor = this.themeService.getActualTheme() === 'light' ? '#e8ecef' : '#18242b';
-    document.body.style.backgroundColor = globalColor;
-    document.documentElement.style.backgroundColor = globalColor;
 
     this.nodeConsoleService.openConsoles = 0;
     this.title.setTitle('GNS3 Web UI');

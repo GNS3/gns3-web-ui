@@ -1,0 +1,26 @@
+.ports {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.ports__add-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 16px 24px;
+}
+
+.ports__add-btn {
+  margin-top: 4px;
+  height: 48px;
+}
+
+@media (max-width: 768px) {
+  .ports__add-row {
+    flex-direction: column;
+    padding: 16px;
+  }
+}

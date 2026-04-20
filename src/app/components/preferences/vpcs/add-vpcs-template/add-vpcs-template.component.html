@@ -1,39 +1,34 @@
-<div class="content">
-  <div class="default-header">
-    <div class="row">
-      <div class="col col-md-1">
-        <button
-          class="top-button"
-          *ngIf="controller"
-          class="cancel-button"
-          mat-button
-          (click)="goBack()"
-        >
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-      </div>
-      <div class="col col-md-11">
-        <h1 class="col">New VPCS node template</h1>
-      </div>
-    </div>
-  </div>
-  <div class="default-content">
-    <mat-card class="matCard">
-      <mat-radio-group class="radio-group">
-        <mat-radio-button class="radio-button" value="1" (click)="setControllerType('local')" checked
-          >Run the VPCS node locally</mat-radio-button
-        >
+<div class="vpcs-add">
+  <header class="vpcs-add__header">
+    @if (controller) {
+    <button class="vpcs-add__back-btn" (click)="goBack()" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    }
+    <h1 class="vpcs-add__title">New VPCS node template</h1>
+  </header>
+
+  <main class="vpcs-add__content">
+    <section class="vpcs-add__form-card">
+      <mat-radio-group class="vpcs-add__radio-group">
+        <mat-radio-button class="vpcs-add__radio" value="1" (click)="setControllerType('local')" [checked]="true">
+          Run the VPCS node locally
+        </mat-radio-button>
       </mat-radio-group>
 
-      <form [formGroup]="templateNameForm">
-        <mat-form-field class="form-field">
+      <form [formGroup]="templateNameForm" class="vpcs-add__form">
+        <mat-form-field appearance="fill" class="vpcs-add__field">
+          <mat-label>Template name</mat-label>
           <input matInput formControlName="templateName" type="text" placeholder="Template name" />
         </mat-form-field>
       </form>
-    </mat-card>
-    <div class="buttons-bar">
-      <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
-      <button mat-raised-button color="primary" (click)="addTemplate()">Add template</button>
+    </section>
+
+    <div class="vpcs-add__actions">
+      <button mat-button class="vpcs-add__cancel-btn" (click)="goBack()">Cancel</button>
+      <button mat-raised-button color="primary" class="vpcs-add__submit-btn" (click)="addTemplate()">
+        Add template
+      </button>
     </div>
-  </div>
+  </main>
 </div>

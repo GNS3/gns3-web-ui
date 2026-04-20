@@ -2,16 +2,8 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { ANGULAR_MAP_DECLARATIONS } from './angular-map.imports';
-import { D3MapComponent } from './components/d3-map/d3-map.component';
-import { DraggableSelectionComponent } from './components/draggable-selection/draggable-selection.component';
-import { LinkEditingComponent } from './components/link-editing/link-editing.component';
-import { DrawingAddingComponent } from './components/drawing-adding/drawing-adding.component';
-import { DrawingResizingComponent } from './components/drawing-resizing/drawing-resizing.component';
-import { ExperimentalMapComponent } from './components/experimental-map/experimental-map.component';
 import { SelectionControlComponent } from './components/selection-control/selection-control.component';
 import { SelectionSelectComponent } from './components/selection-select/selection-select.component';
-import { TextEditorComponent } from './components/text-editor/text-editor.component';
 import { DrawingToMapDrawingConverter } from './converters/map/drawing-to-map-drawing-converter';
 import { LabelToMapLabelConverter } from './converters/map/label-to-map-label-converter';
 import { LinkNodeToMapLinkNodeConverter } from './converters/map/link-node-to-map-link-node-converter';
@@ -35,8 +27,6 @@ import {
   MapNodesDataSource,
   MapSymbolsDataSource,
 } from './datasources/map-datasource';
-import { MovingCanvasDirective } from './directives/moving-canvas.directive';
-import { ZoomingCanvasDirective } from './directives/zooming-canvas.directive';
 import { DrawingsEventSource } from './events/drawings-event-source';
 import { LinksEventSource } from './events/links-event-source';
 import { MovingEventSource } from './events/moving-event-source';
@@ -45,6 +35,7 @@ import { SelectionEventSource } from './events/selection-event-source';
 import { CanvasSizeDetector } from './helpers/canvas-size-detector';
 import { CssFixer } from './helpers/css-fixer';
 import { DefaultDrawingsFactory } from './helpers/default-drawings-factory';
+import { CurveElementFactory } from './helpers/drawings-factory/curve-element-factory';
 import { EllipseElementFactory } from './helpers/drawings-factory/ellipse-element-factory';
 import { LineElementFactory } from './helpers/drawings-factory/line-element-factory';
 import { RectangleElementFactory } from './helpers/drawings-factory/rectangle-element-factory';
@@ -63,21 +54,8 @@ import { EthernetLinkWidget } from './widgets/links/ethernet-link';
 import { SerialLinkWidget } from './widgets/links/serial-link';
 
 @NgModule({
-  imports: [CommonModule, MatMenuModule, MatIconModule],
-  declarations: [
-    D3MapComponent,
-    ExperimentalMapComponent,
-    DrawingAddingComponent,
-    DrawingResizingComponent,
-    TextEditorComponent,
-    ...ANGULAR_MAP_DECLARATIONS,
-    SelectionControlComponent,
-    SelectionSelectComponent,
-    DraggableSelectionComponent,
-    LinkEditingComponent,
-    MovingCanvasDirective,
-    ZoomingCanvasDirective,
-  ],
+  imports: [CommonModule, MatMenuModule, MatIconModule, SelectionControlComponent, SelectionSelectComponent],
+  declarations: [],
   providers: [
     CssFixer,
     FontFixer,
@@ -86,6 +64,7 @@ import { SerialLinkWidget } from './widgets/links/serial-link';
     EllipseElementFactory,
     RectangleElementFactory,
     LineElementFactory,
+    CurveElementFactory,
     MultiLinkCalculatorHelper,
     SvgToDrawingConverter,
     QtDasharrayFixer,
@@ -125,6 +104,6 @@ import { SerialLinkWidget } from './widgets/links/serial-link';
     SerialLinkWidget,
     ...D3_MAP_IMPORTS,
   ],
-  exports: [D3MapComponent, ExperimentalMapComponent],
+  exports: [],
 })
 export class CartographyModule {}

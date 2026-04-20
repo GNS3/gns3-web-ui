@@ -4,33 +4,33 @@
   </div>
   <div class="default-content">
     <div class="container mat-elevation-z8">
-      <mat-table #table [dataSource]="dataSource">
+      <mat-table #table [dataSource]="dataSource()">
         <ng-container matColumnDef="name">
           <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <ng-container *ngIf="row.type !== 'adbutler'">
+            @if (row.type !== 'adbutler') {
+            <ng-container>
               {{ row.name }}
             </ng-container>
-
-            <ng-container *ngIf="row.type === 'adbutler'">
+            } @if (row.type === 'adbutler') {
+            <ng-container>
               <app-adbutler theme="dark"></app-adbutler>
             </ng-container>
+            }
           </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="actions">
           <mat-header-cell *matHeaderCellDef></mat-header-cell>
           <mat-cell *matCellDef="let row" style="text-align: right">
-            <app-install-software
-              [software]="row"
-              (installedChanged)="onInstalled($event)"
-              *ngIf="row.type !== 'adbutler'"
-            ></app-install-software>
+            @if (row.type !== 'adbutler') {
+            <app-install-software [software]="row" (installedChanged)="onInstalled($event)"></app-install-software>
+            }
           </mat-cell>
         </ng-container>
 
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+        <mat-header-row *matHeaderRowDef="displayedColumns()"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns()"></mat-row>
       </mat-table>
     </div>
   </div>

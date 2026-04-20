@@ -1,61 +1,115 @@
-import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ControllerService } from '@services/controller.service';
-import { MockedControllerService } from '@services/controller.service.spec';
-import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VpcsPreferencesComponent } from './vpcs-preferences.component';
+import { ControllerService } from '@services/controller.service';
+import { Controller } from '@models/controller';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('VpcsPreferencesComponent', () => {
-  let component: VpcsPreferencesComponent;
   let fixture: ComponentFixture<VpcsPreferencesComponent>;
+  let component: VpcsPreferencesComponent;
+  let mockControllerService: any;
+  let mockActivatedRoute: any;
 
-  let mockedControllerService = new MockedControllerService();
-  let activatedRoute = new MockedActivatedRoute().get();
+  const mockController: Controller = {
+    id: 1,
+    name: 'Test Controller',
+    location: 'local',
+    host: '127.0.0.1',
+    port: 3080,
+    path: '/',
+    ubridge_path: '',
+    status: 'running',
+    protocol: 'http:',
+    username: '',
+    password: '',
+    authToken: '',
+    tokenExpired: false,
+  };
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
-      imports: [
-        MatIconModule,
-        MatToolbarModule,
-        MatMenuModule,
-        MatCheckboxModule,
-        CommonModule,
-        NoopAnimationsModule,
-        RouterTestingModule.withRoutes([]),
-      ],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: activatedRoute,
+  beforeEach(async () => {
+    mockControllerService = {
+      get: vi.fn().mockResolvedValue(mockController),
+    };
+
+    mockActivatedRoute = {
+      snapshot: {
+        paramMap: {
+          get: vi.fn().mockReturnValue('1'),
         },
-        { provide: ControllerService, useValue: mockedControllerService },
-      ],
-      declarations: [VpcsPreferencesComponent],
-      schemas: [NO_ERRORS_SCHEMA],
-    }).compileComponents();
-  });
+      },
+    };
 
-  beforeEach(() => {
+    await TestBed.configureTestingModule({
+      imports: [VpcsPreferencesComponent],
+      providers: [
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: ControllerService, useValue: mockControllerService },
+      ],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(VpcsPreferencesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+    vi.runAllTimers();
+    fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  afterEach(() => {
+    fixture.destroy();
   });
 
-  it('should clear path to executable', () => {
-    component.restoreDefaults();
+  describe('Creation', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy();
+    });
+  });
 
-    expect(component.vpcsExecutable).toBe('');
+  describe('ngOnInit', () => {
+    it('should fetch controller with id from route param', () => {
+      expect(mockActivatedRoute.snapshot.paramMap.get).toHaveBeenCalledWith('controller_id');
+      expect(mockControllerService.get).toHaveBeenCalledWith(1);
+    });
+
+    it('should store controller after successful fetch', () => {
+      expect(component.controller).toEqual(mockController);
+    });
+  });
+
+  describe('Template', () => {
+    it('should display VPCS preferences header', () => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      const header = compiled.querySelector('h1');
+      expect(header?.textContent).toContain('VPCS preferences');
+    });
+
+    it('should display vpcs executable input field', () => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      const input = compiled.querySelector('input[placeholder="Path to VPCS executable"]');
+      expect(input).toBeTruthy();
+    });
+
+    it('should update vpcsExecutable when user types in input', () => {
+      const compiled = fixture.nativeElement as HTMLElement;
+      const input = compiled.querySelector('input') as HTMLInputElement;
+
+      input.value = '/custom/path/vpcs';
+      input.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+
+      expect(component.vpcsExecutable()).toBe('/custom/path/vpcs');
+    });
+  });
+
+  describe('restoreDefaults', () => {
+    it('should clear vpcsExecutable', () => {
+      component.vpcsExecutable.set('/some/path/vpcs');
+      fixture.detectChanges();
+
+      component.restoreDefaults();
+      fixture.detectChanges();
+
+      expect(component.vpcsExecutable()).toBe('');
+    });
   });
 });

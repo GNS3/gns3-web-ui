@@ -1,14 +1,19 @@
+/**
+ * GNS3 Navigation Dialog Component Styles
+ * Using MD3 CSS variables
+ */
+
 .dialogWrapper {
-  background-color: #263238;
-  padding: 10px 20px;
+  background-color: var(--mat-sys-surface);
+  padding: 8px 16px;
   margin-bottom: -8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.lightTheme {
-  background-color: white !important;
+.dialogWrapper.lightTheme {
+  background-color: var(--mat-sys-surface);
 }
 
 .title {

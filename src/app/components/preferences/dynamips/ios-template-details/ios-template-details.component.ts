@@ -1,7 +1,23 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialog } from '@angular/material/dialog';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Controller } from '@models/controller';
 import { IosTemplate } from '@models/templates/ios-template';
@@ -9,17 +25,46 @@ import { IosConfigurationService } from '@services/ios-configuration.service';
 import { IosService } from '@services/ios.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
-import { ProgressService } from "../../../../common/progress/progress.service";
+import { ProgressService } from '../../../../common/progress/progress.service';
+import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
+import { DialogConfigService } from '@services/dialog-config.service';
 
 @Component({
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ios-template-details',
   templateUrl: './ios-template-details.component.html',
   styleUrls: ['./ios-template-details.component.scss', '../../preferences.component.scss'],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MatChipsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconModule,
+    MatExpansionModule,
+    MatCheckboxModule,
+  ],
 })
 export class IosTemplateDetailsComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private iosService = inject(IosService);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private iosConfigurationService = inject(IosConfigurationService);
+  private progressService = inject(ProgressService);
+  private router = inject(Router);
+  private cd = inject(ChangeDetectorRef);
+  private dialog = inject(MatDialog);
+  private dialogConfig = inject(DialogConfigService);
+
   controller: Controller;
   iosTemplate: IosTemplate;
-  isSymbolSelectionOpened: boolean = false;
   platforms: string[] = [];
   consoleTypes: string[] = [];
   categories = [];
@@ -38,16 +83,14 @@ export class IosTemplateDetailsComponent implements OnInit {
   memoryForm: UntypedFormGroup;
   advancedForm: UntypedFormGroup;
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private iosService: IosService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder,
-    private iosConfigurationService: IosConfigurationService,
-    private progressService: ProgressService,
-    private router: Router
-  ) {
+  // Section collapse states
+  generalSettingsExpanded: boolean = false;
+  memoryExpanded: boolean = false;
+  slotsExpanded: boolean = false;
+  advancedExpanded: boolean = false;
+  usageExpanded: boolean = false;
+
+  constructor() {
     this.generalSettingsForm = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
       defaultName: new UntypedFormControl('', Validators.required),
@@ -71,14 +114,17 @@ export class IosTemplateDetailsComponent implements OnInit {
       execarea: new UntypedFormControl('', Validators.required),
       idlepc: new UntypedFormControl('', Validators.pattern(this.iosConfigurationService.getIdlepcRegex())),
       mac_addr: new UntypedFormControl('', Validators.pattern(this.iosConfigurationService.getMacAddrRegex())),
+      mmap: new UntypedFormControl(true),
+      sparsemem: new UntypedFormControl(true),
     });
   }
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
       this.controller = controller;
+      this.cd.markForCheck();
 
       this.getConfiguration();
       this.iosService.getTemplate(this.controller, template_id).subscribe((iosTemplate: IosTemplate) => {
@@ -87,6 +133,8 @@ export class IosTemplateDetailsComponent implements OnInit {
           this.iosTemplate.tags = [];
         }
         this.fillSlotsData();
+        this.populateForms();
+        this.cd.markForCheck();
       });
     });
   }
@@ -105,43 +153,50 @@ export class IosTemplateDetailsComponent implements OnInit {
 
   findIdlePC() {
     let data = {
-      "image": this.iosTemplate.image,
-      "platform": this.iosTemplate.platform,
-      "ram": this.iosTemplate.ram
+      image: this.iosTemplate.image,
+      platform: this.iosTemplate.platform,
+      ram: this.iosTemplate.ram,
     };
     this.progressService.activate();
-    this.iosService.findIdlePC(this.controller, data).subscribe((result: any) => {
-      this.progressService.deactivate();
-      if (result.idlepc !== null) {
-        this.iosTemplate.idlepc = result.idlepc;
-        this.toasterService.success(`Idle-PC value found: ${result.idlepc}`);
-      }
-    },
+    this.iosService.findIdlePC(this.controller, data).subscribe(
+      (result: any) => {
+        this.progressService.deactivate();
+        if (result.idlepc !== null) {
+          this.iosTemplate.idlepc = result.idlepc;
+          this.advancedForm.get('idlepc').setValue(result.idlepc);
+          this.toasterService.success(`Idle-PC value found: ${result.idlepc}`);
+        }
+      },
       (error) => {
         this.progressService.deactivate();
         this.toasterService.error(`Error while finding an idle-PC value`);
       }
-      );
+    );
   }
 
   generateBaseMAC() {
     // Generate a random MAC address in format xxxx.xxxx.xxxx
     const hexChars = '0123456789abcdef';
+    const randomBytes = new Uint8Array(6);
+    crypto.getRandomValues(randomBytes);
     let mac = '';
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 4; j++) {
-        mac += hexChars[Math.floor(Math.random() * 16)];
+        const byteIndex = i * 2 + Math.floor(j / 2);
+        const nibbleIndex = j % 2;
+        const nibble = (randomBytes[byteIndex] >> (nibbleIndex * 4)) & 0x0f;
+        mac += hexChars[nibble];
       }
       if (i < 2) {
         mac += '.';
       }
     }
     this.iosTemplate.mac_addr = mac;
+    this.advancedForm.get('mac_addr').setValue(mac);
     this.toasterService.success(`Base MAC generated: ${mac}`);
   }
 
   fillSlotsData() {
-
     // load network adapters
     for (let i = 0; i <= 6; i++) {
       if (this.iosTemplate[`slot${i}`]) {
@@ -157,16 +212,41 @@ export class IosTemplateDetailsComponent implements OnInit {
     }
   }
 
-  saveSlotsData() {
+  populateForms() {
+    this.generalSettingsForm.patchValue({
+      templateName: this.iosTemplate.name,
+      defaultName: this.iosTemplate.default_name_format,
+      symbol: this.iosTemplate.symbol,
+      path: this.iosTemplate.image,
+      initialConfig: this.iosTemplate.startup_config,
+    });
 
+    this.memoryForm.patchValue({
+      ram: this.iosTemplate.ram,
+      nvram: this.iosTemplate.nvram,
+      disk0: this.iosTemplate.disk0,
+      disk1: this.iosTemplate.disk1,
+    });
+
+    this.advancedForm.patchValue({
+      systemId: this.iosTemplate.system_id,
+      idlemax: this.iosTemplate.idlemax,
+      idlesleep: this.iosTemplate.idlesleep,
+      execarea: this.iosTemplate.exec_area,
+      idlepc: this.iosTemplate.idlepc,
+      mac_addr: this.iosTemplate.mac_addr,
+      mmap: this.iosTemplate.mmap,
+      sparsemem: this.iosTemplate.sparsemem,
+    });
+  }
+
+  saveSlotsData() {
     // save network adapters
     for (let i = 0; i <= 6; i++) {
       const slotAdapters = this.adapterMatrix?.[this.iosTemplate.platform]?.[this.iosTemplate.chassis || '']?.[i];
       if (slotAdapters) {
-        if (this.networkAdaptersForTemplate[i] === undefined)
-          this.iosTemplate[`slot${i}`] = ""
-        else
-          this.iosTemplate[`slot${i}`] = this.networkAdaptersForTemplate[i];
+        if (this.networkAdaptersForTemplate[i] === undefined) this.iosTemplate[`slot${i}`] = '';
+        else this.iosTemplate[`slot${i}`] = this.networkAdaptersForTemplate[i];
       } else {
         // Remove slot properties that don't exist on this platform/chassis
         delete this.iosTemplate[`slot${i}`];
@@ -177,10 +257,8 @@ export class IosTemplateDetailsComponent implements OnInit {
     for (let i = 0; i <= 3; i++) {
       const wicAdapters = this.wicMatrix?.[this.iosTemplate.platform]?.[i];
       if (wicAdapters) {
-        if (this.wicsForTemplate[i] === undefined)
-          this.iosTemplate[`wic${i}`] = ""
-        else
-          this.iosTemplate[`wic${i}`] = this.wicsForTemplate[i];
+        if (this.wicsForTemplate[i] === undefined) this.iosTemplate[`wic${i}`] = '';
+        else this.iosTemplate[`wic${i}`] = this.wicsForTemplate[i];
       } else {
         // Remove WIC properties that don't exist on this platform
         delete this.iosTemplate[`wic${i}`];
@@ -244,6 +322,25 @@ export class IosTemplateDetailsComponent implements OnInit {
     } else {
       this.saveSlotsData();
 
+      // Update iosTemplate from form values
+      this.iosTemplate.name = this.generalSettingsForm.get('templateName').value;
+      this.iosTemplate.default_name_format = this.generalSettingsForm.get('defaultName').value;
+      this.iosTemplate.symbol = this.generalSettingsForm.get('symbol').value;
+      this.iosTemplate.image = this.generalSettingsForm.get('path').value;
+      this.iosTemplate.startup_config = this.generalSettingsForm.get('initialConfig').value;
+      this.iosTemplate.ram = this.memoryForm.get('ram').value;
+      this.iosTemplate.nvram = this.memoryForm.get('nvram').value;
+      this.iosTemplate.disk0 = this.memoryForm.get('disk0').value;
+      this.iosTemplate.disk1 = this.memoryForm.get('disk1').value;
+      this.iosTemplate.system_id = this.advancedForm.get('systemId').value;
+      this.iosTemplate.idlemax = this.advancedForm.get('idlemax').value;
+      this.iosTemplate.idlesleep = this.advancedForm.get('idlesleep').value;
+      this.iosTemplate.exec_area = this.advancedForm.get('execarea').value;
+      this.iosTemplate.idlepc = this.advancedForm.get('idlepc').value;
+      this.iosTemplate.mac_addr = this.advancedForm.get('mac_addr').value;
+      this.iosTemplate.mmap = this.advancedForm.get('mmap').value;
+      this.iosTemplate.sparsemem = this.advancedForm.get('sparsemem').value;
+
       this.iosService.saveTemplate(this.controller, this.iosTemplate).subscribe((iosTemplate: IosTemplate) => {
         this.toasterService.success('Changes saved');
       });
@@ -255,11 +352,24 @@ export class IosTemplateDetailsComponent implements OnInit {
   }
 
   chooseSymbol() {
-    this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
+    const dialogConfig = this.dialogConfig.openConfig('templateSymbol', {
+      autoFocus: false,
+      disableClose: false,
+      data: {
+        controller: this.controller,
+        symbol: this.iosTemplate.symbol,
+      },
+    });
+    const dialogRef = this.dialog.open(TemplateSymbolDialogComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.iosTemplate.symbol = result;
+        this.generalSettingsForm.get('symbol').setValue(result);
+      }
+    });
   }
 
   symbolChanged(chosenSymbol: string) {
-    this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
     this.iosTemplate.symbol = chosenSymbol;
   }
 
@@ -287,6 +397,26 @@ export class IosTemplateDetailsComponent implements OnInit {
 
     if (index >= 0) {
       this.iosTemplate.tags.splice(index, 1);
+    }
+  }
+
+  toggleSection(section: string): void {
+    switch (section) {
+      case 'general':
+        this.generalSettingsExpanded = !this.generalSettingsExpanded;
+        break;
+      case 'memory':
+        this.memoryExpanded = !this.memoryExpanded;
+        break;
+      case 'slots':
+        this.slotsExpanded = !this.slotsExpanded;
+        break;
+      case 'advanced':
+        this.advancedExpanded = !this.advancedExpanded;
+        break;
+      case 'usage':
+        this.usageExpanded = !this.usageExpanded;
+        break;
     }
   }
 }

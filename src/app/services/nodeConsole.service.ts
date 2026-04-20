@@ -5,7 +5,6 @@ import { Node } from '../cartography/models/node';
 import { Router } from '@angular/router';
 import { ToasterService } from './toaster.service';
 import { MapSettingsService } from './mapsettings.service';
-import { node } from 'prop-types';
 import { environment } from 'environments/environment';
 
 @Injectable()
@@ -67,26 +66,28 @@ export class NodeConsoleService {
   }
 
   getUrl(controller: Controller, node: Node) {
-    let protocol:string = "ws"
-	  if (controller.protocol === "https:") {
-		  protocol = "wss"
-	  }
+    let protocol: string = 'ws';
+    if (controller.protocol === 'https:') {
+      protocol = 'wss';
+    }
 
-    return `${protocol}://${controller.host}:${controller.port}/${environment.current_version}/projects/${node.project_id}/nodes/${node.node_id}/console/ws?token=${controller.authToken}`
+    return `${protocol}://${controller.host}:${controller.port}/${environment.current_version}/projects/${node.project_id}/nodes/${node.node_id}/console/ws?token=${controller.authToken}`;
   }
 
   openConsolesForAllNodesInWidget(nodes: Node[]) {
     let nodesToStart = 'Please start the following nodes if you want to open consoles for them: ';
     let nodesToStartCounter = 0;
     nodes.forEach((n) => {
-      if (n.console_type !== "none") {
+      if (n.console_type !== 'none') {
         if (n.status === 'started') {
           this.mapSettingsService.logConsoleSubject.next(true);
           // this timeout is required due to xterm.js implementation
-          setTimeout(() => { this.openConsoleForNode(n); }, 500);
+          setTimeout(() => {
+            this.openConsoleForNode(n);
+          }, 500);
         } else {
           nodesToStartCounter++;
-          nodesToStart += n.name + ' '
+          nodesToStart += n.name + ' ';
         }
       }
     });
@@ -100,14 +101,14 @@ export class NodeConsoleService {
     let nodesToStartCounter = 0;
     nodes.forEach((n) => {
       // opening a console in tab is only supported for telnet type
-      if (n.console_type === "telnet") {
+      if (n.console_type === 'telnet') {
         if (n.status === 'started') {
           let url = this.router.url.split('/');
           let urlString = `/static/web-ui/${url[1]}/${url[2]}/${url[3]}/${url[4]}/nodes/${n.node_id}`;
           window.open(urlString);
         } else {
           nodesToStartCounter++;
-          nodesToStart += n.name + ' '
+          nodesToStart += n.name + ' ';
         }
       }
     });

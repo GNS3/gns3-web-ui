@@ -1,118 +1,596 @@
-import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
-import { Controller } from '@models/controller';
-import { EthernetSwitchTemplate } from '@models/templates/ethernet-switch-template';
-import { BuiltInTemplatesService } from '@services/built-in-templates.service';
-import { ComputeService } from '@services/compute.service';
-import { ControllerService } from '@services/controller.service';
-import { MockedControllerService } from '@services/controller.service.spec';
-import { TemplateMocksService } from '@services/template-mocks.service';
-import { ToasterService } from '@services/toaster.service';
-import { MockedToasterService } from '@services/toaster.service.spec';
-import { MockedComputeService } from '../../../../preferences/vpcs/add-vpcs-template/add-vpcs-template.component.spec';
-import { MockedActivatedRoute } from '../../../preferences.component.spec';
 import { EthernetSwitchesAddTemplateComponent } from './ethernet-switches-add-template.component';
-
-export class MockedBuiltInTemplatesService {
-  public addTemplate(controller: Controller, ethernetHubTemplate: EthernetSwitchTemplate) {
-    return of(ethernetHubTemplate);
-  }
-}
+import { BuiltInTemplatesService } from '@services/built-in-templates.service';
+import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
+import { EthernetSwitchTemplate } from '@models/templates/ethernet-switch-template';
+import { Controller } from '@models/controller';
+import { PortsMappingEntity } from '@models/ethernetHub/ports-mapping-enity';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('EthernetSwitchesAddTemplateComponent', () => {
   let component: EthernetSwitchesAddTemplateComponent;
   let fixture: ComponentFixture<EthernetSwitchesAddTemplateComponent>;
 
-  let mockedControllerService = new MockedControllerService();
-  let mockedBuiltInTemplatesService = new MockedBuiltInTemplatesService();
-  let mockedToasterService = new MockedToasterService();
-  let mockedComputeService = new MockedComputeService();
-  let activatedRoute = new MockedActivatedRoute().get();
+  let mockBuiltInTemplatesService: any;
+  let mockControllerService: any;
+  let mockToasterService: any;
+  let mockRouter: any;
+  let mockActivatedRoute: any;
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
-      imports: [
-        FormsModule,
-        ReactiveFormsModule,
-        MatIconModule,
-        MatToolbarModule,
-        MatMenuModule,
-        MatCheckboxModule,
-        CommonModule,
-        NoopAnimationsModule,
-        RouterTestingModule.withRoutes([
-          { path: 'controller/1/preferences/builtin/ethernet-switches', component: EthernetSwitchesAddTemplateComponent },
-        ]),
-      ],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: activatedRoute,
-        },
-        { provide: ControllerService, useValue: mockedControllerService },
-        { provide: BuiltInTemplatesService, useValue: mockedBuiltInTemplatesService },
-        { provide: ToasterService, useValue: mockedToasterService },
-        { provide: ComputeService, useValue: mockedComputeService },
-        { provide: TemplateMocksService, useClass: TemplateMocksService },
-      ],
-      declarations: [EthernetSwitchesAddTemplateComponent],
-      schemas: [NO_ERRORS_SCHEMA],
-    }).compileComponents();
+  let mockController: Controller;
+  let addedTemplate: EthernetSwitchTemplate | undefined;
+
+  const createMockEthernetSwitchTemplate = (): EthernetSwitchTemplate => ({
+    builtin: false,
+    category: 'switch',
+    compute_id: 'local',
+    console_type: 'none',
+    default_name_format: 'Switch{0}',
+    name: '',
+    ports_mapping: [],
+    symbol: 'ethernet_switch',
+    template_id: '',
+    template_type: 'ethernet_switch',
+    tags: [],
+    usage: '',
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
+    mockController = {
+      id: 1,
+      authToken: '',
+      name: 'Test Controller',
+      location: 'local',
+      host: '192.168.1.100',
+      port: 3080,
+      path: '',
+      ubridge_path: '',
+      status: 'running',
+      protocol: 'http:',
+      username: '',
+      password: '',
+      tokenExpired: false,
+    };
+
+    mockActivatedRoute = {
+      snapshot: {
+        paramMap: {
+          get: vi.fn().mockReturnValue('1'),
+        },
+      },
+    };
+
+    mockRouter = {
+      navigate: vi.fn(),
+    };
+
+    mockControllerService = {
+      get: vi.fn().mockResolvedValue(mockController),
+    };
+
+    mockBuiltInTemplatesService = {
+      addTemplate: vi.fn().mockReturnValue(of(createMockEthernetSwitchTemplate())),
+    };
+
+    mockToasterService = {
+      success: vi.fn(),
+      error: vi.fn(),
+    };
+
+    TestBed.resetTestingModule();
+
+    await TestBed.configureTestingModule({
+      imports: [EthernetSwitchesAddTemplateComponent],
+      providers: [
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: Router, useValue: mockRouter },
+        { provide: ControllerService, useValue: mockControllerService },
+        { provide: BuiltInTemplatesService, useValue: mockBuiltInTemplatesService },
+        { provide: ToasterService, useValue: mockToasterService },
+      ],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(EthernetSwitchesAddTemplateComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    addedTemplate = undefined;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  afterEach(() => {
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
-  it('should call add template', () => {
-    spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as EthernetSwitchTemplate));
-    component.templateName = 'sample name';
-    component.controller = { id: 1 } as Controller;
-    component.formGroup.controls['templateName'].setValue('template name');
-    component.formGroup.controls['numberOfPorts'].setValue('1');
+  describe('Creation', () => {
+    it('should create the component', () => {
+      expect(component).toBeTruthy();
+    });
 
-    component.addTemplate();
+    it('should initialize isLocalComputerChosen to true', () => {
+      expect(component.isLocalComputerChosen).toBe(true);
+    });
 
-    expect(mockedBuiltInTemplatesService.addTemplate).toHaveBeenCalled();
+    it('should have a formGroup with templateName and numberOfPorts controls', () => {
+      expect(component.formGroup).toBeDefined();
+      expect(component.formGroup.get('templateName')).toBeDefined();
+      expect(component.formGroup.get('numberOfPorts')).toBeDefined();
+    });
+
+    it('should have templateName control with required validator', () => {
+      expect(component.formGroup.get('templateName').hasError('required')).toBe(true);
+    });
+
+    it('should have numberOfPorts control with required validator', () => {
+      component.formGroup.get('numberOfPorts').setValue(null);
+      fixture.detectChanges();
+
+      expect(component.formGroup.get('numberOfPorts').hasError('required')).toBe(true);
+    });
+
+    it('should have default numberOfPorts value of 8', () => {
+      expect(component.formGroup.get('numberOfPorts').value).toBe(8);
+    });
   });
 
-  it('should not call add template when template name is empty', () => {
-    spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as EthernetSwitchTemplate));
-    spyOn(mockedToasterService, 'error');
-    component.formGroup.controls['numberOfPorts'].setValue('1');
-    component.controller = { id: 1 } as Controller;
+  describe('ngOnInit', () => {
+    it('should fetch controller from route param controller_id', async () => {
+      component.ngOnInit();
+      fixture.detectChanges();
+      await fixture.whenStable();
 
-    component.addTemplate();
+      expect(mockControllerService.get).toHaveBeenCalledWith(1);
+    });
 
-    expect(mockedBuiltInTemplatesService.addTemplate).not.toHaveBeenCalled();
-    expect(mockedToasterService.error).toHaveBeenCalled();
+    it('should store controller when fetched', async () => {
+      component.ngOnInit();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(component.controller).toBe(mockController);
+    });
+
+    it('should call markForCheck after fetching controller', async () => {
+      const markForCheckSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.ngOnInit();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(markForCheckSpy).toHaveBeenCalled();
+    });
   });
 
-  xit('should not call add template when number of ports is missing', () => {
-    spyOn(mockedBuiltInTemplatesService, 'addTemplate').and.returnValue(of({} as EthernetSwitchTemplate));
-    spyOn(mockedToasterService, 'error');
-    component.formGroup.controls['templateName'].setValue('template name');
-    component.controller = { id: 1 } as Controller;
+  describe('setControllerType', () => {
+    it('should set isLocalComputerChosen to true when passed "local"', () => {
+      component.isLocalComputerChosen = false;
+      fixture.detectChanges();
 
-    component.addTemplate();
+      component.setControllerType('local');
 
-    expect(mockedBuiltInTemplatesService.addTemplate).not.toHaveBeenCalled();
-    expect(mockedToasterService.error).toHaveBeenCalled();
+      expect(component.isLocalComputerChosen).toBe(true);
+    });
+
+    it('should not change isLocalComputerChosen when passed "remote"', () => {
+      component.isLocalComputerChosen = true;
+      fixture.detectChanges();
+
+      component.setControllerType('remote');
+
+      expect(component.isLocalComputerChosen).toBe(true);
+    });
+  });
+
+  describe('goBack', () => {
+    it('should navigate to controller ethernet-switches preferences page', () => {
+      component.controller = mockController;
+      fixture.detectChanges();
+
+      component.goBack();
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith([
+        '/controller',
+        mockController.id,
+        'preferences',
+        'builtin',
+        'ethernet-switches',
+      ]);
+    });
+
+    it('should navigate correctly even when controller id is 0', () => {
+      component.controller = { ...mockController, id: 0 };
+      fixture.detectChanges();
+
+      component.goBack();
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith([
+        '/controller',
+        0,
+        'preferences',
+        'builtin',
+        'ethernet-switches',
+      ]);
+    });
+  });
+
+  describe('addTemplate', () => {
+    beforeEach(() => {
+      component.controller = mockController;
+      component.ngOnInit();
+      fixture.detectChanges();
+    });
+
+    it('should not add template when form is invalid', () => {
+      component.formGroup.get('templateName').setValue('');
+      fixture.detectChanges();
+
+      component.addTemplate();
+
+      expect(mockBuiltInTemplatesService.addTemplate).not.toHaveBeenCalled();
+    });
+
+    it('should not add template when templateName is null', () => {
+      component.formGroup.get('templateName').setValue(null);
+      fixture.detectChanges();
+
+      component.addTemplate();
+
+      expect(mockBuiltInTemplatesService.addTemplate).not.toHaveBeenCalled();
+    });
+
+    it('should call toasterService.error when form is invalid', () => {
+      component.formGroup.get('templateName').setValue('');
+      fixture.detectChanges();
+
+      component.addTemplate();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Fill all required fields');
+    });
+
+    it('should add template when form is valid', async () => {
+      const templateName = 'My Ethernet Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      fixture.detectChanges();
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(mockBuiltInTemplatesService.addTemplate).toHaveBeenCalled();
+    });
+
+    it('should navigate to goBack after successful template addition', async () => {
+      const templateName = 'Test Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      fixture.detectChanges();
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith([
+        '/controller',
+        mockController.id,
+        'preferences',
+        'builtin',
+        'ethernet-switches',
+      ]);
+    });
+
+    it('should call toasterService.success after successful template addition', async () => {
+      const templateName = 'Success Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      fixture.detectChanges();
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(mockToasterService.success).toHaveBeenCalledWith('Template added successfully');
+    });
+
+    it('should create template with correct template_type', async () => {
+      const templateName = 'Test Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      fixture.detectChanges();
+
+      mockBuiltInTemplatesService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        addedTemplate = template;
+        return of(createMockEthernetSwitchTemplate());
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(addedTemplate?.template_type).toBe('ethernet_switch');
+    });
+
+    it('should create template with correct category', async () => {
+      const templateName = 'Test Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      fixture.detectChanges();
+
+      mockBuiltInTemplatesService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        addedTemplate = template;
+        return of(createMockEthernetSwitchTemplate());
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(addedTemplate?.category).toBe('switch');
+    });
+
+    it('should create template with compute_id as local', async () => {
+      const templateName = 'Test Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      fixture.detectChanges();
+
+      mockBuiltInTemplatesService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        addedTemplate = template;
+        return of(createMockEthernetSwitchTemplate());
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(addedTemplate?.compute_id).toBe('local');
+    });
+
+    it('should create template with symbol as ethernet_switch', async () => {
+      const templateName = 'Test Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      fixture.detectChanges();
+
+      mockBuiltInTemplatesService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        addedTemplate = template;
+        return of(createMockEthernetSwitchTemplate());
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(addedTemplate?.symbol).toBe('ethernet_switch');
+    });
+
+    it('should create template with default_name_format as Switch{0}', async () => {
+      const templateName = 'Test Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      fixture.detectChanges();
+
+      mockBuiltInTemplatesService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        addedTemplate = template;
+        return of(createMockEthernetSwitchTemplate());
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(addedTemplate?.default_name_format).toBe('Switch{0}');
+    });
+
+    it('should create template with console_type as none', async () => {
+      const templateName = 'Test Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      fixture.detectChanges();
+
+      mockBuiltInTemplatesService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        addedTemplate = template;
+        return of(createMockEthernetSwitchTemplate());
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(addedTemplate?.console_type).toBe('none');
+    });
+
+    it('should create template with builtin as false', async () => {
+      const templateName = 'Test Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      fixture.detectChanges();
+
+      mockBuiltInTemplatesService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        addedTemplate = template;
+        return of(createMockEthernetSwitchTemplate());
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(addedTemplate?.builtin).toBe(false);
+    });
+
+    it('should generate a non-empty template_id using uuid', async () => {
+      const templateName = 'Test Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      fixture.detectChanges();
+
+      mockBuiltInTemplatesService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        addedTemplate = template;
+        return of(createMockEthernetSwitchTemplate());
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(addedTemplate?.template_id).toBeTruthy();
+      expect(addedTemplate?.template_id).not.toBe('');
+    });
+  });
+
+  describe('addTemplate with ports', () => {
+    beforeEach(() => {
+      component.controller = mockController;
+      component.ngOnInit();
+      fixture.detectChanges();
+    });
+
+    it('should create 8 ports mapping when numberOfPorts is 8 (default)', async () => {
+      const templateName = 'Test Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      component.formGroup.get('numberOfPorts').setValue(8);
+      fixture.detectChanges();
+
+      mockBuiltInTemplatesService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        addedTemplate = template;
+        return of(createMockEthernetSwitchTemplate());
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(addedTemplate?.ports_mapping.length).toBe(8);
+    });
+
+    it('should create correct ports mapping with Ethernet names', async () => {
+      const templateName = 'Test Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      component.formGroup.get('numberOfPorts').setValue(4);
+      fixture.detectChanges();
+
+      mockBuiltInTemplatesService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        addedTemplate = template;
+        return of(createMockEthernetSwitchTemplate());
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(addedTemplate?.ports_mapping[0].name).toBe('Ethernet0');
+      expect(addedTemplate?.ports_mapping[1].name).toBe('Ethernet1');
+      expect(addedTemplate?.ports_mapping[2].name).toBe('Ethernet2');
+      expect(addedTemplate?.ports_mapping[3].name).toBe('Ethernet3');
+    });
+
+    it('should create ports with correct port_number values', async () => {
+      const templateName = 'Test Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      component.formGroup.get('numberOfPorts').setValue(3);
+      fixture.detectChanges();
+
+      mockBuiltInTemplatesService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        addedTemplate = template;
+        return of(createMockEthernetSwitchTemplate());
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(addedTemplate?.ports_mapping[0].port_number).toBe(0);
+      expect(addedTemplate?.ports_mapping[1].port_number).toBe(1);
+      expect(addedTemplate?.ports_mapping[2].port_number).toBe(2);
+    });
+
+    it('should create ports with ethertype 0x8100', async () => {
+      const templateName = 'Test Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      component.formGroup.get('numberOfPorts').setValue(2);
+      fixture.detectChanges();
+
+      mockBuiltInTemplatesService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        addedTemplate = template;
+        return of(createMockEthernetSwitchTemplate());
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(addedTemplate?.ports_mapping[0].ethertype).toBe('0x8100');
+      expect(addedTemplate?.ports_mapping[1].ethertype).toBe('0x8100');
+    });
+
+    it('should create ports with type access', async () => {
+      const templateName = 'Test Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      component.formGroup.get('numberOfPorts').setValue(2);
+      fixture.detectChanges();
+
+      mockBuiltInTemplatesService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        addedTemplate = template;
+        return of(createMockEthernetSwitchTemplate());
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(addedTemplate?.ports_mapping[0].type).toBe('access');
+      expect(addedTemplate?.ports_mapping[1].type).toBe('access');
+    });
+
+    it('should create ports with vlan 1', async () => {
+      const templateName = 'Test Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      component.formGroup.get('numberOfPorts').setValue(2);
+      fixture.detectChanges();
+
+      mockBuiltInTemplatesService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        addedTemplate = template;
+        return of(createMockEthernetSwitchTemplate());
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(addedTemplate?.ports_mapping[0].vlan).toBe(1);
+      expect(addedTemplate?.ports_mapping[1].vlan).toBe(1);
+    });
+
+    it('should create 0 ports when numberOfPorts is 0', async () => {
+      const templateName = 'Test Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      component.formGroup.get('numberOfPorts').setValue(0);
+      fixture.detectChanges();
+
+      mockBuiltInTemplatesService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        addedTemplate = template;
+        return of(createMockEthernetSwitchTemplate());
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(addedTemplate?.ports_mapping.length).toBe(0);
+    });
+
+    it('should create 16 ports when numberOfPorts is 16', async () => {
+      const templateName = 'Test Switch';
+      component.formGroup.get('templateName').setValue(templateName);
+      component.formGroup.get('numberOfPorts').setValue(16);
+      fixture.detectChanges();
+
+      mockBuiltInTemplatesService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        addedTemplate = template;
+        return of(createMockEthernetSwitchTemplate());
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(addedTemplate?.ports_mapping.length).toBe(16);
+      expect(addedTemplate?.ports_mapping[15].name).toBe('Ethernet15');
+    });
+  });
+
+  describe('Form validation', () => {
+    it('should be invalid when templateName is empty', () => {
+      component.formGroup.get('templateName').setValue('');
+      fixture.detectChanges();
+
+      expect(component.formGroup.invalid).toBe(true);
+    });
+
+    it('should be valid when templateName is set', () => {
+      component.formGroup.get('templateName').setValue('My Switch');
+      fixture.detectChanges();
+
+      expect(component.formGroup.valid).toBe(true);
+    });
+
+    it('should be valid when numberOfPorts is set to 0', () => {
+      component.formGroup.get('templateName').setValue('My Switch');
+      component.formGroup.get('numberOfPorts').setValue(0);
+      fixture.detectChanges();
+
+      expect(component.formGroup.valid).toBe(true);
+    });
   });
 });

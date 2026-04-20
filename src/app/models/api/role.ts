@@ -1,4 +1,4 @@
-import {Privilege} from "@models/api/Privilege";
+import { Privilege } from '@models/api/Privilege';
 
 export interface Role {
   name: string;

@@ -7,9 +7,9 @@
  */
 
 export function toUnsigned32bit(toConvert) {
-    return toConvert >>> 0;
+  return toConvert >>> 0;
 }
 
 export function toSigned32bit(toConvert) {
-    return toConvert | 0;
+  return toConvert | 0;
 }

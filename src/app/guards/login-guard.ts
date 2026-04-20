@@ -6,7 +6,11 @@ import { ControllerService } from '@services/controller.service';
 
 @Injectable()
 export class LoginGuard implements CanActivate {
-  constructor(private controllerService: ControllerService, private loginService: LoginService, private router: Router) {}
+  constructor(
+    private controllerService: ControllerService,
+    private loginService: LoginService,
+    private router: Router
+  ) {}
 
   async canActivate(next: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     const controller_id = next.paramMap.get('controller_id');
@@ -15,7 +19,7 @@ export class LoginGuard implements CanActivate {
     try {
       await this.loginService.getLoggedUser(controller);
     } catch (e) {}
-    return this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
+    return this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
       if (controller.authToken && !controller.tokenExpired) {
         return true;
       }

@@ -1,4 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
@@ -6,17 +9,19 @@ import { NodeService } from '@services/node.service';
 @Component({
   selector: 'app-reload-node-action',
   templateUrl: './reload-node-action.component.html',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReloadNodeActionComponent implements OnInit {
-  @Input() controller: Controller;
-  @Input() nodes: Node[];
+  private nodeService = inject(NodeService);
+
+  readonly controller = input<Controller>(undefined);
+  readonly nodes = input<Node[]>(undefined);
 
   filteredNodes: Node[] = [];
 
-  constructor(private nodeService: NodeService) {}
-
   ngOnInit() {
-    this.nodes.forEach((node) => {
+    this.nodes().forEach((node) => {
       if (
         node.node_type === 'vpcs' ||
         node.node_type === 'qemu' ||
@@ -30,7 +35,7 @@ export class ReloadNodeActionComponent implements OnInit {
 
   reloadNodes() {
     this.filteredNodes.forEach((node) => {
-      this.nodeService.reload(this.controller, node).subscribe((n: Node) => {});
+      this.nodeService.reload(this.controller(), node).subscribe((n: Node) => {});
     });
   }
 }

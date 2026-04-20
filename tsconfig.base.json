@@ -7,11 +7,11 @@
     "sourceMap": true,
     "declaration": false,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "experimentalDecorators": true,
     "importHelpers": true,
-    "target": "es5",
-    "types": ["jasmine", "jest", "mocha", "node"],
+    "target": "ES2022",
+    "types": ["node"],
     "typeRoots": [
       "node_modules/@types",
       "src/types"
@@ -38,8 +38,6 @@
     "src/app/models/software.ts",
     "src/app/services/testing.ts",
     // "src/app/testing/app-testing/app-testing.module.ts",
-    "src/environments/environment.electron.prod.ts",
-    "src/environments/environment.electron.ts",
     "src/environments/environment.github.prod.ts",
     "src/environments/environment.prod.ts",
     // "**/*.spec.ts"

@@ -1,0 +1,78 @@
+{
+  "root": true,
+  "ignorePatterns": [
+    "dist/**/*",
+    "node_modules/**/*",
+    "**/*.spec.ts",
+    "src/environments/*.prod.ts",
+    "projects/**/*",
+    "src/app/cartography/tool.ts",
+    "src/app/cartography/widgets/drawings.backup.ts",
+    "src/app/converters/converter.ts",
+    "src/app/models/software.ts",
+    "src/app/directives/LazyImg.directive.ts",
+    "src/app/models/LocalStorage.ts",
+    "src/app/services/controller-version.service.ts",
+    "src/app/components/user-management/edit-user-dialog/edit-user-dialog.component.ts"
+  ],
+  "overrides": [
+    {
+      "files": ["src/**/*.ts"],
+      "parserOptions": {
+        "project": ["src/tsconfig.app.json", "src/tsconfig.spec.json"],
+        "createDefaultProgram": true
+      },
+      "extends": [
+        "plugin:@angular-eslint/recommended",
+        "plugin:@angular-eslint/template/process-inline-templates"
+      ],
+      "rules": {
+        "@angular-eslint/directive-selector": [
+          "error",
+          {
+            "type": "attribute",
+            "prefix": "app",
+            "style": "camelCase"
+          }
+        ],
+        "@angular-eslint/component-selector": [
+          "error",
+          {
+            "type": "element",
+            "prefix": "app",
+            "style": "kebab-case"
+          }
+        ],
+        "@angular-eslint/no-input-rename": "off",
+        "@angular-eslint/no-output-native": "off",
+        "@angular-eslint/prefer-inject": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "no-console": "off",
+        "no-constant-condition": "off"
+      }
+    },
+    {
+      "files": ["src/**/*.html"],
+      "extends": ["plugin:@angular-eslint/template/recommended"],
+      "rules": {
+        "@angular-eslint/template/banana-in-box": "error",
+        "@angular-eslint/template/no-negated-async": "off"
+      }
+    },
+    {
+      "files": ["e2e/**/*.ts"],
+      "parserOptions": {
+        "project": "e2e/tsconfig.e2e.json"
+      },
+      "extends": [
+        "plugin:@angular-eslint/recommended"
+      ],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": "off",
+        "prefer-const": "off"
+      }
+    }
+  ]
+}

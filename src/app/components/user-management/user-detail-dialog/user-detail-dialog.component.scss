@@ -1,0 +1,170 @@
+/**
+ * User Detail Dialog Styles
+ * Uses base-dialog-panel + configurator-dialog-panel styles from _dialogs.scss
+ * Only component-specific styles here
+ */
+
+.user-detail-dialog {
+  &__content {
+    padding: 0;
+  }
+
+  &__section {
+    margin-bottom: 24px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+    margin: 0 0 12px 0;
+  }
+
+  &__card {
+    margin-bottom: 16px;
+    border-radius: 12px;
+
+    mat-card-content {
+      padding-top: 16px;
+    }
+
+    &--muted {
+      background: var(--mat-sys-surface-container-low);
+    }
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: flex-start;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__field {
+    width: 100%;
+  }
+
+  &__checkbox {
+    display: flex;
+    align-items: center;
+    padding-top: 4px;
+  }
+
+  &__info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &--full {
+      grid-column: 1 / -1;
+    }
+  }
+
+  &__info-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__info-value {
+    font-size: 14px;
+    color: var(--mat-sys-on-surface);
+
+    &--mono {
+      font-family: monospace;
+      font-size: 12px;
+    }
+  }
+
+  &__groups-list {
+    background: var(--mat-sys-surface-container-low);
+    border-radius: 8px;
+    padding: 12px 16px;
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      padding: 8px 0;
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+
+  &__group-name {
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__ace-table {
+    width: 100%;
+    background: var(--mat-sys-surface-container-low);
+    border-radius: 8px;
+    overflow: hidden;
+
+    .mat-header-row {
+      background: var(--mat-sys-surface-container);
+    }
+
+    mat-header-cell {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--mat-sys-on-surface-variant);
+      text-transform: uppercase;
+    }
+
+    mat-cell {
+      font-size: 14px;
+      color: var(--mat-sys-on-surface);
+    }
+
+    mat-row:hover {
+      background-color: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
+    }
+  }
+
+  &__empty-message {
+    color: var(--mat-sys-on-surface-variant);
+    font-style: italic;
+    text-align: center;
+    padding: 24px;
+  }
+
+  &__loading {
+    text-align: center;
+    padding: 24px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}

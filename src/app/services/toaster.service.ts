@@ -1,4 +1,4 @@
-import { Injectable, NgZone } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Injectable()
@@ -24,24 +24,18 @@ export class ToasterService {
     MatSnackBarVerticalPosition: 'bottom',
   };
 
-  constructor(private snackbar: MatSnackBar, private zone: NgZone) {}
+  constructor(private snackbar: MatSnackBar) {}
 
   public error(message: string) {
     console.error(message);
-    this.zone.run(() => {
-      this.snackbar.open(message, 'Close', this.snackBarConfigForError);
-    });
+    this.snackbar.open(message, 'Close', this.snackBarConfigForError);
   }
 
   public warning(message: string) {
-    this.zone.run(() => {
-      this.snackbar.open(message, 'Close', this.snackBarConfigForWarning);
-    });
+    this.snackbar.open(message, 'Close', this.snackBarConfigForWarning);
   }
 
   public success(message: string) {
-    this.zone.run(() => {
-      this.snackbar.open(message, 'Close', this.snackBarConfigForSuccess);
-    });
+    this.snackbar.open(message, 'Close', this.snackBarConfigForSuccess);
   }
 }

@@ -1,5 +1,10 @@
+/**
+ * GNS3 Snapshot Menu Item Component Styles
+ * Using MD3 CSS variables
+ */
+
 .snapshot-button {
-  transition: transform 0.2s ease;
+  transition: transform 100ms ease;
 }
 
 .snapshot-button:hover {

@@ -1,30 +1,60 @@
 import { DataSource, SelectionModel } from '@angular/cdk/collections';
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatBottomSheet } from '@angular/material/bottom-sheet';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSort, MatSortable } from '@angular/material/sort';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, viewChild, model } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSort, MatSortable, MatSortModule } from '@angular/material/sort';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ExportPortableProjectComponent } from '@components/export-portable-project/export-portable-project.component';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
-import { map } from 'rxjs//operators';
+import { map } from 'rxjs/operators';
 import { ProgressService } from '../../common/progress/progress.service';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
 import { RecentlyOpenedProjectService } from '@services/recentlyOpenedProject.service';
 import { Settings, SettingsService } from '@services/settings.service';
+import { ThemeService } from '@services/theme.service';
 import { ToasterService } from '@services/toaster.service';
 import { AddBlankProjectDialogComponent } from './add-blank-project-dialog/add-blank-project-dialog.component';
 import { ChooseNameDialogComponent } from './choose-name-dialog/choose-name-dialog.component';
 import { ConfirmationBottomSheetComponent } from './confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { ConfirmationDeleteAllProjectsComponent } from './confirmation-delete-all-projects/confirmation-delete-all-projects.component';
+import { EditProjectDialogComponent } from './edit-project-dialog/edit-project-dialog.component';
 import { ImportProjectDialogComponent } from './import-project-dialog/import-project-dialog.component';
 import { NavigationDialogComponent } from './navigation-dialog/navigation-dialog.component';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ProjectsFilter } from '../../filters/projectsFilter.pipe';
+import { version } from '../../version';
 
 @Component({
   selector: 'app-projects',
   templateUrl: './projects.component.html',
-  styleUrls: ['./projects.component.scss'],
+  styleUrl: './projects.component.scss',
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatBottomSheetModule,
+    MatDialogModule,
+    MatSortModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatCheckboxModule,
+    MatProgressSpinnerModule,
+    ProjectsFilter,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProjectsComponent implements OnInit {
   controller: Controller;
@@ -33,23 +63,28 @@ export class ProjectsComponent implements OnInit {
   displayedColumns = ['select', 'name', 'actions', 'delete'];
   settings: Settings;
   project: Project;
-  searchText: string = '';
+  readonly searchText = model('');
   isAllDelete: boolean = false;
   selection = new SelectionModel(true, []);
+  public readonly version = version;
+  public readonly currentYear = new Date().getFullYear();
+  private loadingProjects = new Set<string>();
 
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  readonly sort = viewChild(MatSort);
 
-  constructor(
-    private route: ActivatedRoute,
-    private projectService: ProjectService,
-    private settingsService: SettingsService,
-    private progressService: ProgressService,
-    public dialog: MatDialog,
-    private router: Router,
-    private bottomSheet: MatBottomSheet,
-    private toasterService: ToasterService,
-    private recentlyOpenedProjectService: RecentlyOpenedProjectService
-  ) {}
+  private route = inject(ActivatedRoute);
+  private projectService = inject(ProjectService);
+  private settingsService = inject(SettingsService);
+  private progressService = inject(ProgressService);
+  public dialog = inject(MatDialog);
+  private router = inject(Router);
+  private bottomSheet = inject(MatBottomSheet);
+  private toasterService = inject(ToasterService);
+  private recentlyOpenedProjectService = inject(RecentlyOpenedProjectService);
+  private cdr = inject(ChangeDetectorRef);
+  private themeService = inject(ThemeService);
+
+  constructor() {}
 
   ngOnInit() {
     this.controller = this.route.snapshot.data['controller'];
@@ -57,11 +92,11 @@ export class ProjectsComponent implements OnInit {
     this.recentlyOpenedProjectService.setcontrollerIdProjectList(this.controller.id.toString());
 
     this.refresh();
-    this.sort.sort(<MatSortable>{
+    this.sort().sort(<MatSortable>{
       id: 'name',
       start: 'asc',
     });
-    this.dataSource = new ProjectDataSource(this.projectDatabase, this.sort);
+    this.dataSource = new ProjectDataSource(this.projectDatabase, this.sort());
     this.settings = this.settingsService.getAll();
 
     this.projectService.projectListSubject.subscribe(() => this.refresh());
@@ -79,13 +114,23 @@ export class ProjectsComponent implements OnInit {
   }
 
   delete(project: Project) {
-    this.bottomSheet.open(ConfirmationBottomSheetComponent);
-    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
-    bottomSheetRef.instance.message = 'Do you want to delete the project?';
+    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
+      data: { message: 'Do you want to delete the project?' },
+      panelClass: 'confirmation-bottom-sheet',
+    });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
-        this.projectService.delete(this.controller, project.project_id).subscribe(() => {
-          this.refresh();
+        this.setProjectLoading(project.project_id, true);
+        this.projectService.delete(this.controller, project.project_id).subscribe({
+          next: () => {
+            this.refresh();
+          },
+          error: () => {
+            this.setProjectLoading(project.project_id, false);
+          },
+          complete: () => {
+            this.setProjectLoading(project.project_id, false);
+          },
         });
       }
     });
@@ -110,14 +155,25 @@ export class ProjectsComponent implements OnInit {
   }
 
   close(project: Project) {
-    this.bottomSheet.open(ConfirmationBottomSheetComponent);
-    let bottomSheetRef = this.bottomSheet._openedBottomSheetRef;
-    bottomSheetRef.instance.message = 'Do you want to close the project?';
+    const bottomSheetRef = this.bottomSheet.open(ConfirmationBottomSheetComponent, {
+      data: { message: 'Do you want to close the project?' },
+      panelClass: 'confirmation-bottom-sheet',
+    });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
-        this.projectService.close(this.controller, project.project_id).subscribe(() => {
-          this.refresh();
-          this.progressService.deactivate();
+        this.setProjectLoading(project.project_id, true);
+        this.projectService.close(this.controller, project.project_id).subscribe({
+          next: () => {
+            this.refresh();
+            this.progressService.deactivate();
+          },
+          error: () => {
+            this.setProjectLoading(project.project_id, false);
+            this.progressService.deactivate();
+          },
+          complete: () => {
+            this.setProjectLoading(project.project_id, false);
+          },
         });
       }
     });
@@ -125,7 +181,7 @@ export class ProjectsComponent implements OnInit {
 
   duplicate(project: Project) {
     const dialogRef = this.dialog.open(ChooseNameDialogComponent, {
-      width: '400px',
+      panelClass: ['base-dialog-panel', 'choose-name-dialog-panel'],
       autoFocus: false,
       disableClose: true,
     });
@@ -137,9 +193,23 @@ export class ProjectsComponent implements OnInit {
     });
   }
 
+  editProject(project: Project) {
+    const dialogRef = this.dialog.open(EditProjectDialogComponent, {
+      autoFocus: false,
+      disableClose: true,
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'edit-project-dialog-panel'],
+    });
+    let instance = dialogRef.componentInstance;
+    instance.controller = this.controller;
+    instance.project = project;
+    dialogRef.afterClosed().subscribe(() => {
+      this.refresh();
+    });
+  }
+
   addBlankProject() {
     const dialogRef = this.dialog.open(AddBlankProjectDialogComponent, {
-      width: '400px',
+      panelClass: ['base-dialog-panel', 'add-blank-project-dialog-panel'],
       autoFocus: false,
       disableClose: true,
     });
@@ -150,7 +220,7 @@ export class ProjectsComponent implements OnInit {
   importProject() {
     let uuid: string = '';
     const dialogRef = this.dialog.open(ImportProjectDialogComponent, {
-      width: '400px',
+      panelClass: ['base-dialog-panel', 'import-project-dialog-panel'],
       autoFocus: false,
       disableClose: true,
     });
@@ -181,24 +251,23 @@ export class ProjectsComponent implements OnInit {
 
   deleteAllFiles() {
     const dialogRef = this.dialog.open(ConfirmationDeleteAllProjectsComponent, {
-      width: '550px',
-      maxHeight: '650px',
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel', 'delete-all-projects-dialog-panel'],
       autoFocus: false,
       disableClose: true,
       data: {
         controller: this.controller,
-        deleteFilesPaths: this.selection.selected
-      }
+        deleteFilesPaths: this.selection.selected,
+      },
     });
 
     dialogRef.afterClosed().subscribe((isAllfilesdeleted: boolean) => {
       if (isAllfilesdeleted) {
-        this.unChecked()
-        this.refresh()
+        this.unChecked();
+        this.refresh();
         this.toasterService.success('All projects deleted');
       } else {
-        this.unChecked()
-        this.refresh()
+        this.unChecked();
+        this.refresh();
         return false;
       }
     });
@@ -224,23 +293,44 @@ export class ProjectsComponent implements OnInit {
     this.isAllDelete = true;
   }
 
-exportSelectProject(project: Project){
-  this.project = project
-  if(this.project.project_id){
-    this.exportPortableProjectDialog()
+  exportSelectProject(project: Project) {
+    this.project = project;
+    if (this.project.project_id) {
+      this.exportPortableProjectDialog();
+    }
   }
-
-}
   exportPortableProjectDialog() {
     const dialogRef = this.dialog.open(ExportPortableProjectComponent, {
-      width: '700px',
-      maxHeight: '850px',
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel'],
       autoFocus: false,
       disableClose: true,
-      data: {controllerDetails:this.controller,projectDetails:this.project},
+      data: { controllerDetails: this.controller, projectDetails: this.project },
     });
 
     dialogRef.afterClosed().subscribe((isAddes: boolean) => {});
+  }
+
+  isLightThemeEnabled() {
+    return this.themeService.getActualTheme() === 'light';
+  }
+
+  /**
+   * Check if a project is currently being operated on (closing or deleting)
+   */
+  isProjectLoading(projectId: string): boolean {
+    return this.loadingProjects.has(projectId);
+  }
+
+  /**
+   * Set project loading state
+   */
+  private setProjectLoading(projectId: string, loading: boolean): void {
+    if (loading) {
+      this.loadingProjects.add(projectId);
+    } else {
+      this.loadingProjects.delete(projectId);
+    }
+    this.cdr.markForCheck();
   }
 }
 

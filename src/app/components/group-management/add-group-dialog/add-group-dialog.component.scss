@@ -1,9 +1,5 @@
-.file-name-form-field {
+.full-width-field {
   width: 100%;
-}
-
-.project-snackbar {
-  background: #2196f3;
 }
 
 .userList {
@@ -15,11 +11,7 @@
 
 .users {
   display: flex;
-  height: 180px;
+  min-height: 40px;
   overflow: auto;
   flex-direction: column;
-}
-
-.button-div {
-  float: right;
 }

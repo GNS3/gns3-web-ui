@@ -1,69 +1,74 @@
-<div class="upload-indicator-container" *ngIf="hasUploads">
+@if (hasUploads) {
+<div class="upload-indicator-container">
   <div class="upload-indicator-header" (click)="toggleExpanded()">
     <div class="header-left">
       <mat-icon class="upload-icon">cloud_upload</mat-icon>
       <span class="header-title">
-        <ng-container *ngIf="activeCount > 0">
-          Uploading {{ activeCount }} file{{ activeCount !== 1 ? 's' : '' }}
-        </ng-container>
-        <ng-container *ngIf="activeCount === 0">
-          Uploads complete
-        </ng-container>
+        @if (activeCount > 0) {
+        <ng-container> Uploading {{ activeCount }} file{{ activeCount !== 1 ? 's' : '' }} </ng-container>
+        } @if (activeCount === 0) {
+        <ng-container> Uploads complete </ng-container>
+        }
       </span>
     </div>
     <div class="header-right">
-      <mat-progress-bar
-        *ngIf="activeCount > 0"
-        class="header-progress"
-        mode="determinate"
-        [value]="overallProgress"
-      ></mat-progress-bar>
-      <mat-icon class="toggle-icon">{{ isExpanded ? 'expand_more' : 'expand_less' }}</mat-icon>
+      @if (activeCount > 0) {
+      <mat-progress-bar class="header-progress" mode="determinate" [value]="overallProgress"></mat-progress-bar>
+      }
+      <mat-icon class="toggle-icon">{{ isExpanded() ? 'expand_more' : 'expand_less' }}</mat-icon>
     </div>
   </div>
 
-  <div class="upload-list" *ngIf="isExpanded">
-    <div
-      class="upload-item"
-      *ngFor="let row of uploadList; trackBy: trackByTempId"
-      [class.dismissing]="row.dismissing"
-    >
+  @if (isExpanded()) {
+  <div class="upload-list">
+    @for (row of uploadList; track trackByTempId) {
+    <div class="upload-item" [class.dismissing]="row.dismissing">
       <div class="upload-item-info">
-        <mat-icon class="file-icon" [ngClass]="{
-          'status-uploading': row.status === 'uploading' || row.status === 'queued',
-          'status-done': row.status === 'uploaded',
-          'status-error': row.status === 'error',
-          'status-canceled': row.status === 'canceled'
-        }">
-          <ng-container *ngIf="row.status === 'uploaded'">check_circle</ng-container>
-          <ng-container *ngIf="row.status === 'error'">error</ng-container>
-          <ng-container *ngIf="row.status === 'canceled'">cancel</ng-container>
-          <ng-container *ngIf="row.status === 'uploading' || row.status === 'queued'">insert_drive_file</ng-container>
+        <mat-icon
+          class="file-icon"
+          [ngClass]="{
+            'status-uploading': row.status === 'uploading' || row.status === 'queued',
+            'status-done': row.status === 'uploaded',
+            'status-error': row.status === 'error',
+            'status-canceled': row.status === 'canceled'
+          }"
+        >
+          @if (row.status === 'uploaded') {
+          <ng-container>check_circle</ng-container>
+          } @if (row.status === 'error') {
+          <ng-container>error</ng-container>
+          } @if (row.status === 'canceled') {
+          <ng-container>cancel</ng-container>
+          } @if (row.status === 'uploading' || row.status === 'queued') {
+          <ng-container>insert_drive_file</ng-container>
+          }
         </mat-icon>
         <div class="upload-item-text" (click)="navigateToFile(row, $event)">
           <span class="filename" [title]="row.filename">{{ row.filename }}</span>
-          <span class="status-text" *ngIf="row.status === 'queued'">Queued</span>
-          <span class="status-text" *ngIf="row.status === 'uploading'">{{ row.progress }}%</span>
-          <span class="status-text status-done" *ngIf="row.status === 'uploaded'">Done</span>
-          <span class="status-text status-error" *ngIf="row.status === 'error'">{{ row.errorMessage || 'Failed' }}</span>
-          <span class="status-text status-canceled" *ngIf="row.status === 'canceled'">Canceled</span>
+          @if (row.status === 'queued') {
+          <span class="status-text">Queued</span>
+          } @if (row.status === 'uploading') {
+          <span class="status-text">{{ row.progress }}%</span>
+          } @if (row.status === 'uploaded') {
+          <span class="status-text status-done">Done</span>
+          } @if (row.status === 'error') {
+          <span class="status-text status-error">{{ row.errorMessage || 'Failed' }}</span>
+          } @if (row.status === 'canceled') {
+          <span class="status-text status-canceled">Canceled</span>
+          }
         </div>
-        <button
-          *ngIf="row.status === 'uploading' || row.status === 'queued'"
-          mat-icon-button
-          class="cancel-btn"
-          (click)="cancelUpload(row.tempId)"
-          title="Cancel upload"
-        >
+        @if (row.status === 'uploading' || row.status === 'queued') {
+        <button mat-icon-button class="cancel-btn" (click)="cancelUpload(row.tempId)" title="Cancel upload">
           <mat-icon>close</mat-icon>
         </button>
+        }
       </div>
-      <mat-progress-bar
-        *ngIf="row.status === 'uploading' || row.status === 'queued'"
-        mode="determinate"
-        [value]="row.progress"
-        class="item-progress"
-      ></mat-progress-bar>
+      @if (row.status === 'uploading' || row.status === 'queued') {
+      <mat-progress-bar mode="determinate" [value]="row.progress" class="item-progress"></mat-progress-bar>
+      }
     </div>
+    }
   </div>
+  }
 </div>
+}

@@ -1,60 +1,80 @@
-import { AfterViewInit, Component, ElementRef, Input, OnInit, OnDestroy, ViewChild, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
-import { Terminal } from 'xterm';
-import { AttachAddon } from 'xterm-addon-attach';
-import { FitAddon } from 'xterm-addon-fit';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  OnInit,
+  OnDestroy,
+  ChangeDetectorRef,
+  inject,
+  input,
+  viewChild,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Terminal } from '@xterm/xterm';
+import { AttachAddon } from '@xterm/addon-attach';
+import { FitAddon } from '@xterm/addon-fit';
+import { Subject, takeUntil } from 'rxjs';
 import { Node as GNS3Node } from '../../../cartography/models/node';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { NodeConsoleService } from '@services/nodeConsole.service';
 import { ThemeService } from '@services/theme.service';
 import { XtermContextMenuService } from '@services/xterm-context-menu.service';
+import { XtermService } from '@services/xterm.service';
 
 @Component({
-  encapsulation: ViewEncapsulation.None,
   selector: 'app-web-console',
   templateUrl: './web-console.component.html',
-  styleUrls: ['../../../../../node_modules/xterm/css/xterm.css', './web-console.component.scss'],
+  styleUrl: './web-console.component.scss',
+  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() controller: Controller;
-  @Input() project: Project;
-  @Input() node: GNS3Node;
+  readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
+  readonly node = input<GNS3Node>(undefined);
 
+  // Inject services first
+  private consoleService = inject(NodeConsoleService);
+  private themeService = inject(ThemeService);
+  private cdr = inject(ChangeDetectorRef);
+  private contextMenuService = inject(XtermContextMenuService);
+  private xtermService = inject(XtermService);
+
+  // Now can use xtermService for terminal initialization
   public term: Terminal = new Terminal({
     cols: 100,
     rows: 32,
-    cursorBlink: true,
-    rightClickSelectsWord: true,  // Enable right-click to select word
-    altClickMovesCursor: true,    // Enable Alt+Click to move cursor
+    ...this.xtermService.getDefaultTerminalOptions(),
   });
   public fitAddon: FitAddon = new FitAddon();
+  private socket: WebSocket | null = null;
   public isLightThemeEnabled: boolean = false;
-  private copiedText: string = '';
   private resizeObserver: ResizeObserver | null = null;
   private contextMenuCleanup: (() => void) | null = null;
+  private destroy$ = new Subject<void>();
+  private isDestroying = false;
 
-  @ViewChild('terminal') terminal: ElementRef;
+  readonly terminal = viewChild<ElementRef>('terminal');
 
-  constructor(
-    private consoleService: NodeConsoleService,
-    private themeService: ThemeService,
-    private cdr: ChangeDetectorRef,
-    private contextMenuService: XtermContextMenuService
-  ) {}
+  constructor() {}
 
   ngOnInit() {
-    this.themeService.getActualTheme() === 'light'
-      ? (this.isLightThemeEnabled = true)
-      : (this.isLightThemeEnabled = false);
+    this.isLightThemeEnabled = this.themeService.getActualTheme() === 'light';
+    this.cdr.markForCheck();
 
-    this.consoleService.consoleResized.subscribe((ev) => {
-      let numberOfColumns = Math.floor(ev.width / 9);
-      let numberOfRows = Math.floor(ev.height / 17);
+    // Subscribe to theme changes
+    this.themeService.themeChanged.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.xtermService.updateTerminalTheme(this.term, this.cdr);
+      this.isLightThemeEnabled = this.themeService.getActualTheme() === 'light';
+    });
 
-      this.consoleService.setNumberOfColumns(numberOfColumns);
-      this.consoleService.setNumberOfRows(numberOfRows);
-
-      this.term.resize(numberOfColumns, numberOfRows);
+    this.consoleService.consoleResized.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      // Delay to ensure DOM has been updated with new dimensions
+      setTimeout(() => {
+        this.fitTerminal();
+      }, 50);
     });
 
     if (this.consoleService.getNumberOfColumns() && this.consoleService.getNumberOfRows()) {
@@ -63,24 +83,34 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    this.term.open(this.terminal.nativeElement);
-    if (this.isLightThemeEnabled)
-      this.term.setOption('theme', { background: 'white', foreground: 'black', cursor: 'black' });
+    const terminal = this.terminal();
+    this.term.open(terminal.nativeElement);
 
-    const socket = new WebSocket(this.consoleService.getUrl(this.controller, this.node));
+    // Set theme based on current Material Design 3 theme
+    this.xtermService.updateTerminalTheme(this.term, this.cdr);
 
-    socket.onerror = (event) => {
-      this.term.write('Connection lost');
+    this.socket = new WebSocket(this.consoleService.getUrl(this.controller(), this.node()));
+
+    this.socket.onerror = () => {
+      console.error('[WebConsole] Socket connection error');
+      this.term.write('\r\n\x1b[31mConnection lost. Please check if the node is still running.\x1b[0m\r\n');
     };
-    socket.onclose = (event) => {
-      this.consoleService.closeConsoleForNode(this.node);
+    this.socket.onclose = () => {
+      // Only log and write message if this is an unexpected disconnect (not during component destroy)
+      if (!this.isDestroying) {
+        console.log('[WebConsole] Socket closed unexpectedly');
+        this.term.write('\r\n\x1b[33mConnection closed.\x1b[0m\r\n');
+        const currentNode = this.node();
+        if (currentNode) {
+          this.consoleService.closeConsoleForNode(currentNode);
+        }
+      }
     };
 
-    const attachAddon = new AttachAddon(socket);
+    const attachAddon = new AttachAddon(this.socket);
     this.term.loadAddon(attachAddon);
-    this.term.setOption('cursorBlink', true);
-    this.term.loadAddon(this.fitAddon);
-    this.fitAddon.activate(this.term);
+    this.xtermService.initTerminal(this.term, this.fitAddon);
+    this.fitAddon.fit();
     this.term.focus();
 
     this.term.attachCustomKeyEventHandler((key: KeyboardEvent) => {
@@ -89,7 +119,7 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         // Create and dispatch custom event for parent component
         const customEvent = new CustomEvent('consoleTabShortcut', {
           detail: { key: key.key },
-          bubbles: true
+          bubbles: true,
         });
         this.term.element.dispatchEvent(customEvent);
         return false; // Prevent xterm from handling this
@@ -108,17 +138,15 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
     this.setupResizeObserver();
 
     // Setup context menu for copy/paste
-    this.contextMenuCleanup = this.contextMenuService.attachContextMenu(
-      this.term,
-      this.terminal.nativeElement
-    );
+    this.contextMenuCleanup = this.contextMenuService.attachContextMenu(this.term, terminal.nativeElement);
   }
 
   /**
    * Setup ResizeObserver to automatically resize terminal when container size changes
    */
   private setupResizeObserver(): void {
-    if (!this.terminal?.nativeElement) return;
+    const terminal = this.terminal();
+    if (!terminal?.nativeElement) return;
 
     this.resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -129,27 +157,28 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
 
         // Use requestAnimationFrame to ensure DOM is fully rendered
         requestAnimationFrame(() => {
-          requestAnimationFrame(() => {
-            try {
-              // Fit terminal to container
-              this.fitAddon.fit();
-
-              // Also update columns/rows for service
-              const cols = this.term.cols;
-              const rows = this.term.rows;
-              this.consoleService.setNumberOfColumns(cols);
-              this.consoleService.setNumberOfRows(rows);
-            } catch (e) {
-              // Ignore fit errors when element is not visible
-            }
-
-            this.cdr.markForCheck();
-          });
+          try {
+            this.fitTerminal();
+          } catch (e) {
+            // Ignore fit errors when element is not visible
+          }
         });
       }
     });
 
-    this.resizeObserver.observe(this.terminal.nativeElement);
+    this.resizeObserver.observe(terminal.nativeElement);
+  }
+
+  /**
+   * Fit terminal to container and update service state
+   */
+  private fitTerminal(): void {
+    this.fitAddon.fit();
+    const cols = this.term.cols;
+    const rows = this.term.rows;
+    this.consoleService.setNumberOfColumns(cols);
+    this.consoleService.setNumberOfRows(rows);
+    this.term.resize(cols, rows);
   }
 
   /**
@@ -166,6 +195,19 @@ export class WebConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
    * Cleanup on component destroy
    */
   ngOnDestroy(): void {
+    // Set flag to prevent onclose from closing the tab
+    this.isDestroying = true;
+
+    // Complete destroy$ to unsubscribe all takeUntil subscriptions
+    this.destroy$.next();
+    this.destroy$.complete();
+
+    // Close WebSocket connection
+    if (this.socket) {
+      this.socket.close();
+      this.socket = null;
+    }
+
     // Cleanup ResizeObserver to prevent memory leaks
     if (this.resizeObserver) {
       this.resizeObserver.disconnect();

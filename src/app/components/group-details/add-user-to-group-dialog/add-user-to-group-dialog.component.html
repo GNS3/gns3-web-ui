@@ -1,16 +1,65 @@
-<div class="title">
-  <h3>Add User To group: {{data.group.name}}</h3>
-</div>
-<div class="filter">
-  <mat-form-field class="input-field">
-    <mat-label>Search user </mat-label>
-    <input matInput  type="text" [(ngModel)]="searchText" (keydown)="onSearch()">
-  </mat-form-field>
+<div class="dialog-header">
+  <h2 class="dialog-title">Add User To Group: {{ data.group.name }}</h2>
 </div>
 
-<div class="userList" *ngFor="let user of displayedUsers | async">
-  <div>{{user.username}}</div>
-  <div>{{user.email}}</div>
-  <mat-icon (click)="addUser(user)" *ngIf="!loading">add</mat-icon>
-  <mat-spinner *ngIf="loading"></mat-spinner>
+<div class="dialog-content">
+  <div class="search-section">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search users</mat-label>
+      <input
+        matInput
+        type="text"
+        [value]="searchText()"
+        (input)="searchText.set($event.target.value)"
+        (keydown)="onSearch()"
+        placeholder="Type to filter users..."
+      />
+      <mat-icon matPrefix>search</mat-icon>
+    </mat-form-field>
+  </div>
+
+  <div class="users-list">
+    @for (user of displayedUsers | async; track user.username) {
+    <div class="user-item">
+      <mat-checkbox
+        [checked]="isUserSelected(user.user_id)"
+        (change)="toggleUserSelection(user.user_id)"
+        class="user-checkbox"
+      >
+      </mat-checkbox>
+      <div class="user-info">
+        <div class="user-name">{{ user.username }}</div>
+        <div class="user-email">{{ user.email }}</div>
+      </div>
+    </div>
+    } @if (displayedUsers | async; as users) { @if (users.length === 0) {
+    <div class="empty-state">
+      <mat-icon>person_off</mat-icon>
+      <p>No users found</p>
+    </div>
+    } }
+  </div>
+</div>
+
+<div class="dialog-actions">
+  <div class="selection-info">
+    <mat-checkbox
+      [checked]="allSelected()"
+      (change)="toggleSelectAll()"
+      [indeterminate]="selectedCount() > 0 && !allSelected()"
+    >
+      Select All ({{ selectedCount() }})
+    </mat-checkbox>
+  </div>
+  <div class="action-buttons">
+    <button mat-button (click)="onClose()">Cancel</button>
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="addSelectedUsers()"
+      [disabled]="selectedCount() === 0 || loading"
+    >
+      Add Selected ({{ selectedCount() }})
+    </button>
+  </div>
 </div>

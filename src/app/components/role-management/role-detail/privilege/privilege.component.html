@@ -1,42 +1,69 @@
-<link rel="stylesheet" href="privilege.component.scss">
 <div class="privileges">
-  <div class="header">
-    <div class="title">Privileges</div>
-    <div *ngIf="!disable">
-      <button mat-button *ngIf="!editMode">
-        <mat-icon (click)="editMode = true">edit</mat-icon>
+  <div
+    class="privileges__header"
+    [class.privileges__header--clickable]="collapsed"
+    (click)="collapsed && toggleCollapsed()"
+  >
+    <h3 class="privileges__title">Privileges</h3>
+    <div class="privileges__actions">
+      <button mat-icon-button (click)="toggleCollapsed()" [matTooltip]="collapsed ? 'Expand' : 'Collapse'">
+        <mat-icon>{{ collapsed ? 'expand_more' : 'expand_less' }}</mat-icon>
       </button>
-      <button *ngIf="editMode" mat-raised-button color="warn" (click)="editMode = false">Cancel</button>
-      <button *ngIf="editMode" mat-raised-button color="primary" (click)="close()">Update</button>
+      @if (!disable()) { @if (!editMode) {
+      <button mat-icon-button (click)="editMode = true" matTooltip="Edit privileges">
+        <mat-icon>edit</mat-icon>
+      </button>
+      } @if (editMode) {
+      <button mat-raised-button color="warn" (click)="editMode = false">Cancel</button>
+      <button mat-raised-button color="primary" (click)="close()">Update</button>
+      } }
     </div>
   </div>
-  <div *ngFor="let privilegeName of privileges | groupPrivileges">
-    <div *ngIf="editMode; else normalMode">
-      <div class="privilege">
-        <div class="key">{{privilegeName.key}}:</div>
-        <div class="values">
-          <div class="box" *ngFor="let privilegeVerb of privilegeName.values">
-            <mat-checkbox
-              (change)="onPrivilegeChange($event.checked, privilegeVerb.privilege)"
-              [checked]="ownedPrivilegesList.includes(privilegeVerb.privilege.privilege_id)"></mat-checkbox>
-            <div
-              [ngClass]="{add: changer.isAdded(privilegeVerb.privilege.privilege_id), delete: changer.isDeleted(privilegeVerb.privilege.privilege_id)}">
-              {{privilegeVerb.verb}}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <ng-template #normalMode>
-      <div class="privilege" *ngIf="ownedPrivilegesName.includes(privilegeName.key)">
-        <div class="key">{{privilegeName.key}}:</div>
-        <div class="values">
-          <div *ngFor="let privilegeVerb of privilegeName.values">
-            <div [ngClass]="{box: ownedPrivilegesList.includes(privilegeVerb.privilege.privilege_id)}"
-                 *ngIf="ownedPrivilegesList.includes(privilegeVerb.privilege.privilege_id)">{{privilegeVerb.verb}}</div>
-          </div>
-        </div>
-      </div>
-    </ng-template>
-  </div>
-</div>
 
+  @if (!collapsed) {
+  <div class="privileges__list">
+    @for (privilegeName of privileges() | groupPrivileges; track privilegeName.key) { @if (editMode) {
+    <div class="privileges__group">
+      <div class="privileges__key">{{ privilegeName.key }}:</div>
+      <div class="privileges__values">
+        @for (privilegeVerb of privilegeName.values; track privilegeVerb.privilege.privilege_id) {
+        <div class="privileges__verb">
+          <mat-checkbox
+            class="privileges__checkbox"
+            (change)="onPrivilegeChange($event.checked, privilegeVerb.privilege)"
+            [checked]="ownedPrivilegesList().includes(privilegeVerb.privilege.privilege_id)"
+          ></mat-checkbox>
+          <span
+            [class.privileges__verb--added]="changer.isAdded(privilegeVerb.privilege.privilege_id)"
+            [class.privileges__verb--deleted]="changer.isDeleted(privilegeVerb.privilege.privilege_id)"
+          >
+            {{ privilegeVerb.verb }}
+          </span>
+          @if (privilegeVerb.privilege.description) {
+          <mat-icon
+            class="privileges__info-icon"
+            [matTooltip]="privilegeVerb.privilege.description"
+            matTooltipPosition="right"
+            >info</mat-icon
+          >
+          }
+        </div>
+        }
+      </div>
+    </div>
+    } @else { @if (ownedPrivilegesName().includes(privilegeName.key)) {
+    <div class="privileges__group">
+      <div class="privileges__key">{{ privilegeName.key }}:</div>
+      <div class="privileges__values">
+        @for (privilegeVerb of privilegeName.values; track privilegeVerb.privilege.privilege_id) { @if
+        (ownedPrivilegesList().includes(privilegeVerb.privilege.privilege_id)) {
+        <span class="privileges__verb">
+          {{ privilegeVerb.verb }}
+        </span>
+        } }
+      </div>
+    </div>
+    } } }
+  </div>
+  }
+</div>

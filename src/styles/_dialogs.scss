@@ -1,0 +1,1108 @@
+/**
+ * GNS3 Web UI - Dialog Styles
+ *
+ * All Material dialog styles are centralized here.
+ * Use panelClass to target specific dialogs.
+ *
+ * Architecture:
+ * 1. Base styles (.base-dialog-panel) - Common dialog styles (no sizing)
+ * 2. Configurator styles (.configurator-dialog-panel) - Main config dialogs (800px, tabs, cards)
+ * 3. Simple styles (.simple-dialog-panel) - Sub dialogs like Image Creator (500px)
+ * 4. Usage: panelClass: ['base-dialog-panel', 'specific-dialog-panel']
+ */
+
+/* =============================================
+// Base Dialog Styles - All dialogs inherit this
+// ============================================= */
+.base-dialog-panel {
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+      box-shadow: 0 12px 40px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
+        0 4px 12px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
+    }
+  }
+
+  /* Dialog title - common typography */
+  h1[mat-dialog-title],
+  h2[mat-dialog-title] {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    margin-bottom: 24px;
+    padding: 24px 24px 0 24px;
+  }
+
+  /* Dialog content - common spacing */
+  .mat-mdc-dialog-content {
+    padding: 16px 24px 0 24px;
+    overflow-y: auto;
+  }
+
+  /* Dialog actions - common button layout */
+  .mat-mdc-dialog-actions {
+    padding: 16px 24px;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  /* Form fields - common width */
+  .form-field {
+    width: 100%;
+    margin-bottom: 4px;
+  }
+
+  /* Modal form container padding */
+  .modal-form-container {
+    padding: 16px 24px;
+  }
+
+  /* Checkboxes - common spacing */
+  mat-checkbox {
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  /* Cards - common spacing */
+  mat-card {
+    margin-bottom: 16px;
+  }
+
+  /* Info note text */
+  .info-note {
+    font-size: 13px;
+    color: var(--mat-sys-on-surface-variant);
+    background: var(--mat-sys-surface-container-high);
+    padding: 12px;
+    border-radius: 8px;
+    margin: 0 0 16px 0;
+  }
+
+  /* Add adapter row with note */
+  .add-adapter-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    align-items: start;
+    margin-top: 16px;
+  }
+
+  /* Info note text for compact inline display */
+  .info-note-text {
+    flex: 1;
+    font-size: 12px;
+    color: var(--mat-sys-on-surface-variant);
+    line-height: 1.4;
+    padding-top: 6px;
+  }
+
+  mat-card-title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+  }
+
+  mat-card-subtitle {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  /* Radio button spacing */
+  mat-radio-button {
+    margin-right: 8px;
+  }
+}
+
+/* =============================================
+// Configurator Dialog Styles - Main config pages
+// ============================================= */
+.configurator-dialog-panel {
+  --mat-dialog-container-max-width: 800px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 800px;
+    max-width: 800px;
+    max-height: 80vh;
+
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+    }
+  }
+
+  /* Dialog content - with max-height for scroll */
+  .mat-mdc-dialog-content {
+    max-height: calc(80vh - 140px);
+  }
+
+  /* Tab content - add spacing below tab labels */
+  mat-tab-group {
+    .mat-mdc-tab-body-wrapper {
+      .mat-mdc-tab-body {
+        .mat-mdc-tab-body-content {
+          padding-top: 16px;
+        }
+      }
+    }
+  }
+
+  /* Two-column form layout */
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px 24px;
+  }
+
+  .form-grid__full {
+    grid-column: 1 / -1;
+  }
+
+  /* Tags field */
+  .tags-field {
+    width: 100%;
+  }
+
+  /* File upload button */
+  .file-button {
+    width: 18%;
+  }
+
+  .file-name-form-field {
+    padding-left: 2%;
+    width: 80%;
+  }
+
+  /* Create button */
+  .create-button {
+    width: 100%;
+  }
+
+  /* Hidden file input */
+  .nonvisible {
+    display: none;
+  }
+
+  /* HDD create button section */
+  .hdd-create-section {
+    margin-bottom: 16px;
+  }
+
+  /* Custom adapters button section - centered */
+  .custom-adapters-section {
+    display: flex;
+    justify-content: center;
+    margin: 16px 0;
+  }
+
+  /* File upload section */
+  .file-upload-section {
+    .file-upload-hint {
+      font-size: 12px;
+      color: var(--mat-sys-on-surface-variant);
+      margin: 4px 0 0 0;
+    }
+  }
+
+  /* Disk cards grid layout - two columns */
+  .disk-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  /* Card stack - single column layout */
+  .card-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .disk-card {
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 12px;
+    padding: 16px;
+    background: var(--mat-sys-surface-container-low);
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: var(--mat-sys-surface-container);
+    }
+  }
+
+  .disk-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .disk-card__title {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    margin: 0;
+  }
+
+  .disk-card__badge {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+    font-weight: 500;
+  }
+
+  .disk-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* =============================================
+// Simple Dialog Styles - Sub dialogs like Image Creator
+// ============================================= */
+.simple-dialog-panel {
+  --mat-dialog-container-max-width: 500px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 500px;
+    max-width: 500px;
+    max-height: 80vh;
+
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+    }
+  }
+
+  /* Dialog content - with max-height for scroll */
+  .mat-mdc-dialog-content {
+    max-height: calc(80vh - 140px);
+  }
+
+  /* Format options styling */
+  .format-options {
+    margin: 16px 0;
+  }
+
+  .option-group {
+    margin-bottom: 16px;
+  }
+
+  .option-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .radio-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+/* =============================================
+// Confirmation Dialog
+// ============================================= */
+.confirmation-dialog-panel {
+  mat-dialog-container,
+  .mat-dialog-container {
+    background: transparent;
+    padding: 0;
+    box-shadow: none;
+  }
+}
+
+/* =============================================
+// Edit Controller Dialog
+// ============================================= */
+.edit-controller-dialog-panel {
+  .mat-mdc-dialog-container {
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+      box-shadow: 0 12px 40px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
+        0 4px 12px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
+    }
+  }
+
+  .mat-mdc-dialog-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    margin-bottom: 24px;
+    padding: 24px 24px 0 24px;
+  }
+
+  .mat-mdc-dialog-content {
+    padding: 0 24px;
+    margin-bottom: 16px;
+  }
+}
+
+/* =============================================
+// Add Controller Dialog
+// ============================================= */
+.add-controller-dialog-panel {
+  .mat-mdc-dialog-container {
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+      box-shadow: 0 12px 40px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
+        0 4px 12px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
+    }
+  }
+
+  .mat-mdc-dialog-title {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    margin-bottom: 24px;
+    padding: 24px 24px 0 24px;
+  }
+
+  .mat-mdc-dialog-content {
+    padding: 0 24px;
+    margin-bottom: 16px;
+  }
+}
+
+/* =============================================
+// Confirmation Bottom Sheet
+// ============================================= */
+.confirmation-bottom-sheet {
+  .mat-bottom-sheet-container {
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+/* =============================================
+// Custom Adapters Dialog
+// ============================================= */
+.custom-adapters-dialog-panel {
+  --mat-dialog-container-max-width: 1000px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 1000px;
+    max-width: 1000px;
+  }
+
+  .mat-mdc-dialog-content {
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  /* Add adapter row with note */
+  .add-adapter-row {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+    align-items: start;
+    margin-top: 16px;
+  }
+
+  /* Info note text for compact inline display */
+  .info-note-text {
+    flex: 1;
+    font-size: 12px;
+    color: var(--mat-sys-on-surface-variant);
+    line-height: 1.4;
+    padding-top: 6px;
+  }
+}
+
+/* =============================================
+// Edit Project Dialog
+// Inherits from base-dialog-panel + configurator-dialog-panel
+// Only overrides width (700px) and max-height (600px)
+// ============================================= */
+.edit-project-dialog-panel {
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 700px;
+    max-width: 700px;
+  }
+
+  .mat-mdc-dialog-content {
+    max-height: 600px;
+  }
+}
+
+/* =============================================
+// Add ACE Dialog
+// ============================================= */
+.add-ace-dialog-panel {
+  --mat-dialog-container-max-width: 1000px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 1000px;
+    max-width: 1000px;
+  }
+}
+
+/* =============================================
+// New Template Dialog
+// ============================================= */
+.new-template-dialog-panel {
+  --mat-dialog-container-max-width: 800px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 800px;
+    max-width: 800px;
+  }
+}
+
+/* =============================================
+// Tool Details Dialog
+// ============================================= */
+.tool-details-dialog {
+  .json-container {
+    --ngx-json-string: var(--mat-sys-primary);
+    --ngx-json-number: var(--mat-sys-secondary);
+    --ngx-json-boolean: var(--mat-sys-tertiary);
+    --ngx-json-date: var(--mat-sys-on-surface-variant);
+    --ngx-json-array: var(--mat-sys-error);
+    --ngx-json-object: var(--mat-sys-inverse-surface);
+    --ngx-json-function: var(--mat-sys-on-surface);
+    --ngx-json-null: var(--mat-sys-outline);
+    --ngx-json-key: var(--mat-sys-on-surface);
+    --ngx-json-separator: var(--mat-sys-outline);
+    --ngx-json-value: var(--mat-sys-on-surface);
+  }
+}
+
+/* =============================================
+// Change Symbol Dialog
+// Inherits from base-dialog-panel + configurator-dialog-panel
+// ============================================= */
+.change-symbol-dialog-panel {
+  --mat-dialog-container-max-width: 800px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 800px;
+    max-width: 800px;
+    height: 600px;
+    max-height: 600px;
+  }
+}
+
+/* =============================================
+// Nodes Menu Confirmation Dialog
+// ============================================= */
+.nodes-menu-confirmation-dialog-panel {
+  --mat-dialog-container-max-width: 500px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 500px;
+    max-width: 500px;
+  }
+
+  .mat-mdc-dialog-content {
+    max-height: 200px;
+  }
+
+  .nodes-menu-confirmation-dialog__title {
+    text-transform: capitalize;
+  }
+
+  .mat-dialog-actions {
+    min-height: 31px;
+  }
+}
+
+/* =============================================
+// Generic Dialog Title Styles
+// ============================================= */
+h1[mat-dialog-title],
+h2[mat-dialog-title] {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+/* =============================================
+// Base Confirmation Dialog Panel
+// Unified confirmation dialog styles
+// ============================================= */
+.base-confirmation-dialog-panel {
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+      box-shadow: 0 12px 40px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
+        0 4px 12px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
+    }
+  }
+
+  /* Dialog title */
+  h1[mat-dialog-title],
+  h2[mat-dialog-title] {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    padding: 24px 24px 0 24px;
+    margin-bottom: 16px;
+  }
+
+  /* Dialog content */
+  .mat-mdc-dialog-content {
+    padding: 0 24px 24px 24px;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* Dialog actions - unified button layout */
+  .mat-dialog-actions {
+    padding: 16px 24px 24px 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-bottom: 0;
+  }
+
+  /* Button styles - modern rounded design */
+  .mat-mdc-button {
+    border-radius: 20px;
+    padding: 8px 24px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Cancel button - outlined style */
+  .cancel-button,
+  button[mat-button] {
+    color: var(--mat-sys-on-surface-variant);
+    border: 1px solid var(--mat-sys-outline);
+    background: transparent;
+
+    &:hover {
+      background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+      border-color: var(--mat-sys-on-surface-variant);
+    }
+  }
+
+  /* Confirm button - filled style */
+  .confirm-button,
+  button.mat-mdc-raised-button {
+    box-shadow: 0 2px 6px color-mix(in srgb, currentColor 25%, transparent);
+
+    &:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px color-mix(in srgb, currentColor 35%, transparent);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+/* =============================================
+// Information Dialog Panel
+// For general information and MD5 confirmation
+// ============================================= */
+.information-dialog-panel {
+  --mat-dialog-container-max-width: 500px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 500px;
+    max-width: 500px;
+  }
+
+  .mat-mdc-dialog-content {
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .information-dialog__message {
+    margin: 0;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+}
+
+/* =============================================
+// Confirmation Danger Panel
+// For dangerous operations (delete, remove, etc.)
+// ============================================= */
+.confirmation-danger-panel {
+  .mat-mdc-dialog-surface {
+    border: 1px solid var(--mat-sys-error-container);
+  }
+
+  h1[mat-dialog-title],
+  h2[mat-dialog-title] {
+    color: var(--mat-sys-error);
+    font-weight: 500;
+  }
+
+  .confirm-button,
+  button.mat-mdc-raised-button {
+    background-color: var(--mat-sys-error);
+    color: var(--mat-sys-on-error);
+  }
+}
+
+/* =============================================
+// Confirmation Warning Panel
+// For warning operations (unlock, etc.)
+// ============================================= */
+.confirmation-warning-panel {
+  .mat-mdc-dialog-surface {
+    border: 1px solid var(--mat-sys-tertiary-container);
+  }
+
+  h1[mat-dialog-title],
+  h2[mat-dialog-title] {
+    color: var(--mat-sys-tertiary);
+    font-weight: 500;
+  }
+
+  .confirm-button,
+  button.mat-mdc-raised-button {
+    background-color: var(--mat-sys-tertiary);
+    color: var(--mat-sys-on-tertiary);
+  }
+}
+
+/* =============================================
+// Confirmation Info Panel
+// For informational confirmations
+// ============================================= */
+.confirmation-info-panel {
+  .mat-mdc-dialog-surface {
+    border: 1px solid var(--mat-sys-primary-container);
+  }
+
+  h1[mat-dialog-title],
+  h2[mat-dialog-title] {
+    color: var(--mat-sys-primary);
+    font-weight: 500;
+  }
+
+  .confirm-button,
+  button.mat-mdc-raised-button {
+    background-color: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+  }
+}
+
+/* =============================================
+// Project Management Dialogs
+// ============================================= */
+
+// Choose Name Dialog - 400px
+.choose-name-dialog-panel {
+  --mat-dialog-container-max-width: 400px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 400px;
+    max-width: 400px;
+  }
+}
+
+// Add Blank Project Dialog - 400px
+.add-blank-project-dialog-panel {
+  --mat-dialog-container-max-width: 400px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 400px;
+    max-width: 400px;
+  }
+}
+
+// Import Project Dialog - 400px
+.import-project-dialog-panel {
+  --mat-dialog-container-max-width: 400px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 400px;
+    max-width: 400px;
+  }
+}
+
+// Delete All Projects Confirmation - 550px x 650px
+.delete-all-projects-dialog-panel {
+  --mat-dialog-container-max-width: 550px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 550px;
+    max-width: 550px;
+    max-height: 650px;
+  }
+
+  .mat-mdc-dialog-content {
+    max-height: calc(650px - 140px);
+    overflow-y: auto;
+  }
+}
+
+/* =============================================
+// Image Manager Dialogs
+// ============================================= */
+
+// Question Dialog - 450px
+.question-dialog-panel {
+  --mat-dialog-container-max-width: 450px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 450px;
+    max-width: 450px;
+  }
+}
+
+// Add Image Dialog - 600px x 550px
+.add-image-dialog-panel {
+  --mat-dialog-container-max-width: 600px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 600px;
+    max-width: 600px;
+    max-height: 550px;
+  }
+
+  .mat-mdc-dialog-content {
+    max-height: calc(550px - 140px);
+    overflow-y: auto;
+  }
+}
+
+// Delete All Images Dialog - 550px x 650px
+.delete-all-images-dialog-panel {
+  --mat-dialog-container-max-width: 550px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 550px;
+    max-width: 550px;
+    max-height: 650px;
+  }
+
+  .mat-mdc-dialog-content {
+    max-height: calc(650px - 140px);
+    overflow-y: auto;
+  }
+}
+
+/* =============================================
+// User/Role/Group Management Dialogs
+// ============================================= */
+
+// Add User Dialog - 400px
+.add-user-dialog-panel {
+  --mat-dialog-container-max-width: 400px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 400px;
+    max-width: 400px;
+  }
+}
+
+// Change User Password Dialog - 400px x 400px
+.change-user-password-dialog-panel {
+  --mat-dialog-container-max-width: 400px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 400px;
+    max-width: 400px;
+    height: 400px;
+    max-height: 400px;
+  }
+}
+
+// AI Profile Dialog - 700px
+// Inherits from base-dialog-panel
+// Similar to simple-dialog-panel but with 700px width
+.ai-profile-dialog-panel {
+  --mat-dialog-container-max-width: 700px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 700px;
+    max-width: 700px;
+    max-height: 80vh;
+
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+    }
+  }
+
+  /* Dialog content - with max-height for scroll */
+  .mat-mdc-dialog-content {
+    max-height: calc(80vh - 140px);
+  }
+}
+
+/* =============================================
+// Node Editor Dialogs
+// ============================================= */
+
+// QEMU Configurator - 500px
+.qemu-configurator-dialog-panel {
+  --mat-dialog-container-max-width: 500px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 500px;
+    max-width: 500px;
+  }
+}
+
+// Docker Configurator - 800px
+.docker-configurator-dialog-panel {
+  --mat-dialog-container-max-width: 800px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 800px;
+    max-width: 800px;
+  }
+
+  /* Two column grid layout for form fields */
+  .two-column-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start;
+
+    .grid-span-2 {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+/* =============================================
+// Context Menu Action Dialogs
+// ============================================= */
+
+// Idle PC Action - 500px
+.idle-pc-action-dialog-panel {
+  --mat-dialog-container-max-width: 500px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 500px;
+    max-width: 500px;
+  }
+}
+
+// Export Config Action - 500px
+.export-config-action-dialog-panel {
+  --mat-dialog-container-max-width: 500px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 500px;
+    max-width: 500px;
+  }
+}
+
+// Import Config Action - 500px
+.import-config-action-dialog-panel {
+  --mat-dialog-container-max-width: 500px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 500px;
+    max-width: 500px;
+  }
+}
+
+// Show Node Action - 600px x 600px
+.show-node-action-dialog-panel {
+  --mat-dialog-container-max-width: 600px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 600px;
+    max-width: 600px;
+    max-height: 600px;
+  }
+
+  .mat-mdc-dialog-content {
+    max-height: calc(600px - 140px);
+    overflow-y: auto;
+  }
+}
+
+// Edit Text Action - 300px
+.edit-text-action-dialog-panel {
+  --mat-dialog-container-max-width: 300px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 300px;
+    max-width: 300px;
+  }
+}
+
+// Edit Config Action - 600px x 500px
+.edit-config-action-dialog-panel {
+  --mat-dialog-container-max-width: 600px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 600px;
+    max-width: 600px;
+    height: 500px;
+    max-height: 500px;
+  }
+
+  .mat-mdc-dialog-content {
+    max-height: calc(500px - 140px);
+    overflow-y: auto;
+  }
+}
+
+// Edit Style Action - 500px
+// Inherits from base-dialog-panel + simple-dialog-panel
+.edit-style-action-dialog-panel {
+  --mat-dialog-container-max-width: 500px;
+}
+
+/* =============================================
+// Other Component Dialogs
+// ============================================= */
+
+// Template Dialog - 600px
+.template-dialog-panel {
+  --mat-dialog-container-max-width: 600px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 600px;
+    max-width: 600px;
+  }
+}
+
+// Template Name Dialog - 400px
+.template-name-dialog-panel {
+  --mat-dialog-container-max-width: 400px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 400px;
+    max-width: 400px;
+  }
+}
+
+// Controller Dialogs - 350px/400px
+.controller-dialog-panel {
+  --mat-dialog-container-max-width: 400px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 400px;
+    max-width: 400px;
+  }
+}
+
+.controller-small-dialog-panel {
+  --mat-dialog-container-max-width: 350px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 350px;
+    max-width: 350px;
+  }
+}
+
+// Add ACE Dialog - 1000px
+.add-ace-dialog-panel {
+  --mat-dialog-container-max-width: 1000px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 1000px;
+    max-width: 1000px;
+  }
+}
+
+// Add User To Group Dialog - 700px x 500px
+// Inherits from base-dialog-panel + simple-dialog-panel
+// Only overrides width (700px) and height (500px)
+.add-user-to-group-dialog-panel {
+  --mat-dialog-container-max-width: 700px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 700px;
+    max-width: 700px;
+    height: 500px;
+    max-height: 500px;
+
+    .mat-mdc-dialog-surface {
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  .mat-mdc-dialog-content {
+    flex: 1;
+    overflow: hidden;
+    padding: 0; // Remove default padding, component handles spacing
+  }
+
+  // Hide default dialog actions since we have custom ones
+  .mat-dialog-actions {
+    display: none;
+  }
+}
+
+/* =============================================
+// AI Chat Session Menu Items
+// ============================================= */
+.session-action-menu .mat-mdc-menu-item {
+  display: flex;
+  align-items: center;
+}
+
+/* Web Wireshark Inline Window Styles are now in the component's own SCSS file */
+
+/* =============================================
+// Code Block Dialog Panel - Custom sized for code display
+// Inherits from base-dialog-panel, only overrides width
+// ============================================= */
+.code-block-dialog-panel {
+  --mat-dialog-container-max-width: 1200px;
+
+  mat-dialog-container,
+  .mat-mdc-dialog-container {
+    width: 1200px;
+    max-width: 1200px;
+  }
+
+  /* Override content padding for code display */
+  .mat-mdc-dialog-content {
+    padding: 0;
+  }
+
+  /* Add border top to actions */
+  .mat-mdc-dialog-actions {
+    border-top: 1px solid var(--mat-sys-outline-variant);
+  }
+}

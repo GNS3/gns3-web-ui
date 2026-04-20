@@ -1,28 +1,27 @@
+/**
+ * GNS3 Log Console Component Styles
+ * Using MD3 CSS variables
+ */
+
 .consoleWrapper {
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100%;
-  background: #000000;
-  color: white;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
   overflow: hidden;
   font-size: 12px;
 }
 
-.lightTheme {
-  background: white !important;
-  color: black;
-}
-
 .filterButton {
   background: transparent;
-  color: white;
+  color: var(--mat-sys-on-surface-variant);
   border: none;
-  margin-top: 0px;
+  margin-top: 0;
   outline: none;
-  color: #dbd5d5;
   font-weight: bold;
-  padding: 0px;
+  padding: 0;
 }
 
 .consoleFiltering {
@@ -37,7 +36,7 @@
   display: flex;
   padding: 4px 8px;
   justify-content: space-between;
-  background: #1a1a1a;
+  background: var(--mat-sys-surface);
   flex-shrink: 0;
 }
 
@@ -45,13 +44,13 @@
   flex: 1;
   overflow-y: auto;
   padding: 8px;
-  color: #f0f0f0;
+  color: var(--mat-sys-on-surface);
   font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.4;
-  scrollbar-color: darkgrey #1a1a1a;
+  scrollbar-color: var(--mat-sys-on-surface-variant) var(--mat-sys-surface);
   scrollbar-width: thin;
-  background: #000000;
+  background: var(--mat-sys-surface);
 }
 
 .consoleInput {
@@ -59,16 +58,16 @@
   height: 32px;
   padding: 4px 8px;
   display: flex;
-  background: #1a1a1a;
+  background: var(--mat-sys-surface);
   flex-shrink: 0;
 }
 
 .commandLine {
   background-color: transparent;
-  color: #f0f0f0;
+  color: var(--mat-sys-on-surface);
   border: none;
   font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .inputIcon {
@@ -76,26 +75,13 @@
 }
 
 mat-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
 }
 
 input:focus {
   outline: none;
-}
-
-::-webkit-scrollbar {
-  width: 0.5em;
-}
-
-::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: darkgrey;
-  outline: 1px solid #263238;
 }
 
 .closeButton {

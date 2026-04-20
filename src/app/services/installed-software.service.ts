@@ -3,9 +3,7 @@ import { ExternalSoftwareDefinitionService } from './external-software-definitio
 
 @Injectable()
 export class InstalledSoftwareService {
-  constructor(
-    private externalSoftwareDefinition: ExternalSoftwareDefinitionService
-  ) {}
+  constructor(private externalSoftwareDefinition: ExternalSoftwareDefinitionService) {}
 
   list() {
     // Web application - software installation detection not available

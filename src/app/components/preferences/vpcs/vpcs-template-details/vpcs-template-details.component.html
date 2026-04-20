@@ -1,105 +1,126 @@
-<div class="content" [ngClass]="{ shadowed: isSymbolSelectionOpened }">
-  <div class="default-header">
-    <div class="row">
-      <div class="col col-md-1">
-        <button
-          class="top-button"
-          *ngIf="controller"
-          class="cancel-button"
-          mat-button
-          (click)="goBack()"
-        >
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-      </div>
-      <div class="col col-md-11">
-        <h1 class="col">VPCS node template configuration</h1>
-      </div>
-    </div>
-  </div>
-  <div class="default-content" *ngIf="vpcsTemplate">
-    <mat-card class="matCard">
-      <form [formGroup]="inputForm">
-        <mat-form-field class="form-field">
+<div class="vpcs-template-details">
+  <header class="vpcs-template-details__header">
+    @if (controller) {
+    <button class="vpcs-template-details__back-btn" (click)="goBack()" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    }
+    <h1 class="vpcs-template-details__title">VPCS node template configuration</h1>
+  </header>
+
+  @if (vpcsTemplate) {
+  <main class="vpcs-template-details__content">
+    <section class="vpcs-template-details__form-card">
+      <h3 class="vpcs-template-details__section-title">General settings</h3>
+      <form class="vpcs-template-details__form">
+        <mat-form-field appearance="fill" class="vpcs-template-details__field">
+          <mat-label>Template name</mat-label>
           <input
             matInput
+            [value]="templateName()"
+            (input)="templateName.set($event.target.value)"
             type="text"
-            [(ngModel)]="vpcsTemplate.name"
-            formControlName="templateName"
             placeholder="Template name"
           />
         </mat-form-field>
-        <mat-form-field class="form-field">
+
+        <mat-form-field appearance="fill" class="vpcs-template-details__field">
+          <mat-label>Default name format</mat-label>
           <input
             matInput
+            [value]="defaultName()"
+            (input)="defaultName.set($event.target.value)"
             type="text"
-            [(ngModel)]="vpcsTemplate.default_name_format"
-            formControlName="defaultName"
             placeholder="Default name format"
           />
         </mat-form-field>
-        <mat-form-field class="form-field">
+
+        <mat-form-field appearance="fill" class="vpcs-template-details__field">
+          <mat-label>Base script file</mat-label>
           <input
             matInput
+            [value]="scriptFile()"
+            (input)="scriptFile.set($event.target.value)"
             type="text"
-            [(ngModel)]="vpcsTemplate.base_script_file"
-            formControlName="scriptFile"
             placeholder="Base script file"
           />
         </mat-form-field>
-        <mat-form-field class="form-field">
-          <input matInput type="text" [(ngModel)]="vpcsTemplate.symbol" formControlName="symbol" placeholder="Symbol" />
-        </mat-form-field>
-        <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br /><br />
-        <mat-form-field class="form-field tags-field">
+
+        <div class="vpcs-template-details__symbol-row">
+          <mat-form-field appearance="fill" class="vpcs-template-details__field vpcs-template-details__field--flex">
+            <mat-label>Symbol</mat-label>
+            <input
+              matInput
+              [value]="symbol()"
+              (input)="symbol.set($event.target.value)"
+              type="text"
+              placeholder="Symbol"
+            />
+          </mat-form-field>
+          <button mat-button class="vpcs-template-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
+        </div>
+
+        <mat-form-field appearance="fill" class="vpcs-template-details__field">
           <mat-label>Tags</mat-label>
-          <mat-chip-list #chipList>
-            <mat-chip *ngFor="let tag of vpcsTemplate?.tags" (removed)="removeTag(tag)">
+          <mat-chip-grid #chipList>
+            @for (tag of tags(); track tag) {
+            <mat-chip (removed)="removeTag(tag)">
               {{ tag }}
               <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip>
-          </mat-chip-list>
-          <input matInput placeholder="Add tags"
-                 [matChipInputFor]="chipList"
-                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                 (matChipInputTokenEnd)="addTag($event)" />
+            }
+          </mat-chip-grid>
+          <input
+            matInput
+            placeholder="Add tags"
+            [matChipInputFor]="chipList"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            (matChipInputTokenEnd)="addTag($event)"
+          />
         </mat-form-field>
-        <mat-form-field class="form-field">
-          <mat-select
-            placeholder="Category"
-            [ngModelOptions]="{ standalone: true }"
-            [(ngModel)]="vpcsTemplate.category"
-          >
-            <mat-option *ngFor="let category of categories" [value]="category[1]">
-              {{ category[0] }}
+
+        <mat-form-field appearance="fill" class="vpcs-template-details__field">
+          <mat-label>Category</mat-label>
+          <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
+            @for (cat of categories; track $index) {
+            <mat-option [value]="cat[1]">
+              {{ cat[0] }}
             </mat-option>
+            }
           </mat-select>
         </mat-form-field>
-        <mat-form-field class="select">
-          <mat-select
-            placeholder="Console type"
-            [ngModelOptions]="{ standalone: true }"
-            [(ngModel)]="vpcsTemplate.console_type"
-          >
-            <mat-option *ngFor="let type of consoleTypes" [value]="type">
+
+        <mat-form-field appearance="fill" class="vpcs-template-details__field">
+          <mat-label>Console type</mat-label>
+          <mat-select [value]="consoleType()" (selectionChange)="consoleType.set($event.value)">
+            @for (type of consoleTypes; track type) {
+            <mat-option [value]="type">
               {{ type }}
             </mat-option>
+            }
           </mat-select>
         </mat-form-field>
-        <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="vpcsTemplate.console_auto_start">
-          Auto start console
-        </mat-checkbox>
+
+        <mat-checkbox [checked]="consoleAutoStart()" (change)="consoleAutoStart.set($event.checked)"
+          >Auto start console</mat-checkbox
+        >
       </form>
-    </mat-card>
-    <div class="buttons-bar">
-      <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
-      <button mat-raised-button color="primary" (click)="onSave()">Save</button>
+    </section>
+
+    <section class="vpcs-template-details__form-card">
+      <h3 class="vpcs-template-details__section-title">Usage</h3>
+      <div class="preferences__usage-form">
+        <mat-form-field appearance="fill" class="preferences__usage-field--full">
+          <mat-label>Usage notes</mat-label>
+          <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
+        </mat-form-field>
+      </div>
+    </section>
+
+    <div class="vpcs-template-details__actions">
+      <button class="vpcs-template-details__cancel-btn" (click)="goBack()" mat-button>Cancel</button>
+      <button mat-raised-button color="primary" class="vpcs-template-details__save-btn" (click)="onSave()">Save</button>
     </div>
-  </div>
+  </main>
+  }
 </div>
-<app-symbols-menu
-  *ngIf="isSymbolSelectionOpened && vpcsTemplate"
-  [controller]="controller"
-  [symbol]="vpcsTemplate.symbol"
-  (symbolChangedEmitter)="symbolChanged($event)"
-></app-symbols-menu>

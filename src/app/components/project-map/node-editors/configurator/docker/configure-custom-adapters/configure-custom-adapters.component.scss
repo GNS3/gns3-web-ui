@@ -1,13 +1,18 @@
+/**
+ * GNS3 Configure Custom Adapters Component Styles
+ * Using MD3 CSS variables
+ */
+
 th {
-  border: 0px !important;
+  border: 0;
 }
 
 th.mat-header-cell {
-  padding-bottom: 15px;
+  padding-bottom: 16px;
 }
 
 td.mat-cell {
-  padding-top: 15px;
+  padding-top: 16px;
 }
 
 .header {

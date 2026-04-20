@@ -1,57 +1,97 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { Component, HostBinding, OnInit } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { NavigationCancel, NavigationEnd, NavigationError, NavigationStart, Router } from '@angular/router';
 import { ProgressService } from './common/progress/progress.service';
 import { SettingsService } from '@services/settings.service';
 import { ThemeService } from '@services/theme.service';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { GlobalUploadIndicatorComponent } from './components/global-upload-indicator/global-upload-indicator.component';
+import { ConnectionManagerService } from '@services/connection-manager.service';
+import { ControllerService } from '@services/controller.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  styleUrl: './app.component.scss',
+  imports: [CommonModule, RouterModule, GlobalUploadIndicatorComponent],
+  host: {
+    class: 'componentCssClass',
+  },
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent implements OnInit {
-  public darkThemeEnabled: boolean = false;
+  private overlayContainer = inject(OverlayContainer);
+  private iconReg = inject(MatIconRegistry);
+  private sanitizer = inject(DomSanitizer);
+  private settingsService = inject(SettingsService);
+  private themeService = inject(ThemeService);
+  private router = inject(Router);
+  private progressService = inject(ProgressService);
+  private connectionManager = inject(ConnectionManagerService);
+  private controllerService = inject(ControllerService);
 
-  constructor(
-    private overlayContainer: OverlayContainer,
-    iconReg: MatIconRegistry,
-    sanitizer: DomSanitizer,
-    private settingsService: SettingsService,
-    private themeService: ThemeService,
-    private router: Router,
-    private progressService: ProgressService
-  ) {
-    iconReg.addSvgIcon('gns3', sanitizer.bypassSecurityTrustResourceUrl('./assets/gns3_icon.svg'));
-    iconReg.addSvgIcon('gns3black', sanitizer.bypassSecurityTrustResourceUrl('./assets/gns3_icon_black.svg'));
+  constructor() {
+    this.iconReg.addSvgIcon('gns3', this.sanitizer.bypassSecurityTrustResourceUrl('./assets/gns3_icon.svg'));
+    this.iconReg.addSvgIcon('gns3black', this.sanitizer.bypassSecurityTrustResourceUrl('./assets/gns3_icon_black.svg'));
+    this.iconReg.addSvgIcon('github', this.sanitizer.bypassSecurityTrustResourceUrl('./assets/github-icon.svg'));
 
-    router.events.subscribe((value) => {
+    this.router.events.subscribe((value) => {
       this.checkEvent(value);
     });
   }
 
-  @HostBinding('class') componentCssClass;
-
   ngOnInit(): void {
-    this.applyTheme(this.themeService.savedTheme + '-theme');
-    this.themeService.themeChanged.subscribe((event: string) => {
-      this.applyTheme(event);
+    this.themeService.themeChanged.subscribe((theme: string) => {
+      this.applyTheme(theme);
+    });
+
+    // Check for auto-login and establish WebSocket connection
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      this.checkAndEstablishConnection(event.url);
     });
   }
 
-  applyTheme(theme: string) {
-    if (theme === 'dark-theme') {
-      this.darkThemeEnabled = true;
-    } else {
-      this.darkThemeEnabled = false;
+  /**
+   * Check if user is auto-logged in and establish WebSocket connection
+   */
+  private async checkAndEstablishConnection(url: string) {
+    // Extract controller_id from URL
+    const controllerIdMatch = url.match(/\/controller\/(\d+)/);
+    if (!controllerIdMatch) return;
+
+    const controllerId = parseInt(controllerIdMatch[1], 10);
+
+    try {
+      const controller = await this.controllerService.get(controllerId);
+
+      // If controller has auth token, user is logged in - establish connection
+      if (controller && controller.authToken) {
+        this.connectionManager.establishConnection(controller);
+      }
+    } catch (error) {
+      console.error('Failed to check controller for auto-login:', error);
     }
+  }
+
+  applyTheme(theme: string) {
     const classList = this.overlayContainer.getContainerElement().classList;
-    classList.remove('dark-theme', 'light-theme', 'dark', 'light');
-    classList.add(theme);
-    classList.add(theme === 'dark-theme' ? 'dark' : 'light');
-    this.componentCssClass = theme;
+    classList.remove(
+      'theme-deeppurple-amber',
+      'theme-indigo-pink',
+      'theme-magenta-violet',
+      'theme-rose-red',
+      'theme-pink-bluegrey',
+      'theme-purple-green',
+      'theme-azure-blue',
+      'theme-cyan-orange'
+    );
+    classList.add(`theme-${theme}`);
   }
 
   checkEvent(routerEvent): void {

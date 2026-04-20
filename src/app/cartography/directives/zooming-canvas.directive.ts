@@ -1,4 +1,4 @@
-import { Directive, ElementRef, OnDestroy, OnInit } from '@angular/core';
+import { Directive, ElementRef, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { select } from 'd3-selection';
 import { Subscription } from 'rxjs';
 import { MapScaleService } from '@services/mapScale.service';
@@ -6,7 +6,8 @@ import { MovingEventSource } from '../events/moving-event-source';
 import { Context } from '../models/context';
 
 @Directive({
-  selector: '[zoomingCanvas]',
+  standalone: true,
+  selector: '[appZoomingCanvas]',
 })
 export class ZoomingCanvasDirective implements OnInit, OnDestroy {
   private wheelListener: Function;
@@ -14,12 +15,17 @@ export class ZoomingCanvasDirective implements OnInit, OnDestroy {
 
   constructor(
     private element: ElementRef,
+    private renderer: Renderer2,
     private movingEventSource: MovingEventSource,
     private context: Context,
     private mapsScaleService: MapScaleService
   ) {}
 
   ngOnInit() {
+    // Disable default browser zoom via CSS for passive event listener support
+    this.renderer.setStyle(this.element.nativeElement, 'touch-action', 'none');
+    this.renderer.setStyle(this.element.nativeElement, '-ms-touch-action', 'none');
+
     this.movingModeState = this.movingEventSource.movingModeState.subscribe((event: boolean) => {
       event ? this.addListener() : this.removeListener();
     });
@@ -32,7 +38,6 @@ export class ZoomingCanvasDirective implements OnInit, OnDestroy {
   addListener() {
     this.wheelListener = (event: WheelEvent) => {
       event.stopPropagation();
-      event.preventDefault();
 
       let zoom = event.deltaY;
       zoom = event.deltaMode === 0 ? zoom / 100 : zoom / 3;
@@ -52,8 +57,9 @@ export class ZoomingCanvasDirective implements OnInit, OnDestroy {
       });
     };
 
+    // Use passive: true since we're using CSS to prevent default zoom
     this.element.nativeElement.addEventListener('wheel', this.wheelListener as EventListenerOrEventListenerObject, {
-      passive: false,
+      passive: true,
     });
   }
 

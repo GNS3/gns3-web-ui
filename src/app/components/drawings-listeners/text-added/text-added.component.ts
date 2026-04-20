@@ -1,4 +1,14 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  inject,
+  input,
+} from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
@@ -15,22 +25,22 @@ import { DrawingService } from '@services/drawing.service';
 @Component({
   selector: 'app-text-added',
   templateUrl: './text-added.component.html',
-  styleUrls: ['./text-added.component.scss'],
+  styleUrl: './text-added.component.scss',
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TextAddedComponent implements OnInit, OnDestroy {
-  @Input() controller: Controller;
+  readonly controller = input<Controller>(undefined);
   @Input() project: Project;
   @Output() drawingSaved = new EventEmitter<boolean>();
   private textAdded: Subscription;
 
-  constructor(
-    private drawingService: DrawingService,
-    private drawingsDataSource: DrawingsDataSource,
-    private drawingsEventSource: DrawingsEventSource,
-    private drawingsFactory: DefaultDrawingsFactory,
-    private mapDrawingToSvgConverter: MapDrawingToSvgConverter,
-    private context: Context
-  ) {}
+  private drawingService = inject(DrawingService);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private drawingsEventSource = inject(DrawingsEventSource);
+  private drawingsFactory = inject(DefaultDrawingsFactory);
+  private mapDrawingToSvgConverter = inject(MapDrawingToSvgConverter);
+  private context = inject(Context);
 
   ngOnInit() {
     this.textAdded = this.drawingsEventSource.textAdded.subscribe((evt) => this.onTextAdded(evt));
@@ -41,14 +51,13 @@ export class TextAddedComponent implements OnInit, OnDestroy {
     (drawing.element as TextElement).text = evt.savedText;
     let svgText = this.mapDrawingToSvgConverter.convert(drawing);
 
+    // evt.x and evt.y are canvas coordinates (like rectangle/circle)
     this.drawingService
       .add(
-        this.controller,
+        this.controller(),
         this.project.project_id,
-        (evt.x - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x)) /
-          this.context.transformation.k,
-        (evt.y - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y)) /
-          this.context.transformation.k,
+        evt.x,
+        evt.y,
         svgText
       )
       .subscribe((controllerDrawing: Drawing) => {

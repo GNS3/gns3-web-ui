@@ -1,8 +1,18 @@
-import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, inject, input, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { BehaviorSubject, Subject, combineLatest } from 'rxjs';
 import { takeUntil, filter } from 'rxjs/operators';
-import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTableModule } from '@angular/material/table';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatCardModule } from '@angular/material/card';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import { Controller } from '@models/controller';
 import { User } from '@models/users/user';
@@ -10,7 +20,7 @@ import {
   LLMModelConfigWithSource,
   LLMModelConfigInheritedResponse,
   CreateLLMModelConfigRequest,
-  UpdateLLMModelConfigRequest
+  UpdateLLMModelConfigRequest,
 } from '@models/ai-profile';
 
 import { AiProfilesService } from '@services/ai-profiles.service';
@@ -20,14 +30,29 @@ import { ConfirmDialogComponent } from './ai-profile-dialog/confirm-dialog/confi
 @Component({
   selector: 'app-ai-profile-tab',
   templateUrl: './ai-profile-tab.component.html',
-  styleUrls: ['./ai-profile-tab.component.scss']
+  styleUrl: './ai-profile-tab.component.scss',
+  imports: [
+    CommonModule,
+    MatDialogModule,
+    MatSnackBarModule,
+    MatTableModule,
+    MatButtonModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatCheckboxModule,
+    MatCardModule,
+    MatProgressSpinnerModule,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AiProfileTabComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   // Input properties from parent component
-  @Input() controller: Controller;
-  @Input() user: User;
+  readonly controller = input<Controller>(undefined);
+  readonly user = input<User>(undefined);
 
   // Data state
   loading$ = new BehaviorSubject<boolean>(false);
@@ -37,40 +62,45 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
   defaultConfig$ = new BehaviorSubject<LLMModelConfigWithSource | null>(null);
 
   // Local data
-  configs: LLMModelConfigWithSource[] = [];
-  defaultConfig: LLMModelConfigWithSource | null = null;
+  configs = signal<LLMModelConfigWithSource[]>([]);
+  defaultConfig = signal<LLMModelConfigWithSource | null>(null);
   settingDefaultConfigs = new Set<string>();
 
-  // Table columns - now with model type column
-  displayedColumns: string[] = ['name', 'model_type', 'provider', 'model', 'context_limit', 'actions'];
+  // Table columns (model_type removed as only text type is supported)
+  displayedColumns: string[] = ['name', 'provider', 'model', 'context_limit', 'actions'];
 
-  constructor(
-    private aiProfilesService: AiProfilesService,
-    private dialog: MatDialog,
-    private snackBar: MatSnackBar
-  ) {}
+  private aiProfilesService = inject(AiProfilesService);
+  private dialog = inject(MatDialog);
+  private snackBar = inject(MatSnackBar);
+
+  constructor() {}
 
   ngOnInit(): void {
+    // Ensure inputs are available before loading
+    if (!this.controller() || !this.user()) {
+      console.error('AiProfileTabComponent: controller or user inputs are not set');
+      return;
+    }
+
     this.loadConfigs();
 
     // Subscribe to data changes
-    combineLatest([
-      this.configs$,
-      this.defaultConfig$
-    ]).pipe(
-      takeUntil(this.destroy$)
-    ).subscribe(([configs, defaultConfig]) => {
-      this.configs = configs;
-      this.defaultConfig = defaultConfig;
-    });
+    combineLatest([this.configs$, this.defaultConfig$])
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(([configs, defaultConfig]) => {
+        this.configs.set(configs);
+        this.defaultConfig.set(defaultConfig);
+      });
 
     // Subscribe to errors
-    this.error$.pipe(
-      takeUntil(this.destroy$),
-      filter(error => error !== null)
-    ).subscribe(error => {
-      this.showError(error);
-    });
+    this.error$
+      .pipe(
+        takeUntil(this.destroy$),
+        filter((error) => error !== null)
+      )
+      .subscribe((error) => {
+        this.showError(error);
+      });
   }
 
   ngOnDestroy(): void {
@@ -85,10 +115,9 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
     this.loading$.next(true);
     this.error$.next(null);
 
-    this.aiProfilesService.getConfigs(this.controller, this.user.user_id)
-      .pipe(
-        takeUntil(this.destroy$)
-      )
+    this.aiProfilesService
+      .getConfigs(this.controller(), this.user().user_id)
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response: LLMModelConfigInheritedResponse) => {
           this.configs$.next(response.configs);
@@ -97,7 +126,7 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           this.handleError(error, 'Failed to load configurations');
-        }
+        },
       });
   }
 
@@ -109,10 +138,37 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Extract and format the domain from base_url for display
+   * e.g., "https://openrouter.ai/api/v1" -> "openrouter.ai"
+   */
+  getProviderDisplay(config: LLMModelConfigWithSource): string {
+    const baseUrl = config.config.base_url;
+
+    if (!baseUrl) {
+      // Fallback to provider name if no base_url
+      return config.config.provider;
+    }
+
+    try {
+      // Remove protocol and path, extract hostname
+      const url = new URL(baseUrl);
+      const hostname = url.hostname;
+
+      // Remove common prefixes like "api." to make it cleaner
+      // e.g., "api.openai.com" -> "openai.com"
+      // e.g., "openrouter.ai" -> "openrouter.ai"
+      return hostname.replace(/^api\./, '');
+    } catch {
+      // If URL parsing fails, fallback to provider name
+      return config.config.provider;
+    }
+  }
+
+  /**
    * Check if config is default
    */
   isDefault(config: LLMModelConfigWithSource): boolean {
-    return this.defaultConfig?.config_id === config.config_id;
+    return this.defaultConfig()?.config_id === config.config_id;
   }
 
   /**
@@ -130,19 +186,24 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
    */
   openCreateDialog(): void {
     const dialogRef = this.dialog.open(AiProfileDialogComponent, {
-      width: '700px',
+      panelClass: ['base-dialog-panel', 'ai-profile-dialog-panel'],
       data: {
         mode: 'create',
         config: null,
-        existingNames: this.configs.filter(c => c.source === 'user').map(c => c.name)
-      }
+        existingNames: this.configs()
+          .filter((c) => c.source === 'user')
+          .map((c) => c.name),
+      },
     });
 
-    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result) {
-        this.createConfig(result);
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((result) => {
+        if (result) {
+          this.createConfig(result);
+        }
+      });
   }
 
   /**
@@ -150,21 +211,24 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
    */
   openEditDialog(config: LLMModelConfigWithSource): void {
     const dialogRef = this.dialog.open(AiProfileDialogComponent, {
-      width: '700px',
+      panelClass: ['base-dialog-panel', 'ai-profile-dialog-panel'],
       data: {
         mode: 'edit',
         config: { ...config },
-        existingNames: this.configs
-          .filter(c => c.source === 'user' && c.config_id !== config.config_id)
-          .map(c => c.name)
-      }
+        existingNames: this.configs()
+          .filter((c) => c.source === 'user' && c.config_id !== config.config_id)
+          .map((c) => c.name),
+      },
     });
 
-    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result) {
-        this.updateConfig(config.config_id, result);
-      }
-    });
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((result) => {
+        if (result) {
+          this.updateConfig(config.config_id, result);
+        }
+      });
   }
 
   /**
@@ -173,11 +237,9 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
   createConfig(configData: CreateLLMModelConfigRequest): void {
     this.loading$.next(true);
 
-    this.aiProfilesService.createConfig(
-      this.controller,
-      this.user.user_id,
-      configData
-    ).pipe(takeUntil(this.destroy$))
+    this.aiProfilesService
+      .createConfig(this.controller(), this.user().user_id, configData)
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           // Reload all configs to get fresh data
@@ -186,7 +248,7 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           this.handleError(error, 'Failed to create configuration');
-        }
+        },
       });
   }
 
@@ -196,12 +258,9 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
   updateConfig(configId: string, updates: UpdateLLMModelConfigRequest): void {
     this.loading$.next(true);
 
-    this.aiProfilesService.updateConfig(
-      this.controller,
-      this.user.user_id,
-      configId,
-      updates
-    ).pipe(takeUntil(this.destroy$))
+    this.aiProfilesService
+      .updateConfig(this.controller(), this.user().user_id, configId, updates)
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           // Reload all configs to get fresh data
@@ -214,7 +273,7 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
           } else {
             this.handleError(error, 'Failed to update configuration');
           }
-        }
+        },
       });
   }
 
@@ -223,36 +282,37 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
    */
   deleteConfig(config: LLMModelConfigWithSource): void {
     const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '400px',
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
       data: {
         title: 'Delete Configuration',
         message: `Are you sure you want to delete configuration "${config.name}"? This action cannot be undone.`,
         confirmText: 'Delete',
-        cancelText: 'Cancel'
-      }
+        cancelText: 'Cancel',
+      },
     });
 
-    dialogRef.afterClosed().pipe(takeUntil(this.destroy$)).subscribe(result => {
-      if (result) {
-        this.loading$.next(true);
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((result) => {
+        if (result) {
+          this.loading$.next(true);
 
-        this.aiProfilesService.deleteConfig(
-          this.controller,
-          this.user.user_id,
-          config.config_id
-        ).pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: () => {
-              // Reload all configs to get fresh data
-              this.loadConfigs();
-              this.showSuccess('Configuration deleted successfully');
-            },
-            error: (error) => {
-              this.handleError(error, 'Failed to delete configuration');
-            }
-          });
-      }
-    });
+          this.aiProfilesService
+            .deleteConfig(this.controller(), this.user().user_id, config.config_id)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: () => {
+                // Reload all configs to get fresh data
+                this.loadConfigs();
+                this.showSuccess('Configuration deleted successfully');
+              },
+              error: (error) => {
+                this.handleError(error, 'Failed to delete configuration');
+              },
+            });
+        }
+      });
   }
 
   /**
@@ -261,27 +321,52 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
    */
   toggleDefaultConfig(config: LLMModelConfigWithSource): void {
     const configId = config.config_id;
-    const isCurrentlyDefault = this.isDefault(config);
+
+    // Check if there's already a pending operation on this config
+    if (this.settingDefaultConfigs.has(configId)) {
+      return; // Prevent duplicate operations
+    }
+
+    // Use the config's own is_default property to determine current state
+    // This is more reliable than checking the defaultConfig signal which may be stale
+    const isCurrentlyDefault = config.is_default;
+
+    // Store previous state for rollback on error
+    const previousDefaultConfig = this.defaultConfig();
+    const previousConfigs = [...this.configs()];
+
+    // Optimistic update: update UI immediately
+    const updatedConfigs = previousConfigs.map((c) => ({
+      ...c,
+      is_default: isCurrentlyDefault ? false : c.config_id === configId,
+    }));
+    this.configs.set(updatedConfigs);
+    this.defaultConfig.set(isCurrentlyDefault ? null : config);
 
     // Add to setting default set (button-level loading state)
     this.settingDefaultConfigs.add(configId);
     this.settingDefault$.next(new Set(this.settingDefaultConfigs));
 
     if (isCurrentlyDefault) {
-      this.aiProfilesService.unsetDefaultConfig(this.controller, this.user.user_id, configId)
+      this.aiProfilesService
+        .unsetDefaultConfig(this.controller(), this.user().user_id, configId)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
-            // Reload all configs to get fresh data
-            this.loadConfigs();
-
             // Remove from setting default set
             this.settingDefaultConfigs.delete(configId);
             this.settingDefault$.next(new Set(this.settingDefaultConfigs));
 
             this.showSuccess('Default configuration removed');
+
+            // Still reload to ensure server state is in sync
+            this.loadConfigsWithoutLoading();
           },
           error: (error) => {
+            // Rollback on error
+            this.configs.set(previousConfigs);
+            this.defaultConfig.set(previousDefaultConfig);
+
             // Remove from setting default set on error too
             this.settingDefaultConfigs.delete(configId);
             this.settingDefault$.next(new Set(this.settingDefaultConfigs));
@@ -291,23 +376,28 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
             } else {
               this.handleError(error, 'Failed to remove default configuration');
             }
-          }
+          },
         });
     } else {
-      this.aiProfilesService.setDefaultConfig(this.controller, this.user.user_id, configId)
+      this.aiProfilesService
+        .setDefaultConfig(this.controller(), this.user().user_id, configId)
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: () => {
-            // Reload all configs to get fresh data
-            this.loadConfigs();
-
             // Remove from setting default set
             this.settingDefaultConfigs.delete(configId);
             this.settingDefault$.next(new Set(this.settingDefaultConfigs));
 
             this.showSuccess('Default configuration set successfully');
+
+            // Still reload to ensure server state is in sync
+            this.loadConfigsWithoutLoading();
           },
           error: (error) => {
+            // Rollback on error
+            this.configs.set(previousConfigs);
+            this.defaultConfig.set(previousDefaultConfig);
+
             // Remove from setting default set on error too
             this.settingDefaultConfigs.delete(configId);
             this.settingDefault$.next(new Set(this.settingDefaultConfigs));
@@ -317,9 +407,29 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
             } else {
               this.handleError(error, 'Failed to set default configuration');
             }
-          }
+          },
         });
     }
+  }
+
+  /**
+   * Load configurations without showing loading state (for background refresh)
+   */
+  private loadConfigsWithoutLoading(): void {
+    this.error$.next(null);
+
+    this.aiProfilesService
+      .getConfigs(this.controller(), this.user().user_id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response: LLMModelConfigInheritedResponse) => {
+          this.configs$.next(response.configs);
+          this.defaultConfig$.next(response.default_config);
+        },
+        error: (error) => {
+          this.handleError(error, 'Failed to refresh configurations');
+        },
+      });
   }
 
   /**
@@ -355,7 +465,7 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
   private showSuccess(message: string): void {
     this.snackBar.open(message, 'Close', {
       duration: 3000,
-      panelClass: ['success-snackbar']
+      panelClass: ['success-snackbar'],
     });
   }
 
@@ -365,7 +475,7 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
   private showWarning(message: string): void {
     this.snackBar.open(message, 'Close', {
       duration: 5000,
-      panelClass: ['warning-snackbar']
+      panelClass: ['warning-snackbar'],
     });
   }
 
@@ -375,7 +485,7 @@ export class AiProfileTabComponent implements OnInit, OnDestroy {
   private showError(message: string): void {
     this.snackBar.open(message, 'Close', {
       duration: 5000,
-      panelClass: ['error-snackbar']
+      panelClass: ['error-snackbar'],
     });
   }
 }

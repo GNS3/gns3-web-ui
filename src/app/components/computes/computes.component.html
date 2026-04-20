@@ -1,0 +1,99 @@
+<div class="computes">
+  <header class="computes__header">
+    @if (controller) {
+    <button class="computes__back-btn" [routerLink]="'/controller/' + controller.id + '/projects'" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    }
+    <h1 class="computes__title">Computes</h1>
+    @if (controller) {
+    <button
+      class="computes__add-btn"
+      matTooltip="Add Compute"
+      matTooltipClass="custom-tooltip"
+      mat-icon-button
+      (click)="openAddDialog()"
+    >
+      <mat-icon>add_circle_outline</mat-icon>
+    </button>
+    }
+  </header>
+
+  <main class="computes__content">
+    <div class="computes__info">
+      <mat-icon class="computes__info-icon">info</mat-icon>
+      <p class="computes__info-text">
+        Once configured and connected, the backend maintains the connection to Compute nodes automatically. This page is
+        used to add/delete/update node configurations and view node status.
+      </p>
+    </div>
+    @if (loading()) {
+    <div class="computes__loading">Loading...</div>
+    } @if (!loading() && !computes().length) {
+    <div class="computes__empty">
+      <mat-icon class="computes__empty-icon">cloud_off</mat-icon>
+      <p>No computes found. Click + to add one.</p>
+    </div>
+    } @if (!loading() && computes().length) {
+    <nav class="computes__list">
+      @for (compute of computes(); track compute.compute_id) {
+      <div class="computes__list-item">
+        <mat-icon
+          class="computes__list-icon"
+          [style.color]="getStatusColor(compute)"
+          [matTooltip]="compute.connected ? 'Connected' : 'Disconnected'"
+        >
+          {{ getStatusIcon(compute) }}
+        </mat-icon>
+        <div class="computes__list-info">
+          <span class="computes__list-name">{{ compute.name || compute.compute_id }}</span>
+          <span class="computes__list-host">{{ formatHost(compute) }}</span>
+        </div>
+        <div class="computes__list-stats">
+          @if (compute.connected) {
+          <span class="computes__stat">
+            <mat-icon class="computes__stat-icon">memory</mat-icon>
+            {{ formatPercent(compute.cpu_usage_percent) }}
+          </span>
+          <span class="computes__stat">
+            <mat-icon class="computes__stat-icon">storage</mat-icon>
+            {{ formatPercent(compute.memory_usage_percent) }}
+          </span>
+          <span class="computes__stat">
+            <mat-icon class="computes__stat-icon">disc_full</mat-icon>
+            {{ formatPercent(compute.disk_usage_percent) }}
+          </span>
+          } @else {
+          <span class="computes__stat computes__stat--offline">Offline</span>
+          }
+        </div>
+        @if (compute.compute_id !== 'local') {
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="menu"
+          class="computes__menu-btn"
+          (click)="$event.stopPropagation()"
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu" xPosition="before">
+          <button mat-menu-item (click)="openEditDialog(compute)">
+            <mat-icon>edit</mat-icon>
+            <span>Edit</span>
+          </button>
+          <button mat-menu-item (click)="connectCompute(compute)">
+            <mat-icon>link</mat-icon>
+            <span>Connect</span>
+          </button>
+          <button mat-menu-item (click)="deleteCompute(compute)">
+            <mat-icon>delete</mat-icon>
+            <span>Delete</span>
+          </button>
+        </mat-menu>
+        }
+      </div>
+      }
+    </nav>
+    }
+  </main>
+</div>

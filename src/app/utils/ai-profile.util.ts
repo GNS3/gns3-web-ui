@@ -60,6 +60,6 @@ export function shortenModelName(model: string): string {
   // Convert to title case and format
   // Replace - and _ with spaces, then capitalize first letter of each word
   return modelName
-    .replace(/[-_]/g, ' ')  // Replace - and _ with space
-    .replace(/\b\w/g, c => c.toUpperCase()); // Capitalize first letter of each word
+    .replace(/[-_]/g, ' ') // Replace - and _ with space
+    .replace(/\b\w/g, (c) => c.toUpperCase()); // Capitalize first letter of each word
 }

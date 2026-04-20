@@ -1,7 +1,27 @@
-.menu-button {
-  margin: 0px 5px !important;
+/**
+ * GNS3 Nodes Menu Component Styles
+ * Using MD3 CSS variables
+ */
+
+/* =============================================
+// Selection State Classes
+// Unified selection states for menu items
+// ============================================= */
+
+/* Selected/Active state */
+.marked {
+  color: var(--mat-sys-primary);
 }
 
-.marked {
-  color: #0097a7 !important;
+.menu-button {
+  margin: 0 4px;
+  transition: transform 100ms ease;
+
+  mat-icon {
+    color: var(--mat-sys-on-primary);
+  }
+}
+
+.menu-button:hover {
+  transform: scale(1.2);
 }

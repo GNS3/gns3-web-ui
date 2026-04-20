@@ -1,48 +1,91 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatDividerModule } from '@angular/material/divider';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { NodesMenuConfirmationDialogComponent } from './nodes-menu-confirmation-dialog.component';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('NodesMenuConfirmationDialogComponent', () => {
-  let component: NodesMenuConfirmationDialogComponent;
   let fixture: ComponentFixture<NodesMenuConfirmationDialogComponent>;
+  let mockDialogRef: { close: ReturnType<typeof vi.fn> };
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports:[
-        MatIconModule,
-        MatToolbarModule,
-        MatMenuModule,
-        MatCheckboxModule,
-        MatDialogModule,
-        MatSnackBarModule,
-        MatDividerModule,
-      ],
+  const createComponent = (actionType: string) => {
+    mockDialogRef = { close: vi.fn() };
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [NodesMenuConfirmationDialogComponent],
       providers: [
-
-        { provide: MAT_DIALOG_DATA, useValue: {} },
-        { provide: MatDialogRef, useValue: {} },
+        { provide: MatDialogRef, useValue: mockDialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: actionType },
       ],
-      declarations: [ NodesMenuConfirmationDialogComponent ],
-      schemas: [NO_ERRORS_SCHEMA]
-    })
-    .compileComponents();
-  });
-
-  beforeEach(() => {
+    });
     fixture = TestBed.createComponent(NodesMenuConfirmationDialogComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
+  };
+
+  afterEach(() => fixture?.destroy());
+
+  describe('when opened with Start action', () => {
+    beforeEach(() => createComponent('start'));
+
+    it('should display "Confirm start All" in title', () => {
+      const title = fixture.nativeElement.querySelector('h2');
+      expect(title.textContent).toContain('Confirm start All');
+    });
+
+    it('should display start message in content', () => {
+      const content = fixture.nativeElement.querySelector('mat-dialog-content');
+      expect(content.textContent).toContain('start all devices');
+    });
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  describe('when opened with Stop action', () => {
+    beforeEach(() => createComponent('stop'));
+
+    it('should display "Confirm stop All" in title', () => {
+      const title = fixture.nativeElement.querySelector('h2');
+      expect(title.textContent).toContain('Confirm stop All');
+    });
+
+    it('should display stop message in content', () => {
+      const content = fixture.nativeElement.querySelector('mat-dialog-content');
+      expect(content.textContent).toContain('stop all devices');
+    });
+  });
+
+  describe('confirmAction', () => {
+    it('should close dialog with isAction true when confirmed', () => {
+      createComponent('start');
+      fixture.componentInstance.confirmAction();
+      expect(mockDialogRef.close).toHaveBeenCalledWith({
+        actionType: 'start',
+        isAction: true,
+      });
+    });
+
+    it('should preserve actionType in returned data', () => {
+      createComponent('stop');
+      fixture.componentInstance.confirmAction();
+      expect(mockDialogRef.close).toHaveBeenCalledWith({
+        actionType: 'stop',
+        isAction: true,
+      });
+    });
+  });
+
+  describe('template', () => {
+    it('should have Yes button that triggers confirmAction', () => {
+      createComponent('start');
+      const yesButton = fixture.nativeElement.querySelectorAll('button')[1];
+      yesButton.click();
+      expect(mockDialogRef.close).toHaveBeenCalledWith({
+        actionType: 'start',
+        isAction: true,
+      });
+    });
+
+    it('should have No button with mat-dialog-close', () => {
+      createComponent('start');
+      const noButton = fixture.nativeElement.querySelector('button[mat-dialog-close]');
+      expect(noButton).toBeTruthy();
+    });
   });
 });

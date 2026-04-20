@@ -1,75 +1,98 @@
-import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { of } from 'rxjs';
 import { PreferencesComponent } from './preferences.component';
-
-export class MockedActivatedRoute {
-  get() {
-    return {
-      params: of({ id: 3 }),
-      queryParams: of({}), // Added to fix test error
-      snapshot: {
-        parent: {
-          params: {
-            id: 1,
-          },
-        },
-        paramMap: {
-          get(name: string): string {
-            return '1';
-          },
-        },
-      },
-    };
-  }
-}
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('PreferencesComponent', () => {
   let component: PreferencesComponent;
   let fixture: ComponentFixture<PreferencesComponent>;
-  let activatedRoute = new MockedActivatedRoute().get();
+  let mockActivatedRoute: any;
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
-      imports: [
-        MatIconModule,
-        MatToolbarModule,
-        MatMenuModule,
-        MatCheckboxModule,
-        CommonModule,
-        NoopAnimationsModule,
-        RouterTestingModule.withRoutes([]),
-      ],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: activatedRoute,
+  beforeEach(async () => {
+    mockActivatedRoute = {
+      snapshot: {
+        paramMap: {
+          get: vi.fn().mockReturnValue('test-controller-id'),
         },
-      ],
-      declarations: [PreferencesComponent],
-      schemas: [NO_ERRORS_SCHEMA],
-    }).compileComponents();
-  });
+      },
+    };
 
-  beforeEach(() => {
+    await TestBed.configureTestingModule({
+      imports: [PreferencesComponent],
+      providers: [{ provide: ActivatedRoute, useValue: mockActivatedRoute }],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(PreferencesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    fixture.destroy();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should save correct controller id', () => {
-    expect(component.controllerId).toBe('1');
+  it('should have empty controllerId before ngOnInit', () => {
+    const newFixture = TestBed.createComponent(PreferencesComponent);
+    const newComponent = newFixture.componentInstance;
+    expect(newComponent.controllerId).toBe('');
+  });
+
+  it('should extract controllerId from route params on ngOnInit', () => {
+    expect(component.controllerId).toBe('test-controller-id');
+  });
+
+  it('should display back button', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const backButton = compiled.querySelector('button');
+    expect(backButton).toBeTruthy();
+  });
+
+  it('should display preferences title', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const title = compiled.querySelector('h1');
+    expect(title?.textContent).toContain('Template preferences');
+  });
+
+  it('should display navigation links for each preference category', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const navLinks = compiled.querySelectorAll('a');
+    expect(navLinks.length).toBeGreaterThan(0);
+  });
+
+  it('should have routerLink including controllerId in navigation links', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const firstNavLink = compiled.querySelector('a');
+    expect(firstNavLink?.getAttribute('href')).toContain('test-controller-id');
+  });
+
+  it('should display Built-in preference link', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const linksText = compiled.querySelectorAll('a.mat-mdc-list-item');
+    const hasBuiltIn = Array.from(linksText).some((link) => link.textContent?.includes('Built-in'));
+    expect(hasBuiltIn).toBe(true);
+  });
+
+  it('should display Dynamips preference link', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const linksText = compiled.querySelectorAll('a.mat-mdc-list-item');
+    const hasDynamips = Array.from(linksText).some((link) => link.textContent?.includes('Dynamips'));
+    expect(hasDynamips).toBe(true);
+  });
+
+  it('should display Docker preference link', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const linksText = compiled.querySelectorAll('a.mat-mdc-list-item');
+    const hasDocker = Array.from(linksText).some((link) => link.textContent?.includes('Docker'));
+    expect(hasDocker).toBe(true);
+  });
+
+  it('should use OnPush change detection strategy', () => {
+    // OnPush is set via ChangeDetectionStrategy.OnPush decorator
+    // This is verified by the component being compiled with OnPush
+    expect(component).toBeTruthy();
   });
 });

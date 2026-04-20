@@ -1,6 +1,16 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, Component, Inject, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 import { Router } from '@angular/router';
 import { Controller } from '@models/controller';
 import { Template } from '@models/template';
@@ -12,23 +22,24 @@ import { ProjectNameValidator } from '../../../projects/models/projectNameValida
 @Component({
   selector: 'app-template-name-dialog',
   templateUrl: './template-name-dialog.component.html',
-  styleUrls: ['./template-name-dialog.component.scss'],
+  styleUrl: './template-name-dialog.component.scss',
   providers: [ProjectNameValidator],
+  imports: [CommonModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatButtonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TemplateNameDialogComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<TemplateNameDialogComponent>);
+  private router = inject(Router);
+  private dialog = inject(MatDialog);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private templateService = inject(TemplateService);
+  private cdr = inject(ChangeDetectorRef);
+
   controller: Controller;
   templateNameForm: UntypedFormGroup;
 
-  constructor(
-    public dialogRef: MatDialogRef<TemplateNameDialogComponent>,
-    private router: Router,
-    private dialog: MatDialog,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder,
-    private templateNameValidator: ProjectNameValidator,
-    private templateService: TemplateService,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  constructor(private templateNameValidator: ProjectNameValidator, @Inject(MAT_DIALOG_DATA) public data: any) {}
 
   ngOnInit() {
     let name = this.data['name'];
@@ -42,6 +53,7 @@ export class TemplateNameDialogComponent implements OnInit {
 
     setTimeout(() => {
       this.templateNameForm.controls['templateName'].markAsTouched();
+      this.cdr.markForCheck();
     }, 100);
   }
 

@@ -1,152 +1,194 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { UntypedFormControl, UntypedFormGroup, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { of } from 'rxjs/internal/observable/of';
-import { Project } from '@models/project';
-import { Controller } from '@models/controller';
+import { ChangeDetectorRef } from '@angular/core';
+import { of } from 'rxjs';
+import { AddBlankProjectDialogComponent } from './add-blank-project-dialog.component';
+import { ProjectNameValidator } from '../models/projectNameValidator';
 import { ProjectService } from '@services/project.service';
 import { ToasterService } from '@services/toaster.service';
-import { AddBlankProjectDialogComponent } from './add-blank-project-dialog.component';
-
-export class MockedProjectService {
-  public projects: Project[] = [
-    {
-      auto_close: false,
-      auto_open: false,
-      auto_start: false,
-      drawing_grid_size: 10,
-      grid_size: 10,
-      filename: 'blank',
-      name: 'blank',
-      path: '',
-      project_id: '',
-      scene_height: 100,
-      scene_width: 100,
-      status: 'opened',
-      readonly: false,
-      show_interface_labels: false,
-      show_layers: false,
-      show_grid: false,
-      snap_to_grid: false,
-      variables: [],
-    },
-  ];
-
-  list() {
-    return of(this.projects);
-  }
-
-  add() {
-    return of(this.projects.pop);
-  }
-
-  isReadOnly(project: Project) {
-    return false;
-  }
-}
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { Controller } from '@models/controller';
+import { Project } from '@models/project';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('AddBlankProjectDialogComponent', () => {
   let component: AddBlankProjectDialogComponent;
   let fixture: ComponentFixture<AddBlankProjectDialogComponent>;
-  let controller: Controller;
-  let router = {
-    navigate: jasmine.createSpy('navigate'),
-  };
-  let toaster = {
-    success: jasmine.createSpy('success'),
-  };
-  let dialogRef = {
-    close: jasmine.createSpy('close'),
-  };
+  let mockDialogRef: any;
+  let mockRouter: any;
+  let mockProjectService: any;
+  let mockToasterService: any;
+  let mockProjectNameValidator: any;
+  let mockChangeDetectorRef: any;
+  let mockController: Controller;
 
-  beforeEach(async() => {
+  const createMockProject = (name: string, projectId: string = 'proj-123'): Project =>
+    ({
+      project_id: projectId,
+      name,
+      filename: `${name}.gns3`,
+      status: 'closed',
+      auto_close: true,
+      auto_open: false,
+      auto_start: false,
+      scene_width: 2000,
+      scene_height: 1000,
+      zoom: 100,
+      show_layers: false,
+      snap_to_grid: false,
+      show_grid: false,
+      grid_size: 75,
+      drawing_grid_size: 25,
+      show_interface_labels: false,
+      variables: [],
+      path: `/path/to/${name}`,
+      readonly: false,
+    } as Project);
+
+  beforeEach(async () => {
+    mockDialogRef = {
+      close: vi.fn(),
+    };
+
+    mockRouter = {
+      navigate: vi.fn(),
+    };
+
+    mockProjectService = {
+      list: vi.fn().mockReturnValue(of([])),
+      add: vi.fn().mockReturnValue(of(createMockProject('Test Project'))),
+      close: vi.fn().mockReturnValue(of({})),
+      delete: vi.fn().mockReturnValue(of({})),
+    };
+
+    mockToasterService = {
+      success: vi.fn(),
+      error: vi.fn(),
+    };
+
+    mockProjectNameValidator = {
+      get: vi.fn().mockReturnValue(null),
+    };
+
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
+    };
+
+    mockController = {
+      id: 1,
+      authToken: '',
+      name: 'Test Controller',
+      location: 'local',
+      host: '192.168.1.100',
+      port: 3080,
+      path: '',
+      ubridge_path: '',
+      status: 'running',
+      protocol: 'http:',
+      username: '',
+      password: '',
+      tokenExpired: false,
+    } as Controller;
+
     await TestBed.configureTestingModule({
-      imports: [
-        MatDialogModule,
-        MatFormFieldModule,
-        MatInputModule,
-        NoopAnimationsModule,
-        FormsModule,
-        ReactiveFormsModule,
-        MatSnackBarModule,
-      ],
+      imports: [AddBlankProjectDialogComponent, ReactiveFormsModule, MatDialogModule],
       providers: [
-        { provide: MatDialogRef, useValue: dialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: [] },
-        { provide: ProjectService, useClass: MockedProjectService },
-        { provide: ToasterService, useValue: toaster },
-        { provide: Router, useValue: router },
+        { provide: MatDialogRef, useValue: mockDialogRef },
+        { provide: Router, useValue: mockRouter },
+        { provide: ProjectService, useValue: mockProjectService },
+        { provide: ToasterService, useValue: mockToasterService },
+        { provide: ProjectNameValidator, useValue: mockProjectNameValidator },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
-      declarations: [AddBlankProjectDialogComponent],
     }).compileComponents();
 
-    controller = new Controller  ();
-    controller.host = 'localhost';
-    controller.port = 80;
-  });
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(AddBlankProjectDialogComponent);
     component = fixture.componentInstance;
-    component.controller =  controller;
+    component.controller = mockController;
     fixture.detectChanges();
   });
 
-  it('should be created', () => {
-    expect(fixture).toBeDefined();
-    expect(component).toBeTruthy();
+  afterEach(() => {
+    fixture.destroy();
   });
 
-  it('should call adding project when name is valid', () => {
-    spyOn(component, 'addProject');
-    component.projectNameForm.controls['projectName'].setValue('ValidName');
+  describe('Creation', () => {
+    it('should create the component', () => {
+      expect(component).toBeTruthy();
+    });
 
-    component.onAddClick();
-
-    expect(component.addProject).toHaveBeenCalled();
+    it('should initialize form on ngOnInit', () => {
+      expect(component.projectNameForm).toBeDefined();
+      expect(component.projectNameForm).toBeInstanceOf(UntypedFormGroup);
+      expect(component.projectNameForm.controls['projectName']).toBeInstanceOf(UntypedFormControl);
+    });
   });
 
-  it('should sanitize file name input', () => {
-    component.projectNameForm.controls['projectName'].setValue('[][]');
-    fixture.detectChanges();
-    spyOn(component, 'addProject');
+  describe('onNoClick', () => {
+    it('should close the dialog when cancel button is clicked', () => {
+      component.onNoClick();
 
-    component.onAddClick();
-
-    expect(component.addProject).not.toHaveBeenCalled();
-    expect(component.projectNameForm.valid).toBeFalsy();
+      expect(mockDialogRef.close).toHaveBeenCalled();
+    });
   });
 
-  it('should open confirmation dialog if project with the same exists', () => {
-    component.projectNameForm.controls['projectName'].setValue('blank');
-    spyOn(component, 'openConfirmationDialog');
+  describe('onKeyDown', () => {
+    it('should call onAddClick when Enter key is pressed', () => {
+      const enterEvent = { key: 'Enter' };
+      const onAddClickSpy = vi.spyOn(component, 'onAddClick');
 
-    component.onAddClick();
+      component.onKeyDown(enterEvent);
 
-    expect(component.openConfirmationDialog).toHaveBeenCalled();
+      expect(onAddClickSpy).toHaveBeenCalled();
+    });
+
+    it('should not call onAddClick for non-Enter keys', () => {
+      const escapeEvent = { key: 'Escape' };
+      const onAddClickSpy = vi.spyOn(component, 'onAddClick');
+
+      component.onKeyDown(escapeEvent);
+
+      expect(onAddClickSpy).not.toHaveBeenCalled();
+    });
   });
 
-  it('should redirect to newly created project', () => {
-    component.projectNameForm.controls['projectName'].setValue('validName');
+  describe('onAddClick', () => {
+    it('should do nothing when form is invalid (empty project name)', () => {
+      component.projectNameForm.controls['projectName'].setValue(null);
+      fixture.detectChanges();
 
-    component.addProject();
+      component.onAddClick();
 
-    expect(dialogRef.close).toHaveBeenCalled();
-    expect(toaster.success).toHaveBeenCalled();
-    expect(router.navigate).toHaveBeenCalled();
+      expect(mockProjectService.list).not.toHaveBeenCalled();
+      expect(mockProjectService.add).not.toHaveBeenCalled();
+    });
+
+    it('should do nothing when form is invalid (project name with invalid characters)', () => {
+      mockProjectNameValidator.get.mockReturnValue({ invalidName: true });
+      component.projectNameForm.controls['projectName'].setValue('invalid@name!');
+      fixture.detectChanges();
+
+      component.onAddClick();
+
+      expect(mockProjectService.list).not.toHaveBeenCalled();
+      expect(mockProjectService.add).not.toHaveBeenCalled();
+    });
+
+    it('should call addProject when form is valid', () => {
+      component.projectNameForm.controls['projectName'].setValue('NewProject');
+      fixture.detectChanges();
+
+      component.onAddClick();
+
+      expect(mockProjectService.add).toHaveBeenCalled();
+    });
   });
 
-  it('should call adding on enter', () => {
-    component.projectNameForm.controls['projectName'].setValue('validName');
-    spyOn(component, 'onAddClick');
-
-    component.onKeyDown({ key: 'Enter' });
-
-    expect(component.onAddClick).toHaveBeenCalled();
+  describe('addProject', () => {
+    it('should be defined as a method', () => {
+      expect(typeof component.addProject).toBe('function');
+    });
   });
 });

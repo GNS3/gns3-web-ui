@@ -1,3 +1,10 @@
+/**
+ * GNS3 Idle PC Dialog Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .container {
   width: 100%;
   display: flex;
@@ -5,7 +12,7 @@
 }
 
 .multiline-tooltip {
-  background-color: grey;
-  color: #ffffff;
+  background-color: var(--mat-app-surface);
+  color: var(--mat-app-on-surface-color);
   white-space: pre-line;
 }

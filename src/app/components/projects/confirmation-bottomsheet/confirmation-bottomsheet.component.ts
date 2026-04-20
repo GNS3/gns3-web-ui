@@ -1,30 +1,32 @@
-import { Component, OnInit, Inject } from '@angular/core';
-import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
-import { MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
+import { ChangeDetectionStrategy, Component, OnInit, Inject, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatBottomSheetRef, MatBottomSheetModule, MAT_BOTTOM_SHEET_DATA } from '@angular/material/bottom-sheet';
+import { MatButtonModule } from '@angular/material/button';
 import { ThemeService } from '@services/theme.service';
 
 @Component({
   selector: 'app-confirmation-bottomsheet',
   templateUrl: 'confirmation-bottomsheet.component.html',
-  styleUrls: ['confirmation-bottomsheet.component.scss'],
+  styleUrl: 'confirmation-bottomsheet.component.scss',
+  imports: [CommonModule, MatBottomSheetModule, MatButtonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmationBottomSheetComponent implements OnInit {
-  message: string = '';
-  isLightThemeEnabled: boolean = false;
+  private bottomSheetRef = inject(MatBottomSheetRef<ConfirmationBottomSheetComponent>);
+  private themeService = inject(ThemeService);
 
-  constructor(
-    private bottomSheetRef: MatBottomSheetRef<ConfirmationBottomSheetComponent>,
-    private themeService: ThemeService,
-    @Inject(MAT_BOTTOM_SHEET_DATA) public data: { message: string }
-  ) {}
+  message = signal('');
+  isLightThemeEnabled = signal(false);
+
+  constructor(@Inject(MAT_BOTTOM_SHEET_DATA) public data: { message: string }) {}
 
   ngOnInit() {
     if (this.data && this.data.message) {
-      this.message = this.data.message;
+      this.message.set(this.data.message);
     }
     this.themeService.getActualTheme() === 'light'
-      ? (this.isLightThemeEnabled = true)
-      : (this.isLightThemeEnabled = false);
+      ? this.isLightThemeEnabled.set(true)
+      : this.isLightThemeEnabled.set(false);
   }
 
   onNoClick(): void {

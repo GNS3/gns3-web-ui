@@ -1,34 +1,236 @@
-table {
+/**
+ * GNS3 ACL Management Component Styles
+ * BEM naming applied, Material theme variables used
+ * Design language unified with user-management page
+ */
+
+:host {
+  display: block;
   width: 100%;
 }
 
-.full-width {
-  width: 940px;
-  margin-left: -470px;
-  left: 50%;
+/* =============================================
+// Header / Title Bar
+// ============================================= */
+.acl-management__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 0;
+  animation: fadeInSlideIn 0.4s ease-out;
 }
 
-.add-ace-button {
-  height: 40px;
-  width: 160px;
-  margin: 20px;
+.acl-management__title {
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin: 0;
 }
 
-.loader {
-  position: absolute;
-  margin: auto;
-  height: 175px;
-  bottom: 0;
-  left: 0;
-  right: 0;
+.acl-management__actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* =============================================
+// Buttons
+// ============================================= */
+.acl-management__button {
+  margin: 12px 0;
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.5px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover:not([disabled]) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
+  }
+
+  &:active:not([disabled]) {
+    transform: translateY(0);
+  }
+}
+
+/* =============================================
+// Search
+// ============================================= */
+.acl-management__search-form {
+  display: flex;
+  justify-content: center;
+  margin: 16px auto;
+  width: 100%;
+  animation: fadeInSlideIn 0.4s ease-out 0.05s both;
+}
+
+.acl-management__search {
+  width: 100%;
+  max-width: 1000px;
+}
+
+/* =============================================
+// Table Container
+// ============================================= */
+.acl-management__table-container {
+  border-radius: 16px;
+  overflow: hidden;
+  width: 100%;
+  background: var(--mat-sys-surface);
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInSlideIn 0.4s ease-out 0.15s both;
+}
+
+.acl-management__table-container--hidden {
+  display: none;
+}
+
+/* =============================================
+// Material Table Internal DOM Styling
+// ============================================= */
+mat-row {
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+  position: relative;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
+    transform: scale(1.002);
+  }
+}
+
+// Zebra striping - even rows
+mat-row:nth-child(even) {
+  background-color: color-mix(in srgb, var(--mat-sys-on-surface) 1%, transparent);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent);
+  }
+}
+
+// Header row styles
+.mat-header-row {
+  position: sticky;
   top: 0;
-  width: 175px;
+  z-index: 10;
+  background: var(--mat-sys-surface);
+
+  mat-header-cell {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface-variant);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
 }
 
-.delete-btn {
-  transition: transform 0.2s ease;
+// Cell spacing and alignment
+mat-header-cell,
+mat-cell {
+  justify-content: center;
+  padding: 0 16px;
 }
 
-.delete-btn:hover mat-icon {
-  transform: scale(1.35);
+mat-cell {
+  font-size: 14px;
+  color: var(--mat-sys-on-surface);
+}
+
+// Text overflow
+.acl-management__overflow-text {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  padding-right: 5px;
+}
+
+// Actions column - right align
+mat-cell[mat-column='actions'],
+mat-header-cell[mat-column='actions'] {
+  justify-content: flex-end;
+  padding: 0 16px;
+}
+
+mat-cell[mat-column='actions'] {
+  overflow: visible;
+}
+
+// Small column for checkbox
+.acl-management__small-col {
+  width: 60px;
+  min-width: 60px;
+}
+
+/* =============================================
+// Loading Spinner
+// ============================================= */
+.acl-management__loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+}
+
+.acl-management__spinner {
+  width: 48px;
+  height: 48px;
+}
+
+/* =============================================
+// Paginator
+// ============================================= */
+mat-paginator {
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 768px) {
+  .acl-management__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 16px 0;
+  }
+
+  .acl-management__actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .acl-management__button {
+    width: 100%;
+    height: 44px;
+    font-size: 15px;
+  }
+
+  .acl-management__actions-cell {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  mat-cell {
+    padding: 0 12px;
+    font-size: 13px;
+  }
 }

@@ -1,17 +1,14 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, computed } from '@angular/core';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-empty-templates-list',
   templateUrl: './empty-templates-list.component.html',
-  styleUrls: ['./empty-templates-list.component.scss'],
+  styleUrl: './empty-templates-list.component.scss',
+  imports: [MatCardModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmptyTemplatesListComponent {
-  @Input() textMessage: string;
-  emptyTemplatesListMessage: string = 'Empty templates list';
-
-  constructor() {
-    if (this.textMessage) {
-      this.emptyTemplatesListMessage = this.textMessage;
-    }
-  }
+  readonly textMessage = input<string>(undefined);
+  readonly emptyTemplatesListMessage = computed(() => this.textMessage() ?? 'Empty templates list');
 }

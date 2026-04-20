@@ -12,7 +12,7 @@ import { environment } from 'environments/environment';
 export class QemuService {
   constructor(private httpController: HttpController) {}
 
-  getTemplates(controller: Controller ): Observable<QemuTemplate[]> {
+  getTemplates(controller: Controller): Observable<QemuTemplate[]> {
     return this.httpController.get<QemuTemplate[]>(controller, '/templates') as Observable<QemuTemplate[]>;
   }
 
@@ -24,24 +24,59 @@ export class QemuService {
     return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/images/upload/${filename}`;
   }
 
-
-  getImages(controller: Controller ): Observable<any> {
+  getImages(controller: Controller): Observable<any> {
     return this.httpController.get<QemuImage[]>(controller, '/images?image_type=qemu') as Observable<QemuImage[]>;
   }
 
-  addImage(controller: Controller, qemuImg: QemuImg): Observable<QemuImg> {
-    return this.httpController.post<QemuImg>(controller, '/images/upload', qemuImg) as Observable<QemuImg>;
+  /**
+   * Create a QEMU disk image for a node
+   * API: POST /projects/{project_id}/nodes/{node_id}/qemu/disk_image/{disk_name}
+   */
+  createDiskImage(
+    controller: Controller,
+    projectId: string,
+    nodeId: string,
+    diskName: string,
+    options: QemuDiskImageOptions
+  ): Observable<any> {
+    return this.httpController.post<any>(
+      controller,
+      `/projects/${projectId}/nodes/${nodeId}/qemu/disk_image/${diskName}`,
+      options
+    ) as Observable<any>;
   }
 
   addTemplate(controller: Controller, qemuTemplate: QemuTemplate): Observable<QemuTemplate> {
-    return this.httpController.post<QemuTemplate>(controller, `/templates`, qemuTemplate) as Observable<QemuTemplate>;
+    const templateToSend = this.prepareTemplate(qemuTemplate);
+    return this.httpController.post<QemuTemplate>(controller, `/templates`, templateToSend) as Observable<QemuTemplate>;
   }
 
   saveTemplate(controller: Controller, qemuTemplate: QemuTemplate): Observable<QemuTemplate> {
+    const templateToSend = this.prepareTemplate(qemuTemplate);
     return this.httpController.put<QemuTemplate>(
       controller,
       `/templates/${qemuTemplate.template_id}`,
-      qemuTemplate
+      templateToSend
     ) as Observable<QemuTemplate>;
   }
+
+  private prepareTemplate(template: QemuTemplate): QemuTemplate {
+    return {
+      ...template,
+      custom_adapters: template.custom_adapters || []
+    };
+  }
+}
+
+export interface QemuDiskImageOptions {
+  format: string;
+  size: number; // Size in MB
+  preallocation?: string;
+  cluster_size?: number;
+  refcount_bits?: number;
+  lazy_refcounts?: string;
+  subformat?: string;
+  static?: string;
+  zeroed_grain?: string;
+  adapter_type?: string;
 }

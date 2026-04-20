@@ -1,40 +1,43 @@
-<div class="console-devices-panel" [class.collapsed]="collapsed" [ngClass]="{ lightTheme: isLightTheme }">
+<div class="console-devices-panel" [class.collapsed]="collapsed()" [ngClass]="{ lightTheme: isLightTheme() }">
   <!-- Panel Header -->
-  <div class="panel-header"
-       (mousedown)="$event.stopPropagation()"
-       (click)="togglePanel()"
-       [class.clickable]="true"
-       [ngClass]="{ lightTheme: isLightTheme }"
-       title="Click to toggle panel">
+  <div
+    class="panel-header"
+    (mousedown)="$event.stopPropagation()"
+    (click)="togglePanel()"
+    [class.clickable]="true"
+    [ngClass]="{ lightTheme: isLightTheme() }"
+    title="Click to toggle panel"
+  >
     <div class="header-title">
       <mat-icon class="panel-icon">devices</mat-icon>
-      <span class="header-text" *ngIf="!collapsed">Devices</span>
+      @if (!collapsed()) {
+      <span class="header-text">Devices</span>
+      }
     </div>
   </div>
 
   <!-- Device List -->
-  <div class="device-list" *ngIf="!collapsed">
-    <div
-      *ngFor="let node of nodes"
-      class="device-item"
-      [class.started]="isDeviceStarted(node)"
-      (click)="onDeviceClick(node)"
-    >
+  @if (!collapsed()) {
+  <div class="device-list">
+    @for (node of nodes(); track node.node_id) {
+    <div class="device-item" [class.started]="isDeviceStarted(node)" (click)="onDeviceClick(node)">
       <div class="device-info">
         <div class="device-status-indicator" [style.backgroundColor]="getStatusColor(node.status)"></div>
         <div class="device-details">
           <div class="device-name">{{ node.name }}</div>
         </div>
       </div>
-      <mat-icon class="device-icon" [class.disabled]="!isDeviceStarted(node)">
-        terminal
-      </mat-icon>
+      <mat-icon class="device-icon" [class.disabled]="!isDeviceStarted(node)"> terminal </mat-icon>
     </div>
+    }
 
     <!-- Empty State -->
-    <div *ngIf="nodes.length === 0" class="empty-state">
+    @if (nodes().length === 0) {
+    <div class="empty-state">
       <mat-icon class="empty-icon">devices</mat-icon>
       <div class="empty-text">No console devices available</div>
     </div>
+    }
   </div>
+  }
 </div>

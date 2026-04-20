@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, Injectable, inject } from '@angular/core';
 import { select } from 'd3-selection';
 import { Draggable } from '../events/draggable';
 import { InterfaceLabelContextMenu } from '../events/event-source';
@@ -10,9 +10,11 @@ import { MapLink } from '../models/map/map-link';
 import { MapLinkNode } from '../models/map/map-link-node';
 import { MapNode } from '../models/map/map-node';
 import { SVGSelection } from '../models/types';
+import { ThemeService } from '@services/theme.service';
 
 @Injectable()
 export class InterfaceLabelWidget {
+  private themeService = inject(ThemeService);
   public onContextMenu = new EventEmitter<InterfaceLabelContextMenu>();
   public draggable = new Draggable<SVGGElement, MapLinkNode>();
 
@@ -26,17 +28,21 @@ export class InterfaceLabelWidget {
     private mapSettings: MapSettingsManager
   ) {}
 
+  /**
+   * Replace fill color in style string with theme-aware color
+   */
+  private applyThemeLabelColor(style: string): string {
+    const labelColor = this.themeService.getCanvasLabelColor();
+    return style.replace(/fill:\s*[^;]+;?/gi, `fill: ${labelColor};`);
+  }
+
   private getRenderedLabelX(labelNode: MapLinkNode) {
-    const renderOffsetX = this.selectionManager.isSelected(labelNode)
-      ? 0
-      : labelNode.bezierRenderOffsetX || 0;
+    const renderOffsetX = this.selectionManager.isSelected(labelNode) ? 0 : labelNode.bezierRenderOffsetX || 0;
     return labelNode.label.x + renderOffsetX;
   }
 
   private getRenderedLabelY(labelNode: MapLinkNode) {
-    const renderOffsetY = this.selectionManager.isSelected(labelNode)
-      ? 0
-      : labelNode.bezierRenderOffsetY || 0;
+    const renderOffsetY = this.selectionManager.isSelected(labelNode) ? 0 : labelNode.bezierRenderOffsetY || 0;
     return labelNode.label.y + renderOffsetY;
   }
 
@@ -92,10 +98,12 @@ export class InterfaceLabelWidget {
       .attr('class', 'interface_label noselect')
       .attr('interface_label_id', (i: MapLinkNode) => `${i.id}`);
 
-    const merge = labels.merge(enter).on('contextmenu', (n: MapLinkNode, i: number) => {
-      event.preventDefault();
-      self.onContextMenu.emit(new InterfaceLabelContextMenu(event, n));
-    });
+    const merge = labels
+      .merge(enter)
+      .on('contextmenu', function (this: SVGGElement, event: MouseEvent, n: MapLinkNode) {
+        event.preventDefault();
+        self.onContextMenu.emit(new InterfaceLabelContextMenu(event, n));
+      });
 
     // update label
     merge
@@ -104,6 +112,7 @@ export class InterfaceLabelWidget {
       .attr('style', (l: MapLinkNode) => {
         let styles = this.cssFixer.fix(l.label.style);
         styles = this.fontFixer.fixStyles(styles);
+        styles = this.applyThemeLabelColor(styles);
         return styles;
       })
       .attr('x', (l: MapLinkNode) => this.getRenderedLabelX(l))

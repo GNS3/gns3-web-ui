@@ -1,7 +1,18 @@
+/**
+ * GNS3 Add Blank Project Dialog Component Styles
+ * Material Design 3, unified with other dialogs
+ */
+
+.file-name-form {
+  width: 100%;
+  padding: 0 24px;
+  box-sizing: border-box;
+}
+
 .file-name-form-field {
   width: 100%;
 }
 
 .project-snackbar {
-  background: #2196f3;
+  background: var(--mat-sys-primary);
 }

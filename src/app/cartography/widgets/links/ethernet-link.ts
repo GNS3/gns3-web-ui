@@ -1,5 +1,4 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { event } from 'd3-selection';
 import { LinkContextMenu } from '../../events/event-source';
 import { MapLink } from '../../models/map/map-link';
 import { SVGSelection } from '../../models/types';
@@ -16,7 +15,8 @@ class EthernetLinkPath {
     public style: LinkStyle,
     public bezierVariation: number = 0,
     public sourceOrientation?: ConnectorOrientation,
-    public targetOrientation?: ConnectorOrientation
+    public targetOrientation?: ConnectorOrientation,
+    public controlOffset?: [number, number]
   ) {}
 }
 
@@ -24,8 +24,8 @@ class EthernetLinkPath {
 export class EthernetLinkWidget implements Widget {
   public onContextMenu = new EventEmitter<LinkContextMenu>();
   private readonly bezierLayout = new BezierLinkLayout();
-  private defaultEthernetLinkStyle : LinkStyle = {
-    color: "#000000",
+  private readonly defaultEthernetLinkStyle: LinkStyle = {
+    color: '#000000',
     width: 2,
     type: 1,
     link_type: StyleTranslator.DEFAULT_LINK_TYPE,
@@ -35,37 +35,19 @@ export class EthernetLinkWidget implements Widget {
 
   constructor() {}
 
-  private resolveContextMenuLink(arg1: unknown, arg2: unknown): MapLink | undefined {
-    const candidates = [arg2, arg1];
-
-    for (const candidate of candidates) {
-      if (!candidate || typeof candidate !== 'object') {
-        continue;
-      }
-
-      const maybePath = candidate as Partial<EthernetLinkPath>;
-      if (maybePath.link) {
-        return maybePath.link;
-      }
-
-      const maybeMapLink = candidate as Partial<MapLink>;
-      if (typeof maybeMapLink.id === 'string' && Array.isArray(maybeMapLink.nodes)) {
-        return maybeMapLink as MapLink;
-      }
-    }
-
-    return undefined;
-  }
-
   private linktoEthernetLink(link: MapLink) {
     const normalizedLinkType = StyleTranslator.normalizeLinkType(link.link_style?.link_type);
-    const sourceCenter: [number, number] = [link.source.x + link.source.width / 2, link.source.y + link.source.height / 2];
-    const targetCenter: [number, number] = [link.target.x + link.target.width / 2, link.target.y + link.target.height / 2];
+    const sourceCenter: [number, number] = [
+      link.source.x + link.source.width / 2,
+      link.source.y + link.source.height / 2,
+    ];
+    const targetCenter: [number, number] = [
+      link.target.x + link.target.width / 2,
+      link.target.y + link.target.height / 2,
+    ];
     const sourceOrientation = StyleTranslator.getContinuousOrientation(sourceCenter, targetCenter);
     const targetOrientation = StyleTranslator.getContinuousOrientation(targetCenter, sourceCenter);
-    const bezierVariation = normalizedLinkType === 'bezier'
-      ? this.bezierLayout.getVariation(link)
-      : 0;
+    const bezierVariation = normalizedLinkType === 'bezier' ? this.bezierLayout.getVariation(link) : 0;
 
     const hasValidColor = typeof link.link_style?.color === 'string' && link.link_style.color.length > 0;
     const hasValidWidth =
@@ -81,6 +63,7 @@ export class EthernetLinkWidget implements Widget {
           ? StyleTranslator.normalizeStateMachineCurviness(link.link_style?.bezier_curviness)
           : StyleTranslator.normalizeBezierCurviness(link.link_style?.bezier_curviness),
       flowchart_roundness: StyleTranslator.normalizeFlowchartRoundness(link.link_style?.flowchart_roundness),
+      control_offset: link.link_style?.control_offset,
     };
 
     let sourcePoint = sourceCenter;
@@ -107,13 +90,7 @@ export class EthernetLinkWidget implements Widget {
         targetOrientation
       );
 
-      this.bezierLayout.applyLabelRenderOffsets(
-        link,
-        sourcePoint,
-        targetPoint,
-        curveSideDirection,
-        majorAnchor
-      );
+      this.bezierLayout.applyLabelRenderOffsets(link, sourcePoint, targetPoint, curveSideDirection, majorAnchor);
     } else {
       this.bezierLayout.clearLabelRenderOffsets(link);
     }
@@ -125,7 +102,8 @@ export class EthernetLinkWidget implements Widget {
       style,
       bezierVariation,
       sourceOrientation,
-      targetOrientation
+      targetOrientation,
+      style.control_offset
     );
   }
 
@@ -133,34 +111,35 @@ export class EthernetLinkWidget implements Widget {
     const linksInView = view.data() as MapLink[];
     this.bezierLayout.buildEndpointOrder(Array.isArray(linksInView) ? linksInView : []);
 
-    const link = view.selectAll<SVGPathElement, EthernetLinkPath>('path.ethernet_link').data((l) => {
+    const link = view.selectAll('path.ethernet_link').data((l: MapLink) => {
       if (l.linkType === 'ethernet') {
-        return [this.linktoEthernetLink(l)];
+        const ethernetLink = this.linktoEthernetLink(l);
+        return ethernetLink ? [ethernetLink] : [];
       }
       return [];
     });
 
-    const link_enter = link
-      .enter()
-      .append<SVGPathElement>('path')
-      .attr('class', 'ethernet_link')
-      .on('contextmenu', (arg1: unknown, arg2: unknown) => {
-        const evt = event;
-        const link = this.resolveContextMenuLink(arg1, arg2);
-        if (!link) {
-          return;
-        }
-        this.onContextMenu.emit(new LinkContextMenu(evt, link));
-      });
+    const link_enter = link.enter().append<SVGPathElement>('path').attr('class', 'ethernet_link');
 
     const link_merge = link.merge(link_enter);
 
     link_merge
+      .on('contextmenu', (evt: any, datum: any) => {
+        const link: MapLink = datum;
+        if (!link) {
+          return;
+        }
+        this.onContextMenu.emit(new LinkContextMenu(evt, link));
+      })
       .attr('transform', (datum) => {
         return StyleTranslator.getLinkTransform(datum.style);
       })
       .attr('fill', 'none')
       .attr('stroke', (datum) => {
+        // Use CSS variable for default color, custom color if set
+        if (!datum.style.color || datum.style.color === this.defaultEthernetLinkStyle.color) {
+          return 'var(--gns3-canvas-link-color)';
+        }
         return datum.style.color;
       })
       .attr('stroke-width', (datum) => {
@@ -169,13 +148,22 @@ export class EthernetLinkWidget implements Widget {
       .attr('stroke-dasharray', (datum) => {
         return StyleTranslator.getLinkStyle(datum.style);
       })
-      .attr('stroke-opacity', (datum) => {
-        return datum.style.type === 0 ? 0 : 1;
-      })
+      .classed('link_hidden', (datum) => datum.style.type === 0)
       .attr('pointer-events', (datum) => {
         return datum.style.type === 0 ? 'stroke' : null;
       })
       .attr('d', (ethernet) => {
+        // Use freeform bezier if link_type is freeform OR if control_offset exists
+        // (control_offset is only set for freeform links when user drags to adjust curve)
+        if (ethernet.style.link_type === 'freeform' || ethernet.controlOffset) {
+          return StyleTranslator.getFreeformBezierPath(
+            ethernet.source,
+            ethernet.target,
+            ethernet.sourceOrientation,
+            ethernet.targetOrientation,
+            ethernet.controlOffset
+          );
+        }
         return StyleTranslator.getLinkPath(ethernet.source, ethernet.target, ethernet.style, {
           bezierVariation: ethernet.bezierVariation,
           sourceOrientation: ethernet.sourceOrientation,

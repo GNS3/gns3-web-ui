@@ -1,17 +1,53 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: true,
   selector: 'app-configurator-switch',
   templateUrl: './configurator-switch.component.html',
   styleUrls: ['../configurator.component.scss', '../../../../preferences/preferences.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatCardModule,
+    MatTableModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTooltipModule,
+  ],
 })
 export class ConfiguratorDialogSwitchComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<ConfiguratorDialogSwitchComponent>);
+  private nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   node: Node;
   name: string;
@@ -29,12 +65,7 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
   destinationPort: string = '';
   destinationDlci: string = '';
 
-  constructor(
-    public dialogRef: MatDialogRef<ConfiguratorDialogSwitchComponent>,
-    public nodeService: NodeService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder
-  ) {
+  constructor() {
     this.nameForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
     });
@@ -63,6 +94,7 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
           portOut: value,
         });
       });
+      this.cd.markForCheck();
     });
   }
 

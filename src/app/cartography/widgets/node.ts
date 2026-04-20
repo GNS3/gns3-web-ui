@@ -1,5 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { event, select } from 'd3-selection';
+import { select } from 'd3-selection';
+
 import { MapSettingsService } from '@services/mapsettings.service';
 import { ClickedDataEvent } from '../events/event-source';
 import { NodeClicked, NodeContextMenu } from '../events/nodes';
@@ -35,7 +36,8 @@ export class NodeWidget implements Widget {
     const node_body_merge = node_body
       .merge(node_body_enter)
       .classed('selected', (n: MapNode) => this.selectionManager.isSelected(n))
-      .on('click', (node: MapNode) => {
+      .classed('locked', (n: MapNode) => n.locked)
+      .on('click', (event: any, node: MapNode) => {
         this.nodesEventSource.clicked.emit(new ClickedDataEvent<MapNode>(node, event.pageX, event.pageY));
       });
 
@@ -50,6 +52,21 @@ export class NodeWidget implements Widget {
         .attr('y', (n: MapNode) => n.height / 2 - 13)
         .attr('fill', 'red');
     }
+
+    // Add locked border rect
+    node_body_merge.select('.locked_border').remove();
+    node_body_merge
+      .filter((n: MapNode) => n.locked)
+      .append<SVGRectElement>('rect')
+      .attr('class', 'locked_border')
+      .attr('width', (n: MapNode) => n.width || 60)
+      .attr('height', (n: MapNode) => n.height || 60)
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('stroke', 'var(--mat-sys-outline)')
+      .attr('stroke-width', 2)
+      .attr('stroke-dasharray', '5, 3')
+      .attr('fill', 'none');
 
     node_body_merge.select('.layer_label').remove();
     if (this.mapSettingsService.isLayerNumberVisible) {
@@ -78,16 +95,24 @@ export class NodeWidget implements Widget {
     // update image of node
     node_body_merge
       .select<SVGImageElement>('image')
-      .on('contextmenu', function (n: MapNode, i: number) {
+      .on('contextmenu', function (this: SVGImageElement, event: MouseEvent, n: MapNode) {
         event.preventDefault();
         self.onContextMenu.emit(new NodeContextMenu(event, n));
       })
-      .on('dblclick', function (n: MapNode, i: number) {
+      .on('dblclick', function (this: SVGImageElement, event: MouseEvent, n: MapNode) {
         event.preventDefault();
         self.onContextConsoleMenu.emit(new NodeContextMenu(event, n));
       })
       .each(function (n: MapNode) {
-        if ((this as Element).getAttribute('href') !== n.symbolUrl) {
+        const currentHref = (this as Element).getAttribute('href');
+        if (currentHref !== n.symbolUrl) {
+          // Force browser to reload the image by:
+          // 1. Removing the href attribute
+          // 2. Forcing a reflow
+          // 3. Setting the new href
+          (this as Element).removeAttribute('href');
+          // Force reflow by accessing a layout property
+          void (this as Element).getClientRects();
           (this as Element).setAttribute('href', n.symbolUrl);
         }
       })

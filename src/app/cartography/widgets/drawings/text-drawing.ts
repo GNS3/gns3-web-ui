@@ -59,7 +59,9 @@ export class TextDrawingWidget implements DrawingShapeWidget {
     merge.attr('transform', function (this: SVGTextElement, text: TextElement) {
       const bbox = this.getBBox();
       const expectedHeight = Number(text.height);
-      const yOffset = isFinite(expectedHeight) ? expectedHeight / 2 - (bbox.y + bbox.height / 2) : 0;
+      const fillRatio = expectedHeight > 0 ? bbox.height / expectedHeight : 0;
+      const yOffset =
+        isFinite(expectedHeight) && fillRatio > 0.5 ? expectedHeight / 2 - (bbox.y + bbox.height / 2) : 0;
       return `translate(0, ${yOffset})`;
     });
 

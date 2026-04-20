@@ -1,7 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
+import { MatIconModule } from '@angular/material/icon';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
@@ -10,11 +23,32 @@ import { ToasterService } from '@services/toaster.service';
 import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
 
 @Component({
+  standalone: true,
   selector: 'app-configurator-ethernet-hub',
   templateUrl: './configurator-ethernet-hub.component.html',
-  styleUrls: ['../configurator.component.scss'],
+  // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatChipsModule,
+    MatIconModule,
+  ],
 })
 export class ConfiguratorDialogEthernetHubComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<ConfiguratorDialogEthernetHubComponent>);
+  private nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private vpcsConfigurationService = inject(VpcsConfigurationService);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   node: Node;
   numberOfPorts: number;
@@ -24,15 +58,10 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
   name: string;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
-  constructor(
-    public dialogRef: MatDialogRef<ConfiguratorDialogEthernetHubComponent>,
-    public nodeService: NodeService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder,
-    private vpcsConfigurationService: VpcsConfigurationService
-  ) {
+  constructor() {
     this.inputForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
+      numberOfPorts: new UntypedFormControl(''),
     });
   }
 
@@ -41,10 +70,18 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
       this.node = node;
       this.name = this.node.name;
       this.numberOfPorts = this.node.ports.length;
+
+      // Update form values with node data
+      this.inputForm.patchValue({
+        name: node.name,
+        numberOfPorts: this.node.ports.length,
+      });
+
       this.getConfiguration();
       if (!this.node.tags) {
         this.node.tags = [];
       }
+      this.cd.markForCheck();
     });
   }
 
@@ -55,6 +92,12 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
 
   onSaveClick() {
     if (this.inputForm.valid) {
+      // Merge form values back into node
+      const formValues = this.inputForm.value;
+
+      this.node.name = formValues.name;
+      this.numberOfPorts = formValues.numberOfPorts;
+
       this.node.properties.ports_mapping = [];
       for (let i = 0; i < this.numberOfPorts; i++) {
         this.node.properties.ports_mapping.push({

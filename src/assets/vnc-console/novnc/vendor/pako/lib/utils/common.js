@@ -1,13 +1,16 @@
 // reduce buffer size, avoiding mem copy
-export function shrinkBuf (buf, size) {
-  if (buf.length === size) { return buf; }
-  if (buf.subarray) { return buf.subarray(0, size); }
+export function shrinkBuf(buf, size) {
+  if (buf.length === size) {
+    return buf;
+  }
+  if (buf.subarray) {
+    return buf.subarray(0, size);
+  }
   buf.length = size;
   return buf;
-};
+}
 
-
-export function arraySet (dest, src, src_offs, len, dest_offs) {
+export function arraySet(dest, src, src_offs, len, dest_offs) {
   if (src.subarray && dest.subarray) {
     dest.set(src.subarray(src_offs, src_offs + len), dest_offs);
     return;
@@ -19,7 +22,7 @@ export function arraySet (dest, src, src_offs, len, dest_offs) {
 }
 
 // Join array of chunks to single array.
-export function flattenChunks (chunks) {
+export function flattenChunks(chunks) {
   var i, l, len, pos, chunk, result;
 
   // calculate data length
@@ -40,6 +43,6 @@ export function flattenChunks (chunks) {
   return result;
 }
 
-export var Buf8  = Uint8Array;
+export var Buf8 = Uint8Array;
 export var Buf16 = Uint16Array;
 export var Buf32 = Int32Array;

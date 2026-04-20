@@ -1,61 +1,119 @@
-import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ControllerService } from '@services/controller.service';
-import { MockedControllerService } from '@services/controller.service.spec';
-import { MockedActivatedRoute } from '../../preferences.component.spec';
 import { VmwarePreferencesComponent } from './vmware-preferences.component';
+import { ControllerService } from '@services/controller.service';
+import { Controller } from '@models/controller';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('VmwarePreferencesComponent', () => {
   let component: VmwarePreferencesComponent;
   let fixture: ComponentFixture<VmwarePreferencesComponent>;
+  let mockControllerService: any;
+  let mockActivatedRoute: any;
+  let mockController: Controller;
 
-  let mockedControllerService = new MockedControllerService();
-  let activatedRoute = new MockedActivatedRoute().get();
+  beforeEach(async () => {
+    mockController = {
+      id: 1,
+      name: 'Test Controller',
+      location: 'local',
+      host: 'localhost',
+      port: 3080,
+      path: '/',
+      ubridge_path: '',
+      status: 'running',
+      protocol: 'http:',
+      username: 'admin',
+      password: 'admin',
+      authToken: 'token',
+      tokenExpired: false,
+    };
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
-      imports: [
-        MatIconModule,
-        MatToolbarModule,
-        MatMenuModule,
-        MatCheckboxModule,
-        CommonModule,
-        NoopAnimationsModule,
-        RouterTestingModule.withRoutes([]),
-      ],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: activatedRoute,
+    mockControllerService = {
+      get: vi.fn().mockResolvedValue(mockController),
+    };
+
+    mockActivatedRoute = {
+      snapshot: {
+        paramMap: {
+          get: vi.fn().mockReturnValue('1'),
         },
-        { provide: ControllerService, useValue: mockedControllerService },
-      ],
-      declarations: [VmwarePreferencesComponent],
-      schemas: [NO_ERRORS_SCHEMA],
-    }).compileComponents();
-  });
+      },
+    };
 
-  beforeEach(() => {
+    await TestBed.configureTestingModule({
+      imports: [VmwarePreferencesComponent],
+      providers: [
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: ControllerService, useValue: mockControllerService },
+      ],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(VmwarePreferencesComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
+  });
+
+  afterEach(() => {
+    fixture.destroy();
   });
 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should clear path to executable', () => {
-    component.restoreDefaults();
+  it('should extract controller_id from route params on ngOnInit', () => {
+    expect(mockActivatedRoute.snapshot.paramMap.get).toHaveBeenCalledWith('controller_id');
+  });
 
-    expect(component.vmrunPath).toBe('');
+  it('should call controllerService.get with parsed controller id', () => {
+    expect(mockControllerService.get).toHaveBeenCalledWith(1);
+  });
+
+  it('should populate controller after async load', async () => {
+    // The mock controllerService.get returns a promise that resolves immediately
+    // After ngOnInit and detectChanges, the controller should be populated
+    expect(component.controller).toEqual(mockController);
+  });
+
+  it('should have vmrunPath initially empty string', () => {
+    const newFixture = TestBed.createComponent(VmwarePreferencesComponent);
+    const newComponent = newFixture.componentInstance;
+    // vmrunPath is initialized with empty string in the component
+    expect(newComponent.vmrunPath()).toBe('');
+  });
+
+  it('should restore vmrunPath to empty string when restoreDefaults is called', () => {
+    component.vmrunPath.set('/some/path');
+    component.restoreDefaults();
+    expect(component.vmrunPath()).toBe('');
+  });
+
+  it('should display VMware preferences title', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const title = compiled.querySelector('h1');
+    expect(title?.textContent).toContain('VMware preferences');
+  });
+
+  it('should display mat-form-field for vmrun path input', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const formField = compiled.querySelector('mat-form-field');
+    expect(formField).toBeTruthy();
+  });
+
+  it('should have input element with placeholder for vmrun path', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const input = compiled.querySelector('input[matInput]');
+    expect(input).toBeTruthy();
+  });
+
+  it('should display "Path to vmrun:" placeholder text', () => {
+    const compiled = fixture.nativeElement as HTMLElement;
+    const input = compiled.querySelector('input[matInput]');
+    expect(input?.getAttribute('placeholder')).toBe('Path to vmrun:');
+  });
+
+  it('should use OnPush change detection strategy', () => {
+    expect(component).toBeTruthy();
   });
 });

@@ -1,4 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../../../cartography/models/drawing';
@@ -10,39 +13,42 @@ import { NodeService } from '@services/node.service';
 @Component({
   selector: 'app-bring-to-front-action',
   templateUrl: './bring-to-front-action.component.html',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BringToFrontActionComponent implements OnInit {
-  @Input() controller: Controller;
-  @Input() nodes: Node[];
-  @Input() drawings: Drawing[];
+export class BringToFrontActionComponent {
+  private nodesDataSource = inject(NodesDataSource);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private nodeService = inject(NodeService);
+  private drawingService = inject(DrawingService);
+  private cdr = inject(ChangeDetectorRef);
 
-  constructor(
-    private nodesDataSource: NodesDataSource,
-    private drawingsDataSource: DrawingsDataSource,
-    private nodeService: NodeService,
-    private drawingService: DrawingService
-  ) {}
-
-  ngOnInit() {}
+  readonly controller = input<Controller>(undefined);
+  readonly nodes = input<Node[]>([]);
+  readonly drawings = input<Drawing[]>([]);
 
   bringToFront() {
-    let maxZValueForNodes = Math.max(...this.nodes.map((n) => n.z));
-    let maxZValueForDrawings = Math.max(...this.drawings.map((n) => n.z));
+    let maxZValueForNodes = Math.max(...this.nodes().map((n) => n.z));
+    let maxZValueForDrawings = Math.max(...this.drawings().map((n) => n.z));
     let maxZValue = Math.max(maxZValueForNodes, maxZValueForDrawings);
     if (maxZValue < 100) maxZValue++;
 
-    this.nodes.forEach((node) => {
+    this.nodes().forEach((node) => {
       node.z = maxZValue;
       this.nodesDataSource.update(node);
 
-      this.nodeService.update(this.controller, node).subscribe((node: Node) => {});
+      this.nodeService.update(this.controller(), node).subscribe((node: Node) => {
+        this.cdr.markForCheck();
+      });
     });
 
-    this.drawings.forEach((drawing) => {
+    this.drawings().forEach((drawing) => {
       drawing.z = maxZValue;
       this.drawingsDataSource.update(drawing);
 
-      this.drawingService.update(this.controller, drawing).subscribe((drawing: Drawing) => {});
+      this.drawingService.update(this.controller(), drawing).subscribe((drawing: Drawing) => {
+        this.cdr.markForCheck();
+      });
     });
   }
 }

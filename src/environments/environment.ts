@@ -7,15 +7,15 @@ export const environment = {
   electron: false,
   githubio: false,
   solarputty_download_url: '',
-  current_version:'v3',
-  compute_id:'local'
+  current_version: 'v3',
+  compute_id: 'local',
 };
 
 /*
  * For easier debugging in development mode, you can import the following file
- * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
+ * to ignore Angular error stack frames.
  *
  * This import should be commented out in production mode because it will have a negative impact
  * on performance if an error is thrown.
  */
-// import 'zone.js/plugins/zone-error';  // Included with Angular CLI.
+// Angular error stack plugin import disabled (zoneless mode)

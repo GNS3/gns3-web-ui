@@ -54,11 +54,12 @@ export interface Iou {
 }
 
 export interface Images {
-  hda_disk_image: string;
-  hdb_disk_image: string;
-  hdc_disk_image: string;
-  hdd_disk_image: string;
-  cdrom_image: string;
+  bios_image?: string;
+  hda_disk_image?: string;
+  hdb_disk_image?: string;
+  hdc_disk_image?: string;
+  hdd_disk_image?: string;
+  cdrom_image?: string;
 }
 
 export interface Version {
@@ -89,6 +90,7 @@ export interface Appliance {
   vendor_name: string;
   vendor_url: string;
   versions: Version[];
+  tags: string[];
 
   docker: Docker;
   dynamips: Dynamips;

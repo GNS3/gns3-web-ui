@@ -1,114 +1,434 @@
-.import-button {
-  height: 40px;
-  width: 160px;
-  margin: 20px 0 20px 20px;
-}
+/**
+ * GNS3 Projects Component Styles
+ * BEM naming applied, Material Design 3, unified with controllers and login pages
+ */
 
-.refresh-button {
-  height: 40px;
-  width: 160px;
-  margin: 20px 0 20px 20px;
-}
-
-.add-button {
-  height: 40px;
-  width: 160px;
-  margin: 20px 0 20px 20px;
-}
-
-.full-width {
-  width: 100%;
-  max-width: 940px;
-  margin: 0 auto;
+:host {
   display: block;
+  width: 100%;
+  // Background moved to default-layout, keep transparent here
+  background: transparent;
 }
 
-.row {
+/* =============================================
+// Header
+// ============================================= */
+.projects__header {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
+  justify-content: space-between;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 20px 16px;
+  animation: fadeInSlideIn 0.4s ease-out;
 }
-table {
+
+.projects__title {
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin: 0;
+}
+
+/* =============================================
+// Content
+// ============================================= */
+
+.projects__content {
+  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+}
+
+/* =============================================
+// Buttons Bar
+// ============================================= */
+.projects__buttons-bar {
+  display: flex;
+  gap: 12px;
+}
+
+.projects__button {
+  margin: 12px 0;
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.5px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover:not([disabled]) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
+  }
+
+  &:active:not([disabled]) {
+    transform: translateY(0);
+  }
+}
+
+/* =============================================
+// Search
+// ============================================= */
+.projects__search-form {
+  display: flex;
+  justify-content: center;
+  margin: 16px auto;
+  width: 100%;
+  max-width: 1000px;
+  padding: 0 20px;
+  animation: fadeInSlideIn 0.4s ease-out 0.05s both;
+}
+
+.projects__search {
   width: 100%;
 }
 
-// mat-header-cell, mat-cell {
-//   justify-content: center;
-// }
-
-.action{
-  justify-content: center;
+/* =============================================
+// Table Styles
+// ============================================= */
+.projects__table-container {
+  border-radius: 16px;
+  overflow: hidden;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  background: var(--mat-sys-surface);
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: fadeInSlideIn 0.4s ease-out 0.15s both;
 }
 
-.mat-header-row {
-  z-index: 1;
+// Material table internal DOM styling
+mat-row {
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+  position: relative;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
+    transform: scale(1.002);
+  }
 }
 
-.mat-header-cell {
-  background: inherit;
+// Zebra striping
+mat-row:nth-child(even) {
+  background-color: color-mix(in srgb, var(--mat-sys-on-surface) 1%, transparent);
 }
 
-.table-container {
-  overflow: visible;
-  -webkit-overflow-scrolling: touch;
+mat-row:nth-child(even):hover {
+  background-color: color-mix(in srgb, var(--mat-sys-on-surface) 4%, transparent);
 }
 
+// Header row styles
 .mat-header-row {
   position: sticky;
   top: 0;
-  z-index: 3;
+  z-index: 10;
+  background: var(--mat-sys-surface);
+
+  mat-header-cell {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface-variant);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
 }
 
 .mat-table-sticky {
-  top: 0 !important;
-  z-index: 3 !important;
+  top: 0;
 }
 
-@media (max-width: 768px) {
-  .table-container {
-    overflow-x: auto;
-    overflow-y: visible;
-  }
-
-  .row {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .row h1 {
-    margin-bottom: 0;
-  }
-
-  .add-button,
-  .import-button,
-  .refresh-button {
-    width: 100%;
-    margin: 0;
-  }
-
-  .action {
-    justify-content: flex-end;
-  }
+// Cell spacing and alignment
+mat-header-cell,
+mat-cell {
+  justify-content: center;
+  padding: 0 16px;
 }
 
-.table-link {
-  transition: transform 0.2s ease;
+mat-cell {
+  font-size: 14px;
+  color: var(--mat-sys-on-surface);
+}
+
+// Name column - left align
+mat-cell[mat-column='name'] {
+  justify-content: flex-start;
+  font-weight: 500;
+}
+
+// Actions column
+.projects__cell--actions {
+  justify-content: center;
+  padding: 0 16px;
+}
+
+/* =============================================
+// Project Link
+// ============================================= */
+.projects__link {
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-block;
   transform-origin: left center;
-  padding: 2px 4px;
-  margin: -2px -4px;
+  color: var(--mat-sys-primary);
+  text-decoration: none;
+  font-weight: 500;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: currentColor;
+    transition: width 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:hover {
+    color: color-mix(in srgb, var(--mat-sys-primary) 80%, black);
+    transform: translateY(-2px);
+
+    &::after {
+      width: 100%;
+    }
+  }
 }
 
-.table-link:hover {
-  transform: scale(1.25);
+/* =============================================
+// Action Buttons
+// ============================================= */
+.projects__actions-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
 
-/* Table action buttons hover effect */
-mat-cell .mat-icon-button {
-  transition: transform 0.2s ease;
+// Icon buttons - Material Design 3 style
+button[mat-icon-button] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 50%;
+  --mat-icon-button-state-layer-size: 32px;
+  --mat-icon-button-icon-size: 20px;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background-color: var(--mat-icon-button-state-layer);
+    opacity: 0;
+    transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &:hover::before {
+    opacity: var(--mat-icon-button-hover-state-layer-opacity);
+  }
+
+  &:active::before {
+    opacity: var(--mat-icon-button-pressed-state-layer-opacity);
+  }
+
+  mat-icon {
+    transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    z-index: 1;
+  }
+
+  &:hover mat-icon {
+    transform: scale(1.15);
+  }
+
+  &:active mat-icon {
+    transform: scale(0.95);
+  }
 }
 
-mat-cell .mat-icon-button:hover {
-  transform: scale(1.25);
+// Primary action button (Open) - uses primary theme color
+.projects__actions-cell button[mat-icon-button]:first-child {
+  &::before {
+    background-color: var(--mat-sys-primary);
+  }
+
+  &:hover::before {
+    opacity: 0.12;
+  }
+
+  &:hover mat-icon {
+    color: var(--mat-sys-primary);
+  }
+}
+
+// Delete button - uses error/warn theme color
+button[color='warn'] {
+  &::before {
+    background-color: var(--mat-sys-error);
+  }
+
+  &:hover::before {
+    opacity: 0.12;
+  }
+
+  &:hover mat-icon {
+    color: var(--mat-sys-error);
+  }
+}
+
+// Loading state - spinner inside icon button
+button[mat-icon-button] {
+  mat-progress-spinner {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  &:disabled {
+    cursor: wait;
+    opacity: 0.7;
+  }
+}
+
+/* =============================================
+// Footer
+// ============================================= */
+.projects__footer {
+  padding: 24px 20px;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 14px;
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.projects__footer-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1000px;
+  margin: 0 auto;
+  gap: 16px;
+}
+
+.projects__footer-info {
+  flex: 1;
+}
+
+.projects__footer-social {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.projects__footer-social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--mat-sys-on-surface-variant);
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+    color: var(--mat-sys-primary);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.projects__footer-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  overflow: visible;
+}
+
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 768px) {
+  .projects__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 16px 12px;
+  }
+
+  .projects__title {
+    font-size: 28px;
+  }
+
+  .projects__button {
+    margin: 8px 0;
+    width: 100%;
+    height: 44px;
+    font-size: 15px;
+  }
+
+  .projects__buttons-bar {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .projects__actions-cell {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  mat-cell {
+    padding: 0 12px;
+    font-size: 13px;
+  }
+
+  .projects__footer {
+    padding: 16px;
+    font-size: 12px;
+  }
+
+  .projects__footer-content {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
 }

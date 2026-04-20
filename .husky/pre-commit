@@ -1,4 +1,115 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
-# yarn test
+echo "🔍 Running Standards check..."
+
+# Check if .husky/ files are being modified (PROTECTED)
+STAGED_HUSKY=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null | grep "^\.\husky/" || true)
+if [ -n "$STAGED_HUSKY" ]; then
+  echo ""
+  echo "⚠️  ⚠️  ⚠️  WARNING ⚠️  ⚠️  ⚠️"
+  echo "You are modifying git hooks and quality check scripts!"
+  echo ""
+  echo "These files protect code quality standards:"
+  echo "$STAGED_HUSKY" | sed 's/^/  - /'
+  echo ""
+  echo "These changes require:"
+  echo "  1. Team lead approval"
+  echo "  2. Update SCRIPT_SHA256 if modifying check-hardcoded-colors.sh"
+  echo "  3. Update allowed-hardcoded-colors.json if adding/removing allowed colors"
+  echo ""
+  echo "If this is intentional, press Enter to continue."
+  echo "Press Ctrl+C to cancel."
+  read -r
+fi
+
+# Get list of staged files in src/ only
+STAGED_SCSS=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null | grep "^src/.*\.scss$" || true)
+STAGED_TS=$(git diff --cached --name-only --diff-filter=ACM 2>/dev/null | grep "^src/.*\.ts$" || true)
+
+# Check for ::ng-deep in SCSS (FORBIDDEN)
+if [ -n "$STAGED_SCSS" ]; then
+  VIOLATIONS=$(grep -rn "::ng-deep" $STAGED_SCSS 2>/dev/null | grep -v "//.*::ng-deep" || true)
+  if [ -n "$VIOLATIONS" ]; then
+    echo "❌ FAIL: ::ng-deep found in staged SCSS files (FORBIDDEN)"
+    echo "$VIOLATIONS"
+    exit 1
+  fi
+fi
+
+# Check for :deep() in SCSS (FORBIDDEN)
+if [ -n "$STAGED_SCSS" ]; then
+  VIOLATIONS=$(grep -rn ":deep(" $STAGED_SCSS 2>/dev/null | grep -v "//.*:deep(" || true)
+  if [ -n "$VIOLATIONS" ]; then
+    echo "❌ FAIL: :deep() found in staged SCSS files (FORBIDDEN)"
+    echo "$VIOLATIONS"
+    exit 1
+  fi
+fi
+
+# Check for !important in SCSS (FORBIDDEN)
+if [ -n "$STAGED_SCSS" ]; then
+  VIOLATIONS=$(grep -rn "!important" $STAGED_SCSS 2>/dev/null | grep -v "//.*!important" || true)
+  if [ -n "$VIOLATIONS" ]; then
+    echo "❌ FAIL: !important found in staged SCSS files (FORBIDDEN)"
+    echo "$VIOLATIONS"
+    exit 1
+  fi
+fi
+
+# Check for ViewEncapsulation.None (FORBIDDEN)
+if [ -n "$STAGED_TS" ]; then
+  VIOLATIONS=$(grep -rn "ViewEncapsulation.None" $STAGED_TS 2>/dev/null || true)
+  if [ -n "$VIOLATIONS" ]; then
+    echo "❌ FAIL: ViewEncapsulation.None found in staged files (FORBIDDEN)"
+    echo "$VIOLATIONS"
+    exit 1
+  fi
+fi
+
+# Check for zone.js imports (FORBIDDEN, exclude test.ts)
+if [ -n "$STAGED_TS" ]; then
+  VIOLATIONS=$(grep -rn "zone.js" $STAGED_TS 2>/dev/null | grep -v "test.ts" || true)
+  if [ -n "$VIOLATIONS" ]; then
+    echo "❌ FAIL: zone.js import found in staged files (FORBIDDEN)"
+    echo "$VIOLATIONS"
+    exit 1
+  fi
+fi
+
+# Check for NgZone usage (FORBIDDEN)
+if [ -n "$STAGED_TS" ]; then
+  VIOLATIONS=$(grep -rn "NgZone" $STAGED_TS 2>/dev/null || true)
+  if [ -n "$VIOLATIONS" ]; then
+    echo "❌ FAIL: NgZone found in staged files (FORBIDDEN)"
+    echo "$VIOLATIONS"
+    exit 1
+  fi
+fi
+
+# Check for Zone.run usage (FORBIDDEN)
+if [ -n "$STAGED_TS" ]; then
+  VIOLATIONS=$(grep -rn "Zone.run" $STAGED_TS 2>/dev/null || true)
+  if [ -n "$VIOLATIONS" ]; then
+    echo "❌ FAIL: Zone.run found in staged files (FORBIDDEN)"
+    echo "$VIOLATIONS"
+    exit 1
+  fi
+fi
+
+# Check for ApplicationRef.tick usage (FORBIDDEN)
+if [ -n "$STAGED_TS" ]; then
+  VIOLATIONS=$(grep -rn "ApplicationRef.tick" $STAGED_TS 2>/dev/null || true)
+  if [ -n "$VIOLATIONS" ]; then
+    echo "❌ FAIL: ApplicationRef.tick found in staged files (FORBIDDEN)"
+    echo "$VIOLATIONS"
+    exit 1
+  fi
+fi
+
+# Check for hardcoded colors in SCSS (WARNING)
+if [ -n "$STAGED_SCSS" ]; then
+  . "$(dirname -- "$0")/check-hardcoded-colors.sh"
+fi
+
+echo "✅ Standards check passed"

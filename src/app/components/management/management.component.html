@@ -1,9 +1,20 @@
-<nav mat-tab-nav-bar>
-  <a mat-tab-link *ngFor="let link of links"
-     (click)="activeLink = link"
-     routerLink="./{{link}}"
-     routerLinkActive
-     [active]="rla.isActive"
-     #rla="routerLinkActive">{{link.charAt(0).toUpperCase() + link.slice(1)}} </a>
-</nav>
-<router-outlet></router-outlet>
+<section class="management__header">
+  <div class="management__header-content">
+    <h1 class="management__title">Controller Management</h1>
+  </div>
+</section>
+
+<section class="management__tab-nav">
+  <mat-tab-nav-panel #tabPanel></mat-tab-nav-panel>
+  <nav mat-tab-nav-bar [tabPanel]="tabPanel">
+    @for (link of links(); track link) {
+    <a mat-tab-link class="management__tab-link" routerLink="./{{ link }}" routerLinkActive #rla="routerLinkActive">
+      {{ link.charAt(0).toUpperCase() + link.slice(1) }}
+    </a>
+    }
+  </nav>
+</section>
+
+<section class="management__content">
+  <router-outlet></router-outlet>
+</section>

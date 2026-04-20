@@ -1,21 +1,48 @@
+/**
+ * GNS3 Import Project Dialog Component Styles
+ * Material Design 3, unified with other dialogs
+ */
+
 .non-visible {
   display: none;
 }
 
 .file-button {
-  width: 100%;
-  margin-top: 5px;
-  margin-bottom: 10px;
-  padding: 0px;
+  width: calc(100% - 48px);
+  height: 48px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  margin-left: 24px;
+  margin-right: 24px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.5px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:hover:not([disabled]) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
+  }
+
+  &:active:not([disabled]) {
+    transform: translateY(0);
+  }
 }
 
 .file-name-form {
-  float: right;
   width: 100%;
+  padding: 0 24px;
+  box-sizing: border-box;
 }
 
 .file-name-form-field {
-  width: 90%;
+  width: 100%;
 }
 
 .empty {
@@ -26,18 +53,37 @@
   background: transparent;
   border: none;
   outline: 0;
-  width: 10%;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--mat-sys-on-surface) 8%, transparent);
+  }
 }
 
 .delete-icon {
-  vertical-align: 'middle';
+  vertical-align: middle;
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: var(--mat-sys-on-surface-variant);
+
+  &:hover {
+    color: var(--mat-sys-on-surface);
+  }
 }
 
 .result-message-box {
-  margin-top: 10px;
+  margin-top: 16px;
   text-align: center;
+  color: var(--mat-sys-on-surface);
 }
 
 .progress-bar {
-  background-color: #0097a7;
+  background-color: var(--mat-sys-primary);
 }

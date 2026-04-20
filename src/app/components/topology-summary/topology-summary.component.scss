@@ -1,3 +1,8 @@
+/**
+ * GNS3 Topology Summary Component Styles
+ * Using MD3 CSS variables
+ */
+
 @media screen and (max-width: 600px) {
   .summaryWrapper {
     visibility: hidden;
@@ -9,25 +14,18 @@ mat-tab-group {
 }
 
 .summaryWrapper {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent);
   position: fixed;
   top: 60px;
-  right: 0px;
+  right: 0;
   height: 400px;
   width: 320px;
-  background: #263238;
-  color: white;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
   overflow: hidden;
   font-size: 12px;
-  margin: 20px;
-  border-radius: 8px;
-}
-
-.lightTheme {
-  background-color: rgba(244, 248, 252, 0.95);
-  color: black;
-  margin: 20px;
-  border-radius: 8px;
+  margin: 16px;
+  border-radius: 4px;
 }
 
 .summaryHeaderMenu {
@@ -41,14 +39,14 @@ mat-tab-group {
 
 .summaryFilters {
   height: 25px;
-  margin-left: 5px;
-  margin-right: 5px;
+  margin-left: 8px;
+  margin-right: 8px;
 }
 
 .summarySorting {
   height: 25px;
-  margin-left: 5px;
-  margin-right: 5px;
+  margin-left: 8px;
+  margin-right: 8px;
 }
 
 .tabContent {
@@ -57,32 +55,32 @@ mat-tab-group {
 
 .summaryContent {
   overflow: auto;
-  scrollbar-color: darkgrey #263238;
+  scrollbar-color: darkgrey var(--mat-sys-surface);
   scrollbar-width: thin;
 }
 
 .summaryContentComputes {
   max-height: 350px;
   overflow: auto;
-  scrollbar-color: darkgrey #263238;
+  scrollbar-color: darkgrey var(--mat-sys-surface);
   scrollbar-width: thin;
 }
 
 .titleButton {
-  margin-left: 5px;
+  margin-left: 8px;
   margin-top: 4px;
   outline: none;
-  border-radius: 0px;
+  border-radius: 0;
 }
 
 .marked {
-  color: #0097a7;
-  border-bottom: 2px solid #0097a7;
+  color: var(--mat-sys-primary);
+  border-bottom: 2px solid var(--mat-sys-primary);
 }
 
 .divider {
-  margin-top: 5px;
-  margin-bottom: 5px;
+  margin-top: 8px;
+  margin-bottom: 8px;
   width: 100%;
   height: 2px;
 }
@@ -91,7 +89,7 @@ mat-tab-group {
   width: 100%;
   display: flex;
   justify-content: space-between;
-  padding-right: 5px;
+  padding-right: 8px;
 
   > div {
     display: flex;
@@ -105,21 +103,8 @@ mat-tab-group {
   }
 }
 
-::-webkit-scrollbar {
-  width: 0.5em;
-}
-
-::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: darkgrey;
-  outline: 1px solid #263238;
-}
-
 .radio-group-wrapper {
-  margin-top: 5px;
+  margin-top: 8px;
 }
 
 .radio-group {
@@ -129,9 +114,9 @@ mat-tab-group {
 
 .closeButton {
   cursor: pointer;
-  font-size: 24px;
+  font-size: 18px;
   margin-top: 8px;
-  margin-right: 5px;
+  margin-right: 8px;
 }
 
 .filterBox {

@@ -1,4 +1,4 @@
-import {Resource} from "@models/resourcePools/Resource";
+import { Resource } from '@models/resourcePools/Resource';
 
 export class ResourcePool {
   name: string;

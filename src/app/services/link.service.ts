@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import 'rxjs/add/operator/map';
 import { Node } from '../cartography/models/node';
 import { CapturingSettings } from '@models/capturingSettings';
 import { FilterDescription } from '@models/filter-description';
@@ -107,15 +106,29 @@ export class LinkService {
       };
     });
 
-    return this.httpController.put(controller, `/projects/${link.project_id}/links/${link.link_id}`, { nodes: requestNodes });
+    return this.httpController.put(controller, `/projects/${link.project_id}/links/${link.link_id}`, {
+      nodes: requestNodes,
+    });
   }
 
   startCaptureOnLink(controller: Controller, link: Link, settings: CapturingSettings) {
-    return this.httpController.post(controller, `/projects/${link.project_id}/links/${link.link_id}/capture/start`, settings);
+    return this.httpController.post<Link>(
+      controller,
+      `/projects/${link.project_id}/links/${link.link_id}/capture/start`,
+      settings
+    );
   }
 
   stopCaptureOnLink(controller: Controller, link: Link) {
     return this.httpController.post(controller, `/projects/${link.project_id}/links/${link.link_id}/capture/stop`, {});
+  }
+
+  restartWiresharkCapture(controller: Controller, link: Link) {
+    return this.httpController.post<{ status: string; ws_url: string }>(
+      controller,
+      `/projects/${link.project_id}/links/${link.link_id}/capture/wireshark/restart`,
+      {}
+    );
   }
 
   resetLink(controller: Controller, link: Link) {

@@ -1,4 +1,15 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  inject,
+  input,
+  viewChild,
+  ChangeDetectorRef,
+} from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
@@ -9,31 +20,39 @@ import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog
 @Component({
   selector: 'app-import-config-action',
   templateUrl: './import-config-action.component.html',
-  styleUrls: ['./import-config-action.component.scss'],
+  styleUrl: './import-config-action.component.scss',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImportConfigActionComponent {
-  @Input() controller: Controller;
-  @Input() node: Node;
-  @ViewChild('fileInput') fileInput: ElementRef;
+  private nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
+  private dialog = inject(MatDialog);
+  private cdr = inject(ChangeDetectorRef);
+
+  readonly controller = input<Controller>(undefined);
+  readonly node = input<Node>(undefined);
+  readonly fileInput = viewChild<ElementRef>('fileInput');
   configType: string;
 
-  constructor(private nodeService: NodeService, private toasterService: ToasterService, private dialog: MatDialog) {}
-
   triggerClick() {
-    if (this.node.node_type !== 'vpcs') {
+    // Reset fileInput to ensure the change event can be triggered again
+    this.fileInput().nativeElement.value = '';
+    if (this.node().node_type !== 'vpcs') {
       const dialogRef = this.dialog.open(ConfigDialogComponent, {
-        width: '500px',
+        panelClass: ['base-dialog-panel', 'import-config-action-dialog-panel'],
         autoFocus: false,
-        disableClose: true,
+        disableClose: false,
       });
       let instance = dialogRef.componentInstance;
       dialogRef.afterClosed().subscribe((configType: string) => {
         this.configType = configType;
-        this.fileInput.nativeElement.click();
+        this.cdr.markForCheck();
+        this.fileInput().nativeElement.click();
       });
     } else {
       this.configType = 'startup-config';
-      this.fileInput.nativeElement.click();
+      this.fileInput().nativeElement.click();
     }
   }
 
@@ -47,13 +66,29 @@ export class ImportConfigActionComponent {
       }
 
       if (this.configType === 'startup-config') {
-        this.nodeService.saveConfiguration(this.controller, this.node, content).subscribe(() => {
-          this.toasterService.success(`Configuration for node ${this.node.name} imported.`);
+        this.nodeService.saveConfiguration(this.controller(), this.node(), content).subscribe({
+          next: () => {
+            this.toasterService.success(`Configuration for node ${this.node().name} imported.`);
+            this.cdr.markForCheck();
+          },
+          error: (error) => {
+            this.toasterService.error(error.error?.message || 'Failed to import startup configuration');
+            this.cdr.markForCheck();
+          },
         });
       } else if (this.configType === 'private-config') {
-        this.nodeService.savePrivateConfiguration(this.controller, this.node, content).subscribe(() => {
-          this.toasterService.success(`Configuration for node ${this.node.name} imported.`);
+        this.nodeService.savePrivateConfiguration(this.controller(), this.node(), content).subscribe({
+          next: () => {
+            this.toasterService.success(`Configuration for node ${this.node().name} imported.`);
+            this.cdr.markForCheck();
+          },
+          error: (error) => {
+            this.toasterService.error(error.error?.message || 'Failed to import private configuration');
+            this.cdr.markForCheck();
+          },
         });
+      } else {
+        this.toasterService.error('No configuration type selected');
       }
     };
     fileReader.readAsText(file);

@@ -1,3 +1,26 @@
-.form-field {
-  width: 100%;
+/**
+ * GNS3 Change Hostname Dialog Component Styles
+ */
+
+.change-hostname {
+  padding: 16px;
+
+  &__title {
+    margin-bottom: 16px;
+    font-size: 18px;
+  }
+
+  &__form {
+    margin-bottom: 24px;
+  }
+
+  &__field {
+    width: 100%;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
 }

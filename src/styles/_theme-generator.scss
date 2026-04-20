@@ -1,0 +1,112 @@
+/**
+ * Material 3 Theme Generator
+ *
+ * Based on Angular Material 21 MD3 Sass Mixin system,
+ * automatically generates dynamically switchable global variable classes.
+ *
+ * Usage:
+ * 1. Import this file in styles.scss
+ * 2. Call generate-all-themes() mixin
+ * 3. In HTML, switch themes by toggling <html class="theme-rose-red">
+ */
+
+@use 'sass:map';
+@use '@angular/material' as mat;
+
+// ============================================
+// Theme configuration map
+// Angular Material 21 MD3 palette list:
+// $red-palette, $green-palette, $blue-palette, $yellow-palette,
+// $cyan-palette, $magenta-palette, $orange-palette,
+// $chartreuse-palette, $spring-green-palette, $azure-palette,
+// $violet-palette, $rose-palette
+// ============================================
+
+$theme-configs: (
+  // Light themes
+  'deeppurple-amber':
+    (
+      theme-type: light,
+      primary: mat.$violet-palette,
+      tertiary: mat.$yellow-palette,
+    ),
+  'indigo-pink': (
+    theme-type: light,
+    primary: mat.$azure-palette,
+    tertiary: mat.$rose-palette,
+  ),
+  'magenta-violet': (
+    theme-type: light,
+    primary: mat.$magenta-palette,
+    tertiary: mat.$violet-palette,
+  ),
+  'rose-red': (
+    theme-type: light,
+    primary: mat.$rose-palette,
+    tertiary: mat.$red-palette,
+  ),
+  // Dark themes
+  'pink-bluegrey':
+    (
+      theme-type: dark,
+      primary: mat.$rose-palette,
+      tertiary: mat.$blue-palette,
+    ),
+  'purple-green': (
+    theme-type: dark,
+    primary: mat.$violet-palette,
+    tertiary: mat.$green-palette,
+  ),
+  'azure-blue': (
+    theme-type: dark,
+    primary: mat.$azure-palette,
+    tertiary: mat.$blue-palette,
+  ),
+  'cyan-orange': (
+    theme-type: dark,
+    primary: mat.$cyan-palette,
+    tertiary: mat.$orange-palette,
+  )
+);
+
+// ============================================
+// Core mixin: define theme and inject into :root
+// ============================================
+
+/// Generate complete CSS variables for a specified theme
+@mixin generate-theme($config, $class-name) {
+  $theme: mat.define-theme(
+    (
+      color: (
+        theme-type: map.get($config, theme-type),
+        primary: map.get($config, primary),
+        tertiary: map.get($config, tertiary),
+      ),
+      typography: (
+        brand-family: 'Roboto',
+        plain-family: 'Roboto',
+      ),
+      density: (
+        scale: 0,
+      ),
+    )
+  );
+
+  :root.#{$class-name} {
+    @include mat.all-component-themes($theme);
+    @include mat.system-level-colors($theme);
+    @include mat.system-level-typography($theme);
+  }
+
+  .cdk-overlay-container.#{$class-name},
+  html.#{$class-name} .cdk-overlay-container {
+    @include mat.all-component-themes($theme);
+  }
+}
+
+/// Generate switch classes for all configured themes
+@mixin generate-all-themes() {
+  @each $name, $config in $theme-configs {
+    @include generate-theme($config, 'theme-#{$name}');
+  }
+}

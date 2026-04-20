@@ -1,0 +1,120 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-03-31",
+  "description": "Allowed hardcoded colors in legacy graphics rendering code. DO NOT modify without proper review.",
+  "allowed_colors": [
+    {
+      "file": "src/app/cartography/components/text-editor/text-editor.component.ts",
+      "patterns": [
+        ": '#000000'",
+        "this.renderer.setStyle(temporaryTextElement.nativeElement, 'color', '#000000');"
+      ],
+      "reason": "D3.js text editor rendering"
+    },
+    {
+      "file": "src/app/cartography/helpers/drawings-factory/ellipse-element-factory.ts",
+      "patterns": [
+        "ellipseElement.fill = '#ffffff'",
+        "ellipseElement.stroke = '#000000'"
+      ],
+      "reason": "Ellipse element factory default colors"
+    },
+    {
+      "file": "src/app/cartography/helpers/drawings-factory/line-element-factory.ts",
+      "patterns": [
+        "lineElement.stroke = '#000000'"
+      ],
+      "reason": "Line element factory default color"
+    },
+    {
+      "file": "src/app/cartography/helpers/drawings-factory/rectangle-element-factory.ts",
+      "patterns": [
+        "rectElement.fill = '#ffffff'",
+        "rectElement.stroke = '#000000'"
+      ],
+      "reason": "Rectangle element factory default colors"
+    },
+    {
+      "file": "src/app/cartography/helpers/drawings-factory/text-element-factory.ts",
+      "patterns": [
+        "textElement.fill = '#000000'"
+      ],
+      "reason": "Text element factory default color"
+    },
+    {
+      "file": "src/app/cartography/helpers/font-bbox-calculator.ts",
+      "patterns": [
+        "element.setAttribute('fill', '#00000')"
+      ],
+      "reason": "Font bounding box calculator"
+    },
+    {
+      "file": "src/app/cartography/widgets/links/ethernet-link.ts",
+      "patterns": [
+        "color: '#000000'"
+      ],
+      "reason": "Ethernet link default color"
+    },
+    {
+      "file": "src/app/cartography/widgets/links/serial-link.ts",
+      "patterns": [
+        "color: '#800000'"
+      ],
+      "reason": "Serial link default color"
+    },
+    {
+      "file": "src/app/cartography/widgets/interface-status.ts",
+      "patterns": [
+        "LABEL_BACKGROUND_COLOR = '#E2E8FF'",
+        ".attr('fill', '#111111')",
+        ".attr('fill', '#2ecc71')",
+        ".attr('fill', '#FFFF00')",
+        "return '#2ecc71'",
+        "return '#FFFF00'"
+      ],
+      "reason": "Interface status widget colors"
+    },
+    {
+      "file": "src/app/cartography/widgets/drawing-line.ts",
+      "patterns": [
+        ".attr('stroke', '#000')"
+      ],
+      "reason": "Drawing line stroke color"
+    },
+    {
+      "file": "src/app/cartography/widgets/drawing.ts",
+      "patterns": [
+        ".attr('fill', `#ffffff`)"
+      ],
+      "reason": "Drawing fill color"
+    },
+    {
+      "file": "src/app/cartography/widgets/node.ts",
+      "patterns": [
+        ".attr('fill', `#ffffff`)"
+      ],
+      "reason": "Node fill color"
+    },
+    {
+      "file": "src/app/components/project-map/drawings-editors/style-editor/style-editor.component.ts",
+      "patterns": [
+        "stroke = this.element.stroke ?? '#000000'"
+      ],
+      "reason": "Style editor default stroke color"
+    },
+    {
+      "file": "src/app/components/project-map/drawings-editors/text-editor/text-editor.component.ts",
+      "patterns": [
+        ": '#000000'"
+      ],
+      "reason": "Text editor default fill color"
+    },
+    {
+      "file": "src/app/components/project-map/drawings-editors/link-style-editor/link-style-editor.component.ts",
+      "patterns": [
+        "link.link_type === 'serial' ? '#800000' : '#000000'"
+      ],
+      "reason": "Link style editor default colors"
+    }
+  ]
+}

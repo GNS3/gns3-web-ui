@@ -10,7 +10,7 @@ import { HttpController } from './http-controller.service';
 export class VirtualBoxService {
   constructor(private httpController: HttpController) {}
 
-  getTemplates(controller: Controller ): Observable<VirtualBoxTemplate[]> {
+  getTemplates(controller: Controller): Observable<VirtualBoxTemplate[]> {
     return this.httpController.get<VirtualBoxTemplate[]>(controller, '/templates') as Observable<VirtualBoxTemplate[]>;
   }
 
@@ -22,22 +22,34 @@ export class VirtualBoxService {
   }
 
   addTemplate(controller: Controller, virtualBoxTemplate: VirtualBoxTemplate): Observable<VirtualBoxTemplate> {
+    const templateToSend = this.prepareTemplate(virtualBoxTemplate);
     return this.httpController.post<VirtualBoxTemplate>(
       controller,
       `/templates`,
-      virtualBoxTemplate
+      templateToSend
     ) as Observable<VirtualBoxTemplate>;
   }
 
   saveTemplate(controller: Controller, virtualBoxTemplate: VirtualBoxTemplate): Observable<VirtualBoxTemplate> {
+    const templateToSend = this.prepareTemplate(virtualBoxTemplate);
     return this.httpController.put<VirtualBoxTemplate>(
       controller,
       `/templates/${virtualBoxTemplate.template_id}`,
-      virtualBoxTemplate
+      templateToSend
     ) as Observable<VirtualBoxTemplate>;
   }
 
-  getVirtualMachines(controller: Controller ): Observable<VirtualBoxVm[]> {
-    return this.httpController.get<VirtualBoxVm[]>(controller, `/computes/${environment.compute_id}/virtualbox/vms`) as Observable<VirtualBoxVm[]>;
+  private prepareTemplate(template: VirtualBoxTemplate): VirtualBoxTemplate {
+    return {
+      ...template,
+      custom_adapters: template.custom_adapters || []
+    };
+  }
+
+  getVirtualMachines(controller: Controller): Observable<VirtualBoxVm[]> {
+    return this.httpController.get<VirtualBoxVm[]>(
+      controller,
+      `/computes/${environment.compute_id}/virtualbox/vms`
+    ) as Observable<VirtualBoxVm[]>;
   }
 }

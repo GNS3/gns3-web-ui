@@ -1,64 +1,114 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
-import { By } from '@angular/platform-browser';
-import { Router } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ProgressService } from '../../common/progress/progress.service';
-import { Controller } from '@models/controller';
-import { ControllerService } from '@services/controller.service';
-import { MockedControllerService } from '@services/controller.service.spec';
-import { MockedProgressService } from '../project-map/project-map.component.spec';
+import { Router, RouterEvent } from '@angular/router';
+import { Subject } from 'rxjs';
 import { BundledControllerFinderComponent } from './bundled-controller-finder.component';
+import { ProgressService } from '../../common/progress/progress.service';
+import { ControllerService } from '@services/controller.service';
+import { Controller } from '@models/controller';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('BundledControllerFinderComponent', () => {
-  let component: BundledControllerFinderComponent;
   let fixture: ComponentFixture<BundledControllerFinderComponent>;
-  let router: any;
-  let service: ControllerService;
-  let progressService: MockedProgressService = new MockedProgressService();
-  let controllerServiceMock: jasmine.SpyObj<ControllerService>;
+  let mockRouter: any;
+  let mockControllerService: any;
+  let mockProgressService: any;
+  let mockStateSubject: Subject<any>;
 
+  const mockController: Controller = {
+    authToken: '',
+    id: 42,
+    name: 'local',
+    location: 'bundled',
+    host: '127.0.0.1',
+    port: 3080,
+    path: '',
+    ubridge_path: '',
+    status: 'running',
+    protocol: 'http:',
+    username: '',
+    password: '',
+    tokenExpired: false,
+  };
 
   beforeEach(async () => {
-    router = {
-      navigate: jasmine.createSpy('navigate'),
+    vi.clearAllMocks();
+
+    // Mock state subject for ProgressService
+    mockStateSubject = new Subject<any>();
+
+    mockProgressService = {
+      activate: vi.fn(),
+      deactivate: vi.fn(),
+      state: mockStateSubject.asObservable(),
     };
 
+    mockRouter = {
+      navigate: vi.fn().mockResolvedValue(true),
+      events: new Subject<RouterEvent>(),
+      url: '/some-url',
+    };
 
-
-    controllerServiceMock = jasmine.createSpyObj<ControllerService>([
-      "getLocalController"
-    ]);
-
+    mockControllerService = {
+      getLocalController: vi.fn().mockResolvedValue(mockController),
+    };
 
     await TestBed.configureTestingModule({
-      providers: [
-        { provide: Router, useValue: router },
-        { provide: ControllerService, useValue: controllerServiceMock },
-        { provide: ProgressService, useValue: progressService },
-      ],
-      declarations: [BundledControllerFinderComponent],
+      imports: [BundledControllerFinderComponent],
       schemas: [NO_ERRORS_SCHEMA],
-    }).compileComponents();
+    })
+      .overrideProvider(ProgressService, { useValue: mockProgressService })
+      .overrideProvider(Router, { useValue: mockRouter })
+      .overrideProvider(ControllerService, { useValue: mockControllerService })
+      .compileComponents();
 
     fixture = TestBed.createComponent(BundledControllerFinderComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
   });
 
-  it('should create and redirect to controller', fakeAsync(() => {
-    const controller = new Controller ();
-    controller.id = 99;
-    controllerServiceMock.getLocalController.and.returnValue(
-      Promise.resolve(controller)
-    );
-    expect(component).toBeTruthy();
-    tick(101)
-    fixture.detectChanges()
-    fixture.whenStable().then(() => {
-      expect(controllerServiceMock.getLocalController).toHaveBeenCalledWith('vps3.gns3.net',3000);
-      expect(router.navigate).toHaveBeenCalledWith(['/controller', 99, 'projects']);
-    })
-    service = TestBed.inject(ControllerService);
-  }));
+  afterEach(() => {
+    if (fixture) {
+      fixture.destroy();
+    }
+    // Clean up router events subject
+    if (mockRouter?.events) {
+      (mockRouter.events as Subject<RouterEvent>).complete();
+    }
+  });
+
+  describe('rendering', () => {
+    it('should render app-progress element', () => {
+      fixture.detectChanges();
+      const progressEl = fixture.nativeElement.querySelector('app-progress');
+      expect(progressEl).not.toBeNull();
+    });
+  });
+
+  describe('ngOnInit', () => {
+    it('should activate progress service on init', () => {
+      fixture.detectChanges();
+      expect(mockProgressService.activate).toHaveBeenCalledTimes(1);
+    });
+
+    it('should call getLocalController with hostname and port from document location', async () => {
+      fixture.detectChanges();
+      await vi.runAllTimersAsync();
+      // getLocalController is called with the hostname and port from document.location
+      expect(mockControllerService.getLocalController).toHaveBeenCalled();
+      const [host, port] = mockControllerService.getLocalController.mock.calls[0];
+      expect(typeof host).toBe('string');
+      expect(typeof port).toBe('number');
+    });
+
+    it('should navigate to controller projects page on success', async () => {
+      fixture.detectChanges();
+      await vi.runAllTimersAsync();
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', 42, 'projects']);
+    });
+
+    it('should deactivate progress service after successful navigation', async () => {
+      fixture.detectChanges();
+      await vi.runAllTimersAsync();
+      expect(mockProgressService.deactivate).toHaveBeenCalledTimes(1);
+    });
+  });
 });

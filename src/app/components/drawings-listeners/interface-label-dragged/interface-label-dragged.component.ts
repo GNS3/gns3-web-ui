@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
@@ -11,17 +11,17 @@ import { LinkService } from '@services/link.service';
 @Component({
   selector: 'app-interface-label-dragged',
   templateUrl: './interface-label-dragged.component.html',
-  styleUrls: ['./interface-label-dragged.component.scss'],
+  styleUrl: './interface-label-dragged.component.scss',
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class InterfaceLabelDraggedComponent {
-  @Input() controller: Controller;
+export class InterfaceLabelDraggedComponent implements OnInit, OnDestroy {
+  readonly controller = input<Controller>(undefined);
   private interfaceDragged: Subscription;
 
-  constructor(
-    private linkService: LinkService,
-    private linksDataSource: LinksDataSource,
-    private linksEventSource: LinksEventSource
-  ) {}
+  private linkService = inject(LinkService);
+  private linksDataSource = inject(LinksDataSource);
+  private linksEventSource = inject(LinksEventSource);
 
   ngOnInit() {
     this.interfaceDragged = this.linksEventSource.interfaceDragged.subscribe((evt) =>
@@ -40,7 +40,7 @@ export class InterfaceLabelDraggedComponent {
       link.nodes[1].label.y += draggedEvent.dy;
     }
 
-    this.linkService.updateNodes(this.controller, link, link.nodes).subscribe((controllerLink: Link) => {
+    this.linkService.updateNodes(this.controller(), link, link.nodes).subscribe((controllerLink: Link) => {
       this.linksDataSource.update(controllerLink);
     });
   }

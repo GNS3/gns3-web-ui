@@ -12,7 +12,7 @@ import {
   ChatRequest,
   RenameSessionRequest,
   ChatErrorType,
-  ChatError
+  ChatError,
 } from '@models/ai-chat.interface';
 
 /**
@@ -20,7 +20,7 @@ import {
  * Handles all interactions with GNS3 Copilot Chat API
  */
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AiChatService {
   private currentProjectId: string | null = null;
@@ -49,11 +49,11 @@ export class AiChatService {
 
     const authHeaders = this.getAuthHeaders(controller);
     const headersObj: Record<string, string> = {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     };
 
     // Convert HttpHeaders to plain object
-    authHeaders.keys().forEach(key => {
+    authHeaders.keys().forEach((key) => {
       const value = authHeaders.get(key);
       if (value) {
         headersObj[key] = value;
@@ -64,147 +64,144 @@ export class AiChatService {
       fetch(url, {
         method: 'POST',
         headers: headersObj,
-        body: JSON.stringify(request)
+        body: JSON.stringify(request),
       })
-      .then(async (response) => {
-        if (!response.ok) {
-          // Try to read error message from response body
-          let errorMessage = `HTTP error! status: ${response.status}`;
-          try {
-            const errorData = await response.json();
-            if (errorData.message) {
-              errorMessage = errorData.message;
-            }
-          } catch (e) {
-            // If response is not JSON, use status text
-            if (response.statusText) {
-              errorMessage = response.statusText;
-            }
-          }
-          // Create an error object with server response structure
-          const error: any = new Error(errorMessage);
-          error.status = response.status;
-          error.statusText = response.statusText;
-          error.error = { message: errorMessage };
-          throw error;
-        }
-
-        if (!response.body) {
-          throw new Error('Response body is null');
-        }
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let buffer = '';
-
-        const processStream = async () => {
-          try {
-            while (true) {
-              const { done, value } = await reader.read();
-
-              if (done) {
-                observer.complete();
-                break;
+        .then(async (response) => {
+          if (!response.ok) {
+            // Try to read error message from response body
+            let errorMessage = `HTTP error! status: ${response.status}`;
+            try {
+              const errorData = await response.json();
+              if (errorData.message) {
+                errorMessage = errorData.message;
               }
+            } catch (e) {
+              // If response is not JSON, use status text
+              if (response.statusText) {
+                errorMessage = response.statusText;
+              }
+            }
+            // Create an error object with server response structure
+            const error: any = new Error(errorMessage);
+            error.status = response.status;
+            error.statusText = response.statusText;
+            error.error = { message: errorMessage };
+            throw error;
+          }
 
-              // Decode and add to buffer
-              buffer += decoder.decode(value, { stream: true });
+          if (!response.body) {
+            throw new Error('Response body is null');
+          }
 
-              // Process complete lines from buffer
-              const lines = buffer.split('\n');
-              buffer = lines.pop() || ''; // Keep incomplete line
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder();
+          let buffer = '';
 
-              for (const line of lines) {
-                if (line.startsWith('data: ')) {
-                  const data = line.slice(6).trim();
+          const processStream = async () => {
+            try {
+              while (true) {
+                const { done, value } = await reader.read();
 
-                  if (data) {
-                    try {
-                      const event: ChatEvent = JSON.parse(data);
+                if (done) {
+                  observer.complete();
+                  break;
+                }
 
-                      // Skip heartbeat messages
-                      if (event.type === 'heartbeat') {
-                        continue;
+                // Decode and add to buffer
+                buffer += decoder.decode(value, { stream: true });
+
+                // Process complete lines from buffer
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || ''; // Keep incomplete line
+
+                for (const line of lines) {
+                  if (line.startsWith('data: ')) {
+                    const data = line.slice(6).trim();
+
+                    if (data) {
+                      try {
+                        const event: ChatEvent = JSON.parse(data);
+
+                        // Skip heartbeat messages
+                        if (event.type === 'heartbeat') {
+                          continue;
+                        }
+
+                        // Update current session ID
+                        if (event.session_id) {
+                          this.currentSessionId = event.session_id;
+                        }
+
+                        observer.next(event);
+
+                        // Check if done
+                        if (event.type === 'done' || event.type === 'error') {
+                          observer.complete();
+                          break;
+                        }
+                      } catch (e) {
+                        console.error('Failed to parse SSE data:', data, e);
                       }
-
-                      // Update current session ID
-                      if (event.session_id) {
-                        this.currentSessionId = event.session_id;
-                      }
-
-                      observer.next(event);
-
-                      // Check if done
-                      if (event.type === 'done' || event.type === 'error') {
-                        observer.complete();
-                        break;
-                      }
-                    } catch (e) {
-                      console.error('Failed to parse SSE data:', data, e);
                     }
                   }
                 }
-              }
 
-              // Exit loop if completed
-              if (observer.closed) {
-                break;
+                // Exit loop if completed
+                if (observer.closed) {
+                  break;
+                }
               }
+            } catch (error) {
+              console.error('Stream processing error:', error);
+              observer.error(error);
+            } finally {
+              reader.cancel();
             }
-          } catch (error) {
-            console.error('Stream processing error:', error);
-            observer.error(error);
-          } finally {
-            reader.cancel();
-          }
-        };
+          };
 
-        processStream();
-      })
-      .catch(error => {
-        console.error('Fetch error:', error);
-        // Pass the original error - component will extract the message
-        observer.error(error);
-      })
-      .finally(() => {
-        this.isStreaming.next(false);
-      });
+          processStream();
+        })
+        .catch((error) => {
+          console.error('Fetch error:', error);
+          // Pass the original error - component will extract the message
+          observer.error(error);
+        })
+        .finally(() => {
+          this.isStreaming.next(false);
+        });
 
       // Return cleanup function
       return () => {
         this.isStreaming.next(false);
       };
     }).pipe(
-      catchError(error => {
+      catchError((error) => {
         this.isStreaming.next(false);
-        return throwError(error);
+        return throwError(() => error);
       })
     );
   }
 
   /**
    * Get sessions list
-   * GET /v3/projects/{project_id}/chat/sessions
+   * GET /projects/{project_id}/chat/sessions
    * @param controller Controller
    * @param projectId Project ID
    * @returns Sessions list
    */
   getSessions(controller: Controller, projectId: string): Observable<ChatSession[]> {
-    return this.httpController.get<ChatSession[]>(
-      controller,
-      `/projects/${projectId}/chat/sessions`
-    ).pipe(
-      catchError(error => {
+    return this.httpController.get<ChatSession[]>(controller, `/projects/${projectId}/chat/sessions`).pipe(
+      catchError((error) => {
         console.error('Failed to get sessions:', error);
         // Pass through the original error - it contains the server response
-        return throwError(error);
+        return throwError(() => error);
       })
     );
   }
 
   /**
    * Get session history
-   * GET /v3/projects/{project_id}/chat/sessions/{session_id}/history
+   * GET /projects/{project_id}/chat/sessions/{session_id}/history
    * @param controller Controller
    * @param projectId Project ID
    * @param sessionId Session ID
@@ -219,64 +216,49 @@ export class AiChatService {
   ): Observable<ConversationHistory> {
     const params = limit ? { limit } : undefined;
 
-    return this.httpController.get<ConversationHistory>(
-      controller,
-      `/projects/${projectId}/chat/sessions/${sessionId}/history`
-    ).pipe(
-      catchError(error => {
-        console.error('Failed to get session history:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.httpController
+      .get<ConversationHistory>(controller, `/projects/${projectId}/chat/sessions/${sessionId}/history`)
+      .pipe(
+        catchError((error) => {
+          console.error('Failed to get session history:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
    * Rename session
-   * PATCH /v3/projects/{project_id}/chat/sessions/{session_id}
+   * PATCH /projects/{project_id}/chat/sessions/{session_id}
    * @param controller Controller
    * @param projectId Project ID
    * @param sessionId Session ID
    * @param title New title
    * @returns Updated session
    */
-  renameSession(
-    controller: Controller,
-    projectId: string,
-    sessionId: string,
-    title: string
-  ): Observable<ChatSession> {
+  renameSession(controller: Controller, projectId: string, sessionId: string, title: string): Observable<ChatSession> {
     const request: RenameSessionRequest = { title };
 
-    return this.httpController.patch<ChatSession>(
-      controller,
-      `/projects/${projectId}/chat/sessions/${sessionId}`,
-      request
-    ).pipe(
-      catchError(error => {
-        console.error('Failed to rename session:', error);
-        return throwError(() => error);
-      })
-    );
+    return this.httpController
+      .patch<ChatSession>(controller, `/projects/${projectId}/chat/sessions/${sessionId}`, request)
+      .pipe(
+        catchError((error) => {
+          console.error('Failed to rename session:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
    * Delete session
-   * DELETE /v3/projects/{project_id}/chat/sessions/{session_id}
+   * DELETE /projects/{project_id}/chat/sessions/{session_id}
    * @param controller Controller
    * @param projectId Project ID
    * @param sessionId Session ID
    * @returns void
    */
-  deleteSession(
-    controller: Controller,
-    projectId: string,
-    sessionId: string
-  ): Observable<void> {
-    return this.httpController.delete<void>(
-      controller,
-      `/projects/${projectId}/chat/sessions/${sessionId}`
-    ).pipe(
-      catchError(error => {
+  deleteSession(controller: Controller, projectId: string, sessionId: string): Observable<void> {
+    return this.httpController.delete<void>(controller, `/projects/${projectId}/chat/sessions/${sessionId}`).pipe(
+      catchError((error) => {
         console.error('Failed to delete session:', error);
         return throwError(() => error);
       })
@@ -285,51 +267,40 @@ export class AiChatService {
 
   /**
    * Pin session
-   * PUT /v3/projects/{project_id}/chat/sessions/{session_id}/pin
+   * PUT /projects/{project_id}/chat/sessions/{session_id}/pin
    * @param controller Controller
    * @param projectId Project ID
    * @param sessionId Session ID
    * @returns Updated session
    */
-  pinSession(
-    controller: Controller,
-    projectId: string,
-    sessionId: string
-  ): Observable<ChatSession> {
-    return this.httpController.put<ChatSession>(
-      controller,
-      `/projects/${projectId}/chat/sessions/${sessionId}/pin`,
-      null
-    ).pipe(
-      catchError(error => {
-        console.error('Failed to pin session:', error);
-        return throwError(() => error);
-      })
-    );
+  pinSession(controller: Controller, projectId: string, sessionId: string): Observable<ChatSession> {
+    return this.httpController
+      .put<ChatSession>(controller, `/projects/${projectId}/chat/sessions/${sessionId}/pin`, null)
+      .pipe(
+        catchError((error) => {
+          console.error('Failed to pin session:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
    * Unpin session
-   * DELETE /v3/projects/{project_id}/chat/sessions/{session_id}/pin
+   * DELETE /projects/{project_id}/chat/sessions/{session_id}/pin
    * @param controller Controller
    * @param projectId Project ID
    * @param sessionId Session ID
    * @returns Updated session
    */
-  unpinSession(
-    controller: Controller,
-    projectId: string,
-    sessionId: string
-  ): Observable<ChatSession> {
-    return this.httpController.delete<ChatSession>(
-      controller,
-      `/projects/${projectId}/chat/sessions/${sessionId}/pin`
-    ).pipe(
-      catchError(error => {
-        console.error('Failed to unpin session:', error);
-        return throwError(() => error);
-      })
-    );
+  unpinSession(controller: Controller, projectId: string, sessionId: string): Observable<ChatSession> {
+    return this.httpController
+      .delete<ChatSession>(controller, `/projects/${projectId}/chat/sessions/${sessionId}/pin`)
+      .pipe(
+        catchError((error) => {
+          console.error('Failed to unpin session:', error);
+          return throwError(() => error);
+        })
+      );
   }
 
   /**
@@ -338,6 +309,23 @@ export class AiChatService {
    */
   getStreamingState(): Observable<boolean> {
     return this.isStreaming.asObservable();
+  }
+
+  /**
+   * Abort chat session
+   * POST /v3/projects/{project_id}/chat/sessions/{session_id}/abort
+   * @param controller Controller
+   * @param projectId Project ID
+   * @param sessionId Session ID
+   * @returns void
+   */
+  abortChat(controller: Controller, projectId: string, sessionId: string): Observable<void> {
+    return this.httpController.post<void>(controller, `/projects/${projectId}/chat/sessions/${sessionId}/abort`, null).pipe(
+      catchError((error) => {
+        console.error('Failed to abort chat:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
   /**
@@ -399,7 +387,7 @@ export class AiChatService {
       return {
         type: ChatErrorType.UNAUTHORIZED,
         message: 'Unauthorized access',
-        details: error
+        details: error,
       };
     }
 
@@ -407,7 +395,7 @@ export class AiChatService {
       return {
         type: ChatErrorType.SESSION_NOT_FOUND,
         message: 'Session not found',
-        details: error
+        details: error,
       };
     }
 
@@ -415,14 +403,14 @@ export class AiChatService {
       return {
         type: ChatErrorType.NETWORK_ERROR,
         message: 'Network connection failed',
-        details: error
+        details: error,
       };
     }
 
     return {
       type: ChatErrorType.UNKNOWN_ERROR,
       message: error.message || 'Unknown error',
-      details: error
+      details: error,
     };
   }
 }

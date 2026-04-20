@@ -1,17 +1,55 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
+import { MatTableModule } from '@angular/material/table';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: true,
   selector: 'app-configurator-atm-switch',
   templateUrl: './configurator-atm-switch.component.html',
-  styleUrls: ['../configurator.component.scss', '../../../../preferences/preferences.component.scss'],
+  // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatCardModule,
+    MatTableModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatIconModule,
+    MatTooltipModule,
+  ],
 })
 export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<ConfiguratorDialogAtmSwitchComponent>);
+  private nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   node: Node;
   name: string;
@@ -34,14 +72,10 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
 
   useVpiOnly: boolean = false;
 
-  constructor(
-    public dialogRef: MatDialogRef<ConfiguratorDialogAtmSwitchComponent>,
-    public nodeService: NodeService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder
-  ) {
+  constructor() {
     this.nameForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
+      useVpiOnly: new UntypedFormControl(false),
     });
 
     this.inputForm = this.formBuilder.group({
@@ -62,6 +96,12 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
       this.node = node;
       this.name = node.name;
 
+      // Update form values with node data
+      this.nameForm.patchValue({
+        name: node.name,
+        useVpiOnly: false,
+      });
+
       let mappings = node.properties.mappings;
       Object.keys(mappings).forEach((key) => {
         this.nodeMappings.set(key, mappings[key]);
@@ -73,6 +113,7 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
           portOut: value,
         });
       });
+      this.cd.markForCheck();
     });
   }
 
@@ -83,7 +124,9 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
   add() {
     if (this.inputForm.valid) {
       let nodeMapping: NodeMapping;
-      if (!this.useVpiOnly) {
+      const useVpiOnly = this.nameForm.value.useVpiOnly;
+
+      if (!useVpiOnly) {
         if (this.abstractForm.valid) {
           nodeMapping = {
             portIn: `${this.sourcePort}:${this.sourceVpi}:${this.sourceVci}`,
@@ -136,6 +179,12 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
 
   onSaveClick() {
     if (this.nameForm.valid) {
+      // Merge form values back into node
+      const formValues = this.nameForm.value;
+
+      this.node.name = formValues.name;
+      this.useVpiOnly = formValues.useVpiOnly;
+
       this.nodeMappings.clear();
       this.nodeMappingsDataSource.forEach((elem) => {
         this.nodeMappings.set(elem.portIn, elem.portOut);

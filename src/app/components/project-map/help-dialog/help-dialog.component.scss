@@ -1,7 +1,13 @@
+/**
+ * GNS3 Help Dialog Component Styles
+ * Using MD3 CSS variables
+ */
+
 .message {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .description {
-  color: #b0bec5;
+  color: var(--mat-sys-on-surface);
+  opacity: 0.7;
 }

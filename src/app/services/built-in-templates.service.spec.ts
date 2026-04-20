@@ -1,160 +1,118 @@
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { inject, TestBed } from '@angular/core/testing';
-import { environment } from 'environments/environment';
-import { Controller } from '@models/controller';
-import { CloudTemplate } from '@models/templates/cloud-template';
-import { EthernetHubTemplate } from '@models/templates/ethernet-hub-template';
-import { AppTestingModule } from '../testing/app-testing/app-testing.module';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { BuiltInTemplatesService } from './built-in-templates.service';
 import { HttpController } from './http-controller.service';
-import { getTestController } from './testing';
+import { Observable, of } from 'rxjs';
+import { Controller } from '@models/controller';
 
 describe('BuiltInTemplatesService', () => {
-  let httpClient: HttpClient;
-  let httpTestingController: HttpTestingController;
-  let httpController: HttpController;
-  let controller: Controller;
+  let service: BuiltInTemplatesService;
+  let mockHttpController: any;
+  let mockController: Controller;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpController, BuiltInTemplatesService],
+    mockHttpController = {
+      get: vi.fn(),
+      post: vi.fn(),
+      put: vi.fn(),
+      delete: vi.fn(),
+    };
+
+    mockController = {
+      id: 1,
+      name: 'Test Controller',
+      location: 'local',
+      host: 'localhost',
+      port: 3080,
+      protocol: 'http:',
+      status: 'running',
+    } as Controller;
+
+    service = new BuiltInTemplatesService(mockHttpController);
+  });
+
+  describe('Service Creation', () => {
+    it('should create the service', () => {
+      expect(service).toBeTruthy();
     });
 
-    httpClient = TestBed.get(HttpClient);
-    httpTestingController = TestBed.get(HttpTestingController);
-    httpController = TestBed.get(HttpController);
-    controller = getTestController();
+    it('should be instance of BuiltInTemplatesService', () => {
+      expect(service).toBeInstanceOf(BuiltInTemplatesService);
+    });
   });
 
-  afterEach(() => {
-    httpTestingController.verify();
+  describe('getTemplates', () => {
+    it('should call httpController.get with templates endpoint', () => {
+      mockHttpController.get.mockReturnValue(of([]));
+
+      service.getTemplates(mockController);
+
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/templates');
+    });
+
+    it('should return Observable', () => {
+      mockHttpController.get.mockReturnValue(of([]));
+
+      const result = service.getTemplates(mockController);
+
+      expect(result).toBeInstanceOf(Observable);
+    });
   });
 
-  it('should be created', inject([BuiltInTemplatesService], (service: BuiltInTemplatesService) => {
-    expect(service).toBeTruthy();
-  }));
+  describe('getTemplate', () => {
+    it('should call httpController.get with template_id', () => {
+      mockHttpController.get.mockReturnValue(of({}));
 
-  it('should update cloud template', inject([BuiltInTemplatesService], (service: BuiltInTemplatesService) => {
-    const cloudtemplate = {
-      builtin: false,
-      category: 'guest',
-      compute_id: 'local',
-      default_name_format: 'Cloud{0}',
-      name: '',
-      ports_mapping: [],
-      remote_console_type: 'none',
-      symbol: 'cloud',
-      template_id: '1',
-      template_type: 'cloud',
-    } as CloudTemplate;
+      service.getTemplate(mockController, 'builtin-1');
 
-    service.saveTemplate(controller, cloudtemplate).subscribe();
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/templates/builtin-1');
+    });
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates/1`);
-    expect(req.request.method).toEqual('PUT');
-    expect(req.request.body).toEqual(cloudtemplate);
-  }));
+    it('should return Observable', () => {
+      mockHttpController.get.mockReturnValue(of({}));
 
-  it('should update ethernet hub template', inject([BuiltInTemplatesService], (service: BuiltInTemplatesService) => {
-    let ethernethubtemplate: EthernetHubTemplate = {
-      builtin: false,
-      category: 'switch',
-      compute_id: 'local',
-      default_name_format: 'Hub{0}',
-      name: '',
-      ports_mapping: [],
-      symbol: 'hub',
-      template_id: '2',
-      template_type: 'ethernet_hub',
-    };
+      const result = service.getTemplate(mockController, 'builtin-1');
 
-    service.saveTemplate(controller, ethernethubtemplate).subscribe();
+      expect(result).toBeInstanceOf(Observable);
+    });
+  });
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates/2`);
-    expect(req.request.method).toEqual('PUT');
-    expect(req.request.body).toEqual(ethernethubtemplate);
-  }));
+  describe('addTemplate', () => {
+    it('should call httpController.post with template', () => {
+      const template = { name: 'New Built-in' };
+      mockHttpController.post.mockReturnValue(of(template));
 
-  it('should update ethernet switch template', inject([BuiltInTemplatesService], (service: BuiltInTemplatesService) => {
-    let ethernetswitchtemplate: EthernetHubTemplate = {
-      builtin: false,
-      category: 'switch',
-      compute_id: 'local',
-      default_name_format: 'Hub{0}',
-      name: '',
-      ports_mapping: [],
-      symbol: 'hub',
-      template_id: '3',
-      template_type: 'ethernet_hub',
-    };
+      service.addTemplate(mockController, template);
 
-    service.saveTemplate(controller, ethernetswitchtemplate).subscribe();
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/templates', template);
+    });
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates/3`);
-    expect(req.request.method).toEqual('PUT');
-    expect(req.request.body).toEqual(ethernetswitchtemplate);
-  }));
+    it('should return Observable', () => {
+      const template = { name: 'New Built-in' };
+      mockHttpController.post.mockReturnValue(of(template));
 
-  it('should add cloud template', inject([BuiltInTemplatesService], (service: BuiltInTemplatesService) => {
-    const cloudtemplate = {
-      builtin: false,
-      category: 'guest',
-      compute_id: 'local',
-      default_name_format: 'Cloud{0}',
-      name: '',
-      ports_mapping: [],
-      remote_console_type: 'none',
-      symbol: 'cloud',
-      template_id: '1',
-      template_type: 'cloud',
-    } as CloudTemplate;
+      const result = service.addTemplate(mockController, template);
 
-    service.addTemplate(controller, cloudtemplate).subscribe();
+      expect(result).toBeInstanceOf(Observable);
+    });
+  });
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates`)
-    expect(req.request.method).toEqual('POST');
-    expect(req.request.body).toEqual(cloudtemplate);
-  }));
+  describe('saveTemplate', () => {
+    it('should call httpController.put with template_id', () => {
+      const template = { template_id: 'builtin-1', name: 'Updated' };
+      mockHttpController.put.mockReturnValue(of(template));
 
-  it('should add ethernet hub template', inject([BuiltInTemplatesService], (service: BuiltInTemplatesService) => {
-    let ethernethubtemplate: EthernetHubTemplate = {
-      builtin: false,
-      category: 'switch',
-      compute_id: 'local',
-      default_name_format: 'Hub{0}',
-      name: '',
-      ports_mapping: [],
-      symbol: 'hub',
-      template_id: '2',
-      template_type: 'ethernet_hub',
-    };
+      service.saveTemplate(mockController, template);
 
-    service.addTemplate(controller, ethernethubtemplate).subscribe();
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/templates/builtin-1', template);
+    });
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates`)
-    expect(req.request.method).toEqual('POST');
-    expect(req.request.body).toEqual(ethernethubtemplate);
-  }));
+    it('should return Observable', () => {
+      const template = { template_id: 'builtin-1', name: 'Updated' };
+      mockHttpController.put.mockReturnValue(of(template));
 
-  it('should add ethernet switch template', inject([BuiltInTemplatesService], (service: BuiltInTemplatesService) => {
-    let ethernetswitchtemplate: EthernetHubTemplate = {
-      builtin: false,
-      category: 'switch',
-      compute_id: 'local',
-      default_name_format: 'Hub{0}',
-      name: '',
-      ports_mapping: [],
-      symbol: 'hub',
-      template_id: '3',
-      template_type: 'ethernet_hub',
-    };
+      const result = service.saveTemplate(mockController, template);
 
-    service.addTemplate(controller, ethernetswitchtemplate).subscribe();
-
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates`)
-    expect(req.request.method).toEqual('POST');
-    expect(req.request.body).toEqual(ethernetswitchtemplate);
-  }));
+      expect(result).toBeInstanceOf(Observable);
+    });
+  });
 });

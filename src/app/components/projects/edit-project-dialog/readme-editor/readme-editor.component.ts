@@ -1,56 +1,44 @@
-import { Component, OnInit, ViewEncapsulation, Input } from '@angular/core';
-import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { marked } from 'marked';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, input, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MarkdownModule } from 'ngx-markdown';
 import { ProjectService } from '@services/project.service';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
 
 @Component({
-    selector: 'app-readme-editor',
-    templateUrl: './readme-editor.component.html',
-    encapsulation: ViewEncapsulation.None,
-    styleUrls: ['./readme-editor.component.scss']
+  standalone: true,
+  selector: 'app-readme-editor',
+  templateUrl: './readme-editor.component.html',
+  styleUrls: ['./readme-editor.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, FormsModule, MatTabsModule, MarkdownModule],
 })
 export class ReadmeEditorComponent implements OnInit {
-    @Input() controller: Controller;
-    @Input() project: Project;
+  readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
 
-    public markdown = ``;
+  private projectService = inject(ProjectService);
+  private cd = inject(ChangeDetectorRef);
 
-    constructor(
-        private projectService: ProjectService,
-        private sanitizer: DomSanitizer
-    ) {}
+  markdown = signal('');
 
-    /**
-     * Get safe HTML for markdown preview
-     * @returns SafeHtml
-     */
-    get markdownHtml(): SafeHtml | string {
-        if (!this.markdown) {
-            return '';
+  ngOnInit() {
+    this.projectService.getReadmeFile(this.controller(), this.project().project_id).subscribe({
+      next: (file) => {
+        if (file) {
+          this.markdown.set(file);
         }
-        try {
-            const html = marked(this.markdown) as string;
-            return this.sanitizer.bypassSecurityTrustHtml(html);
-        } catch (e) {
-            return this.markdown;
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        if (err.status === 404) {
+          // File doesn't exist yet, which is fine
+          this.markdown.set('');
         }
-    }
-
-    ngOnInit() {
-        this.projectService.getReadmeFile(this.controller, this.project.project_id).subscribe({
-            next: (file) => {
-                if (file) {
-                    this.markdown = file;
-                }
-            },
-            error: (err) => {
-                if (err.status === 404) {
-                    // File doesn't exist yet, which is fine
-                    this.markdown = '';
-                }
-            }
-        });
-    }
+        this.cd.markForCheck();
+      },
+    });
+  }
 }

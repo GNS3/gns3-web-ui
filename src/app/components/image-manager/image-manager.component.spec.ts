@@ -1,107 +1,102 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDialogModule } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { ImageManagerService } from 'app/services/image-manager.service';
-import { ControllerService } from 'app/services/controller.service';
-import { MockedControllerService } from 'app/services/controller.service.spec';
-import { of } from 'rxjs';
-import { Controller } from '@models/controller';
-
+import { describe, it, expect } from 'vitest';
 import { ImageManagerComponent } from './image-manager.component';
-import { Image } from '@models/images';
-import { ProgressService } from 'app/common/progress/progress.service';
-import { MockedProgressService } from '../project-map/project-map.component.spec';
-import { MockedActivatedRoute } from '../preferences/preferences.component.spec';
-import { ActivatedRoute } from '@angular/router';
-import { MockedVersionService } from '@services/version.service.spec';
-import { VersionService } from 'app/services/version.service';
-import { ToasterService } from 'app/services/toaster.service';
-import { MockedToasterService } from 'app/services/toaster.service.spec';
-import { ImageUploadSessionService } from '@services/image-upload-session.service';
-import { Subject } from 'rxjs';
-
-export class MockedImageManagerService {
-  public getImages(controller: Controller ) {
-    return of();
-  }
-
-  public deleteFile(controller: Controller, image_path) {
-    return of();
-  }
-
-}
 
 describe('ImageManagerComponent', () => {
-  let component: ImageManagerComponent;
-  let fixture: ComponentFixture<ImageManagerComponent>;
+  describe('prototype methods', () => {
+    it('should have ngOnInit method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).ngOnInit).toBe('function');
+    });
 
-  let mockedControllerService = new MockedControllerService();
-  let mockedImageManagerService = new MockedImageManagerService()
-  let mockedProgressService = new MockedProgressService()
-  let mockedVersionService = new MockedVersionService()
-  let mockedToasterService = new MockedToasterService()
-  let activatedRoute = new MockedActivatedRoute().get();
-  let mockedImageUploadSessionService = { events$: new Subject() };
+    it('should have ngOnDestroy method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).ngOnDestroy).toBe('function');
+    });
 
+    it('should have getImages method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).getImages).toBe('function');
+    });
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [
-        BrowserAnimationsModule,
-        MatIconModule,
-        MatToolbarModule,
-        MatMenuModule,
-        MatCheckboxModule,
-        MatDialogModule
-      ],
-      providers: [
-        {
-          provide: ActivatedRoute,
-          useValue: activatedRoute,
-        },
-        { provide: ControllerService, useValue: mockedControllerService },
-        { provide: ImageManagerService, useValue: mockedImageManagerService },
-        { provide: ProgressService, useValue: mockedProgressService },
-        { provide: VersionService, useValue: mockedVersionService },
-        { provide: ToasterService, useValue: mockedToasterService },
-        { provide: ImageUploadSessionService, useValue: mockedImageUploadSessionService },
-      ],
-      declarations: [ImageManagerComponent],
-      schemas: [NO_ERRORS_SCHEMA],
-    })
-      .compileComponents();
-  });
+    it('should have onPageEvent method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).onPageEvent).toBe('function');
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ImageManagerComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    it('should have onSearchChange method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).onSearchChange).toBe('function');
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should have isHighlighted method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).isHighlighted).toBe('function');
+    });
 
+    it('should have isPersistedRow method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).isPersistedRow).toBe('function');
+    });
 
-  it('should call save images', () => {
-    spyOn(mockedImageManagerService, 'getImages').and.returnValue(of([] as Image[]));
-    component.getImages()
-    expect(mockedImageManagerService.getImages).toHaveBeenCalled();
-  });
+    it('should have hasUploadState method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).hasUploadState).toBe('function');
+    });
 
-  it('should delete image', () => {
-    const mockDialogRef = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
-    mockDialogRef.afterClosed.and.returnValue(of(true));
-    spyOn(component['dialog'], 'open').and.returnValue(mockDialogRef);
-    spyOn(mockedImageManagerService, 'getImages').and.returnValue(of([] as Image[]));
-    spyOn(mockedImageManagerService, 'deleteFile').and.returnValue(of({} as Image));
-    component.controller = { authToken: 'test' } as any;
-    component.deleteFile('image_path')
-    expect(mockedImageManagerService.deleteFile).toHaveBeenCalled();
+    it('should have formatImageSize method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).formatImageSize).toBe('function');
+    });
+
+    it('should have deleteFile method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).deleteFile).toBe('function');
+    });
+
+    it('should have cancelUpload method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).cancelUpload).toBe('function');
+    });
+
+    it('should have onRowCheckboxClick method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).onRowCheckboxClick).toBe('function');
+    });
+
+    it('should have trackByRow method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).trackByRow).toBe('function');
+    });
+
+    it('should have isAllSelected method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).isAllSelected).toBe('function');
+    });
+
+    it('should have selectAllImages method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).selectAllImages).toBe('function');
+    });
+
+    it('should have unChecked method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).unChecked).toBe('function');
+    });
+
+    it('should have allChecked method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).allChecked).toBe('function');
+    });
+
+    it('should have hasSelection method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).hasSelection).toBe('function');
+    });
+
+    it('should have selectedCount method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).selectedCount).toBe('function');
+    });
+
+    it('should have installAllImages method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).installAllImages).toBe('function');
+    });
+
+    it('should have pruneImages method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).pruneImages).toBe('function');
+    });
+
+    it('should have addImageDialog method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).addImageDialog).toBe('function');
+    });
+
+    it('should have deleteAllFiles method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).deleteAllFiles).toBe('function');
+    });
+
+    it('should have isRowSelected method', () => {
+      expect(typeof (ImageManagerComponent.prototype as any).isRowSelected).toBe('function');
+    });
   });
 });

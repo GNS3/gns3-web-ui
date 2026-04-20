@@ -1,7 +1,10 @@
-<div class="content">
-  <div class="default-header"><h1>Help</h1></div>
-  <div class="default-content">
-    <div class="container mat-elevation-z8">
+<div class="help">
+  <header class="help__header">
+    <h1 class="help__title">Help</h1>
+  </header>
+
+  <main class="help__content">
+    <section class="help__card">
       <mat-accordion>
         <mat-expansion-panel>
           <mat-expansion-panel-header>
@@ -21,17 +24,24 @@
           <mat-expansion-panel-header>
             <mat-panel-title> Third party components </mat-panel-title>
           </mat-expansion-panel-header>
-          <a href="https://downloads.solarwinds.com/solarwinds/GNS3/Solar-PuTTY/Solar-PuTTY-Optional.exe">
-          <div [innerHTML]="thirdpartylicenses" ></div></a>
+          <a
+            class="help__link"
+            href="https://downloads.solarwinds.com/solarwinds/GNS3/Solar-PuTTY/Solar-PuTTY-Optional.exe"
+          >
+            <div [innerHTML]="thirdpartylicenses()"></div>
+          </a>
         </mat-expansion-panel>
         <mat-expansion-panel>
           <mat-expansion-panel-header>
             <mat-panel-title> Release notes </mat-panel-title>
           </mat-expansion-panel-header>
-          <div [innerHTML]="releasenotes"></div>
+          <div [innerHTML]="releasenotes()"></div>
         </mat-expansion-panel>
       </mat-accordion>
-    </div>
-    <button mat-button color="primary" class="full-width" (click)="goToDocumentation()">Go to documentation</button>
-  </div>
+    </section>
+
+    <button mat-button color="primary" class="help__doc-button" (click)="goToDocumentation()">
+      Go to documentation
+    </button>
+  </main>
 </div>

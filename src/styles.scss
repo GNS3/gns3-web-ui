@@ -1,54 +1,104 @@
-/* GitHub Markdown styles - removed */
+/**
+ * GNS3 Web UI - Global Styles
+ *
+ * Using Angular Material prebuilt themes with built-in design tokens.
+ * Theme switching is handled by ThemeService.
+ */
 
-/* Global markdown list fix */
-app-chat-message-list markdown p,
-app-chat-message-list markdown ul,
-app-chat-message-list markdown ol,
-app-chat-message-list markdown li {
-  margin-top: 0.1em !important;
-  margin-bottom: 0.1em !important;
-  line-height: 1.2 !important;
+@use 'styles/dialogs' as *;
+@use 'styles/map' as *;
+@use 'styles/xterm-context-menu' as *;
+@use 'styles/markdown' as *;
+
+/* =============================================
+// Global Scrollbar Styles
+// ============================================= */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-app-chat-message-list markdown li p {
-  margin: 0 !important;
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-/* body background-color is now controlled dynamically by ThemeService and applyMapBackground() */
-
-img.logo-header {
-  width: 50px;
+::-webkit-scrollbar-thumb {
+  background-color: var(--mat-sys-outline);
+  border-radius: 4px;
 }
 
-a.table-link {
-  color: #0097a7;
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--mat-sys-on-surface-variant);
 }
 
-.snackabar-success {
-  background: #0097a7 !important;
-  color: white !important;
-}
-.uplaoding-file-snackabar {
-  background: #263238 !important;
-  color: white !important;
-  max-width: 80% !important;
+/* =============================================
+// GNS3 Custom Properties - Opacity Levels
+// Unified opacity values for consistent theming
+// ============================================= */
+:root {
+  // Shadow opacity levels
+  --gns3-shadow-opacity-subtle: 10%;
+  --gns3-shadow-opacity-light: 15%;
+  --gns3-shadow-opacity-normal: 20%;
+  --gns3-shadow-opacity-medium: 25%;
+  --gns3-shadow-opacity-strong: 30%;
+  --gns3-shadow-opacity-heavy: 40%;
+
+  // Border opacity levels
+  --gns3-border-opacity-subtle: 8%;
+  --gns3-border-opacity-light: 12%;
+  --gns3-border-opacity-normal: 15%;
+  --gns3-border-opacity-medium: 20%;
+  --gns3-border-opacity-strong: 25%;
+
+  // Selection opacity levels
+  --gns3-selection-opacity-light: 10%;
+  --gns3-selection-opacity-normal: 15%;
+  --gns3-selection-opacity-medium: 20%;
 }
 
-.snackbar-warning {
-  background: rgb(197, 199, 64) !important;
-  color: white !important;
-}
+/* =============================================
+// Global markdown list fix (deprecated - moved to _markdown.scss)
+// ============================================= */
 
-.snackbar-error {
-  background: #b00020 !important;
-  color: white !important;
-  white-space: pre-wrap !important;
-}
-
+/* =============================================
+// Dialog Styles
+// ============================================= */
 .mat-dialog-actions {
-  margin-bottom: -12px !important;
+  margin-bottom: -12px;
 }
 
+/* =============================================
+// ToasterService Snackbar Styles
+// Material 3 themed notification styles
+// ============================================= */
+.snackabar-success {
+  .mat-mdc-snack-bar-surface {
+    background-color: var(--mat-sys-primary);
+    color: var(--mat-sys-on-primary);
+    border-radius: 8px;
+  }
+}
+
+.snackabar-warning {
+  .mat-mdc-snack-bar-surface {
+    background-color: var(--mat-sys-tertiary);
+    color: var(--mat-sys-on-tertiary);
+    border-radius: 8px;
+  }
+}
+
+.snackabar-error {
+  .mat-mdc-snack-bar-surface {
+    background-color: var(--mat-sys-error);
+    color: var(--mat-sys-on-error);
+    border-radius: 8px;
+  }
+}
+
+/* =============================================
+// Form Field Styles
+// ============================================= */
 @-moz-document url-prefix() {
   .temporaryElement {
     line-height: 1.4em;
@@ -61,54 +111,351 @@ a.table-link {
 
 app-root {
   width: 100%;
+  height: 100%; // Changed to 100%, relative to html/body
 }
 
+html,
+body {
+  height: 100%; // Changed to height to ensure full viewport
+  margin: 0;
+  padding: 0;
+}
+
+/* =============================================
+// Menu Styles
+// ============================================= */
 mat-menu-panel {
   min-height: 0px;
 }
 
-.custom-tooltip {
-  background-color: grey;
-  color: #ffffff;
+.template-menu.mat-mdc-menu-panel,
+.mat-mdc-menu-panel.template-menu {
+  max-width: 500px;
 }
 
-.permission-tooltip {
-  max-width: unset !important;
-  background-color: grey;
-  color: #ffffff;
-  white-space: pre-line;
-  font-size: 12px !important;
-  font-family: monospace;
+/* Allow drag ghost to escape menu panels by increasing selector specificity */
+body .cdk-overlay-container .mat-mdc-menu-panel.mat-mdc-menu-panel {
+  overflow: visible;
 }
+
+body .cdk-overlay-container .mat-mdc-menu-content.mat-mdc-menu-content {
+  overflow: visible;
+}
+
+/* =============================================
+// Interface Menu Panel
+// ============================================= */
+body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.interface-menu-panel {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.mat-mdc-menu-panel {
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+/* Template menu - fixed width and increased height to prevent double scrollbar */
+body .cdk-overlay-container .cdk-overlay-pane .mat-mdc-menu-panel.template-menu {
+  max-width: 400px;
+  width: 400px;
+  max-height: 700px;
+}
+
+/* =============================================
+// Tab Styles
+// ============================================= */
 .mat-tab-body-content {
   height: 100%;
-  overflow: initial !important;
+  overflow: initial;
 }
+
 .mat-tab-body.mat-tab-body-active {
-
-  overflow-y: clip !important;
-
+  overflow-y: clip;
 }
+
 .mat-tab-label {
-  padding: 0 10px !important;
-  min-width: 152px !important;
-}
-.mat-tab-header-pagination-controls-enabled .mat-tab-header-pagination {
-  display: none !important;
+  padding: 0 8px;
+  min-width: 152px;
 }
 
-/* Link hover effects - simple line thickening */
+.mat-tab-header-pagination-controls-enabled .mat-tab-header-pagination {
+  display: none;
+}
+
+/* =============================================
+// Console Wrapper Tabs - Material 3 Layout
+// ============================================= */
+.console-wrapper__tabs .mat-mdc-tab {
+  min-width: 10rem;
+  flex: 0 0 auto;
+  padding-right: 4px;
+}
+
+.console-wrapper__tabs .mdc-tab__content {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.console-wrapper__tabs .mdc-tab__text-label {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+}
+
+.console-wrapper__tabs .mdc-tab__text-label .tab-label-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.console-wrapper__tabs .mdc-tab__text-label .mat-mdc-icon-button {
+  flex-shrink: 0;
+  margin-right: -4px;
+}
+
+/* =============================================
+// Console Header Actions
+// ============================================= */
+.console-header-actions {
+  display: flex;
+  align-items: flex-start;
+  flex-shrink: 0;
+  padding-top: 4px;
+
+  .mat-icon-button {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover {
+      background-color: var(--mat-sys-hover-state-layer);
+
+      .mat-icon {
+        color: var(--mat-sys-primary);
+      }
+    }
+
+    &:active {
+      background-color: var(--mat-sys-focus-state-layer);
+    }
+  }
+
+  .mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: var(--mat-sys-on-surface);
+  }
+}
+
+/* =============================================
+// Link Hover Effects (Map Links)
+// ============================================= */
 .ethernet_link,
 .serial_link {
-  transition: stroke-width 0.2s ease-in-out, stroke 0.2s ease-in-out, stroke-opacity 0.2s ease-in-out;
+  transition: stroke-width 150ms cubic-bezier(0.4, 0, 0.2, 1), stroke 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  stroke-opacity: 1;
 }
 
 .ethernet_link:hover,
 .serial_link:hover {
-  stroke-width: 4px !important;
+  stroke: var(--mat-sys-error);
+  stroke-width: 4px;
   cursor: pointer;
-  stroke: #ff0000 !important;
-  stroke-opacity: 1 !important;
+  stroke-opacity: 1;
+}
+
+/* Hidden links - use class instead of inline style */
+.ethernet_link.link_hidden,
+.serial_link.link_hidden {
+  stroke-opacity: 0;
+}
+
+.ethernet_link.link_hidden:hover,
+.serial_link.link_hidden:hover {
+  stroke-opacity: 0.3;
+  stroke: var(--mat-sys-outline);
+}
+
+/* =============================================
+// Curviness Anchor (Link Drag Handle)
+// ============================================= */
+.curviness-anchor {
+  transition: r 150ms ease, fill 150ms ease;
+}
+
+.curviness-anchor:hover {
+  r: 10;
+  fill: var(--mat-sys-primary);
+}
+
+/* =============================================
+// Material Overlays Z-Index Fix
+// ============================================= */
+/*
+ * AI Chat container uses z-index: 1000
+ * Material overlays use default z-index: 1000
+ * Session Menu (1300) and Confirm Dialog (1400) are set via ZIndexService
+ */
+
+/* =============================================
+// AI Chat Menu Icon Alignment
+// ============================================= */
+
+/* Fix alignment: menu items with icons */
+.mat-menu-panel .mat-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mat-menu-panel .mat-menu-item:hover .menu-item-icon {
+  fill: var(--mat-sys-primary);
+}
+
+/* =============================================
+// Fix SVG and text alignment in AI Chat buttons
+// ============================================= */
+
+.ai-chat-container .new-session-button .mat-button-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-chat-container .session-list-icon {
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* =============================================
+// Tool Status Spinner in AI Chat
+// ============================================= */
+.tool-status mat-spinner {
+  display: inline-block;
+}
+
+/* =============================================
+// Session Action Menu Panel
+// ============================================= */
+.session-action-menu {
+  min-height: auto;
+  max-height: none;
+  height: auto;
+  overflow: visible;
+
+  .mat-mdc-menu-content {
+    padding: 4px 0;
+    max-height: none;
+  }
+
+  .mat-mdc-menu-item {
+    height: 40px;
+    min-height: 40px;
+    padding: 0 12px;
+  }
+
+  .mdc-list-item__primary-text {
+    font-size: 14px;
+  }
+
+  .menu-item-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+    vertical-align: middle;
+  }
+
+  .delete-icon {
+    fill: var(--mat-app-error);
+  }
+}
+
+/* =============================================
+// Uploading Processbar Snack Bar
+// ============================================= */
+.uplaoding-file-snackabar .mat-snack-bar-container {
+  min-width: 450px;
+}
+
+.proccessBar-row {
+  display: flex;
+}
+
+.proccessBar-col {
+  margin: auto;
+}
+
+/* =============================================
+// Settings Component Expansion Panel Styles
+// These styles target mat-expansion-panel inside .settings__card
+// Required here because Angular Material internals cannot be styled
+// via component-scoped styles
+// ============================================= */
+.settings__card {
+  .mat-expansion-panel {
+    box-shadow: none;
+    border-radius: 0;
+
+    &:first-child {
+      border-top-left-radius: 16px;
+      border-top-right-radius: 16px;
+    }
+
+    &:last-child {
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+    }
+
+    &:not(:last-child) {
+      border-bottom: 1px solid var(--mat-sys-outline-variant);
+    }
+
+    &.mat-expanded {
+      background: color-mix(in srgb, var(--mat-sys-primary-container) 30%, transparent);
+    }
+  }
+
+  .mat-expansion-panel-header {
+    padding: 16px 24px;
+    height: auto;
+    min-height: 64px;
+
+    &:hover {
+      background: color-mix(in srgb, var(--mat-sys-on-surface) 3%, transparent);
+    }
+  }
+
+  .mat-expansion-panel-header-description {
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  .mat-expansion-panel-content {
+    padding: 8px 24px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .settings__card {
+    .mat-expansion-panel-header {
+      padding: 12px 16px;
+      min-height: 56px;
+    }
+
+    .mat-expansion-panel-content {
+      padding: 8px 16px 16px;
+    }
+  }
 }
 
 /* Hidden link labels - invisible by default, revealed on hover */
@@ -123,141 +470,23 @@ g.link:hover .link-hidden {
   pointer-events: auto;
 }
 
-/* ============================================================================
- * Material overlays z-index fix
- * AI Chat container uses z-index: 1000
- * Material overlays use default z-index: 1000
- * Session Menu (1300) and Confirm Dialog (1400) are set via ZIndexService
- * ============================================================================ */
+/* =============================================
+// Chips in Form Fields - Fix label overlap
+// ============================================= */
+mat-form-field {
+  mat-chip-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 16px;
+  }
 
-/* ============================================================================
- * AI Chat Session Menu Icon Colors
- * Target SVG icons (.menu-item-icon) inside Material menus
- * ============================================================================ */
+  .mat-mdc-form-field-subscript-wrapper {
+    margin-top: 4px;
+  }
 
-/* Dark theme (default) - white icons for AI Chat menus */
-.mat-menu-panel .menu-item-icon {
-  fill: rgba(255, 255, 255, 0.87) !important;
-  flex-shrink: 0;
-  vertical-align: middle;
-}
-
-/* Fix alignment: menu items with icons */
-.mat-menu-panel .mat-menu-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.mat-menu-panel .delete-icon {
-  fill: #f44336 !important;
-}
-
-.mat-menu-panel .mat-menu-item:hover .menu-item-icon {
-  fill: #10a37f !important;
-}
-
-.mat-menu-panel .mat-menu-item:hover .delete-icon {
-  fill: #f44336 !important;
-}
-
-/* Light theme override */
-.lightTheme .mat-menu-panel .menu-item-icon {
-  fill: rgba(0, 0, 0, 0.87) !important;
-}
-
-.lightTheme .mat-menu-panel .delete-icon {
-  fill: #d32f2f !important;
-}
-
-.lightTheme .mat-menu-panel .mat-menu-item:hover .menu-item-icon {
-  fill: #0097a7 !important;
-}
-
-/* ============================================================================
- * AI Chat Sidebar Icon Colors (Session List Component)
- * These icons are inside AI Chat container but need global styles
- * ============================================================================ */
-
-/* Menu icon (three dots) in session list */
-.ai-chat-container .menu-icon,
-.mat-menu-panel .menu-icon {
-  fill: rgba(255, 255, 255, 0.7) !important;
-}
-
-/* Session list icon (New Chat +) */
-.ai-chat-container .session-list-icon {
-  fill: rgba(255, 255, 255, 0.87) !important;
-}
-
-/* Session icon (chat bubble) */
-.ai-chat-container .session-icon {
-  fill: rgba(255, 255, 255, 0.6) !important;
-}
-
-/* Pin icon */
-.ai-chat-container .pin-icon {
-  fill: #10a37f !important;
-}
-
-/* No sessions icon */
-.ai-chat-container .no-sessions-icon {
-  fill: rgba(255, 255, 255, 0.3) !important;
-}
-
-/* Hover effects for sidebar icons */
-.ai-chat-container .new-session-button:hover .session-list-icon,
-.ai-chat-container .session-item:hover .session-icon,
-.ai-chat-container .session-menu-button:hover .menu-icon {
-  fill: rgba(255, 255, 255, 1) !important;
-}
-
-/* Light theme override for sidebar icons */
-.lightTheme .ai-chat-container .menu-icon,
-.lightTheme .ai-chat-container .session-list-icon,
-.lightTheme .ai-chat-container .session-icon {
-  fill: rgba(0, 0, 0, 0.6) !important;
-}
-
-.lightTheme .ai-chat-container .pin-icon {
-  fill: #0097a7 !important;
-}
-
-.lightTheme .ai-chat-container .no-sessions-icon {
-  fill: rgba(0, 0, 0, 0.3) !important;
-}
-
-.lightTheme .ai-chat-container .new-session-button:hover .session-list-icon,
-.lightTheme .ai-chat-container .session-item:hover .session-icon,
-.lightTheme .ai-chat-container .session-menu-button:hover .menu-icon {
-  fill: rgba(0, 0, 0, 0.87) !important;
-}
-
-/* ============================================================================
- * Fix SVG and text alignment in AI Chat buttons
- * ============================================================================ */
-
-.ai-chat-container .new-session-button .mat-button-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.ai-chat-container .session-list-icon {
-  flex-shrink: 0;
-  vertical-align: middle;
-}
-
-/* ============================================================================
- * Confirmation Dialog - Outer transparent, inner with color
- * ============================================================================ */
-
-.confirmation-dialog-panel {
-  /* Material Dialog Container - transparent */
-  mat-dialog-container,
-  .mat-dialog-container {
-    background: transparent !important;
-    padding: 0 !important;
-    box-shadow: none !important;
+  /* Ensure label floats above chips when present */
+  .mat-mdc-form-field-flex {
+    align-items: flex-start;
   }
 }

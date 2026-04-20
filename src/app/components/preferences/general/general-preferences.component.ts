@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-general-preferences',
   templateUrl: './general-preferences.component.html',
-  styleUrls: ['./general-preferences.component.scss'],
+  styleUrl: './general-preferences.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GeneralPreferencesComponent implements OnInit {
-  public controllerId: string = '';
+  private route = inject(ActivatedRoute);
 
-  constructor(private route: ActivatedRoute) {}
+  public controllerId: string = '';
 
   ngOnInit() {
     this.controllerId = this.route.snapshot.paramMap.get('controller_id');

@@ -1,0 +1,70 @@
+<h1 mat-dialog-title>Snapshots</h1>
+
+<div mat-dialog-content>
+  <div class="snapshot-dialog__toolbar">
+    <mat-form-field appearance="fill" class="snapshot-dialog__search">
+      <mat-icon matPrefix>search</mat-icon>
+      <input
+        matInput
+        [value]="searchText()"
+        (input)="searchText.set($event.target.value)"
+        placeholder="Filter snapshots"
+      />
+    </mat-form-field>
+    <button mat-button matTooltip="Create snapshot" matTooltipClass="custom-tooltip" (click)="openCreateDialog()">
+      <mat-icon>add_circle_outline</mat-icon>
+      Create snapshot
+    </button>
+  </div>
+
+  <div class="snapshot-dialog__table-container">
+    <mat-table [dataSource]="filteredSnapshots()" class="snapshot-dialog__table">
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef class="snapshot-dialog__column-name">Name</mat-header-cell>
+        <mat-cell *matCellDef="let row" class="snapshot-dialog__column-name">{{ row.name }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="created_at">
+        <mat-header-cell *matHeaderCellDef class="snapshot-dialog__column-date">Date</mat-header-cell>
+        <mat-cell *matCellDef="let row" class="snapshot-dialog__column-date">{{
+          row.created_at | datefilter
+        }}</mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef class="snapshot-dialog__column-actions">Actions</mat-header-cell>
+        <mat-cell *matCellDef="let row" class="snapshot-dialog__column-actions">
+          <div class="snapshot-dialog__actions">
+            <button
+              mat-icon-button
+              matTooltip="Restore snapshot"
+              matTooltipClass="custom-tooltip"
+              (click)="restoreSnapshot(row)"
+            >
+              <mat-icon>restore</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              matTooltip="Delete snapshot"
+              matTooltipClass="custom-tooltip"
+              (click)="deleteSnapshot(row)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    </mat-table>
+
+    @if (snapshots().length === 0) {
+    <div class="snapshot-dialog__empty">No snapshots available</div>
+    }
+  </div>
+</div>
+
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close>Close</button>
+</div>

@@ -1,6 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
+import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatButtonModule } from '@angular/material/button';
 import { Link } from '@models/link';
 import { LinkStyle } from '@models/link-style';
 import { Project } from '@models/project';
@@ -17,16 +30,37 @@ import { StyleTranslator } from '../../../../cartography/widgets/links/style-tra
 @Component({
   selector: 'app-link-style-editor',
   templateUrl: './link-style-editor.component.html',
-  styleUrls: ['./link-style-editor.component.scss'],
+  styleUrl: './link-style-editor.component.scss',
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatDialogModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatButtonModule,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LinkStyleEditorDialogComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<LinkStyleEditorDialogComponent>);
+  private formBuilder = inject(UntypedFormBuilder);
+  private toasterService = inject(ToasterService);
+  private linkService = inject(LinkService);
+  private linksDataSource = inject(LinksDataSource);
+  private linksEventSource = inject(LinksEventSource);
+  private linkToMapLink = inject(LinkToMapLinkConverter);
+  private nonNegativeValidator = inject(NonNegativeValidator);
+
   controller: Controller;
   project: Project;
   link: Link;
   formGroup: UntypedFormGroup;
-  borderTypes = ["Invisible", "Solid", "Dash", "Dot", "Dash Dot", "Dash Dot Dot"];
-  linkTypes = ["Straight", "Bezier", "Flowchart", "StateMachine"];
-  private readonly linkTypeValues = ["straight", "bezier", "flowchart", "statemachine"];
+  borderTypes = ['Invisible', 'Solid', 'Dash', 'Dot', 'Dash Dot', 'Dash Dot Dot'];
+  linkTypes = ['Straight', 'Bezier', 'Flowchart', 'StateMachine', 'Freeform'];
+  private readonly linkTypeValues = ['straight', 'bezier', 'flowchart', 'statemachine', 'freeform'];
   bezierCurvinessMin = StyleTranslator.BEZIER_CURVINESS_MIN;
   bezierCurvinessMax = StyleTranslator.BEZIER_CURVINESS_MAX;
   bezierCurvinessStep = StyleTranslator.BEZIER_CURVINESS_STEP;
@@ -41,19 +75,10 @@ export class LinkStyleEditorDialogComponent implements OnInit {
   flowchartRoundnessDefault = StyleTranslator.FLOWCHART_ROUNDNESS_DEFAULT;
   private curvinessLinkTypeContext: string = StyleTranslator.DEFAULT_LINK_TYPE;
 
-  constructor(
-    public dialogRef: MatDialogRef<LinkStyleEditorDialogComponent>,
-    private formBuilder: UntypedFormBuilder,
-    private toasterService: ToasterService,
-    private linkService: LinkService,
-    private linksDataSource: LinksDataSource,
-    private linksEventSource: LinksEventSource,
-    private linkToMapLink: LinkToMapLinkConverter,
-    private nonNegativeValidator: NonNegativeValidator
-  ) {
+  constructor() {
     this.formGroup = this.formBuilder.group({
       color: new UntypedFormControl('', [Validators.required]),
-      width: new UntypedFormControl('', [Validators.required, nonNegativeValidator.get]),
+      width: new UntypedFormControl('', [Validators.required, this.nonNegativeValidator.get]),
       type: new UntypedFormControl('', [Validators.required]),
       linkType: new UntypedFormControl('', [Validators.required]),
       bezierCurviness: new UntypedFormControl(this.bezierCurvinessDefault, [Validators.required]),
@@ -61,7 +86,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
         Validators.required,
         Validators.min(this.flowchartRoundnessMin),
         Validators.max(this.flowchartRoundnessMax),
-      ])
+      ]),
     });
   }
 
@@ -80,11 +105,11 @@ export class LinkStyleEditorDialogComponent implements OnInit {
 
     let type = this.borderTypes[1];
     if (
-      this.link.link_style?.type !== undefined
-      && this.link.link_style.type >= 0
-      && this.link.link_style.type < this.borderTypes.length
+      this.link.link_style?.type !== undefined &&
+      this.link.link_style.type >= 0 &&
+      this.link.link_style.type < this.borderTypes.length
     ) {
-        type = this.borderTypes[this.link.link_style.type];
+      type = this.borderTypes[this.link.link_style.type];
     }
     this.formGroup.controls['type'].setValue(type);
 
@@ -131,10 +156,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
         ? selectedTypeDefaultCurviness
         : this.normalizeCurvinessByLinkType(selectedLinkType, rawCurviness);
 
-      this.formGroup.controls['bezierCurviness'].setValue(
-        nextCurviness,
-        { emitEvent: false }
-      );
+      this.formGroup.controls['bezierCurviness'].setValue(nextCurviness, { emitEvent: false });
 
       this.curvinessLinkTypeContext = selectedLinkType;
     });
@@ -218,6 +240,9 @@ export class LinkStyleEditorDialogComponent implements OnInit {
         this.link.link_style.link_type || LinkTypeCache.get(this.link.project_id, this.link.link_id)
       );
 
+      // Preserve existing control_offset when updating freeform link style
+      const existingControlOffset = this.link.link_style.control_offset;
+
       this.link.link_style.color = this.formGroup.controls['color'].value;
       this.link.link_style.width = this.formGroup.controls['width'].value;
 
@@ -227,7 +252,16 @@ export class LinkStyleEditorDialogComponent implements OnInit {
         this.link.link_style.link_type,
         this.formGroup.controls['bezierCurviness'].value
       );
-      this.link.link_style.flowchart_roundness = StyleTranslator.normalizeFlowchartRoundness(this.formGroup.controls['flowchartRoundness'].value);
+      this.link.link_style.flowchart_roundness = StyleTranslator.normalizeFlowchartRoundness(
+        this.formGroup.controls['flowchartRoundness'].value
+      );
+
+      // Restore control_offset for freeform links, clear it for other types
+      if (this.link.link_style.link_type === 'freeform') {
+        this.link.link_style.control_offset = existingControlOffset;
+      } else {
+        this.link.link_style.control_offset = undefined;
+      }
 
       const expectedLinkType = this.link.link_style.link_type;
       const expectedBezierCurviness = this.link.link_style.bezier_curviness;
@@ -241,8 +275,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
           }
 
           const returnedLinkType = link.link_style.link_type;
-          const hasExplicitServerLinkType =
-            typeof returnedLinkType === 'string' && returnedLinkType.trim().length > 0;
+          const hasExplicitServerLinkType = typeof returnedLinkType === 'string' && returnedLinkType.trim().length > 0;
           const serverReturnedDifferentLinkType =
             hasExplicitServerLinkType &&
             this.normalizeLinkType(returnedLinkType) !== this.normalizeLinkType(expectedLinkType);
@@ -257,6 +290,13 @@ export class LinkStyleEditorDialogComponent implements OnInit {
 
           if (link.link_style.flowchart_roundness === undefined && expectedFlowchartRoundness !== undefined) {
             link.link_style.flowchart_roundness = expectedFlowchartRoundness;
+          }
+
+          // Preserve control_offset only for freeform links if server didn't return it
+          if (link.link_style.control_offset === undefined && existingControlOffset !== undefined) {
+            if (link.link_style.link_type === 'freeform') {
+              link.link_style.control_offset = existingControlOffset;
+            }
           }
 
           LinkTypeCache.set(link.project_id, link.link_id, link.link_style.link_type);

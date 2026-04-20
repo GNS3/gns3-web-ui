@@ -6,7 +6,7 @@
   </div>
   <div class="default-content">
     <mat-form-field class="form-field">
-      <input matInput type="text" [(ngModel)]="vboxManagePath" placeholder="Path to VirtualBox manage" />
+      <input matInput type="text" [value]="vboxManagePath()" (input)="vboxManagePath.set($event.target.value)" placeholder="Path to VirtualBox manage" />
     </mat-form-field>
   </div>
 </div>

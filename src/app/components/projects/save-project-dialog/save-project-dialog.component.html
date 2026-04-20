@@ -9,12 +9,11 @@
       [ngClass]="{ 'is-invalid': form.projectName?.errors }"
       placeholder="Please enter name"
     />
-    <mat-error *ngIf="form.projectName?.touched && form.projectName?.errors && form.projectName?.errors.required"
-      >Project name is required</mat-error
-    >
-    <mat-error *ngIf="form.projectName?.touched && form.projectName?.errors && form.projectName?.errors.invalidName"
-      >Project name is incorrect</mat-error
-    >
+    @if (form.projectName?.touched && form.projectName?.errors && form.projectName?.errors.required) {
+    <mat-error>Project name is required</mat-error>
+    } @if (form.projectName?.touched && form.projectName?.errors && form.projectName?.errors.invalidName) {
+    <mat-error>Project name is incorrect</mat-error>
+    }
   </mat-form-field>
   <div mat-dialog-actions>
     <button mat-button (click)="onNoClick()" color="accent">Cancel</button>

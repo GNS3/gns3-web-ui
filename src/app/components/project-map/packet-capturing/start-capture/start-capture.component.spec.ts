@@ -1,105 +1,361 @@
-import { CommonModule } from '@angular/common';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatDialogRef } from '@angular/material/dialog';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatSelectModule } from '@angular/material/select';
+import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { of } from 'rxjs';
+import { MatButtonModule } from '@angular/material/button';
 import { NodesDataSource } from '../../../../cartography/datasources/nodes-datasource';
-import { Link } from '@models/link';
+import { LinksDataSource } from '../../../../cartography/datasources/links-datasource';
 import { LinkService } from '@services/link.service';
-import { LoginService } from '@services/login.service';
-import { ControllerService } from '@services/controller.service';
 import { PacketCaptureService } from '@services/packet-capture.service';
 import { ToasterService } from '@services/toaster.service';
-import { MockedToasterService } from '@services/toaster.service.spec';
-import { MockedLinkService, MockedNodesDataSource } from '../../project-map.component.spec';
 import { StartCaptureDialogComponent } from './start-capture.component';
-import { ProtocolHandlerService } from '@services/protocol-handler.service';
+import { Controller } from '@models/controller';
+import { Project } from '@models/project';
+import { Link } from '@models/link';
+import { LinkNode } from '@models/link-node';
+import { Node } from '../../../../cartography/models/node';
+import { of } from 'rxjs';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('StartCaptureDialogComponent', () => {
-  let component: StartCaptureDialogComponent;
   let fixture: ComponentFixture<StartCaptureDialogComponent>;
+  let mockDialogRef: any;
+  let mockLinkService: any;
+  let mockPacketCaptureService: any;
+  let mockToasterService: any;
+  let mockNodesDataSource: any;
+  let mockController: Controller;
+  let mockProject: Project;
 
-  let mockedToasterService = new MockedToasterService();
-  let mockedLinkService = new MockedLinkService();
-  let mockedNodesDataSource = new MockedNodesDataSource();
-  let protocolHandlerService: ProtocolHandlerService;
+  const createMockController = (): Controller =>
+    ({
+      id: 1,
+      authToken: 'token',
+      name: 'Test Controller',
+      location: 'local',
+      host: '192.168.1.100',
+      port: 3080,
+      path: '',
+      ubridge_path: '',
+      status: 'running',
+      protocol: 'http:',
+      username: '',
+      password: '',
+      tokenExpired: false,
+    } as Controller);
 
-  let dialogRef = {
-    close: jasmine.createSpy('close'),
-  };
+  const createMockProject = (): Project =>
+    ({
+      project_id: 'proj-123',
+      name: 'Test Project',
+      filename: 'test.gns3',
+      status: 'opened',
+      auto_close: true,
+      auto_open: false,
+      auto_start: false,
+      scene_width: 2000,
+      scene_height: 1000,
+      zoom: 100,
+      show_layers: false,
+      snap_to_grid: false,
+      show_grid: false,
+      grid_size: 75,
+      drawing_grid_size: 25,
+      show_interface_labels: false,
+      variables: [],
+      path: '/path/to/project',
+      readonly: false,
+    } as Project);
+
+  const createMockNode = (name: string, ports: any[]): Node =>
+    ({
+      name,
+      ports,
+      status: 'started',
+      node_id: `node-${name}`,
+    } as unknown as Node);
+
+  const createMockLinkNode = (nodeId: string, portNumber: number, labelText: string = ''): LinkNode =>
+    ({
+      node_id: nodeId,
+      adapter_number: 0,
+      port_number: portNumber,
+      label: { text: labelText },
+    } as LinkNode);
+
+  const createMockLink = (linkType: string, linkNodes: LinkNode[]): Link =>
+    ({
+      link_id: 'link-1',
+      link_type: linkType,
+      nodes: linkNodes,
+      project_id: 'proj-123',
+      capture_file_name: '',
+      capture_file_path: '',
+      capturing: false,
+      suspend: false,
+      distance: 0,
+      length: 0,
+      source: null as unknown as Node,
+      target: null as unknown as Node,
+      x: 0,
+      y: 0,
+    } as Link);
 
   beforeEach(async () => {
+    mockDialogRef = {
+      close: vi.fn(),
+    };
+
+    mockLinkService = {
+      startCaptureOnLink: vi.fn().mockReturnValue(of(undefined)),
+    };
+
+    mockPacketCaptureService = {
+      startCapture: vi.fn(),
+    };
+
+    mockToasterService = {
+      error: vi.fn(),
+    };
+
+    mockController = createMockController();
+    mockProject = createMockProject();
+
+    // Create default mock data to prevent ngOnInit crash during createComponent
+    const defaultLink = createMockLink('ethernet', [
+      createMockLinkNode('node-DefaultSrc', 0),
+      createMockLinkNode('node-DefaultDst', 0),
+    ]);
+    const defaultSrcNode = createMockNode('DefaultSrc', [{ name: 'Eth0/0' }]);
+    const defaultDstNode = createMockNode('DefaultDst', [{ name: 'Eth0/0' }]);
+
+    mockNodesDataSource = {
+      get: vi.fn().mockReturnValueOnce(defaultSrcNode).mockReturnValueOnce(defaultDstNode),
+    };
+
     await TestBed.configureTestingModule({
       imports: [
-        MatDialogModule,
-        FormsModule,
+        StartCaptureDialogComponent,
         ReactiveFormsModule,
-        MatIconModule,
-        MatToolbarModule,
-        MatMenuModule,
+        MatSelectModule,
+        MatInputModule,
         MatCheckboxModule,
-        CommonModule,
-        NoopAnimationsModule,
+        MatButtonModule,
       ],
       providers: [
-        { provide: MatDialogRef, useValue: dialogRef },
-        { provide: MAT_DIALOG_DATA, useValue: [] },
-        { provide: ToasterService, useValue: mockedToasterService },
-        { provide: LinkService, useValue: mockedLinkService },
-        { provide: NodesDataSource, useValue: mockedNodesDataSource },
-        { provide: PacketCaptureService },
-        { provide: LoginService, useValue: {} },
-        { provide: ControllerService, useValue: {} },
-        ProtocolHandlerService,
+        { provide: MatDialogRef, useValue: mockDialogRef },
+        { provide: LinkService, useValue: mockLinkService },
+        { provide: PacketCaptureService, useValue: mockPacketCaptureService },
+        { provide: ToasterService, useValue: mockToasterService },
+        { provide: NodesDataSource, useValue: mockNodesDataSource },
+        { provide: LinksDataSource, useValue: { update: vi.fn() } },
       ],
-      declarations: [StartCaptureDialogComponent],
-      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
-    protocolHandlerService = TestBed.inject(ProtocolHandlerService);
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(StartCaptureDialogComponent);
-    component = fixture.componentInstance;
-    component.link = { link_type: 'ethernet', nodes: [{ node_id: '1' }, { node_id: '2' }] } as Link;
+    fixture.componentInstance.controller = mockController;
+    fixture.componentInstance.project = mockProject;
+    fixture.componentInstance.link = defaultLink;
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  afterEach(() => {
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
-  it('should call link service when input is valid', () => {
-    component.inputForm.controls['linkType'].setValue('Ethernet');
-    component.inputForm.controls['fileName'].setValue('SampleFileName');
-    spyOn(mockedLinkService, 'startCaptureOnLink').and.returnValue(of({}));
+  const setupWithEthernetLink = () => {
+    const sourceNode = createMockNode('Router1', [{ name: 'Eth0/0' }, { name: 'Eth0/1' }]);
+    const targetNode = createMockNode('Router2', [{ name: 'Eth0/0' }, { name: 'Eth0/1' }]);
+    const linkNodes = [
+      createMockLinkNode('node-Router1', 0, 'Eth0/0'),
+      createMockLinkNode('node-Router2', 0, 'Eth0/0')
+    ];
+    const link = createMockLink('ethernet', linkNodes);
 
-    component.onYesClick();
+    // Use mockReturnValue to return proper nodes for each call
+    mockNodesDataSource.get
+      .mockReturnValueOnce(sourceNode)
+      .mockReturnValueOnce(targetNode)
+      .mockReturnValueOnce(sourceNode)
+      .mockReturnValueOnce(targetNode);
 
-    expect(mockedLinkService.startCaptureOnLink).toHaveBeenCalled();
+    fixture.componentInstance.link = link;
+    fixture.componentInstance.ngOnInit();
+    fixture.detectChanges();
+
+    return { sourceNode, targetNode, link };
+  };
+
+  const setupWithNonEthernetLink = () => {
+    const sourceNode = createMockNode('Router1', [{ name: 'Serial0/0' }, { name: 'Serial0/1' }]);
+    const targetNode = createMockNode('Router2', [{ name: 'Serial0/0' }, { name: 'Serial0/1' }]);
+    const linkNodes = [createMockLinkNode('node-Router1', 0), createMockLinkNode('node-Router2', 0)];
+    const link = createMockLink('hdlc', linkNodes);
+
+    mockNodesDataSource.get
+      .mockReturnValueOnce(sourceNode)
+      .mockReturnValueOnce(targetNode)
+      .mockReturnValueOnce(sourceNode)
+      .mockReturnValueOnce(targetNode);
+
+    fixture.componentInstance.link = link;
+    fixture.componentInstance.ngOnInit();
+    fixture.detectChanges();
+
+    return { sourceNode, targetNode, link };
+  };
+
+  const setupWithStoppedNodes = () => {
+    const sourceNode = createMockNode('Router1', [{ name: 'Eth0/0' }]);
+    const targetNode = createMockNode('Router2', [{ name: 'Eth0/0' }]);
+    sourceNode.status = 'stopped';
+    targetNode.status = 'stopped';
+    const linkNodes = [createMockLinkNode('node-Router1', 0), createMockLinkNode('node-Router2', 0)];
+    const link = createMockLink('ethernet', linkNodes);
+
+    mockNodesDataSource.get
+      .mockReturnValueOnce(sourceNode)
+      .mockReturnValueOnce(targetNode)
+      .mockReturnValueOnce(sourceNode)
+      .mockReturnValueOnce(targetNode);
+
+    fixture.componentInstance.link = link;
+    fixture.componentInstance.ngOnInit();
+    fixture.detectChanges();
+
+    return { sourceNode, targetNode, link };
+  };
+
+  describe('Creation', () => {
+    it('should create the component', () => {
+      setupWithEthernetLink();
+      expect(fixture.componentInstance).toBeTruthy();
+    });
   });
 
-  it('should not call link service when link type is not set', () => {
-    component.inputForm.controls['fileName'].setValue('SampleFileName');
-    spyOn(mockedLinkService, 'startCaptureOnLink').and.returnValue(of({}));
+  describe('ngOnInit', () => {
+    it('should set ethernet linkTypes for ethernet link', () => {
+      setupWithEthernetLink();
+      expect(fixture.componentInstance.linkTypes).toEqual([['Ethernet', 'DLT_EN10MB']]);
+    });
 
-    component.onYesClick();
+    it('should set multiple linkTypes for non-ethernet link', () => {
+      setupWithNonEthernetLink();
+      expect(fixture.componentInstance.linkTypes).toEqual([
+        ['Cisco HDLC', 'DLT_C_HDLC'],
+        ['Cisco PPP', 'DLT_PPP_SERIAL'],
+        ['Frame Relay', 'DLT_FRELAY'],
+        ['ATM', 'DLT_ATM_RFC1483'],
+      ]);
+    });
 
-    expect(mockedLinkService.startCaptureOnLink).not.toHaveBeenCalled();
+    it('should generate filename from source and target node/port names', () => {
+      setupWithEthernetLink();
+      const fileNameControl = fixture.componentInstance.inputForm.get('fileName');
+      // Slashes are replaced with hyphens, so Eth0/0 becomes Eth0-0
+      expect(fileNameControl?.value).toBe('Router1_Eth0-0_to_Router2_Eth0-0');
+    });
+
+    it('should auto-select first linkType option and be valid', () => {
+      setupWithEthernetLink();
+      const linkTypeControl = fixture.componentInstance.inputForm.get('linkType');
+      // After ngOnInit, linkType should have a value (auto-selected) and be valid
+      expect(linkTypeControl?.value).toBe('DLT_EN10MB');
+      expect(linkTypeControl?.valid).toBe(true);
+      expect(linkTypeControl?.hasError('required')).toBe(false);
+    });
   });
 
-  it('should not call link service when filename is empty', () => {
-    component.inputForm.controls['linkType'].setValue('Ethernet');
-    component.inputForm.controls['fileName'].setValue('');
-    spyOn(mockedLinkService, 'startCaptureOnLink').and.returnValue(of({}));
+  describe('onNoClick', () => {
+    it('should close the dialog', () => {
+      setupWithEthernetLink();
+      fixture.componentInstance.onNoClick();
+      expect(mockDialogRef.close).toHaveBeenCalled();
+    });
+  });
 
-    component.onYesClick();
+  describe('onYesClick', () => {
+    it('should close the dialog when form is valid and devices are running', async () => {
+      const { link } = setupWithEthernetLink();
+      fixture.componentInstance.inputForm.setValue({
+        linkType: 'DLT_EN10MB',
+        fileName: 'test_capture',
+      });
+      fixture.componentInstance.startProgram.set(false);
 
-    expect(mockedLinkService.startCaptureOnLink).not.toHaveBeenCalled();
+      fixture.componentInstance.onYesClick();
+      await vi.runAllTimersAsync();
+
+      expect(mockLinkService.startCaptureOnLink).toHaveBeenCalledWith(mockController, link, {
+        capture_file_name: 'test_capture',
+        data_link_type: 'DLT_EN10MB',
+        wireshark: false,
+      });
+      expect(mockDialogRef.close).toHaveBeenCalled();
+    });
+
+    it('should show error toast when no devices are running', () => {
+      setupWithStoppedNodes();
+      fixture.componentInstance.inputForm.setValue({
+        linkType: 'DLT_EN10MB',
+        fileName: 'test_capture',
+      });
+
+      fixture.componentInstance.onYesClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith(
+        'Cannot capture because there is no running device on this link'
+      );
+      expect(mockLinkService.startCaptureOnLink).not.toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
+
+    it('should show error toast when form is invalid', () => {
+      setupWithEthernetLink();
+      fixture.componentInstance.inputForm.setValue({
+        linkType: '',
+        fileName: '',
+      });
+
+      fixture.componentInstance.onYesClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Fill all required fields');
+      expect(mockLinkService.startCaptureOnLink).not.toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
+
+    it('should call packetCaptureService.startCapture when startProgram is true', () => {
+      const { link } = setupWithEthernetLink();
+      fixture.componentInstance.inputForm.setValue({
+        linkType: 'DLT_EN10MB',
+        fileName: 'test_capture',
+      });
+      fixture.componentInstance.startProgram.set(true);
+
+      fixture.componentInstance.onYesClick();
+
+      expect(mockPacketCaptureService.startCapture).toHaveBeenCalledWith(
+        mockController,
+        mockProject,
+        link,
+        'test_capture'
+      );
+    });
+
+    it('should not call packetCaptureService.startCapture when startProgram is false', () => {
+      setupWithEthernetLink();
+      fixture.componentInstance.inputForm.setValue({
+        linkType: 'DLT_EN10MB',
+        fileName: 'test_capture',
+      });
+      fixture.componentInstance.startProgram.set(false);
+
+      fixture.componentInstance.onYesClick();
+
+      expect(mockPacketCaptureService.startCapture).not.toHaveBeenCalled();
+    });
   });
 });

@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core';
-import { event, mouse, select } from 'd3-selection';
+import { select, pointer } from 'd3-selection';
 import { Subject } from 'rxjs';
 import { SelectionEventSource } from '../events/selection-event-source';
 import { Context } from '../models/context';
@@ -27,8 +27,9 @@ export class SelectionTool {
 
   private activate(selection) {
     const self = this;
+    const svgNode = selection.node();
 
-    selection.on('mousedown', function () {
+    selection.on('mousedown', function (event: any) {
       // prevent deselection on right click
       if (event.button == 2) {
         selection.on('contextmenu', () => {
@@ -40,21 +41,20 @@ export class SelectionTool {
       }
 
       const subject = select(window);
-      const parent = this.parentElement;
-
-      const start = self.transformation(mouse(parent));
+      const start = self.transformation(pointer(event, svgNode));
       self.startSelection(start);
 
       // clear selection
       selection.selectAll(SelectionTool.SELECTABLE_CLASS).classed('selected', false);
 
+      // In zoneless mode, mousemove events don't trigger Angular CD automatically
       subject
-        .on('mousemove.selection', function () {
-          const end = self.transformation(mouse(parent));
+        .on('mousemove.selection', function (event: any) {
+          const end = self.transformation(pointer(event, svgNode));
           self.moveSelection(start, end);
         })
-        .on('mouseup.selection', function () {
-          const end = self.transformation(mouse(parent));
+        .on('mouseup.selection', function (event: any) {
+          const end = self.transformation(pointer(event, svgNode));
           self.endSelection(start, end);
           subject.on('mousemove.selection', null).on('mouseup.selection', null);
         });
@@ -81,25 +81,45 @@ export class SelectionTool {
 
     if (status !== 'activated' && this.enabled) {
       this.activate(selection);
-      tool.attr('activated');
+      tool.attr('status', 'activated');
     }
     if (status !== 'deactivated' && !this.enabled) {
       this.deactivate(selection);
-      tool.attr('deactivated');
+      tool.attr('status', 'deactivated');
     }
   }
 
   private startSelection(start) {
+    // Validate coordinates before creating path
+    if (start[0] == null || start[1] == null || isNaN(start[0]) || isNaN(start[1])) {
+      return;
+    }
     this.path.attr('d', this.rect(start[0], start[1], 0, 0)).attr('visibility', 'visible');
   }
 
   private moveSelection(start, move) {
-    let x = start[0] / this.context.transformation.k;
-    let y = start[1] / this.context.transformation.k;
-    this.path.attr(
-      'd',
-      this.rect(x, y, move[0] / this.context.transformation.k - x, move[1] / this.context.transformation.k - y)
-    );
+    // Validate transformation.k to prevent NaN
+    const k = this.context.transformation.k;
+    if (!k || k === 0 || isNaN(k)) {
+      return;
+    }
+
+    let x = start[0] / k;
+    let y = start[1] / k;
+
+    // Validate coordinates
+    if (isNaN(x) || isNaN(y)) {
+      return;
+    }
+
+    const moveX = move[0] / k - x;
+    const moveY = move[1] / k - y;
+
+    if (isNaN(moveX) || isNaN(moveY)) {
+      return;
+    }
+
+    this.path.attr('d', this.rect(x, y, moveX, moveY));
     this.selectedEvent(start, move);
   }
 

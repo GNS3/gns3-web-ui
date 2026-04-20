@@ -1,41 +1,118 @@
-.mat-form-field {
-  width: 100%;
+/**
+ * GNS3 Add Image Dialog Component Styles
+ * BEM naming applied, Material theme variables used
+ * Design language unified with management pages
+ */
+
+.add-image {
+  display: flex;
+  flex-direction: column;
+  min-width: 400px;
 }
 
-.non-visible {
+/* =============================================
+// Header
+// ============================================= */
+.add-image__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 24px 0;
+}
+
+.add-image__header-content {
+  flex: 1;
+}
+
+.add-image__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-image__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+}
+
+.add-image__close-btn {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+/* =============================================
+// Content
+// ============================================= */
+.add-image__content {
+  padding: 16px 24px;
+}
+
+.add-image__radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* =============================================
+// Hint
+// ============================================= */
+.add-image__hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.add-image__hint-icon {
+  font-size: 18px;
+  height: 18px;
+  width: 18px;
+}
+
+/* =============================================
+// File Input
+// ============================================= */
+.add-image__file-input {
   display: none;
 }
 
-.txt-align {
-  text-align: end;
-}
-
-.file-button {
-  margin-top: 8px;
-}
-
-.choose-instal-appliance {
+/* =============================================
+// Actions
+// ============================================= */
+.add-image__actions {
   display: flex;
-  flex-direction: row;
-  margin: 15px 0px 11px 0px;
-  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 16px 24px 24px;
+  gap: 12px;
 }
 
-.instal-appliances-button {
-  margin: 11px;
-}
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 480px) {
+  .add-image {
+    min-width: 300px;
+  }
 
-.background-hint {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  color: #aaa;
-  margin: 4px 0 0;
+  .add-image__header {
+    flex-direction: column;
+    padding: 16px 16px 0;
+  }
 
-  .hint-icon {
-    font-size: 14px;
-    height: 14px;
-    width: 14px;
+  .add-image__header-actions {
+    align-self: flex-end;
+  }
+
+  .add-image__content {
+    padding: 12px 16px;
+  }
+
+  .add-image__actions {
+    padding: 12px 16px 16px;
+    flex-direction: column;
   }
 }

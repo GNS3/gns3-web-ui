@@ -1,13 +1,19 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   ComponentRef,
   Input,
   OnInit,
-  ViewChild,
   ViewContainerRef,
+  inject,
+  input,
+  signal,
+  viewChild,
 } from '@angular/core';
-import { MatMenuTrigger } from '@angular/material/menu';
+import { CommonModule } from '@angular/common';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { Node } from '../../../cartography/models/node';
@@ -22,36 +28,38 @@ import { ConsoleDeviceActionBrowserComponent } from '../context-menu/actions/con
 @Component({
   selector: 'app-context-console-menu',
   templateUrl: './context-console-menu.component.html',
-  styleUrls: ['./context-console-menu.component.scss'],
+  styleUrl: './context-console-menu.component.scss',
+  imports: [CommonModule, MatMenuModule, MatIconModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContextConsoleMenuComponent implements OnInit {
-  @Input() project: Project;
+  private sanitizer = inject(DomSanitizer);
+  private changeDetector = inject(ChangeDetectorRef);
+  private mapSettingsService = inject(MapSettingsService);
+  private consoleService = inject(NodeConsoleService);
+  private toasterService = inject(ToasterService);
+  private router = inject(Router);
+  private vncConsoleService = inject(VncConsoleService);
+
+  readonly project = input<Project>(undefined);
   @Input() controller: Controller;
-  @ViewChild(MatMenuTrigger) contextConsoleMenu: MatMenuTrigger;
-  @ViewChild('container', { read: ViewContainerRef }) container;
+  readonly contextConsoleMenu = viewChild(MatMenuTrigger);
+  readonly container = viewChild('container', { read: ViewContainerRef });
   componentBrowserRef: ComponentRef<ConsoleDeviceActionBrowserComponent>;
 
-  topPosition;
-  leftPosition;
+  topPosition = signal<any>(undefined);
+  leftPosition = signal<any>(undefined);
   node: Node;
 
-  constructor(
-    private sanitizer: DomSanitizer,
-    private changeDetector: ChangeDetectorRef,
-    private mapSettingsService: MapSettingsService,
-    private consoleService: NodeConsoleService,
-    private toasterService: ToasterService,
-    private router: Router,
-    private vncConsoleService: VncConsoleService
-  ) {}
+  constructor() {}
 
   ngOnInit() {
     this.setPosition(0, 0);
   }
 
   public setPosition(top: number, left: number) {
-    this.topPosition = this.sanitizer.bypassSecurityTrustStyle(top + 'px');
-    this.leftPosition = this.sanitizer.bypassSecurityTrustStyle(left + 'px');
+    this.topPosition.set(this.sanitizer.bypassSecurityTrustStyle(top + 'px'));
+    this.leftPosition.set(this.sanitizer.bypassSecurityTrustStyle(left + 'px'));
     this.changeDetector.detectChanges();
   }
 
@@ -68,16 +76,18 @@ export class ContextConsoleMenuComponent implements OnInit {
       }
     } else {
       this.setPosition(top, left);
-      this.contextConsoleMenu.openMenu();
+      this.contextConsoleMenu().openMenu();
     }
   }
 
   openConsole() {
     this.mapSettingsService.setConsoleContextMenuAction('console');
     // Use Ivy's new API - no need for resolveComponentFactory
-    this.componentBrowserRef = this.container.createComponent(ConsoleDeviceActionBrowserComponent);
-    this.componentBrowserRef.instance.controller = this.controller;
-    this.componentBrowserRef.instance.node = this.node;
+    this.componentBrowserRef = this.container().createComponent(ConsoleDeviceActionBrowserComponent);
+    this.componentBrowserRef.setInput('controller', this.controller);
+    this.componentBrowserRef.setInput('node', this.node);
+    // In zoneless mode, createComponent doesn't automatically trigger change detection
+    this.componentBrowserRef.changeDetectorRef.detectChanges();
     this.componentBrowserRef.instance.openConsole();
   }
 

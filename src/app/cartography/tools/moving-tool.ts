@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { event } from 'd3-selection';
+
 import { D3ZoomEvent, zoom, ZoomBehavior } from 'd3-zoom';
 import { Context } from '../models/context';
 import { SVGSelection } from '../models/types';
@@ -40,7 +40,9 @@ export class MovingTool {
   private activate(selection: SVGSelection) {
     const self = this;
 
-    const onZoom = function (this: SVGSVGElement) {
+    // In zoneless mode, d3-zoom events don't trigger Angular change detection automatically.
+    // The canvas transform is updated directly via d3, so no Angular CD is needed during zoom.
+    const onZoom = function (this: SVGSVGElement, event: D3ZoomEvent<SVGSVGElement, any>) {
       const canvas = selection.select<SVGGElement>('g.canvas');
       const e: D3ZoomEvent<SVGSVGElement, any> = event;
       canvas.attr('transform', () => {
@@ -56,7 +58,7 @@ export class MovingTool {
     };
 
     // disable zooming on wheel
-    this.zoom.filter(() => {
+    this.zoom.filter((event: any) => {
       const e: D3ZoomEvent<SVGSVGElement, any> = event;
       return e.type === 'mousedown';
     });

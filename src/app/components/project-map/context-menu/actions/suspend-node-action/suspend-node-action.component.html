@@ -1,4 +1,6 @@
-<button mat-menu-item *ngIf="isNodeWithStartedStatus" (click)="suspendNodes()">
+@if (isNodeWithStartedStatus) {
+<button mat-menu-item (click)="suspendNodes()">
   <mat-icon>pause</mat-icon>
   <span>Suspend</span>
 </button>
+}

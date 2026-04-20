@@ -1,33 +1,37 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output} from '@angular/core';
-import {Group} from "@models/groups/group";
-import {Observable} from "rxjs";
-import {UntypedFormControl} from "@angular/forms";
-import {map, startWith} from "rxjs/operators";
+import { ChangeDetectionStrategy, Component, EventEmitter, OnChanges, OnInit, Output, input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { Observable } from 'rxjs';
+import { UntypedFormControl } from '@angular/forms';
+import { map, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'app-autocomplete',
   templateUrl: './autocomplete.component.html',
-  styleUrls: ['./autocomplete.component.scss']
+  styleUrl: './autocomplete.component.scss',
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatAutocompleteModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AutocompleteComponent<T> implements OnChanges {
-
-  @Input() data: T[];
+  readonly data = input<T[]>(undefined);
   filteredData: Observable<T[]>;
-  typeName: string
+  typeName: string;
   autocompleteControl = new UntypedFormControl();
 
-  @Input() eltType: string
-  @Input() displayFn: (value: T) => string
-  @Input() filterFn: (value: string, data: T[]) => T[]
-  @Output() onSelection: EventEmitter<T> = new EventEmitter<T>();
+  readonly eltType = input<string>(undefined);
+  readonly displayFn = input<(value: T) => string>(undefined);
+  readonly filterFn = input<(value: string, data: T[]) => T[]>(undefined);
+  @Output() selectionChange: EventEmitter<T> = new EventEmitter<T>();
 
-  constructor() { }
+  constructor() {}
 
   ngOnChanges(): void {
     this.filteredData = this.autocompleteControl.valueChanges.pipe(
       startWith(''),
-      map(value => this.filterFn(value, this.data))
-    )
+      map((value) => this.filterFn()(value, this.data()))
+    );
   }
-
 }

@@ -1,3 +1,21 @@
+/**
+ * GNS3 Configurator Component Styles
+ * Using MD3 CSS variables
+ *
+ * MIGRATION NOTICE: These styles have been migrated to src/styles/_dialogs.scss
+ * under the .configurator-dialog-panel class for centralized dialog styling.
+ *
+ * Components should:
+ * 1. Remove styleUrls: ['../configurator.component.scss']
+ * 2. Add comment: // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
+ * 3. Ensure panelClass: 'configurator-dialog-panel' is used when opening dialog
+ *
+ * This file is kept for backward compatibility during migration.
+ *
+ * IOS-specific styles have been moved to configurator-ios.component.scss
+ * using BEM naming convention (.ios-configurator__*).
+ */
+
 table {
   width: 100%;
 }
@@ -10,15 +28,8 @@ table {
   width: 100%;
 }
 
-.select {
-  width: 100%;
-}
-
-.default-content {
-  max-height: 400px;
-  overflow-y: scroll;
-  scrollbar-color: darkgrey #263238;
-  scrollbar-width: thin;
+.modal-form-container {
+  padding: 16px;
 }
 
 .file-button {
@@ -39,41 +50,9 @@ table {
 }
 
 mat-radio-button {
-  margin-right: 10px;
-}
-
-::-webkit-scrollbar {
-  width: 0.5em;
-}
-
-::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: darkgrey;
-  outline: 1px solid #263238;
+  margin-right: 8px;
 }
 
 .tags-field {
-  ::ng-deep .mat-form-field-wrapper {
-    .mat-form-field-flex {
-      .mat-form-field-infix {
-        width: 100% !important;
-        min-width: 400px;
-        display: flex !important;
-        flex-wrap: wrap !important;
-      }
-    }
-  }
-
-  ::ng-deep .mat-chip-list {
-    flex-wrap: wrap !important;
-    width: 100%;
-  }
-
-  ::ng-deep input.mat-input-element {
-    min-width: 200px !important;
-    flex: 1 1 200px !important;
-  }
+  width: 100%;
 }

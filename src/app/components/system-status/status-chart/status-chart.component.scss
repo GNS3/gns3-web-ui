@@ -1,13 +1,336 @@
-.wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  max-height: 250px !important;
+/**
+ * GNS3 Status Chart Component Styles
+ * BEM naming applied, Material Design 3
+ */
+
+:host {
+  display: block;
 }
 
-.chips-wrapper {
-  width: 100%;
+/* =============================================
+// Card Container
+// ============================================= */
+.status-chart {
+  background: var(--mat-sys-surface);
+  border-radius: 16px;
+  padding: 24px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* =============================================
+// Gauges Container
+// ============================================= */
+.status-chart__gauges {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin-bottom: 24px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* =============================================
+// Empty Gauge (placeholder for layout)
+// ============================================= */
+.gauge--empty {
+  flex: 1;
+  max-width: 200px;
+  visibility: hidden;
+}
+
+/* =============================================
+// Section
+// ============================================= */
+.status-chart__section {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  &:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+  }
+}
+
+.status-chart__section-title {
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--mat-sys-on-surface-variant);
+  margin-bottom: 16px;
+}
+
+.status-chart__empty {
+  font-size: 13px;
+  color: var(--mat-sys-on-surface-variant);
+  font-style: italic;
+}
+
+/* =============================================
+// Chips Section
+// ============================================= */
+.status-chart__chips {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+}
+
+.status-chart__chip-row {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 10px;
+  gap: 16px;
+  margin-bottom: 12px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+/* =============================================
+// Individual Chip
+// ============================================= */
+.chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 20px;
+  border-radius: var(--mat-sys-corner-medium);
+  flex: 1;
+  min-width: 0;
+  transition: all 200ms ease;
+
+  &__label {
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+  }
+
+  &__value {
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  &--memory {
+    background: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+  }
+
+  &--swap {
+    background: var(--mat-sys-tertiary-container);
+    color: var(--mat-sys-on-tertiary-container);
+  }
+}
+
+/* =============================================
+// Stats Grid (Projects & Nodes Overview)
+// ============================================= */
+.status-chart__stats-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 12px;
+  border-radius: var(--mat-sys-corner-medium);
+  background: var(--mat-sys-surface-container-high);
+
+  &__value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: var(--mat-sys-on-surface-variant);
+    margin-top: 4px;
+    text-align: center;
+  }
+
+  &--opened {
+    background: var(--mat-sys-primary-container);
+    .stat-card__value {
+      color: var(--mat-sys-on-primary-container);
+    }
+    .stat-card__label {
+      color: var(--mat-sys-on-primary-container);
+      opacity: 0.8;
+    }
+  }
+
+  &--closed {
+    background: var(--mat-sys-surface-container-highest);
+  }
+
+  &--nodes {
+    background: var(--mat-sys-secondary-container);
+    .stat-card__value {
+      color: var(--mat-sys-on-secondary-container);
+    }
+    .stat-card__label {
+      color: var(--mat-sys-on-secondary-container);
+      opacity: 0.8;
+    }
+  }
+
+  &--links {
+    background: var(--mat-sys-tertiary-container);
+    .stat-card__value {
+      color: var(--mat-sys-on-tertiary-container);
+    }
+    .stat-card__label {
+      color: var(--mat-sys-on-tertiary-container);
+      opacity: 0.8;
+    }
+  }
+
+  &--capturing {
+    background: var(--mat-sys-error-container);
+    .stat-card__value {
+      color: var(--mat-sys-on-error-container);
+    }
+    .stat-card__label {
+      color: var(--mat-sys-on-error-container);
+      opacity: 0.8;
+    }
+  }
+}
+
+/* =============================================
+// Breakdown (Nodes by Type/Status)
+// ============================================= */
+.status-chart__breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.breakdown-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--mat-sys-surface-container);
+  border-radius: var(--mat-sys-corner-small);
+  min-width: 100px;
+
+  &__label {
+    font-size: 13px;
+    color: var(--mat-sys-on-surface-variant);
+    text-transform: capitalize;
+  }
+
+  &__value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+    margin-left: auto;
+  }
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 768px) {
+  .status-chart {
+    padding: 16px;
+    border-radius: var(--mat-sys-corner-medium);
+  }
+
+  .status-chart__gauges {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .gauge--empty {
+    display: none;
+  }
+
+  .status-chart__chip-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .chip {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 10px 16px;
+  }
+
+  .status-chart__stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .breakdown-item {
+    flex: 1 1 calc(50% - 8px);
+    min-width: 0;
+  }
+
+  .status-chart__compute-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* =============================================
+// Info Table (Compute Details)
+// ============================================= */
+.status-chart__info-table {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &__label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__value {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+    text-align: right;
+  }
+}
+
+/* =============================================
+// Compute Stats Grid (4 columns)
+// ============================================= */
+.status-chart__compute-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+
+  .stat-card__value {
+    font-size: 20px;
+  }
 }

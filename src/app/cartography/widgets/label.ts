@@ -41,10 +41,12 @@ export class LabelWidget implements Widget {
       .attr('class', 'label_container')
       .attr('label_id', (label: MapLabel) => label.id);
 
-    const merge = label_view.merge(label_enter).on('contextmenu', (n: MapLabel, i: number) => {
-      event.preventDefault();
-      self.onContextMenu.emit(new LabelContextMenu(event, n));
-    });
+    const merge = label_view
+      .merge(label_enter)
+      .on('contextmenu', function (this: SVGGElement, event: MouseEvent, n: MapLabel) {
+        event.preventDefault();
+        self.onContextMenu.emit(new LabelContextMenu(event, n));
+      });
 
     this.drawLabel(merge);
 
@@ -53,6 +55,14 @@ export class LabelWidget implements Widget {
     if (!this.mapSettings.isReadOnly) {
       this.draggable.call(label_view);
     }
+  }
+
+  /**
+   * Remove fill color from style string to let CSS variable take effect
+   */
+  private removeInlineFillColor(style: string): string {
+    // Remove fill color to allow CSS to control it
+    return style.replace(/fill:\s*[^;]+;?/gi, '');
   }
 
   private drawLabel(view: SVGSelection) {
@@ -73,6 +83,7 @@ export class LabelWidget implements Widget {
       .attr('style', (label: MapLabel) => {
         let styles = this.cssFixer.fix(label.style);
         styles = this.fontFixer.fixStyles(styles);
+        styles = this.removeInlineFillColor(styles);
         return styles;
       })
       .text((label: MapLabel) => label.text)

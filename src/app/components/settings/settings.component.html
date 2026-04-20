@@ -1,7 +1,10 @@
-<div class="content">
-  <div class="default-header"><h1>Settings</h1></div>
-  <div class="default-content">
-    <div class="container mat-elevation-z8">
+<div class="settings">
+  <div class="settings__header">
+    <h1 class="settings__title">Settings</h1>
+  </div>
+
+  <div class="settings__content">
+    <div class="settings__card">
       <mat-accordion>
         <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header>
@@ -9,12 +12,15 @@
             <mat-panel-description> Customize your local settings </mat-panel-description>
           </mat-expansion-panel-header>
 
-          <div>
-            <mat-checkbox [(ngModel)]="settings.crash_reports">Send anonymous crash reports</mat-checkbox><br/>
-            <mat-checkbox [(ngModel)]="integrateLinksLabelsToLinks">Integrate link labels to links</mat-checkbox><br/>
-            <mat-checkbox [(ngModel)]="openReadme">Automatically open project README files</mat-checkbox><br/>
-            <mat-checkbox [(ngModel)]="settings.anonymous_statistics">Send anonymous usage statistics</mat-checkbox><br />
-            <mat-checkbox [(ngModel)]="openConsolesInWidget">Open consoles in the widget instead of in new tabs after clicking start consoles for all nodes</mat-checkbox>
+          <div class="settings__checkbox-group">
+            <mat-checkbox [checked]="crashReports()" (change)="crashReports.set($event.checked)">Send anonymous crash reports</mat-checkbox>
+            <mat-checkbox [checked]="integrateLinksLabelsToLinks()" (change)="integrateLinksLabelsToLinks.set($event.checked)">Integrate link labels to links</mat-checkbox>
+            <mat-checkbox [checked]="openReadme()" (change)="openReadme.set($event.checked)">Automatically open project README files</mat-checkbox>
+            <mat-checkbox [checked]="anonymousStatistics()" (change)="anonymousStatistics.set($event.checked)">Send anonymous usage statistics</mat-checkbox>
+            <mat-checkbox [checked]="openConsolesInWidget()" (change)="openConsolesInWidget.set($event.checked)"
+              >Open consoles in the widget instead of in new tabs after clicking start consoles for all
+              nodes</mat-checkbox
+            >
           </div>
         </mat-expansion-panel>
 
@@ -24,17 +30,87 @@
             <mat-panel-description> Customize theme settings </mat-panel-description>
           </mat-expansion-panel-header>
 
-          <div class="theme-panel">
-            <button mat-raised-button (click)="setDarkMode(false)">Switch to light theme</button>
-            <button mat-raised-button (click)="setDarkMode(true)">Switch to dark theme</button>
+          <div class="settings__theme-section">
+            <label class="settings__label">Global theme</label>
+            <mat-radio-group [value]="currentTheme" (change)="setTheme($event.value)" class="settings__radio-group">
+              <div class="settings__theme-group">
+                <span class="settings__theme-group-label">Light</span>
+                @for (theme of lightThemes; track theme.key) {
+                <mat-radio-button [value]="theme.key">
+                  <span class="settings__theme-option">
+                    <span class="settings__theme-swatch" [style.background]="theme.primaryColor"></span>
+                    <span class="settings__theme-name">{{ theme.label }}</span>
+                  </span>
+                </mat-radio-button>
+                }
+              </div>
+              <div class="settings__theme-group">
+                <span class="settings__theme-group-label">Dark</span>
+                @for (theme of darkThemes; track theme.key) {
+                <mat-radio-button [value]="theme.key">
+                  <span class="settings__theme-option">
+                    <span class="settings__theme-swatch" [style.background]="theme.primaryColor"></span>
+                    <span class="settings__theme-name">{{ theme.label }}</span>
+                  </span>
+                </mat-radio-button>
+                }
+              </div>
+            </mat-radio-group>
           </div>
- 
-          <div class="theme-panel theme-panel--map">
-            <label class="theme-panel__label">Project map background</label>
-            <mat-radio-group [value]="mapTheme" (change)="setMapTheme($event.value)" class="theme-panel__radio-group">
-              <mat-radio-button value="auto">Follow global theme</mat-radio-button>
-              <mat-radio-button value="light">Always light</mat-radio-button>
-              <mat-radio-button value="dark">Always dark</mat-radio-button>
+
+          <div class="settings__theme-section settings__theme-section--map">
+            <label class="settings__label">Project map background</label>
+            <mat-radio-group
+              [value]="mapTheme"
+              (change)="setMapTheme($event.value)"
+              class="settings__map-background-group"
+            >
+              @if (autoMapBackground) {
+              <div class="settings__map-background-auto">
+                <mat-radio-button [value]="autoMapBackground.key">
+                  <span class="settings__theme-option">
+                    <span class="settings__theme-swatch settings__theme-swatch--auto"></span>
+                    <span class="settings__theme-name">{{ autoMapBackground.label }}</span>
+                  </span>
+                </mat-radio-button>
+              </div>
+              }
+              <div class="settings__map-background-row">
+                <div class="settings__theme-group">
+                  <span class="settings__theme-group-label">Light</span>
+                  @for (bg of lightMapBackgrounds; track bg.key) {
+                  <mat-radio-button [value]="bg.key">
+                    <span class="settings__theme-option">
+                      <span
+                        class="settings__theme-swatch settings__theme-swatch--bg"
+                        [style.background]="bg.background"
+                        [style.color]="bg.textColor"
+                      >
+                        <span class="settings__theme-swatch-text">A</span>
+                      </span>
+                      <span class="settings__theme-name">{{ bg.label }}</span>
+                    </span>
+                  </mat-radio-button>
+                  }
+                </div>
+                <div class="settings__theme-group">
+                  <span class="settings__theme-group-label">Dark</span>
+                  @for (bg of darkMapBackgrounds; track bg.key) {
+                  <mat-radio-button [value]="bg.key">
+                    <span class="settings__theme-option">
+                      <span
+                        class="settings__theme-swatch settings__theme-swatch--bg"
+                        [style.background]="bg.background"
+                        [style.color]="bg.textColor"
+                      >
+                        <span class="settings__theme-swatch-text">A</span>
+                      </span>
+                      <span class="settings__theme-name">{{ bg.label }}</span>
+                    </span>
+                  </mat-radio-button>
+                  }
+                </div>
+              </div>
             </mat-radio-group>
           </div>
         </mat-expansion-panel>
@@ -45,13 +121,17 @@
             <mat-panel-description> Check for updates </mat-panel-description>
           </mat-expansion-panel-header>
 
-          <div class="theme-panel">
-            <button mat-raised-button (click)="checkForUpdates()" class="fullWidth">Check for updates</button>
+          <div class="settings__update-section">
+            <button mat-raised-button (click)="checkForUpdates()" class="settings__update-button">
+              Check for updates
+            </button>
           </div>
         </mat-expansion-panel>
       </mat-accordion>
     </div>
 
-    <div class="buttons-bar"><button mat-raised-button color="primary" (click)="save()">Save settings</button></div>
+    <div class="settings__actions">
+      <button mat-raised-button color="primary" (click)="save()" class="settings__save-button">Save settings</button>
+    </div>
   </div>
 </div>

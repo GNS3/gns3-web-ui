@@ -1,59 +1,162 @@
-.buttonWrapper {
-  width: 85px;
-  height: 85px;
+/**
+ * GNS3 Symbols Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
+.symbolsWrapper {
+  overflow: visible;
+  --zoom-level: 1;
+}
+
+.zoom-controls {
   display: flex;
   align-items: center;
-  margin-left: auto;
-  margin-right: auto;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 8px;
+  background-color: var(--mat-sys-surface-container);
+  border-radius: 8px;
+
+  .zoom-level {
+    min-width: 50px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+  }
+}
+
+.wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(calc(60px * var(--zoom-level)), 1fr));
+  gap: calc(4px * var(--zoom-level));
+  transition: gap 0.2s ease;
+}
+
+.buttonWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   outline: none;
+  padding: calc(4px * var(--zoom-level));
+}
+
+.symbol-item {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.button {
+  background: border-box;
+  border-width: 0;
+  outline: none;
+  width: 100%;
+  height: 100%;
+  padding: calc(4px * var(--zoom-level));
+}
+
+.buttonSelected {
+  background-color: var(--mat-sys-secondary-container);
+}
+
+.image {
+  width: calc(45px * var(--zoom-level));
+  height: calc(45px * var(--zoom-level));
+  object-fit: contain;
+}
+
+.imageSelected {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: 1px;
+}
+
+.delete-button {
+  position: absolute;
+  top: calc(-2px * var(--zoom-level));
+  right: calc(-2px * var(--zoom-level));
+  width: calc(16px * var(--zoom-level));
+  height: calc(16px * var(--zoom-level));
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  transition: transform 0.2s ease;
+  z-index: 1;
+
+  mat-icon {
+    font-size: calc(12px * var(--zoom-level));
+    width: auto;
+    height: auto;
+  }
+
+  &:hover {
+    transform: scale(1.2);
+    background-color: transparent;
+  }
 }
 
 .menu {
   display: flex;
   justify-content: space-between;
-}
-
-.button {
-  background: border-box;
-  border-width: 0px;
-  outline: none;
-}
-
-.buttonSelected {
-  background: #0097a7 !important;
-}
-
-.image {
-  width: 65px;
-  height: 65px;
-  filter: invert(0);
-  --webkit-filter: invert(0) !important;
-}
-
-.imageSelected {
-  margin-left: 0px;
-}
-
-.wrapper {
-  display: grid;
-  grid-template-rows: auto;
-  grid-template-columns: repeat(7, 1fr);
-  grid-row-gap: 3em;
-  grid-column-gap: 1em;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .radio-selection {
-  width: 90%;
+  display: flex;
+  gap: 8px;
 }
 
-.mat-radio-button ~ .mat-radio-button {
-  margin-left: 16px;
+.delete-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+
+  .selected-count {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+  }
+}
+
+.example-full-width {
+  width: 100%;
+  margin-bottom: 8px;
 }
 
 .non-visible {
   display: none;
 }
 
-.example-full-width {
+// Delete mode styles
+.symbol-item {
+  &.delete-mode {
+    padding: 2px;
+    border-radius: 4px;
+  }
+}
+
+.button {
+  background: border-box;
+  border-width: 0;
+  outline: none;
   width: 100%;
+  height: 100%;
+  padding: calc(4px * var(--zoom-level));
+
+  &.in-delete-mode {
+    cursor: pointer;
+  }
+
+  &.delete-selected {
+    outline: 2px solid var(--mat-sys-error);
+    outline-offset: -2px;
+    box-shadow: 0 0 0 2px var(--mat-sys-error);
+  }
 }

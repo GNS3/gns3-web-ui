@@ -1,5 +1,12 @@
-.container {
-  width: 100%;
+/**
+ * GNS3 Config Dialog Component Styles
+ *
+ * Unified design language following Material Design patterns
+ */
+
+.config-options {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 0;
 }

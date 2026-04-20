@@ -1,0 +1,312 @@
+.web-wireshark-inline {
+  position: fixed;
+  z-index: 1000;
+  background: var(--mat-sys-surface);
+  border: 2px solid var(--mat-sys-outline);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent),
+    0 4px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+  overflow: visible;
+  transition: box-shadow 0.2s ease;
+  contain: layout style;
+
+  &:hover {
+    box-shadow: 0 12px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+      0 6px 12px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
+  }
+
+  &.is-dragging {
+    box-shadow: 0 16px 48px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
+      0 8px 16px color-mix(in srgb, var(--mat-sys-shadow) 15%, transparent);
+    opacity: 0.9;
+    cursor: move;
+    will-change: left, top;
+  }
+
+  &.is-minimized {
+    display: none;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    border-radius: 6px;
+  }
+}
+
+.web-wireshark-inline-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  background: var(--mat-sys-surface-container);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  cursor: move;
+  user-select: none;
+  flex-shrink: 0;
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+
+    .header-icon {
+      font-size: 14px;
+      color: var(--mat-sys-primary);
+      width: 14px;
+      height: 14px;
+    }
+
+    .link-info {
+      font-size: 10px;
+      color: var(--mat-sys-on-surface-variant);
+      font-weight: 400;
+      margin-left: 4px;
+      padding-left: 4px;
+      border-left: 1px solid var(--mat-sys-outline-variant);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+
+    .minimize-button,
+    .close-button {
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        vertical-align: middle;
+      }
+
+      &:hover {
+        background-color: var(--mat-sys-error-container);
+        color: var(--mat-sys-error);
+      }
+    }
+
+    .restart-button {
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
+
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        vertical-align: middle;
+        color: var(--mat-sys-primary);
+      }
+
+      &:hover:not(:disabled) {
+        background-color: var(--mat-sys-primary-container);
+        color: var(--mat-sys-on-primary-container);
+      }
+
+      &:hover mat-icon {
+        color: var(--mat-sys-on-primary-container);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .restart-icon.is-spinning {
+        animation: spin 1s linear infinite;
+      }
+    }
+  }
+}
+
+.web-wireshark-inline__iframe-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  min-height: 200px; // Reduced from 400px to allow smaller window sizes
+  height: 100%; // Ensure it fills available space
+}
+
+.web-wireshark-inline__iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: var(--mat-sys-surface);
+  z-index: 1;
+
+  .loading-icon {
+    font-size: 48px;
+    color: var(--mat-sys-primary);
+    will-change: transform;
+    animation: spin 1s linear infinite;
+  }
+
+  span {
+    font-size: 14px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.restart-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: color-mix(in srgb, var(--mat-sys-surface) 90%, transparent);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+
+  .restart-logo {
+    width: 80px;
+    height: 80px;
+    animation: breathe 2s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px var(--mat-sys-primary));
+  }
+
+  span {
+    font-size: 14px;
+    color: var(--mat-sys-on-surface);
+    font-weight: 500;
+  }
+}
+
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+.resize-handle {
+  position: absolute;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+
+  .web-wireshark-inline:hover & {
+    opacity: 1;
+  }
+
+  // Edge handles - transparent
+  &.resize-handle-top {
+    top: -4px;
+    left: 12px;
+    right: 12px;
+    height: 12px;
+    cursor: ns-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-right {
+    top: 12px;
+    right: -4px;
+    bottom: 12px;
+    width: 12px;
+    cursor: ew-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-bottom {
+    bottom: -4px;
+    left: 12px;
+    right: 12px;
+    height: 12px;
+    cursor: ns-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-left {
+    top: 12px;
+    left: -4px;
+    bottom: 12px;
+    width: 12px;
+    cursor: ew-resize;
+    background: transparent;
+  }
+
+  // Corner handles - transparent, just for resize cursor
+  &.resize-handle-top-left {
+    top: -6px;
+    left: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nwse-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-top-right {
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nesw-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-bottom-left {
+    bottom: -6px;
+    left: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nesw-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-bottom-right {
+    bottom: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nwse-resize;
+    background: transparent;
+  }
+}

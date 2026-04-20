@@ -1,34 +1,44 @@
-<div class="content">
-  <div class="default-header">
-    <div class="row">
-      <div class="col col-md-1">
-        <button class="top-button" *ngIf="controller" class="cancel-button" mat-button (click)="goBack()">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-      </div>
-      <div class="col col-md-11">
-        <h1 class="col">New VMware VM template</h1>
-      </div>
-    </div>
-  </div>
-  <div class="default-content" *ngIf="vmwareTemplate">
-    <mat-card class="matCard">
-      <form [formGroup]="templateNameForm">
-        <mat-form-field class="form-field">
-          <mat-select placeholder="VM list" formControlName="templateName" [(ngModel)]="selectedVM">
-            <mat-option *ngFor="let vm of virtualMachines" [value]="vm">
+<div class="vmware-add">
+  <header class="vmware-add__header">
+    @if (controller()) {
+    <button class="vmware-add__back-btn" (click)="goBack()" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    }
+    <h1 class="vmware-add__title">New VMware VM template</h1>
+  </header>
+
+  @if (vmwareTemplate()) {
+  <main class="vmware-add__content">
+    <section class="vmware-add__form-card">
+      <div class="vmware-add__form">
+        <mat-form-field appearance="fill" class="vmware-add__field">
+          <mat-label>VM list</mat-label>
+          <mat-select
+            placeholder="VM list"
+            [value]="templateName()"
+            (selectionChange)="templateName.set($event.value); selectedVM.set($event.value)"
+          >
+            @for (vm of virtualMachines(); track vm) {
+            <mat-option [value]="vm">
               {{ vm.vmname }}
             </mat-option>
-          </mat-select> </mat-form-field
-        ><br />
-        <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="vmwareTemplate.linked_clone">
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-checkbox [checked]="linkedClone()" (change)="linkedClone.set($event.checked)">
           Use as a linked base VM (experimental)
         </mat-checkbox>
-      </form>
-    </mat-card>
-    <div class="buttons-bar">
-      <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
-      <button mat-raised-button color="primary" (click)="addTemplate()">Add template</button>
+      </div>
+    </section>
+
+    <div class="vmware-add__actions">
+      <button mat-button class="vmware-add__cancel-btn" (click)="goBack()">Cancel</button>
+      <button mat-raised-button color="primary" class="vmware-add__submit-btn" (click)="addTemplate()">
+        Add template
+      </button>
     </div>
-  </div>
+  </main>
+  }
 </div>

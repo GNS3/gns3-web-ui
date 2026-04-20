@@ -4,157 +4,145 @@
   <div class="content">
     <div class="default-content">
       <mat-card class="matCard">
-        <mat-tab-group *ngIf="name">
+        @if (name) {
+        <mat-tab-group>
           <mat-tab label="General settings">
-            <br />
             <form [formGroup]="generalSettingsForm">
               <mat-form-field class="form-field">
-                <input matInput formControlName="name" type="text" [(ngModel)]="node.name" placeholder="Name" />
+                <mat-label>Name</mat-label>
+                <input matInput formControlName="name" type="text" />
               </mat-form-field>
 
               <mat-form-field class="form-field tags-field">
                 <mat-label>Tags</mat-label>
-                <mat-chip-list #chipList>
-                  <mat-chip *ngFor="let tag of node?.tags" (removed)="removeTag(tag)">
+                <mat-chip-grid #chipList>
+                  @for (tag of node?.tags; track tag) {
+                  <mat-chip (removed)="removeTag(tag)">
                     {{ tag }}
                     <mat-icon matChipRemove>cancel</mat-icon>
                   </mat-chip>
-                </mat-chip-list>
-                <input matInput placeholder="Add tags"
-                       [matChipInputFor]="chipList"
-                       [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                       (matChipInputTokenEnd)="addTag($event)" />
-              </mat-form-field>
-
-              <mat-form-field class="form-field">
+                  }
+                </mat-chip-grid>
                 <input
                   matInput
-                  formControlName="startCommand"
-                  type="text"
-                  [(ngModel)]="node.properties.start_command"
-                  placeholder="Start command"
+                  placeholder="Add tags"
+                  [matChipInputFor]="chipList"
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  (matChipInputTokenEnd)="addTag($event)"
                 />
               </mat-form-field>
 
               <mat-form-field class="form-field">
-                <input
-                  formControlName="adapter"
-                  matInput
-                  type="number"
-                  [(ngModel)]="node.properties.adapters"
-                  placeholder="Adapters"
-                />
+                <mat-label>Start command</mat-label>
+                <input matInput formControlName="startCommand" type="text" />
               </mat-form-field>
 
-              <mat-form-field class="form-field">
-                <input
-                  matInput
-                  formControlName="mac_address"
-                  type="text"
-                  [(ngModel)]="node.properties.mac_address"
-                  placeholder="Base MAC"
-                />
-              </mat-form-field>
+              <div class="two-column-grid">
+                <mat-form-field class="form-field">
+                  <mat-label>Adapters</mat-label>
+                  <input formControlName="adapter" matInput type="number" />
+                </mat-form-field>
 
-              <mat-form-field class="form-field">
-                  <input formControlName="memory" matInput type="number" min="0" [(ngModel)]="node.properties.memory" placeholder="Maximum memory">
+                <mat-form-field class="form-field">
+                  <mat-label>Base MAC</mat-label>
+                  <input matInput formControlName="mac_address" type="text" />
+                </mat-form-field>
+
+                <mat-form-field class="form-field">
+                  <mat-label>Maximum memory</mat-label>
+                  <input formControlName="memory" matInput type="number" min="0" />
                   <span matSuffix>MB</span>
-              </mat-form-field>
+                </mat-form-field>
 
-              <mat-form-field class="form-field">
-                  <input formControlName="cpus" matInput type="number" min="0" [(ngModel)]="node.properties.cpus" placeholder="Maximum CPUs">
-              </mat-form-field>
+                <mat-form-field class="form-field">
+                  <mat-label>Maximum CPUs</mat-label>
+                  <input formControlName="cpus" matInput type="number" min="0" />
+                </mat-form-field>
 
-<!--              <button mat-button class="form-field" (click)="configureCustomAdapters()">-->
-<!--                  Configure custom adapters-->
-<!--              </button>-->
+                <mat-form-field class="form-field">
+                  <mat-label>Console type</mat-label>
+                  <mat-select formControlName="console_type">
+                    @for (type of consoleTypes; track type) {
+                    <mat-option [value]="type">
+                      {{ type }}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
 
-              <mat-form-field class="select">
-                <mat-select
-                  [ngModelOptions]="{ standalone: true }"
-                  placeholder="Console type"
-                  [(ngModel)]="node.console_type"
-                >
-                  <mat-option *ngFor="let type of consoleTypes" [value]="type">
-                    {{ type }}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-              <mat-form-field class="select">
-                <mat-select
-                  [ngModelOptions]="{ standalone: true }"
-                  placeholder="Auxiliary console type"
-                  [(ngModel)]="node.aux_type"
-                >
-                  <mat-option *ngFor="let type of auxConsoleTypes" [value]="type">
-                    {{ type }}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-              <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="node.console_auto_start">
-                Auto start console
-              </mat-checkbox>
+                <mat-form-field class="form-field">
+                  <mat-label>Auxiliary console type</mat-label>
+                  <mat-select formControlName="aux_type">
+                    @for (type of auxConsoleTypes; track type) {
+                    <mat-option [value]="type">
+                      {{ type }}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
 
-              <mat-form-field class="form-field">
-                <mat-select
-                  [ngModelOptions]="{ standalone: true }"
-                  placeholder="VNC console resolution"
-                  [(ngModel)]="node.properties.console_resolution"
-                >
-                  <mat-option *ngFor="let resolution of consoleResolutions" [value]="resolution">
-                    {{ resolution }}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
+                <mat-form-field class="form-field">
+                  <mat-label>VNC console resolution</mat-label>
+                  <mat-select formControlName="console_resolution">
+                    @for (resolution of consoleResolutions; track resolution) {
+                    <mat-option [value]="resolution">
+                      {{ resolution }}
+                    </mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
 
-              <mat-form-field class="form-field">
-                <input
-                  formControlName="consoleHttpPort"
-                  matInput
-                  type="number"
-                  [(ngModel)]="node.properties.console_http_port"
-                  placeholder="HTTP port in the container"
-                />
-              </mat-form-field>
+                <mat-form-field class="form-field">
+                  <mat-label>HTTP port in the container</mat-label>
+                  <input formControlName="consoleHttpPort" matInput type="number" />
+                </mat-form-field>
 
-              <mat-form-field class="form-field">
-                <input
-                  matInput
-                  formControlName="consoleHttpPath"
-                  type="text"
-                  [(ngModel)]="node.properties.console_http_path"
-                  placeholder="HTTP path"
-                />
-              </mat-form-field>
+                <mat-form-field class="form-field grid-span-2">
+                  <mat-label>HTTP path</mat-label>
+                  <input matInput formControlName="consoleHttpPath" type="text" />
+                </mat-form-field>
+
+                <mat-checkbox formControlName="console_auto_start" class="grid-span-2"> Auto start console </mat-checkbox>
+              </div>
 
               <button mat-button class="form-field" (click)="editNetworkConfiguration()">
                 Edit network configuration
               </button>
             </form>
-            <h6>Environment</h6>
-            <mat-form-field class="form-field">
-              <textarea matInput type="text" [(ngModel)]="node.properties.environment"></textarea>
-            </mat-form-field>
           </mat-tab>
 
           <mat-tab label="Advanced">
-            <h6>Extra hosts</h6>
-            <mat-form-field class="form-field">
-              <textarea matInput type="text" [(ngModel)]="node.properties.extra_hosts"></textarea></mat-form-field
-            ><br />
+            <form [formGroup]="generalSettingsForm">
+              <h6>Environment</h6>
+              <mat-form-field class="form-field">
+                <mat-label>Environment variables</mat-label>
+                <textarea matInput formControlName="environment" placeholder="KEY1=value1&#10;KEY2=value2"></textarea>
+              </mat-form-field>
 
-            <h6>Additional volumes</h6>
-            <mat-form-field class="form-field">
-              <textarea matInput type="text" [(ngModel)]="node.properties.extra_volumes"></textarea>
-            </mat-form-field>
+              <h6>Extra hosts</h6>
+              <mat-form-field class="form-field">
+                <mat-label>Extra hosts</mat-label>
+                <textarea matInput formControlName="extra_hosts"></textarea>
+              </mat-form-field>
+
+              <h6>Additional volumes</h6>
+              <mat-form-field class="form-field">
+                <mat-label>Additional volumes</mat-label>
+                <textarea matInput formControlName="extra_volumes"></textarea>
+              </mat-form-field>
+            </form>
           </mat-tab>
 
           <mat-tab label="Usage">
-            <mat-form-field class="form-field">
-              <textarea matInput type="text" [(ngModel)]="node.properties.usage"></textarea>
-            </mat-form-field>
+            <form [formGroup]="generalSettingsForm">
+              <mat-form-field class="form-field">
+                <mat-label>Usage</mat-label>
+                <textarea matInput formControlName="usage"></textarea>
+              </mat-form-field>
+            </form>
           </mat-tab>
         </mat-tab-group>
+        }
       </mat-card>
     </div>
   </div>

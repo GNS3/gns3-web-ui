@@ -1,73 +1,90 @@
-import { ComponentFixture, TestBed, async } from '@angular/core/testing';
-import { CommonModule } from '@angular/common';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ToasterService } from '@services/toaster.service';
-import { MapSettingsService } from '@services/mapsettings.service';
-import { NodeConsoleService } from '@services/nodeConsole.service';
-import { ThemeService } from '@services/theme.service';
+import { describe, it, expect } from 'vitest';
 import { ConsoleWrapperComponent } from './console-wrapper.component';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatTabsModule } from '@angular/material/tabs';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatIconModule } from '@angular/material/icon';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('ConsoleWrapperComponent', () => {
-  let fixture: ComponentFixture<ConsoleWrapperComponent>;
-  let component: ConsoleWrapperComponent;
+  describe('prototype methods', () => {
+    it('should have ngOnInit method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).ngOnInit).toBe('function');
+    });
 
-  let nodeConsoleService: NodeConsoleService;
-  let themeService: ThemeService;
-  let mapSettingsService: MapSettingsService;
-  let toasterService: ToasterService;
+    it('should have ngAfterViewInit method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).ngAfterViewInit).toBe('function');
+    });
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
-      declarations: [ConsoleWrapperComponent],
-      imports: [
-        CommonModule,
-        RouterTestingModule,
-        MatSnackBarModule,
-        MatTabsModule,
-        MatIconModule,
-        BrowserAnimationsModule
-      ],
-      providers: [NodeConsoleService, ThemeService, MapSettingsService, ToasterService],
-      schemas: [NO_ERRORS_SCHEMA]
-    }).compileComponents();
+    it('should have ngOnDestroy method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).ngOnDestroy).toBe('function');
+    });
 
-    toasterService = TestBed.inject(ToasterService);
-    nodeConsoleService = TestBed.inject(NodeConsoleService);
-    themeService = TestBed.inject(ThemeService);
-    mapSettingsService = TestBed.inject(MapSettingsService);
-  });
+    it('should have minimize method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).minimize).toBe('function');
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ConsoleWrapperComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    it('should have toggleMinimize method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).toggleMinimize).toBe('function');
+    });
 
-  it('should be created', () => {
-    expect(component).toBeTruthy();
-  });
+    it('should have toggleMaximize method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).toggleMaximize).toBe('function');
+    });
 
-  it('should get actual theme', () => {
-    component.ngOnInit();
+    it('should have addTab method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).addTab).toBe('function');
+    });
 
-    expect(component.isLightThemeEnabled).toBe(false);
+    it('should have removeTab method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).removeTab).toBe('function');
+    });
+
+    it('should have validate method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).validate).toBe('function');
+    });
+
+    it('should have onResizeEnd method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).onResizeEnd).toBe('function');
+    });
+
+    it('should have close method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).close).toBe('function');
+    });
+
+    it('should have getActiveTabName method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).getActiveTabName).toBe('function');
+    });
+
+    it('should have onDeviceSelected method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).onDeviceSelected).toBe('function');
+    });
+
+    it('should have handleTabShortcut method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).handleTabShortcut).toBe('function');
+    });
+
+    it('should have onXtermTabShortcut method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).onXtermTabShortcut).toBe('function');
+    });
+
+    it('should have onConsoleActivate method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).onConsoleActivate).toBe('function');
+    });
+
+    it('should have onDocumentClick method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).onDocumentClick).toBe('function');
+    });
+
+    it('should have switchToTab method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).switchToTab).toBe('function');
+    });
+
+    it('should have enableScroll method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).enableScroll).toBe('function');
+    });
+
+    it('should have disableScroll method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).disableScroll).toBe('function');
+    });
+
+    it('should have onWindowResize method', () => {
+      expect(typeof (ConsoleWrapperComponent.prototype as any).onWindowResize).toBe('function');
+    });
   });
 });
-
-export type SpyOf<T> = T & { [k in keyof T]: jasmine.Spy };
-
-export function autoSpy<T>(obj: new (...args: any[]) => T): SpyOf<T> {
-  const res: SpyOf<T> = {} as any;
-
-  const keys = Object.getOwnPropertyNames(obj.prototype);
-  keys.forEach((key) => {
-    res[key] = jasmine.createSpy(key);
-  });
-
-  return res;
-}

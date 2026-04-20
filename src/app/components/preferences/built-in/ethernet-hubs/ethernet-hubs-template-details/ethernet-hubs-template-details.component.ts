@@ -1,51 +1,78 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { MatChipInputEvent } from '@angular/material/chips';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, model, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { MatDialog } from '@angular/material/dialog';
 import { Controller } from '@models/controller';
 import { EthernetHubTemplate } from '@models/templates/ethernet-hub-template';
 import { BuiltInTemplatesConfigurationService } from '@services/built-in-templates-configuration.service';
 import { BuiltInTemplatesService } from '@services/built-in-templates.service';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
+import { TemplateSymbolDialogComponent } from '@components/project-map/template-symbol-dialog/template-symbol-dialog.component';
+import { DialogConfigService } from '@services/dialog-config.service';
 
 @Component({
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ethernet-hubs-template-details',
   templateUrl: './ethernet-hubs-template-details.component.html',
   styleUrls: ['./ethernet-hubs-template-details.component.scss', '../../../preferences.component.scss'],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatIconModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatChipsModule,
+  ],
 })
 export class EthernetHubsTemplateDetailsComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private builtInTemplatesService = inject(BuiltInTemplatesService);
+  private toasterService = inject(ToasterService);
+  private builtInTemplatesConfigurationService = inject(BuiltInTemplatesConfigurationService);
+  private router = inject(Router);
+  private cd = inject(ChangeDetectorRef);
+  private dialog = inject(MatDialog);
+  private dialogConfig = inject(DialogConfigService);
+
   controller: Controller;
   ethernetHubTemplate: EthernetHubTemplate;
-  numberOfPorts: number;
-  inputForm: UntypedFormGroup;
-  isSymbolSelectionOpened: boolean = false;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
-  categories = [];
+  categories: any[] = [];
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private builtInTemplatesService: BuiltInTemplatesService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder,
-    private builtInTemplatesConfigurationService: BuiltInTemplatesConfigurationService,
-    private router: Router
-  ) {
-    this.inputForm = this.formBuilder.group({
-      templateName: new UntypedFormControl('', Validators.required),
-      defaultName: new UntypedFormControl('', Validators.required),
-      symbol: new UntypedFormControl('', Validators.required),
-    });
-  }
+  // Model signals for form fields
+  templateName = model('');
+  defaultName = model('');
+  symbol = model('');
+  category = model('');
+  numberOfPorts = model(0);
+  tags = model<string[]>([]);
+  usage = model('');
+
+  // Section collapse states
+  generalSettingsExpanded = model(false);
+  usageExpanded = model(false);
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
       this.controller = controller;
+      this.cd.markForCheck();
 
       this.categories = this.builtInTemplatesConfigurationService.getCategoriesForEthernetHubs();
       this.builtInTemplatesService
@@ -55,10 +82,20 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
           if (!this.ethernetHubTemplate.ports_mapping) {
             this.ethernetHubTemplate.ports_mapping = [];
           }
-          this.numberOfPorts = this.ethernetHubTemplate.ports_mapping.length;
           if (!this.ethernetHubTemplate.tags) {
             this.ethernetHubTemplate.tags = [];
           }
+
+          // Initialize model signals
+          this.templateName.set(ethernetHubTemplate.name || '');
+          this.defaultName.set(ethernetHubTemplate.default_name_format || '');
+          this.symbol.set(ethernetHubTemplate.symbol || '');
+          this.category.set(ethernetHubTemplate.category || '');
+          this.numberOfPorts.set(ethernetHubTemplate.ports_mapping.length || 0);
+          this.tags.set(ethernetHubTemplate.tags || []);
+          this.usage.set(ethernetHubTemplate.usage || '');
+
+          this.cd.markForCheck();
         });
     });
   }
@@ -68,58 +105,79 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
   }
 
   onSave() {
-    if (this.inputForm.invalid || !this.numberOfPorts) {
-      this.toasterService.error(`Fill all required fields`);
-    } else {
-      this.ethernetHubTemplate.ports_mapping = [];
-      for (let i = 0; i < this.numberOfPorts; i++) {
-        this.ethernetHubTemplate.ports_mapping.push({
-          name: `Ethernet${i}`,
-          port_number: i,
-        });
-      }
+    // Update ethernetHubTemplate from model signals
+    this.ethernetHubTemplate.name = this.templateName();
+    this.ethernetHubTemplate.default_name_format = this.defaultName();
+    this.ethernetHubTemplate.symbol = this.symbol();
+    this.ethernetHubTemplate.category = this.category();
+    this.ethernetHubTemplate.tags = this.tags();
+    this.ethernetHubTemplate.usage = this.usage();
 
-      this.builtInTemplatesService
-        .saveTemplate(this.controller, this.ethernetHubTemplate)
-        .subscribe((ethernetHubTemplate: EthernetHubTemplate) => {
-          this.toasterService.success('Changes saved');
-        });
+    const numPorts = this.numberOfPorts();
+    this.ethernetHubTemplate.ports_mapping = [];
+    for (let i = 0; i < numPorts; i++) {
+      this.ethernetHubTemplate.ports_mapping.push({
+        name: `Ethernet${i}`,
+        port_number: i,
+      });
     }
+
+    this.builtInTemplatesService
+      .saveTemplate(this.controller, this.ethernetHubTemplate)
+      .subscribe((ethernetHubTemplate: EthernetHubTemplate) => {
+        this.toasterService.success('Changes saved');
+      });
   }
 
   chooseSymbol() {
-    this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
-  }
-
-  symbolChanged(chosenSymbol: string) {
-    this.isSymbolSelectionOpened = !this.isSymbolSelectionOpened;
-    this.ethernetHubTemplate.symbol = chosenSymbol;
+    const dialogConfig = this.dialogConfig.openConfig('templateSymbol', {
+      autoFocus: false,
+      disableClose: false,
+      data: {
+        controller: this.controller,
+        symbol: this.symbol(),
+      },
+    });
+    const dialogRef = this.dialog.open(TemplateSymbolDialogComponent, dialogConfig);
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.symbol.set(result);
+      }
+    });
   }
 
   addTag(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
+    const currentTags = this.tags();
 
-    if (value && this.ethernetHubTemplate) {
-      if (!this.ethernetHubTemplate.tags) {
-        this.ethernetHubTemplate.tags = [];
-      }
-      this.ethernetHubTemplate.tags.push(value);
+    if (value) {
+      this.tags.set([...currentTags, value]);
     }
 
-    // Clear the input value
     if (event.chipInput) {
       event.chipInput.clear();
     }
   }
 
   removeTag(tag: string): void {
-    if (!this.ethernetHubTemplate.tags) {
-      return;
-    }
-    const index = this.ethernetHubTemplate.tags.indexOf(tag);
+    const currentTags = this.tags();
+    const index = currentTags.indexOf(tag);
 
     if (index >= 0) {
-      this.ethernetHubTemplate.tags.splice(index, 1);
+      const newTags = [...currentTags];
+      newTags.splice(index, 1);
+      this.tags.set(newTags);
+    }
+  }
+
+  toggleSection(section: string): void {
+    switch (section) {
+      case 'general':
+        this.generalSettingsExpanded.set(!this.generalSettingsExpanded());
+        break;
+      case 'usage':
+        this.usageExpanded.set(!this.usageExpanded());
+        break;
     }
   }
 }

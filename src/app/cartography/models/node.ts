@@ -11,11 +11,13 @@ export class PortsMapping {
 export class Properties {
   adapter_type: string;
   adapters: number;
+  ethernet_adapters: number;
+  serial_adapters: number;
   headless: boolean;
   linked_clone: boolean;
   on_close: string;
   aux: number;
-  aux_type: boolean;
+  aux_type?: string;
   ram: number;
   system_id: string;
   dynamips_id?: number;
@@ -87,6 +89,14 @@ export class Properties {
   wic0?: string;
   wic1?: string;
   wic2?: string;
+  remote_console_host?: string;
+  remote_console_port?: number;
+  remote_console_http_path?: string;
+  use_default_iou_values?: boolean;
+  console_resolution?: string;
+  console_http_port?: number;
+  console_http_path?: string;
+  extra_volumes?: string;
 }
 
 export class Node {
@@ -121,4 +131,5 @@ export class Node {
   x: number;
   y: number;
   z: number;
+  aux_type?: string;
 }

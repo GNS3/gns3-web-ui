@@ -3,7 +3,7 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { environment } from 'environments/environment';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import {Controller, ControllerProtocol } from '@models/controller';
+import { Controller, ControllerProtocol } from '@models/controller';
 
 /* tslint:disable:interface-over-type-literal */
 export type JsonOptions = {
@@ -93,7 +93,7 @@ export class ControllerErrorHandler {
     //  window.location.reload();
     //}
 
-    return throwError(err);
+    return throwError(() => err);
   }
 }
 
@@ -141,6 +141,17 @@ export class HttpController {
     return this.http
       .post<T>(intercepted.url, body, intercepted.options)
       .pipe(catchError<T, any>(this.errorHandler.handleError)) as Observable<T>;
+  }
+
+  postBlob(controller: Controller, url: string, body: Blob): Observable<Blob> {
+    const options: BlobOptions = {
+      responseType: 'blob',
+      headers: {},
+    };
+    const intercepted = this.getOptionsForController<BlobOptions>(controller, url, options);
+    this.requestsNotificationEmitter.emit(`POST ${intercepted.url}`);
+
+    return this.http.post(intercepted.url, body, intercepted.options).pipe(catchError(this.errorHandler.handleError));
   }
 
   put<T>(controller: Controller, url: string, body: any, options?: JsonOptions): Observable<T> {

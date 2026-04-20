@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, input, ChangeDetectorRef } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { environment } from 'environments/environment';
 import { FileItem, FileUploader, ParsedResponseHeaders } from 'ng2-file-upload';
 import { Project } from '@models/project';
@@ -16,24 +17,27 @@ import { ToasterService } from '@services/toaster.service';
 @Component({
   selector: 'app-import-appliance',
   templateUrl: './import-appliance.component.html',
-  styleUrls: ['./import-appliance.component.scss'],
+  styleUrl: './import-appliance.component.scss',
+  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImportApplianceComponent implements OnInit {
-  @Input('project') project: Project;
-  @Input('controller') controller: Controller;
+  readonly project = input<Project>(undefined);
+  readonly controller = input<Controller>(undefined);
   uploader: FileUploader;
   template;
 
-  constructor(
-    private toasterService: ToasterService,
-    private dockerService: DockerService,
-    private qemuService: QemuService,
-    private iouService: IouService,
-    private iosService: IosService
-  ) {}
+  private toasterService = inject(ToasterService);
+  private dockerService = inject(DockerService);
+  private qemuService = inject(QemuService);
+  private iouService = inject(IouService);
+  private iosService = inject(IosService);
+  private cdr = inject(ChangeDetectorRef);
+
+  constructor() {}
 
   ngOnInit() {
-    this.uploader = new FileUploader({url: ''});
+    this.uploader = new FileUploader({ url: '' });
     this.uploader.onAfterAddingFile = (file) => {
       file.withCredentials = false;
     };
@@ -49,13 +53,13 @@ export class ImportApplianceComponent implements OnInit {
       headers: ParsedResponseHeaders
     ) => {
       if (this.template.template_type === 'qemu') {
-        this.qemuService.addTemplate(this.controller, this.template).subscribe(() => this.onUploadComplete());
+        this.qemuService.addTemplate(this.controller(), this.template).subscribe(() => this.onUploadComplete());
       } else if (this.template.template_type === 'iou') {
-        this.iouService.addTemplate(this.controller, this.template).subscribe(() => this.onUploadComplete());
+        this.iouService.addTemplate(this.controller(), this.template).subscribe(() => this.onUploadComplete());
       } else if (this.template.template_type === 'dynamips') {
-        this.iosService.addTemplate(this.controller, this.template).subscribe(() => this.onUploadComplete());
+        this.iosService.addTemplate(this.controller(), this.template).subscribe(() => this.onUploadComplete());
       } else if (this.template.template_type === 'docker') {
-        this.dockerService.addTemplate(this.controller, this.template).subscribe(() => this.onUploadComplete());
+        this.dockerService.addTemplate(this.controller(), this.template).subscribe(() => this.onUploadComplete());
       }
     };
   }
@@ -63,6 +67,7 @@ export class ImportApplianceComponent implements OnInit {
   private onUploadComplete() {
     this.toasterService.success('Appliance imported successfully');
     this.uploader.queue = [];
+    this.cdr.markForCheck();
   }
 
   public uploadAppliance(event) {
@@ -129,6 +134,7 @@ export class ImportApplianceComponent implements OnInit {
       template.category = appliance.category;
       template.builtin = false;
       template.default_name_format = '{name}-{0}';
+      template.tags = appliance.tags || [];
       template.compute_id = 'vm';
       // qemu - VM
       // iou - VM + main controller
@@ -141,8 +147,9 @@ export class ImportApplianceComponent implements OnInit {
         template.symbol = `:/symbols/${template.category}_guest.svg`;
       }
       this.template = template;
+      this.cdr.markForCheck();
 
-      const url = this.getUploadPath(this.controller, name);
+      const url = this.getUploadPath(this.controller(), name);
       this.uploader.queue.forEach((elem) => (elem.url = url));
       const itemToUpload = this.uploader.queue[0];
       this.uploader.uploadItem(itemToUpload);

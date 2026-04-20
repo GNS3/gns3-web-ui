@@ -1,54 +1,59 @@
-<div class="content">
-  <div class="default-header">
-    <div class="row">
-      <div class="col col-md-1">
-        <button
-          class="top-button"
-          *ngIf="controller"
-          class="cancel-button"
-          mat-button
-          routerLink="/controller/{{ controller.id }}/preferences"
-          >
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-      </div>
-      <div class="col col-md-10">
-        <h1 class="col">VirtualBox VM templates</h1>
-      </div>
-      <div class="col col-md-1">
-        <button
-          *ngIf="controller"
-          class="top-button cancel-button"
-          matTooltip="Add Virtual Box VM template"
-          matTooltipClass="custom-tooltip"
-          routerLink="/controller/{{ controller.id }}/preferences/virtualbox/addtemplate"
-          mat-button
-        >
-          <mat-icon>add_circle_outline</mat-icon>
-        </button>
-      </div>
-    </div>
+<div class="virtualbox-templates">
+  <header class="virtualbox-templates__header">
+    @if (controller) {
+    <button
+      class="virtualbox-templates__back-btn"
+      [routerLink]="'/controller/' + controller.id + '/preferences'"
+      mat-icon-button
+    >
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    }
+    <h1 class="virtualbox-templates__title">VirtualBox VM templates</h1>
+    @if (controller) {
+    <button
+      class="virtualbox-templates__add-btn"
+      matTooltip="Add VirtualBox VM template"
+      matTooltipClass="custom-tooltip"
+      [routerLink]="'/controller/' + controller.id + '/preferences/virtualbox/addtemplate'"
+      mat-icon-button
+    >
+      <mat-icon>add_circle_outline</mat-icon>
+    </button>
+    }
+  </header>
 
-  </div>
-  <app-empty-templates-list *ngIf="!virtualBoxTemplates.length"></app-empty-templates-list>
-  <div class="default-content" *ngIf="virtualBoxTemplates.length">
-    <div class="listcontainer mat-elevation-z8">
-      <mat-nav-list *ngIf="controller">
-        <div class="list-item" *ngFor="let template of virtualBoxTemplates">
-          <mat-list-item class="template-name" routerLink="{{ template.template_id }}">{{
-            template.name
-          }}</mat-list-item>
-          <button mat-button class="menu-button" [matMenuTriggerFor]="menu">
-            <mat-icon>more_vert</mat-icon>
+  <main class="virtualbox-templates__content">
+    @if (!virtualBoxTemplates.length) {
+    <app-empty-templates-list></app-empty-templates-list>
+    } @if (virtualBoxTemplates.length) {
+    <nav class="virtualbox-templates__list">
+      @for (template of virtualBoxTemplates; track template.template_id) {
+      <div class="virtualbox-templates__list-item" [routerLink]="template.template_id">
+        <mat-icon class="virtualbox-templates__list-icon">computer</mat-icon>
+        <span class="virtualbox-templates__list-name">{{ template.name }}</span>
+        <button
+          mat-icon-button
+          [matMenuTriggerFor]="menu"
+          class="virtualbox-templates__menu-btn"
+          (click)="$event.stopPropagation()"
+        >
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu" xPosition="before">
+          <a mat-menu-item [routerLink]="template.template_id">
+            <mat-icon>edit</mat-icon>
+            <span>Edit</span>
+          </a>
+          <button mat-menu-item (click)="deleteTemplate(template)">
+            <mat-icon>delete</mat-icon>
+            <span>Delete</span>
           </button>
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item (click)="deleteTemplate(template)">
-              <mat-icon>delete</mat-icon><span>Delete</span>
-            </button>
-          </mat-menu>
-        </div>
-      </mat-nav-list>
-    </div>
-  </div>
+        </mat-menu>
+      </div>
+      }
+    </nav>
+    }
+  </main>
 </div>
-<app-delete-template #deleteComponent [controller]="controller" (deleteEvent)="onDeleteEvent()"> </app-delete-template>
+<app-delete-template #deleteComponent [controller]="controller" (deleteEvent)="onDeleteEvent()"></app-delete-template>

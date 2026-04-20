@@ -65,7 +65,7 @@ export class ProjectService {
     return this.httpController.post<Project>(controller, `/projects/${project_id}/close`, {});
   }
 
-  list(controller: Controller ) {
+  list(controller: Controller) {
     return this.httpController.get<Project[]>(controller, '/projects');
   }
 
@@ -133,27 +133,24 @@ export class ProjectService {
 
   getCompression() {
     return this.compression_methods;
-  };
+  }
   getCompressionLevel() {
     return this.compression_level_default_value;
-  };
+  }
 
-
-  getexportPortableProjectPath(controller : Controller, project_id: string,formData:any={}) {
-    if (formData.compression_level != null && formData.compression_level !='') {
+  getexportPortableProjectPath(controller: Controller, project_id: string, formData: any = {}) {
+    if (formData.compression_level != null && formData.compression_level != '') {
       return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/projects/${project_id}/export?include_snapshots=${formData.include_snapshots}&include_images=${formData.include_base_image}&reset_mac_addresses=${formData.reset_mac_address}&compression=${formData.compression}&compression_level=${formData.compression_level}&token=${controller.authToken}`;
     } else {
       return `${controller.protocol}//${controller.host}:${controller.port}/${environment.current_version}/projects/${project_id}/export?include_snapshots=${formData.include_snapshots}&include_images=${formData.include_base_image}&reset_mac_addresses=${formData.reset_mac_address}&compression=${formData.compression}&token=${controller.authToken}`;
-
     }
   }
 
-getProjectStatus(controller : Controller, project_id: string): Observable<any> {
-  return this.get(controller,`${project_id}/locked`)
-}
+  getProjectStatus(controller: Controller, project_id: string): Observable<any> {
+    return this.get(controller, `${project_id}/locked`);
+  }
 
-
-  projectUpdateLockIcon(){
-    this.projectLockIconSubject.next(true)
+  projectUpdateLockIcon() {
+    this.projectLockIconSubject.next(true);
   }
 }

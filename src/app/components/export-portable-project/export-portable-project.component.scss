@@ -1,39 +1,107 @@
-.mat-dialog-title {
-  margin: 0 0 0px;
+/**
+ * Export Portable Project Component Styles
+ * Uses BEM naming convention
+ * Inherits from base-dialog-panel and simple-dialog-panel
+ */
+
+:host {
   display: block;
 }
-.mat-dialog-container {
-  padding: 14px 14px 5px 14px !important;
+
+.export-portable-project {
+  &__form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 24px 8px;
+  }
+
+  &__title {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    margin: 0;
+  }
+
+  &__close-btn {
+    flex-shrink: 0;
+  }
+
+  &__content {
+    padding: 16px 24px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    @media (max-width: 600px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  &__label {
+    flex: 0 0 140px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+    align-self: flex-start;
+    padding-top: 12px;
+  }
+
+  &__field {
+    flex: 1;
+  }
+
+  &__checkbox-section {
+    display: flex;
+    align-items: center;
+    min-height: 35px;
+  }
+
+  &__checkbox {
+    margin: 0;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 16px 24px;
+  }
 }
+
+/* Legacy class names for backward compatibility */
 .checkBox-section {
   display: flex;
-  align-content: center;
   align-items: center;
-  height: 35px;
+  min-height: 35px;
 }
 
 .checkBox-margin {
   margin: 0 10px;
 }
-.txt-align {
-  text-align: end;
-}
-.close-btn {
-  margin: 0 0 20px 40px;
-}
-.mat-data {
-  margin: 15px 0 15px 0;
-}
-
 
 .input-full-width {
   width: 100%;
 }
+
 .col-data {
   text-align: left;
   align-self: self-end;
   margin-bottom: 20px;
 }
-.checkbox-row{
-  margin-top: 5px 0 5px 0;
+
+.checkbox-row {
+  margin-top: 5px;
 }

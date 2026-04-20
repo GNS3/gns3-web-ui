@@ -1,201 +1,588 @@
-import { CommonModule } from '@angular/common';
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-import { AbstractControlDirective, UntypedFormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatCommonModule } from '@angular/material/core';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
-import { MatInputModule } from '@angular/material/input';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatRadioModule } from '@angular/material/radio';
-import { MatSelectModule } from '@angular/material/select';
-import { MatStepperModule } from '@angular/material/stepper';
-import { MatTableModule } from '@angular/material/table';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { By } from '@angular/platform-browser';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { ActivatedRoute } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ActivatedRoute, Router } from '@angular/router';
 import { of } from 'rxjs';
-import { Controller } from '@models/controller';
-import { DockerTemplate } from '@models/templates/docker-template';
-import { DockerConfigurationService } from '@services/docker-configuration.service';
+import { AddDockerTemplateComponent } from './add-docker-template.component';
 import { DockerService } from '@services/docker.service';
+import { ComputeService } from '@services/compute.service';
 import { ControllerService } from '@services/controller.service';
-import { MockedControllerService } from '@services/controller.service.spec';
 import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
-import { MockedToasterService } from '@services/toaster.service.spec';
-import { MockedActivatedRoute } from '../../preferences.component.spec';
-import { AddDockerTemplateComponent } from './add-docker-template.component';
+import { DockerConfigurationService } from '@services/docker-configuration.service';
+import { DockerImage } from '@models/docker/docker-image';
+import { DockerTemplate } from '@models/templates/docker-template';
+import { Controller } from '@models/controller';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
-export class MockedDockerService {
-  public addTemplate(controller: Controller, dockerTemplate: DockerTemplate) {
-    return of(dockerTemplate);
-  }
-}
-
-//Tests disabled due to instability
-xdescribe('AddDockerTemplateComponent', () => {
+describe('AddDockerTemplateComponent', () => {
   let component: AddDockerTemplateComponent;
   let fixture: ComponentFixture<AddDockerTemplateComponent>;
 
-  let mockedControllerService = new MockedControllerService();
-  let mockedDockerService = new MockedDockerService();
-  let mockedToasterService = new MockedToasterService();
-  let activatedRoute = new MockedActivatedRoute().get();
+  let mockControllerService: any;
+  let mockDockerService: any;
+  let mockTemplateMocksService: any;
+  let mockToasterService: any;
+  let mockRouter: any;
+  let mockActivatedRoute: any;
+  let mockComputeService: any;
+  let mockConfigurationService: any;
 
-  beforeEach(async() => {
-    await TestBed.configureTestingModule({
-      imports: [
-        MatStepperModule,
-        MatAutocompleteModule,
-        MatCommonModule,
-        MatRadioModule,
-        FormsModule,
-        MatTableModule,
-        MatAutocompleteModule,
-        MatFormFieldModule,
-        MatInputModule,
-        ReactiveFormsModule,
-        MatSelectModule,
-        MatIconModule,
-        MatToolbarModule,
-        MatMenuModule,
-        MatCheckboxModule,
-        CommonModule,
-        NoopAnimationsModule,
-        RouterTestingModule.withRoutes([
-          { path: 'controller/1/preferences/docker/templates', component: AddDockerTemplateComponent },
-        ]),
-      ],
-      providers: [
-        { provide: ActivatedRoute, useValue: activatedRoute },
-        { provide: ControllerService, useValue: mockedControllerService },
-        { provide: DockerService, useValue: mockedDockerService },
-        { provide: ToasterService, useValue: mockedToasterService },
-        { provide: TemplateMocksService, useClass: TemplateMocksService },
-        { provide: DockerConfigurationService, useClass: DockerConfigurationService },
-        { provide: AbstractControlDirective, useExisting: UntypedFormControl, useMulti: true },
-      ],
-      declarations: [AddDockerTemplateComponent],
-    }).compileComponents();
+  let mockController: Controller;
+  let mockDockerTemplate: DockerTemplate;
+  let mockDockerImages: DockerImage[];
+
+  const createMockDockerTemplate = (): DockerTemplate => ({
+    adapters: 1,
+    builtin: false,
+    category: 'container',
+    compute_id: 'local',
+    console_auto_start: false,
+    console_http_path: '/',
+    console_http_port: 80,
+    console_resolution: '1024x768',
+    console_type: 'telnet',
+    aux_type: 'none',
+    mac_address: '',
+    custom_adapters: [],
+    default_name_format: 'docker{0}',
+    environment: '',
+    extra_hosts: '',
+    image: '',
+    name: '',
+    start_command: '',
+    symbol: 'docker',
+    template_id: '',
+    template_type: 'docker',
+    usage: '',
+    tags: [],
   });
 
-  beforeEach(() => {
+  const consoleTypes = ['telnet', 'vnc', 'http'];
+  const auxConsoleTypes = ['none', 'telnet', 'http'];
+
+  beforeEach(async () => {
+    mockController = {
+      id: 1,
+      authToken: 'test-token',
+      name: 'Test Controller',
+      location: 'local',
+      host: '192.168.1.100',
+      port: 3080,
+      path: '',
+      ubridge_path: '',
+      status: 'running',
+      protocol: 'http:',
+      username: '',
+      password: '',
+      tokenExpired: false,
+    } as Controller;
+
+    mockDockerTemplate = createMockDockerTemplate();
+
+    mockDockerImages = [{ image: 'nginx:latest' }, { image: 'ubuntu:20.04' }, { image: 'alpine:latest' }];
+
+    mockActivatedRoute = {
+      snapshot: {
+        paramMap: {
+          get: vi.fn().mockReturnValue('1'),
+        },
+      },
+    };
+
+    mockRouter = {
+      navigate: vi.fn(),
+    };
+
+    mockControllerService = {
+      get: vi.fn().mockResolvedValue(mockController),
+    };
+
+    mockDockerService = {
+      getImages: vi.fn().mockReturnValue(of(mockDockerImages)),
+      addTemplate: vi.fn().mockReturnValue(of(mockDockerTemplate)),
+    };
+
+    mockTemplateMocksService = {
+      getDockerTemplate: vi.fn().mockReturnValue(of(createMockDockerTemplate())),
+    };
+
+    mockToasterService = {
+      error: vi.fn(),
+      success: vi.fn(),
+      warning: vi.fn(),
+    };
+
+    mockComputeService = {
+      getComputes: vi.fn().mockReturnValue(of([])),
+    };
+
+    mockConfigurationService = {
+      getConsoleTypes: vi.fn().mockReturnValue(consoleTypes),
+      getAuxConsoleTypes: vi.fn().mockReturnValue(auxConsoleTypes),
+    };
+
+    await TestBed.configureTestingModule({
+      imports: [AddDockerTemplateComponent],
+      providers: [
+        { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: Router, useValue: mockRouter },
+        { provide: ControllerService, useValue: mockControllerService },
+        { provide: DockerService, useValue: mockDockerService },
+        { provide: TemplateMocksService, useValue: mockTemplateMocksService },
+        { provide: ToasterService, useValue: mockToasterService },
+        { provide: ComputeService, useValue: mockComputeService },
+        { provide: DockerConfigurationService, useValue: mockConfigurationService },
+      ],
+    }).compileComponents();
+
     fixture = TestBed.createComponent(AddDockerTemplateComponent);
     component = fixture.componentInstance;
+    component.ngOnInit();
+    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
-  it('should open first step at start', async () => {
-    fixture.detectChanges();
-   await fixture.whenStable().then(() => {
-      let stepperComponent = fixture.debugElement.query(By.css('mat-vertical-stepper')).componentInstance;
+  describe('Creation', () => {
+    it('should create the component', () => {
+      expect(component).toBeTruthy();
+    });
 
-      expect(stepperComponent.selectedIndex).toBe(0);
+    it('should initialize isLocalComputerChosen to true', () => {
+      expect(component.isLocalComputerChosen).toBe(true);
+    });
+
+    it('should initialize newImageSelected to false', () => {
+      expect(component.newImageSelected).toBe(false);
+    });
+
+    it('should have empty filename model', () => {
+      expect(component.filename()).toBe('');
+    });
+
+    it('should have empty templateName model', () => {
+      expect(component.templateName()).toBe('');
+    });
+
+    it('should have adapters model initialized to 1', () => {
+      expect(component.adapters()).toBe(1);
+    });
+
+    it('should have empty startCommand model', () => {
+      expect(component.startCommand()).toBe('');
+    });
+
+    it('should have empty consoleType model', () => {
+      expect(component.consoleType()).toBe('');
+    });
+
+    it('should have empty auxConsoleType model', () => {
+      expect(component.auxConsoleType()).toBe('');
+    });
+
+    it('should have empty environment model', () => {
+      expect(component.environment()).toBe('');
     });
   });
 
-  it('should display correct label at start', async() => {
-    fixture.detectChanges();
-   await fixture.whenStable().then(() => {
-      let selectedLabel = fixture.nativeElement.querySelector('[aria-selected="true"]');
+  describe('ngOnInit', () => {
+    it('should fetch controller from route param controller_id', () => {
+      expect(mockControllerService.get).toHaveBeenCalledWith(1);
+    });
 
-      expect(selectedLabel.textContent).toMatch('Controller type');
+    it('should fetch docker images after controller is loaded', () => {
+      expect(mockDockerService.getImages).toHaveBeenCalledWith(mockController);
+    });
+
+    it('should store controller when fetched', () => {
+      expect(component.controller).toEqual(mockController);
+    });
+
+    it('should fetch template mock from templateMocksService', () => {
+      expect(mockTemplateMocksService.getDockerTemplate).toHaveBeenCalled();
+    });
+
+    it('should set consoleTypes from configurationService', () => {
+      expect(mockConfigurationService.getConsoleTypes).toHaveBeenCalled();
+    });
+
+    it('should set auxConsoleTypes from configurationService', () => {
+      expect(mockConfigurationService.getAuxConsoleTypes).toHaveBeenCalled();
     });
   });
 
-  it('should not call add template when required fields are empty', async() => {
-    fixture.detectChanges();
-    await fixture.whenStable().then(() => {
-      let addButton = fixture.debugElement.nativeElement.querySelector('.add-button');
-      spyOn(mockedDockerService, 'addTemplate').and.returnValue(of({} as DockerTemplate));
+  describe('setControllerType', () => {
+    it('should set isLocalComputerChosen to true when passed "local"', () => {
+      component.isLocalComputerChosen = false;
 
-      addButton.click();
+      component.setControllerType('local');
 
-      expect(component.virtualMachineForm.invalid).toBe(true);
-      expect(component.containerNameForm.invalid).toBe(true);
-      expect(component.networkAdaptersForm.invalid).toBe(true);
+      expect(component.isLocalComputerChosen).toBe(true);
+    });
 
-      expect(mockedDockerService.addTemplate).not.toHaveBeenCalled();
+    it('should not change isLocalComputerChosen when passed "remote"', () => {
+      component.isLocalComputerChosen = true;
+
+      component.setControllerType('remote');
+
+      expect(component.isLocalComputerChosen).toBe(true);
     });
   });
 
-  it('should call add template when required fields are filled', async () => {
-    fixture.detectChanges();
-   await  fixture.whenStable().then(() => {
-      let stepperComponent = fixture.debugElement.query(By.css('mat-vertical-stepper')).componentInstance;
-      stepperComponent.selectedIndex = 1;
+  describe('setDiskImage', () => {
+    it('should set newImageSelected to true when passed "newImage"', () => {
+      component.newImageSelected = false;
+
+      component.setDiskImage('newImage');
+
+      expect(component.newImageSelected).toBe(true);
+    });
+
+    it('should set newImageSelected to false when passed "existingImage"', () => {
       component.newImageSelected = true;
 
+      component.setDiskImage('existingImage');
+
+      expect(component.newImageSelected).toBe(false);
+    });
+  });
+
+  describe('goBack', () => {
+    it('should navigate to controller docker templates page', () => {
+      component.controller = mockController;
+
+      component.goBack();
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith([
+        '/controller',
+        mockController.id,
+        'preferences',
+        'docker',
+        'templates',
+      ]);
+    });
+
+    it('should navigate correctly even when controller id is 0', () => {
+      const controllerWithZeroId = { ...mockController, id: 0 } as Controller;
+      component.controller = controllerWithZeroId;
+
+      component.goBack();
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith(['/controller', 0, 'preferences', 'docker', 'templates']);
+    });
+  });
+
+  describe('addTemplate', () => {
+    it('should not add template when no image selected and newImageSelected is false', () => {
+      component.newImageSelected = false;
+      component.selectedImage = undefined;
+      component.templateName.set('Test Template');
+      component.adapters.set(1);
       fixture.detectChanges();
-      fixture.whenStable().then(() => {
-        let selectedLabel = fixture.nativeElement.querySelector('[aria-selected="true"]');
 
-        expect(selectedLabel.textContent).toMatch('Docker Virtual Machine');
+      component.addTemplate();
 
-        let filenameInput = fixture.debugElement.nativeElement.querySelector('.filename');
-        filenameInput.value = 'sample filename';
-        filenameInput.dispatchEvent(new Event('input'));
-        fixture.detectChanges();
-        fixture.whenStable().then(() => {
-          expect(component.dockerTemplate.image).toBe('sample filename');
+      expect(mockDockerService.addTemplate).not.toHaveBeenCalled();
+    });
 
-          expect(component.virtualMachineForm.invalid).toBe(false);
-          expect(component.containerNameForm.invalid).toBe(true);
+    it('should not add template when newImageSelected and filename is empty', () => {
+      component.newImageSelected = true;
+      component.filename.set('');
+      component.templateName.set('Test Template');
+      component.adapters.set(1);
+      fixture.detectChanges();
 
-          stepperComponent.selectedIndex = 2;
-          fixture.detectChanges();
-          fixture.whenStable().then(() => {
-            selectedLabel = fixture.nativeElement.querySelector('[aria-selected="true"]');
+      component.addTemplate();
 
-            expect(selectedLabel.textContent).toMatch('Container name');
+      expect(mockDockerService.addTemplate).not.toHaveBeenCalled();
+    });
 
-            let templatenameInput = fixture.debugElement.nativeElement.querySelector('.templatename');
-            templatenameInput.value = 'sample templatename';
-            templatenameInput.dispatchEvent(new Event('input'));
-            fixture.detectChanges();
-            fixture.whenStable().then(() => {
-              expect(component.dockerTemplate.name).toBe('sample templatename');
+    it('should not add template when newImageSelected and templateName is empty', () => {
+      component.newImageSelected = true;
+      component.filename.set('nginx:latest');
+      component.templateName.set('');
+      component.adapters.set(1);
+      fixture.detectChanges();
 
-              expect(component.virtualMachineForm.invalid).toBe(false);
-              expect(component.containerNameForm.invalid).toBe(false);
+      component.addTemplate();
 
-              stepperComponent.selectedIndex = 3;
-              fixture.detectChanges();
-              fixture.whenStable().then(() => {
-                selectedLabel = fixture.nativeElement.querySelector('[aria-selected="true"]');
+      expect(mockDockerService.addTemplate).not.toHaveBeenCalled();
+    });
 
-                expect(selectedLabel.textContent).toMatch('Network adapters');
+    it('should not add template when newImageSelected and adapters is 0', () => {
+      component.newImageSelected = true;
+      component.filename.set('nginx:latest');
+      component.templateName.set('Test Template');
+      component.adapters.set(0);
+      fixture.detectChanges();
 
-                let networkadapterInput = fixture.debugElement.nativeElement.querySelector('.networkadapter');
-                networkadapterInput.value = 2;
-                networkadapterInput.dispatchEvent(new Event('input'));
-                fixture.detectChanges();
-                fixture.whenStable().then(() => {
-                  expect(component.dockerTemplate.adapters).toBe(2);
+      component.addTemplate();
 
-                  expect(component.virtualMachineForm.invalid).toBe(false);
-                  expect(component.containerNameForm.invalid).toBe(false);
-                  expect(component.networkAdaptersForm.invalid).toBe(false);
+      expect(mockDockerService.addTemplate).not.toHaveBeenCalled();
+    });
 
-                  let addButton = fixture.debugElement.nativeElement.querySelector('.add-button');
-                  spyOn(mockedDockerService, 'addTemplate').and.returnValue(of({} as DockerTemplate));
+    it('should call toasterService.error when required fields are missing', () => {
+      component.newImageSelected = false;
+      component.selectedImage = undefined;
+      fixture.detectChanges();
 
-                  addButton.click();
+      component.addTemplate();
 
-                  expect(mockedDockerService.addTemplate).toHaveBeenCalled();
-                });
-              });
-            });
-          });
-        });
+      expect(mockToasterService.error).toHaveBeenCalledWith('Fill all required fields');
+    });
+
+    it('should add template when valid with existing image', async () => {
+      component.newImageSelected = false;
+      component.selectedImage = mockDockerImages[0];
+      component.templateName.set('Test Template');
+      component.adapters.set(1);
+      fixture.detectChanges();
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(mockDockerService.addTemplate).toHaveBeenCalled();
+    });
+
+    it('should add template when valid with new image', async () => {
+      component.newImageSelected = true;
+      component.filename.set('nginx:latest');
+      component.templateName.set('Test Template');
+      component.adapters.set(1);
+      fixture.detectChanges();
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(mockDockerService.addTemplate).toHaveBeenCalled();
+    });
+
+    it('should navigate to goBack after successful template addition', async () => {
+      component.newImageSelected = false;
+      component.selectedImage = mockDockerImages[0];
+      component.templateName.set('Test Template');
+      component.adapters.set(1);
+      fixture.detectChanges();
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(mockRouter.navigate).toHaveBeenCalledWith([
+        '/controller',
+        mockController.id,
+        'preferences',
+        'docker',
+        'templates',
+      ]);
+    });
+
+    it('should set template_id to a uuid', async () => {
+      component.newImageSelected = false;
+      component.selectedImage = mockDockerImages[0];
+      component.templateName.set('Test Template');
+      component.adapters.set(1);
+      fixture.detectChanges();
+
+      let capturedTemplate: DockerTemplate | undefined;
+      mockDockerService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        capturedTemplate = template;
+        return of(mockDockerTemplate);
       });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(capturedTemplate?.template_id).toBeTruthy();
+      expect(capturedTemplate?.template_id).not.toBe('');
+    });
+
+    it('should set name from templateName model', async () => {
+      component.newImageSelected = false;
+      component.selectedImage = mockDockerImages[0];
+      component.templateName.set('My Docker Template');
+      component.adapters.set(1);
+      fixture.detectChanges();
+
+      let capturedTemplate: DockerTemplate | undefined;
+      mockDockerService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        capturedTemplate = template;
+        return of(mockDockerTemplate);
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(capturedTemplate?.name).toBe('My Docker Template');
+    });
+
+    it('should set compute_id to local', async () => {
+      component.newImageSelected = false;
+      component.selectedImage = mockDockerImages[0];
+      component.templateName.set('Test Template');
+      component.adapters.set(1);
+      fixture.detectChanges();
+
+      let capturedTemplate: DockerTemplate | undefined;
+      mockDockerService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        capturedTemplate = template;
+        return of(mockDockerTemplate);
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(capturedTemplate?.compute_id).toBe('local');
+    });
+
+    it('should set image from selectedImage when newImageSelected is false', async () => {
+      component.newImageSelected = false;
+      component.selectedImage = mockDockerImages[0];
+      component.templateName.set('Test Template');
+      component.adapters.set(1);
+      fixture.detectChanges();
+
+      let capturedTemplate: DockerTemplate | undefined;
+      mockDockerService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        capturedTemplate = template;
+        return of(mockDockerTemplate);
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(capturedTemplate?.image).toBe('nginx:latest');
+    });
+
+    it('should set image from filename when newImageSelected is true', async () => {
+      component.newImageSelected = true;
+      component.filename.set('new_nginx:latest');
+      component.templateName.set('Test Template');
+      component.adapters.set(1);
+      fixture.detectChanges();
+
+      let capturedTemplate: DockerTemplate | undefined;
+      mockDockerService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        capturedTemplate = template;
+        return of(mockDockerTemplate);
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(capturedTemplate?.image).toBe('new_nginx:latest');
+    });
+
+    it('should set adapters from adapters model', async () => {
+      component.newImageSelected = false;
+      component.selectedImage = mockDockerImages[0];
+      component.templateName.set('Test Template');
+      component.adapters.set(4);
+      fixture.detectChanges();
+
+      let capturedTemplate: DockerTemplate | undefined;
+      mockDockerService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        capturedTemplate = template;
+        return of(mockDockerTemplate);
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(capturedTemplate?.adapters).toBe(4);
+    });
+
+    it('should set start_command from startCommand model', async () => {
+      component.newImageSelected = false;
+      component.selectedImage = mockDockerImages[0];
+      component.templateName.set('Test Template');
+      component.adapters.set(1);
+      component.startCommand.set('/bin/bash');
+      fixture.detectChanges();
+
+      let capturedTemplate: DockerTemplate | undefined;
+      mockDockerService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        capturedTemplate = template;
+        return of(mockDockerTemplate);
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(capturedTemplate?.start_command).toBe('/bin/bash');
+    });
+
+    it('should set console_type from consoleType model', async () => {
+      component.newImageSelected = false;
+      component.selectedImage = mockDockerImages[0];
+      component.templateName.set('Test Template');
+      component.adapters.set(1);
+      component.consoleType.set('vnc');
+      fixture.detectChanges();
+
+      let capturedTemplate: DockerTemplate | undefined;
+      mockDockerService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        capturedTemplate = template;
+        return of(mockDockerTemplate);
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(capturedTemplate?.console_type).toBe('vnc');
+    });
+
+    it('should set aux_type from auxConsoleType model', async () => {
+      component.newImageSelected = false;
+      component.selectedImage = mockDockerImages[0];
+      component.templateName.set('Test Template');
+      component.adapters.set(1);
+      component.auxConsoleType.set('telnet');
+      fixture.detectChanges();
+
+      let capturedTemplate: DockerTemplate | undefined;
+      mockDockerService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        capturedTemplate = template;
+        return of(mockDockerTemplate);
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(capturedTemplate?.aux_type).toBe('telnet');
+    });
+
+    it('should set environment from environment model', async () => {
+      component.newImageSelected = false;
+      component.selectedImage = mockDockerImages[0];
+      component.templateName.set('Test Template');
+      component.adapters.set(1);
+      component.environment.set('DEBUG=1');
+      fixture.detectChanges();
+
+      let capturedTemplate: DockerTemplate | undefined;
+      mockDockerService.addTemplate = vi.fn().mockImplementation((controller, template) => {
+        capturedTemplate = template;
+        return of(mockDockerTemplate);
+      });
+
+      component.addTemplate();
+      await fixture.whenStable();
+
+      expect(capturedTemplate?.environment).toBe('DEBUG=1');
+    });
+  });
+
+  describe('dockerImages', () => {
+    it('should contain docker images when loaded', () => {
+      expect(component.dockerImages).toEqual(mockDockerImages);
+    });
+
+    it('should have multiple docker images', () => {
+      expect(component.dockerImages.length).toBe(3);
     });
   });
 });

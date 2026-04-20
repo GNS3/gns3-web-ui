@@ -11,4 +11,5 @@ export interface VpcsTemplate {
   template_id: string;
   template_type: string;
   tags?: string[];
+  usage?: string;
 }

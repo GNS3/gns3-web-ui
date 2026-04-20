@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, model } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatListModule } from '@angular/material/list';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
 import { Node } from '../../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { DockerConfigurationService } from '@services/docker-configuration.service';
@@ -10,38 +13,50 @@ import { ToasterService } from '@services/toaster.service';
 @Component({
   selector: 'app-configure-custom-adapters',
   templateUrl: './configure-custom-adapters.component.html',
-  styleUrls: ['./configure-custom-adapters.component.scss'],
+  styleUrl: './configure-custom-adapters.component.scss',
+  imports: [CommonModule, MatDialogModule, MatListModule, MatInputModule, MatButtonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigureCustomAdaptersDialogComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<ConfigureCustomAdaptersDialogComponent>);
+  private nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
+  private dockerConfigurationService = inject(DockerConfigurationService);
+  private cdr = inject(ChangeDetectorRef);
+
   controller: Controller;
   node: Node;
   displayedColumns: string[] = ['adapter_number', 'port_name'];
-  adapters: CustomAdapter[] = [];
+  readonly adapters = model<CustomAdapter[]>([]);
 
-  constructor(
-    public dialogRef: MatDialogRef<ConfigureCustomAdaptersDialogComponent>,
-    public nodeService: NodeService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder,
-    private dockerConfigurationService: DockerConfigurationService
-  ) {}
+  constructor() {}
 
   ngOnInit() {
     let i: number = 0;
+    const currentAdapters: CustomAdapter[] = [];
     if (!this.node.custom_adapters) {
       this.node.ports.forEach((port) => {
-        this.adapters.push({
+        currentAdapters.push({
           adapter_number: i,
           port_name: '',
         });
+        i++;
       });
     } else {
-      this.adapters = this.node.custom_adapters;
+      currentAdapters.push(...this.node.custom_adapters);
     }
+    this.adapters.set(currentAdapters);
+  }
+
+  onPortNameChange(adapterNumber: number, value: string) {
+    this.adapters.update((adapters) =>
+      adapters.map((a) => (a.adapter_number === adapterNumber ? { ...a, port_name: value } : a))
+    );
+    this.cdr.markForCheck();
   }
 
   onSaveClick() {
-    this.node.custom_adapters = this.adapters;
+    this.node.custom_adapters = this.adapters();
     this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe(() => {
       this.onCancelClick();
       this.toasterService.success(`Configuration saved for node ${this.node.name}`);

@@ -1,4 +1,15 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter, ChangeDetectorRef, Input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  OnDestroy,
+  Output,
+  EventEmitter,
+  ChangeDetectorRef,
+  inject,
+  input,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { Subject } from 'rxjs';
@@ -13,45 +24,46 @@ import { NodesDataSource } from '../../../cartography/datasources/nodes-datasour
 @Component({
   selector: 'app-console-devices-panel',
   templateUrl: './console-devices-panel.component.html',
-  styleUrls: ['./console-devices-panel.component.scss']
+  styleUrl: './console-devices-panel.component.scss',
+  imports: [CommonModule, MatIconModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
-  @Output() deviceSelected = new EventEmitter<Node>();
-  @Input() isLightTheme: boolean = false;
+  private nodesDataSource = inject(NodesDataSource);
+  private cdr = inject(ChangeDetectorRef);
 
-  nodes: Node[] = [];
-  collapsed = true;
+  @Output() deviceSelected = new EventEmitter<Node>();
+  readonly isLightTheme = input<boolean>(false);
+
+  nodes = signal<Node[]>([]);
+  collapsed = signal(true);
 
   private destroy$ = new Subject<void>();
 
-  constructor(
-    private nodesDataSource: NodesDataSource,
-    private cdr: ChangeDetectorRef
-  ) {}
+  constructor() {}
 
   ngOnInit(): void {
     // Subscribe to all nodes changes
-    this.nodesDataSource.changes.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe((nodes: Node[]) => {
+    this.nodesDataSource.changes.pipe(takeUntil(this.destroy$)).subscribe((nodes: Node[]) => {
       // Filter out nodes without console and VNC/HTTP/HTTPS nodes (they use standalone popup windows)
-      this.nodes = nodes.filter(n => {
+      const filteredNodes = nodes.filter((n) => {
         const noConsole = n.console_type === 'none' || !n.console_type;
         const isVnc = n.console_type === 'vnc';
         const isHttp = n.console_type && n.console_type.startsWith('http');
         return !noConsole && !isVnc && !isHttp;
       });
+      this.nodes.set(filteredNodes);
       this.sortNodes();
       this.cdr.markForCheck();
     });
 
     // Subscribe to individual node updates
-    this.nodesDataSource.itemChanged.pipe(
-      takeUntil(this.destroy$)
-    ).subscribe((node: Node) => {
-      const index = this.nodes.findIndex(n => n.node_id === node.node_id);
+    this.nodesDataSource.itemChanged.pipe(takeUntil(this.destroy$)).subscribe((node: Node) => {
+      const currentNodes = this.nodes();
+      const index = currentNodes.findIndex((n) => n.node_id === node.node_id);
       if (index >= 0) {
-        this.nodes[index] = node;
+        currentNodes[index] = node;
+        this.nodes.set([...currentNodes]);
         this.sortNodes();
         this.cdr.markForCheck();
       }
@@ -74,7 +86,8 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
    * Sort nodes: started devices first, then by name
    */
   private sortNodes(): void {
-    this.nodes.sort((a, b) => {
+    const currentNodes = this.nodes();
+    currentNodes.sort((a, b) => {
       // First, sort by status (started first)
       const aStarted = a.status === 'started';
       const bStarted = b.status === 'started';
@@ -89,20 +102,22 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
       // Then, sort by name alphabetically
       return a.name.localeCompare(b.name);
     });
+    this.nodes.set([...currentNodes]);
   }
 
   /**
-   * Get status color
+   * Get status color using CSS variable
    */
   getStatusColor(status: string): string {
-    const colorMap = {
-      started: '#22c55e',
-      starting: '#eab308',
-      stopped: '#6b7280',
-      suspended: '#f97316',
-      errored: '#ef4444'
+    // Use CSS custom properties for theme consistency
+    const colorMap: Record<string, string> = {
+      started: 'var(--mat-sys-primary)',
+      starting: 'var(--mat-sys-tertiary)',
+      stopped: 'var(--mat-sys-outline)',
+      suspended: 'var(--mat-sys-secondary)',
+      errored: 'var(--mat-sys-error)',
     };
-    return colorMap[status] || '#6b7280';
+    return colorMap[status] || 'var(--mat-sys-outline)';
   }
 
   /**
@@ -116,7 +131,7 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
    * Toggle panel collapse/expand
    */
   togglePanel(): void {
-    this.collapsed = !this.collapsed;
+    this.collapsed.set(!this.collapsed());
     this.cdr.markForCheck();
   }
 
@@ -129,7 +144,7 @@ export class ConsoleDevicesPanelComponent implements OnInit, OnDestroy {
       starting: 'Starting',
       stopped: 'Stopped',
       suspended: 'Suspended',
-      errored: 'Error'
+      errored: 'Error',
     };
     return labelMap[status] || 'Unknown';
   }

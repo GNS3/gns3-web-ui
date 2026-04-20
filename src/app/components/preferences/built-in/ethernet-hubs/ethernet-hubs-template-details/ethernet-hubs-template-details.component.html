@@ -1,97 +1,125 @@
-<div class="content" [ngClass]="{ shadowed: isSymbolSelectionOpened }">
-  <div class="default-header">
-    <div class="row">
-      <div class="col-md-1">
-        <button
-        *ngIf="controller"
-        class="top-button"
-        class="cancel-button"
-        (click)="goBack()"
-        mat-button
-      >
-        <mat-icon>arrow_back</mat-icon>
-      </button>
+<div class="ethernet-hub-details">
+  <header class="ethernet-hub-details__header">
+    @if (controller) {
+    <button class="ethernet-hub-details__back-btn" (click)="goBack()" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    }
+    <h1 class="ethernet-hub-details__title">Ethernet hub template configuration</h1>
+  </header>
+
+  @if (ethernetHubTemplate) {
+  <main class="ethernet-hub-details__content">
+    <section class="ethernet-hub-details__form-card">
+      <div class="ethernet-hub-details__section-header" (click)="toggleSection('general')">
+        <h3 class="ethernet-hub-details__section-title">General settings</h3>
+        <mat-icon class="ethernet-hub-details__expand-icon">{{
+          generalSettingsExpanded() ? 'expand_less' : 'expand_more'
+        }}</mat-icon>
       </div>
-      <div class="col-md-11">
-        <h1 class="col">Ethernet hub template configuration</h1>
-      </div>
-    </div>
-  </div>
-  <div class="default-content" *ngIf="ethernetHubTemplate">
-    <mat-card>
-      <form [formGroup]="inputForm">
-        <mat-form-field class="form-field">
+      @if (generalSettingsExpanded()) {
+      <form class="ethernet-hub-details__form">
+        <mat-form-field appearance="fill" class="ethernet-hub-details__field">
+          <mat-label>Template name</mat-label>
           <input
             matInput
+            [value]="templateName()"
+            (input)="templateName.set($event.target.value)"
             type="text"
-            [(ngModel)]="ethernetHubTemplate.name"
-            formControlName="templateName"
             placeholder="Template name"
           />
         </mat-form-field>
-        <mat-form-field class="form-field">
+
+        <mat-form-field appearance="fill" class="ethernet-hub-details__field">
+          <mat-label>Default name format</mat-label>
           <input
             matInput
+            [value]="defaultName()"
+            (input)="defaultName.set($event.target.value)"
             type="text"
-            [(ngModel)]="ethernetHubTemplate.default_name_format"
-            formControlName="defaultName"
             placeholder="Default name format"
           />
         </mat-form-field>
-        <mat-form-field class="form-field">
-          <input
-            matInput
-            type="text"
-            [(ngModel)]="ethernetHubTemplate.symbol"
-            formControlName="symbol"
-            placeholder="Symbol"
-          />
-        </mat-form-field>
-        <button mat-button class="symbolSelectionButton" (click)="chooseSymbol()">Choose symbol</button><br /><br />
-        <mat-form-field class="form-field tags-field">
+
+        <div class="ethernet-hub-details__symbol-row">
+          <mat-form-field appearance="fill" class="ethernet-hub-details__field ethernet-hub-details__field--flex">
+            <mat-label>Symbol</mat-label>
+            <input
+              matInput
+              [value]="symbol()"
+              (input)="symbol.set($event.target.value)"
+              type="text"
+              placeholder="Symbol"
+            />
+          </mat-form-field>
+          <button mat-button class="ethernet-hub-details__symbol-btn" (click)="chooseSymbol()">Choose symbol</button>
+        </div>
+
+        <mat-form-field appearance="fill" class="ethernet-hub-details__field">
           <mat-label>Tags</mat-label>
-          <mat-chip-list #chipList>
-            <mat-chip *ngFor="let tag of ethernetHubTemplate?.tags" (removed)="removeTag(tag)">
+          <mat-chip-grid #chipList>
+            @for (tag of tags(); track tag) {
+            <mat-chip (removed)="removeTag(tag)">
               {{ tag }}
               <mat-icon matChipRemove>cancel</mat-icon>
             </mat-chip>
-          </mat-chip-list>
-          <input matInput placeholder="Add tags"
-                 [matChipInputFor]="chipList"
-                 [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                 (matChipInputTokenEnd)="addTag($event)" />
-        </mat-form-field>
-        <mat-form-field class="form-field">
-          <mat-select
-            placeholder="Category"
-            [ngModelOptions]="{ standalone: true }"
-            [(ngModel)]="ethernetHubTemplate.category"
-          >
-            <mat-option *ngFor="let category of categories" [value]="category[1]">
-              {{ category[0] }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-form-field class="form-field">
+            }
+          </mat-chip-grid>
           <input
             matInput
+            placeholder="Add tags"
+            [matChipInputFor]="chipList"
+            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+            (matChipInputTokenEnd)="addTag($event)"
+          />
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="ethernet-hub-details__field">
+          <mat-label>Category</mat-label>
+          <mat-select [value]="category()" (selectionChange)="category.set($event.value)">
+            @for (cat of categories; track $index) {
+            <mat-option [value]="cat[1]">
+              {{ cat[0] }}
+            </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="ethernet-hub-details__field">
+          <mat-label>Number of ports</mat-label>
+          <input
+            matInput
+            [value]="numberOfPorts()"
+            (input)="numberOfPorts.set(+$event.target.value)"
             type="number"
-            [(ngModel)]="numberOfPorts"
-            [ngModelOptions]="{ standalone: true }"
             placeholder="Number of ports"
           />
         </mat-form-field>
       </form>
-    </mat-card>
-    <div class="buttons-bar">
-      <button class="cancel-button" (click)="goBack()" mat-button>Cancel</button>
-      <button mat-raised-button color="primary" (click)="onSave()">Save</button><br />
+      }
+    </section>
+
+    <section class="ethernet-hub-details__form-card">
+      <div class="ethernet-hub-details__section-header" (click)="toggleSection('usage')">
+        <h3 class="ethernet-hub-details__section-title">Usage</h3>
+        <mat-icon class="ethernet-hub-details__expand-icon">{{
+          usageExpanded() ? 'expand_less' : 'expand_more'
+        }}</mat-icon>
+      </div>
+      @if (usageExpanded()) {
+      <div class="preferences__usage-form">
+        <mat-form-field appearance="fill" class="preferences__usage-field--full">
+          <mat-label>Usage notes</mat-label>
+          <textarea matInput [value]="usage()" (input)="usage.set($event.target.value)" type="text"></textarea>
+        </mat-form-field>
+      </div>
+      }
+    </section>
+
+    <div class="ethernet-hub-details__actions">
+      <button class="ethernet-hub-details__cancel-btn" (click)="goBack()" mat-button>Cancel</button>
+      <button mat-raised-button color="primary" class="ethernet-hub-details__save-btn" (click)="onSave()">Save</button>
     </div>
-  </div>
+  </main>
+  }
 </div>
-<app-symbols-menu
-  *ngIf="isSymbolSelectionOpened && ethernetHubTemplate"
-  [controller]="controller"
-  [symbol]="ethernetHubTemplate.symbol"
-  (symbolChangedEmitter)="symbolChanged($event)"
-></app-symbols-menu>

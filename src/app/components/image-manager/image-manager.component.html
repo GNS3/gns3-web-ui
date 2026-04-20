@@ -1,66 +1,79 @@
-<div class="content">
-  <div class="default-header">
-    <div class="row image-manager-header">
-      <h1 class="col title">Image Manager</h1>
-      <button mat-raised-button color="primary" (click)="installAllImages()" class="install-all-button action-button">
-        <mat-icon>done_all</mat-icon> Install all images
+<div class="image-manager">
+  <header class="image-manager__header">
+    <button class="image-manager__back-btn" [routerLink]="'/controller/' + controllerId + '/projects'" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="image-manager__title">Image Manager</h1>
+    <div class="image-manager__actions">
+      <button
+        mat-icon-button
+        matTooltip="Install all images"
+        matTooltipClass="custom-tooltip"
+        (click)="installAllImages()"
+      >
+        <mat-icon>done_all</mat-icon>
       </button>
-      <button mat-raised-button color="primary" (click)="pruneImages()" class="prune-button action-button">
-        <mat-icon>delete</mat-icon> Prune Images
+      <button mat-icon-button matTooltip="Prune images" matTooltipClass="custom-tooltip" (click)="pruneImages()">
+        <mat-icon>delete</mat-icon>
       </button>
-      <button mat-raised-button color="primary" (click)="addImageDialog()" class="add-button action-button">
-        <mat-icon>add</mat-icon> Add Image
+      <button mat-icon-button matTooltip="Add image" matTooltipClass="custom-tooltip" (click)="addImageDialog()">
+        <mat-icon>add_circle_outline</mat-icon>
       </button>
     </div>
-  </div>
+  </header>
 
-  <div class="default-content">
-    <app-controller-discovery></app-controller-discovery>
-
-    <form>
-      <mat-form-field class="full-width images-search">
+  <main class="image-manager__content">
+    <form class="image-manager__search-form">
+      <mat-form-field appearance="fill" class="image-manager__search-field">
         <mat-icon matPrefix>search</mat-icon>
         <input
           matInput
           placeholder="Search images"
-          [(ngModel)]="searchText"
-          [ngModelOptions]="{ standalone: true }"
-          (ngModelChange)="onSearchChange($event)"
+          [value]="searchText()"
+          (input)="onSearchChange($event.target.value)"
         />
       </mat-form-field>
     </form>
 
-    <div class="mat-elevation-z8 table-container">
+    <div class="image-manager__table-container">
       <mat-table #table [dataSource]="dataSource" [trackBy]="trackByRow" matSort>
         <ng-container matColumnDef="select">
           <mat-header-cell *matHeaderCellDef>
             <mat-checkbox
               (change)="$event ? selectAllImages() : null"
               [checked]="hasSelection() && isAllSelected()"
-              [indeterminate]="hasSelection() && !isAllSelected()">
+              [indeterminate]="hasSelection() && !isAllSelected()"
+            >
             </mat-checkbox>
           </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <mat-checkbox (click)="onRowCheckboxClick($event, row)"
+            <mat-checkbox
+              (click)="onRowCheckboxClick($event, row)"
               [checked]="isRowSelected(row)"
-              [disabled]="!isPersistedRow(row)">
+              [disabled]="!isPersistedRow(row)"
+            >
             </mat-checkbox>
           </mat-cell>
-
         </ng-container>
 
         <ng-container matColumnDef="filename">
           <mat-header-cell *matHeaderCellDef mat-sort-header> File Name </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <div class="row-content">
-              <mat-list-item role="listitem">{{ row.filename }}</mat-list-item>
-              <div *ngIf="hasUploadState(row)" class="upload-status">
+            <div class="image-manager__row-content">
+              <span class="image-manager__filename">{{ row.filename }}</span>
+              @if (hasUploadState(row)) {
+              <div class="image-manager__upload-status">
                 <mat-progress-bar mode="determinate" [value]="row.uploadProgress || 0"></mat-progress-bar>
-                <span class="upload-text" [ngClass]="{ 'upload-error': row.uploadStatus === 'error' }">
-                  {{ row.uploadStatus | titlecase }} {{ row.uploadProgress || 0 }}%
-                  <span *ngIf="row.errorMessage"> - {{ row.errorMessage }}</span>
+                <span
+                  class="image-manager__upload-text"
+                  [class.image-manager__upload-error]="row.uploadStatus === 'error'"
+                >
+                  {{ row.uploadStatus | titlecase }} {{ row.uploadProgress || 0 }}% @if (row.errorMessage) {
+                  <span> - {{ row.errorMessage }}</span>
+                  }
                 </span>
               </div>
+              }
             </div>
           </mat-cell>
         </ng-container>
@@ -77,38 +90,42 @@
 
         <ng-container matColumnDef="created_at">
           <mat-header-cell *matHeaderCellDef mat-sort-header> Created </mat-header-cell>
-          <mat-cell *matCellDef="let row"> {{ row.created_at ? (row.created_at | date:'short') : '-' }} </mat-cell>
+          <mat-cell *matCellDef="let row"> {{ row.created_at ? (row.created_at | date : 'short') : '-' }} </mat-cell>
         </ng-container>
 
-        <ng-container matColumnDef="delete" >
+        <ng-container matColumnDef="delete">
           <mat-header-cell *matHeaderCellDef>
-            <button mat-button *ngIf="(hasSelection() && isAllSelected()) || selectedCount() > 1" (click)="deleteAllFiles()" aria-label="Example icon button with a delete icon">
+            @if ((hasSelection() && isAllSelected()) || selectedCount() > 1) {
+            <button mat-icon-button (click)="deleteAllFiles()">
               <mat-icon>delete</mat-icon>
             </button>
+            }
           </mat-header-cell>
-          <mat-cell *matCellDef="let row" >
-            <button mat-button *ngIf="isPersistedRow(row) && isRowSelected(row)" (click)="deleteFile(row.path)" aria-label="Example icon button with a delete icon">
+          <mat-cell *matCellDef="let row">
+            @if (isPersistedRow(row) && isRowSelected(row)) {
+            <button mat-icon-button (click)="deleteFile(row.path)">
               <mat-icon>delete</mat-icon>
             </button>
+            } @if (hasUploadState(row) && (row.uploadStatus === 'uploading' || row.uploadStatus === 'queued')) {
             <button
-              mat-button
-              *ngIf="hasUploadState(row) && (row.uploadStatus === 'uploading' || row.uploadStatus === 'queued')"
+              mat-icon-button
               (click)="cancelUpload(row)"
               matTooltip="Cancel upload"
               matTooltipClass="custom-tooltip"
-              aria-label="Cancel upload"
             >
               <mat-icon>cancel</mat-icon>
             </button>
+            }
           </mat-cell>
         </ng-container>
-        <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns" [class.row-highlight]="isHighlighted(row)"></mat-row>
+        <mat-header-row *matHeaderRowDef="displayedColumns(); sticky: true"></mat-header-row>
+        <mat-row
+          *matRowDef="let row; columns: displayedColumns()"
+          [class.image-manager__row-highlight]="isHighlighted(row)"
+          (click)="onRowCheckboxClick($event, row)"
+        ></mat-row>
       </mat-table>
-      <mat-paginator
-        [pageSizeOptions]="pageSizeOptions"
-        showFirstLastButtons>
-      </mat-paginator>
+      <mat-paginator [pageSizeOptions]="pageSizeOptions" showFirstLastButtons> </mat-paginator>
     </div>
-  </div>
+  </main>
 </div>

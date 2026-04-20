@@ -1,41 +1,6 @@
-<div *ngIf="project" [ngClass]="{ lightTheme: isLightThemeEnabled }" class="project-map">
-  <app-d3-map
-    *ngIf="!settings.angular_map"
-    [controller]="controller"
-    [project]="project"
-    [symbols]="symbols"
-    [nodes]="nodes"
-    [links]="links"
-    [drawings]="drawings"
-    [width]="project.scene_width"
-    [height]="project.scene_height"
-    [show-interface-labels]="isInterfaceLabelVisible"
-    [readonly]="inReadOnlyMode"
-    (nodeDragged)="onNodeDragged($event)"
-    (drawingDragged)="onDrawingDragged($event)"
-    (onLinkCreated)="onLinkCreated($event)"
-    (onDrawingResized)="onDrawingResized($event)"
-  >
-  </app-d3-map>
-
-  <app-experimental-map
-    *ngIf="settings.angular_map"
-    [symbols]="symbols"
-    [nodes]="nodes"
-    [links]="links"
-    [drawings]="drawings"
-    [width]="project.scene_width"
-    [height]="project.scene_height"
-    [show-interface-labels]="isInterfaceLabelVisible"
-    [selection-tool]="tools.selection"
-    [moving-tool]="tools.moving"
-    [draw-link-tool]="tools.draw_link"
-    [readonly]="inReadOnlyMode"
-  >
-  </app-experimental-map>
-
+<div class="project-map" #projectMap [class.pan-mode]="tools.moving" [ngClass]="mapBgClass()">
   <!-- Project Titlebar -->
-  <div id="project-titlebar" [ngClass]="{ lightTheme: isGlobalLightTheme }">
+  <div id="project-titlebar">
     <button
       matTooltip="Open menu"
       matTooltipClass="custom-tooltip"
@@ -44,12 +9,13 @@
       class="gns3-button menu-button"
       [matMenuTriggerFor]="mainMenu"
     >
-      <mat-icon *ngIf="!isGlobalLightTheme" svgIcon="gns3"></mat-icon>
-      <mat-icon *ngIf="isGlobalLightTheme" svgIcon="gns3black"></mat-icon>
+      <mat-icon svgIcon="gns3"></mat-icon>
     </button>
     <div class="project-titlebar-controls">
-      <div *ngIf="!readonly" [ngClass]="{ lightTheme: isGlobalLightTheme }" class="menu-button-group primary-controls">
-        <app-template [controller]="controller" [project]="project" (onNodeCreation)="onNodeCreation($event)"> </app-template>
+      @if (!readonly) {
+      <div class="menu-button-group primary-controls">
+        <app-template [controller]="controller" [project]="project" (nodeCreationChange)="onNodeCreation($event)">
+        </app-template>
         <button
           matTooltip="Add a link"
           matTooltipClass="custom-tooltip"
@@ -63,9 +29,15 @@
           <mat-icon>timeline</mat-icon>
         </button>
       </div>
+      }
       <div class="menu-button-group">
         <app-nodes-menu [controller]="controller" [project]="project"></app-nodes-menu>
-        <app-context-menu [project]="project" [controller]="controller"></app-context-menu>
+        <app-context-menu
+          [project]="project"
+          [controller]="controller"
+          (openWebWiresharkInline)="openWebWiresharkInline($event)"
+          (openWebConsoleInline)="onOpenWebConsoleInline($event)"
+        ></app-context-menu>
       </div>
     </div>
     <div>
@@ -73,10 +45,6 @@
         matTooltip="Toggle topology/controllers summary"
         matTooltipClass="custom-tooltip"
         matTooltipPosition="left"
-        [ngClass]="{
-          unmarkedLight: !isTopologySummaryVisible && isGlobalLightTheme,
-          marked: isTopologySummaryVisible
-        }"
         mat-icon-button
         (click)="toggleShowTopologySummary(!isTopologySummaryVisible)"
       >
@@ -95,6 +63,10 @@
         <span>Projects</span>
       </button>
 
+      <button mat-menu-item routerLink="/controller/{{ controller.id }}/computes">
+        <mat-icon>dns</mat-icon>
+        <span>Computes</span>
+      </button>
       <button mat-menu-item routerLink="/controller/{{ controller.id }}/preferences">
         <mat-icon>settings_applications</mat-icon>
         <span>Template preferences</span>
@@ -155,25 +127,25 @@
     <!-- Map Settings sub-menu -->
     <mat-menu #viewMenu="matMenu" [overlapTrigger]="false">
       <div class="options-item">
-        <mat-checkbox [ngModel]="isInterfaceLabelVisible" (change)="toggleShowInterfaceLabels($event.checked)">
+        <mat-checkbox [checked]="isInterfaceLabelVisible" (change)="toggleShowInterfaceLabels($event.checked)">
           Show interface labels </mat-checkbox
         ><br />
-        <mat-checkbox [ngModel]="isConsoleVisible" (change)="toggleShowConsole($event.checked)">
+        <mat-checkbox [checked]="isConsoleVisible" (change)="toggleShowConsole($event.checked)">
           Show console </mat-checkbox
         ><br />
-        <mat-checkbox [ngModel]="isTopologySummaryVisible" (change)="toggleShowTopologySummary($event.checked)">
+        <mat-checkbox [checked]="isTopologySummaryVisible" (change)="toggleShowTopologySummary($event.checked)">
           Show topology/controllers summary </mat-checkbox
         ><br />
-        <mat-checkbox [ngModel]="notificationsVisibility" (change)="toggleNotifications($event.checked)">
+        <mat-checkbox [checked]="notificationsVisibility" (change)="toggleNotifications($event.checked)">
           Show notifications </mat-checkbox
         ><br />
-        <mat-checkbox [ngModel]="layersVisibility" (change)="toggleLayers($event.checked)"> Show layers </mat-checkbox
+        <mat-checkbox [checked]="layersVisibility" (change)="toggleLayers($event.checked)"> Show layers </mat-checkbox
         ><br />
-        <mat-checkbox [ngModel]="gridVisibility" (change)="toggleGrid($event.checked)"> Show grid </mat-checkbox><br />
-        <mat-checkbox [ngModel]="project.snap_to_grid" (change)="toggleSnapToGrid($event.checked)">
+        <mat-checkbox [checked]="gridVisibility" (change)="toggleGrid($event.checked)"> Show grid </mat-checkbox><br />
+        <mat-checkbox [checked]="project.snap_to_grid" (change)="toggleSnapToGrid($event.checked)">
           Snap to grid </mat-checkbox
         ><br />
-        <mat-checkbox [ngModel]="symbolScaling" (change)="toggleSymbolScaling($event.checked)">
+        <mat-checkbox [checked]="symbolScaling" (change)="toggleSymbolScaling($event.checked)">
           Scale symbols </mat-checkbox
         ><br />
       </div>
@@ -181,7 +153,22 @@
   </div>
 
   <!-- Project toolbar -->
-  <div id="project-toolbar" [ngClass]="{ lightTheme: isGlobalLightTheme }">
+  <app-d3-map
+    [controller]="controller"
+    [project]="project"
+    [symbols]="symbols"
+    [nodes]="nodes()"
+    [links]="links"
+    [drawings]="drawings"
+    [width]="project.scene_width || 2000"
+    [height]="project.scene_height || 2000"
+    [show-interface-labels]="isInterfaceLabelVisible"
+    [readonly]="inReadOnlyMode"
+  >
+  </app-d3-map>
+
+  <!-- Project toolbar -->
+  <div id="project-toolbar">
     <div class="section">
       <button
         matTooltip="Selection mode"
@@ -189,6 +176,7 @@
         matTooltipPosition="left"
         mat-icon-button
         class="selection-button menu-button"
+        [class.tool-active]="!tools.moving"
         [color]="tools.moving ? 'basic' : 'primary'"
         (click)="toggleMovingMode()"
       >
@@ -199,6 +187,7 @@
         matTooltipClass="custom-tooltip"
         matTooltipPosition="left"
         class="pan-button menu-button"
+        [class.tool-active]="tools.moving"
         mat-icon-button
         [color]="tools.moving ? 'primary' : 'basic'"
         (click)="toggleMovingMode()"
@@ -206,43 +195,54 @@
         <mat-icon>zoom_out_map</mat-icon>
       </button>
       <button
-         matTooltip="Zoom in"
-         matTooltipClass="custom-tooltip"
-         matTooltipPosition="left"
-         class="zoom-button"
-         mat-icon-button
-         (click)="zoomIn()">
+        matTooltip="Zoom in"
+        matTooltipClass="custom-tooltip"
+        matTooltipPosition="left"
+        class="zoom-button"
+        mat-icon-button
+        (click)="zoomIn()"
+      >
         <mat-icon>zoom_in</mat-icon>
       </button>
       <button
-         matTooltip="Reset zoom"
-         matTooltipClass="custom-tooltip"
-         matTooltipPosition="left"
-         class="reset-zoom-button"
-         mat-icon-button
-         (click)="resetZoom()">
+        matTooltip="Reset zoom"
+        matTooltipClass="custom-tooltip"
+        matTooltipPosition="left"
+        class="reset-zoom-button"
+        mat-icon-button
+        (click)="resetZoom()"
+      >
         <mat-icon>adjust</mat-icon>
       </button>
       <button
-         matTooltip="Zoom out"
-         matTooltipClass="custom-tooltip"
-         matTooltipPosition="left"
-         class="zoom-button"
-         mat-icon-button
-         (click)="zoomOut()">
+        matTooltip="Zoom out"
+        matTooltipClass="custom-tooltip"
+        matTooltipPosition="left"
+        class="zoom-button"
+        mat-icon-button
+        (click)="zoomOut()"
+      >
         <mat-icon>zoom_out</mat-icon>
       </button>
     </div>
     <div class="section">
-      <app-project-map-menu [controller]="controller" [project]="project" (aiChatOpened)="onAIChatOpened()"></app-project-map-menu>
+      <app-project-map-menu
+        [controller]="controller"
+        [project]="project"
+        (aiChatOpened)="onAIChatOpened()"
+      ></app-project-map-menu>
     </div>
-    <div *ngIf="!readonly" class="section">
+    @if (!readonly) {
+    <div class="section">
       <app-snapshot-menu-item [controller]="controller" [project]="project"> </app-snapshot-menu-item>
     </div>
+    }
   </div>
 
   <app-progress></app-progress>
-  <app-draw-link-tool [links]="links" *ngIf="tools.draw_link"></app-draw-link-tool>
+  @if (tools.draw_link) {
+  <app-draw-link-tool [links]="links"></app-draw-link-tool>
+  }
   <app-drawing-dragged [controller]="controller" [project]="project"></app-drawing-dragged>
   <app-drawing-resized [controller]="controller"></app-drawing-resized>
   <app-interface-label-dragged [controller]="controller"></app-interface-label-dragged>
@@ -252,23 +252,100 @@
   <app-text-added [controller]="controller" [project]="project" (drawingSaved)="onDrawingSaved()"> </app-text-added>
   <app-text-edited [controller]="controller"></app-text-edited>
   <div [ngClass]="{ visible: !isConsoleVisible }">
+    @if (project) {
     <app-console-wrapper
-      *ngIf="project"
       [controller]="controller"
       [project]="project"
+      [zIndex]="consoleZIndex"
       (closeConsole)="toggleShowConsole($event)"
-      (deviceSelected)="onDeviceSelected($event)"
-      (consoleDeactivated)="clearConsoleHighlight()"
+      (windowFocused)="bringConsoleToFront()"
     ></app-console-wrapper>
+    }
   </div>
 
   <!-- AI Chat Panel -->
+  @if (project && isAIChatVisible) {
   <app-ai-chat
-    *ngIf="project && isAIChatVisible"
     [project]="project"
     [controller]="controller"
-    (closed)="closeAIChat()">
-  </app-ai-chat>
+    [zIndex]="aiChatZIndex"
+    (closed)="closeAIChat()"
+    (windowFocused)="bringAIChatToFront()"
+  ></app-ai-chat>
+  }
+
+  <!-- Web Wireshark Inline Windows (multiple) -->
+  @if (project && webWiresharkInlineWindows.size > 0) {
+    @for (link of getWebWiresharkInlineWindows(); track link.link_id) {
+      <app-web-wireshark-inline
+        [link]="link"
+        [controller]="controller"
+        [project]="project"
+        [zIndex]="getWebWiresharkWindowZIndex(link.link_id)"
+        (closeWindow)="closeWebWiresharkInline(link.link_id)"
+        (windowFocused)="bringWebWiresharkWindowToFront(link.link_id)"
+      ></app-web-wireshark-inline>
+    }
+  }
+
+  <!-- Web Console Inline Windows (multiple) -->
+  @if (project && webConsoleInlineWindows.size > 0) {
+    @for (node of getWebConsoleInlineWindows(); track node.node_id) {
+      <app-web-console-inline
+        [node]="node"
+        [controller]="controller"
+        [project]="project"
+        [zIndex]="getWebConsoleWindowZIndex(node.node_id)"
+        (closeWindow)="closeWebConsoleInline(node.node_id)"
+        (windowFocused)="bringWebConsoleWindowToFront(node.node_id)"
+      ></app-web-console-inline>
+    }
+  }
+
+  <!-- Unified Taskbar for all open windows -->
+  <div class="inline-taskbar">
+    <!-- Console taskbar icon - always shown when console is open -->
+    @if (project && isConsoleVisible) {
+      <div
+        class="inline-taskbar__icon"
+        [class.inline-taskbar__icon--minimized]="windowManagement.minimizedWindows().some(w => w.id === 'console')"
+        [style.left.px]="getConsoleTaskbarLeft()"
+        (click)="toggleConsoleMinimize()"
+        [title]="windowManagement.minimizedWindows().some(w => w.id === 'console') ? 'Console - Click to restore' : 'Console - Click to minimize'"
+      >
+        <mat-icon class="inline-taskbar__icon-type">terminal</mat-icon>
+        <span class="inline-taskbar__label">Console</span>
+      </div>
+    }
+
+    <!-- Wireshark taskbar icons - shown for all open Wireshark windows -->
+    @for (link of getWebWiresharkInlineWindows(); track link.link_id) {
+      <div
+        class="inline-taskbar__icon"
+        [class.inline-taskbar__icon--minimized]="windowManagement.minimizedWindows().some(w => w.id === 'wireshark-' + link.link_id)"
+        [style.left.px]="getWiresharkTaskbarLeft(link.link_id)"
+        (click)="toggleWiresharkMinimize(link.link_id)"
+        [title]="link.capture_file_name"
+      >
+        <mat-icon class="inline-taskbar__icon-type">analytics</mat-icon>
+        <span class="inline-taskbar__label">{{ link.capture_file_name }}</span>
+      </div>
+    }
+
+    <!-- Web Console taskbar icons - shown for all open Web Console windows -->
+    @for (node of getWebConsoleInlineWindows(); track node.node_id) {
+      <div
+        class="inline-taskbar__icon"
+        [class.inline-taskbar__icon--minimized]="windowManagement.minimizedWindows().some(w => w.id === 'console-' + node.node_id)"
+        [style.left.px]="getWebConsoleTaskbarLeft(node.node_id)"
+        (click)="toggleWebConsoleMinimize(node.node_id)"
+        [title]="node.name"
+      >
+        <mat-icon class="inline-taskbar__icon-type">web</mat-icon>
+        <span class="inline-taskbar__label">{{ node.name }}</span>
+      </div>
+    }
+  </div>
 </div>
 
 <ng-template #topologySummaryContainer></ng-template>

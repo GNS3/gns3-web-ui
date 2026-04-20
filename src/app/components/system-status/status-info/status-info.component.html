@@ -1,5 +1,16 @@
-<div *ngIf="!computeStatistics.length">Statistics not loaded</div>
-<div *ngFor="let statistics of computeStatistics">
-  {{ statistics.compute_name }}
+@if (!projectStats().total && !nodeStats().total && !linkStats().total && !computeStatistics().length) {
+<div>Statistics not loaded</div>
+}
+<div class="status-info__summary">
+  <app-status-chart
+    [projectStats]="projectStats()"
+    [nodeStats]="nodeStats()"
+    [linkStats]="linkStats()"
+  ></app-status-chart>
+</div>
+@for (statistics of computeStatistics(); track statistics.compute_name) {
+<div class="status-info__compute">
+  <h3 class="status-info__compute-title">{{ statistics.compute_name }}</h3>
   <app-status-chart [computeStatistics]="statistics"></app-status-chart>
 </div>
+}

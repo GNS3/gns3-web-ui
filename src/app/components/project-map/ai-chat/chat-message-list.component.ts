@@ -1,13 +1,24 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, AfterViewChecked, ElementRef, ViewChild, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  Output,
+  EventEmitter,
+  OnChanges,
+  SimpleChanges,
+  AfterViewChecked,
+  AfterViewInit,
+  ElementRef,
+  ChangeDetectionStrategy,
+  inject,
+  input,
+  viewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { MarkdownModule } from 'ngx-markdown';
 import { ChatMessage, ToolCall, ToolResult } from '@models/ai-chat.interface';
-import { ToolCallDisplayComponent } from './tool-call-display.component';
 import { ToolDetailsDialogComponent, ToolDetailsDialogData } from './tool-details-dialog.component';
-import { ThemeService } from '@services/theme.service';
+import { CodeBlockDialogComponent, CodeBlockDialogData } from './code-block-dialog.component';
 
 /**
  * AI Chat Message List Component
@@ -16,122 +27,26 @@ import { ThemeService } from '@services/theme.service';
  */
 @Component({
   selector: 'app-chat-message-list',
+  imports: [CommonModule, MatIconModule, MatDialogModule, MarkdownModule],
+  templateUrl: './chat-message-list.component.html',
   styleUrls: ['./chat-message-list.component.scss'],
-  encapsulation: ViewEncapsulation.None,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div class="chat-message-list" #messageContainer [class.auto-scroll]="autoScroll">
-      <div class="messages-container">
-        <ng-container *ngFor="let message of messages; trackBy: trackByMessageId">
-          <!-- User message -->
-          <div class="message user-message" *ngIf="message.role === 'user'">
-            <div class="message-avatar user-avatar">
-              <span class="avatar-text">Y</span>
-            </div>
-            <div class="message-content user-content">
-              <div class="message-bubble user-bubble">
-                <markdown class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all" [data]="message.content"></markdown>
-              </div>
-              <div class="message-time">{{ formatTime(message.created_at) }}</div>
-            </div>
-          </div>
-
-          <!-- AI assistant message -->
-          <div class="message assistant-message" *ngIf="message.role === 'assistant'">
-            <div class="message-avatar assistant-avatar">
-              <img src="assets/gns3_icon.svg" alt="GNS3" class="avatar-logo" />
-            </div>
-            <div class="message-content assistant-content">
-              <div class="message-bubble assistant-bubble" [class.streaming]="isStreaming && message === lastAssistantMessage">
-                <markdown class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all" [data]="message.content"></markdown>
-                <mat-spinner *ngIf="isStreaming && message === lastAssistantMessage" diameter="16" class="streaming-indicator"></mat-spinner>
-              </div>
-
-              <!-- Tool calls list -->
-              <div class="tool-calls-container" *ngIf="message.tool_calls && message.tool_calls.length > 0">
-                <div
-                  class="inline-tool-call"
-                  *ngFor="let toolCall of message.tool_calls"
-                  (click)="openToolCallDialog(toolCall)">
-                  <mat-icon class="tool-icon">build</mat-icon>
-                  <span class="tool-name-text">{{ toolCall.function.name }}</span>
-                  <mat-icon class="expand-icon">open_in_new</mat-icon>
-                </div>
-              </div>
-
-              <!-- Tool results list -->
-              <div class="tool-results-container" *ngIf="message.tool_result && message.tool_result.length > 0">
-                <div
-                  class="inline-tool-result"
-                  *ngFor="let result of message.tool_result"
-                  (click)="openAssistantToolResultDialog(result)">
-                  <mat-icon class="tool-icon">check_circle</mat-icon>
-                  <span class="tool-name-text">{{ result.toolName }}</span>
-                  <mat-icon class="expand-icon">open_in_new</mat-icon>
-                </div>
-              </div>
-
-              <div class="message-time">{{ formatTime(message.created_at) }}</div>
-            </div>
-          </div>
-
-          <!-- System message -->
-          <div class="message system-message" *ngIf="message.role === 'system'">
-            <div class="message-bubble system-bubble">
-              <markdown class="message-text prose prose-sm dark:prose-invert max-w-none min-w-0 prose-p:break-words prose-ul:break-words prose-ol:break-words prose-pre:break-all prose-a:break-all prose-code:break-all" [data]="message.content"></markdown>
-            </div>
-          </div>
-
-          <!-- Error message -->
-          <div class="message error-message" *ngIf="message.metadata?.error">
-            <div class="message-bubble error-bubble">
-              <mat-icon class="error-icon">error</mat-icon>
-              <div class="message-text">{{ message.metadata.error }}</div>
-            </div>
-          </div>
-        </ng-container>
-
-        <!-- Empty state -->
-        <div class="empty-state" *ngIf="messages.length === 0">
-          <div class="empty-content">
-            <div class="empty-icon-wrapper">
-              <mat-icon class="empty-icon">smart_toy</mat-icon>
-            </div>
-            <h3 class="empty-title">Welcome to GNS3 AI Assistant</h3>
-            <p class="empty-description">Ask me anything about network automation and GNS3</p>
-            <div class="empty-suggestions">
-              <div class="suggestion-chip" (click)="sendSuggestion('Help me understand this network topology')">
-                <mat-icon>help_outline</mat-icon>
-                <span>Explain network topology</span>
-              </div>
-              <div class="suggestion-chip" (click)="sendSuggestion('Analyze the network configuration')">
-                <mat-icon>analytics</mat-icon>
-                <span>Analyze configuration</span>
-              </div>
-              <div class="suggestion-chip" (click)="sendSuggestion('Find potential network issues')">
-                <mat-icon>search</mat-icon>
-                <span>Find network issues</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `
 })
-export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
-  @Input() messages: ChatMessage[] = [];
-  @Input() isStreaming = false;
-  @Input() autoScroll = true;
+export class ChatMessageListComponent implements OnChanges, AfterViewChecked, AfterViewInit {
+  readonly messages = input<ChatMessage[]>([]);
+  readonly isStreaming = input(false);
+  readonly autoScroll = input(true);
 
   @Output() scrollToEnd = new EventEmitter<void>();
   @Output() suggestionClicked = new EventEmitter<string>();
 
-  @ViewChild('messageContainer') private messageContainer!: ElementRef<HTMLDivElement>;
+  private readonly messageContainer = viewChild.required<ElementRef<HTMLDivElement>>('messageContainer');
 
   private shouldScrollToBottom = false;
 
-  constructor(private dialog: MatDialog, private themeService: ThemeService) {}
+  private dialog = inject(MatDialog);
+
+  constructor() {}
 
   ngOnChanges(changes: SimpleChanges): void {
     // Mark need to scroll to bottom when messages change
@@ -142,17 +57,125 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
 
   ngAfterViewChecked(): void {
     // Scroll to bottom if needed and auto-scroll is enabled
-    if (this.shouldScrollToBottom && this.autoScroll) {
+    if (this.shouldScrollToBottom && this.autoScroll()) {
       this.scrollToBottom();
       this.shouldScrollToBottom = false;
     }
+  }
+
+  ngAfterViewInit(): void {
+    // Setup code block collapse functionality
+    this.setupCodeBlockCollapse();
+  }
+
+  /**
+   * Setup code block collapse for long code blocks (>50 lines)
+   */
+  private setupCodeBlockCollapse(): void {
+    // Use event delegation for dynamically added markdown content
+    const messageContainer = this.messageContainer().nativeElement;
+
+    // Observer to detect new markdown content
+    const observer = new MutationObserver(() => {
+      this.processCodeBlocks(messageContainer);
+      this.wrapTables(messageContainer);
+    });
+
+    observer.observe(messageContainer, {
+      childList: true,
+      subtree: true,
+    });
+
+    // Initial processing
+    this.processCodeBlocks(messageContainer);
+    this.wrapTables(messageContainer);
+  }
+
+  /**
+   * Process all code blocks and add collapse functionality to long ones
+   */
+  private processCodeBlocks(container: HTMLElement): void {
+    const codeBlocks = container.querySelectorAll('markdown pre');
+
+    codeBlocks.forEach((pre) => {
+      // Skip if already processed
+      if (pre.hasAttribute('data-code-processed')) {
+        return;
+      }
+
+      const code = pre.querySelector('code');
+      if (!code) {
+        return;
+      }
+
+      // Count lines
+      const lines = code.textContent?.split('\n').length || 0;
+
+      // Mark as processed
+      pre.setAttribute('data-code-processed', 'true');
+
+      // If code block has more than 50 lines, add collapse functionality
+      if (lines > 50) {
+        pre.classList.add('code-block-collapsible');
+        pre.setAttribute('title', `Click to view full code (${lines} lines)`);
+
+        // Add click handler
+        pre.addEventListener('click', (event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          this.openCodeBlockDialog(code.innerHTML, code.className);
+        });
+      }
+    });
+  }
+
+  /**
+   * Wrap all tables in scrollable containers
+   */
+  private wrapTables(container: HTMLElement): void {
+    const tables = container.querySelectorAll('markdown table');
+
+    tables.forEach((table) => {
+      // Skip if already wrapped
+      if (table.parentElement?.classList.contains('markdown-table-wrapper')) {
+        return;
+      }
+
+      // Create wrapper div
+      const wrapper = document.createElement('div');
+      wrapper.className = 'markdown-table-wrapper';
+
+      // Insert wrapper before table
+      table.parentNode?.insertBefore(wrapper, table);
+
+      // Move table into wrapper
+      wrapper.appendChild(table);
+    });
+  }
+
+  /**
+   * Open code block in dialog
+   */
+  private openCodeBlockDialog(code: string, languageClass: string): void {
+    // Extract language from className (e.g., "language-typescript" -> "typescript")
+    const language = languageClass.match(/language-(\w+)/)?.[1] || undefined;
+
+    const data: CodeBlockDialogData = {
+      code,
+      language,
+    };
+
+    this.dialog.open(CodeBlockDialogComponent, {
+      data,
+      panelClass: ['base-dialog-panel', 'code-block-dialog-panel'],
+    });
   }
 
   /**
    * Get last assistant message
    */
   get lastAssistantMessage(): ChatMessage | undefined {
-    const assistantMessages = this.messages.filter(m => m.role === 'assistant');
+    const assistantMessages = this.messages().filter((m) => m.role === 'assistant');
     return assistantMessages[assistantMessages.length - 1];
   }
 
@@ -208,7 +231,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       });
     }
   }
@@ -217,8 +240,9 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
    * Scroll to bottom
    */
   private scrollToBottom(): void {
-    if (this.messageContainer?.nativeElement) {
-      const element = this.messageContainer.nativeElement;
+    const messageContainer = this.messageContainer();
+    if (messageContainer?.nativeElement) {
+      const element = messageContainer.nativeElement;
       element.scrollTop = element.scrollHeight;
       this.scrollToEnd.emit();
     }
@@ -253,12 +277,8 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
 
     const data: ToolDetailsDialogData = {
       type: 'tool_call',
-      toolCall: tc
+      toolCall: tc,
     };
-
-    // Get current theme for dialog styling
-    const theme = this.themeService.getActualTheme();
-    const themeClass = theme === 'light' ? 'light-theme' : 'dark-theme';
 
     this.dialog.open(ToolDetailsDialogComponent, {
       data,
@@ -266,7 +286,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
       minWidth: '600px',
       maxWidth: '95vw',
       maxHeight: '85vh',
-      panelClass: ['tool-details-dialog', themeClass]
+      panelClass: ['tool-details-dialog'],
     });
   }
 
@@ -278,12 +298,8 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
     const data: ToolDetailsDialogData = {
       type: 'tool_result',
       toolName: result.toolName,
-      toolOutput: result.toolOutput
+      toolOutput: result.toolOutput,
     };
-
-    // Get current theme for dialog styling
-    const theme = this.themeService.getActualTheme();
-    const themeClass = theme === 'light' ? 'light-theme' : 'dark-theme';
 
     this.dialog.open(ToolDetailsDialogComponent, {
       data,
@@ -291,7 +307,7 @@ export class ChatMessageListComponent implements OnChanges, AfterViewChecked {
       minWidth: '600px',
       maxWidth: '95vw',
       maxHeight: '85vh',
-      panelClass: ['tool-details-dialog', themeClass]
+      panelClass: ['tool-details-dialog'],
     });
   }
 

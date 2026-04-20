@@ -1,50 +1,73 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatDividerModule } from '@angular/material/divider';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-import { MatToolbarModule } from '@angular/material/toolbar';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
-
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ProjectMapLockConfirmationDialogComponent } from './project-map-lock-confirmation-dialog.component';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('ProjectMapLockConfirmationDialogComponent', () => {
-  let component: ProjectMapLockConfirmationDialogComponent;
   let fixture: ComponentFixture<ProjectMapLockConfirmationDialogComponent>;
+  let mockDialogRef: { close: ReturnType<typeof vi.fn> };
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports:[
-        MatButtonModule,
-        MatIconModule,
-        MatToolbarModule,
-        MatMenuModule,
-        MatCheckboxModule,
-        MatDialogModule,
-        MatDividerModule,
-        MatSnackBarModule,
-      ],
+  const createComponent = (data: { actionType: string }) => {
+    mockDialogRef = { close: vi.fn() };
+    TestBed.resetTestingModule();
+    TestBed.configureTestingModule({
+      imports: [ProjectMapLockConfirmationDialogComponent],
       providers: [
-
-        { provide: MAT_DIALOG_DATA, useValue: {} },
-        { provide: MatDialogRef, useValue: {} },
+        { provide: MatDialogRef, useValue: mockDialogRef },
+        { provide: MAT_DIALOG_DATA, useValue: data },
       ],
-      declarations: [ ProjectMapLockConfirmationDialogComponent ],
-      schemas: [NO_ERRORS_SCHEMA]
-    })
-    .compileComponents();
-  });
-
-  beforeEach(() => {
+    });
     fixture = TestBed.createComponent(ProjectMapLockConfirmationDialogComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
+  };
+
+  afterEach(() => fixture?.destroy());
+
+  describe('when opened with Lock action', () => {
+    beforeEach(() => createComponent({ actionType: 'Lock' }));
+
+    it('should display "Lock All" in title', () => {
+      const title = fixture.nativeElement.querySelector('h2');
+      expect(title.textContent).toContain('Lock All');
+    });
+
+    it('should display lock message in content', () => {
+      const content = fixture.nativeElement.querySelector('p');
+      expect(content.textContent).toContain('Lock all devices');
+    });
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  describe('when opened with Unlock action', () => {
+    beforeEach(() => createComponent({ actionType: 'Unlock' }));
+
+    it('should display "Unlock All" in title', () => {
+      const title = fixture.nativeElement.querySelector('h2');
+      expect(title.textContent).toContain('Unlock All');
+    });
+
+    it('should display unlock message in content', () => {
+      const content = fixture.nativeElement.querySelector('p');
+      expect(content.textContent).toContain('Unlock all devices');
+    });
+  });
+
+  describe('confirmAction', () => {
+    it('should close dialog with isAction true when actionType is Lock', () => {
+      createComponent({ actionType: 'Lock' });
+      fixture.componentInstance.confirmAction();
+      expect(mockDialogRef.close).toHaveBeenCalledWith({
+        actionType: 'Lock',
+        isAction: true,
+      });
+    });
+
+    it('should close dialog with isAction false when actionType is Unlock', () => {
+      createComponent({ actionType: 'Unlock' });
+      fixture.componentInstance.confirmAction();
+      expect(mockDialogRef.close).toHaveBeenCalledWith({
+        actionType: 'Unlock',
+        isAction: false,
+      });
+    });
   });
 });

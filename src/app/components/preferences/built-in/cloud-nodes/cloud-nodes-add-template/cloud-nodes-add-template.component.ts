@@ -1,6 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { v4 as uuid } from 'uuid';
 import { Compute } from '@models/compute';
 import { Controller } from '@models/controller';
@@ -12,26 +26,41 @@ import { TemplateMocksService } from '@services/template-mocks.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-cloud-nodes-add-template',
   templateUrl: './cloud-nodes-add-template.component.html',
   styleUrls: ['./cloud-nodes-add-template.component.scss', '../../../preferences.component.scss'],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MatIconModule,
+    MatButtonModule,
+    MatCardModule,
+    MatRadioModule,
+    MatFormFieldModule,
+    MatInputModule,
+  ],
 })
 export class CloudNodesAddTemplateComponent implements OnInit {
+  private route = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  private builtInTemplatesService = inject(BuiltInTemplatesService);
+  private router = inject(Router);
+  private toasterService = inject(ToasterService);
+  private templateMocksService = inject(TemplateMocksService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private computeService = inject(ComputeService);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   templateName: string = '';
   formGroup: UntypedFormGroup;
   isLocalComputerChosen: boolean = true;
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private builtInTemplatesService: BuiltInTemplatesService,
-    private router: Router,
-    private toasterService: ToasterService,
-    private templateMocksService: TemplateMocksService,
-    private formBuilder: UntypedFormBuilder,
-    private computeService: ComputeService
-  ) {
+  constructor() {
     this.formGroup = this.formBuilder.group({
       templateName: new UntypedFormControl('', Validators.required),
     });
@@ -39,8 +68,9 @@ export class CloudNodesAddTemplateComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
       this.controller = controller;
+      this.cd.markForCheck();
     });
   }
 

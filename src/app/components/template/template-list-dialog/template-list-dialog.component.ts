@@ -1,22 +1,59 @@
 import { DataSource } from '@angular/cdk/collections';
-import { Component, Inject, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject, model } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import {
+  FormsModule,
+  ReactiveFormsModule,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+} from '@angular/forms';
+import { RouterModule } from '@angular/router';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { Template } from '@models/template';
+import { Compute } from '@models/compute';
 import { TemplateService } from '@services/template.service';
+import { ComputeService } from '@services/compute.service';
 import { ToasterService } from '@services/toaster.service';
 import { NonNegativeValidator } from '../../../validators/non-negative-validator';
+import { TemplateFilter } from '@filters/templateFilter.pipe';
 
 @Component({
+  standalone: true,
   selector: 'app-template-list-dialog',
   templateUrl: './template-list-dialog.component.html',
   styleUrls: ['./template-list-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterModule,
+    MatDialogModule,
+    MatButtonModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    TemplateFilter,
+  ],
 })
 export class TemplateListDialogComponent implements OnInit {
+  private dialogRef = inject(MatDialogRef<TemplateListDialogComponent>);
+  private templateService = inject(TemplateService);
+  private computeService = inject(ComputeService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private toasterService = inject(ToasterService);
+  private nonNegativeValidator = inject(NonNegativeValidator);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   project: Project;
   templateTypes: string[] = [
@@ -31,28 +68,24 @@ export class TemplateListDialogComponent implements OnInit {
     'iou',
     'qemu',
   ];
-  selectedType: string;
   configurationForm: UntypedFormGroup;
   positionForm: UntypedFormGroup;
-  templates: Template[];
-  filteredTemplates: Template[];
-  selectedTemplate: Template;
-  searchText: string = '';
+  templates: Template[] = [];
+  filteredTemplates: Template[] = [];
+  nodeControllers: { display: string; value: string }[] = [{ display: 'local', value: 'local' }];
 
-  nodeControllers: string[] = ['local', 'vm'];
+  // Model signals for two-way binding
+  searchText = model('');
+  selectedType = model('');
+  selectedTemplate = model<Template | null>(null);
 
-  constructor(
-    public dialogRef: MatDialogRef<TemplateListDialogComponent>,
-    private templateService: TemplateService,
-    private formBuilder: UntypedFormBuilder,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    private toasterService: ToasterService,
-    private nonNegativeValidator: NonNegativeValidator
-  ) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
     this.controller = data['controller'];
     this.project = data['project'];
     this.configurationForm = this.formBuilder.group({
-      numberOfNodes: new UntypedFormControl(1, [ Validators.compose([Validators.required, nonNegativeValidator.get])]),
+      numberOfNodes: new UntypedFormControl(1, [
+        Validators.compose([Validators.required, this.nonNegativeValidator.get]),
+      ]),
     });
     this.positionForm = this.formBuilder.group({
       top: new UntypedFormControl(0, Validators.required),
@@ -64,6 +97,37 @@ export class TemplateListDialogComponent implements OnInit {
     this.templateService.list(this.controller).subscribe((listOfTemplates: Template[]) => {
       this.filteredTemplates = listOfTemplates;
       this.templates = listOfTemplates;
+      this.cd.markForCheck();
+    });
+
+    // Listen for new template creation events to refresh the list
+    this.templateService.newTemplateCreated.subscribe((newTemplate: Template) => {
+      this.templates.push(newTemplate);
+      this.filteredTemplates = [...this.templates];
+      this.cd.markForCheck();
+    });
+
+    // Load computes list for node controller selection
+    this.computeService.getComputes(this.controller).subscribe({
+      next: (computes: Compute[]) => {
+        // Add remote computes to nodeControllers (skip 'local' as it's already included)
+        const remoteComputes = computes
+          .filter((c) => c.compute_id !== 'local')
+          .map((c) => {
+            const shortId = c.compute_id.slice(-8);
+            return {
+              display: `${c.name || c.compute_id} (${shortId})`,
+              value: c.compute_id, // Full UUID as actual value
+            };
+          });
+        this.nodeControllers = [{ display: 'local', value: 'local' }, ...remoteComputes];
+        this.cd.markForCheck();
+      },
+      error: () => {
+        // Fallback to local only if fails
+        this.nodeControllers = [{ display: 'local', value: 'local' }];
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -71,29 +135,38 @@ export class TemplateListDialogComponent implements OnInit {
     this.dialogRef.close();
   }
 
-  filterTemplates(event) {
-    let temporaryTemplates = this.templates.filter((item) => {
-      return item.name.toLowerCase().includes(this.searchText.toLowerCase());
-    });
-    this.filteredTemplates = temporaryTemplates.filter((t) => t.template_type === event.value.toString());
+  compareControllers(a: string, b: string): boolean {
+    return a === b;
   }
 
-  chooseTemplate(event) {
-    this.selectedTemplate = event.value;
-    if (
-      this.selectedTemplate.template_type === 'cloud' ||
-      this.selectedTemplate.template_type === 'ethernet_hub' ||
-      this.selectedTemplate.template_type === 'ethernet_switch'
-    ) {
-      this.selectedTemplate.compute_id = 'local';
+  filterTemplates() {
+    let temporaryTemplates = this.templates.filter((item) => {
+      return item.name.toLowerCase().includes(this.searchText().toLowerCase());
+    });
+    if (this.selectedType() === '' || this.selectedType() === 'all') {
+      this.filteredTemplates = temporaryTemplates;
+    } else {
+      this.filteredTemplates = temporaryTemplates.filter((t) => t.template_type === this.selectedType());
     }
-    // this.configurationForm.controls['name'].setValue(this.selectedTemplate.default_name_format);
+  }
+
+  chooseTemplate() {
+    if (this.selectedTemplate()) {
+      const template = this.selectedTemplate()!;
+      if (
+        template.template_type === 'cloud' ||
+        template.template_type === 'ethernet_hub' ||
+        template.template_type === 'ethernet_switch'
+      ) {
+        template.compute_id = 'local';
+      }
+    }
   }
 
   onAddClick(): void {
-    if (!this.selectedTemplate || this.filteredTemplates.length === 0) {
+    if (!this.selectedTemplate() || this.filteredTemplates.length === 0) {
       this.toasterService.error('Please firstly choose template.');
-    } else if (!this.positionForm.valid || !this.configurationForm.valid || !this.selectedTemplate.compute_id) {
+    } else if (!this.positionForm.valid || !this.configurationForm.valid || !this.selectedTemplate().compute_id) {
       this.toasterService.error('Please fill all required fields.');
     } else {
       let x: number = this.positionForm.get('left').value;
@@ -106,15 +179,14 @@ export class TemplateListDialogComponent implements OnInit {
       ) {
         this.toasterService.error('Please set correct position values.');
       } else {
-        let event: NodeAddedEvent = {
-          template: this.selectedTemplate,
-          controller: this.selectedTemplate.compute_id,
-          // name: this.configurationForm.get('name').value,
+        let nodeAddedEvent: NodeAddedEvent = {
+          template: this.selectedTemplate(),
+          controller: this.selectedTemplate().compute_id,
           numberOfNodes: this.configurationForm.get('numberOfNodes').value,
           x: x,
           y: y,
         };
-        this.dialogRef.close(event);
+        this.dialogRef.close(nodeAddedEvent);
       }
     }
   }

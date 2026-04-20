@@ -1,80 +1,129 @@
-.header {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 20px;
-  padding-left: 10px;
+/**
+ * Privilege Component Styles
+ * Uses Material theme variables and BEM naming convention
+ */
+
+app-privilege {
+  display: block;
+  width: 100%;
 }
 
 .privileges {
-  padding-left: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
+  padding: 16px;
+  background: var(--mat-sys-surface);
+  border-radius: 12px;
+  border: 1px solid var(--mat-sys-outline-variant);
 
-.title {
-  justify-content: center;
-}
+  &__header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
 
-.header > div > button {
-  margin: 10px;
-}
+    &--clickable {
+      cursor: pointer;
+      &:hover {
+        background: var(--mat-sys-surface-container-low);
+        margin: -16px;
+        margin-bottom: 0;
+        padding: 16px;
+        padding-bottom: 16px;
+        border-radius: 12px 12px 0 0;
+      }
+    }
+  }
 
-.privilege {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  margin-bottom: 10px;
-  min-height: 40px;
-  border: solid white 1px;
-  align-items: flex-start;
-}
+  &__title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--mat-sys-on-surface);
+    margin: 0;
+  }
 
-.key {
-  color: gray;
-  display: flex;
-  flex-shrink: 0;
-  width: 120px;
-  margin-left: 10px;
-  align-items: center;
-  height: 40px;
-}
+  &__actions {
+    display: flex;
+    gap: 8px;
+  }
 
-.values {
-  flex: 1;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 8px;
-  padding: 8px;
-  min-height: 40px;
-  align-items: center;
-}
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
 
-.box {
-  margin: 0;
-  display: inline-flex;
-  align-items: center;
-  padding: 4px 8px;
-  border-radius: 4px;
-  white-space: nowrap;
-}
+  &__group {
+    display: flex;
+    flex-direction: row;
+    padding: 12px;
+    background: var(--mat-sys-surface-container-low);
+    border-radius: 8px;
+    min-height: 40px;
+    align-items: flex-start;
+  }
 
-.box > mat-checkbox {
-  margin-right: 10px;
-}
+  &__key {
+    color: var(--mat-sys-on-surface-variant);
+    display: flex;
+    flex-shrink: 0;
+    width: 120px;
+    align-items: center;
+    height: 40px;
+    font-weight: 500;
+  }
 
-.values > div {
-  width: auto;
-}
+  &__values {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px;
+    min-height: 40px;
+    align-items: center;
+  }
 
-.add {
-  color: green;
-}
+  &__verb {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface);
+    font-size: 13px;
 
-.delete {
-  color: red;
-  text-decoration: line-through;
+    &--added {
+      background: var(--mat-sys-primary-container);
+      color: var(--mat-sys-on-primary-container);
+    }
+
+    &--deleted {
+      background: var(--mat-sys-error-container);
+      color: var(--mat-sys-on-error-container);
+      text-decoration: line-through;
+    }
+  }
+
+  &__checkbox {
+    margin-right: 8px;
+  }
+
+  &__info-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-left: 4px;
+    color: var(--mat-sys-on-surface-variant);
+    cursor: help;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 1;
+      color: var(--mat-sys-primary);
+    }
+  }
 }

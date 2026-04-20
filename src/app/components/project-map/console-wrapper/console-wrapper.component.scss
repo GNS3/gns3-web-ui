@@ -1,3 +1,8 @@
+/**
+ * GNS3 Console Wrapper Component Styles
+ * Using MD3 CSS variables
+ */
+
 @media screen and (max-width: 700px) {
   .consoleWrapper {
     visibility: hidden;
@@ -5,45 +10,141 @@
 }
 
 .consoleWrapper {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent);
   position: fixed;
-  bottom: 40px;
+  bottom: 100px; // Moved up from 40px to avoid bottom button overlap
   left: 80px;
   height: 180px;
   width: 600px;
-  background: #000000 !important;
-  color: white;
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
   overflow: hidden;
   font-size: 12px;
-  border-radius: 8px;
+  border-radius: 4px;
   outline: none;
-  transition: box-shadow 0.2s ease;
+  transition: box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 900; // Ensure console stays above most content but below AI Chat (1000) and context menu (10000)
 
-  &.console-active {
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19),
-                0 0 0 2px rgba(0, 151, 167, 0.6),
-                0 0 12px rgba(0, 151, 167, 0.3);
-  }
+  // GPU acceleration hint for smooth dragging
+  will-change: left, bottom;
+  contain: layout style; // Isolate from parent layout recalculations
 
   &:focus {
     outline: none;
   }
+
+  /* =============================================
+  // Dragging State - GPU Accelerated
+  // ============================================= */
+  &.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+    box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 40%, transparent);
+    transition: none; // Instant position updates during drag
+
+    // Use will-change on transform for GPU layer promotion
+    will-change: left, bottom;
+  }
+
+  /* =============================================
+  // Minimized State - hide console window
+  // ============================================= */
+  &.is-minimized {
+    display: none;
+  }
 }
 
-.consoleWrapper.lightTheme {
-  background: white !important;
-  color: black;
+/* =============================================
+// Taskbar Icon Styles (always visible, fixed position)
+// ============================================= */
+.taskbar-icon {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 901; // Above console (900) but below AI Chat (1000) and context menu (10000)
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  height: 48px;
+  width: 180px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 150ms var(--mat-sys-motion-easing-linear);
+  background: var(--mat-sys-surface);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
+    0 0 0 1px var(--mat-sys-outline-variant);
+
+  &:hover {
+    background: var(--mat-sys-hover-state-layer);
+  }
+
+  &:active {
+    background: var(--mat-sys-focus-state-layer);
+  }
+
+  &__icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: var(--mat-sys-primary);
+    flex-shrink: 0;
+  }
+
+  &__label {
+    flex: 1;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    pointer-events: none;
+  }
+}
+
+.lightThemeConsoleHeader {
+  background: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+
+  .mat-icon-button {
+    &:hover {
+      background-color: var(--mat-sys-hover-state-layer);
+
+      mat-icon {
+        color: var(--mat-sys-primary);
+        filter: none;
+      }
+    }
+
+    &:active {
+      background-color: var(--mat-sys-focus-state-layer);
+    }
+  }
+
+  .mat-icon-button[title='Close']:hover {
+    background-color: var(--mat-sys-error-container);
+
+    mat-icon {
+      color: var(--mat-sys-error);
+    }
+
+    &:active {
+      background-color: var(--mat-sys-error);
+      opacity: 0.8;
+    }
+  }
 }
 
 .filterButton {
   background: transparent;
-  color: white;
+  color: var(--mat-sys-on-surface-variant);
   border: none;
-  margin-top: 0px;
+  margin-top: 0;
   outline: none;
-  color: #dbd5d5;
   font-weight: bold;
-  padding: 0px;
+  padding: 0;
 }
 
 .consoleFiltering {
@@ -57,123 +158,76 @@
   display: flex;
   padding: 2px;
   justify-content: space-between;
-  background: #263238 !important;
+  align-items: center;
+  background: var(--mat-sys-surface);
   cursor: grab;
   position: relative;
   z-index: 10;
   flex-shrink: 0;
+
+  .mat-icon-button {
+    mat-icon {
+      color: var(--mat-sys-on-surface);
+    }
+  }
 }
 
 .consoleHeader:active {
   cursor: grabbing;
 }
 
-// Enhanced hover effects for header buttons
-.consoleHeader {
-  .mat-icon-button {
-    transition: all 0.2s ease;
-    border-radius: 50%;
-
-    &:hover {
-      background-color: rgba(0, 151, 167, 0.15);
-      transform: scale(1.1);
-      box-shadow: 0 2px 8px rgba(0, 151, 167, 0.2);
-
-      mat-icon {
-        color: #4dd0e1;
-        filter: drop-shadow(0 0 4px rgba(0, 151, 167, 0.6));
-      }
-    }
-
-    &:active {
-      transform: scale(0.95);
-      background-color: rgba(0, 151, 167, 0.25);
-    }
-  }
-
-  // Close button special hover effect (red tint)
-  .mat-icon-button[title="Close"]:hover,
-  .mat-icon-button[title~="close"]:hover {
-    background-color: rgba(244, 67, 54, 0.15);
-    box-shadow: 0 2px 8px rgba(244, 67, 54, 0.2);
-
-    mat-icon {
-      color: #ff8a80;
-      filter: drop-shadow(0 0 4px rgba(244, 67, 54, 0.6));
-    }
-
-    &:active {
-      background-color: rgba(244, 67, 54, 0.25);
-    }
-  }
-}
-
-.lightThemeConsoleHeader {
-  background: white !important;
-  color: black !important;
-
-  .mat-icon-button {
-    &:hover {
-      background-color: rgba(0, 151, 167, 0.1);
-
-      mat-icon {
-        color: #0097a7;
-        filter: none;
-      }
-    }
-
-    &:active {
-      background-color: rgba(0, 151, 167, 0.2);
-    }
-  }
-
-  // Close button hover in light theme
-  .mat-icon-button[title="Close"]:hover,
-  .mat-icon-button[title~="close"]:hover {
-    background-color: rgba(244, 67, 54, 0.1);
-
-    mat-icon {
-      color: #d32f2f;
-    }
-
-    &:active {
-      background-color: rgba(244, 67, 54, 0.2);
-    }
-  }
-}
-
-:host ::ng-deep .mat-tab-label {
-  height: 3rem !important;
-  min-width: 8rem !important;
+.mat-tab-label {
+  height: 3rem;
+  min-width: 8rem;
   flex-shrink: 0;
 }
 
-:host ::ng-deep .mat-tab-label.mat-tab-label-active {
-  border-bottom: 2px solid #0097a7;
+.mat-tab-label > .tab-label-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mat-tab-label > .mat-icon-button {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 4px;
+  margin-left: auto;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.mat-tab-label.mat-tab-label-active {
+  border-bottom: 2px solid var(--mat-sys-primary);
   box-sizing: border-box;
-  font-weight: 1200;
+  font-weight: 700;
 }
 
-:host ::ng-deep .mat-ink-bar {
-  display: none !important;
+.mat-ink-bar {
+  display: none;
 }
 
-/* Firefox tab label fix */
 @-moz-document url-prefix() {
-  :host ::ng-deep .mat-tab-label {
-    min-width: 8rem !important;
-    max-width: none !important;
+  .mat-tab-label {
+    min-width: 8rem;
+    max-width: none;
     flex: 0 0 auto;
-    width: auto !important;
+    width: auto;
   }
 
-  :host ::ng-deep .mat-tab-label-container {
+  .mat-tab-label-container {
     display: flex;
     flex-direction: row;
   }
 }
 
-.tabs {
+.console-wrapper__tabs {
   width: 80%;
 }
 
@@ -182,13 +236,9 @@
   height: 120px;
   overflow-y: scroll;
   padding: 2px;
-  color: #dbd5d5;
-  scrollbar-color: darkgrey #263238;
+  color: var(--mat-sys-on-surface-variant);
+  scrollbar-color: var(--mat-sys-on-surface-variant) var(--mat-sys-surface);
   scrollbar-width: thin;
-}
-
-.xterm-console {
-  background: black;
 }
 
 .consoleInput {
@@ -200,7 +250,7 @@
 
 .commandLine {
   background-color: transparent;
-  color: white;
+  color: var(--mat-sys-on-surface);
   border: none;
 }
 
@@ -209,33 +259,19 @@
 }
 
 mat-icon {
-  font-size: 20px;
-  width: 20px;
-  height: 20px;
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
 }
 
 input:focus {
   outline: none;
 }
 
-::-webkit-scrollbar {
-  width: 0.5em;
-}
-
-::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-}
-
-::-webkit-scrollbar-thumb {
-  background-color: darkgrey;
-  outline: 1px solid #263238;
-}
-
 .closeButton {
   cursor: pointer;
 }
 
-// Console layout with devices panel
 .console-content {
   display: flex;
   height: 100%;
@@ -248,6 +284,89 @@ input:focus {
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  /* isolation: isolate;  ← Removed to allow theme propagation to devices panel */
 }
 
+.resize-handle {
+  position: absolute;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+
+  .consoleWrapper:hover & {
+    opacity: 1;
+  }
+
+  // Edge handles - transparent
+  &.resize-handle-top {
+    top: -4px;
+    left: 12px;
+    right: 12px;
+    height: 12px;
+    cursor: ns-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-right {
+    top: 12px;
+    right: -4px;
+    bottom: 12px;
+    width: 12px;
+    cursor: ew-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-bottom {
+    bottom: -4px;
+    left: 12px;
+    right: 12px;
+    height: 12px;
+    cursor: ns-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-left {
+    top: 12px;
+    left: -4px;
+    bottom: 12px;
+    width: 12px;
+    cursor: ew-resize;
+    background: transparent;
+  }
+
+  // Corner handles - more subtle
+  &.resize-handle-top-left {
+    top: -6px;
+    left: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nwse-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-top-right {
+    top: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nesw-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-bottom-left {
+    bottom: -6px;
+    left: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nesw-resize;
+    background: transparent;
+  }
+
+  &.resize-handle-bottom-right {
+    bottom: -6px;
+    right: -6px;
+    width: 20px;
+    height: 20px;
+    cursor: nwse-resize;
+    background: transparent;
+  }
+}

@@ -1,46 +1,131 @@
-<div class="wrapper">
-  <div class="loginCard">
-    <mat-card class="matCard">
-      <div class="loginTitle">
-        <div class="loginIcon">
-          <mat-icon class="mat-icon-login" *ngIf="!isLightThemeEnabled" svgIcon="gns3"></mat-icon>
-          <mat-icon class="mat-icon-login" *ngIf="isLightThemeEnabled" svgIcon="gns3black"></mat-icon>
-          <div>
+<div class="login-wrapper">
+  <!-- Back to Controllers Button -->
+  <a class="login-back-btn" routerLink="/controllers">
+    @if (!isLightThemeEnabled()) {
+    <mat-icon class="login-back-btn__icon" svgIcon="gns3"></mat-icon>
+    } @if (isLightThemeEnabled()) {
+    <mat-icon class="login-back-btn__icon" svgIcon="gns3black"></mat-icon>
+    }
+  </a>
+
+  <div class="login-card">
+    <mat-card class="login-card__mat-card">
+      <!-- Header with Logo and Version -->
+      <div class="login-card__header">
+        <div class="login-card__logo">
+          @if (!isLightThemeEnabled()) {
+          <mat-icon class="login-card__icon" svgIcon="gns3"></mat-icon>
+          } @if (isLightThemeEnabled()) {
+          <mat-icon class="login-card__icon" svgIcon="gns3black"></mat-icon>
+          }
+          <div class="login-card__title">
             <h1>GNS3</h1>
-            <h6>v{{ version }}</h6>
+            <h6>v{{ version() }}</h6>
           </div>
         </div>
       </div>
 
-      <form [formGroup]="loginForm" (ngSubmit)="login()">
-        <mat-form-field>
-          <input matInput formControlName="username" placeholder="Username" />
-          <mat-error *ngIf="loginForm.get('username').hasError('required')">You must enter username</mat-error>
+      <!-- Controller Information -->
+      @if (controllerName) {
+      <div class="login-card__controller-info">
+        <mat-icon class="login-card__controller-icon">storage</mat-icon>
+        <div class="login-card__controller-details">
+          <span class="login-card__controller-name">{{ controllerName }}</span>
+          <span class="login-card__controller-address">{{ controllerAddress }}</span>
+        </div>
+      </div>
+      }
+
+      <!-- Login Form -->
+      <form [formGroup]="loginForm" (ngSubmit)="login()" class="login-card__form">
+        <!-- Username Field -->
+        <mat-form-field class="login-card__form-field">
+          <mat-icon matPrefix class="login-card__field-icon">person</mat-icon>
+          <input #usernameInput matInput formControlName="username" placeholder="Username" />
+          @if (loginForm.controls.username.hasError('required')) {
+          <mat-error> Username is required </mat-error>
+          }
         </mat-form-field>
-        <mat-form-field>
-          <input matInput type="password" formControlName="password" placeholder="Password" />
-          <mat-error *ngIf="loginForm.get('password').hasError('required')">You must enter password</mat-error>
+
+        <!-- Password Field -->
+        <mat-form-field class="login-card__form-field">
+          <mat-icon matPrefix class="login-card__field-icon">lock</mat-icon>
+          <input
+            matInput
+            [type]="hidePassword() ? 'password' : 'text'"
+            formControlName="password"
+            placeholder="Password"
+            (keyup)="onCapsLock($event)"
+          />
+          <mat-icon matSuffix class="login-card__visibility-icon" (click)="togglePasswordVisibility()">
+            {{ hidePassword() ? 'visibility_off' : 'visibility' }}
+          </mat-icon>
+          @if (loginForm.controls.password.hasError('required')) {
+          <mat-error> Password is required </mat-error>
+          }
         </mat-form-field>
-        <mat-checkbox
-          [disabled]="!isRememberMe"
-          [checked]="isRememberMeChecked"
-          class="margin-left"
-          color="primary"
-          (change)="rememberMe($event)"
-          >Remember me</mat-checkbox
-        >
-        <div class="buttons-bar">
-          <button type="submit" class="loginButton" mat-raised-button color="primary">Login</button>
+
+        <!-- Caps Lock Warning -->
+        @if (isCapsLockOn()) {
+        <div class="login-card__caps-lock-warning">
+          <mat-icon class="login-card__warning-icon">warning</mat-icon>
+          <span>Caps Lock is on</span>
+        </div>
+        }
+
+        <!-- Remember Me Checkbox -->
+        <div class="login-card__checkbox">
+          <mat-checkbox [checked]="isRememberMeChecked()" color="primary" (change)="onRememberMeChange($event.checked)">
+            Remember me
+          </mat-checkbox>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="login-card__actions">
+          <button
+            type="submit"
+            class="login-card__submit-btn"
+            mat-raised-button
+            color="primary"
+            [disabled]="isLoading()"
+          >
+            @if (isLoading()) {
+            <mat-progress-spinner diameter="20" mode="indeterminate" class="login-card__spinner"></mat-progress-spinner>
+            } @else {
+            <span>Login</span>
+            }
+          </button>
         </div>
       </form>
     </mat-card>
 
-    <div class="errorMessage">
-      <mat-error *ngIf="loginError">Authentication was unsuccessful</mat-error>
+    <!-- Social Links -->
+    <div class="login-card__social">
+      <a
+        class="login-card__social-link"
+        href="https://github.com/GNS3"
+        target="_blank"
+        rel="noopener noreferrer"
+        matTooltip="GitHub"
+      >
+        <mat-icon class="login-card__social-icon" svgIcon="github"></mat-icon>
+      </a>
+      <a
+        class="login-card__social-link"
+        href="https://www.gns3.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        matTooltip="Website"
+      >
+        @if (!isLightThemeEnabled()) {
+        <mat-icon class="login-card__social-icon" svgIcon="gns3"></mat-icon>
+        } @if (isLightThemeEnabled()) {
+        <mat-icon class="login-card__social-icon" svgIcon="gns3black"></mat-icon>
+        }
+      </a>
     </div>
 
-    <div class="errorMessage">
-      <mat-error *ngIf="loginError">The default username and password is admin</mat-error>
-    </div>
+    <!-- Version Footer -->
+    <div class="login-card__footer">GNS3 Web-UI ©2018-{{ currentYear }} v{{ version() }}</div>
   </div>
 </div>

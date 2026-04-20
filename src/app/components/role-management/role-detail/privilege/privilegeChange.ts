@@ -1,15 +1,11 @@
-import {IPrivilegesChange} from "@components/role-management/role-detail/privilege/IPrivilegesChange";
+import { IPrivilegesChange } from '@components/role-management/role-detail/privilege/IPrivilegesChange';
 
 export class PrivilegeChange {
+  private change = { add: new Set<string>(), delete: new Set<string>() };
 
-  private change= {add: new Set<string>(), delete: new Set<string>()};
-
-  constructor(public ownedPrivileges: string[]) {
-
-  }
+  constructor(public ownedPrivileges: string[]) {}
 
   public add(id: string) {
-
     if (this.change.delete.has(id)) {
       this.change.delete.delete(id);
     }
@@ -29,7 +25,6 @@ export class PrivilegeChange {
     this.change.delete.add(id);
   }
 
-
   isAdded(id: string): boolean {
     return this.change.add.has(id);
   }
@@ -39,6 +34,6 @@ export class PrivilegeChange {
   }
 
   get(): IPrivilegesChange {
-    return {add: Array.from(this.change.add), delete: Array.from(this.change.delete)};
+    return { add: Array.from(this.change.add), delete: Array.from(this.change.delete) };
   }
 }

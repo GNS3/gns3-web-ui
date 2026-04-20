@@ -1,81 +1,168 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { Node } from '../../../../../cartography/models/node';
-import { Controller } from '@models/controller';
+import { MatMenuModule } from '@angular/material/menu';
+import { ConsoleDeviceActionComponent } from './console-device-action.component';
+import { ToasterService } from '@services/toaster.service';
 import { NodeService } from '@services/node.service';
 import { ControllerService } from '@services/controller.service';
-import { MockedControllerService } from '@services/controller.service.spec';
 import { SettingsService } from '@services/settings.service';
-import { ToasterService } from '@services/toaster.service';
-import { MockedToasterService } from '@services/toaster.service.spec';
-import { MockedNodeService } from '../../../project-map.component.spec';
-import { ConsoleDeviceActionComponent } from './console-device-action.component';
+import { Node } from '../../../../../cartography/models/node';
+import { Controller } from '@models/controller';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 describe('ConsoleDeviceActionComponent', () => {
-  let component: ConsoleDeviceActionComponent;
   let fixture: ComponentFixture<ConsoleDeviceActionComponent>;
-  let controller: Controller;
-  let settingsService: SettingsService;
-  let mockedControllerService: MockedControllerService;
-  let mockedToaster: MockedToasterService;
-  let mockedNodeService: MockedNodeService = new MockedNodeService();
+  let mockToasterService: { error: ReturnType<typeof vi.fn> };
 
-  beforeEach(() => {
-    mockedControllerService = new MockedControllerService();
-    mockedToaster = new MockedToasterService();
+  const mockController: Controller = {
+    id: 1,
+    name: 'Test Controller',
+    location: 'local',
+    host: '192.168.1.100',
+    port: 3080,
+    path: '/',
+    ubridge_path: '',
+    protocol: 'http:',
+    username: 'admin',
+    password: 'admin',
+    authToken: 'test-token',
+    status: 'running',
+    tokenExpired: false,
+  };
 
-    controller = { host: 'localhost', port: 222 } as Controller;
-  });
+  const createMockNode = (overrides: Partial<Node> = {}): Node => {
+    const defaults: Node = {
+      node_id: 'node-1',
+      name: 'Test Node',
+      status: 'started',
+      console_host: '0.0.0.0',
+      console: 3080,
+      console_type: 'telnet',
+      console_auto_start: false,
+      node_type: 'vpcs',
+      project_id: 'proj-1',
+      command_line: '',
+      compute_id: 'local',
+      height: 50,
+      width: 50,
+      x: 0,
+      y: 0,
+      z: 0,
+      label: { text: '', x: 0, y: 0, style: '', rotation: 0 },
+      locked: false,
+      first_port_name: '',
+      port_name_format: '',
+      port_segment_size: 1,
+      ports: [],
+      properties: {} as any,
+      symbol: '',
+      symbol_url: '',
+      node_directory: '',
+    };
+    return Object.assign({}, defaults, overrides);
+  };
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
-      providers: [
-        { provide: ControllerService, useValue: mockedControllerService },
-        { provide: SettingsService },
-        { provide: ToasterService, useValue: mockedToaster },
-        { provide: NodeService, useValue: mockedNodeService },
-      ],
-      imports: [MatIconModule],
-      declarations: [ConsoleDeviceActionComponent],
-    }).compileComponents();
+  beforeEach(async () => {
+    mockToasterService = { error: vi.fn() };
 
-    settingsService = TestBed.inject(SettingsService);
-  });
+    await TestBed.configureTestingModule({
+      imports: [ConsoleDeviceActionComponent, MatButtonModule, MatIconModule, MatMenuModule],
+    })
+      .overrideProvider(ToasterService, { useValue: mockToasterService })
+      .overrideProvider(NodeService, { useValue: vi.fn() })
+      .overrideProvider(ControllerService, { useValue: vi.fn() })
+      .overrideProvider(SettingsService, { useValue: vi.fn() })
+      .compileComponents();
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(ConsoleDeviceActionComponent);
-    component = fixture.componentInstance;
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  afterEach(() => {
+    fixture.destroy();
+    vi.clearAllMocks();
   });
 
-  describe('console to nodes', () => {
-    let nodes: Node[];
+  describe('button visibility', () => {
+    it('should show Console button when nodes is provided', () => {
+      fixture.componentRef.setInput('nodes', [createMockNode()]);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
 
-    beforeEach(() => {
-      nodes = [
-        {
-          status: 'started',
-          console_type: 'telnet',
-          console_host: 'host',
-          console: 999,
-          name: 'Node 1',
-          project_id: '1111',
-          node_id: '2222',
-        } as Node,
-      ];
-
-      component.nodes = nodes;
-      component.controller =  controller;
-
-      settingsService.setConsoleSettings('command');
+      const button = fixture.nativeElement.querySelector('button');
+      expect(button).toBeTruthy();
+      expect(button.textContent).toContain('Console');
     });
 
-    it('should create nodes array', () => {
-      expect(component.nodes).toEqual(nodes);
+    it('should show Console button when nodes is empty array', () => {
+      fixture.componentRef.setInput('nodes', []);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('button');
+      expect(button).toBeTruthy();
+      expect(button.textContent).toContain('Console');
+    });
+
+    it('should show Console button when nodes is undefined', () => {
+      fixture.componentRef.setInput('nodes', undefined);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('button');
+      expect(button).toBeTruthy();
+      expect(button.textContent).toContain('Console');
+    });
+  });
+
+  describe('console()', () => {
+    it('should show error toast when called', () => {
+      fixture.componentRef.setInput('nodes', [createMockNode()]);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      fixture.nativeElement.querySelector('button').click();
+      fixture.detectChanges();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Console action is only supported in Electron mode');
+    });
+
+    it('should show error toast with correct message regardless of node status', () => {
+      const stoppedNode = createMockNode({ status: 'stopped' });
+      fixture.componentRef.setInput('nodes', [stoppedNode]);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      fixture.nativeElement.querySelector('button').click();
+      fixture.detectChanges();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Console action is only supported in Electron mode');
+    });
+
+    it('should show error toast with correct message regardless of console type', () => {
+      const vncNode = createMockNode({ console_type: 'vnc' });
+      fixture.componentRef.setInput('nodes', [vncNode]);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      fixture.nativeElement.querySelector('button').click();
+      fixture.detectChanges();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Console action is only supported in Electron mode');
+    });
+
+    it('should show error toast when called with multiple nodes', () => {
+      const node1 = createMockNode({ name: 'Node1' });
+      const node2 = createMockNode({ name: 'Node2' });
+      fixture.componentRef.setInput('nodes', [node1, node2]);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      fixture.nativeElement.querySelector('button').click();
+      fixture.detectChanges();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Console action is only supported in Electron mode');
     });
   });
 });

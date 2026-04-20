@@ -1,27 +1,28 @@
-<div class="content">
-  <div class="default-header">
-    <div class="row">
-      <div class="col col-md-1">
-        <button class="top-button" *ngIf="controller" class="cancel-button" (click)="goBack()" mat-button>
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-      </div>
-      <div class="col col-md-11">
-      <h1 class="col">Copy Docker container template</h1>
-      </div>
-    </div>
-  </div>
-  <div class="default-content">
-    <div class="container mat-elevation-z8">
-      <form [formGroup]="templateNameForm">
-        <mat-form-field class="form-field">
-          <input matInput type="text" [(ngModel)]="templateName" placeholder="Name" formControlName="templateName" />
+<div class="docker-copy">
+  <header class="docker-copy__header">
+    @if (controller) {
+    <button class="docker-copy__back-btn" (click)="goBack()" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    }
+    <h1 class="docker-copy__title">Copy Docker container template</h1>
+  </header>
+
+  <main class="docker-copy__content">
+    <section class="docker-copy__form-card">
+      <form [formGroup]="templateNameForm" class="docker-copy__form">
+        <mat-form-field appearance="fill" class="docker-copy__field">
+          <mat-label>Template name</mat-label>
+          <input matInput type="text" placeholder="Name" formControlName="templateName" />
         </mat-form-field>
       </form>
+    </section>
+
+    <div class="docker-copy__actions">
+      <button mat-button class="docker-copy__cancel-btn" (click)="goBack()">Cancel</button>
+      <button mat-raised-button color="primary" class="docker-copy__submit-btn" (click)="addTemplate()">
+        Copy template
+      </button>
     </div>
-    <div class="buttons-bar">
-      <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
-      <button mat-raised-button color="primary" (click)="addTemplate()">Copy template</button>
-    </div>
-  </div>
+  </main>
 </div>

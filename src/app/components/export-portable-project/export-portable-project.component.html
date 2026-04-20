@@ -1,73 +1,71 @@
+@if (export_project_form) {
 <form
-  [formGroup]="export_project_form" *ngIf="export_project_form"
+  class="export-portable-project__form"
+  [formGroup]="export_project_form"
   (ngSubmit)="export_project_form.valid && exportPortableProject()"
 >
-  <div class="row">
-    <div class="col-md-10">
-      <h1 mat-dialog-title>Export Project</h1>
-    </div>
-    <div class="col-md-2 txt-align">
-      <button mat-button type="button" class="close-btn" (click)="dialogRef.close()">
-        <mat-icon>close</mat-icon>
-      </button>
-    </div>
+  <div class="export-portable-project__header">
+    <h1 class="export-portable-project__title">Export Project</h1>
+    <button mat-icon-button type="button" class="export-portable-project__close-btn" (click)="dialogRef.close()">
+      <mat-icon>close</mat-icon>
+    </button>
   </div>
+
   <mat-divider></mat-divider>
 
-  <div class="mat-data">
-    <div class="row">
-      <div class="col-md-4 col-data">Compression:</div>
-      <div class="col-md-8">
-        <mat-form-field class="input-full-width">
-          <mat-select formControlName="compression" (selectionChange)="selectCompression($event)" required>
-            <mat-option *ngFor="let compressionValue of compression_methods" [value]="compressionValue">{{
-              compressionValue?.name
-            }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
+  <div class="export-portable-project__content">
+    <div class="export-portable-project__row">
+      <span class="export-portable-project__label">Compression:</span>
+      <mat-form-field class="export-portable-project__field">
+        <mat-select formControlName="compression" (selectionChange)="selectCompression($event)" required>
+          @for (compressionValue of compression_methods; track compressionValue?.name) {
+          <mat-option [value]="compressionValue">{{ compressionValue?.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
     </div>
-    <div class="row">
-      <div class="col-md-4 col-data">Compression level:</div>
-      <div class="col-md-8">
-        <mat-form-field class="input-full-width">
-          <mat-select formControlName="compression_level">
-            <mat-option *ngFor="let compressionLevel of compression_filter_value" [value]="compressionLevel">{{
-              compressionLevel
-            }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
+
+    <div class="export-portable-project__row">
+      <span class="export-portable-project__label">Compression level:</span>
+      <mat-form-field class="export-portable-project__field">
+        <mat-select formControlName="compression_level">
+          @for (compressionLevel of compression_filter_value; track compressionLevel) {
+          <mat-option [value]="compressionLevel">{{ compressionLevel }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
     </div>
-    <div class="row">
-      <div class="col-md-12 checkbox-row">
-        <section  class="checkBox-section">
-          <mat-checkbox formControlName="include_base_image" class="checkBox-margin"> Include base images </mat-checkbox>
-        </section>
-      </div>
+
+    <div class="export-portable-project__row">
+      <section class="export-portable-project__checkbox-section">
+        <mat-checkbox formControlName="include_base_image" class="export-portable-project__checkbox">
+          Include base images
+        </mat-checkbox>
+      </section>
     </div>
-    <div class="row">
-      <div class="col-md-12 checkbox-row">
-        <section class="checkBox-section" >
-          <mat-checkbox class="checkBox-margin" formControlName="include_snapshots"> Include snapshots </mat-checkbox>
-        </section>
-      </div>
+
+    <div class="export-portable-project__row">
+      <section class="export-portable-project__checkbox-section">
+        <mat-checkbox formControlName="include_snapshots" class="export-portable-project__checkbox">
+          Include snapshots
+        </mat-checkbox>
+      </section>
     </div>
-    <div class="row">
-      <div class="col-md-12 checkbox-row">
-        <section class="checkBox-section">
-          <mat-checkbox  formControlName="reset_mac_address" class="checkBox-margin"> Reset MAC addresses</mat-checkbox>
-        </section>
-      </div>
+
+    <div class="export-portable-project__row">
+      <section class="export-portable-project__checkbox-section">
+        <mat-checkbox formControlName="reset_mac_address" class="export-portable-project__checkbox">
+          Reset MAC addresses
+        </mat-checkbox>
+      </section>
     </div>
   </div>
+
   <mat-divider></mat-divider>
-  <div class="row">
-    <div class="col-md-12">
-      <div mat-dialog-actions align="end">
-        <button mat-button type="submit" [disabled]="isExport" cdkFocusInitial>Export</button>
-        <button type="button" mat-button (click)="dialogRef.close()" cdkFocusInitial>Cancel</button>
-      </div>
-    </div>
+
+  <div class="export-portable-project__actions">
+    <button mat-button type="button" (click)="dialogRef.close()">Cancel</button>
+    <button mat-raised-button color="primary" type="submit" [disabled]="isExport()" cdkFocusInitial>Export</button>
   </div>
 </form>
+}

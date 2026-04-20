@@ -1,4 +1,3 @@
-
 import { DataSource } from '@angular/cdk/collections';
 import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
@@ -31,11 +30,7 @@ export class imageDatabase {
 export class imageDataSource extends DataSource<ImageTableRow> {
   private filterChange: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
-  constructor(
-    private controllerDatabase: imageDatabase,
-    private sort?: MatSort,
-    private paginator?: MatPaginator
-  ) {
+  constructor(private controllerDatabase: imageDatabase, private sort?: MatSort, private paginator?: MatPaginator) {
     super();
   }
 
@@ -54,13 +49,7 @@ export class imageDataSource extends DataSource<ImageTableRow> {
         // Apply filter
         if (filter) {
           data = data.filter((row: ImageTableRow) => {
-            const searchable = [
-              row.filename,
-              row.image_type,
-              row.image_size,
-              row.created_at,
-              row.uploadStatus,
-            ]
+            const searchable = [row.filename, row.image_type, row.image_size, row.created_at, row.uploadStatus]
               .map((value) => String(value || '').toLowerCase())
               .join(' ');
             return searchable.includes(filter);
@@ -109,5 +98,5 @@ export class imageDataSource extends DataSource<ImageTableRow> {
     return String(value || '').toLowerCase();
   }
 
-  disconnect() { }
+  disconnect() {}
 }

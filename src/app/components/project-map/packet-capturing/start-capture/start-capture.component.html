@@ -1,24 +1,48 @@
-<h1 mat-dialog-title>Packet capture</h1>
+@if (isLoading()) {
+  <h1 mat-dialog-title>Starting Web Wireshark</h1>
+  <div mat-dialog-content class="loading-content">
+    <mat-spinner color="accent"></mat-spinner>
+    <p class="loading-message">{{ loadingMessage() }}</p>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button disabled color="accent">Cancel</button>
+    <button mat-button disabled mat-raised-button color="primary">Starting...</button>
+  </div>
+} @else {
+  @if (errorMessage()) {
+    <div class="error-message">
+      <p>{{ errorMessage() }}</p>
+    </div>
+  }
+  <h1 mat-dialog-title>Packet capture</h1>
 
-<div class="modal-form-container">
-  <form [formGroup]="inputForm">
-    <mat-form-field class="input-field">
-      <mat-select placeholder="Link type" formControlName="linkType" ngDefaultControl>
-        <mat-option *ngFor="let type of linkTypes" [value]="type[1]">
-          {{ type[0] }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-    <mat-form-field class="input-field">
-      <input placeholder="File name" formControlName="fileName" matInput type="text" />
-    </mat-form-field>
-    <mat-checkbox [ngModelOptions]="{ standalone: true }" [(ngModel)]="startProgram">
-      Start the capture visualization program
-    </mat-checkbox>
-  </form>
-</div>
+  <div class="modal-form-container">
+    <form [formGroup]="inputForm">
+      <mat-form-field class="input-field">
+        <mat-label>Link type</mat-label>
+        <mat-select formControlName="linkType" ngDefaultControl>
+          @for (type of linkTypes; track type[1]) {
+          <mat-option [value]="type[1]">
+            {{ type[0] }}
+          </mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field class="input-field">
+        <mat-label>Capture file name</mat-label>
+        <input matInput formControlName="fileName" type="text" />
+      </mat-form-field>
+      <mat-checkbox [checked]="startProgram()" (change)="startProgram.set($event.checked)">
+        Start the capture visualization program
+      </mat-checkbox>
+      <mat-checkbox [checked]="webWireshark()" (change)="webWireshark.set($event.checked)">
+        Web Wireshark
+      </mat-checkbox>
+    </form>
+  </div>
 
-<div mat-dialog-actions>
-  <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
-  <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary">Ok</button>
-</div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
+    <button mat-button (click)="onYesClick()" tabindex="2" mat-raised-button color="primary">Ok</button>
+  </div>
+}

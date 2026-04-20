@@ -1,11 +1,19 @@
-<mat-tab-group>
-    <mat-tab label="Edit">
-        <textarea class="editorWrapper" matInput type="text" [(ngModel)]="markdown"></textarea>
-    </mat-tab>
+<mat-tab-group selectedIndex="1">
+  <mat-tab label="Edit">
+    <textarea
+      class="editorWrapper"
+      matInput
+      type="text"
+      [value]="markdown()"
+      (input)="markdown.set($event.target.value)"
+    ></textarea>
+  </mat-tab>
 
-    <mat-tab label="Preview">
-        <span *ngIf="markdown">
-            <div class="textWrapper markdown-body" [innerHTML]="markdownHtml"></div>
-        </span>
-    </mat-tab>
+  <mat-tab label="Preview">
+    @if (markdown()) {
+    <div class="textWrapper markdown-body">
+      <markdown [data]="markdown()"></markdown>
+    </div>
+    }
+  </mat-tab>
 </mat-tab-group>

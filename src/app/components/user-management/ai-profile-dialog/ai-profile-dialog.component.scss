@@ -1,0 +1,11 @@
+/**
+ * AI Profile Dialog Styles
+ * Uses base-dialog-panel + configurator-dialog-panel styles from _dialogs.scss
+ * Only component-specific styles here
+ */
+
+.ai-profile-dialog {
+  &__content {
+    padding: 16px 0;
+  }
+}

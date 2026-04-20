@@ -1,4 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { Node } from '../../../../../cartography/models/node';
 import { Project } from '@models/project';
@@ -8,24 +11,25 @@ import { ConfigEditorDialogComponent } from '../../../node-editors/config-editor
 @Component({
   selector: 'app-edit-config-action',
   templateUrl: './edit-config-action.component.html',
+  imports: [MatButtonModule, MatIconModule, MatMenuModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditConfigActionComponent {
-  @Input() controller: Controller;
-  @Input() project: Project;
-  @Input() node: Node;
+  private dialog = inject(MatDialog);
 
-  constructor(private dialog: MatDialog) {}
+  readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
+  readonly node = input<Node>(undefined);
 
   editConfig() {
     const dialogRef = this.dialog.open(ConfigEditorDialogComponent, {
-      width: '600px',
-      height: '500px',
+      panelClass: ['base-dialog-panel', 'edit-config-action-dialog-panel'],
       autoFocus: false,
-      disableClose: true,
+      disableClose: false,
     });
     let instance = dialogRef.componentInstance;
-    instance.controller = this.controller;
-    instance.project = this.project;
-    instance.node = this.node;
+    instance.controller = this.controller();
+    instance.project = this.project();
+    instance.node = this.node();
   }
 }

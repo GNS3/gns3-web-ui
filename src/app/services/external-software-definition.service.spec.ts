@@ -1,92 +1,113 @@
-import { TestBed } from '@angular/core/testing';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { ExternalSoftwareDefinitionService } from './external-software-definition.service';
 import { PlatformService } from './platform.service';
 
-import Spy = jasmine.Spy;
-
-class PlatformServiceMock {
-  platform: string;
-  isWindows() {
-    return this.platform == 'windows';
-  }
-  isLinux() {
-    return this.platform == 'linux';
-  }
-  isDarwin() {
-    return this.platform == 'darwin';
-  }
-}
+vi.mock('environments/environment', () => ({
+  environment: {
+    solarputty_download_url: 'https://example.com/solarputty.exe',
+  },
+}));
 
 describe('ExternalSoftwareDefinitionService', () => {
-  let platformServiceMock: PlatformServiceMock;
   let service: ExternalSoftwareDefinitionService;
+  let mockPlatformService: any;
 
   beforeEach(() => {
-    platformServiceMock = new PlatformServiceMock();
+    mockPlatformService = {
+      isWindows: vi.fn(),
+      isDarwin: vi.fn(),
+      isLinux: vi.fn(),
+    };
+
+    service = new ExternalSoftwareDefinitionService(mockPlatformService);
   });
 
-  beforeEach(() =>
-    TestBed.configureTestingModule({
-      providers: [ExternalSoftwareDefinitionService, { provide: PlatformService, useValue: platformServiceMock }],
-    })
-  );
+  describe('Service Creation', () => {
+    it('should create the service', () => {
+      expect(service).toBeTruthy();
+    });
 
-  beforeEach(() => {
-    service = TestBed.get(ExternalSoftwareDefinitionService);
+    it('should be instance of ExternalSoftwareDefinitionService', () => {
+      expect(service).toBeInstanceOf(ExternalSoftwareDefinitionService);
+    });
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
+  describe('get', () => {
+    it('should return Windows software when on Windows', () => {
+      mockPlatformService.isWindows.mockReturnValue(true);
+
+      const result = service.get();
+
+      expect(result).toBeInstanceOf(Array);
+      expect(result.length).toBeGreaterThan(0);
+    });
+
+    it('should return empty array for Darwin', () => {
+      mockPlatformService.isDarwin.mockReturnValue(true);
+
+      const result = service.get();
+
+      expect(result).toEqual([]);
+    });
+
+    it('should return empty array for Linux', () => {
+      mockPlatformService.isLinux.mockReturnValue(true);
+
+      const result = service.get();
+
+      expect(result).toEqual([]);
+    });
+
+    it('should prioritize Windows check', () => {
+      mockPlatformService.isWindows.mockReturnValue(true);
+      mockPlatformService.isDarwin.mockReturnValue(true);
+
+      const result = service.get();
+
+      expect(result.length).toBeGreaterThan(0);
+    });
   });
 
-  it('should return list for windows', () => {
-    let software = service.getForWindows();
-    expect(software.length).toEqual(1);
-  });
-
-  it('should return list for linux', () => {
-    let software = service.getForLinux();
-    expect(software.length).toEqual(0);
-  });
-
-  it('should return list for darwin', () => {
-    let software = service.getForDarwin();
-    expect(software.length).toEqual(0);
-  });
-
-  describe('ExternalSoftwareDefinitionService.get', () => {
-    let windowsSpy: Spy;
-    let darwinSpy: Spy;
-    let linuxSpy: Spy;
-
+  describe('getForWindows', () => {
     beforeEach(() => {
-      windowsSpy = spyOn(service, 'getForWindows').and.callThrough();
-      darwinSpy = spyOn(service, 'getForDarwin').and.callThrough();
-      linuxSpy = spyOn(service, 'getForLinux').and.callThrough();
+      mockPlatformService.isWindows.mockReturnValue(false);
     });
 
-    it('should return list when on windows', () => {
-      platformServiceMock.platform = 'windows';
-      expect(service.get()).toBeDefined();
-      expect(windowsSpy).toHaveBeenCalled();
-      expect(darwinSpy).not.toHaveBeenCalled();
-      expect(linuxSpy).not.toHaveBeenCalled();
+    it('should return array with Wireshark', () => {
+      const result = service.getForWindows();
+
+      expect(result.some((s: any) => s.name === 'Wireshark')).toBe(true);
     });
 
-    it('should return list when on linux', () => {
-      platformServiceMock.platform = 'linux';
-      expect(service.get()).toBeDefined();
-      expect(windowsSpy).not.toHaveBeenCalled();
-      expect(darwinSpy).not.toHaveBeenCalled();
-      expect(linuxSpy).toHaveBeenCalled();
+    it('should include at least Wireshark', () => {
+      const result = service.getForWindows();
+
+      expect(result.length).toBeGreaterThanOrEqual(1);
     });
 
-    it('should return list when on darwin', () => {
-      platformServiceMock.platform = 'darwin';
-      expect(service.get()).toBeDefined();
-      expect(windowsSpy).not.toHaveBeenCalled();
-      expect(darwinSpy).toHaveBeenCalled();
-      expect(linuxSpy).not.toHaveBeenCalled();
+    it('should have Wireshark properties', () => {
+      const result = service.getForWindows();
+      const wireshark = result.find((s: any) => s.name === 'Wireshark');
+
+      expect(wireshark.type).toBe('web');
+      expect(wireshark.binary).toBe('Wireshark.exe');
+      expect(wireshark.sudo).toBe(true);
+    });
+  });
+
+  describe('getForLinux', () => {
+    it('should return empty array', () => {
+      const result = service.getForLinux();
+
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('getForDarwin', () => {
+    it('should return empty array', () => {
+      const result = service.getForDarwin();
+
+      expect(result).toEqual([]);
     });
   });
 });

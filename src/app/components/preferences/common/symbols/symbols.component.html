@@ -1,39 +1,87 @@
 <div class="menu">
+  @if (!isDeleteMode()) {
   <mat-radio-group aria-label="Select an option" class="radio-selection">
     <mat-radio-button value="1" (click)="setFilter('all')" checked>All symbols</mat-radio-button>
     <mat-radio-button value="2" (click)="setFilter('builtin')">Built-in symbols</mat-radio-button>
     <mat-radio-button value="3" (click)="setFilter('custom')">Custom symbols</mat-radio-button>
   </mat-radio-group>
-  <input
-    type="file"
-    accept=".svg, .bmp, .jpeg, .jpg, .gif, .png"
-    class="non-visible"
-    #file
-    (change)="uploadSymbolFile($event)"
-  />
-  <button mat-button (click)="file.click()">
-    <mat-icon>add</mat-icon>
-    Add symbol
+  <button mat-button (click)="openSymbolsManager()">
+    <mat-icon>settings</mat-icon>
+    Symbols Manager
   </button>
+  } @else {
+  <div class="delete-actions">
+    <button
+      mat-button
+      color="warn"
+      (click)="deleteSelectedSymbols()"
+      [disabled]="!hasSelectedSymbols()"
+      mat-raised-button
+    >
+      <mat-icon>delete</mat-icon>
+      Delete ({{ selectedForDeletion().size }})
+    </button>
+    <span class="selected-count">{{ selectedForDeletion().size }} selected</span>
+    <button mat-button (click)="selectAllVisible()" matTooltip="Select all custom symbols">Select all</button>
+    <button mat-button (click)="clearSelection()" matTooltip="Clear selection">Clear</button>
+    <button mat-button (click)="toggleDeleteMode()">Cancel</button>
+  </div>
+  }
 </div>
 <form>
   <mat-form-field class="example-full-width">
-    <input matInput placeholder="Search by filename" [(ngModel)]="searchText" [ngModelOptions]="{ standalone: true }" />
+    <input matInput placeholder="Search by filename" [value]="searchText()" (input)="searchText.set($event.target.value)" />
   </mat-form-field>
 </form>
-<div class="wrapper">
-  <div class="buttonWrapper" *ngFor="let symbol of filteredSymbols | filenamefilter: searchText">
-    <button
-      [ngClass]="{ buttonSelected: isSelected === symbol.symbol_id }"
-      class="button"
-      (click)="setSelected(symbol.symbol_id)"
-    >
-      <img
-        lazyimg
-        [ngClass]="{ imageSelected: isSelected === symbol.symbol_id }"
-        class="image"
-        [src]="getImageSourceForTemplate(symbol.symbol_id)"
-      />
-    </button>
-  </div>
+<div class="zoom-controls">
+  <button mat-icon-button (click)="zoomOut()" [disabled]="zoomLevel() <= 0.5" matTooltip="Zoom out">
+    <mat-icon>remove</mat-icon>
+  </button>
+  <span class="zoom-level">{{ Math.round(zoomLevel() * 100) }}%</span>
+  <button mat-icon-button (click)="zoomIn()" [disabled]="zoomLevel() >= 2.0" matTooltip="Zoom in">
+    <mat-icon>add</mat-icon>
+  </button>
+  <button mat-button (click)="resetZoom()" [disabled]="zoomLevel() === 1.0">Reset</button>
+</div>
+<div class="symbolsWrapper" [style.--zoom-level]="zoomLevel()">
+  <mat-accordion multi>
+    @for (group of symbolGroups; track group.theme) {
+    <mat-expansion-panel [expanded]="isThemeExpanded(group.theme)">
+      <mat-expansion-panel-header (click)="toggleTheme(group.theme)">
+        <mat-panel-title>
+          {{ group.theme }}
+        </mat-panel-title>
+        <mat-panel-description> {{ group.symbols.length }} symbols </mat-panel-description>
+      </mat-expansion-panel-header>
+      <div class="wrapper">
+        @for (symbol of group.symbols | filenamefilter: searchText(); track symbol.symbol_id) {
+        <div class="buttonWrapper">
+          <div class="symbol-item" [class.delete-mode]="isDeleteMode()">
+            <button
+              [ngClass]="{
+                buttonSelected: isSelected === symbol.symbol_id,
+                'in-delete-mode': isDeleteMode(),
+                'delete-selected': isDeleteMode() && isSymbolSelected(symbol.symbol_id)
+              }"
+              class="button"
+              (click)="
+                isDeleteMode() && canDeleteSymbol(symbol)
+                  ? toggleSelection(symbol.symbol_id)
+                  : setSelected(symbol.symbol_id)
+              "
+            >
+              <img
+                lazyimg
+                [ngClass]="{ imageSelected: isSelected === symbol.symbol_id }"
+                class="image"
+                [src]="getImageSourceForTemplate(symbol.symbol_id)"
+              />
+            </button>
+          </div>
+        </div>
+        }
+      </div>
+    </mat-expansion-panel>
+    }
+  </mat-accordion>
 </div>

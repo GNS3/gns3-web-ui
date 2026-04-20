@@ -1,26 +1,35 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, Component, Inject, OnInit, inject, signal } from '@angular/core';
+import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 import { Project } from '@models/project';
+
+interface ConfirmationDialogData {
+  existingProject: Project;
+}
 
 @Component({
   selector: 'app-import-project-dialog',
   templateUrl: 'confirmation-dialog.component.html',
-  styleUrls: ['confirmation-dialog.component.scss'],
+  styleUrl: 'confirmation-dialog.component.scss',
+  imports: [MatDialogModule, MatButtonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmationDialogComponent implements OnInit {
+  public dialogRef = inject(MatDialogRef<ConfirmationDialogComponent>);
   private existingProject: Project;
-  public confirmationMessage: string;
-  public isOpen: boolean;
-  constructor(public dialogRef: MatDialogRef<ConfirmationDialogComponent>, @Inject(MAT_DIALOG_DATA) public data: any) {
-    this.existingProject = data['existingProject'];
+  public confirmationMessage = signal('');
+  public isOpen = signal(false);
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: ConfirmationDialogData) {
+    this.existingProject = data.existingProject;
   }
 
   ngOnInit() {
     if (this.existingProject.status === 'opened') {
-      this.confirmationMessage = `Project ${this.existingProject.name} is open. You can not overwrite it.`;
-      this.isOpen = true;
+      this.confirmationMessage.set(`Project ${this.existingProject.name} is open. You can not overwrite it.`);
+      this.isOpen.set(true);
     } else {
-      this.confirmationMessage = `Project ${this.existingProject.name} already exist, overwrite it?`;
+      this.confirmationMessage.set(`Project ${this.existingProject.name} already exists, overwrite it?`);
     }
   }
 

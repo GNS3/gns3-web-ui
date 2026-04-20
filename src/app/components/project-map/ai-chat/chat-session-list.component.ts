@@ -1,14 +1,19 @@
-import { Component, Input, Output, EventEmitter, OnInit, ViewChild, Renderer2 } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Output, EventEmitter, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatDividerModule } from '@angular/material/divider';
 import { ChatSession } from '@models/ai-chat.interface';
 import { Controller } from '@models/controller';
 import { AiChatService } from '@services/ai-chat.service';
-import { ConfirmationDialogComponent, ConfirmationDialogData } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
+import {
+  ConfirmationDialogComponent,
+  ConfirmationDialogData,
+} from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 
 /**
  * AI Chat Session List Component
@@ -16,398 +21,28 @@ import { ConfirmationDialogComponent, ConfirmationDialogData } from '@components
  */
 @Component({
   selector: 'app-chat-session-list',
-  template: `
-    <div class="chat-session-list">
-      <!-- New session button -->
-      <div class="session-list-header">
-        <button mat-button (click)="createNewSession()" class="new-session-button">
-          <svg class="session-list-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
-            <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-          </svg>
-          <span>New Chat</span>
-        </button>
-      </div>
-
-      <!-- Sessions list -->
-      <div class="sessions-container">
-        <ng-container *ngIf="sessions.length > 0; else noSessions">
-          <div
-            class="session-item"
-            *ngFor="let session of sortedSessions; trackBy: trackBySessionId"
-            [class.active]="session.thread_id === currentSessionId"
-            (click)="selectSession(session.thread_id)"
-          >
-            <!-- Pin indicator -->
-            <div class="session-pin" *ngIf="session.pinned">
-              <svg class="pin-icon pin-animation" xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 24 24">
-                <path d="M16 12V4H17V2H7V4H8V12L6 14V16H11V22H13V16H18V14L16 12Z"/>
-              </svg>
-            </div>
-
-            <!-- Session content -->
-            <div class="session-content">
-              <!-- Session title -->
-              <div class="session-header" *ngIf="!session.editing">
-                <div class="session-info">
-                  <div class="session-title">{{ session.title || 'New chat' }}</div>
-                  <div class="session-preview">
-                    <span class="session-stats">{{ session.message_count }} messages</span>
-                    <span class="session-time">{{ formatTime(session.updated_at) }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Edit title -->
-              <mat-form-field class="session-edit-field" *ngIf="session.editing" (click)="$event.stopPropagation()">
-                <input
-                  matInput
-                  [value]="session.title"
-                  (keydown.enter)="finishRename(session)"
-                  (keydown.escape)="cancelRename(session)"
-                  (blur)="finishRename(session)"
-                  #titleInput
-                />
-              </mat-form-field>
-            </div>
-
-            <!-- Session menu button -->
-            <button
-              mat-icon-button
-              class="session-menu-button"
-              [matMenuTriggerFor]="sessionMenu"
-              (click)="$event.stopPropagation()"
-            >
-              <svg class="menu-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
-                <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-              </svg>
-            </button>
-
-            <!-- Session menu -->
-            <mat-menu #sessionMenu="matMenu" xPosition="before" panelClass="session-action-menu" (opened)="onMenuOpened()" (closed)="onMenuClosed()">
-              <button mat-menu-item (click)="renameSession(session)">
-                <svg class="menu-item-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
-                  <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
-                </svg>
-                <span>Rename</span>
-              </button>
-              <button mat-menu-item (click)="togglePinSession(session)">
-                <svg class="menu-item-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
-                  <path d="M16 12V4H17V2H7V4H8V12L6 14V16H11V22H13V16H18V14L16 12Z"/>
-                </svg>
-                <span>{{ session.pinned ? 'Unpin' : 'Pin' }}</span>
-              </button>
-              <mat-divider></mat-divider>
-              <button mat-menu-item (click)="deleteSession(session, $event)" class="delete-action">
-                <svg class="menu-item-icon delete-icon" xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24">
-                  <path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/>
-                </svg>
-                <span>Delete</span>
-              </button>
-            </mat-menu>
-          </div>
-        </ng-container>
-
-        <ng-template #noSessions>
-          <div class="no-sessions">
-            <svg class="no-sessions-icon" xmlns="http://www.w3.org/2000/svg" height="48" width="48" viewBox="0 0 24 24">
-              <path d="M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z"/>
-            </svg>
-            <p class="no-sessions-text">No sessions</p>
-            <p class="no-sessions-hint">Click button above to create new session</p>
-          </div>
-        </ng-template>
-      </div>
-    </div>
-  `,
-  styles: [`
-    .chat-session-list {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      background-color: var(--mat-app-surface-container);
-      border-right: 1px solid var(--mat-app-outline-variant);
-    }
-
-    .session-list-header {
-      padding: 12px;
-      border-bottom: 1px solid var(--mat-app-outline-variant);
-    }
-
-    .new-session-button {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    /* Session list header icon (New Chat + icon) */
-    .session-list-icon {
-      fill: var(--mat-app-on-surface);
-      transition: fill 0.2s ease;
-    }
-
-    .new-session-button:hover .session-list-icon {
-      fill: var(--mat-app-primary);
-    }
-
-    .sessions-container {
-      flex: 1;
-      overflow-y: auto;
-      padding: 8px;
-    }
-
-    .session-item {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      padding: 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.2s;
-      position: relative;
-    }
-
-    .session-item:hover {
-      background-color: var(--mat-app-surface-container-high);
-    }
-
-    .session-item.active {
-      background-color: var(--mat-app-primary-container);
-      border-left: 4px solid var(--mat-app-primary);
-      box-shadow: 0 4px 12px rgba(0, 151, 167, 0.3), inset 0 0 0 1px rgba(0, 151, 167, 0.1);
-      transform: translateX(2px);
-    }
-
-    .session-item.active .session-title {
-      color: var(--mat-app-on-primary-container);
-      font-weight: 700;
-    }
-
-    .session-item.active .session-stats,
-    .session-item.active .session-time {
-      color: var(--mat-app-on-primary-container);
-      opacity: 0.9;
-    }
-
-    .session-item.active .menu-icon {
-      fill: var(--mat-app-on-primary-container);
-    }
-
-    .session-pin {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-    }
-
-    /* Pin icon */
-    .pin-icon {
-      fill: var(--mat-app-primary);
-      filter: drop-shadow(0 2px 4px rgba(0, 151, 167, 0.4));
-    }
-
-    /* Pin bounce animation */
-    .pin-animation {
-      animation: pinBounce 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    }
-
-    @keyframes pinBounce {
-      0% {
-        transform: scale(0);
-        opacity: 0;
-      }
-      50% {
-        transform: scale(1.35);
-      }
-      100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
-    .session-content {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .session-header {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* Session icon (chat bubble) */
-    .session-icon {
-      fill: var(--mat-app-on-surface-variant);
-      flex-shrink: 0;
-      transition: fill 0.2s ease;
-    }
-
-    .session-item:hover .session-icon {
-      fill: var(--mat-app-on-surface);
-    }
-
-    .session-item.active .session-icon {
-      fill: var(--mat-app-on-primary-container);
-    }
-
-    .session-info {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .session-title {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--mat-app-on-surface);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .session-preview {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    .session-stats {
-      font-size: 11px;
-      color: var(--mat-app-on-surface-variant);
-    }
-
-    .session-time {
-      font-size: 11px;
-      color: var(--mat-app-on-surface-variant);
-      opacity: 0.7;
-    }
-
-    .session-edit-field {
-      width: 100%;
-      margin: 0;
-    }
-
-    .session-edit-field .mat-mdc-form-field-infix {
-      padding: 0;
-    }
-
-    .session-edit-field input {
-      font-size: 14px;
-    }
-
-    .session-menu-button {
-      width: 32px;
-      height: 32px;
-      padding: 0;
-      opacity: 0;
-      transition: opacity 0.2s;
-    }
-
-    .session-item:hover .session-menu-button {
-      opacity: 1;
-    }
-
-    /* Menu icon (three dots) */
-    .menu-icon {
-      fill: var(--mat-app-on-surface-variant);
-      transition: fill 0.2s ease;
-    }
-
-    .session-menu-button:hover .menu-icon {
-      fill: var(--mat-app-on-surface);
-    }
-
-    .no-sessions {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 48px 24px;
-      text-align: center;
-    }
-
-    .no-sessions-icon {
-      fill: var(--mat-app-outline-variant);
-      margin-bottom: 12px;
-    }
-
-    .no-sessions-text {
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--mat-app-on-surface);
-      margin: 0 0 4px 0;
-    }
-
-    .no-sessions-hint {
-      font-size: 12px;
-      color: var(--mat-app-on-surface-variant);
-      margin: 0;
-    }
-
-    .delete-action {
-      color: var(--mat-app-error);
-    }
-
-    /* Session menu panel - flexible height */
-    ::ng-deep .mat-menu-panel.session-action-menu {
-      min-height: auto !important;
-      max-height: none !important;
-      height: auto !important;
-      overflow: visible !important;
-    }
-
-    ::ng-deep .session-action-menu .mat-mdc-menu-content {
-      padding: 4px 0;
-      max-height: none !important;
-    }
-
-    ::ng-deep .session-action-menu .mat-mdc-menu-item {
-      height: 40px;
-      min-height: 40px;
-      padding: 0 12px;
-    }
-
-    ::ng-deep .session-action-menu .mat-mdc-menu-item .mdc-list-item__primary-text {
-      font-size: 14px;
-    }
-
-    /* Menu item icons */
-    ::ng-deep .session-action-menu .menu-item-icon {
-      width: 20px;
-      height: 20px;
-      margin-right: 12px;
-      vertical-align: middle;
-    }
-
-    ::ng-deep .session-action-menu .delete-icon {
-      fill: var(--mat-app-error);
-    }
-
-    /* Scrollbar styles */
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: var(--mat-app-outline-variant);
-      border-radius: 3px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: var(--mat-app-outline);
-    }
-  `]
+  imports: [
+    CommonModule,
+    MatIconModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatMenuModule,
+    MatButtonModule,
+    MatDialogModule,
+    MatDividerModule,
+  ],
+  templateUrl: './chat-session-list.component.html',
+  styleUrls: ['./chat-session-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ChatSessionListComponent implements OnInit {
-  @Input() sessions: ChatSession[] = [];
-  @Input() currentSessionId: string | null = null;
-  @Input() controller: Controller;
-  @Input() projectId: string;
+export class ChatSessionListComponent {
+  private dialog = inject(MatDialog);
+  private aiChatService = inject(AiChatService);
+
+  readonly sessions = input<ChatSession[]>([]);
+  readonly currentSessionId = input<string | null>(null);
+  readonly controller = input<Controller>(undefined);
+  readonly projectId = input<string>(undefined);
 
   @Output() sessionSelected = new EventEmitter<string>();
   @Output() sessionCreated = new EventEmitter<void>();
@@ -416,11 +51,7 @@ export class ChatSessionListComponent implements OnInit {
   @Output() sessionPinned = new EventEmitter<string>();
   @Output() sessionUnpinned = new EventEmitter<string>();
 
-  constructor(
-    private dialog: MatDialog,
-    private aiChatService: AiChatService,
-    private renderer: Renderer2
-  ) {}
+  constructor() {}
 
   /**
    * Handle menu opened event
@@ -440,8 +71,8 @@ export class ChatSessionListComponent implements OnInit {
    * Sorted sessions list (pinned ones first)
    */
   get sortedSessions(): ChatSession[] {
-    const pinned = this.sessions.filter(s => s.pinned);
-    const unpinned = this.sessions.filter(s => !s.pinned);
+    const pinned = this.sessions().filter((s) => s.pinned);
+    const unpinned = this.sessions().filter((s) => !s.pinned);
 
     // Sort by update time descending
     const sortByTime = (a: ChatSession, b: ChatSession) => {
@@ -451,10 +82,6 @@ export class ChatSessionListComponent implements OnInit {
     };
 
     return [...pinned.sort(sortByTime), ...unpinned.sort(sortByTime)];
-  }
-
-  ngOnInit(): void {
-    // Initialization logic
   }
 
   /**
@@ -484,13 +111,14 @@ export class ChatSessionListComponent implements OnInit {
   /**
    * Finish renaming
    * @param session Session
+   * @param value Input value
    */
-  finishRename(session: ChatSession): void {
-    const input = document.querySelector('.session-edit-field input') as HTMLInputElement;
-    if (input && input.value.trim()) {
+  finishRename(session: ChatSession, value: string): void {
+    const trimmedValue = value.trim();
+    if (trimmedValue) {
       this.sessionRenamed.emit({
         sessionId: session.thread_id,
-        title: input.value.trim()
+        title: trimmedValue,
       });
     }
     (session as any).editing = false;
@@ -562,18 +190,17 @@ export class ChatSessionListComponent implements OnInit {
 
       position = {
         top: `${top}px`,
-        left: `${left}px`
+        left: `${left}px`,
       };
     }
 
     const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
       data: { message },
-      width: '360px',
       position,
       autoFocus: false,
       restoreFocus: false,
       backdropClass: 'delete-dialog-backdrop',
-      panelClass: 'confirmation-dialog-panel'
+      panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
     });
 
     dialogRef.afterClosed().subscribe((result: boolean) => {
@@ -588,18 +215,14 @@ export class ChatSessionListComponent implements OnInit {
    * @param session Session
    */
   delete(session: ChatSession): void {
-    this.aiChatService.deleteSession(
-      this.controller,
-      this.projectId,
-      session.thread_id
-    ).subscribe({
+    this.aiChatService.deleteSession(this.controller(), this.projectId(), session.thread_id).subscribe({
       next: () => {
         // Emit event to notify parent to remove from store
         this.sessionDeleted.emit(session.thread_id);
       },
       error: (error) => {
         console.error('[ChatSessionList] Delete failed:', error);
-      }
+      },
     });
   }
 
@@ -639,7 +262,7 @@ export class ChatSessionListComponent implements OnInit {
         month: 'short',
         day: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       });
     }
   }

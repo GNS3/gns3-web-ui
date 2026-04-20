@@ -1,1 +1,4 @@
-<app-node-select-interface [links]="links" (onChooseInterface)="onChooseInterface($event)"></app-node-select-interface>
+<app-node-select-interface
+  [links]="links()"
+  (chooseInterfaceChange)="onChooseInterface($event)"
+></app-node-select-interface>

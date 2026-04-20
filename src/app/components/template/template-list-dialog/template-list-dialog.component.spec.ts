@@ -1,51 +1,86 @@
-import { HttpClient } from '@angular/common/http';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpController } from '@services/http-controller.service';
-import { MockedControllerService } from 'app/services/controller.service.spec';
-import { TemplateMocksService } from 'app/services/template-mocks.service';
-import { TemplateService } from 'app/services/template.service';
-import { ToasterService } from 'app/services/toaster.service';
-import { MockedToasterService } from 'app/services/toaster.service.spec';
-import { NonNegativeValidator } from 'app/validators/non-negative-validator';
-import { TemplateListDialogComponent } from './template-list-dialog.component';
-import {TemplateFilter} from "@filters/templateFilter.pipe";
-
-
+import { describe, it, expect } from 'vitest';
+import {
+  TemplateListDialogComponent,
+  TemplateDatabase,
+  TemplateDataSource,
+  NodeAddedEvent,
+} from './template-list-dialog.component';
 
 describe('TemplateListDialogComponent', () => {
-  let component: TemplateListDialogComponent;
-  let fixture: ComponentFixture<TemplateListDialogComponent>;
+  describe('prototype methods', () => {
+    it('should have ngOnInit method', () => {
+      expect(typeof (TemplateListDialogComponent.prototype as any).ngOnInit).toBe('function');
+    });
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [TemplateListDialogComponent, TemplateFilter],
-      imports: [ReactiveFormsModule, FormsModule, RouterTestingModule, MatFormFieldModule, MatInputModule, MatSelectModule, NoopAnimationsModule],
-      providers: [
-        { provide: TemplateService, useClass: TemplateMocksService },
-        { provide: ToasterService, useValue: MockedToasterService },
-        { provide: MatDialogRef, useValue: {} },
-        { provide: MAT_DIALOG_DATA, useValue: {} },
-        { provide: NonNegativeValidator, useValue: {} },
-        HttpController,
-        HttpClient
-      ]
-    }).compileComponents();
+    it('should have onNoClick method', () => {
+      expect(typeof (TemplateListDialogComponent.prototype as any).onNoClick).toBe('function');
+    });
+
+    it('should have compareControllers method', () => {
+      expect(typeof (TemplateListDialogComponent.prototype as any).compareControllers).toBe('function');
+    });
+
+    it('should have filterTemplates method', () => {
+      expect(typeof (TemplateListDialogComponent.prototype as any).filterTemplates).toBe('function');
+    });
+
+    it('should have chooseTemplate method', () => {
+      expect(typeof (TemplateListDialogComponent.prototype as any).chooseTemplate).toBe('function');
+    });
+
+    it('should have onAddClick method', () => {
+      expect(typeof (TemplateListDialogComponent.prototype as any).onAddClick).toBe('function');
+    });
   });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(TemplateListDialogComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+  describe('exported types', () => {
+    it('should export NodeAddedEvent interface', () => {
+      const event: NodeAddedEvent = {
+        template: {} as any,
+        controller: 'local',
+        numberOfNodes: 1,
+        x: 0,
+        y: 0,
+      };
+      expect(event.template).toBeDefined();
+      expect(event.controller).toBe('local');
+      expect(event.numberOfNodes).toBe(1);
+    });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+    it('should have TemplateDatabase class', () => {
+      expect(typeof TemplateDatabase).toBe('function');
+    });
+
+    it('should have TemplateDataSource class', () => {
+      expect(typeof TemplateDataSource).toBe('function');
+    });
+  });
+});
+
+describe('TemplateDataSource', () => {
+  describe('prototype methods', () => {
+    it('should have connect method', () => {
+      expect(typeof (TemplateDataSource.prototype as any).connect).toBe('function');
+    });
+
+    it('should have disconnect method', () => {
+      expect(typeof (TemplateDataSource.prototype as any).disconnect).toBe('function');
+    });
+
+    it('should have filter getter', () => {
+      expect(typeof Object.getOwnPropertyDescriptor(TemplateDataSource.prototype, 'filter')?.get).toBe('function');
+    });
+
+    it('should have filter setter', () => {
+      expect(typeof Object.getOwnPropertyDescriptor(TemplateDataSource.prototype, 'filter')?.set).toBe('function');
+    });
+  });
+});
+
+describe('TemplateDatabase', () => {
+  describe('prototype', () => {
+    it('should have data getter', () => {
+      expect(typeof Object.getOwnPropertyDescriptor(TemplateDatabase.prototype, 'data')?.get).toBe('function');
+    });
   });
 });

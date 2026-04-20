@@ -1,11 +1,14 @@
+/**
+ * GNS3 App Component Styles
+ *
+ * Using Angular Material Design 3 theming system
+ */
+
+:host {
+  display: block;
+  height: 100%;
+}
+
 mat-menu-panel {
   min-height: 0px;
-}
-
-.dark {
-  background: #263238 !important;
-}
-
-.light {
-  background: white !important;
 }

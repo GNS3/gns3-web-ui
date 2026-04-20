@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapLabelToLabelConverter } from '../../../cartography/converters/map/map-label-to-label-converter';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
@@ -12,18 +12,18 @@ import { NodeService } from '@services/node.service';
 @Component({
   selector: 'app-node-label-dragged',
   templateUrl: './node-label-dragged.component.html',
-  styleUrls: ['./node-label-dragged.component.scss'],
+  styleUrl: './node-label-dragged.component.scss',
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
-  @Input() controller: Controller;
+  readonly controller = input<Controller>(undefined);
   private nodeLabelDragged: Subscription;
 
-  constructor(
-    private nodesDataSource: NodesDataSource,
-    private nodeService: NodeService,
-    private nodesEventSource: NodesEventSource,
-    private mapLabelToLabel: MapLabelToLabelConverter
-  ) {}
+  private nodesDataSource = inject(NodesDataSource);
+  private nodeService = inject(NodeService);
+  private nodesEventSource = inject(NodesEventSource);
+  private mapLabelToLabel = inject(MapLabelToLabelConverter);
 
   ngOnInit() {
     this.nodeLabelDragged = this.nodesEventSource.labelDragged.subscribe((evt) => this.onNodeLabelDragged(evt));
@@ -32,13 +32,11 @@ export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
   onNodeLabelDragged(draggedEvent: DraggedDataEvent<MapLabel>) {
     const node = this.nodesDataSource.get(draggedEvent.datum.nodeId);
     const mapLabel = draggedEvent.datum;
-    mapLabel.x += draggedEvent.dx;
-    mapLabel.y += draggedEvent.dy;
-
+    // Position already updated during drag, datum contains the final position
     const label = this.mapLabelToLabel.convert(mapLabel);
     node.label = label;
 
-    this.nodeService.updateLabel(this.controller, node, node.label).subscribe((controllerNode: Node) => {
+    this.nodeService.updateLabel(this.controller(), node, node.label).subscribe((controllerNode: Node) => {
       this.nodesDataSource.update(controllerNode);
     });
   }

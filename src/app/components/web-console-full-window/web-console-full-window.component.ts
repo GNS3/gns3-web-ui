@@ -1,10 +1,20 @@
-import { Component, ElementRef, OnInit, OnDestroy, ViewChild, ViewEncapsulation } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  OnInit,
+  OnDestroy,
+  inject,
+  viewChild,
+  ChangeDetectorRef,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { Terminal } from 'xterm';
-import { AttachAddon } from 'xterm-addon-attach';
-import { FitAddon } from 'xterm-addon-fit';
+import { Subject, takeUntil } from 'rxjs';
+import { Terminal } from '@xterm/xterm';
+import { AttachAddon } from '@xterm/addon-attach';
+import { FitAddon } from '@xterm/addon-fit';
 import { Node as GNS3Node } from '../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
@@ -12,49 +22,58 @@ import { NodeConsoleService } from '@services/nodeConsole.service';
 import { ControllerService } from '@services/controller.service';
 import { ThemeService } from '@services/theme.service';
 import { XtermContextMenuService } from '@services/xterm-context-menu.service';
+import { XtermService } from '@services/xterm.service';
 
 @Component({
-  encapsulation: ViewEncapsulation.None,
   selector: 'app-web-console-full-window',
   templateUrl: './web-console-full-window.component.html',
-  styleUrls: ['../../../../node_modules/xterm/css/xterm.css', './web-console-full-window.component.scss'],
+  styleUrl: './web-console-full-window.component.scss',
+  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
   private controllerId: string;
   private projectId: string;
   private nodeId: string;
-  private subscriptions: Subscription = new Subscription();
+  private destroy$ = new Subject<void>();
   private controller: Controller;
   private node: GNS3Node;
   private contextMenuCleanup: (() => void) | null = null;
+  private socket: WebSocket | null = null;
 
+  // Inject services first
+  private consoleService = inject(NodeConsoleService);
+  private controllerService = inject(ControllerService);
+  private route = inject(ActivatedRoute);
+  private title = inject(Title);
+  private nodeService = inject(NodeService);
+  private themeService = inject(ThemeService);
+  private contextMenuService = inject(XtermContextMenuService);
+  private cdr = inject(ChangeDetectorRef);
+  private xtermService = inject(XtermService);
+
+  // Now can use xtermService for terminal initialization
   public term: Terminal = new Terminal({
-    rightClickSelectsWord: true,  // Enable right-click to select word
-    altClickMovesCursor: true,    // Enable Alt+Click to move cursor
+    ...this.xtermService.getDefaultTerminalOptions(),
   });
   public fitAddon: FitAddon = new FitAddon();
 
-  @ViewChild('terminal') terminal: ElementRef;
+  readonly terminal = viewChild<ElementRef>('terminal');
 
-  constructor(
-    private consoleService: NodeConsoleService,
-    private controllerService: ControllerService,
-    private route: ActivatedRoute,
-    private title: Title,
-    private nodeService: NodeService,
-    private themeService: ThemeService,
-    private contextMenuService: XtermContextMenuService
-  ) {}
+  constructor() {}
 
   ngOnInit() {
+    // Subscribe to theme changes
+    this.themeService.themeChanged.pipe(takeUntil(this.destroy$)).subscribe(() => {
+      this.xtermService.updateTerminalTheme(this.term, this.cdr);
+    });
+
     if (this.controllerService.isServiceInitialized) {
       this.getData();
     } else {
-      this.subscriptions.add(
-        this.controllerService.serviceInitialized.subscribe((val) => {
-          if (val) this.getData();
-        })
-      );
+      this.controllerService.serviceInitialized.pipe(takeUntil(this.destroy$)).subscribe((val) => {
+        if (val) this.getData();
+      });
     }
   }
 
@@ -63,37 +82,45 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
     this.projectId = this.route.snapshot.paramMap.get('project_id');
     this.nodeId = this.route.snapshot.paramMap.get('node_id');
 
-    this.consoleService.consoleResized.subscribe((ev) => {
+    this.consoleService.consoleResized.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.fitAddon.fit();
     });
 
-    this.controllerService.get(+this.controllerId).then((controller: Controller ) => {
+    this.controllerService.get(+this.controllerId).then((controller: Controller) => {
       this.controller = controller;
-      this.nodeService.getNodeById(this.controller, this.projectId, this.nodeId).subscribe((node: GNS3Node) => {
-        this.node = node;
-        this.title.setTitle(this.node.name);
-        this.openTerminal();
-      });
+      this.nodeService
+        .getNodeById(this.controller, this.projectId, this.nodeId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((node: GNS3Node) => {
+          this.node = node;
+          this.title.setTitle(this.node.name);
+          this.openTerminal();
+        });
     });
   }
 
   openTerminal() {
     setTimeout(() => {
-      this.term.open(this.terminal.nativeElement);
-      const socket = new WebSocket(this.consoleService.getUrl(this.controller, this.node));
+      const terminal = this.terminal();
+      this.term.open(terminal.nativeElement);
 
-      socket.onerror = (event) => {
-        this.term.write('Connection lost' + '\r\n');
+      // Set theme based on current Material Design 3 theme
+      this.xtermService.updateTerminalTheme(this.term, this.cdr);
+
+      this.socket = new WebSocket(this.consoleService.getUrl(this.controller, this.node));
+
+      this.socket.onerror = () => {
+        console.error('[WebConsoleFullWindow] Socket connection error');
+        this.term.write('\r\n\x1b[31mConnection lost. Please check if the node is still running.\x1b[0m\r\n');
       };
-      socket.onclose = (event) => {
-        this.term.write('Connection closed' + '\r\n');
+      this.socket.onclose = () => {
+        console.log('[WebConsoleFullWindow] Socket closed');
+        this.term.write('\r\n\x1b[33mConnection closed.\x1b[0m\r\n');
       };
 
-      const attachAddon = new AttachAddon(socket);
+      const attachAddon = new AttachAddon(this.socket);
       this.term.loadAddon(attachAddon);
-      this.term.setOption('cursorBlink', true);
-      this.term.loadAddon(this.fitAddon);
-      this.fitAddon.activate(this.term);
+      this.xtermService.initTerminal(this.term, this.fitAddon);
       this.fitAddon.fit();
       this.term.focus();
 
@@ -107,14 +134,7 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
       });
 
       // Setup context menu for copy/paste
-      this.contextMenuCleanup = this.contextMenuService.attachContextMenu(
-        this.term,
-        this.terminal.nativeElement
-      );
-
-      let numberOfColumns = Math.round(window.innerWidth / this.consoleService.getLineWidth());
-      let numberOfRows = Math.round(window.innerHeight / this.consoleService.getLineHeight());
-      this.term.resize(numberOfColumns, numberOfRows);
+      this.contextMenuCleanup = this.contextMenuService.attachContextMenu(this.term, terminal.nativeElement);
     }, 0);
   }
 
@@ -122,9 +142,14 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
    * Cleanup on component destroy
    */
   ngOnDestroy(): void {
-    // Cleanup subscriptions
-    if (this.subscriptions) {
-      this.subscriptions.unsubscribe();
+    // Complete destroy$ to unsubscribe all takeUntil subscriptions
+    this.destroy$.next();
+    this.destroy$.complete();
+
+    // Close WebSocket connection
+    if (this.socket) {
+      this.socket.close();
+      this.socket = null;
     }
 
     // Cleanup context menu event listeners

@@ -1,73 +1,102 @@
-<div *ngIf="isDraggingEnabled" (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)">
-</div>
-<!-- Option with resizing -->
-<div class="consoleWrapper" [ngClass]="{ lightTheme: isLightThemeEnabled, 'console-active': isConsoleActive }"
-  [ngStyle]="style" mwlResizable [validateResize]="validate" [resizeCursorPrecision]="6"
-  [resizeEdges]="{ right: true, left: true, bottom: true, top: true }" [enableGhostResize]="true"
-  (resizeStart)="toggleDragging(false)" (resizeEnd)="onResizeEnd($event)"
+<!-- Console Wrapper with RxJS drag handling -->
+<div
+  #consoleWrapper
+  class="consoleWrapper"
+  [ngClass]="{
+    lightTheme: isLightThemeEnabled(),
+    'console-active': isConsoleActive(),
+    'is-minimized': isMinimized(),
+    'is-dragging': isDragging()
+  }"
+  [style.z-index]="zIndex()"
+  (mousedown)="onWindowFocus()"
+  mwlResizable
+  [validateResize]="validate"
+  [enableGhostResize]="true"
+  (resizeEnd)="onResizeEnd($event)"
   tabindex="0"
   (click)="onConsoleActivate()"
-  (focus)="onConsoleActivate()">
+  (focus)="onConsoleActivate()"
+>
+  @if (!isMinimized()) {
+  <!-- Edge handles -->
+  <div class="resize-handle resize-handle-top" mwlResizeHandle [resizeEdges]="{ top: true }"></div>
+  <div class="resize-handle resize-handle-right" mwlResizeHandle [resizeEdges]="{ right: true }"></div>
+  <div class="resize-handle resize-handle-bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
+  <div class="resize-handle resize-handle-left" mwlResizeHandle [resizeEdges]="{ left: true }"></div>
 
+  <!-- Corner handles -->
+  <div class="resize-handle resize-handle-top-left" mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
+  <div class="resize-handle resize-handle-top-right" mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
+  <div class="resize-handle resize-handle-bottom-left" mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
+  <div class="resize-handle resize-handle-bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
+  }
+
+  <!-- Console Content -->
   <div class="console-content">
     <!-- Devices Panel -->
-    <app-console-devices-panel [isLightTheme]="isLightThemeEnabled" (deviceSelected)="onDeviceSelected($event)"></app-console-devices-panel>
+    <app-console-devices-panel
+      [isLightTheme]="isLightThemeEnabled()"
+      (deviceSelected)="onDeviceSelected($event)"
+    ></app-console-devices-panel>
 
     <!-- Console Area -->
     <div class="console-area">
-      <div class="consoleHeader" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }"
-           (mousedown)="toggleDragging(true)">
-    <mat-tab-group class="tabs" [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
-      <mat-tab *ngFor="let node of nodes; let index = index" [label]="tab">
-        <ng-template mat-tab-label>
-          <div class="col" style="margin-left: 20px">{{ node.name }}</div>
-          <button [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white" mat-icon-button
+      <div class="consoleHeader" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled() }">
+        <mat-tab-group
+          class="console-wrapper__tabs"
+          [selectedIndex]="selected.value"
+          (selectedIndexChange)="selected.setValue($event)"
+        >
+          @for (node of nodes; track $index; let index = $index) {
+          <mat-tab [label]="tab">
+            <ng-template mat-tab-label>
+              <span class="tab-label-text">{{ node.name }}</span>
+              <button mat-icon-button (mousedown)="$event.stopPropagation()" (click)="removeTab(index)">
+                <mat-icon>close</mat-icon>
+              </button>
+            </ng-template>
+          </mat-tab>
+          }
+
+          <mat-tab>
+            <ng-template mat-tab-label>
+              <span class="tab-label-text">GNS3 console</span>
+            </ng-template>
+          </mat-tab>
+        </mat-tab-group>
+
+        <div class="console-header-actions">
+          @if (!isMaximized()) {
+          <button
+            mat-icon-button
             (mousedown)="$event.stopPropagation()"
-            (click)="removeTab(index)">
+            (click)="toggleMaximize()"
+            title="Maximize height"
+          >
+            <mat-icon>fullscreen</mat-icon>
+          </button>
+          } @if (isMaximized()) {
+          <button mat-icon-button (mousedown)="$event.stopPropagation()" (click)="toggleMaximize()" title="Restore">
+            <mat-icon>fullscreen_exit</mat-icon>
+          </button>
+          }
+          <button mat-icon-button (mousedown)="$event.stopPropagation()" (click)="minimize(true)">
+            <mat-icon>remove</mat-icon>
+          </button>
+          <button mat-icon-button (mousedown)="$event.stopPropagation()" (click)="close()">
             <mat-icon>close</mat-icon>
           </button>
-        </ng-template>
-      </mat-tab>
+        </div>
+      </div>
 
-      <mat-tab>
-        <ng-template mat-tab-label>
-          <div class="col" style="margin-left: 20px">GNS3 console</div>
-        </ng-template>
-      </mat-tab>
-    </mat-tab-group>
+      <app-log-console [hidden]="!(selected.value === nodes.length)" [controller]="controller()" [project]="project()">
+      </app-log-console>
 
-    <button *ngIf="!isMinimized && !isMaximized" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white"
-      mat-icon-button (mousedown)="$event.stopPropagation()" (click)="toggleMaximize()"
-      title="Maximize height">
-      <mat-icon>fullscreen</mat-icon>
-    </button>
-    <button *ngIf="isMaximized" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white"
-      mat-icon-button (mousedown)="$event.stopPropagation()" (click)="toggleMaximize()"
-      title="Restore">
-      <mat-icon>fullscreen_exit</mat-icon>
-    </button>
-    <button *ngIf="!isMinimized" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white"
-      mat-icon-button (mousedown)="$event.stopPropagation()" (click)="minimize(true)">
-      <mat-icon>remove</mat-icon>
-    </button>
-    <button *ngIf="isMinimized" [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white"
-      mat-icon-button (mousedown)="$event.stopPropagation()" (click)="minimize(false)">
-      <mat-icon>web_asset</mat-icon>
-    </button>
-    <button [ngClass]="{ lightThemeConsoleHeader: isLightThemeEnabled }" style="color: white" mat-icon-button
-      (mousedown)="$event.stopPropagation()" (click)="close()">
-      <mat-icon>close</mat-icon>
-    </button>
+      @for (node of nodes; track $index; let index = $index) {
+      <app-web-console [hidden]="!(selected.value === index)" [controller]="controller()" [node]="nodes[index]">
+      </app-web-console>
+      }
+    </div>
   </div>
-
-  <app-log-console [hidden]="!(selected.value === nodes.length) || isMinimized" [controller]="controller" [project]="project">
-  </app-log-console>
-
-  <div class="xterm-console"
-    [hidden]="isMinimized" *ngFor="let node of nodes; let index = index">
-    <app-web-console [hidden]="!(selected.value === index)" [controller]="controller" [node]="nodes[index]">
-    </app-web-console>
-  </div>
-</div>
-</div>
 </div>

@@ -1,22 +1,22 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, Component, Inject, inject, signal } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-delete-confirmation-dialog',
   templateUrl: './delete-confirmation-dialog.component.html',
-  styleUrls: ['./delete-confirmation-dialog.component.scss'],
+  styleUrl: './delete-confirmation-dialog.component.scss',
+  imports: [MatDialogModule, MatButtonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DeleteConfirmationDialogComponent implements OnInit {
-  templateName: string = '';
+export class DeleteConfirmationDialogComponent {
+  private dialogRef = inject(MatDialogRef<DeleteConfirmationDialogComponent>);
 
-  constructor(
-    public dialogRef: MatDialogRef<DeleteConfirmationDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {
-    this.templateName = data['templateName'];
+  readonly templateName = signal<string>('');
+
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {
+    this.templateName.set(data['templateName']);
   }
-
-  ngOnInit() {}
 
   onNoClick(): void {
     this.dialogRef.close(false);

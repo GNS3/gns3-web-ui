@@ -1,0 +1,69 @@
+/**
+ * GNS3 System Status Component Styles
+ * BEM naming applied, Material Design 3, unified with projects page
+ */
+
+:host {
+  display: block;
+  width: 100%;
+  // Background moved to default-layout, keep transparent here
+  background: transparent;
+}
+
+/* =============================================
+// Header
+// ============================================= */
+.system-status__header {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 20px 16px;
+  animation: fadeInSlideIn 0.4s ease-out;
+}
+
+.system-status__title {
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin: 0;
+}
+
+/* =============================================
+// Content
+// ============================================= */
+.system-status__content {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 20px 24px;
+  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+}
+
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 768px) {
+  .system-status__header {
+    padding: 16px 16px 12px;
+  }
+
+  .system-status__title {
+    font-size: 28px;
+  }
+
+  .system-status__content {
+    padding: 0 16px 16px;
+  }
+}

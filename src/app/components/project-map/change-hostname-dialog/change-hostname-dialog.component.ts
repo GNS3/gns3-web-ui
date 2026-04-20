@@ -1,45 +1,73 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
+import {
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatCardModule } from '@angular/material/card';
 import { Node } from '../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 
 @Component({
+  standalone: true,
   selector: 'app-change-hostname-dialog-component',
   templateUrl: './change-hostname-dialog.component.html',
   styleUrls: ['./change-hostname-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatDialogModule, MatButtonModule, MatInputModule, MatFormFieldModule, MatCardModule, ReactiveFormsModule],
 })
 export class ChangeHostnameDialogComponent implements OnInit {
+  public dialogRef = inject(MatDialogRef<ChangeHostnameDialogComponent>);
+  public nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
+  private formBuilder = inject(UntypedFormBuilder);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   node: Node;
   inputForm: UntypedFormGroup;
   name: string;
 
-  constructor(
-    public dialogRef: MatDialogRef<ChangeHostnameDialogComponent>,
-    public nodeService: NodeService,
-    private toasterService: ToasterService,
-    private formBuilder: UntypedFormBuilder
-  ) {
+  constructor() {
+    // Directly use the name from the passed node on initialization
+    this.name = '';
     this.inputForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
     });
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
-      this.node = node;
+    // Directly use the passed node, no need to fetch from API again
+    // since the passed node already contains the latest information
+    if (this.node) {
       this.name = this.node.name;
-    });
+      this.inputForm.get('name')?.setValue(this.node.name);
+    }
+    this.cd.markForCheck();
   }
 
   onSaveClick() {
     if (this.inputForm.valid) {
-      this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
-        this.toasterService.success(`Node ${this.node.name} updated.`);
-        this.onCancelClick();
+      // Get the new name from user input in the form
+      const newName = this.inputForm.get('name')?.value;
+      this.node.name = newName;
+      this.nodeService.updateNode(this.controller, this.node).subscribe({
+        next: () => {
+          this.toasterService.success(`Node ${this.node.name} updated.`);
+          this.onCancelClick();
+        },
+        error: (error) => {
+          const message = error.error?.message || 'Failed to update node.';
+          this.toasterService.error(message);
+        },
       });
     } else {
       this.toasterService.error(`Fill all required fields.`);

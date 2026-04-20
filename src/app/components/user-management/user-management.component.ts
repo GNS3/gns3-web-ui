@@ -1,57 +1,104 @@
 /*
-* Software Name : GNS3 Web UI
-* Version: 3
-* SPDX-FileCopyrightText: Copyright (c) 2022 Orange Business Services
-* SPDX-License-Identifier: GPL-3.0-or-later
-*
-* This software is distributed under the GPL-3.0 or any later version,
-* the text of which is available at https://www.gnu.org/licenses/gpl-3.0.txt
-* or see the "LICENSE" file for more details.
-*
-* Author: Sylvain MATHIEU, Elise LEBEAU
-*/
-import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
-import {Location}  from '@angular/common';
-import {ActivatedRoute, Router} from "@angular/router";
-import {Controller} from "@models/controller";
-import {MatSort} from "@angular/material/sort";
-import {UserService} from "@services/user.service";
-import {ProgressService} from "../../common/progress/progress.service";
-import {User} from "@models/users/user";
-import {SelectionModel} from "@angular/cdk/collections";
-import {AddUserDialogComponent} from "@components/user-management/add-user-dialog/add-user-dialog.component";
-import {MatDialog} from "@angular/material/dialog";
-import {DeleteUserDialogComponent} from "@components/user-management/delete-user-dialog/delete-user-dialog.component";
-import {ToasterService} from "@services/toaster.service";
-import {MatPaginator} from "@angular/material/paginator";
-import {MatTableDataSource} from "@angular/material/table";
-import {ControllerService} from "@services/controller.service";
+ * Software Name : GNS3 Web UI
+ * Version: 3
+ * SPDX-FileCopyrightText: Copyright (c) 2022 Orange Business Services
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ *
+ * This software is distributed under the GPL-3.0 or any later version,
+ * the text of which is available at https://www.gnu.org/licenses/gpl-3.0.txt
+ * or see the "LICENSE" file for more details.
+ *
+ * Author: Sylvain MATHIEU, Elise LEBEAU
+ */
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  OnInit,
+  QueryList,
+  ViewChildren,
+  inject,
+  signal,
+  computed,
+  AfterViewInit,
+  model,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Location } from '@angular/common';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Controller } from '@models/controller';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { UserService } from '@services/user.service';
+import { ProgressService } from '../../common/progress/progress.service';
+import { User } from '@models/users/user';
+import { SelectionModel } from '@angular/cdk/collections';
+import { AddUserDialogComponent } from '@components/user-management/add-user-dialog/add-user-dialog.component';
+import { DeleteUserDialogComponent } from '@components/user-management/delete-user-dialog/delete-user-dialog.component';
+import { ToasterService } from '@services/toaster.service';
+import { MatTableDataSource } from '@angular/material/table';
+import { ControllerService } from '@services/controller.service';
+import { UserFilterPipe } from '@filters/user-filter.pipe';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import {
+  UserDetailDialogComponent,
+  UserDetailDialogData,
+} from '@components/user-management/user-detail-dialog/user-detail-dialog.component';
+import {
+  AiProfileDialogComponent,
+  AiProfileDialogData,
+} from '@components/user-management/ai-profile-dialog/ai-profile-dialog.component';
 
 @Component({
+  standalone: true,
   selector: 'app-user-management',
   templateUrl: './user-management.component.html',
-  styleUrls: ['./user-management.component.scss']
+  styleUrls: ['./user-management.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    MatTableModule,
+    MatCheckboxModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatPaginator,
+    MatSortModule,
+    MatDialogModule,
+    UserFilterPipe,
+    MatProgressSpinnerModule,
+  ],
 })
-export class UserManagementComponent implements OnInit {
+export class UserManagementComponent implements OnInit, AfterViewInit {
+  private route = inject(ActivatedRoute);
+  private userService = inject(UserService);
+  private progressService = inject(ProgressService);
+  private controllerService = inject(ControllerService);
+  private dialog = inject(MatDialog);
+  private toasterService = inject(ToasterService);
+  private location = inject(Location);
+  private cd = inject(ChangeDetectorRef);
+
   controller: Controller;
   dataSource = new MatTableDataSource<User>();
-  displayedColumns = ['select', 'username', 'full_name', 'email', 'is_active', 'last_login', 'updated_at', 'delete'];
+  displayedColumns = ['select', 'username', 'full_name', 'email', 'is_active', 'last_login', 'updated_at', 'actions'];
   selection = new SelectionModel<User>(true, []);
-  searchText = '';
+  readonly searchText = model('');
 
   @ViewChildren('usersPaginator') usersPaginator: QueryList<MatPaginator>;
   @ViewChildren('usersSort') usersSort: QueryList<MatSort>;
   isReady = false;
-
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private userService: UserService,
-    private progressService: ProgressService,
-    private controllerService: ControllerService,
-    public dialog: MatDialog,
-    private toasterService: ToasterService,
-    private location: Location) { }
 
   ngOnInit() {
     const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');
@@ -62,13 +109,12 @@ export class UserManagementComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    this.usersPaginator.changes.subscribe((comps: QueryList <MatPaginator>) =>
-    {
+    this.usersPaginator.changes.subscribe((comps: QueryList<MatPaginator>) => {
       this.dataSource.paginator = comps.first;
     });
     this.usersSort.changes.subscribe((comps: QueryList<MatSort>) => {
       this.dataSource.sort = comps.first;
-    })
+    });
 
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
@@ -87,6 +133,7 @@ export class UserManagementComponent implements OnInit {
       (users: User[]) => {
         this.isReady = true;
         this.dataSource.data = users;
+        this.cd.markForCheck();
       },
       (error) => {
         this.progressService.setError(error);
@@ -98,7 +145,7 @@ export class UserManagementComponent implements OnInit {
 
   addUser() {
     const dialogRef = this.dialog.open(AddUserDialogComponent, {
-      width: '400px',
+      panelClass: ['base-dialog-panel', 'add-user-dialog-panel'],
       autoFocus: false,
       disableClose: true,
     });
@@ -109,21 +156,26 @@ export class UserManagementComponent implements OnInit {
 
   onDelete(user: User) {
     this.dialog
-      .open(DeleteUserDialogComponent, {width: '500px', data: {users: [user]}})
+      .open(DeleteUserDialogComponent, {
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+        data: { users: [user] },
+      })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
-          this.userService.delete(this.controller, user.user_id)
-            .subscribe(() => {
-              this.refresh()
-            }, (error) => {
-              this.toasterService.error(`An error occur while trying to delete user ${user.username}`);
-            });
+          this.userService.delete(this.controller, user.user_id).subscribe(
+            () => {
+              this.refresh();
+            },
+            (error) => {
+              const errorMessage =
+                error?.error?.message || `An error occurred while trying to delete user ${user.username}`;
+              this.toasterService.error(errorMessage);
+            }
+          );
         }
       });
   }
-
-
 
   isAllSelected() {
     const numSelected = this.selection.selected.length;
@@ -132,28 +184,71 @@ export class UserManagementComponent implements OnInit {
   }
 
   masterToggle() {
-    this.isAllSelected() ?
-      this.selection.clear() :
-      this.dataSource.data.forEach(row => this.selection.select(row));
+    this.isAllSelected() ? this.selection.clear() : this.dataSource.data.forEach((row) => this.selection.select(row));
   }
 
   deleteMultiple() {
     this.dialog
-      .open(DeleteUserDialogComponent, {width: '500px', data: {users: this.selection.selected}})
+      .open(DeleteUserDialogComponent, {
+        panelClass: ['base-confirmation-dialog-panel', 'confirmation-danger-panel'],
+        data: { users: this.selection.selected },
+      })
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
           this.selection.selected.forEach((user: User) => {
-            this.userService.delete(this.controller, user.user_id)
-              .subscribe(() => {
-                this.refresh()
-              }, (error) => {
-                this.toasterService.error(`An error occur while trying to delete user ${user.username}`);
-              });
-          })
+            this.userService.delete(this.controller, user.user_id).subscribe(
+              () => {
+                this.refresh();
+              },
+              (error) => {
+                const errorMessage =
+                  error?.error?.message || `An error occurred while trying to delete user ${user.username}`;
+                this.toasterService.error(errorMessage);
+              }
+            );
+          });
           this.selection.clear();
         }
       });
+  }
 
+  openUserDetailDialog(user: User) {
+    // Re-fetch user data to ensure we have the latest
+    this.userService.get(this.controller, user.user_id).subscribe({
+      next: (userData: User) => {
+        const dialogData: UserDetailDialogData = {
+          user: userData,
+          controller: this.controller,
+        };
+
+        this.dialog
+          .open(UserDetailDialogComponent, {
+            panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+            data: dialogData,
+            disableClose: false,
+          })
+          .afterClosed()
+          .subscribe(() => {
+            this.refresh();
+          });
+      },
+      error: (error) => {
+        this.toasterService.error(`Cannot load user data: ${error}`);
+      },
+    });
+  }
+
+  openAiProfileDialog(user: User) {
+    const dialogData: AiProfileDialogData = {
+      user: user,
+      controller: this.controller,
+    };
+
+    this.dialog.open(AiProfileDialogComponent, {
+      panelClass: ['base-dialog-panel', 'configurator-dialog-panel'],
+      data: dialogData,
+      disableClose: false,
+    });
   }
 }

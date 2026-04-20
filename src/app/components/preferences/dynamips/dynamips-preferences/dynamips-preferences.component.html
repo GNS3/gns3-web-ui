@@ -6,7 +6,7 @@
   </div>
   <div class="default-content">
     <mat-form-field class="form-field">
-      <input matInput type="text" [(ngModel)]="dynamipsPath" placeholder="Path to Dynamips" />
+      <input matInput type="text" [value]="dynamipsPath()" (input)="dynamipsPath.set($event.target.value)" placeholder="Path to Dynamips" />
     </mat-form-field>
   </div>
 </div>

@@ -1,5 +1,64 @@
+/**
+ * GNS3 Project Map Component Styles
+ * Using MD3 CSS variables
+ */
+
+/* =============================================
+// Reusable Shadow Classes
+// Standardized shadow effects using GNS3 opacity variables
+// ============================================= */
+.shadow-subtle {
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--mat-sys-shadow) var(--gns3-shadow-opacity-light), transparent);
+}
+
+.shadow-normal {
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) var(--gns3-shadow-opacity-normal), transparent);
+}
+
+.shadow-medium {
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--mat-sys-shadow) var(--gns3-shadow-opacity-medium), transparent);
+}
+
+.shadow-heavy {
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--mat-sys-shadow) var(--gns3-shadow-opacity-heavy), transparent);
+}
+
+/* =============================================
+// Reusable Selection State Classes
+// Standardized selection states for different backgrounds
+// ============================================= */
+
+/* Selection on primary background (e.g., titlebar) */
+.selection-on-primary {
+  background: color-mix(in srgb, var(--mat-sys-on-primary) var(--gns3-selection-opacity-normal), transparent);
+
+  mat-icon,
+  .icon {
+    color: var(--mat-sys-on-primary);
+  }
+}
+
+/* Selection on surface background (e.g., toolbar, menus) */
+.selection-on-surface {
+  background: var(--mat-sys-primary-container);
+
+  mat-icon,
+  .icon {
+    color: var(--mat-sys-primary);
+  }
+}
+
+/* Selection for SVG elements on map */
+.selection-svg-stroke {
+  stroke: var(--mat-sys-primary);
+}
+
+.selection-error {
+  stroke: var(--mat-sys-error);
+}
+
 .wrapper {
-  height: 600px;
+  height: 500px;
 }
 
 app-root,
@@ -10,224 +69,206 @@ app-map {
 }
 
 g.node:hover {
-  background-color: #0097a7;
+  background-color: var(--mat-sys-primary);
 }
 
 .project-map {
-  background-color: #18242b;
+  background: var(--gns3-map-bg, var(--mat-sys-surface));
   min-height: 100vh;
   min-width: 100vw;
 
   .label {
-    fill: #ffffff !important;
+    fill: var(--mat-sys-on-surface);
   }
 
-  &:not(.lightTheme) {
-    // Dark mode: make default black ethernet cables visible as white
-    path.ethernet_link[stroke="#000000"] {
-      stroke: #ffffff;
-    }
-
-    // Dark mode: brighten default dark-red serial cables so they're visible
-    path.serial_link[stroke="#800000"] {
-      stroke: #e05555;
-    }
-
-    // Dark mode: drawing cable line is white
-    g.drawing-line-tool path {
-      stroke: #ffffff;
-    }
+  path.ethernet_link {
+    stroke: var(--mat-sys-on-surface);
   }
 
-  &.lightTheme {
-    background-color: #e8ecef;
+  path.serial_link {
+    stroke: var(--mat-sys-error);
+  }
 
-    .label {
-      fill: #000000 !important;
-    }
+  g.drawing-line-tool path {
+    stroke: var(--mat-sys-on-surface);
+  }
 
-    // Light mode: drawing cable line is black
-    g.drawing-line-tool path {
-      stroke: #000000;
+  /* Pan workspace mode - show grab cursor */
+  &.pan-mode {
+    app-d3-map {
+      cursor: grab;
+
+      svg.map {
+        cursor: grab;
+      }
     }
   }
 }
 
 #project-titlebar {
   position: fixed;
-  top: 0px;
-  left: 0px;
-  right: 0px;
-  height: 60px;
-  padding: 0px 20px;
-  background-color: #20313b;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  padding: 0 16px;
+  background-color: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+  @extend .shadow-normal;
   z-index: 2;
+  transition: background-color 200ms ease;
+
+  // Set all icons to white
+  mat-icon {
+    color: var(--mat-sys-on-primary);
+  }
 
   .gns3-button {
     position: relative;
     top: -2px;
 
     mat-icon {
-      width: 30px !important;
-      height: 30px !important;
+      width: 30px;
+      height: 30px;
     }
   }
 
   .primary-controls {
-    border-right: 1px solid rgba(255, 255, 255, 0.3);
-    padding-right: 15px;
-    margin-right: 15px;
-
-    &.lightTheme {
-      border-right: 1px solid black;
-    }
+    border-right: 1px solid color-mix(in srgb, var(--mat-sys-on-primary) var(--gns3-border-opacity-medium), transparent);
+    padding-right: 16px;
+    margin-right: 16px;
   }
 
   .menu-button-group {
     display: flex;
     align-items: center;
-    height: 24px;
+    height: 40px;
   }
 
   .menu-button {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 36px;
-    width: 36px;
-    margin: 0px 8px;
-    border-radius: 18px;
+    height: 40px;
+    width: 40px;
+    margin: 0 8px;
+    border-radius: 20px;
     background: none;
-    font-size: 20px;
-    transition: transform 0.2s ease;
+    font-size: 14px;
+    transition: transform 100ms ease;
+
+    mat-icon {
+      color: var(--mat-sys-on-primary);
+    }
   }
 
   .menu-button:hover {
     transform: scale(1.3);
   }
 
+  // Ensure selected state takes precedence over hover
+  .menu-button.selected:hover {
+    transform: scale(1.15);
+  }
+
   .add-menu-button mat-icon {
-    font-size: 28px !important;
+    font-size: 28px;
   }
 
   .selected {
-    background: rgba(0, 151, 167, 0.1);
-
-    mat-icon {
-      color: #0097a7 !important;
-    }
+    @extend .selection-on-primary;
+    // Enhance visibility with stronger background and visual feedback
+    background: color-mix(in srgb, var(--mat-sys-on-primary) 30%, transparent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--mat-sys-on-primary) 50%, transparent);
+    transform: scale(1.15);
   }
 
   .project-titlebar-controls {
     display: flex;
     align-items: center;
   }
-
-  &.lightTheme {
-    background-color: white !important;
-
-    .selected mat-icon {
-      color: #0097a7 !important;
-    }
-  }
 }
 
 #project-toolbar {
   position: fixed;
-  top: 60px;
-  left: 0px;
-  width: 50px;
-  margin: 20px;
-  background-color: #20313b;
-  border-radius: 6px;
-  box-shadow: 1px 1px 10px rgba(0, 0, 0, 0.2);
+  top: 64px;
+  left: 0;
+  width: 56px;
+  margin: 16px;
+  background-color: var(--mat-sys-surface-container);
+  border-radius: 4px;
+  @extend .shadow-subtle;
   z-index: 2;
+  transition: background-color 200ms ease;
 
-  mat-icon {
-    font-size: 20px;
-  }
+  // Ensure toolbar itself is a flex container
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-  .menu-button {
-    display: flex;
-    justify-content: center;
+  button.mat-mdc-icon-button {
+    display: inline-flex;
     align-items: center;
-    height: 36px;
-    width: 36px;
-    border-radius: 18px;
-    background: none;
-    margin: 2px 0px;
-    transition: transform 0.2s ease;
-  }
-
-  .menu-button:hover {
-    transform: scale(1.3);
-  }
-
-  .zoom-button {
-    display: flex;
     justify-content: center;
-    align-items: center;
-    height: 36px;
-    width: 36px;
-    border-radius: 18px;
-    background: none;
-    margin: 2px 0px;
-    color: white;
-    transition: transform 0.2s ease;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    --mdc-icon-button-icon-size: 20px;
+    --mat-icon-button-icon-size: 20px;
+    --mat-icon-button-state-layer-size: 40px;
+    --mdc-icon-button-state-layer-size: 40px;
 
-    mat-icon {
-      font-size: 24px !important;
+    .mat-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      font-size: 20px;
+      margin: 0;
+
+      svg {
+        width: 20px;
+        height: 20px;
+      }
     }
   }
 
-  .zoom-button:hover {
+  .menu-button,
+  .zoom-button,
+  .reset-zoom-button,
+  .selection-button,
+  .snapshot-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    margin: 2px 0;
+    transition: transform 100ms ease;
+  }
+
+  .menu-button:hover,
+  .zoom-button:hover,
+  .reset-zoom-button:hover,
+  .selection-button:hover,
+  .snapshot-button:hover {
     transform: scale(1.3);
   }
 
-  .reset-zoom-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 36px;
-    width: 36px;
-    border-radius: 18px;
-    background: none;
-    margin: 2px 0px;
-    color: white;
-    transition: transform 0.2s ease;
+  /* Active state for selection/pan tools - similar to AI minimized effect */
+  .menu-button.tool-active,
+  .selection-button.tool-active {
+    background-color: var(--mat-sys-secondary-container);
 
     mat-icon {
-      font-size: 18px !important;
+      color: var(--mat-sys-on-secondary-container);
     }
-  }
-
-  .reset-zoom-button:hover {
-    transform: scale(1.3);
   }
 
   .selection-button {
-    margin-bottom: 0px !important;
-    transition: transform 0.2s ease;
-  }
-
-  .selection-button:hover {
-    transform: scale(1.3);
-  }
-
-  .snapshot-button mat-icon {
-    font-size: 16px;
-  }
-
-  .snapshot-button {
-    transition: transform 0.2s ease;
-  }
-
-  .snapshot-button:hover {
-    transform: scale(1.3);
+    margin-bottom: 0;
   }
 
   .section {
@@ -235,33 +276,11 @@ g.node:hover {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    border-top: 1px solid rgba(255, 255, 255, 0.3);
-    padding: 5px 0px;
+    border-top: 1px solid var(--mat-sys-outline-variant);
+    padding: 5px 0;
 
     &:first-child {
       border: none;
-    }
-  }
-
-  &.lightTheme {
-    background-color: rgba(244, 248, 252, 0.95) !important;
-
-    .zoom-button {
-      opacity: 0.7;
-      color: black;
-    }
-
-    .reset-zoom-button {
-      opacity: 0.7;
-      color: black;
-    }
-
-    .section {
-      border-top: 1px solid rgba(0, 0, 0, 0.1);
-
-      &:first-child {
-        border: none;
-      }
     }
   }
 }
@@ -271,37 +290,23 @@ img {
   filter: invert(1);
 }
 
-.lightTheme {
-  color: black !important;
-
-  // When the map canvas is light but the toolbar/titlebar are in dark mode,
-  // reset the inherited black color back to white so their icons stay visible.
-  #project-titlebar:not(.lightTheme),
-  #project-toolbar:not(.lightTheme) {
-    color: white !important;
-  }
-}
-
-.darkTheme {
-  color: white !important;
-}
-
 #show-menu-wrapper {
   position: fixed;
   background: transparent;
-  top: 0px;
+  top: 0;
   left: 92px;
-  background: #263238;
-  height: 72px;
+  background: var(--mat-sys-surface);
+  height: 48px;
   padding-top: 16px;
+  transition: background-color 200ms ease;
 
   .arrow-button {
-    outline: 0 !important;
+    outline: 0;
   }
 }
 
 .shadowed {
-  box-shadow: 0 4px 8px -4px rgba(0, 0, 0, 0.2), 0 6px 20px -20px rgba(0, 0, 0, 0.19);
+  @extend .shadow-medium;
 }
 
 .non-visible {
@@ -311,27 +316,27 @@ img {
 #menu-wrapper {
   position: fixed;
   background: transparent;
-  top: 0px;
+  top: 0;
   left: 92px;
-  right: 0px;
-  background: #263238;
-  height: 72px;
+  right: 0;
+  background: var(--mat-sys-surface);
+  height: 48px;
   padding-top: 16px;
   padding-bottom: 16px;
   transition: 35s;
   width: 0;
   overflow: hidden;
-  transition: 0.15s;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  transition: 100ms ease;
+  @extend .shadow-medium;
   display: flex;
 
   .menu-button {
-    outline: 0 !important;
+    outline: 0;
     transition: 0.5s;
     margin-bottom: 16px;
     width: 40px;
-    margin-right: 12px !important;
-    margin-left: 12px !important;
+    margin-right: 16px;
+    margin-left: 16px;
     background: transparent;
     padding: 0;
     border: none;
@@ -339,14 +344,14 @@ img {
   }
 
   .arrow-button {
-    outline: 0 !important;
+    outline: 0;
     transition: 0.5s;
     margin-bottom: 16px;
   }
 }
 
 .extended {
-  width: 830px !important;
+  width: 200px;
   height: 100%;
   overflow: hidden;
 }
@@ -356,18 +361,17 @@ mat-divider.divider {
   margin-left: 1px;
   margin-right: 7px;
   width: 10px;
-  color: gray;
+  color: var(--mat-sys-outline-variant);
 }
 
 @-moz-document url-prefix() {
-  /** fixes gray background of drawing menu on Firefox **/
   .mat-drawer-content {
-    display: inline !important;
+    display: inline;
   }
 }
 
 .shadow {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  @extend .shadow-normal;
 }
 
 .mat-drawer-backdrop.mat-drawer-shown {
@@ -375,7 +379,7 @@ mat-divider.divider {
 }
 
 .project-toolbar .mat-toolbar-multiple-rows {
-  width: auto !important;
+  width: auto;
 }
 
 .loading-spinner {
@@ -388,36 +392,26 @@ mat-divider.divider {
 }
 
 line.selected {
-  stroke: #0097a7 !important;
+  @extend .selection-svg-stroke;
 }
 
 svg.map image:hover,
 svg.map image.chosen,
 g.selected {
-  // Use SVG filter for better performance with SVG elements
   filter: url('#grayscale');
 }
 
 path.serial_link.selected {
-  stroke: darkred;
+  @extend .selection-error;
 }
 
-path.ethernet_link:hover {
-  stroke: darkred;
+path.curve_element.selected {
+  @extend .selection-error;
 }
 
 .selected > .interface_label_border {
-  stroke: black;
+  stroke: var(--mat-sys-on-surface);
   fill: none;
-}
-
-.selection-line-tool .selection {
-  fill: #7ccbe1;
-  stroke: #66aec2;
-  fill-opacity: 0.3;
-  stroke-opacity: 0.7;
-  stroke-width: 1;
-  stroke-dasharray: 5, 5;
 }
 
 g.node text,
@@ -430,7 +424,6 @@ g.node text,
   user-select: none;
 }
 
-/* Disable outline after button click */
 .project-toolbar button {
   outline: 0;
   border: none;
@@ -438,16 +431,16 @@ g.node text,
 }
 
 .options-item {
-  padding-left: 15px;
-  padding-right: 15px;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 .context-menu-items .mat-menu-item {
-  line-height: 24px !important;
-  height: 24px !important;
-  font-size: 13px !important;
+  line-height: 32px;
+  height: 32px;
+  font-size: 12px;
   padding: 0 6px;
-  outline: none !important;
+  outline: none;
 }
 
 .context-menu-items .mat-menu-item .mat-icon {
@@ -461,11 +454,11 @@ g.node text,
 .context-menu-items .mat-menu-item.cdk-focused:not(:hover),
 .context-menu-items .mat-menu-item.cdk-program-focused:not(:hover),
 .context-menu-items .mat-menu-item.cdk-keyboard-focused:not(:hover) {
-  background: none !important;
+  background: none;
 }
 
 .context-menu-items .mat-menu-item:hover {
-  background-color: #DC143C !important;
+  background-color: var(--mat-sys-surface-container);
 }
 
 .visible {
@@ -473,81 +466,73 @@ g.node text,
 }
 
 mat-menu-panel {
-  min-height: 0px;
+  min-height: 0;
 }
 
 .unmarked {
-  color: white !important;
+  color: var(--mat-sys-on-surface);
 }
 
-.unmarkedLight {
-  color: black !important;
-}
+/* =============================================
+// Inline Taskbar for minimized windows
+// ============================================= */
+.inline-taskbar {
+  position: fixed;
+  bottom: 20px;
+  left: 0;
+  z-index: 999; // Below floating windows but above map
+  display: flex;
+  gap: 8px;
 
-.marked {
-  color: #0097a7 !important;
-}
+  &__icon {
+    position: absolute;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    height: 48px;
+    width: 180px;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 150ms var(--mat-sys-motion-easing-linear);
+    background: var(--mat-sys-surface);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 25%, transparent),
+      0 0 0 1px var(--mat-sys-outline-variant);
 
-/* ============================================================================
- * Console Device Highlight Styles
- * Highlight selected console device and its connected links in topology
- * ============================================================================ */
+    &:hover {
+      background: var(--mat-sys-hover-state-layer);
+    }
 
-g.node.console-highlight {
-  // Selected node - red glow only (no border color change)
-  filter: drop-shadow(0 0 5px #ef4444);
+    &:active {
+      background: var(--mat-sys-focus-state-layer);
+    }
 
-  .node_body {
-    // No stroke color change - keep original node border color
-    // Only add red glow effect
-    stroke-width: 5px;
+    // Minimized state - slightly different appearance
+    &--minimized {
+      opacity: 0.7;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
   }
 
-  // Exclude label from stroke effect - keep original color
-  .layer_label,
-  .layer_label_wrapper,
-  .label_container,
-  .label,
-  text {
-    stroke: none !important;
-    fill: inherit !important;
-  }
-}
-
-// Connected node highlight (static highlight, performance optimized)
-g.node.console-highlight-connected {
-  filter: drop-shadow(0 0 3px #3b82f6);
-
-  .node_body {
-    // No stroke color change - keep original node border color
-    // Only add blue glow effect
-    stroke-width: 3px;
+  &__icon-type {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: var(--mat-sys-primary);
+    flex-shrink: 0;
   }
 
-  // Exclude label from stroke effect - keep original color
-  .layer_label,
-  .layer_label_wrapper,
-  .label_container,
-  .label,
-  text {
-    stroke: none !important;
-    fill: inherit !important;
-  }
-}
-
-g.link_body.console-highlight {
-  // Performance optimized: removed animation, using static red color
-  > path.ethernet_link,
-  > path.serial_link {
-    stroke: #ef4444 !important;
-    stroke-width: 4px !important;
-    // No animation, no dash - solid red line
-  }
-
-  // Force label text to keep original color using !important on fill attribute
-  .status_label text {
-    fill: #111111 !important;
+  &__label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
-
-// Performance optimized: removed linkDashAnimation (no longer used)

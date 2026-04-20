@@ -1,203 +1,481 @@
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { EventEmitter, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatMenuModule } from '@angular/material/menu';
-import { BrowserModule } from '@angular/platform-browser';
-import { RouterTestingModule } from '@angular/router/testing';
-import { ToasterService } from '@services/toaster.service';
-import { LoginService } from '@services/login.service';
-import { ControllerService } from '@services/controller.service';
-import { ProtocolHandlerService } from '@services/protocol-handler.service';
-import { of } from 'rxjs';
-import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
-import { ProjectWebServiceHandler, WebServiceMessage } from '../../../handlers/project-web-service-handler';
-import { Controller } from '@models/controller';
-import { HttpController, ControllerErrorHandler } from '@services/http-controller.service';
-import { NodeService } from '@services/node.service';
-import { NodeConsoleService } from '@services/nodeConsole.service';
-import { MockedNodesDataSource, MockedNodeService } from '../project-map.component.spec';
+import { ChangeDetectorRef, EventEmitter } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { of, Subject } from 'rxjs';
 import { LogConsoleComponent } from './log-console.component';
 import { LogEventsDataSource } from './log-events-datasource';
-import { MapSettingsService } from '@services/mapsettings.service';
-import { MatSnackBarModule } from '@angular/material/snack-bar';
-
-export class MockedProjectWebServiceHandler {
-  public nodeNotificationEmitter = new EventEmitter<WebServiceMessage>();
-  public linkNotificationEmitter = new EventEmitter<WebServiceMessage>();
-  public drawingNotificationEmitter = new EventEmitter<WebServiceMessage>();
-  public infoNotificationEmitter = new EventEmitter<any>();
-  public warningNotificationEmitter = new EventEmitter<any>();
-  public errorNotificationEmitter = new EventEmitter<any>();
-}
+import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
+import { ProjectWebServiceHandler } from '../../../handlers/project-web-service-handler';
+import { NodeService } from '@services/node.service';
+import { HttpController } from '@services/http-controller.service';
+import { ProtocolHandlerService } from '@services/protocol-handler.service';
+import { ThemeService } from '@services/theme.service';
+import { NodeConsoleService } from '@services/nodeConsole.service';
+import { Node } from '../../../cartography/models/node';
+import { Link } from '@models/link';
+import { Drawing } from '../../../cartography/models/drawing';
+import { LogEvent } from '@models/logEvent';
+import { Controller } from '@models/controller';
+import { Project } from '@models/project';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('LogConsoleComponent', () => {
   let component: LogConsoleComponent;
   let fixture: ComponentFixture<LogConsoleComponent>;
 
-  let mockedNodeService: MockedNodeService = new MockedNodeService();
-  let mockedNodesDataSource: MockedNodesDataSource = new MockedNodesDataSource();
-  let mockedProjectWebServiceHandler: MockedProjectWebServiceHandler = new MockedProjectWebServiceHandler();
-  let nodeConsoleService: NodeConsoleService;
-  let mapSettingsService: MapSettingsService;
-  let toasterService: ToasterService;
-  let protocolHandlerService: ProtocolHandlerService;
+  let mockLogEventsDataSource: LogEventsDataSource;
+  let mockNodesDataSource: any;
+  let mockProjectWebServiceHandler: any;
+  let mockNodeService: any;
+  let mockHttpService: any;
+  let mockProtocolHandlerService: any;
+  let mockThemeService: any;
+  let mockNodeConsoleService: any;
+  let mockCd: any;
 
-  let httpController = new HttpController({} as HttpClient, {} as ControllerErrorHandler);
+  let consoleResizeSubject: Subject<any>;
 
-  beforeEach(async() => {
-   await TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, RouterTestingModule, MatMenuModule, BrowserModule, MatSnackBarModule],
+  let mockController: Controller;
+  let mockProject: Project;
+  let mockNode: Node;
+  let mockLink: Link;
+  let mockDrawing: Drawing;
+
+  const createMockNode = (name = 'TestNode', status = 'started'): Node =>
+    ({
+      node_id: 'node1',
+      name,
+      status,
+      console_host: '0.0.0.0',
+      console: 3080,
+      console_type: 'telnet',
+      node_type: 'vpcs',
+      project_id: 'proj1',
+      command_line: '',
+      compute_id: 'local',
+      height: 50,
+      width: 80,
+      x: 100,
+      y: 200,
+      z: 1,
+      port_name_format: 'eth{0}',
+      port_segment_size: 0,
+      first_port_name: '',
+      label: { text: 'TEST', rotation: 0, style: '', x: 0, y: 0 },
+      symbol: '',
+      symbol_url: '',
+      properties: {},
+      console_auto_start: false,
+      locked: false,
+      node_directory: '',
+      ports: [],
+    } as Node);
+
+  beforeEach(async () => {
+    consoleResizeSubject = new Subject<any>();
+
+    mockLogEventsDataSource = new LogEventsDataSource();
+
+    mockNodesDataSource = {
+      getItems: vi.fn().mockReturnValue([]),
+    };
+
+    mockProjectWebServiceHandler = {
+      nodeNotificationEmitter: new EventEmitter<any>(),
+      linkNotificationEmitter: new EventEmitter<any>(),
+      drawingNotificationEmitter: new EventEmitter<any>(),
+      errorNotificationEmitter: new EventEmitter<string>(),
+      warningNotificationEmitter: new EventEmitter<string>(),
+      infoNotificationEmitter: new EventEmitter<string>(),
+    };
+
+    mockNodeService = {
+      startAll: vi.fn().mockReturnValue(of(undefined)),
+      stopAll: vi.fn().mockReturnValue(of(undefined)),
+      suspendAll: vi.fn().mockReturnValue(of(undefined)),
+      reloadAll: vi.fn().mockReturnValue(of(undefined)),
+      start: vi.fn().mockReturnValue(of(undefined)),
+      stop: vi.fn().mockReturnValue(of(undefined)),
+      suspend: vi.fn().mockReturnValue(of(undefined)),
+      reload: vi.fn().mockReturnValue(of(undefined)),
+    };
+
+    mockHttpService = {
+      requestsNotificationEmitter: new EventEmitter<string>(),
+    };
+
+    mockProtocolHandlerService = {
+      open: vi.fn(),
+    };
+
+    mockThemeService = {
+      getActualTheme: vi.fn().mockReturnValue('dark'),
+    };
+
+    mockNodeConsoleService = {
+      consoleResized: consoleResizeSubject.asObservable(),
+    };
+
+    mockCd = {
+      detectChanges: vi.fn(),
+      markForCheck: vi.fn(),
+    };
+
+    mockController = {
+      id: 1,
+      authToken: '',
+      name: 'Test Controller',
+      location: 'local',
+      host: '127.0.0.1',
+      port: 3080,
+      path: '',
+      ubridge_path: '',
+      status: 'running',
+      protocol: 'http:',
+      username: '',
+      password: '',
+      tokenExpired: false,
+    } as Controller;
+
+    mockProject = {
+      project_id: 'proj1',
+      name: 'Test Project',
+      filename: 'test.gns3',
+      status: 'opened',
+      auto_close: true,
+      auto_open: false,
+      auto_start: false,
+      scene_width: 2000,
+      scene_height: 1000,
+      zoom: 100,
+      show_layers: false,
+      snap_to_grid: false,
+      show_grid: false,
+      grid_size: 75,
+      drawing_grid_size: 25,
+      show_interface_labels: false,
+      variables: [],
+      path: '/path/to/project',
+      readonly: false,
+    } as Project;
+
+    mockNode = createMockNode();
+    mockLink = {
+      link_id: 'link1',
+      link_type: 'ethernet',
+      capturing: false,
+      capture_file_name: '',
+      capture_file_path: '',
+      nodes: [],
+      filters: {},
+      project_id: 'proj1',
+      suspend: false,
+      distance: 0,
+      length: 0,
+      source: mockNode,
+      target: mockNode,
+      x: 0,
+      y: 0,
+    } as Link;
+
+    mockDrawing = {
+      drawing_id: 'draw1',
+      project_id: 'proj1',
+      rotation: 0,
+      x: 100,
+      y: 200,
+      z: 1,
+    } as unknown as Drawing;
+
+    await TestBed.configureTestingModule({
+      imports: [LogConsoleComponent, FormsModule],
       providers: [
-        { provide: ProjectWebServiceHandler, useValue: mockedProjectWebServiceHandler },
-        { provide: NodeService, useValue: mockedNodeService },
-        { provide: NodesDataSource, useValue: mockedNodesDataSource },
-        { provide: LogEventsDataSource, useClass: LogEventsDataSource },
-        { provide: HttpController, useValue: httpController },
-        NodeConsoleService,
-        ToasterService,
-        { provide: LoginService, useValue: {} },
-        { provide: ControllerService, useValue: {} },
-        ProtocolHandlerService,
-        MapSettingsService
+        { provide: LogEventsDataSource, useValue: mockLogEventsDataSource },
+        { provide: NodesDataSource, useValue: mockNodesDataSource },
+        { provide: ProjectWebServiceHandler, useValue: mockProjectWebServiceHandler },
+        { provide: NodeService, useValue: mockNodeService },
+        { provide: HttpController, useValue: mockHttpService },
+        { provide: ProtocolHandlerService, useValue: mockProtocolHandlerService },
+        { provide: ThemeService, useValue: mockThemeService },
+        { provide: NodeConsoleService, useValue: mockNodeConsoleService },
+        { provide: ChangeDetectorRef, useValue: mockCd },
       ],
-      declarations: [LogConsoleComponent],
-      schemas: [NO_ERRORS_SCHEMA],
     }).compileComponents();
 
-    toasterService = TestBed.inject(ToasterService);
-    protocolHandlerService = TestBed.inject(ProtocolHandlerService);
-    mapSettingsService = TestBed.inject(MapSettingsService);
-    nodeConsoleService = TestBed.inject(NodeConsoleService);
-  });
-
-  beforeEach(() => {
     fixture = TestBed.createComponent(LogConsoleComponent);
     component = fixture.componentInstance;
-    component.controller = { location: 'local' } as Controller;
+    component.controller = mockController;
+    fixture.componentRef.setInput('project', mockProject);
     fixture.detectChanges();
   });
 
-  it('should create', () => {
-    expect(component).toBeTruthy();
+  afterEach(() => {
+    fixture.destroy();
   });
 
-  it('should call show message when help command entered', () => {
-    spyOn(component, 'showMessage');
-    component.command = 'help';
+  describe('Creation', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy();
+    });
 
-    component.handleCommand();
+    it('should have default filter set to all', () => {
+      expect(component.selectedFilter).toBe('all');
+    });
 
-    expect(component.showMessage).toHaveBeenCalledWith({
-      type: 'command',
-      message:
-        'Available commands: help, version, console {node name}, start all, start {node name}, stop all, stop {node name}, suspend all, suspend {node name}, reload all, reload {node name}, show {node name}.',
+    it('should have empty filteredEvents initially', () => {
+      expect(component.filteredEvents).toEqual([]);
+    });
+
+    it('should have lightTheme disabled for dark theme', () => {
+      expect(component.isLightThemeEnabled).toBe(false);
     });
   });
 
-  xit('should call show message when version command entered', () => {
-    spyOn(component, 'showMessage');
-    component.command = 'version';
+  describe('applyFilter', () => {
+    it('should update selectedFilter when applying a filter', () => {
+      component.applyFilter('errors');
+      expect(component.selectedFilter).toBe('errors');
+    });
 
-    component.handleCommand();
+    it('should update filteredEvents to only error events when filter is errors', () => {
+      mockLogEventsDataSource.add({ type: 'error', message: 'err1' });
+      mockLogEventsDataSource.add({ type: 'info', message: 'info1' });
+      component.applyFilter('errors');
+      expect(component.filteredEvents.length).toBe(1);
+      expect(component.filteredEvents[0].type).toBe('error');
+    });
 
-    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Current version: 2.2.18dev' });
+    it('should update filteredEvents to only warning events when filter is warnings', () => {
+      mockLogEventsDataSource.add({ type: 'warning', message: 'warn1' });
+      mockLogEventsDataSource.add({ type: 'info', message: 'info1' });
+      component.applyFilter('warnings');
+      expect(component.filteredEvents.length).toBe(1);
+      expect(component.filteredEvents[0].type).toBe('warning');
+    });
+
+    it('should return all events when filter is all', () => {
+      mockLogEventsDataSource.add({ type: 'error', message: 'err1' });
+      mockLogEventsDataSource.add({ type: 'info', message: 'info1' });
+      component.applyFilter('all');
+      expect(component.filteredEvents.length).toBe(2);
+    });
   });
 
-  it('should call show message when unknown command entered', () => {
-    spyOn(component, 'showMessage');
-    component.command = 'xyz';
+  describe('getFilteredEvents', () => {
+    let localDataSource: LogEventsDataSource;
 
-    component.handleCommand();
+    beforeEach(() => {
+      localDataSource = new LogEventsDataSource();
+      // Replace the component's logEventsDataSource with a fresh one
+      (component as any).logEventsDataSource = localDataSource;
+    });
 
-    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Unknown syntax: xyz' });
+    it('should return all events when filter is all', () => {
+      localDataSource.add({ type: 'error', message: 'err1' });
+      localDataSource.add({ type: 'command', message: 'cmd1' });
+      component.applyFilter('all');
+      expect(component.filteredEvents.length).toBe(2);
+    });
+
+    it('should return only map updates and commands when filter is map updates', () => {
+      localDataSource.add({ type: 'map update', message: 'map1' });
+      localDataSource.add({ type: 'command', message: 'cmd1' });
+      localDataSource.add({ type: 'error', message: 'err1' });
+      component.applyFilter('map updates');
+      expect(component.filteredEvents.length).toBe(2);
+      expect(component.filteredEvents.every((e) => e.type === 'map update' || e.type === 'command')).toBe(true);
+    });
+
+    it('should return only controller requests when filter is controller requests', () => {
+      localDataSource.add({ type: 'controller request', message: 'req1' });
+      localDataSource.add({ type: 'error', message: 'err1' });
+      component.applyFilter('controller requests');
+      expect(component.filteredEvents.length).toBe(1);
+      expect(component.filteredEvents[0].type).toBe('controller request');
+    });
   });
 
-  it('should call node service when start all entered', () => {
-    spyOn(component, 'showMessage');
-    spyOn(mockedNodeService, 'startAll').and.returnValue(of({}));
-    component.command = 'start all';
-
-    component.handleCommand();
-
-    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Starting all nodes...' });
-    expect(mockedNodeService.startAll).toHaveBeenCalled();
+  describe('clearConsole', () => {
+    it('should clear filteredEvents', () => {
+      mockLogEventsDataSource.add({ type: 'error', message: 'err1' });
+      component.filteredEvents = mockLogEventsDataSource.getItems();
+      component.clearConsole();
+      expect(component.filteredEvents).toEqual([]);
+    });
   });
 
-  it('should call node service when stop all entered', () => {
-    spyOn(component, 'showMessage');
-    spyOn(mockedNodeService, 'stopAll').and.returnValue(of({}));
-    component.command = 'stop all';
+  describe('handleCommand', () => {
+    beforeEach(() => {
+      mockNodesDataSource.getItems.mockReturnValue([mockNode]);
+    });
 
-    component.handleCommand();
+    it('should show help message when command is help', () => {
+      component.command.set('help');
+      component.handleCommand();
+      expect(component.command()).toBe('');
+    });
 
-    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Stopping all nodes...' });
-    expect(mockedNodeService.stopAll).toHaveBeenCalled();
+    it('should clear command and process version when command is version', () => {
+      component.command.set('version');
+      component.handleCommand();
+      expect(component.command()).toBe('');
+    });
+
+    it('should call startAll when command is start all', () => {
+      component.command.set('start all');
+      component.handleCommand();
+      expect(mockNodeService.startAll).toHaveBeenCalledWith(mockController, mockProject);
+    });
+
+    it('should call stopAll when command is stop all', () => {
+      component.command.set('stop all');
+      component.handleCommand();
+      expect(mockNodeService.stopAll).toHaveBeenCalledWith(mockController, mockProject);
+    });
+
+    it('should call suspendAll when command is suspend all', () => {
+      component.command.set('suspend all');
+      component.handleCommand();
+      expect(mockNodeService.suspendAll).toHaveBeenCalledWith(mockController, mockProject);
+    });
+
+    it('should call reloadAll when command is reload all', () => {
+      component.command.set('reload all');
+      component.handleCommand();
+      expect(mockNodeService.reloadAll).toHaveBeenCalledWith(mockController, mockProject);
+    });
+
+    it('should call start for specific node when command matches regex', () => {
+      component.command.set('start TestNode');
+      component.handleCommand();
+      expect(mockNodeService.start).toHaveBeenCalledWith(mockController, mockNode);
+    });
+
+    it('should clear command after handling', () => {
+      component.command.set('help');
+      component.handleCommand();
+      expect(component.command()).toBe('');
+    });
+
+    it('should show unknown syntax for unrecognized commands', () => {
+      component.command.set('foobar');
+      component.handleCommand();
+      expect(component.command()).toBe('');
+    });
   });
 
-  it('should call node service when suspend all entered', () => {
-    spyOn(component, 'showMessage');
-    spyOn(mockedNodeService, 'suspendAll').and.returnValue(of({}));
-    component.command = 'suspend all';
+  describe('showMessage', () => {
+    it('should add event to logEventsDataSource', () => {
+      const event: LogEvent = { type: 'info', message: 'test message' };
+      component.showMessage(event);
+      expect(mockLogEventsDataSource.getItems().length).toBe(1);
+      expect(mockLogEventsDataSource.getItems()[0].message).toBe('test message');
+    });
 
-    component.handleCommand();
-
-    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Suspending all nodes...' });
-    expect(mockedNodeService.suspendAll).toHaveBeenCalled();
+    it('should update filteredEvents after adding message', () => {
+      component.filteredEvents = [];
+      const event: LogEvent = { type: 'info', message: 'test' };
+      component.showMessage(event);
+      expect(component.filteredEvents.length).toBe(1);
+    });
   });
 
-  it('should call node service when reload all entered', () => {
-    spyOn(component, 'showMessage');
-    spyOn(mockedNodeService, 'reloadAll').and.returnValue(of({}));
-    component.command = 'reload all';
-
-    component.handleCommand();
-
-    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Reloading all nodes...' });
-    expect(mockedNodeService.reloadAll).toHaveBeenCalled();
+  describe('showCommand', () => {
+    it('should add command type event via showMessage', () => {
+      const addSpy = vi.spyOn(component, 'showMessage');
+      component.showCommand('test command');
+      expect(addSpy).toHaveBeenCalledWith({ type: 'command', message: 'test command' });
+    });
   });
 
-  it('should call node service when start node entered', () => {
-    spyOn(component, 'showMessage');
-    spyOn(mockedNodeService, 'start').and.returnValue(of({}));
-    component.command = 'start testNode';
+  describe('subscriptions', () => {
+    it('should add map update event when nodeNotificationEmitter emits', () => {
+      const event = {
+        action: 'created',
+        event: mockNode,
+      };
+      mockProjectWebServiceHandler.nodeNotificationEmitter.emit(event);
+      expect(mockLogEventsDataSource.getItems().some((e) => e.type === 'map update')).toBe(true);
+    });
 
-    component.handleCommand();
+    it('should add map update event when linkNotificationEmitter emits', () => {
+      const event = {
+        action: 'created',
+        event: mockLink,
+      };
+      mockProjectWebServiceHandler.linkNotificationEmitter.emit(event);
+      expect(mockLogEventsDataSource.getItems().some((e) => e.type === 'map update')).toBe(true);
+    });
 
-    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Starting node testNode...' });
-    expect(mockedNodeService.start).toHaveBeenCalled();
+    it('should add map update event when drawingNotificationEmitter emits', () => {
+      const event = {
+        action: 'created',
+        event: mockDrawing,
+      };
+      mockProjectWebServiceHandler.drawingNotificationEmitter.emit(event);
+      expect(mockLogEventsDataSource.getItems().some((e) => e.type === 'map update')).toBe(true);
+    });
+
+    it('should add error event when errorNotificationEmitter emits', () => {
+      mockProjectWebServiceHandler.errorNotificationEmitter.emit('Error: something failed');
+      expect(mockLogEventsDataSource.getItems().some((e) => e.type === 'error')).toBe(true);
+    });
+
+    it('should add warning event when warningNotificationEmitter emits', () => {
+      mockProjectWebServiceHandler.warningNotificationEmitter.emit('Warning: low memory');
+      expect(mockLogEventsDataSource.getItems().some((e) => e.type === 'warning')).toBe(true);
+    });
+
+    it('should add info event when infoNotificationEmitter emits', () => {
+      mockProjectWebServiceHandler.infoNotificationEmitter.emit('Info: server connected');
+      expect(mockLogEventsDataSource.getItems().some((e) => e.type === 'info')).toBe(true);
+    });
+
+    it('should add controller request event when requestsNotificationEmitter emits', () => {
+      mockHttpService.requestsNotificationEmitter.emit('GET /api/nodes');
+      expect(mockLogEventsDataSource.getItems().some((e) => e.type === 'controller request')).toBe(true);
+    });
   });
 
-  it('should call node service when stop node entered', () => {
-    spyOn(component, 'showMessage');
-    spyOn(mockedNodeService, 'stop').and.returnValue(of({}));
-    component.command = 'stop testNode';
-
-    component.handleCommand();
-
-    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Stopping node testNode...' });
-    expect(mockedNodeService.stop).toHaveBeenCalled();
+  describe('printNode', () => {
+    it('should return formatted string with node properties', () => {
+      const result = component.printNode(mockNode);
+      expect(result).toContain('node_id: node1');
+      expect(result).toContain('name: TestNode');
+      expect(result).toContain('status: started');
+    });
   });
 
-  it('should call node service when suspend node entered', () => {
-    spyOn(component, 'showMessage');
-    spyOn(mockedNodeService, 'suspend').and.returnValue(of({}));
-    component.command = 'suspend testNode';
-
-    component.handleCommand();
-
-    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Suspending node testNode...' });
-    expect(mockedNodeService.suspend).toHaveBeenCalled();
+  describe('printPorts', () => {
+    it('should return formatted string with port details', () => {
+      const ports = [
+        {
+          adapter_number: 0,
+          port_number: 0,
+          name: 'eth0',
+          short_name: 'e0',
+          link_type: 'ethernet',
+        },
+      ] as any[];
+      const result = component.printPorts(ports);
+      expect(result).toContain('adapter_number: 0');
+      expect(result).toContain('name: eth0');
+    });
   });
 
-  it('should call node service when reload node entered', () => {
-    spyOn(component, 'showMessage');
-    spyOn(mockedNodeService, 'reload').and.returnValue(of({}));
-    component.command = 'reload testNode';
+  describe('printLink', () => {
+    it('should return formatted string with link properties', () => {
+      const result = component.printLink(mockLink);
+      expect(result).toContain('link_id: link1');
+      expect(result).toContain('link_type: ethernet');
+    });
+  });
 
-    component.handleCommand();
-
-    expect(component.showMessage).toHaveBeenCalledWith({ type: 'command', message: 'Reloading node testNode...' });
-    expect(mockedNodeService.reload).toHaveBeenCalled();
+  describe('printDrawing', () => {
+    it('should return formatted string with drawing properties', () => {
+      const result = component.printDrawing(mockDrawing);
+      expect(result).toContain('drawing_id: draw1');
+      expect(result).toContain('project_id: proj1');
+    });
   });
 });

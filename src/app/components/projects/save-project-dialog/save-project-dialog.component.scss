@@ -1,7 +1,14 @@
+/**
+ * GNS3 Save Project Dialog Component Styles
+ *
+ * Migrated to Angular Material 14+ theming system
+ * Using CSS custom properties and design tokens
+ */
+
 .file-name-form-field {
   width: 100%;
 }
 
 .project-snackbar {
-  background: #2196f3;
+  background: var(--mat-app-primary-color);
 }

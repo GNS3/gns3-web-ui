@@ -1,6 +1,6 @@
 export class Snapshot {
-  snapshot_id: number;
+  snapshot_id: string;
   name: string;
-  created_at: string;
-  project_id: number;
+  created_at: number;
+  project_id: string;
 }

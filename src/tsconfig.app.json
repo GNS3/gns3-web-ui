@@ -14,11 +14,15 @@
     "types": []
   },
   "files": [
-    "main.ts",
-    "main.electron.ts",
-    "polyfills.ts"
+    "main.ts"
   ],
   "include": [
-    // "../src/**/*"
+    "../src/**/*"
+  ],
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.backup.ts",
+    "**/*.bak"
   ]
 }

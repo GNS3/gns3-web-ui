@@ -1,4 +1,5 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, input, viewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
 import { NodeToMapNodeConverter } from '../../../cartography/converters/map/node-to-map-node-converter';
@@ -15,27 +16,29 @@ import { Link } from '@models/link';
 @Component({
   selector: 'app-draw-link-tool',
   templateUrl: './draw-link-tool.component.html',
-  styleUrls: ['./draw-link-tool.component.scss'],
+  styleUrl: './draw-link-tool.component.scss',
+  imports: [CommonModule, NodeSelectInterfaceComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DrawLinkToolComponent implements OnInit, OnDestroy {
-  @Input() links: Link[];
-  @ViewChild(NodeSelectInterfaceComponent) nodeSelectInterfaceMenu: NodeSelectInterfaceComponent;
+  readonly links = input<Link[]>(undefined);
+  readonly nodeSelectInterfaceMenu = viewChild(NodeSelectInterfaceComponent);
 
   private nodeClicked$: Subscription;
 
-  constructor(
-    private drawingLineTool: DrawingLineWidget,
-    private nodesEventSource: NodesEventSource,
-    private linksEventSource: LinksEventSource,
-    private mapNodeToNode: MapNodeToNodeConverter,
-    private nodeToMapNode: NodeToMapNodeConverter,
-    private portToMapPort: PortToMapPortConverter
-  ) {}
+  private drawingLineTool = inject(DrawingLineWidget);
+  private nodesEventSource = inject(NodesEventSource);
+  private linksEventSource = inject(LinksEventSource);
+  private mapNodeToNode = inject(MapNodeToNodeConverter);
+  private nodeToMapNode = inject(NodeToMapNodeConverter);
+  private portToMapPort = inject(PortToMapPortConverter);
+
+  constructor() {}
 
   ngOnInit() {
     this.nodeClicked$ = this.nodesEventSource.clicked.subscribe((clickedEvent) => {
       let node = this.mapNodeToNode.convert(clickedEvent.datum);
-      this.nodeSelectInterfaceMenu.open(node, clickedEvent.y, clickedEvent.x);
+      this.nodeSelectInterfaceMenu().open(node, clickedEvent.y, clickedEvent.x);
     });
   }
 

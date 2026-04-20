@@ -1,14 +1,22 @@
 <h2 mat-dialog-title>{{ data.title }}</h2>
 
 <mat-dialog-content>
+  @if (data.message) {
   <p>{{ data.message }}</p>
+  } @if (data.items?.length) {
+  <ul>
+    @for (item of data.items; track item.name) {
+    <li>{{ item.name }}{{ item.description ? ' (' + item.description + ')' : '' }}</li>
+    }
+  </ul>
+  }
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
   <button mat-button (click)="onCancel()">
     {{ data.cancelText || 'Cancel' }}
   </button>
-  <button mat-raised-button color="warn" (click)="onConfirm()">
-    {{ data.confirmText || 'Delete' }}
+  <button mat-raised-button color="primary" (click)="onConfirm()">
+    {{ data.confirmText || 'Confirm' }}
   </button>
 </mat-dialog-actions>

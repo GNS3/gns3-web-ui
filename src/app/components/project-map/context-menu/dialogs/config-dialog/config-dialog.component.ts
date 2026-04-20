@@ -1,15 +1,22 @@
-import { Component } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-config-dialog',
   templateUrl: './config-dialog.component.html',
-  styleUrls: ['./config-dialog.component.scss'],
+  styleUrl: './config-dialog.component.scss',
+  imports: [MatDialogModule, MatButtonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigDialogComponent {
-  constructor(public dialogRef: MatDialogRef<ConfigDialogComponent>) {}
+  dialogRef = inject(MatDialogRef<ConfigDialogComponent>);
 
   close(fileType: string) {
     this.dialogRef.close(fileType);
+  }
+
+  onClose() {
+    this.dialogRef.close();
   }
 }

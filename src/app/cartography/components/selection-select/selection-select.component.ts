@@ -1,18 +1,22 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { SelectionManager } from '../../managers/selection-manager';
 import { MapChangeDetectorRef } from '../../services/map-change-detector-ref';
 
 @Component({
+  standalone: true,
   selector: 'app-selection-select',
   templateUrl: './selection-select.component.html',
   styleUrls: ['./selection-select.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [],
 })
 export class SelectionSelectComponent implements OnInit, OnDestroy {
   private onSelected: Subscription;
   private onUnselected: Subscription;
 
-  constructor(private selectionManager: SelectionManager, private mapChangeDetectorRef: MapChangeDetectorRef) {}
+  private selectionManager = inject(SelectionManager);
+  private mapChangeDetectorRef = inject(MapChangeDetectorRef);
 
   ngOnInit() {
     this.onSelected = this.selectionManager.selected.subscribe(() => {

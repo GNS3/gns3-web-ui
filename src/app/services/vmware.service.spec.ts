@@ -1,110 +1,217 @@
-import { HttpClient } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { inject, TestBed } from '@angular/core/testing';
-import { environment } from 'environments/environment';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { firstValueFrom, of, throwError } from 'rxjs';
+import { VmwareService } from './vmware.service';
+import { HttpController } from './http-controller.service';
 import { Controller } from '@models/controller';
 import { VmwareTemplate } from '@models/templates/vmware-template';
-import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { HttpController } from './http-controller.service';
-import { getTestController } from './testing';
-import { VmwareService } from './vmware.service';
+import { VmwareVm } from '@models/vmware/vmware-vm';
+
+vi.mock('environments/environment', () => ({
+  environment: {
+    current_version: '3.0.0',
+    compute_id: 'local',
+  },
+}));
 
 describe('VmwareService', () => {
-  let httpClient: HttpClient;
-  let httpTestingController: HttpTestingController;
-  let httpController: HttpController;
-  let controller: Controller;
+  let service: VmwareService;
+  let mockHttpController: {
+    get: ReturnType<typeof vi.fn>;
+    post: ReturnType<typeof vi.fn>;
+    put: ReturnType<typeof vi.fn>;
+    delete: ReturnType<typeof vi.fn>;
+  };
+  let mockController: Controller;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpController, VmwareService],
+    mockHttpController = {
+      get: vi.fn(),
+      post: vi.fn(),
+      put: vi.fn(),
+      delete: vi.fn(),
+    };
+
+    mockController = {
+      id: 1,
+      name: 'Test Controller',
+      location: 'local',
+      host: 'localhost',
+      port: 3080,
+      protocol: 'http:',
+      status: 'running',
+    } as Controller;
+
+    service = new VmwareService(mockHttpController as unknown as HttpController);
+  });
+
+  describe('Service Creation', () => {
+    it('should create the service', () => {
+      expect(service).toBeTruthy();
     });
 
-    httpClient = TestBed.get(HttpClient);
-    httpTestingController = TestBed.get(HttpTestingController);
-    httpController = TestBed.get(HttpController);
-    controller = getTestController();
+    it('should be instance of VmwareService', () => {
+      expect(service).toBeInstanceOf(VmwareService);
+    });
   });
 
-  afterEach(() => {
-    httpTestingController.verify();
+  describe('getTemplates', () => {
+    const mockTemplates: VmwareTemplate[] = [
+      { name: 'VMware 1', template_id: 'vm-1' } as VmwareTemplate,
+      { name: 'VMware 2', template_id: 'vm-2' } as VmwareTemplate,
+    ];
+
+    it('should call httpController.get with templates endpoint', async () => {
+      mockHttpController.get.mockReturnValue(of(mockTemplates));
+
+      await firstValueFrom(service.getTemplates(mockController));
+
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/templates');
+    });
+
+    it('should return array of VmwareTemplate', async () => {
+      mockHttpController.get.mockReturnValue(of(mockTemplates));
+
+      const result = await firstValueFrom(service.getTemplates(mockController));
+
+      expect(result).toEqual(mockTemplates);
+    });
+
+    it('should return empty array when no templates exist', async () => {
+      mockHttpController.get.mockReturnValue(of([]));
+
+      const result = await firstValueFrom(service.getTemplates(mockController));
+
+      expect(result).toEqual([]);
+    });
+
+    it('should propagate error when API fails', async () => {
+      const error = new Error('Server error');
+      mockHttpController.get.mockReturnValue(throwError(() => error));
+
+      await expect(firstValueFrom(service.getTemplates(mockController))).rejects.toThrow('Server error');
+    });
   });
 
-  it('should be created', inject([VmwareService], (service: VmwareService) => {
-    expect(service).toBeTruthy();
-  }));
+  describe('getTemplate', () => {
+    const templateId = 'vmware-1';
+    const mockTemplate: VmwareTemplate = { name: 'Test VM', template_id: templateId } as VmwareTemplate;
 
-  it('should update vmware template', inject([VmwareService], (service: VmwareService) => {
-    const template: VmwareTemplate = {
-      adapter_type: 'e1000',
-      adapters: 1,
-      builtin: false,
-      category: 'guest',
-      compute_id: 'local',
-      console_auto_start: false,
-      console_type: 'none',
-      custom_adapters: [],
-      default_name_format: '{name}-{0}',
-      first_port_name: '',
-      headless: false,
-      linked_clone: false,
-      name: '',
-      on_close: 'power-off',
-      port_name_format: 'Ethernet{0}',
-      port_segment_size: 0,
-      symbol: 'vmware_guest',
-      template_id: '1',
-      template_type: 'vmware',
-      usage: '',
-      use_any_adapter: false,
-      vmx_path: '',
-    };
+    it('should call httpController.get with template_id', async () => {
+      mockHttpController.get.mockReturnValue(of(mockTemplate));
 
-    service.saveTemplate(controller, template).subscribe();
+      await firstValueFrom(service.getTemplate(mockController, templateId));
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates/1`);
-    expect(req.request.method).toEqual('PUT');
-    expect(req.request.body).toEqual(template);
-  }));
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, `/templates/${templateId}`);
+    });
 
-  it('should add vmware template', inject([VmwareService], (service: VmwareService) => {
-    const template: VmwareTemplate = {
-      adapter_type: 'e1000',
-      adapters: 1,
-      builtin: false,
-      category: 'guest',
-      compute_id: 'local',
-      console_auto_start: false,
-      console_type: 'none',
-      custom_adapters: [],
-      default_name_format: '{name}-{0}',
-      first_port_name: '',
-      headless: false,
-      linked_clone: false,
-      name: '',
-      on_close: 'power-off',
-      port_name_format: 'Ethernet{0}',
-      port_segment_size: 0,
-      symbol: 'vmware_guest',
-      template_id: '1',
-      template_type: 'vmware',
-      usage: '',
-      use_any_adapter: false,
-      vmx_path: '',
-    };
+    it('should return VmwareTemplate', async () => {
+      mockHttpController.get.mockReturnValue(of(mockTemplate));
 
-    service.addTemplate(controller, template).subscribe();
+      const result = await firstValueFrom(service.getTemplate(mockController, templateId));
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/templates`);
-    expect(req.request.method).toEqual('POST');
-    expect(req.request.body).toEqual(template);
-  }));
+      expect(result).toEqual(mockTemplate);
+    });
 
-  it('should get available virtual machines', inject([VmwareService], (service: VmwareService) => {
-    service.getVirtualMachines(controller).subscribe();
+    it('should propagate error when template not found', async () => {
+      const error = new Error('Not found');
+      mockHttpController.get.mockReturnValue(throwError(() => error));
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/computes/${environment.compute_id}/vmware/vms`);
-    expect(req.request.method).toEqual('GET');
-  }));
+      await expect(firstValueFrom(service.getTemplate(mockController, templateId))).rejects.toThrow('Not found');
+    });
+  });
+
+  describe('addTemplate', () => {
+    const newTemplate: VmwareTemplate = { name: 'New VMware' } as VmwareTemplate;
+    const expectedTemplate = { name: 'New VMware', custom_adapters: [] };
+    const createdTemplate: VmwareTemplate = { name: 'New VMware', template_id: 'vm-2' } as VmwareTemplate;
+
+    it('should call httpController.post with template', async () => {
+      mockHttpController.post.mockReturnValue(of(createdTemplate));
+
+      await firstValueFrom(service.addTemplate(mockController, newTemplate));
+
+      expect(mockHttpController.post).toHaveBeenCalledWith(mockController, '/templates', expectedTemplate);
+    });
+
+    it('should return created VmwareTemplate with id', async () => {
+      mockHttpController.post.mockReturnValue(of(createdTemplate));
+
+      const result = await firstValueFrom(service.addTemplate(mockController, newTemplate));
+
+      expect(result).toEqual(createdTemplate);
+    });
+
+    it('should propagate error when creation fails', async () => {
+      const error = new Error('Creation failed');
+      mockHttpController.post.mockReturnValue(throwError(() => error));
+
+      await expect(firstValueFrom(service.addTemplate(mockController, newTemplate))).rejects.toThrow('Creation failed');
+    });
+  });
+
+  describe('saveTemplate', () => {
+    const template: VmwareTemplate = { template_id: 'vmware-1', name: 'Updated' } as VmwareTemplate;
+    const expectedTemplate = { template_id: 'vmware-1', name: 'Updated', custom_adapters: [] };
+
+    it('should call httpController.put with template_id', async () => {
+      mockHttpController.put.mockReturnValue(of(template));
+
+      await firstValueFrom(service.saveTemplate(mockController, template));
+
+      expect(mockHttpController.put).toHaveBeenCalledWith(mockController, '/templates/vmware-1', expectedTemplate);
+    });
+
+    it('should return updated VmwareTemplate', async () => {
+      mockHttpController.put.mockReturnValue(of(template));
+
+      const result = await firstValueFrom(service.saveTemplate(mockController, template));
+
+      expect(result).toEqual(template);
+    });
+
+    it('should propagate error when update fails', async () => {
+      const error = new Error('Update failed');
+      mockHttpController.put.mockReturnValue(throwError(() => error));
+
+      await expect(firstValueFrom(service.saveTemplate(mockController, template))).rejects.toThrow('Update failed');
+    });
+  });
+
+  describe('getVirtualMachines', () => {
+    const mockVms: VmwareVm[] = [
+      { vmname: 'VM 1', vmx_path: '/path/to/vm1.vmx' },
+      { vmname: 'VM 2', vmx_path: '/path/to/vm2.vmx' },
+    ];
+
+    it('should call httpController.get with vmware vms endpoint', async () => {
+      mockHttpController.get.mockReturnValue(of(mockVms));
+
+      await firstValueFrom(service.getVirtualMachines(mockController));
+
+      expect(mockHttpController.get).toHaveBeenCalledWith(mockController, '/computes/local/vmware/vms');
+    });
+
+    it('should return array of VMwareVm', async () => {
+      mockHttpController.get.mockReturnValue(of(mockVms));
+
+      const result = await firstValueFrom(service.getVirtualMachines(mockController));
+
+      expect(result).toEqual(mockVms);
+    });
+
+    it('should return empty array when no VMs exist', async () => {
+      mockHttpController.get.mockReturnValue(of([]));
+
+      const result = await firstValueFrom(service.getVirtualMachines(mockController));
+
+      expect(result).toEqual([]);
+    });
+
+    it('should propagate error when API fails', async () => {
+      const error = new Error('Failed to load VMs');
+      mockHttpController.get.mockReturnValue(throwError(() => error));
+
+      await expect(firstValueFrom(service.getVirtualMachines(mockController))).rejects.toThrow('Failed to load VMs');
+    });
+  });
 });

@@ -24,7 +24,7 @@ export class Context {
   public getZeroZeroTransformationPoint() {
     if (this.centerZeroZeroPoint) {
       return new Point(
-        this.centerX !== null ? this.centerX : this.size.width  / 2,
+        this.centerX !== null ? this.centerX : this.size.width / 2,
         this.centerY !== null ? this.centerY : this.size.height / 2
       );
     }

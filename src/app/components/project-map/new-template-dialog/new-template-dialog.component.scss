@@ -1,76 +1,444 @@
-.radio-button {
-  margin-bottom: 30px;
+/**
+ * GNS3 New Template Dialog Component Styles
+ * BEM naming applied, Material theme variables used
+ * Design language unified with management pages
+ */
+
+.new-template {
+  &__title {
+    margin: 0;
+    padding: 24px 24px 16px;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__stepper {
+    background: transparent;
+  }
+
+  &__step {
+    background: transparent;
+  }
+
+  &__step-label {
+    font-size: 14px;
+  }
+
+  &__content {
+    padding: 16px 24px;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  &__radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__radio-button {
+    font-size: 14px;
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 16px 24px 24px;
+    gap: 12px;
+  }
+
+  /* =============================================
+  // Table Header
+  // ============================================= */
+  &__table-header {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  &__filter-field {
+    flex: 1;
+  }
+
+  &__category-field {
+    width: 180px;
+  }
+
+  /* =============================================
+  // Table
+  // ============================================= */
+  &__table-container {
+    background: var(--mat-sys-surface);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  &__table {
+    width: 100%;
+  }
+
+  &__actions-cell {
+    text-align: right;
+    justify-content: flex-end;
+  }
+
+  /* =============================================
+  // Import Area
+  // ============================================= */
+  &__import-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    background: var(--mat-sys-surface);
+    border-radius: 12px;
+    border: 2px dashed var(--mat-sys-outline-variant);
+  }
+
+  &__import-button {
+    margin-top: 16px;
+  }
+
+  &__file-input {
+    display: none;
+  }
+
+  /* =============================================
+  // Install Section
+  // ============================================= */
+  &__install-section {
+    background: var(--mat-sys-surface);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  &__section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+  }
+
+  &__create-button {
+    width: 100%;
+  }
+
+  /* =============================================
+  // Version Item - Now using Accordion
+  // ============================================= */
+  &__version-accordion {
+    margin-bottom: 12px;
+
+    mat-expansion-panel {
+      border-radius: 12px;
+      margin-bottom: 8px;
+      box-shadow: 0 1px 3px color-mix(in srgb, var(--mat-sys-shadow) 8%, transparent);
+      transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+      &:hover {
+        box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 12%, transparent);
+      }
+
+      &.mat-expanded {
+        margin-bottom: 16px;
+      }
+    }
+
+    mat-expansion-panel-header {
+      padding: 0 16px;
+      height: 56px;
+
+      &:hover {
+        background: var(--mat-sys-surface-container-low);
+      }
+
+      .mat-content {
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+
+  &__version-summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: 12px;
+    font-size: 13px;
+    color: var(--mat-sys-on-surface-variant);
+  }
+
+  &__version-count {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: var(--mat-sys-surface-container-highest);
+    font-size: 12px;
+    font-weight: 500;
+
+    &--complete {
+      background: var(--mat-sys-primary-container);
+      color: var(--mat-sys-on-primary-container);
+    }
+
+    &--partial {
+      background: var(--mat-sys-tertiary-container);
+      color: var(--mat-sys-on-tertiary-container);
+    }
+  }
+
+  &__version-content {
+    padding: 0 16px 16px;
+  }
+
+  /* =============================================
+  // Accordion Create Button
+  // ============================================= */
+  &__version-summary {
+    button {
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  /* =============================================
+  // Legacy Version Item (for non-QEMU)
+  // ============================================= */
+  &__version-item {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+
+    &:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+  }
+
+  &__version-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  &__version-name {
+    font-weight: 500;
+    color: var(--mat-sys-on-surface);
+  }
+
+  /* =============================================
+  // Image Item
+  // ============================================= */
+  &__image-list {
+    padding: 0;
+  }
+
+  &__list-item {
+    height: auto;
+    min-height: 48px;
+    padding: 8px 0;
+  }
+
+  &__image-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+
+    // Card style - visual hierarchy optimization
+    background: var(--mat-sys-surface-container-low);
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 12px;
+    padding: 12px 16px;
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+    // Hover effect
+    &:hover {
+      background: var(--mat-sys-surface-container);
+      box-shadow: 0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+    }
+
+    // Installed state - green left border
+    &--installed {
+      border-left: 4px solid var(--mat-sys-primary);
+    }
+
+    // Missing state - orange left border
+    &--missing {
+      border-left: 4px solid var(--mat-sys-tertiary);
+    }
+  }
+
+  &__image-name {
+    font-size: 14px;
+    color: var(--mat-sys-on-surface);
+    word-break: break-word;
+  }
+
+  &__image-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  /* =============================================
+  // Status Badge - Visual state indicators
+  // ============================================= */
+  &__status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 16px;
+    font-size: 13px;
+    font-weight: 500;
+
+    mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+    }
+
+    &--ready {
+      background: var(--mat-sys-primary-container);
+      color: var(--mat-sys-on-primary-container);
+    }
+
+    &--missing {
+      background: var(--mat-sys-error-container);
+      color: var(--mat-sys-on-error-container);
+    }
+  }
+
+  /* =============================================
+  // Action Group - Primary action + menu
+  // ============================================= */
+  &__action-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__action-buttons {
+    display: flex;
+    gap: 8px;
+  }
+
+  /* =============================================
+  // More Menu - Secondary actions dropdown
+  // ============================================= */
+  &__more-menu {
+    mat-icon {
+      font-size: 20px;
+      height: 20px;
+      width: 20px;
+    }
+  }
+
+  /* =============================================
+  // Upload Progress - Inline progress indicator
+  // ============================================= */
+  &__upload-progress {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--mat-sys-primary-container);
+    border-radius: 8px;
+    margin-top: 12px;
+
+    mat-progress-bar {
+      height: 4px;
+      border-radius: 2px;
+    }
+  }
+
+  &__progress-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--mat-sys-on-primary-container);
+  }
+
+  &__progress-text {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    mat-icon {
+      font-size: 18px;
+      height: 18px;
+      width: 18px;
+      animation: spin 1s linear infinite;
+    }
+  }
+
+  &__progress-percentage {
+    font-weight: 500;
+  }
+
+  &__cancel-button {
+    min-width: auto;
+    padding: 4px 8px;
+    font-size: 12px;
+  }
 }
 
-.tableHeader {
-  width: 100%;
+// Progress spinner animation
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.filter-field {
-  width: 100%;
-}
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 640px) {
+  .new-template {
+    &__title {
+      padding: 16px 16px 12px;
+      font-size: 18px;
+    }
 
-.example-container {
-  display: flex;
-  flex-direction: column;
-  max-height: 500px;
-  min-width: 300px;
-}
+    &__content {
+      padding: 12px 16px;
+      max-height: 50vh;
+    }
 
-.mat-table {
-  overflow: auto;
-  max-height: 500px;
-}
+    &__table-header {
+      flex-direction: column;
+      gap: 12px;
+    }
 
-.element-row {
-  position: relative;
-}
+    &__category-field {
+      width: 100%;
+    }
 
-.element-row:not(.expanded) {
-  cursor: pointer;
-}
+    &__actions {
+      padding: 12px 16px 16px;
+      flex-direction: column;
+    }
 
-.element-row:not(.expanded):hover {
-  background: #f5f5f5;
-}
-
-.element-row.expanded {
-  border-bottom-color: transparent;
-}
-
-.list-item {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 15px;
-}
-
-.list-item-inside {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  padding-left: 30px;
-  margin-bottom: 15px;
-}
-
-.button {
-  margin-left: 10px;
-}
-
-.create-button {
-  width: 100%;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-.radio-button {
-  width: 50%;
-  padding-top: 20px;
-}
-
-.selection-group {
-  padding-bottom: 20px;
-}
-.non-visible {
-  display: none;
+    &__version-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+  }
 }

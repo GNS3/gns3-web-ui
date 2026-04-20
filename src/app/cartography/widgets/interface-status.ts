@@ -54,18 +54,8 @@ export class InterfaceStatusWidget implements Widget {
           const destinationPort = l.nodes?.find((node) => node.nodeId === l.target.id)?.label?.text || '';
 
           statuses = [
-            new LinkStatus(
-              start_point.x,
-              start_point.y,
-              l.suspend ? 'suspended' : l.source.status,
-              sourcePort
-            ),
-            new LinkStatus(
-              end_point.x,
-              end_point.y,
-              l.suspend ? 'suspended' : l.target.status,
-              destinationPort
-            ),
+            new LinkStatus(start_point.x, start_point.y, l.suspend ? 'suspended' : l.source.status, sourcePort),
+            new LinkStatus(end_point.x, end_point.y, l.suspend ? 'suspended' : l.target.status, destinationPort),
           ];
         }
       }
@@ -85,18 +75,20 @@ export class InterfaceStatusWidget implements Widget {
       link_group.selectAll<SVGTextElement, LinkStatus>('text.status_suspended_label').remove();
 
       if (useIntegratedLabels && !useTooltipOnlyLabels) {
-        const status_labels = link_group.selectAll<SVGGElement, LinkStatus>('g.status_label').data(statuses);
-        const status_labels_enter = status_labels.enter().append<SVGGElement>('g').attr('class', 'status_label');
+        const status_labels = link_group.selectAll('g.status_label').data(statuses);
+        const status_labels_enter = status_labels.enter().append('g').attr('class', 'status_label');
 
         const status_labels_merge = status_labels
           .merge(status_labels_enter)
           .attr('transform', (ls: LinkStatus) => `translate(${ls.x}, ${ls.y})`)
           .classed('link-hidden', () => linkHidden);
 
-        const status_rects = status_labels_merge.selectAll<SVGRectElement, LinkStatus>('rect').data((ls) => [ls]);
+        const status_rects = status_labels_merge
+          .selectAll<SVGRectElement, LinkStatus>('rect')
+          .data((ls: LinkStatus) => [ls]);
         status_rects
           .enter()
-          .append<SVGRectElement>('rect')
+          .append('rect')
           .merge(status_rects)
           .attr('class', (ls: LinkStatus) => `status_${ls.status}`)
           .attr('width', (ls: LinkStatus) => self.getLabelWidth(ls.port))
@@ -111,10 +103,12 @@ export class InterfaceStatusWidget implements Widget {
           .attr('stroke-width', InterfaceStatusWidget.LABEL_STROKE_WIDTH);
         status_rects.exit().remove();
 
-        const status_texts = status_labels_merge.selectAll<SVGTextElement, LinkStatus>('text').data((ls) => [ls]);
+        const status_texts = status_labels_merge
+          .selectAll<SVGTextElement, LinkStatus>('text')
+          .data((ls: LinkStatus) => [ls]);
         status_texts
           .enter()
-          .append<SVGTextElement>('text')
+          .append('text')
           .merge(status_texts)
           .attr('class', (ls: LinkStatus) => `status_${ls.status}_label`)
           .text((ls: LinkStatus) => ls.port || '')
@@ -302,10 +296,7 @@ export class InterfaceStatusWidget implements Widget {
         if (linkContainer) {
           linkContainer.raise();
         }
-        linkGroup
-          .selectAll<SVGGElement, LinkStatus>('g.status_hover_tooltip')
-          .raise()
-          .attr('visibility', 'visible');
+        linkGroup.selectAll<SVGGElement, LinkStatus>('g.status_hover_tooltip').raise().attr('visibility', 'visible');
       })
       .on('mouseout.status_hover_tooltip', () => {
         linkGroup.selectAll<SVGGElement, LinkStatus>('g.status_hover_tooltip').attr('visibility', 'hidden');

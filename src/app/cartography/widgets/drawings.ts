@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { drag } from 'd3-drag';
-import { event } from 'd3-selection';
+
 import { Draggable } from '../events/draggable';
 import { DrawingContextMenu } from '../events/event-source';
 import { ResizingEnd } from '../events/resizing';
@@ -60,7 +60,7 @@ export class DrawingsWidget implements Widget {
       .append<SVGGElement>('g')
       .attr('class', 'drawing')
       .attr('drawing_id', (l: MapDrawing) => l.id)
-      .on('contextmenu', (l: MapDrawing) => {
+      .on('contextmenu', (event: any, l: MapDrawing) => {
         event.preventDefault();
         this.onContextMenu.emit(new DrawingContextMenu(event, l));
       });
@@ -81,11 +81,11 @@ export class DrawingsWidget implements Widget {
     let bottomEdge: number;
     let isReflectedVertical: boolean = false;
     let bottom = drag()
-      .on('start', (datum: MapDrawing) => {
+      .on('start', (event: any, datum: MapDrawing) => {
         document.body.style.cursor = 'ns-resize';
         topEdge = datum.y;
       })
-      .on('drag', (datum: MapDrawing) => {
+      .on('drag', (event: any, datum: MapDrawing) => {
         const evt = event;
 
         if (!isReflectedVertical) {
@@ -136,18 +136,18 @@ export class DrawingsWidget implements Widget {
 
         this.redrawDrawing(view, datum);
       })
-      .on('end', (datum: MapDrawing) => {
+      .on('end', (event: any, datum: MapDrawing) => {
         document.body.style.cursor = 'initial';
         this.resizingFinished.emit(this.createResizingEvent(datum));
       });
 
     let top = drag()
-      .on('start', (datum: MapDrawing) => {
+      .on('start', (event: any, datum: MapDrawing) => {
         y = event.sourceEvent.pageY - (this.context.getZeroZeroTransformationPoint().y + this.context.transformation.y);
         bottomEdge = y + datum.element.height;
         document.body.style.cursor = 'ns-resize';
       })
-      .on('drag', (datum: MapDrawing) => {
+      .on('drag', (event: any, datum: MapDrawing) => {
         const evt = event;
 
         if (!isReflectedVertical) {
@@ -198,7 +198,7 @@ export class DrawingsWidget implements Widget {
 
         this.redrawDrawing(view, datum);
       })
-      .on('end', (datum: MapDrawing) => {
+      .on('end', (event: any, datum: MapDrawing) => {
         document.body.style.cursor = 'initial';
         this.resizingFinished.emit(this.createResizingEvent(datum));
       });
@@ -209,12 +209,12 @@ export class DrawingsWidget implements Widget {
     let leftEdge: number;
     let isReflectedHorizontal: boolean = false;
     let right = drag()
-      .on('start', (datum: MapDrawing) => {
+      .on('start', (event: any, datum: MapDrawing) => {
         x = event.sourceEvent.pageX - (this.context.getZeroZeroTransformationPoint().x + this.context.transformation.x);
         leftEdge = x + datum.element.width;
         document.body.style.cursor = 'ew-resize';
       })
-      .on('drag', (datum: MapDrawing) => {
+      .on('drag', (event: any, datum: MapDrawing) => {
         const evt = event;
 
         if (!isReflectedHorizontal) {
@@ -264,17 +264,17 @@ export class DrawingsWidget implements Widget {
 
         this.redrawDrawing(view, datum);
       })
-      .on('end', (datum: MapDrawing) => {
+      .on('end', (event: any, datum: MapDrawing) => {
         document.body.style.cursor = 'initial';
         this.resizingFinished.emit(this.createResizingEvent(datum));
       });
 
     let left = drag()
-      .on('start', (datum: MapDrawing) => {
+      .on('start', (event: any, datum: MapDrawing) => {
         document.body.style.cursor = 'ew-resize';
         rightEdge = datum.x;
       })
-      .on('drag', (datum: MapDrawing) => {
+      .on('drag', (event: any, datum: MapDrawing) => {
         const evt = event;
 
         if (!isReflectedHorizontal) {
@@ -324,7 +324,7 @@ export class DrawingsWidget implements Widget {
 
         this.redrawDrawing(view, datum);
       })
-      .on('end', (datum: MapDrawing) => {
+      .on('end', (event: any, datum: MapDrawing) => {
         document.body.style.cursor = 'initial';
         this.resizingFinished.emit(this.createResizingEvent(datum));
       });
@@ -333,7 +333,7 @@ export class DrawingsWidget implements Widget {
       .on('start', () => {
         document.body.style.cursor = 'move';
       })
-      .on('drag', (datum: MapDrawing) => {
+      .on('drag', (event: any, datum: MapDrawing) => {
         const evt = event;
         datum.element.width += evt.dx;
         datum.element.height += evt.dy;
@@ -341,7 +341,7 @@ export class DrawingsWidget implements Widget {
         (datum.element as LineElement).y2 += evt.dy;
         this.redrawDrawing(view, datum);
       })
-      .on('end', (datum: MapDrawing) => {
+      .on('end', (event: any, datum: MapDrawing) => {
         document.body.style.cursor = 'initial';
         this.resizingFinished.emit(this.createResizingEvent(datum));
       });
@@ -350,7 +350,7 @@ export class DrawingsWidget implements Widget {
       .on('start', () => {
         document.body.style.cursor = 'move';
       })
-      .on('drag', (datum: MapDrawing) => {
+      .on('drag', (event: any, datum: MapDrawing) => {
         const evt = event;
         datum.element.width += evt.dx;
         datum.element.height += evt.dy;
@@ -358,7 +358,7 @@ export class DrawingsWidget implements Widget {
         (datum.element as LineElement).y1 += evt.dy;
         this.redrawDrawing(view, datum);
       })
-      .on('end', (datum: MapDrawing) => {
+      .on('end', (event: any, datum: MapDrawing) => {
         document.body.style.cursor = 'initial';
         this.resizingFinished.emit(this.createResizingEvent(datum));
       });

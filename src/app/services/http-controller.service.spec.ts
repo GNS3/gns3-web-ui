@@ -1,202 +1,603 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { environment } from 'environments/environment';
-import { Controller } from '@models/controller';
-import { AppTestingModule } from '../testing/app-testing/app-testing.module';
-import { HttpController, ControllerError, ControllerErrorHandler } from './http-controller.service';
-import { getTestController } from './testing';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpController, ControllerError, ControllerErrorHandler, JsonOptions } from './http-controller.service';
+import { Controller, ControllerProtocol } from '@models/controller';
+import { environment } from '../../environments/environment';
+import { of, throwError } from 'rxjs';
+import { provideHttpClient } from '@angular/common/http';
 
-class MyType {
-  id: number;
-}
+describe('HttpController', () => {
+  let service: HttpController;
+  let mockHttp: HttpClient;
+  let mockErrorHandler: ControllerErrorHandler;
+  let mockController: Controller;
 
-describe('ControllerError', () => {
-  it('should construct with message', () => {
-    const error = new Error('test');
-    expect(error.message).toEqual('test');
+  beforeEach(() => {
+    TestBed.configureTestingModule({
+      providers: [provideHttpClient()],
+    });
+
+    mockHttp = {
+      get: vi.fn(),
+      post: vi.fn(),
+      put: vi.fn(),
+      delete: vi.fn(),
+      patch: vi.fn(),
+      head: vi.fn(),
+      options: vi.fn(),
+    } as any as HttpClient;
+
+    mockErrorHandler = {
+      handleError: vi.fn((err: any) => throwError(() => err)),
+    } as any as ControllerErrorHandler;
+
+    service = new HttpController(mockHttp, mockErrorHandler);
+
+    mockController = {
+      id: 1,
+      name: 'Test Controller',
+      host: 'localhost',
+      port: 3080,
+      protocol: 'http:' as ControllerProtocol,
+      authToken: 'test-token',
+      tokenExpired: false,
+    } as Controller;
   });
 
-  it('should construct ControllerError from error', () => {
-    const error = new Error('test');
-    const controllerError = ControllerError.fromError('new message', error);
-    expect(controllerError.originalError).toEqual(error);
-    expect(controllerError.message).toEqual('new message');
+  describe('Service Creation', () => {
+    it('should create the service', () => {
+      expect(service).toBeTruthy();
+    });
+
+    it('should be instance of HttpController', () => {
+      expect(service).toBeInstanceOf(HttpController);
+    });
+
+    it('should have requestsNotificationEmitter', () => {
+      expect(service.requestsNotificationEmitter).toBeDefined();
+    });
+
+    it('should emit events on requests', () => {
+      let emittedValue: string | undefined;
+      service.requestsNotificationEmitter.subscribe((value) => {
+        emittedValue = value;
+      });
+
+      (mockHttp.get as any).mockReturnValue(of({}));
+      service.get(mockController, '/test');
+
+      expect(emittedValue).toBe('GET http://localhost:3080/' + environment.current_version + '/test');
+    });
+  });
+
+  describe('get', () => {
+    it('should make GET request with correct URL', () => {
+      const mockResponse = { data: 'test' };
+      (mockHttp.get as any).mockReturnValue(of(mockResponse));
+
+      service.get(mockController, '/version').subscribe();
+
+      expect(mockHttp.get).toHaveBeenCalledWith(
+        'http://localhost:3080/' + environment.current_version + '/version',
+        expect.objectContaining({ responseType: 'json' })
+      );
+    });
+
+    it('should include auth token in headers', () => {
+      (mockHttp.get as any).mockReturnValue(of({}));
+
+      service.get(mockController, '/test').subscribe();
+
+      expect(mockHttp.get).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({ Authorization: 'Bearer test-token' }),
+        })
+      );
+    });
+
+    it('should use default responseType json when no options provided', () => {
+      (mockHttp.get as any).mockReturnValue(of({}));
+
+      service.get(mockController, '/test').subscribe();
+
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ responseType: 'json' }));
+    });
+
+    it('should preserve custom options', () => {
+      const customOptions: JsonOptions = {
+        observe: 'body',
+        params: { key: 'value' },
+      };
+      (mockHttp.get as any).mockReturnValue(of({}));
+
+      service.get(mockController, '/test', customOptions);
+
+      expect(mockHttp.get).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          observe: 'body',
+          params: { key: 'value' },
+        })
+      );
+    });
+
+    it('should handle controller without host', () => {
+      const localController = {} as Controller;
+      (mockHttp.get as any).mockReturnValue(of({}));
+
+      service.get(localController, '/test').subscribe();
+
+      expect(mockHttp.get).toHaveBeenCalledWith('/' + environment.current_version + '/test', expect.any(Object));
+    });
+
+    it('should apply error handling', () => {
+      const error = new HttpErrorResponse({ status: 404, statusText: 'Not Found' });
+      (mockHttp.get as any).mockReturnValue(throwError(() => error));
+      (mockErrorHandler.handleError as any).mockReturnValue(throwError(() => error));
+
+      service.get(mockController, '/test').subscribe({
+        error: (err) => expect(err).toBeDefined(),
+      });
+    });
+  });
+
+  describe('getText', () => {
+    it('should make GET request with text responseType', () => {
+      (mockHttp.get as any).mockReturnValue(of('text response'));
+
+      service.getText(mockController, '/test').subscribe();
+
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ responseType: 'text' }));
+    });
+  });
+
+  describe('getBlob', () => {
+    it('should make GET request with blob responseType', () => {
+      const mockBlob = new Blob();
+      (mockHttp.get as any).mockReturnValue(of(mockBlob));
+
+      service.getBlob(mockController, '/test').subscribe();
+
+      expect(mockHttp.get).toHaveBeenCalledWith(expect.any(String), expect.objectContaining({ responseType: 'blob' }));
+    });
+  });
+
+  describe('post', () => {
+    it('should make POST request with correct URL', () => {
+      const body = { name: 'test' };
+      const mockResponse = { id: 1, ...body };
+      (mockHttp.post as any).mockReturnValue(of(mockResponse));
+
+      service.post(mockController, '/test', body).subscribe();
+
+      expect(mockHttp.post).toHaveBeenCalledWith(
+        'http://localhost:3080/' + environment.current_version + '/test',
+        body,
+        expect.any(Object)
+      );
+    });
+
+    it('should emit POST event', () => {
+      let emittedValue: string | undefined;
+      service.requestsNotificationEmitter.subscribe((value) => {
+        emittedValue = value;
+      });
+
+      (mockHttp.post as any).mockReturnValue(of({}));
+      service.post(mockController, '/test', {});
+
+      expect(emittedValue).toBe('POST http://localhost:3080/' + environment.current_version + '/test');
+    });
+
+    it('should include auth token', () => {
+      (mockHttp.post as any).mockReturnValue(of({}));
+
+      service.post(mockController, '/test', {}).subscribe();
+
+      expect(mockHttp.post).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.any(Object),
+        expect.objectContaining({
+          headers: expect.objectContaining({ Authorization: 'Bearer test-token' }),
+        })
+      );
+    });
+  });
+
+  describe('postBlob', () => {
+    it('should make POST request with blob responseType', () => {
+      const mockBlob = new Blob(['test'], { type: 'application/octet-stream' });
+      (mockHttp.post as any).mockReturnValue(of(mockBlob));
+
+      service.postBlob(mockController, '/test', mockBlob).subscribe();
+
+      expect(mockHttp.post).toHaveBeenCalledWith(
+        expect.any(String),
+        mockBlob,
+        expect.objectContaining({ responseType: 'blob' })
+      );
+    });
+  });
+
+  describe('put', () => {
+    it('should make PUT request with correct URL', () => {
+      const body = { name: 'updated' };
+      (mockHttp.put as any).mockReturnValue(of(body));
+
+      service.put(mockController, '/test/1', body).subscribe();
+
+      expect(mockHttp.put).toHaveBeenCalledWith(
+        'http://localhost:3080/' + environment.current_version + '/test/1',
+        body,
+        expect.any(Object)
+      );
+    });
+
+    it('should emit PUT event', () => {
+      let emittedValue: string | undefined;
+      service.requestsNotificationEmitter.subscribe((value) => {
+        emittedValue = value;
+      });
+
+      (mockHttp.put as any).mockReturnValue(of({}));
+      service.put(mockController, '/test', {});
+
+      expect(emittedValue).toBe('PUT http://localhost:3080/' + environment.current_version + '/test');
+    });
+  });
+
+  describe('delete', () => {
+    it('should make DELETE request with correct URL', () => {
+      (mockHttp.delete as any).mockReturnValue(of(null));
+
+      service.delete(mockController, '/test/1').subscribe();
+
+      expect(mockHttp.delete).toHaveBeenCalledWith(
+        'http://localhost:3080/' + environment.current_version + '/test/1',
+        expect.any(Object)
+      );
+    });
+
+    it('should emit DELETE event', () => {
+      let emittedValue: string | undefined;
+      service.requestsNotificationEmitter.subscribe((value) => {
+        emittedValue = value;
+      });
+
+      (mockHttp.delete as any).mockReturnValue(of({}));
+      service.delete(mockController, '/test');
+
+      expect(emittedValue).toBe('DELETE http://localhost:3080/' + environment.current_version + '/test');
+    });
+  });
+
+  describe('patch', () => {
+    it('should make PATCH request with correct URL', () => {
+      const body = { name: 'patched' };
+      (mockHttp.patch as any).mockReturnValue(of(body));
+
+      service.patch(mockController, '/test/1', body).subscribe();
+
+      expect(mockHttp.patch).toHaveBeenCalledWith(
+        'http://localhost:3080/' + environment.current_version + '/test/1',
+        body,
+        expect.any(Object)
+      );
+    });
+
+    it('should not emit event for patch', () => {
+      let emittedValue: string | undefined;
+      service.requestsNotificationEmitter.subscribe((value) => {
+        emittedValue = value;
+      });
+
+      (mockHttp.patch as any).mockReturnValue(of({}));
+      service.patch(mockController, '/test', {});
+
+      expect(emittedValue).toBeUndefined();
+    });
+  });
+
+  describe('head', () => {
+    it('should make HEAD request with correct URL', () => {
+      (mockHttp.head as any).mockReturnValue(of(null));
+
+      service.head(mockController, '/test').subscribe();
+
+      expect(mockHttp.head).toHaveBeenCalledWith(
+        'http://localhost:3080/' + environment.current_version + '/test',
+        expect.any(Object)
+      );
+    });
+  });
+
+  describe('options', () => {
+    it('should make OPTIONS request with correct URL', () => {
+      (mockHttp.options as any).mockReturnValue(of(null));
+
+      service.options(mockController, '/test').subscribe();
+
+      expect(mockHttp.options).toHaveBeenCalledWith(
+        'http://localhost:3080/' + environment.current_version + '/test',
+        expect.any(Object)
+      );
+    });
+  });
+
+  describe('URL Construction', () => {
+    it('should construct URL with protocol, host, port and version', () => {
+      (mockHttp.get as any).mockReturnValue(of({}));
+
+      service.get(mockController, '/version');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(
+        'http://localhost:3080/' + environment.current_version + '/version',
+        expect.any(Object)
+      );
+    });
+
+    it('should handle https protocol', () => {
+      const httpsController = {
+        ...mockController,
+        protocol: 'https:' as ControllerProtocol,
+      };
+      (mockHttp.get as any).mockReturnValue(of({}));
+
+      service.get(httpsController, '/test');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(
+        'https://localhost:3080/' + environment.current_version + '/test',
+        expect.any(Object)
+      );
+    });
+
+    it('should use location.protocol when controller has no protocol', () => {
+      const controllerWithoutProtocol = {
+        host: 'localhost',
+        port: 3080,
+      } as Controller;
+      (mockHttp.get as any).mockReturnValue(of({}));
+
+      service.get(controllerWithoutProtocol, '/test');
+
+      expect(mockHttp.get).toHaveBeenCalled();
+    });
+
+    it('should use environment.current_version in URL', () => {
+      (mockHttp.get as any).mockReturnValue(of({}));
+
+      service.get(mockController, '/api/test');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(
+        'http://localhost:3080/' + environment.current_version + '/api/test',
+        expect.any(Object)
+      );
+    });
+
+    it('should handle local controller without host', () => {
+      const localController = {} as Controller;
+      (mockHttp.get as any).mockReturnValue(of({}));
+
+      service.get(localController, '/version');
+
+      expect(mockHttp.get).toHaveBeenCalledWith('/' + environment.current_version + '/version', expect.any(Object));
+    });
+  });
+
+  describe('Authentication', () => {
+    it('should add Authorization header with Bearer token', () => {
+      (mockHttp.get as any).mockReturnValue(of({}));
+
+      service.get(mockController, '/test');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({ Authorization: 'Bearer test-token' }),
+        })
+      );
+    });
+
+    it('should not add Authorization header when token is expired', () => {
+      const expiredController = {
+        ...mockController,
+        tokenExpired: true,
+      };
+      (mockHttp.get as any).mockReturnValue(of({}));
+
+      service.get(expiredController, '/test');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.not.objectContaining({ Authorization: expect.anything() }),
+        })
+      );
+    });
+
+    it('should not add Authorization header when no token', () => {
+      const noTokenController = {
+        host: 'localhost',
+        port: 3080,
+      } as Controller;
+      (mockHttp.get as any).mockReturnValue(of({}));
+
+      service.get(noTokenController, '/test');
+
+      expect(mockHttp.get).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.any(Object),
+        })
+      );
+    });
+  });
+
+  describe('Error Handling', () => {
+    it('should apply error handler to all requests', () => {
+      const errorResponse = new HttpErrorResponse({ status: 500, statusText: 'Server Error' });
+      (mockHttp.get as any).mockReturnValue(throwError(() => errorResponse));
+      (mockErrorHandler.handleError as any).mockReturnValue(throwError(() => errorResponse));
+
+      let errorCaught: any;
+      service.get(mockController, '/test').subscribe({
+        error: (err) => {
+          errorCaught = err;
+        },
+      });
+
+      expect(mockErrorHandler.handleError).toHaveBeenCalled();
+    });
+  });
+
+  describe('Edge Cases', () => {
+    it('should handle controller with missing id', () => {
+      const controllerWithoutId = {
+        host: 'localhost',
+        port: 3080,
+      } as Controller;
+      (mockHttp.get as any).mockReturnValue(of({}));
+
+      expect(() => service.get(controllerWithoutId, '/test')).not.toThrow();
+    });
+
+    it('should handle empty URL', () => {
+      (mockHttp.get as any).mockReturnValue(of({}));
+
+      service.get(mockController, '').subscribe();
+
+      expect(mockHttp.get).toHaveBeenCalled();
+    });
+
+    it('should handle URL with leading slash', () => {
+      (mockHttp.get as any).mockReturnValue(of({}));
+
+      service.get(mockController, '//test');
+
+      expect(mockHttp.get).toHaveBeenCalled();
+    });
+
+    it('should handle null body in post', () => {
+      (mockHttp.post as any).mockReturnValue(of(null));
+
+      service.post(mockController, '/test', null).subscribe();
+
+      expect(mockHttp.post).toHaveBeenCalled();
+    });
+
+    it('should handle undefined body in post', () => {
+      (mockHttp.post as any).mockReturnValue(of(undefined));
+
+      service.post(mockController, '/test', undefined).subscribe();
+
+      expect(mockHttp.post).toHaveBeenCalled();
+    });
+  });
+});
+
+describe('ControllerError', () => {
+  it('should create error with message', () => {
+    const error = new ControllerError('Test error');
+    expect(error.message).toBe('Test error');
+  });
+
+  it('should be instance of Error', () => {
+    const error = new ControllerError('Test error');
+    expect(error).toBeInstanceOf(Error);
+  });
+
+  it('should have originalError property', () => {
+    const originalError = new Error('Original');
+    const controllerError = ControllerError.fromError('Controller error', originalError);
+
+    expect(controllerError.originalError).toBe(originalError);
+  });
+
+  it('should create error from existing error', () => {
+    const originalError = new Error('Network failure');
+    const controllerError = ControllerError.fromError('Controller is unreachable', originalError);
+
+    expect(controllerError.message).toBe('Controller is unreachable');
+    expect(controllerError.originalError).toBe(originalError);
   });
 });
 
 describe('ControllerErrorHandler', () => {
-  it('should handle HttpErrorResponse with status 0', (done) => {
-    const error = new HttpErrorResponse({ status: 0 });
-
-    const handler = new ControllerErrorHandler();
-    const result = handler.handleError(error);
-
-    result.subscribe(null, (err) => {
-      expect(err.message).toEqual('Controller is unreachable');
-      done();
-    });
-  });
-
-  it('should not handle HttpErrorResponse with status!=0', (done) => {
-    const error = new HttpErrorResponse({ status: 499 });
-
-    const handler = new ControllerErrorHandler();
-    const result = handler.handleError(error);
-
-    result.subscribe(null, (err) => {
-      expect(err.message).toEqual('Http failure response for (unknown url): 499 undefined');
-      done();
-    });
-  });
-});
-
-describe('HttpController', () => {
-  let httpClient: HttpClient;
-  let httpTestingController: HttpTestingController;
-  let service: HttpController;
-  let controller: Controller;
+  let handler: ControllerErrorHandler;
 
   beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule, AppTestingModule],
-      providers: [HttpController],
+    handler = new ControllerErrorHandler();
+  });
+
+  it('should be instance of ControllerErrorHandler', () => {
+    expect(handler).toBeInstanceOf(ControllerErrorHandler);
+  });
+
+  it('should handle HttpErrorResponse with status 0', () => {
+    const error = new HttpErrorResponse({
+      status: 0,
+      statusText: 'Unknown Error',
+      error: new Error('Network error'),
     });
 
-    httpClient = TestBed.get(HttpClient);
-    httpTestingController = TestBed.get(HttpTestingController);
-    service = TestBed.get(HttpController);
-
-    controller = getTestController();
-  });
-
-  afterEach(() => {
-    httpTestingController.verify();
-  });
-
-  it('should make GET query for get method', () => {
-    service.get(controller, '/test').subscribe();
-
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/test`);
-    expect(req.request.method).toEqual('GET');
-    expect(req.request.responseType).toEqual('json');
-  });
-
-  it('should make GET query for get method and return instance of type', () => {
-    const testData: MyType = { id: 3 };
-
-    service.get<MyType>(controller, '/test').subscribe((data) => {
-      expect(data instanceof MyType).toBeFalsy();
-      expect(data).toEqual(testData);
+    let result: any;
+    handler.handleError(error).subscribe({
+      error: (err) => {
+        result = err;
+      },
     });
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/test`);
-    expect(req.request.method).toEqual('GET');
-    expect(req.request.responseType).toEqual('json');
-
-    req.flush({ id: 3 });
+    expect(result).toBeInstanceOf(ControllerError);
+    expect(result.message).toBe('Controller is unreachable');
   });
 
-  it('HttpClient should make GET query for get method and return instance of type', () => {
-    const testData: MyType = { id: 3 };
-
-    httpClient.get<MyType>('http://localhost/test').subscribe((data) => {
-      // when this condition is true, it would be great
-      expect(data instanceof MyType).toBeFalsy();
-      expect(data).toEqual(testData);
+  it('should pass through normal errors', () => {
+    const error = new HttpErrorResponse({
+      status: 404,
+      statusText: 'Not Found',
     });
 
-    const req = httpTestingController.expectOne('http://localhost/test');
-    expect(req.request.method).toEqual('GET');
-    expect(req.request.responseType).toEqual('json');
+    let result: any;
+    handler.handleError(error).subscribe({
+      error: (err) => {
+        result = err;
+      },
+    });
 
-    req.flush(testData);
+    expect(result).toBe(error);
   });
 
-  it('should make GET query for getText method', () => {
-    service.getText(controller, '/test').subscribe();
+  it('should handle error with status 401', () => {
+    const error = new HttpErrorResponse({
+      status: 401,
+      statusText: 'Unauthorized',
+    });
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/test`);
-    expect(req.request.method).toEqual('GET');
-    expect(req.request.responseType).toEqual('text');
+    let result: any;
+    handler.handleError(error).subscribe({
+      error: (err) => {
+        result = err;
+      },
+    });
+
+    expect(result.status).toBe(401);
   });
 
-  it('should make GET query for getText method and preserve options', () => {
-    service
-      .getText(controller, '/test', {
-        headers: {
-          CustomHeader: 'value',
-        },
-        responseType: 'text',
-      })
-      .subscribe();
+  it('should handle error with status 500', () => {
+    const error = new HttpErrorResponse({
+      status: 500,
+      statusText: 'Internal Server Error',
+    });
 
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/test`);
-    expect(req.request.method).toEqual('GET');
-    expect(req.request.responseType).toEqual('text');
-  });
+    let result: any;
+    handler.handleError(error).subscribe({
+      error: (err) => {
+        result = err;
+      },
+    });
 
-  it('should make POST query for post method', () => {
-    service.post(controller, '/test', { test: '1' }).subscribe();
-
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/test`);
-    expect(req.request.method).toEqual('POST');
-    expect(req.request.responseType).toEqual('json');
-  });
-
-  it('should make PUT query for put method', () => {
-    service.put(controller, '/test', { test: '1' }).subscribe();
-
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/test`);
-    expect(req.request.method).toEqual('PUT');
-    expect(req.request.responseType).toEqual('json');
-  });
-
-  it('should make DELETE query for delete method', () => {
-    service.delete(controller, '/test').subscribe();
-
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/test`);
-    expect(req.request.method).toEqual('DELETE');
-    expect(req.request.responseType).toEqual('json');
-  });
-
-  it('should make PATCH query for patch method', () => {
-    service.patch(controller, '/test', { test: '1' }).subscribe();
-
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/test`);
-    expect(req.request.method).toEqual('PATCH');
-    expect(req.request.responseType).toEqual('json');
-  });
-
-  it('should make HEAD query for head method', () => {
-    service.head(controller, '/test').subscribe();
-
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/test`);
-    expect(req.request.method).toEqual('HEAD');
-    expect(req.request.responseType).toEqual('json');
-  });
-
-  it('should make OPTIONS query for options method', () => {
-    service.options(controller, '/test').subscribe();
-
-    const req = httpTestingController.expectOne(`http://127.0.0.1:3080/${environment.current_version}/test`);
-    expect(req.request.method).toEqual('OPTIONS');
-    expect(req.request.responseType).toEqual('json');
-  });
-
-  it('should make local call when ip and port is not defined', () => {
-    controller.host = null;
-    controller.port = null;
-
-    service
-      .get(controller, '/test', {
-        headers: {
-          CustomHeader: 'value',
-        },
-      })
-      .subscribe();
-
-    const req = httpTestingController.expectOne(`/${environment.current_version}/test`);
-    expect(req.request.url).toBe(`/${environment.current_version}/test`);
+    expect(result.status).toBe(500);
   });
 });

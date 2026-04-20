@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
@@ -12,18 +12,18 @@ import { DrawingService } from '@services/drawing.service';
 @Component({
   selector: 'app-drawing-dragged',
   templateUrl: './drawing-dragged.component.html',
-  styleUrls: ['./drawing-dragged.component.scss'],
+  styleUrl: './drawing-dragged.component.scss',
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DrawingDraggedComponent implements OnInit, OnDestroy {
-  @Input() controller: Controller;
-  @Input() project: Project;
+  readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
   private drawingDragged: Subscription;
 
-  constructor(
-    private drawingService: DrawingService,
-    private drawingsDataSource: DrawingsDataSource,
-    private drawingsEventSource: DrawingsEventSource
-  ) {}
+  private drawingService = inject(DrawingService);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private drawingsEventSource = inject(DrawingsEventSource);
 
   ngOnInit() {
     this.drawingDragged = this.drawingsEventSource.dragged.subscribe((evt) => this.onDrawingDragged(evt));
@@ -35,7 +35,7 @@ export class DrawingDraggedComponent implements OnInit, OnDestroy {
     drawing.y += draggedEvent.dy;
 
     this.drawingService
-      .updatePosition(this.controller, this.project, drawing, drawing.x, drawing.y)
+      .updatePosition(this.controller(), this.project(), drawing, drawing.x, drawing.y)
       .subscribe((controllerDrawing: Drawing) => {
         this.drawingsDataSource.update(controllerDrawing);
       });

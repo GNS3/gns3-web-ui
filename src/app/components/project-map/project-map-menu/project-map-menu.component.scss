@@ -1,24 +1,80 @@
+/**
+ * GNS3 Project Map Menu Component Styles
+ * Using MD3 CSS variables
+ */
+
+/* =============================================
+// Icon Button Styles
+// ============================================= */
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+button.mat-mdc-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  --mdc-icon-button-icon-size: 20px;
+  --mat-icon-button-icon-size: 20px;
+  --mat-icon-button-state-layer-size: 40px;
+  --mdc-icon-button-state-layer-size: 40px;
+
+  .mat-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    margin: 0;
+
+    svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+/* =============================================
+// Selection State Classes
+// Unified selection states for menu items
+// ============================================= */
+
+/* Unselected state (default) */
+.unmarked,
+.unmarkedLight {
+  color: var(--mat-sys-on-surface);
+}
+
+/* Selected/Active state */
+.marked {
+  color: var(--mat-sys-primary);
+}
+
+/* Drawing button selected state */
+.draw-line-icon.selected {
+  stroke: var(--mat-sys-primary);
+}
+
 .non-visible {
   display: none;
 }
 
-.unmarked {
-  color: white !important;
-}
-
-.unmarkedLight {
-  color: black !important;
-}
-
-.marked {
-  color: #0097a7 !important;
+/* Draw line icon - uses MD3 variables for theme-aware color */
+.draw-line-icon {
+  stroke: var(--mat-sys-on-surface);
 }
 
 .ai-chat-button .ai-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
   font-family: 'Roboto', sans-serif;
   letter-spacing: -0.5px;
@@ -34,66 +90,27 @@
   position: absolute;
   top: 4px;
   right: 4px;
-  width: 8px;
-  height: 8px;
-  background-color: #00bcd4;
+  width: 4px;
+  height: 4px;
+  background-color: var(--mat-sys-primary-container);
   border-radius: 50%;
-  box-shadow: 0 0 6px rgba(0, 188, 212, 0.8);
+  box-shadow: 0 0 8px var(--mat-sys-primary-container);
 }
 
 /* AI Chat minimized state */
 .ai-chat-button.ai-minimized {
   position: relative;
-  background-color: rgba(0, 188, 212, 0.25) !important;
-  box-shadow: 0 0 16px rgba(0, 188, 212, 0.6), inset 0 0 12px rgba(0, 188, 212, 0.4) !important;
-  animation: pulse-minimized 1.5s ease-in-out infinite;
-  border: 2px solid rgba(0, 188, 212, 0.8) !important;
+  background-color: var(--mat-sys-primary-container);
 }
 
 .ai-chat-button.ai-minimized .ai-icon {
-  color: #00e5ff !important;
-  text-shadow: 0 0 8px rgba(0, 229, 255, 0.8) !important;
-  font-weight: 900 !important;
-}
-
-.ai-minimize-indicator {
-  position: absolute;
-  bottom: 3px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 6px;
-  height: 6px;
-  background-color: #00e5ff;
-  border-radius: 50%;
-  box-shadow: 0 0 8px rgba(0, 229, 255, 1);
-  animation: blink-indicator 1s ease-in-out infinite;
-}
-
-@keyframes pulse-minimized {
-  0%, 100% {
-    box-shadow: 0 0 16px rgba(0, 188, 212, 0.6), inset 0 0 12px rgba(0, 188, 212, 0.4);
-    transform: scale(1);
-  }
-  50% {
-    box-shadow: 0 0 24px rgba(0, 188, 212, 0.9), inset 0 0 16px rgba(0, 188, 212, 0.6);
-    transform: scale(1.05);
-  }
-}
-
-@keyframes blink-indicator {
-  0%, 100% {
-    opacity: 1;
-    transform: translateX(-50%) scale(1);
-  }
-  50% {
-    opacity: 0.6;
-    transform: translateX(-50%) scale(1.3);
-  }
+  color: var(--mat-sys-on-primary-container);
+  font-weight: 900;
 }
 
 /* Menu button hover effect */
 .menu-button {
-  transition: transform 0.2s ease;
+  transition: transform 100ms ease;
 }
 
 .menu-button:hover {

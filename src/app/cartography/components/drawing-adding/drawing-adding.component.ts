@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, input, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { AddedDataEvent } from '../../events/event-source';
@@ -6,16 +6,20 @@ import { Context } from '../../models/context';
 
 @Component({
   selector: 'app-drawing-adding',
+  standalone: true,
   templateUrl: './drawing-adding.component.html',
-  styleUrls: ['./drawing-adding.component.scss'],
+  styleUrl: './drawing-adding.component.scss',
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DrawingAddingComponent implements OnInit, OnDestroy {
-  @Input('svg') svg: SVGSVGElement;
+  readonly svg = input<SVGSVGElement>(undefined);
 
   private mapListener: Function;
   private drawingSelected: Subscription;
 
-  constructor(private drawingsEventSource: DrawingsEventSource, private context: Context) {}
+  private drawingsEventSource = inject(DrawingsEventSource);
+  private context = inject(Context);
 
   ngOnInit() {
     this.drawingSelected = this.drawingsEventSource.selected.subscribe((evt) => {
@@ -38,11 +42,11 @@ export class DrawingAddingComponent implements OnInit, OnDestroy {
 
     this.deactivate();
     this.mapListener = listener;
-    this.svg.addEventListener('click', this.mapListener as EventListenerOrEventListenerObject);
+    this.svg().addEventListener('click', this.mapListener as EventListenerOrEventListenerObject);
   }
 
   deactivate() {
-    this.svg.removeEventListener('click', this.mapListener as EventListenerOrEventListenerObject);
+    this.svg().removeEventListener('click', this.mapListener as EventListenerOrEventListenerObject);
   }
 
   ngOnDestroy() {

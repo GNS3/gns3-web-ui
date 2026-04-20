@@ -1,4 +1,16 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, SimpleChange } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChange,
+  inject,
+  input,
+  OnChanges,
+} from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
@@ -13,22 +25,22 @@ import { DrawingService } from '@services/drawing.service';
 @Component({
   selector: 'app-drawing-added',
   templateUrl: './drawing-added.component.html',
-  styleUrls: ['./drawing-added.component.scss'],
+  styleUrl: './drawing-added.component.scss',
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DrawingAddedComponent implements OnInit, OnDestroy {
-  @Input() controller: Controller
+export class DrawingAddedComponent implements OnInit, OnDestroy, OnChanges {
+  readonly controller = input<Controller>(undefined);
   @Input() project: Project;
   @Input() selectedDrawing: string;
   @Output() drawingSaved = new EventEmitter<boolean>();
   private pointToAddSelected: Subscription;
 
-  constructor(
-    private drawingService: DrawingService,
-    private drawingsDataSource: DrawingsDataSource,
-    private drawingsEventSource: DrawingsEventSource,
-    private drawingsFactory: DefaultDrawingsFactory,
-    private mapDrawingToSvgConverter: MapDrawingToSvgConverter
-  ) {}
+  private drawingService = inject(DrawingService);
+  private drawingsDataSource = inject(DrawingsDataSource);
+  private drawingsEventSource = inject(DrawingsEventSource);
+  private drawingsFactory = inject(DefaultDrawingsFactory);
+  private mapDrawingToSvgConverter = inject(MapDrawingToSvgConverter);
 
   ngOnInit() {
     this.pointToAddSelected = this.drawingsEventSource.pointToAddSelected.subscribe((evt) => this.onDrawingSaved(evt));
@@ -38,6 +50,8 @@ export class DrawingAddedComponent implements OnInit, OnDestroy {
     if (changes['selectedDrawing'] && !changes['selectedDrawing'].isFirstChange()) {
       this.selectedDrawing = changes['selectedDrawing'].currentValue;
 
+      // Always emit selected event (needed for curve drawing tool activation)
+      // But curve tool won't create drawings on click - only on drag
       if (this.selectedDrawing !== 'text') {
         this.drawingsEventSource.selected.emit(this.selectedDrawing);
       }
@@ -45,11 +59,16 @@ export class DrawingAddedComponent implements OnInit, OnDestroy {
   }
 
   onDrawingSaved(evt: AddedDataEvent) {
+    // Skip curve tool - it uses drag-to-draw, not click-to-create
+    if (this.selectedDrawing === 'curve') {
+      return;
+    }
+
     let drawing = this.drawingsFactory.getDrawingMock(this.selectedDrawing);
     let svgText = this.mapDrawingToSvgConverter.convert(drawing);
 
     this.drawingService
-      .add(this.controller, this.project.project_id, evt.x, evt.y, svgText)
+      .add(this.controller(), this.project.project_id, evt.x, evt.y, svgText)
       .subscribe((controllerDrawing: Drawing) => {
         this.drawingsDataSource.add(controllerDrawing);
         this.drawingSaved.emit(true);

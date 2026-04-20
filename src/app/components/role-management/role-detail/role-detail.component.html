@@ -1,51 +1,98 @@
-<div class="content">
-  <div class="default-header">
-    <div class="row align-items-center">
+<div class="role-detail">
+  <!-- Header -->
+  <header class="role-detail__header">
+    <div class="role-detail__header-content">
       <a
         mat-icon-button
         matTooltip="Back to role management"
         matTooltipClass="custom-tooltip"
-        [routerLink]="['/controller', controller.id, 'management', 'roles']">
+        [routerLink]="['/controller', controller.id, 'management', 'roles']"
+        class="role-detail__back-btn"
+      >
         <mat-icon aria-label="Back to role management">keyboard_arrow_left</mat-icon>
       </a>
-      <h1 class="col">Role {{($role | async)?.name}}</h1>
+      <h1 class="role-detail__title">Role {{ ($role | async)?.name }}</h1>
     </div>
-    <div class="main">
-      <div class="details">
-        <form [formGroup]="editRoleForm">
-          <div>
-            <mat-form-field>
-              <mat-label>Role name:</mat-label>
-              <input matInput type="text" formControlName="rolename">
-            </mat-form-field>
-          </div>
-          <div>
-            <mat-form-field>
-              <mat-label>Description:</mat-label>
-              <input matInput type="text" formControlName="description">
-            </mat-form-field>
-          </div>
-        </form>
-        <div>Creation date:   {{($role | async)?.created_at}}</div>
-        <div>Last update Date:   {{($role | async)?.updated_at}}</div>
-        <div>UUID:   {{($role | async)?.role_id}}</div>
-        <div>
-          <mat-checkbox [checked]="($role | async)?.is_builtin" disabled>Is built-in</mat-checkbox>
-        </div>
-        <div mat-dialog-actions class="button-div">
-          <button mat-button (click)="onUpdate()" tabindex="2" mat-raised-button color="primary"
-                  [disabled]="(!(editRoleForm.valueChanges | async) && editRoleForm.valid) || ($role | async)?.is_builtin">
+  </header>
 
-            Update Role
-          </button>
-        </div>
-      </div>
-      <mat-divider [vertical]="true"></mat-divider>
-      <app-privilege
-        [disable]="($role | async)?.is_builtin"
-        [ownedPrivilege]="$ownedPrivilegesId | async"
-        [privileges]="privileges | async"
-        (update)="onPrivilegesUpdate($event)"></app-privilege>
+  <!-- Content -->
+  <div class="role-detail__content">
+    <div class="role-detail__main">
+      <!-- Details Card -->
+      <section class="role-detail__section">
+        <mat-card class="role-detail__card">
+          <mat-card-header>
+            <mat-card-title>Role Details</mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            @if (($role | async)?.is_builtin) {
+            <div class="role-detail__readonly">
+              <div class="role-detail__readonly-item">
+                <span class="role-detail__readonly-label">Role name</span>
+                <span class="role-detail__readonly-value">{{ ($role | async)?.name }}</span>
+              </div>
+              <div class="role-detail__readonly-item">
+                <span class="role-detail__readonly-label">Description</span>
+                <span class="role-detail__readonly-value">{{ ($role | async)?.description || '-' }}</span>
+              </div>
+            </div>
+            } @else {
+            <form [formGroup]="editRoleForm" class="role-detail__form">
+              <mat-form-field appearance="fill" class="role-detail__field">
+                <mat-label>Role name</mat-label>
+                <input matInput type="text" formControlName="rolename" />
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" class="role-detail__field">
+                <mat-label>Description</mat-label>
+                <input matInput type="text" formControlName="description" />
+              </mat-form-field>
+            </form>
+            }
+
+            <div class="role-detail__info-grid">
+              <div class="role-detail__info-item">
+                <span class="role-detail__info-label">Creation date</span>
+                <span class="role-detail__info-value">{{ ($role | async)?.created_at }}</span>
+              </div>
+              <div class="role-detail__info-item">
+                <span class="role-detail__info-label">Last update</span>
+                <span class="role-detail__info-value">{{ ($role | async)?.updated_at }}</span>
+              </div>
+              <div class="role-detail__info-item role-detail__info-item--full">
+                <span class="role-detail__info-label">UUID</span>
+                <span class="role-detail__info-value role-detail__info-value--mono">{{
+                  ($role | async)?.role_id
+                }}</span>
+              </div>
+              <div class="role-detail__info-item">
+                <span class="role-detail__info-label">Is built-in</span>
+                <span class="role-detail__info-value">{{ ($role | async)?.is_builtin ? 'YES' : 'NO' }}</span>
+              </div>
+            </div>
+          </mat-card-content>
+          <mat-card-actions class="role-detail__actions">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="onUpdate()"
+              [disabled]="(!(editRoleForm.valueChanges | async) && editRoleForm.valid) || ($role | async)?.is_builtin"
+            >
+              Update Role
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      </section>
+
+      <!-- Privileges Card -->
+      <section class="role-detail__section">
+        <app-privilege
+          [disable]="($role | async)?.is_builtin"
+          [ownedPrivilege]="$ownedPrivilegesId | async"
+          [privileges]="privileges | async"
+          (update)="onPrivilegesUpdate($event)"
+        ></app-privilege>
+      </section>
     </div>
   </div>
 </div>

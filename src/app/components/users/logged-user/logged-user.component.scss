@@ -1,3 +1,138 @@
-.full_width {
-    width: 100%;
+/**
+ * GNS3 Logged User Component Styles
+ * BEM naming applied, Material theme variables used
+ * Design language unified with management pages
+ */
+
+:host {
+  display: block;
+  width: 100%;
+  // Background moved to default-layout, keep transparent here
+  background: transparent;
+}
+
+/* =============================================
+// Header
+// ============================================= */
+.logged-user__header {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 32px 20px 16px;
+  animation: fadeInSlideIn 0.4s ease-out;
+}
+
+.logged-user__title {
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  margin: 0;
+  padding-bottom: 8px;
+}
+
+/* =============================================
+// Content
+// ============================================= */
+.logged-user__content {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 0 20px 20px;
+  animation: fadeInSlideIn 0.4s ease-out 0.1s both;
+}
+
+/* =============================================
+// Card
+// ============================================= */
+.logged-user__card {
+  background: var(--mat-sys-surface);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 20%, transparent),
+    0 2px 8px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+}
+
+/* =============================================
+// User Info
+// ============================================= */
+.logged-user__info {
+  padding: 24px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.logged-user__info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--mat-sys-outline-variant);
+  }
+}
+
+.logged-user__info-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.logged-user__info-value {
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--mat-sys-on-surface);
+}
+
+/* =============================================
+// Actions
+// ============================================= */
+.logged-user__actions {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.logged-user__button {
+  width: 100%;
+  height: 48px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.5px;
+}
+
+/* =============================================
+// Animations
+// ============================================= */
+@keyframes fadeInSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =============================================
+// Responsive Design
+// ============================================= */
+@media (max-width: 768px) {
+  .logged-user__header {
+    padding: 24px 16px 12px;
+  }
+
+  .logged-user__title {
+    font-size: 24px;
+  }
+
+  .logged-user__content {
+    padding: 0 16px 16px;
+  }
+
+  .logged-user__button {
+    height: 44px;
+    font-size: 15px;
+  }
 }

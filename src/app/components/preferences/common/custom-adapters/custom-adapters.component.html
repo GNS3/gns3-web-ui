@@ -1,21 +1,67 @@
-<div class="content" class="configurator">
-  <div class="default-header">
-    <div class="row">
-      <h1 class="col">Custom adapters configuration</h1>
+<h1 mat-dialog-title>Custom adapters configuration</h1>
+<div mat-dialog-content class="content">
+  <div class="adapter-form">
+    <!-- Table Header -->
+    <div class="adapter-header">
+      <span class="adapter-header-label">Adapter</span>
+      <span class="adapter-header-field">Port name</span>
+      <span class="adapter-header-field">Type</span>
+      <span class="adapter-header-field">MAC address</span>
+      <span class="adapter-header-actions"></span>
+    </div>
+
+    @for (adapter of adapters(); track adapter.adapter_number; let i = $index) {
+    <div class="adapter-item">
+      <span class="adapter-label">Adapter {{ adapter.adapter_number }}</span>
+      <mat-form-field appearance="fill" subscriptSizing="dynamic" class="adapter-field">
+        <input
+          matInput
+          [value]="adapter.port_name"
+          (input)="onPortNameChange(adapter.adapter_number, $event.target.value)"
+          name="port_name_{{ i }}"
+        />
+      </mat-form-field>
+      <mat-form-field appearance="fill" subscriptSizing="dynamic" class="adapter-field">
+        <mat-select
+          [value]="adapter.adapter_type"
+          (selectionChange)="onAdapterTypeChange(adapter.adapter_number, $event.value)"
+          name="adapter_type_{{ i }}"
+        >
+          @for (type of networkTypes; track type.value) {
+          <mat-option [value]="type.value">{{ type.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="fill" subscriptSizing="dynamic" class="adapter-field">
+        <input
+          matInput
+          [value]="adapter.mac_address"
+          (input)="onMacAddressChange(adapter.adapter_number, $event.target.value)"
+          name="mac_address_{{ i }}"
+          placeholder="Paste any MAC format"
+        />
+        @if (adapter.mac_address && !isValidMacAddress(adapter.mac_address)) {
+        <mat-error>{{ getMacErrorMessage(adapter.mac_address) }}</mat-error>
+        }
+      </mat-form-field>
+      <button mat-icon-button matTooltip="Delete" (click)="delete(adapter)" class="adapter-actions">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+    }
+  </div>
+  <div class="add-adapter-row">
+    <button class="add-btn" mat-button (click)="onAdd()">
+      <mat-icon>add</mat-icon>
+      Add adapter
+    </button>
+    <div class="info-note-text">
+      Deleting an adapter reduces the total number of adapters. Adapter numbers will be renumbered when reopened.
+      Adapters without custom configuration will use default settings.
     </div>
   </div>
-  <div class="default-content">
-    <div class="container mat-elevation-z8">
-      <app-custom-adapters-table
-        #customAdapters
-        [networkTypes]="networkTypes"
-        [displayedColumns]="displayedColumns"
-        [adapters]="adapters"
-      ></app-custom-adapters-table>
-    </div>
-    <div class="buttons-bar">
-      <button mat-button (click)="cancelConfigureCustomAdapters()">Cancel</button>
-      <button mat-raised-button color="primary" (click)="configureCustomAdapters()">Apply</button><br />
-    </div>
-  </div>
+</div>
+<div mat-dialog-actions align="end">
+  <button mat-button (click)="cancelConfigureCustomAdapters()">Cancel</button>
+  <button mat-raised-button color="primary" (click)="configureCustomAdapters()">Apply</button>
 </div>

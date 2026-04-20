@@ -7,9 +7,17 @@ import {
   Input,
   OnDestroy,
   OnInit,
-  ViewChild,
+  inject,
+  input,
+  model,
+  viewChild,
 } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { UntypedFormControl } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
 import { Subscription } from 'rxjs';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { Drawing } from '../../../cartography/models/drawing';
@@ -30,16 +38,39 @@ import { LogEventsDataSource } from './log-events-datasource';
 import * as ipaddr from 'ipaddr.js';
 
 @Component({
+  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-log-console',
   templateUrl: './log-console.component.html',
   styleUrls: ['./log-console.component.scss'],
+  imports: [CommonModule, MatIconModule, MatButtonModule, MatMenuModule],
 })
 export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
-  @Input() controller: Controller;
-  @Input() project: Project;
+  private projectWebServiceHandler = inject(ProjectWebServiceHandler);
+  private nodeService = inject(NodeService);
+  private nodesDataSource = inject(NodesDataSource);
+  private protocolHandlerService = inject(ProtocolHandlerService);
+  private logEventsDataSource = inject(LogEventsDataSource);
+  private httpService = inject(HttpController);
+  private themeService = inject(ThemeService);
+  private cd = inject(ChangeDetectorRef);
+  private nodeConsoleService = inject(NodeConsoleService);
 
-  @ViewChild('console') console: ElementRef;
+  @Input() controller: Controller;
+  readonly project = input<Project>(undefined);
+
+  readonly console = viewChild<ElementRef>('console');
+  readonly commandInput = viewChild<ElementRef>('commandInput');
+
+  /**
+   * Focus the command input field
+   */
+  focusInput(): void {
+    const input = this.commandInput();
+    if (input?.nativeElement) {
+      input.nativeElement.focus();
+    }
+  }
 
   private version = version;
   private nodeSubscription: Subscription;
@@ -50,7 +81,7 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   private warningSubscription: Subscription;
   private infoSubscription: Subscription;
 
-  public command: string = '';
+  readonly command = model('');
   public filters: string[] = ['all', 'errors', 'warnings', 'info', 'map updates', 'controller requests'];
   public selectedFilter: string = 'all';
   public filteredEvents: LogEvent[] = [];
@@ -67,23 +98,12 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   public isLightThemeEnabled: boolean = false;
   public selected = new UntypedFormControl(0);
 
-  constructor(
-    private projectWebServiceHandler: ProjectWebServiceHandler,
-    private nodeService: NodeService,
-    private nodesDataSource: NodesDataSource,
-    private protocolHandlerService: ProtocolHandlerService,
-    private logEventsDataSource: LogEventsDataSource,
-    private httpService: HttpController,
-    private themeService: ThemeService,
-    private cd: ChangeDetectorRef,
-    private nodeConsoleService: NodeConsoleService,
-    private changeDetectorRef: ChangeDetectorRef
-  ) {}
+  constructor() {}
 
   ngOnInit() {
     this.nodeConsoleService.consoleResized.subscribe((ev) => {
       this.style = { width: `${ev.width}px`, height: `${ev.height - 70}px` };
-      this.changeDetectorRef.detectChanges();
+      this.cd.detectChanges();
     });
 
     this.themeService.getActualTheme() === 'light'
@@ -149,7 +169,8 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit() {
-    if (this.console.nativeElement) this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
+    const console = this.console();
+    if (console.nativeElement) console.nativeElement.scrollTop = console.nativeElement.scrollHeight;
   }
 
   ngOnDestroy() {
@@ -175,61 +196,65 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   handleCommand() {
-    if (this.command === 'help' || this.command === '') {
+    if (this.command() === 'help' || this.command() === '') {
       this.showCommand(
         'Available commands: help, version, console {node name}, start all, start {node name}, stop all, stop {node name}, suspend all, suspend {node name}, reload all, reload {node name}, show {node name}.'
       );
-    } else if (this.command === 'version') {
+    } else if (this.command() === 'version') {
       this.showCommand('Current version: ' + this.version);
-    } else if (this.command === 'start all') {
+    } else if (this.command() === 'start all') {
       this.showCommand('Starting all nodes...');
-      this.nodeService.startAll(this.controller, this.project).subscribe(() => {
+      this.nodeService.startAll(this.controller, this.project()).subscribe(() => {
         this.showCommand('All nodes started.');
       });
-    } else if (this.command === 'stop all') {
+    } else if (this.command() === 'stop all') {
       this.showCommand('Stopping all nodes...');
-      this.nodeService.stopAll(this.controller, this.project).subscribe(() => {
+      this.nodeService.stopAll(this.controller, this.project()).subscribe(() => {
         this.showCommand('All nodes stopped.');
       });
-    } else if (this.command === 'suspend all') {
+    } else if (this.command() === 'suspend all') {
       this.showCommand('Suspending all nodes...');
-      this.nodeService.suspendAll(this.controller, this.project).subscribe(() => {
+      this.nodeService.suspendAll(this.controller, this.project()).subscribe(() => {
         this.showCommand('All nodes suspended.');
       });
-    } else if (this.command === 'reload all') {
+    } else if (this.command() === 'reload all') {
       this.showCommand('Reloading all nodes...');
-      this.nodeService.reloadAll(this.controller, this.project).subscribe(() => {
+      this.nodeService.reloadAll(this.controller, this.project()).subscribe(() => {
         this.showCommand('All nodes reloaded.');
       });
     } else if (
-      this.regexStart.test(this.command) ||
-      this.regexStop.test(this.command) ||
-      this.regexSuspend.test(this.command) ||
-      this.regexReload.test(this.command) ||
-      this.regexShow.test(this.command) ||
-      this.regexConsole.test(this.command)
+      this.regexStart.test(this.command()) ||
+      this.regexStop.test(this.command()) ||
+      this.regexSuspend.test(this.command()) ||
+      this.regexReload.test(this.command()) ||
+      this.regexShow.test(this.command()) ||
+      this.regexConsole.test(this.command())
     ) {
-      let splittedCommand = this.command.split(/[ ,]+/);
+      let splittedCommand = this.command().split(/[ ,]+/);
       let node = this.nodesDataSource.getItems().find((n) => n.name.valueOf() === splittedCommand[1].valueOf());
       if (node) {
-        if (this.regexStart.test(this.command)) {
+        if (this.regexStart.test(this.command())) {
           this.showCommand(`Starting node ${splittedCommand[1]}...`);
           this.nodeService.start(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} started.`));
-        } else if (this.regexStop.test(this.command)) {
+        } else if (this.regexStop.test(this.command())) {
           this.showCommand(`Stopping node ${splittedCommand[1]}...`);
           this.nodeService.stop(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} stopped.`));
-        } else if (this.regexSuspend.test(this.command)) {
+        } else if (this.regexSuspend.test(this.command())) {
           this.showCommand(`Suspending node ${splittedCommand[1]}...`);
-          this.nodeService.suspend(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} suspended.`));
-        } else if (this.regexReload.test(this.command)) {
+          this.nodeService
+            .suspend(this.controller, node)
+            .subscribe(() => this.showCommand(`Node ${node.name} suspended.`));
+        } else if (this.regexReload.test(this.command())) {
           this.showCommand(`Reloading node ${splittedCommand[1]}...`);
-          this.nodeService.reload(this.controller, node).subscribe(() => this.showCommand(`Node ${node.name} reloaded.`));
-        } else if (this.regexConsole.test(this.command)) {
+          this.nodeService
+            .reload(this.controller, node)
+            .subscribe(() => this.showCommand(`Node ${node.name} reloaded.`));
+        } else if (this.regexConsole.test(this.command())) {
           if (node.status === 'started') {
             this.showCommand(`Launching console for node ${splittedCommand[1]}...`);
             var host = node.console_host;
             if (ipaddr.IPv6.isValid(host)) {
-               host = `[${host}]`;
+              host = `[${host}]`;
             }
             if (node.console_type === 'telnet') {
               this.protocolHandlerService.open(
@@ -244,14 +269,14 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
                 `gns3+spice://${host}:${node.console}?name=${node.name}&project_id=${node.project_id}&node_id=${node.node_id}`
               );
             } else if (node.console_type && node.console_type.startsWith('http')) {
-               window.open(`${node.console_type}://${host}:${node.console}`);
+              window.open(`${node.console_type}://${host}:${node.console}`);
             } else {
               this.showCommand('Supported console types are: telnet, vnc, spice and spice+agent');
             }
           } else {
             this.showCommand(`This node must be started before a console can be opened.`);
           }
-        } else if (this.regexShow.test(this.command)) {
+        } else if (this.regexShow.test(this.command())) {
           this.showCommand(`Information about node ${node.name}:`);
           this.showCommand(this.printNode(node));
         }
@@ -259,15 +284,15 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
         this.showCommand(`Node with ${splittedCommand[1]} name was not found.`);
       }
     } else {
-      this.showCommand(`Unknown syntax: ${this.command}`);
+      this.showCommand(`Unknown syntax: ${this.command()}`);
     }
-    this.command = '';
+    this.command.set('');
     this.cd.detectChanges();
   }
 
   clearConsole() {
     this.filteredEvents = [];
-    this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
+    this.console().nativeElement.scrollTop = this.console().nativeElement.scrollHeight;
   }
 
   showCommand(message: string) {
@@ -280,10 +305,10 @@ export class LogConsoleComponent implements OnInit, AfterViewInit, OnDestroy {
   showMessage(event: LogEvent) {
     this.logEventsDataSource.add(event);
     this.filteredEvents = this.getFilteredEvents();
-    this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
+    this.console().nativeElement.scrollTop = this.console().nativeElement.scrollHeight;
 
     setTimeout(() => {
-      this.console.nativeElement.scrollTop = this.console.nativeElement.scrollHeight;
+      this.console().nativeElement.scrollTop = this.console().nativeElement.scrollHeight;
     }, 100);
     this.cd.detectChanges();
   }

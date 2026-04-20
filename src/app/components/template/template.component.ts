@@ -1,8 +1,37 @@
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+  inject,
+  input,
+  Inject,
+  signal,
+  model,
+  effect,
+  ViewChild,
+  computed,
+} from '@angular/core';
+import { MatMenuTrigger } from '@angular/material/menu';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatOptionModule } from '@angular/material/core';
+import { MatListModule } from '@angular/material/list';
+import { DragAndDropModule } from 'angular-draggable-droppable';
 import { ThemeService } from '@services/theme.service';
 import { Subscription } from 'rxjs';
+import { forkJoin } from 'rxjs';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { Template } from '@models/template';
@@ -11,20 +40,63 @@ import { TemplateService } from '@services/template.service';
 import { NodeAddedEvent, TemplateListDialogComponent } from './template-list-dialog/template-list-dialog.component';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Context } from '../../cartography/models/context';
+import { DOCUMENT } from '@angular/common';
+import { ComputeService } from '@services/compute.service';
+import { Compute } from '@models/compute';
+import { ComputeSelectorComponent } from './compute-selector/compute-selector.component';
+import { NotificationService } from '@services/notification.service';
 
 @Component({
   selector: 'app-template',
   templateUrl: './template.component.html',
-  styleUrls: ['./template.component.scss'],
+  styleUrl: './template.component.scss',
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatDialogModule,
+    MatIconModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatListModule,
+    DragAndDropModule,
+    ComputeSelectorComponent,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TemplateComponent implements OnInit, OnDestroy {
-  @Input() controller: Controller;
-  @Input() project: Project;
-  @Output() onNodeCreation = new EventEmitter<any>();
+  private dialog = inject(MatDialog);
+  private templateService = inject(TemplateService);
+  private symbolService = inject(SymbolService);
+  private domSanitizer = inject(DomSanitizer);
+  private themeService = inject(ThemeService);
+  private overlayContainer = inject(OverlayContainer);
+  private context = inject(Context);
+  private cd = inject(ChangeDetectorRef);
+  private computeService = inject(ComputeService);
+  private notificationService = inject(NotificationService);
+
+  readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
+  @Output() nodeCreationChange = new EventEmitter<any>();
+  @ViewChild('menuTrigger') menuTrigger!: MatMenuTrigger;
   overlay;
   templates: Template[] = [];
   filteredTemplates: Template[] = [];
-  searchText: string = '';
+
+  // Store blob URLs for template symbols to enable JWT authentication
+  templateSymbolBlobUrls = new Map<string, string>();
+
+  // Expose body element for drag ghost element
+  readonly bodyElement: HTMLElement;
+
+  constructor(@Inject(DOCUMENT) private document: Document) {
+    this.overlay = this.overlayContainer.getContainerElement();
+    this.bodyElement = this.document.body;
+  }
   templateTypes: string[] = [
     'all',
     'cloud',
@@ -38,130 +110,333 @@ export class TemplateComponent implements OnInit, OnDestroy {
     'iou',
     'qemu',
   ];
-  selectedType: string;
 
-  private startX: number;
-  private startY: number;
+  // Model signals for two-way binding
+  searchText = model('');
+  selectedType = model('all');
+
+  // Track mouse position during drag using signals (zoneless compatible)
+  private lastPageX = signal<number>(0);
+  private lastPageY = signal<number>(0);
+  private isDragging = signal<boolean>(false);
+
+  // Track mouse offset from the icon's top-left corner for natural placement
+  private mouseOffsetX: number = 0;
+  private mouseOffsetY: number = 0;
+
+  // Store the element being dragged to calculate offset
+  private dragElement: HTMLElement | null = null;
+
+  // Compute selector state
+  showComputeSelector = signal<boolean>(false);
+  availableComputes = signal<Compute[]>([]);
+  pendingNodePosition = signal<{ x: number; y: number } | null>(null);
+  pendingTemplate = signal<Template | null>(null);
+  cachedComputes = signal<Compute[]>([]);
+
+  // Ghost icon screen position: converts world coordinates to screen coordinates
+  ghostIconScreenPosition = computed(() => {
+    const pos = this.pendingNodePosition();
+    if (!pos) {
+      return { x: 0, y: 0 };
+    }
+
+    // Get transformation values
+    const k = this.context.transformation.k;
+    const zeroZero = this.context.getZeroZeroTransformationPoint();
+
+    // Convert world coordinates to screen coordinates
+    // screen = world * scale + center + offset
+    const screenX = pos.x * k + zeroZero.x + this.context.transformation.x;
+    const screenY = pos.y * k + zeroZero.y + this.context.transformation.y;
+
+    return { x: screenX, y: screenY };
+  });
 
   private subscription: Subscription;
   private themeSubscription: Subscription;
   private isLightThemeEnabled: boolean = false;
 
-  constructor(
-    private dialog: MatDialog,
-    private templateService: TemplateService,
-    private symbolService: SymbolService,
-    private domSanitizer: DomSanitizer,
-    private themeService: ThemeService,
-    private overlayContainer: OverlayContainer,
-    private context: Context,
-  ) {
-    this.overlay = overlayContainer.getContainerElement();
-  }
+  // Watch for controller changes and reload templates when it becomes available
+  private controllerWatcher = effect(() => {
+    const ctrl = this.controller();
+    if (ctrl && ctrl.id && this.templates.length === 0) {
+      this.loadTemplates();
+    }
+  });
 
   ngOnInit() {
     this.subscription = this.templateService.newTemplateCreated.subscribe((template: Template) => {
       this.templates.push(template);
+      // Load the symbol blob for the new template
+      this.loadTemplateSymbolBlobs([template]);
+      this.cd.markForCheck();
     });
 
-    this.templateService.list(this.controller).subscribe((listOfTemplates: Template[]) => {
-      this.filteredTemplates = listOfTemplates;
-      this.sortTemplates();
-      this.templates = listOfTemplates;
-    });
-    this.symbolService.list(this.controller);
-    if (this.themeService.getActualTheme()  === 'light') this.isLightThemeEnabled = true;
-    this.themeSubscription = this.themeService.themeChanged.subscribe((value: string) => {
-      if (value === 'light-theme') this.isLightThemeEnabled = true;
-      this.toggleTheme();
+    // Subscribe to compute cache updates
+    this.subscription.add(
+      this.notificationService.computeCacheUpdated.subscribe((computes: Compute[]) => {
+        this.cachedComputes.set(computes);
+        this.cd.markForCheck();
+      })
+    );
+
+    // Load initial computes from cache
+    if (this.notificationService.hasCachedData()) {
+      this.cachedComputes.set(this.notificationService.getCachedComputes());
+    }
+
+    // Only load templates if controller is available
+    if (this.controller() && this.controller().id) {
+      this.loadTemplates();
+    }
+    this.symbolService.list(this.controller());
+    this.isLightThemeEnabled = this.themeService.getThemeType() === 'light';
+    this.themeSubscription = this.themeService.themeChanged.subscribe(() => {
+      this.isLightThemeEnabled = this.themeService.getThemeType() === 'light';
     });
   }
 
-  toggleTheme(): void {
-    if (this.overlay.classList.contains("dark-theme")) {
-        this.overlay.classList.remove("dark-theme");
-        this.overlay.classList.add("light-theme");
-    } else if (this.overlay.classList.contains("light-theme")) {
-        this.overlay.classList.remove("light-theme");
-        this.overlay.classList.add("dark-theme");
-    } else {
-        this.overlay.classList.add("light-theme");
-    }
+  private loadTemplates() {
+    this.templateService.list(this.controller()).subscribe((listOfTemplates: Template[]) => {
+      this.filteredTemplates = listOfTemplates;
+      this.sortTemplates();
+      this.templates = listOfTemplates;
+      this.loadTemplateSymbolBlobs(listOfTemplates);
+      this.cd.markForCheck();
+    });
+  }
+
+  private loadTemplateSymbolBlobs(templates: Template[]) {
+    // Build list of unique symbol paths
+    const symbolPathMap = new Map<string, string>();
+    templates.forEach((template) => {
+      const symbol = template.symbol;
+      let path: string;
+
+      if (symbol.startsWith(':/')) {
+        // Builtin symbol: e.g., :/symbols/affinity/circle/blue/router.svg
+        // Keep the full symbol path including :/ prefix to match API format
+        path = `/symbols/${symbol}/raw`;
+      } else {
+        // Custom symbol: e.g., firefox.svg
+        path = `/symbols/${symbol}/raw`;
+      }
+
+      symbolPathMap.set(symbol, path);
+    });
+
+    // Fetch all blob URLs in parallel
+    const uniquePaths = Array.from(symbolPathMap.values());
+    forkJoin(uniquePaths.map((path) => this.symbolService.getSymbolBlobUrl(this.controller(), path))).subscribe(
+      (blobUrls: string[]) => {
+        uniquePaths.forEach((path, index) => {
+          // Find which symbol this path belongs to
+          for (const [symbol, symbolPath] of symbolPathMap.entries()) {
+            if (symbolPath === path) {
+              this.templateSymbolBlobUrls.set(symbol, blobUrls[index]);
+              break;
+            }
+          }
+        });
+        this.cd.markForCheck();
+      }
+    );
   }
 
   sortTemplates() {
     this.filteredTemplates = this.filteredTemplates.sort((a, b) => (a.name < b.name ? -1 : 1));
   }
 
-  filterTemplates(event) {
+  filterTemplates() {
     let temporaryTemplates = this.templates.filter((item) => {
-      return item.name.toLowerCase().includes(this.searchText.toLowerCase());
+      return item.name.toLowerCase().includes(this.searchText().toLowerCase());
     });
 
-    if (this.selectedType === 'all' || !this.selectedType) {
+    if (this.selectedType() === 'all' || !this.selectedType()) {
       this.filteredTemplates = temporaryTemplates;
     } else {
-      this.filteredTemplates = temporaryTemplates.filter((t) => t.template_type === this.selectedType);
+      this.filteredTemplates = temporaryTemplates.filter((t) => t.template_type === this.selectedType());
     }
     this.sortTemplates();
   }
 
-  dragStart(ev) {
-    // mwlDraggable fires a synthetic event; capture the raw clientX/Y from the
-    // native event so we can reconstruct the absolute drop position later.
-    this.startX = (event as MouseEvent).clientX;
-    this.startY = (event as MouseEvent).clientY;
+  dragStart(ev: any, template: Template) {
+    // Close the mat-menu to remove its overlay that blocks focus
+    if (this.menuTrigger) {
+      this.menuTrigger.closeMenu();
+    }
+
+    // mwlDraggable's DragStartEvent doesn't contain mouse position data
+    // Use window.event (the browser's global event) to access mouse position
+    const mouseEvent = window.event as MouseEvent | undefined;
+    const clientX = mouseEvent?.clientX || 0;
+    const clientY = mouseEvent?.clientY || 0;
+
+    // Get the element being dragged
+    const sourceEl = mouseEvent?.target as HTMLElement | undefined;
+    if (sourceEl) {
+      const elemRect = sourceEl.getBoundingClientRect();
+      // Calculate the offset of the mouse from the icon's top-left corner
+      // This ensures the node maintains the same relative position when dropped
+      this.mouseOffsetX = clientX - elemRect.left;
+      this.mouseOffsetY = clientY - elemRect.top;
+      this.dragElement = sourceEl;
+    }
+
+    // Start tracking mouse position to get the final drop position
+    this.isDragging.set(true);
+    this.lastPageX.set(clientX);
+    this.lastPageY.set(clientY);
+
+    // Add document-level mouse move listener to track position during drag
+    const trackMouseMove = (e: MouseEvent) => {
+      if (this.isDragging()) {
+        this.lastPageX.set(e.clientX);
+        this.lastPageY.set(e.clientY);
+      }
+    };
+
+    // Add one-time mouseup listener to stop tracking
+    const stopTracking = () => {
+      this.isDragging.set(false);
+      document.removeEventListener('mousemove', trackMouseMove);
+      document.removeEventListener('mouseup', stopTracking);
+    };
+
+    document.addEventListener('mousemove', trackMouseMove);
+    document.addEventListener('mouseup', stopTracking, { once: true });
   }
 
-  dragEnd(ev, template: Template) {
-    this.symbolService.raw(this.controller, template.symbol.substring(1)).subscribe((symbolSvg: string) => {
-      let width = +symbolSvg.split('width="')[1].split('"')[0] ? +symbolSvg.split('width="')[1].split('"')[0] : 0;
-      
-      // mwlDraggable's DragEndEvent.x/y are displacement deltas, not absolute
-      // coordinates. Add to the captured start position to get the final
-      // screen position, then convert to canvas coordinates.
-      const dropClientX = this.startX + ev.x;
-      const dropClientY = this.startY + ev.y;
- 
-      const svgElement = document.getElementById('map');
-      const svgRect = svgElement ? svgElement.getBoundingClientRect() : { left: 0, top: 0 };
-      const k = this.context.transformation.k;
+  dragEnd(ev: any, template: Template) {
+    // Calculate coordinates directly without unnecessary HTTP request
+    const pageX = this.lastPageX();
+    const pageY = this.lastPageY();
 
-      const origin = this.context.getZeroZeroTransformationPoint();
-      let nodeAddedEvent: NodeAddedEvent = {
+    // Use scene dimensions as fallback for context size
+    const centerX = this.context.size.width > 0 ? this.context.size.width / 2 : this.project().scene_width / 2;
+    const centerY = this.context.size.height > 0 ? this.context.size.height / 2 : this.project().scene_height / 2;
+
+    // Convert screen coordinates to world coordinates using D3 transformation
+    const worldX = (pageX - (centerX + this.context.transformation.x)) / this.context.transformation.k;
+    const worldY = (pageY - (centerY + this.context.transformation.y)) / this.context.transformation.k;
+
+    // Subtract the mouse offset to position the node correctly
+    // The offset represents where the mouse was relative to the icon's top-left when dragging started
+    const finalX = Math.round(worldX - this.mouseOffsetX);
+    const finalY = Math.round(worldY - this.mouseOffsetY);
+
+    // Get computes from cache (instant, no HTTP request)
+    const computes = this.cachedComputes();
+
+    if (computes.length === 0) {
+      // No cached data, fallback to HTTP request
+      this.computeService.getComputes(this.controller()).subscribe({
+        next: (loadedComputes: Compute[]) => {
+          // Set to cache for future use
+          this.notificationService.setInitialComputes(loadedComputes);
+          this.cachedComputes.set(loadedComputes);
+
+          // Now process with loaded data
+          this.processNodeCreation(template, finalX, finalY, loadedComputes);
+        },
+        error: (error) => {
+          console.error('Failed to load computes:', error);
+          // Fallback to local on error
+          const nodeAddedEvent: NodeAddedEvent = {
+            template: template,
+            controller: 'local',
+            numberOfNodes: 1,
+            x: finalX,
+            y: finalY,
+          };
+          this.nodeCreationChange.emit(nodeAddedEvent);
+        }
+      });
+    } else {
+      // Use cached data (instant)
+      this.processNodeCreation(template, finalX, finalY, computes);
+    }
+  }
+
+  private processNodeCreation(template: Template, x: number, y: number, computes: Compute[]) {
+    if (computes.length === 1) {
+      // Only one compute node, proceed directly
+      const nodeAddedEvent: NodeAddedEvent = {
         template: template,
-        controller: 'local',
+        controller: computes[0].compute_id,
         numberOfNodes: 1,
-        x: (dropClientX - svgRect.left - origin.x - this.context.transformation.x) / k - width / 2,
-        y: (dropClientY - svgRect.top - origin.y - this.context.transformation.y) / k,
+        x: x,
+        y: y,
       };
-      this.onNodeCreation.emit(nodeAddedEvent);
-    });
+      this.nodeCreationChange.emit(nodeAddedEvent);
+    } else {
+      // Multiple compute nodes, show selector
+      this.pendingNodePosition.set({ x, y });
+      this.pendingTemplate.set(template);
+      // Sort computes: local first, then by name
+      const sortedComputes = [...computes].sort((a, b) => {
+        if (a.compute_id === 'local') return -1;
+        if (b.compute_id === 'local') return 1;
+        return (a.name || '').localeCompare(b.name || '');
+      });
+      this.availableComputes.set(sortedComputes);
+      this.showComputeSelector.set(true);
+      this.cd.markForCheck();
+    }
+  }
+
+  clearPendingState() {
+    this.showComputeSelector.set(false);
+    this.pendingNodePosition.set(null);
+    this.pendingTemplate.set(null);
+  }
+
+  onComputeSelected(computeId: string) {
+    const position = this.pendingNodePosition();
+    const template = this.pendingTemplate();
+
+    if (position && template) {
+      const nodeAddedEvent: NodeAddedEvent = {
+        template: template,
+        controller: computeId,
+        numberOfNodes: 1,
+        x: position.x,
+        y: position.y,
+      };
+      this.nodeCreationChange.emit(nodeAddedEvent);
+    }
+
+    this.clearPendingState();
+  }
+
+  onComputeSelectorCancelled() {
+    this.clearPendingState();
   }
 
   openDialog() {
     const dialogRef = this.dialog.open(TemplateListDialogComponent, {
-      width: '600px',
+      panelClass: ['base-dialog-panel', 'template-dialog-panel'],
       data: {
-        controller: this.controller,
-        project: this.project,
+        controller: this.controller(),
+        project: this.project(),
       },
       autoFocus: false,
-      disableClose: true,
     });
 
     dialogRef.afterClosed().subscribe((nodeAddedEvent: NodeAddedEvent) => {
       if (nodeAddedEvent !== null) {
-        this.onNodeCreation.emit(nodeAddedEvent);
+        this.nodeCreationChange.emit(nodeAddedEvent);
       }
     });
   }
 
-  getImageSourceForTemplate(template: Template) {
-    return this.symbolService.getSymbolFromTemplate(this.controller, template);
-    // let symbol = this.symbolService.getSymbolFromTemplate(template);
-    // if (symbol) return this.domSanitizer.bypassSecurityTrustUrl(`data:image/svg+xml;base64,${btoa(symbol.raw)}`);
-    // return this.domSanitizer.bypassSecurityTrustUrl('data:image/svg+xml;base64,');
+  getImageSourceForTemplate(template: Template): string {
+    return this.templateSymbolBlobUrls.get(template.symbol) || '';
+  }
+
+  onMenuClosed() {
+    // Menu closed event handler - can be used for cleanup if needed
   }
 
   ngOnDestroy() {

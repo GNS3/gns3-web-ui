@@ -1,27 +1,32 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, input, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
 import { Controller } from '@models/controller';
+import { SymbolsComponent } from '../symbols/symbols.component';
 
 @Component({
   selector: 'app-symbols-menu',
   templateUrl: './symbols-menu.component.html',
-  styleUrls: ['./symbols-menu.component.scss', '../../preferences.component.scss'],
+  styleUrls: ['./symbols-menu.component.scss'],
+  imports: [CommonModule, MatButtonModule, SymbolsComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SymbolsMenuComponent {
-  @Input() controller: Controller;
-  @Input() symbol: string;
+  readonly controller = input<Controller>(undefined);
+  readonly symbol = input<string>(undefined);
   @Output() symbolChangedEmitter = new EventEmitter<string>();
 
-  chosenSymbol: string = '';
+  readonly chosenSymbol = signal<string>('');
 
   symbolChanged(chosenSymbol: string) {
-    this.chosenSymbol = chosenSymbol;
+    this.chosenSymbol.set(chosenSymbol);
   }
 
   chooseSymbol() {
-    this.symbolChangedEmitter.emit(this.chosenSymbol);
+    this.symbolChangedEmitter.emit(this.chosenSymbol());
   }
 
   cancelChooseSymbol() {
-    this.symbolChangedEmitter.emit(this.symbol);
+    this.symbolChangedEmitter.emit(this.symbol());
   }
 }

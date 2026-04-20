@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { Controller } from '@models/controller';
 
@@ -9,7 +9,7 @@ export interface ControllerStateEvent {
 }
 
 @Injectable()
-export class ControllerManagementService implements OnDestroy {
+export class ControllerManagementService {
   controllerStatusChanged = new Subject<ControllerStateEvent>();
 
   constructor() {
@@ -20,7 +20,7 @@ export class ControllerManagementService implements OnDestroy {
     return 'local-controller-status-events';
   }
 
-  async start(controller: Controller ) {
+  async start(controller: Controller) {
     // Web application - controller management is handled by the server
     var startingEvent: ControllerStateEvent = {
       controllerName: controller.name,
@@ -31,7 +31,7 @@ export class ControllerManagementService implements OnDestroy {
     return Promise.resolve();
   }
 
-  async stop(controller: Controller ) {
+  async stop(controller: Controller) {
     // Web application - controller management is handled by the server
     return Promise.resolve();
   }
@@ -44,9 +44,5 @@ export class ControllerManagementService implements OnDestroy {
   getRunningControllers() {
     // Web application - no local controllers
     return [];
-  }
-
-  ngOnDestroy() {
-    // Cleanup
   }
 }

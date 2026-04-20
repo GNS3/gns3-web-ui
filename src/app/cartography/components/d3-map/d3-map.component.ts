@@ -1,5 +1,7 @@
 import {
+  ChangeDetectionStrategy,
   Component,
+  effect,
   ElementRef,
   HostListener,
   Input,
@@ -7,7 +9,10 @@ import {
   OnDestroy,
   OnInit,
   SimpleChange,
-  ViewChild,
+  inject,
+  input,
+  signal,
+  viewChild,
 } from '@angular/core';
 import { select, Selection } from 'd3-selection';
 import { Subscription } from 'rxjs';
@@ -31,25 +36,48 @@ import { SelectionTool } from '../../tools/selection-tool';
 import { GraphLayout } from '../../widgets/graph-layout';
 import { InterfaceLabelWidget } from '../../widgets/interface-label';
 import { TextEditorComponent } from '../text-editor/text-editor.component';
+import { DrawingAddingComponent } from '../drawing-adding/drawing-adding.component';
+import { CurveDrawingComponent } from '../curve-drawing/curve-drawing.component';
+import { DrawingResizingComponent } from '../drawing-resizing/drawing-resizing.component';
+import { SelectionControlComponent } from '../selection-control/selection-control.component';
+import { SelectionSelectComponent } from '../selection-select/selection-select.component';
+import { DraggableSelectionComponent } from '../draggable-selection/draggable-selection.component';
+import { LinkEditingComponent } from '../link-editing/link-editing.component';
+import { MovingCanvasDirective } from '../../directives/moving-canvas.directive';
+import { ZoomingCanvasDirective } from '../../directives/zooming-canvas.directive';
 
 @Component({
   selector: 'app-d3-map',
+  standalone: true,
   templateUrl: './d3-map.component.html',
-  styleUrls: ['./d3-map.component.scss'],
+  styleUrl: './d3-map.component.scss',
+  imports: [
+    TextEditorComponent,
+    DrawingAddingComponent,
+    CurveDrawingComponent,
+    DrawingResizingComponent,
+    SelectionControlComponent,
+    SelectionSelectComponent,
+    DraggableSelectionComponent,
+    LinkEditingComponent,
+    MovingCanvasDirective,
+    ZoomingCanvasDirective,
+  ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
-  @Input() nodes: Node[] = [];
-  @Input() links: Link[] = [];
-  @Input() drawings: Drawing[] = [];
-  @Input() symbols: Symbol[] = [];
-  @Input() project: Project;
-  @Input() controller: Controller;
+  readonly nodes = input<Node[]>([]);
+  readonly links = input<Link[]>([]);
+  readonly drawings = input<Drawing[]>([]);
+  readonly symbols = input<Symbol[]>([]);
+  readonly project = input<Project>(undefined);
+  readonly controller = input<Controller>(undefined);
 
-  @Input() width = 1500;
-  @Input() height = 600;
+  readonly width = input(1500);
+  readonly height = input(600);
 
-  @ViewChild('svg') svgRef: ElementRef;
-  @ViewChild('textEditor') textEditor: TextEditorComponent;
+  readonly svgRef = viewChild<ElementRef>('svg');
+  readonly textEditor = viewChild<TextEditorComponent>('textEditor');
 
   private parentNativeElement: any;
   private svg: Selection<SVGSVGElement, any, null, undefined>;
@@ -59,29 +87,38 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   protected settings = {
     show_interface_labels: true,
   };
-  public gridVisibility: number = 0;
+  public gridVisibility = signal(0);
 
   public nodeGridX: number = 0;
   public nodeGridY: number = 0;
   public drawingGridX: number = 0;
   public drawingGridY: number = 0;
 
-  constructor(
-    private graphDataManager: GraphDataManager,
-    public context: Context,
-    private mapChangeDetectorRef: MapChangeDetectorRef,
-    private canvasSizeDetector: CanvasSizeDetector,
-    private mapSettings: MapSettingsManager,
-    protected element: ElementRef,
-    protected interfaceLabelWidget: InterfaceLabelWidget,
-    protected selectionToolWidget: SelectionTool,
-    protected movingToolWidget: MovingTool,
-    public graphLayout: GraphLayout,
-    private toolsService: ToolsService,
-    private mapScaleService: MapScaleService,
-    private mapSettingsService: MapSettingsService
-  ) {
-    this.parentNativeElement = element.nativeElement;
+  private graphDataManager = inject(GraphDataManager);
+  public context = inject(Context);
+  private mapChangeDetectorRef = inject(MapChangeDetectorRef);
+  private canvasSizeDetector = inject(CanvasSizeDetector);
+  private mapSettings = inject(MapSettingsManager);
+  protected element = inject(ElementRef);
+  protected interfaceLabelWidget = inject(InterfaceLabelWidget);
+  protected selectionToolWidget = inject(SelectionTool);
+  protected movingToolWidget = inject(MovingTool);
+  public graphLayout = inject(GraphLayout);
+  private toolsService = inject(ToolsService);
+  private mapScaleService = inject(MapScaleService);
+  private mapSettingsService = inject(MapSettingsService);
+
+  constructor() {
+    this.parentNativeElement = this.element.nativeElement;
+
+    // Watch for project grid size changes
+    effect(() => {
+      const project = this.project();
+      if (project && this.mapChangeDetectorRef.hasBeenDrawn) {
+        this.updateGrid();
+        this.mapChangeDetectorRef.detectChanges();
+      }
+    });
   }
 
   @Input('show-interface-labels')
@@ -107,8 +144,8 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       let heightOfProjectWindow = window.innerHeight - 16;
 
-      if (this.height > heightOfProjectWindow) {
-        this.svg.attr('height', this.height);
+      if (this.height() > heightOfProjectWindow) {
+        this.svg.attr('height', this.height());
       } else {
         this.svg.attr('height', heightOfProjectWindow);
       }
@@ -139,6 +176,12 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
     }
     this.context.size = this.getSize();
 
+    // Initialize grid offsets based on project settings
+    const project = this.project();
+    if (project) {
+      this.updateGrid();
+    }
+
     this.onChangesDetected = this.mapChangeDetectorRef.changesDetected.subscribe(() => {
       if (this.mapChangeDetectorRef.hasBeenDrawn) {
         this.redraw();
@@ -157,6 +200,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.subscriptions.push(
       this.toolsService.isMovingToolActivated.subscribe((value: boolean) => {
+        this.movingToolWidget.setEnabled(value);
         this.mapChangeDetectorRef.detectChanges();
       })
     );
@@ -174,7 +218,7 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
       })
     );
 
-    this.gridVisibility = localStorage.getItem('gridVisibility') === 'true' ? 1 : 0;
+    this.gridVisibility.set(localStorage.getItem('gridVisibility') === 'true' ? 1 : 0);
     this.mapSettingsService.isScrollDisabled.subscribe((val) => this.resize(val));
 
     // Recalculate canvas size live during node drags so scrollbars appear as
@@ -213,11 +257,11 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.subscriptions.push(
       this.graphLayout.getNodesWidget().draggable.end.subscribe(() => {
-        const prevCX = dragStartCenterX ?? this.context.size.width  / 2;
+        const prevCX = dragStartCenterX ?? this.context.size.width / 2;
         const prevCY = dragStartCenterY ?? this.context.size.height / 2;
         const newSize = this.getSize();
-        const newCX  = this.context.centerX ?? newSize.width  / 2;
-        const newCY  = this.context.centerY ?? newSize.height / 2;
+        const newCX = this.context.centerX ?? newSize.width / 2;
+        const newCY = this.context.centerY ?? newSize.height / 2;
         // Scroll BEFORE resizing the SVG so the browser never clamps the scroll
         // position first (which would nullify the compensation for the cases
         // where centerX/centerY shift, e.g. nodes returning from the left).
@@ -252,12 +296,12 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public getSize(): Size {
-    const viewportWidth  = document.documentElement.clientWidth;
+    const viewportWidth = document.documentElement.clientWidth;
     const viewportHeight = document.documentElement.clientHeight;
 
     // Use live MapNode positions from graphDataManager so size is correct during
     // active drags (where this.nodes hasn't been updated yet).
-    const mapNodes    = this.graphDataManager.getNodes();
+    const mapNodes = this.graphDataManager.getNodes();
     const mapDrawings = this.graphDataManager.getDrawings();
 
     if (mapNodes.length === 0 && mapDrawings.length === 0) {
@@ -266,12 +310,15 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
       return new Size(viewportWidth, viewportHeight);
     }
 
-    const scale  = this.context.transformation.k;
-    const margin = 100;
-    let minX = 0, maxX = 0, minY = 0, maxY = 0;
+    const scale = this.context.transformation.k;
+    const margin = 30; // Reduced from 100px to 30px to prevent premature scrollbar appearance
+    let minX = 0,
+      maxX = 0,
+      minY = 0,
+      maxY = 0;
 
     for (const node of mapNodes) {
-      const nodeWidth  = (node.width  || 60) * scale;
+      const nodeWidth = (node.width || 60) * scale;
       const nodeHeight = (node.height || 60) * scale;
       const nx = node.width ? node.x * scale : (node.x - 30) * scale;
       const ny = node.width ? node.y * scale : (node.y - 30) * scale;
@@ -290,12 +337,12 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
 
     // Asymmetric canvas: allocate exactly the space needed on each side of the
     // scene origin so scrollbars only appear in the direction content extends.
-    const halfViewW = viewportWidth  / 2;
+    const halfViewW = viewportWidth / 2;
     const halfViewH = viewportHeight / 2;
-    const leftSpace   = Math.max(halfViewW, (-minX) + margin);
-    const rightSpace  = Math.max(halfViewW, maxX    + margin);
-    const topSpace    = Math.max(halfViewH, (-minY) + margin);
-    const bottomSpace = Math.max(halfViewH, maxY    + margin);
+    const leftSpace = Math.max(halfViewW, -minX + margin);
+    const rightSpace = Math.max(halfViewW, maxX + margin);
+    const topSpace = Math.max(halfViewH, -minY + margin);
+    const bottomSpace = Math.max(halfViewH, maxY + margin);
 
     this.context.centerX = leftSpace;
     this.context.centerY = topSpace;
@@ -312,42 +359,40 @@ export class D3MapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private onSymbolsChange(change: SimpleChange) {
-    this.graphDataManager.setSymbols(this.symbols);
+    this.graphDataManager.setSymbols(this.symbols());
   }
 
   private redraw() {
     this.updateGrid();
 
-    this.graphDataManager.setNodes(this.nodes);
-    this.graphDataManager.setLinks(this.links);
-    this.graphDataManager.setDrawings(this.drawings);
+    this.graphDataManager.setNodes(this.nodes());
+    this.graphDataManager.setLinks(this.links());
+    this.graphDataManager.setDrawings(this.drawings());
     // Recalculate after setNodes/Drawings so graphDataManager has current positions.
     this.context.size = this.getSize();
     this.graphLayout.draw(this.svg, this.context);
-    this.textEditor.activateTextEditingForDrawings();
-    this.textEditor.activateTextEditingForNodeLabels();
-    this.textEditor.activateTextEditingForNodeNames();
+    this.textEditor().activateTextEditingForDrawings();
+    this.textEditor().activateTextEditingForNodeLabels();
     this.mapSettingsService.mapRenderedEmitter.emit(true);
   }
 
   updateGrid() {
-    if (this.project.grid_size && this.project.grid_size > 0)
+    const project = this.project();
+    if (project.grid_size && project.grid_size > 0)
       this.nodeGridX =
-        this.context.size.width / 2 -
-        Math.floor(this.context.size.width / 2 / this.project.grid_size) * this.project.grid_size;
-    if (this.project.grid_size && this.project.grid_size > 0)
+        this.context.size.width / 2 - Math.floor(this.context.size.width / 2 / project.grid_size) * project.grid_size;
+    if (project.grid_size && project.grid_size > 0)
       this.nodeGridY =
-        this.context.size.height / 2 -
-        Math.floor(this.context.size.height / 2 / this.project.grid_size) * this.project.grid_size;
+        this.context.size.height / 2 - Math.floor(this.context.size.height / 2 / project.grid_size) * project.grid_size;
 
-    if (this.project.drawing_grid_size && this.project.drawing_grid_size > 0)
+    if (project.drawing_grid_size && project.drawing_grid_size > 0)
       this.drawingGridX =
         this.context.size.width / 2 -
-        Math.floor(this.context.size.width / 2 / this.project.drawing_grid_size) * this.project.drawing_grid_size;
-    if (this.project.drawing_grid_size && this.project.drawing_grid_size > 0)
+        Math.floor(this.context.size.width / 2 / project.drawing_grid_size) * project.drawing_grid_size;
+    if (project.drawing_grid_size && project.drawing_grid_size > 0)
       this.drawingGridY =
         this.context.size.height / 2 -
-        Math.floor(this.context.size.height / 2 / this.project.drawing_grid_size) * this.project.drawing_grid_size;
+        Math.floor(this.context.size.height / 2 / project.drawing_grid_size) * project.drawing_grid_size;
   }
 
   @HostListener('window:resize', ['$event'])

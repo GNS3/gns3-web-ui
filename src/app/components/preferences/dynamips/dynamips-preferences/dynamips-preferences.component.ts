@@ -1,32 +1,37 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, OnInit, inject, model } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { Controller } from '@models/controller';
 import { ControllerSettingsService } from '@services/controller-settings.service';
 import { ControllerService } from '@services/controller.service';
 
 @Component({
+  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-dynamips-preferences',
   templateUrl: './dynamips-preferences.component.html',
   styleUrls: ['./dynamips-preferences.component.scss'],
+  imports: [CommonModule, MatFormFieldModule, MatInputModule],
 })
 export class DynamipsPreferencesComponent implements OnInit {
-  controller: Controller;
-  dynamipsPath: string;
+  private readonly route: ActivatedRoute = inject(ActivatedRoute);
+  private controllerService = inject(ControllerService);
+  readonly cd = inject(ChangeDetectorRef);
 
-  constructor(
-    private route: ActivatedRoute,
-    private controllerService: ControllerService,
-    private controllerSettingsService: ControllerSettingsService
-  ) {}
+  controller: Controller;
+  dynamipsPath = model('');
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller ) => {
+    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
       this.controller = controller;
+      this.cd.markForCheck();
     });
   }
 
   restoreDefaults() {
-    this.dynamipsPath = '';
+    this.dynamipsPath.set('');
   }
 }

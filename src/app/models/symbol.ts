@@ -3,4 +3,5 @@ export class Symbol {
   filename: string;
   symbol_id: string;
   raw: string;
+  theme?: string;
 }

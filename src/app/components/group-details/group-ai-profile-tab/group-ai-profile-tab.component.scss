@@ -77,22 +77,22 @@
 
             mat-row {
               td {
-                border-bottom: 1px solid #e0e0e0;
+                border-bottom: 1px solid var(--mat-sys-outline-variant);
               }
 
               &:hover {
-                background-color: rgba(0, 0, 0, 0.04);
+                background-color: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
               }
 
               &.active-row {
-                background-color: #c8e6c9 !important;
+                background-color: var(--mat-sys-tertiary-container);
 
                 td {
-                  border-bottom: 1px solid #81c784 !important;
+                  border-bottom: 1px solid var(--mat-sys-tertiary);
                 }
 
                 &:hover {
-                  background-color: #a5d6a7 !important;
+                  background-color: color-mix(in srgb, var(--mat-sys-tertiary) 12%, var(--mat-sys-tertiary-container));
                 }
               }
             }
@@ -105,10 +105,10 @@
 
             .provider-badge {
               padding: 4px 8px;
-              background: #e3f2fd;
+              background: var(--mat-sys-primary-container);
               border-radius: 4px;
               font-size: 12px;
-              color: #1976d2;
+              color: var(--mat-sys-on-primary-container);
             }
 
             .model-name {
@@ -160,12 +160,12 @@
                 // Set active button
                 &.active-btn {
                   mat-icon {
-                    color: #4caf50;
+                    color: var(--mat-sys-tertiary);
                   }
 
                   &:hover::before {
                     opacity: 1;
-                    background-color: #e8f5e9;
+                    background-color: var(--mat-sys-tertiary-container);
                   }
 
                   &:hover mat-icon {
@@ -176,18 +176,18 @@
                 // Edit button
                 &:not(.active-btn):not(.delete-btn):hover::before {
                   opacity: 1;
-                  background-color: #e3f2fd;
+                  background-color: var(--mat-sys-primary-container);
                 }
 
                 &:not(.active-btn):not(.delete-btn):hover mat-icon {
-                  color: #1976d2;
+                  color: var(--mat-sys-primary);
                   transform: scale(1.35);
                 }
 
                 // Delete button
                 &.delete-btn:hover::before {
                   opacity: 1;
-                  background-color: #ffebee;
+                  background-color: var(--mat-sys-error-container);
                 }
 
                 &.delete-btn:hover mat-icon {

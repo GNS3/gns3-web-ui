@@ -1,5 +1,16 @@
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { MatMenuTrigger } from '@angular/material/menu';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  OnInit,
+  Output,
+  inject,
+  input,
+  viewChild,
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Node } from '../../../cartography/models/node';
 import { Link } from '@models/link';
@@ -9,20 +20,23 @@ import { Port } from '@models/port';
 @Component({
   selector: 'app-node-select-interface',
   templateUrl: './node-select-interface.component.html',
-  styleUrls: ['./node-select-interface.component.scss'],
+  styleUrl: './node-select-interface.component.scss',
+  imports: [CommonModule, MatMenuModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodeSelectInterfaceComponent implements OnInit {
-  @Input() links: Link[];
-  @Output() onChooseInterface = new EventEmitter<any>();
+  readonly links = input<Link[]>(undefined);
+  @Output() chooseInterfaceChange = new EventEmitter<any>();
 
-  @ViewChild(MatMenuTrigger) contextMenu: MatMenuTrigger;
+  readonly contextMenu = viewChild(MatMenuTrigger);
+
+  private sanitizer = inject(DomSanitizer);
+  private changeDetector = inject(ChangeDetectorRef);
 
   protected topPosition;
   protected leftPosition;
   public node: Node;
   public ports: Port[];
-
-  constructor(private sanitizer: DomSanitizer, private changeDetector: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.setPosition(0, 0);
@@ -38,12 +52,12 @@ export class NodeSelectInterfaceComponent implements OnInit {
     this.node = node;
     this.filterNodePorts();
     this.setPosition(top, left);
-    this.contextMenu.openMenu();
+    this.contextMenu().openMenu();
   }
 
   public filterNodePorts() {
     let linkNodes: LinkNode[] = [];
-    this.links.forEach((link: Link) => {
+    this.links().forEach((link: Link) => {
       link.nodes.forEach((linkNode: LinkNode) => {
         if (linkNode.node_id === this.node.node_id) {
           linkNodes.push(linkNode);
@@ -74,7 +88,7 @@ export class NodeSelectInterfaceComponent implements OnInit {
   }
 
   public chooseInterface(port: Port) {
-    this.onChooseInterface.emit({
+    this.chooseInterfaceChange.emit({
       node: this.node,
       port: port,
     });

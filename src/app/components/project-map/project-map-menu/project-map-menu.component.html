@@ -45,8 +45,8 @@
 >
   <mat-icon [ngClass]="getCssClassForIcon('ellipse')">panorama_fish_eye</mat-icon>
 </button>
+@if (!isLightThemeEnabled) {
 <button
-  *ngIf="!isLightThemeEnabled"
   matTooltip="Draw a line"
   matTooltipClass="custom-tooltip"
   matTooltipPosition="left"
@@ -54,19 +54,20 @@
   class="menu-button"
   (click)="addDrawing('line')"
 >
-  <svg height="40" width="40">
+  <svg height="20" width="20">
     <line
       [ngClass]="{ selected: drawTools.isLineChosen }"
-      x1="30"
-      y1="10"
-      x2="10"
-      y2="30"
-      style="stroke: white; stroke-width: 2"
+      class="draw-line-icon"
+      x1="15"
+      y1="5"
+      x2="5"
+      y2="15"
+      style="stroke-width: 2"
     />
   </svg>
 </button>
+} @if (isLightThemeEnabled) {
 <button
-  *ngIf="isLightThemeEnabled"
   matTooltip="Draw a line"
   matTooltipClass="custom-tooltip"
   matTooltipPosition="left"
@@ -74,15 +75,38 @@
   class="menu-button"
   (click)="addDrawing('line')"
 >
-  <svg height="40" width="40">
+  <svg height="20" width="20">
     <line
       [ngClass]="{ selected: drawTools.isLineChosen }"
-      x1="30"
-      y1="10"
-      x2="10"
-      y2="30"
-      style="stroke: black; stroke-width: 2"
+      class="draw-line-icon"
+      x1="15"
+      y1="5"
+      x2="5"
+      y2="15"
+      style="stroke-width: 2"
     />
+  </svg>
+</button>
+}
+<button
+  matTooltip="Draw a curve"
+  matTooltipClass="custom-tooltip"
+  matTooltipPosition="left"
+  mat-icon-button
+  class="menu-button"
+  (click)="addDrawing('curve')"
+>
+  <svg height="20" width="20" viewBox="0 0 20 20">
+    <g transform="rotate(20, 10, 10)">
+      <path
+        [ngClass]="{ selected: drawTools.isCurveChosen }"
+        class="draw-line-icon"
+        d="M 6 3 C 12 3, 12 6, 10 6 C 8 6, 6 8, 6 10 C 6 12, 8 14, 10 14 C 12 14, 14 17, 14 17"
+        fill="none"
+        stroke-width="2"
+        stroke="currentColor"
+      />
+    </g>
   </svg>
 </button>
 <button
@@ -93,7 +117,7 @@
   class="menu-button"
   (click)="changeLockValue()"
 >
-  <mat-icon [ngClass]="{ unmarkedLight: !isLocked && isLightThemeEnabled, marked: isLocked }">{{lock}}</mat-icon>
+  <mat-icon [ngClass]="{ unmarkedLight: !isLocked && isLightThemeEnabled, marked: isLocked }">{{ lock }}</mat-icon>
 </button>
 <button
   matTooltip="Take a screenshot"
@@ -116,11 +140,10 @@
   (click)="openAIChat()"
 >
   <span class="ai-icon">AI</span>
-  <span *ngIf="isAIChatOpen && isAIMinimized" class="ai-minimize-indicator"></span>
 </button>
 <app-drawing-added
-  [controller]="controller"
-  [project]="project"
+  [controller]="controller()"
+  [project]="project()"
   [selectedDrawing]="selectedDrawing"
   (drawingSaved)="onDrawingSaved()"
 >

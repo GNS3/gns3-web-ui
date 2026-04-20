@@ -1,5 +1,7 @@
-import { Component, Input, OnChanges } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { ChangeDetectionStrategy, Component, OnChanges, inject, input } from '@angular/core';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { ImageElement } from '../../../../../cartography/models/drawings/image-element';
 import { Project } from '@models/project';
@@ -9,28 +11,33 @@ import { StyleEditorDialogComponent } from '../../../drawings-editors/style-edit
 @Component({
   selector: 'app-edit-style-action',
   templateUrl: './edit-style-action.component.html',
+  imports: [MatDialogModule, MatMenuModule, MatIconModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditStyleActionComponent implements OnChanges {
-  @Input() controller: Controller;
-  @Input() project: Project;
-  @Input() drawing: Drawing;
+  private dialog = inject(MatDialog);
+
+  readonly controller = input<Controller>(undefined);
+  readonly project = input<Project>(undefined);
+  readonly drawing = input<Drawing>(undefined);
   isImageDrawing: boolean = false;
 
-  constructor(private dialog: MatDialog) {}
+  constructor() {}
 
   ngOnChanges() {
-    this.isImageDrawing = this.drawing.element instanceof ImageElement;
+    const drawing = this.drawing();
+    this.isImageDrawing = drawing?.element instanceof ImageElement;
   }
 
   editStyle() {
     const dialogRef = this.dialog.open(StyleEditorDialogComponent, {
-      width: '800px',
+      panelClass: ['base-dialog-panel', 'simple-dialog-panel', 'edit-style-action-dialog-panel'],
       autoFocus: false,
-      disableClose: true,
+      disableClose: false,
     });
     let instance = dialogRef.componentInstance;
-    instance.controller = this.controller;
-    instance.project = this.project;
-    instance.drawing = this.drawing;
+    instance.controller = this.controller();
+    instance.project = this.project();
+    instance.drawing = this.drawing();
   }
 }

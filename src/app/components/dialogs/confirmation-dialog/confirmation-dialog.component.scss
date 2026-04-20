@@ -1,10 +1,15 @@
+/**
+ * GNS3 Confirmation Dialog Component Styles
+ * Using MD3 CSS variables
+ */
+
 .dialog-container {
   position: relative;
   overflow: hidden;
-  animation: dialogSlideIn 0.3s ease-out;
+  animation: dialogSlideIn 200ms ease-out;
   border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 4px 16px rgba(0, 0, 0, 0.12);
-  background-color: #2d2d2d;
+  box-shadow: 0 8px 32px color-mix(in srgb, var(--mat-sys-shadow) 30%, transparent);
+  background-color: var(--mat-sys-surface);
 }
 
 @keyframes dialogSlideIn {
@@ -18,14 +23,13 @@
   }
 }
 
-/* Header with icon */
 .dialog-header {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 16px 20px 12px;
-  background: linear-gradient(135deg, rgba(244, 67, 54, 0.06), rgba(244, 67, 54, 0.02));
-  border-bottom: 1px solid rgba(244, 67, 54, 0.15);
+  padding: 24px 30px 16px;
+  background: var(--mat-sys-error-container);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
   margin-bottom: 4px;
   border-radius: 16px 16px 0 0;
 }
@@ -40,33 +44,31 @@
 }
 
 .warning-icon {
-  color: #f44336;
+  color: var(--mat-sys-error);
 }
 
 .dialog-title {
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 600;
-  color: var(--mat-app-on-surface);
+  color: var(--mat-sys-on-surface);
   margin: 0;
   letter-spacing: -0.2px;
 }
 
-/* Content */
 .dialog-content {
-  padding: 8px 20px 16px;
+  padding: 10px 30px 24px;
 }
 
 .dialog-message {
   font-size: 14px;
-  color: var(--mat-app-on-surface-variant);
+  color: var(--mat-sys-on-surface-variant);
   margin: 0;
   line-height: 1.5;
   letter-spacing: -0.1px;
 }
 
-/* Actions */
 .dialog-actions {
-  padding: 12px 20px 20px;
+  padding: 16px 30px 30px;
   display: flex;
   justify-content: center;
   gap: 10px;
@@ -77,11 +79,11 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 16px;
-  border-radius: 12px;
+  padding: 7px 24px;
+  border-radius: 8px;
   font-weight: 500;
-  font-size: 13px;
-  transition: all 0.2s ease;
+  font-size: 14px;
+  transition: all 100ms ease;
   position: relative;
   overflow: hidden;
   min-width: 70px;
@@ -89,16 +91,16 @@
 }
 
 .cancel-button {
-  color: #0097a7;
+  color: var(--mat-sys-primary);
   background: transparent;
-  border: 1px solid rgba(0, 151, 167, 0.25);
+  border: 1px solid var(--mat-sys-outline);
 }
 
 .cancel-button:hover {
-  background: rgba(0, 151, 167, 0.06);
-  border-color: rgba(0, 151, 167, 0.4);
+  background: var(--mat-sys-primary-container);
+  border-color: var(--mat-sys-primary);
   transform: translateY(-1px);
-  box-shadow: 0 3px 10px rgba(0, 151, 167, 0.12);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
 }
 
 .cancel-button:active {
@@ -106,22 +108,23 @@
 }
 
 .cancel-button .button-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
 }
 
 .confirm-button {
-  background: linear-gradient(135deg, #f44336, #e53935);
-  color: white;
+  background: var(--mat-sys-error);
+  color: var(--mat-sys-on-error);
   border: none;
-  box-shadow: 0 2px 6px rgba(244, 67, 54, 0.25);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--mat-sys-error) 25%, transparent);
 }
 
 .confirm-button:hover {
-  background: linear-gradient(135deg, #e53935, #d32f2f);
+  background: var(--mat-sys-error);
+  opacity: 0.9;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.35);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--mat-sys-error) 35%, transparent);
 }
 
 .confirm-button:active {
@@ -135,7 +138,12 @@
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--mat-sys-on-error) 20%, transparent),
+    transparent
+  );
   transition: left 0.5s;
 }
 
@@ -144,12 +152,11 @@
 }
 
 .confirm-button .button-icon {
-  font-size: 16px;
-  width: 16px;
-  height: 16px;
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
 }
 
-/* Ripple effect */
 .cancel-button::after,
 .confirm-button::after {
   content: '';
@@ -159,7 +166,8 @@
   width: 0;
   height: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.4);
+  background: currentColor;
+  opacity: 0.4;
   transform: translate(-50%, -50%);
   transition: width 0.6s, height 0.6s;
 }
@@ -172,9 +180,8 @@
   transition: 0s;
 }
 
-/* Accessibility focus */
 .cancel-button:focus-visible,
 .confirm-button:focus-visible {
-  outline: 2px solid #00bcd4;
+  outline: 2px solid var(--mat-sys-primary);
   outline-offset: 2px;
 }

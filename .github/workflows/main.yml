@@ -1,4 +1,5 @@
-name: Build
+name: Build & Lint
+
 on:
   push:
     branches:
@@ -13,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node: [ 18, 20, 22, 24 ]
+        node: [ 20, 22, 24 ]
     name: Node ${{ matrix.node }}
     steps:
       - uses: actions/checkout@v3
@@ -25,4 +26,130 @@ jobs:
       - name: Install JS dependencies
         run: yarn install --frozen-lockfile --immutable
       - name: Test
-        run: yarn test
+        run: yarn ng test --watch=false
+
+  lint-check:
+    runs-on: ubuntu-latest
+    name: Standards check
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Check for ::ng-deep in SCSS
+        run: |
+          FOUND=$(grep -r "::ng-deep" --include="*.scss" src/ || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ FORBIDDEN: ::ng-deep found in SCSS files"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No ::ng-deep found"
+
+      - name: Check for :deep() in SCSS
+        run: |
+          FOUND=$(grep -r ":deep(" --include="*.scss" src/ || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ FORBIDDEN: :deep() found in SCSS files"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No :deep() found"
+
+      - name: Check for !important in SCSS
+        run: |
+          FOUND=$(grep -rn "!important" --include="*.scss" src/ || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ FORBIDDEN: !important found in SCSS files"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No !important found"
+
+      - name: Check for ViewEncapsulation.None
+        run: |
+          FOUND=$(grep -rn "ViewEncapsulation.None" --include="*.ts" src/ || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ FORBIDDEN: ViewEncapsulation.None found"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No ViewEncapsulation.None found"
+
+      - name: Check for Zone.js imports
+        run: |
+          FOUND=$(grep -rn "zone.js" --include="*.ts" src/ | grep -v "test.ts" || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ FORBIDDEN: zone.js import found"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No zone.js imports found"
+
+      - name: Check for NgZone usage
+        run: |
+          FOUND=$(grep -rn "NgZone" --include="*.ts" src/ || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ FORBIDDEN: NgZone found"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No NgZone found"
+
+      - name: Check for Zone.run usage
+        run: |
+          FOUND=$(grep -rn "Zone.run" --include="*.ts" src/ || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ FORBIDDEN: Zone.run found"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No Zone.run found"
+
+      - name: Check for ApplicationRef.tick usage
+        run: |
+          FOUND=$(grep -rn "ApplicationRef.tick" --include="*.ts" src/ || true)
+          if [ -n "$FOUND" ]; then
+            echo "❌ FORBIDDEN: ApplicationRef.tick found"
+            echo "$FOUND"
+            exit 1
+          fi
+          echo "✅ No ApplicationRef.tick found"
+
+      - name: Check for hardcoded colors in SCSS
+        run: |
+          .husky/check-hardcoded-colors.sh --ci
+
+      - name: Check for hooks modifications
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "Checking if .husky/ files were modified..."
+          HUSKY_FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | grep "^\.\husky/" || true)
+
+          if [ -n "$HUSKY_FILES" ]; then
+            echo "⚠️  The following hook files were modified:"
+            echo "$HUSKY_FILES" | sed 's/^/  /'
+
+            # Check if PR has the 'hooks-update' label
+            HAS_LABEL=$(echo '${{ github.event.pull_request.labels.*.name }}' | grep -o 'hooks-update' || true)
+
+            if [ -z "$HAS_LABEL" ]; then
+              echo ""
+              echo "❌ ERROR: Modifying git hooks requires the 'hooks-update' label"
+              echo ""
+              echo "To proceed:"
+              echo "  1. Add the 'hooks-update' label to this PR"
+              echo "  2. Get approval from maintainers"
+              echo ""
+              exit 1
+            else
+              echo ""
+              echo "✅ PR has 'hooks-update' label - hooks modification allowed"
+            fi
+          else
+            echo "✅ No hook files modified"
+          fi
+
+      - name: Install JS dependencies
+        run: yarn install --frozen-lockfile --immutable
+
+      - name: Run Angular lint
+        run: yarn ng lint gns3-web-ui

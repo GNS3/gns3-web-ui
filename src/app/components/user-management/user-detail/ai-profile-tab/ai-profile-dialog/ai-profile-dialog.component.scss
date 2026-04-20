@@ -1,12 +1,17 @@
-.config-form {
-  min-width: 400px;
-  max-width: 700px;
+/**
+ * AI Profile Dialog Component Styles
+ * Inherits base and sizing from _dialogs.scss (.base-dialog-panel + .ai-profile-dialog-panel)
+ * This file only contains component-specific layout and styling
+ */
 
+.config-form {
+  // Form field layout
   .full-width {
     width: 100%;
     margin-bottom: 12px;
   }
 
+  // Section headers
   .section-header {
     margin-top: 16px;
     margin-bottom: 16px;
@@ -15,10 +20,31 @@
       margin: 0;
       font-size: 18px;
       font-weight: 600;
-      color: #1976d2;
+      color: var(--mat-sys-primary);
     }
   }
 
+  // Help icon in label
+  .help-icon {
+    display: inline-flex;
+    vertical-align: middle;
+    width: 18px;
+    height: 18px;
+    margin-left: 4px;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: var(--mat-sys-on-surface-variant);
+    }
+
+    &:hover mat-icon {
+      color: var(--mat-sys-primary);
+    }
+  }
+
+  // Two-column row layout
   .row {
     display: flex;
     gap: 12px;
@@ -37,39 +63,29 @@
     mat-checkbox {
       display: block;
     }
-
-    ::ng-deep .mat-checkbox-layout {
-      display: block;
-    }
-
-    .checkbox-hint {
-      display: block;
-      margin-top: 8px;
-      margin-left: 28px;
-      font-size: 13px;
-      color: #757575;
-    }
   }
 
+  // Text hints
   .option-hint {
-    color: #757575;
-    font-size: 12px;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 14px;
   }
 
   .existing-key-hint {
-    color: #1976d2;
-    font-size: 13px;
+    color: var(--mat-sys-primary);
+    font-size: 12px;
   }
 
   .warning-hint {
-    color: #757575;
-    font-size: 13px;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 14px;
   }
 
+  // Custom fields section
   .custom-fields-section {
     margin-top: 16px;
     padding-top: 16px;
-    border-top: 1px solid #e0e0e0;
+    border-top: 1px solid var(--mat-sys-outline-variant);
 
     .section-header {
       display: flex;
@@ -81,7 +97,7 @@
         margin: 0;
         font-size: 16px;
         font-weight: 500;
-        color: #424242;
+        color: var(--mat-sys-on-surface);
       }
 
       button {
@@ -118,11 +134,11 @@
 
         &:hover::before {
           opacity: 1;
-          background-color: #e3f2fd;
+          background-color: var(--mat-sys-primary-container);
         }
 
         &:hover mat-icon {
-          color: #1976d2;
+          color: var(--mat-sys-primary);
           transform: scale(1.1);
         }
       }
@@ -133,8 +149,8 @@
 
       .reserved-field-hint {
         margin: 0;
-        font-size: 13px;
-        color: #757575;
+        font-size: 14px;
+        color: var(--mat-sys-on-surface-variant);
         font-style: italic;
       }
     }
@@ -194,7 +210,7 @@
 
           &.delete-btn:hover::before {
             opacity: 1;
-            background-color: #ffebee;
+            background-color: var(--mat-sys-error-container);
           }
 
           &:hover mat-icon {
@@ -210,7 +226,7 @@
       align-items: center;
       justify-content: center;
       padding: 24px;
-      color: #757575;
+      color: var(--mat-sys-on-surface-variant);
       text-align: center;
 
       .empty-icon {
@@ -238,7 +254,7 @@
       flex: 1;
       display: flex;
 
-      ::ng-deep .mat-button-toggle {
+      .mat-button-toggle {
         flex: 1;
 
         .mat-button-toggle-button {
@@ -268,46 +284,29 @@
         font-size: 20px;
         height: 20px;
         width: 20px;
-        color: #757575;
+        color: var(--mat-sys-on-surface-variant);
       }
 
       &:hover mat-icon {
-        color: #1976d2;
+        color: var(--mat-sys-primary);
       }
     }
   }
 
   // Basic Mode
   .basic-mode {
-    .model-option {
-      display: flex;
-      flex-direction: column;
-      line-height: 1.4;
-
-      .model-name {
-        font-weight: 500;
-        font-size: 14px;
-      }
-
-      .model-desc {
-        font-size: 12px;
-        color: #757575;
-        margin-top: 2px;
-      }
-    }
-
     .mode-info {
       display: flex;
       gap: 12px;
       padding: 12px;
       margin-top: 16px;
-      background: #ffffff;
-      border: 1px solid #e0e0e0;
+      background: var(--mat-sys-surface-container);
+      border: 1px solid var(--mat-sys-outline-variant);
       border-radius: 8px;
 
       .info-icon {
         flex-shrink: 0;
-        color: #757575;
+        color: var(--mat-sys-on-surface-variant);
         font-size: 20px;
         height: 20px;
         width: 20px;
@@ -316,13 +315,13 @@
 
       p {
         margin: 0;
-        font-size: 13px;
-        color: #616161;
+        font-size: 14px;
+        color: var(--mat-sys-on-surface-variant);
         line-height: 1.5;
 
         strong {
           font-weight: 500;
-          color: #424242;
+          color: var(--mat-sys-on-surface);
         }
       }
     }
@@ -330,6 +329,38 @@
 
   // Custom Mode
   .custom-mode {
-    // Inherits all existing styles
+    .custom-mode-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: var(--mat-sys-surface-container);
+      border-radius: 8px;
+
+      h3 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--mat-sys-on-surface);
+      }
+
+      button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+
+        .help-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+        }
+
+        span {
+          font-size: 14px;
+          font-weight: 500;
+        }
+      }
+    }
   }
 }

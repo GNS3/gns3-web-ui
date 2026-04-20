@@ -14,7 +14,7 @@ export class SettingsService {
   private settings: Settings = {
     crash_reports: true,
     console_command: undefined,
-    anonymous_statistics: true
+    anonymous_statistics: true,
   };
 
   private readonly reportsSettings: string = 'crash_reports';
@@ -25,8 +25,7 @@ export class SettingsService {
     if (this.getItem(this.reportsSettings))
       this.settings.crash_reports = this.getItem(this.reportsSettings) === 'true' ? true : false;
 
-    if (this.getItem(this.consoleSettings))
-      this.settings.console_command = this.getItem(this.consoleSettings);
+    if (this.getItem(this.consoleSettings)) this.settings.console_command = this.getItem(this.consoleSettings);
 
     if (this.getItem(this.statisticsSettings))
       this.settings.anonymous_statistics = this.getItem(this.statisticsSettings) === 'true' ? true : false;

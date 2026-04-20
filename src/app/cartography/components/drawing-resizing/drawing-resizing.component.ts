@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, ChangeDetectionStrategy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DrawingsEventSource } from '../../events/drawings-event-source';
 import { ResizedDataEvent } from '../../events/event-source';
@@ -8,13 +8,17 @@ import { DrawingsWidget } from '../../widgets/drawings';
 
 @Component({
   selector: 'app-drawing-resizing',
+  standalone: true,
   template: ` <ng-content></ng-content> `,
-  styleUrls: ['./drawing-resizing.component.scss'],
+  styleUrl: './drawing-resizing.component.scss',
+  imports: [],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DrawingResizingComponent implements OnInit, OnDestroy {
   resizingFinished: Subscription;
 
-  constructor(private drawingsWidget: DrawingsWidget, private drawingsEventSource: DrawingsEventSource) {}
+  private drawingsWidget = inject(DrawingsWidget);
+  private drawingsEventSource = inject(DrawingsEventSource);
 
   ngOnInit() {
     this.resizingFinished = this.drawingsWidget.resizingFinished.subscribe((evt: ResizingEnd<MapDrawing>) => {

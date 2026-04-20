@@ -1,0 +1,110 @@
+/**
+ * GNS3 Custom Adapters Dialog Component Styles
+ */
+
+:host {
+  display: block;
+}
+
+/* =============================================
+// Adapter Form
+// ============================================= */
+.adapter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.adapter-item {
+  display: grid;
+  grid-template-columns: 100px 1fr 2fr 1.5fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--mat-sys-surface-container-lowest);
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--mat-sys-outline) 15%, transparent);
+
+  &:hover {
+    border-color: color-mix(in srgb, var(--mat-sys-primary) 30%, transparent);
+  }
+}
+
+.adapter-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  text-align: center;
+}
+
+/* =============================================
+// Table Header
+// ============================================= */
+.adapter-header {
+  display: grid;
+  grid-template-columns: 100px 1fr 2fr 1.5fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 16px;
+  margin-bottom: 8px;
+  border-bottom: 2px solid color-mix(in srgb, var(--mat-sys-outline) 30%, transparent);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--mat-sys-surface);
+  box-shadow: 0 2px 4px color-mix(in srgb, var(--mat-sys-shadow) 10%, transparent);
+}
+
+.adapter-header-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.adapter-header-field {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mat-sys-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+}
+
+.adapter-header-actions {
+  width: 40px;
+  text-align: center;
+}
+
+.adapter-field {
+  margin: 0;
+  text-align: center;
+}
+
+.adapter-actions {
+  margin: 0;
+  text-align: center;
+}
+
+.add-btn {
+  flex-shrink: 0;
+  width: auto;
+  margin-top: 12px;
+  height: 48px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  text-transform: none;
+  border: 2px dashed color-mix(in srgb, var(--mat-sys-outline) 40%, transparent);
+  color: var(--mat-sys-on-surface-variant);
+
+  &:hover {
+    border-color: var(--mat-sys-primary);
+    color: var(--mat-sys-primary);
+    background: color-mix(in srgb, var(--mat-sys-primary) 8%, transparent);
+  }
+}

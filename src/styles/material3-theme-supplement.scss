@@ -1,0 +1,13 @@
+/**
+ * Material Design 3 Theme Variables Supplement
+ *
+ * Based on Angular Material 21 MD3 Sass Mixin system,
+ * automatically generates dynamically switchable CSS variable classes for all themes.
+ *
+ * Usage:
+ * Import this file in styles.scss, it will automatically generate theme switch classes
+ */
+
+// Generate all MD3 theme switch classes
+@use 'theme-generator' as *;
+@include generate-all-themes();

@@ -1,6 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, signal, computed } from '@angular/core';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatButtonModule } from '@angular/material/button';
 import { ImageUploadEvent, ImageUploadSessionService } from '@services/image-upload-session.service';
 
 interface UploadRow extends ImageUploadEvent {
@@ -11,14 +15,17 @@ interface UploadRow extends ImageUploadEvent {
 @Component({
   selector: 'app-global-upload-indicator',
   templateUrl: './global-upload-indicator.component.html',
-  styleUrls: ['./global-upload-indicator.component.scss'],
+  styleUrl: './global-upload-indicator.component.scss',
+  imports: [CommonModule, MatIconModule, MatProgressBarModule, MatButtonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GlobalUploadIndicatorComponent implements OnInit, OnDestroy {
-  uploads = new Map<string, UploadRow>();
-  isExpanded = true;
-  private subscription: Subscription;
+  private imageUploadSessionService = inject(ImageUploadSessionService);
+  private router = inject(Router);
 
-  constructor(private imageUploadSessionService: ImageUploadSessionService, private router: Router) {}
+  uploads = new Map<string, UploadRow>();
+  readonly isExpanded = signal(true);
+  private subscription: Subscription;
 
   ngOnInit() {
     this.subscription = this.imageUploadSessionService.events$.subscribe((event: ImageUploadEvent) => {
@@ -48,7 +55,7 @@ export class GlobalUploadIndicatorComponent implements OnInit, OnDestroy {
     this.imageUploadSessionService.requestCancel(tempId);
   }
 
-    navigateToFile(row: UploadRow, event: MouseEvent) {
+  navigateToFile(row: UploadRow, event: MouseEvent) {
     event.stopPropagation();
     if (!row.controller_id) return;
     this.router.navigate(['/controller', row.controller_id, 'image-manager'], {
@@ -57,7 +64,7 @@ export class GlobalUploadIndicatorComponent implements OnInit, OnDestroy {
   }
 
   toggleExpanded() {
-    this.isExpanded = !this.isExpanded;
+    this.isExpanded.set(!this.isExpanded());
   }
 
   trackByTempId(_index: number, row: UploadRow): string {
@@ -91,7 +98,7 @@ export class GlobalUploadIndicatorComponent implements OnInit, OnDestroy {
     this.uploads.set(event.tempId, row);
 
     if (!existing && event.status === 'queued') {
-      this.isExpanded = true;
+      this.isExpanded.set(true);
     }
   }
 

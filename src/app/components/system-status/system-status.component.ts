@@ -1,15 +1,18 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { StatusInfoComponent } from './status-info/status-info.component';
 
 @Component({
   selector: 'app-system-status',
   templateUrl: './system-status.component.html',
-  styleUrls: ['./system-status.component.scss'],
+  styleUrl: './system-status.component.scss',
+  imports: [StatusInfoComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SystemStatusComponent implements OnInit {
   public controllerId: string = '';
 
-  constructor(private route: ActivatedRoute) {}
+  private route = inject(ActivatedRoute);
 
   ngOnInit() {
     this.controllerId = this.route.snapshot.paramMap.get('controller_id');

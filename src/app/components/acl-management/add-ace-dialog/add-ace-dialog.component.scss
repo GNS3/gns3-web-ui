@@ -1,24 +1,32 @@
-.input-field {
+.ace-form {
+  display: flex;
   width: 100%;
+  height: 400px;
+  overflow-x: hidden;
+  padding: 0 16px;
 }
 
-.height-100 {
-  height: 100%;
+.ace-form__tree-panel {
+  flex: 1;
+  overflow-y: auto;
+  min-width: 0;
+  max-height: 400px;
+  color: var(--mat-sys-on-surface);
 }
 
-.button-div {
-  float: right;
-  position: absolute;
-  right: 0;
-  bottom: 0;
+.ace-form__divider {
+  flex-shrink: 0;
+  margin: 0 16px;
+  height: auto;
+  align-self: stretch;
 }
 
-.allow {
-  background-color: green;
-}
-
-.deny {
-  background-color: darkred;
+.ace-form__selection-panel {
+  flex: 0 0 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-x: hidden;
 }
 
 .typeSelect {
@@ -27,45 +35,57 @@
   margin-right: 5px;
 }
 
-.groupList {
-  display: flex;
-  margin: 10px;
-  justify-content: space-between;
-  flex: 1 1 auto
-}
-
-.groups {
-  display: flex;
-  height: 180px;
-  overflow: auto;
-  flex-direction: column;
-}
-
 .example-tree-invisible {
   display: none;
 }
 
-.example-tree ul,
-.example-tree li {
-  margin-top: 0;
-  margin-bottom: 0;
-  list-style-type: none;
-}
-.example-tree-node {
+.ace-form__tree-node {
   display: block;
 }
 
-.example-tree-node .example-tree-node {
+.ace-form__tree-node .ace-form__tree-node {
   padding-left: 40px;
 }
 
-.form-div {
-  position: relative;
-  width: 25%;
-  float:right;
-  margin-left: 20px;
+.ace-form__checkbox-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
 }
 
-.selected {
-  color: green
+.ace-form__checkbox-left {
+  flex: 1;
+}
+
+.ace-form__divider-vertical {
+  height: auto;
+  align-self: stretch;
+}
+
+.ace-form__checkbox-right {
+  flex: 1;
+  text-align: right;
+}
+
+.ace-form__action-btn {
+  min-width: 80px;
+
+  &--allow {
+    background-color: green;
+    color: white;
+  }
+
+  &--deny {
+    background-color: darkred;
+    color: white;
+  }
+}
+
+.ace-form__actions {
+  margin-top: auto;
+  padding-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
 }

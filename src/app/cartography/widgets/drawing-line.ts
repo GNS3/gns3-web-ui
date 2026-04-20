@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { mouse } from 'd3-selection';
+import { pointer } from 'd3-selection';
 import { line } from 'd3-shape';
 import { Context } from '../models/context';
 import { DrawingLine } from '../models/drawing-line';
@@ -18,18 +18,30 @@ export class DrawingLineWidget {
 
     this.drawing = true;
     this.data = data;
-    this.drawingLine.start = new Point(x, y);
-    this.drawingLine.end = new Point(x, y);
+    this.drawingLine.points = [new Point(x, y)];
 
-    const over = function (this, d, i) {
+    const over = function (this: SVGGElement, event: MouseEvent, d: unknown) {
       const node = self.selection.select<SVGGElement>('g.canvas').node();
-      const coordinates = mouse(node);
-      self.drawingLine.end.x = coordinates[0];
-      self.drawingLine.end.y = coordinates[1];
+      const coordinates = pointer(event, node);
+      // Update with only start point and current mouse position for straight line
+      if (self.drawing) {
+        self.drawingLine.points = [
+          self.drawingLine.points[0], // Keep the start point
+          new Point(coordinates[0], coordinates[1]) // Current mouse position
+        ];
+      }
       self.draw(null, null);
     };
 
+    const keydown = function (this: SVGGElement, event: KeyboardEvent, d: unknown) {
+      if (event.key === 'Escape') {
+        self.cancel();
+      }
+    };
+
+    // In zoneless mode, mousemove events run without Angular CD
     this.selection.on('mousemove', over);
+    this.selection.on('keydown', keydown);
     this.draw(null, null);
   }
 
@@ -37,9 +49,18 @@ export class DrawingLineWidget {
     return this.drawing;
   }
 
+  public cancel() {
+    this.drawing = false;
+    this.drawingLine.points = [];
+    this.selection.on('mousemove', null);
+    this.selection.on('keydown', null);
+    this.draw(null, null);
+  }
+
   public stop() {
     this.drawing = false;
     this.selection.on('mousemove', null);
+    this.selection.on('keydown', null);
     this.draw(null, null);
     return this.data;
   }
@@ -54,27 +75,26 @@ export class DrawingLineWidget {
       canvas.append<SVGGElement>('g').attr('class', 'drawing-line-tool');
     }
 
-    let link_data = [];
+    const drawing_line_tool = this.selection.select<SVGGElement>('g.drawing-line-tool');
 
-    if (this.drawing) {
+    let link_data: [number, number][][] = [];
+
+    if (this.drawing && this.drawingLine.points.length > 0) {
+      // Convert points to array format for d3
       link_data = [
-        [
-          [this.drawingLine.start.x, this.drawingLine.start.y],
-          [this.drawingLine.end.x, this.drawingLine.end.y],
-        ],
+        this.drawingLine.points.map((p) => [p.x, p.y] as [number, number]),
       ];
     }
 
-    const value_line = line();
+    // Use straight line (no curve) for link drawing
+    const value_line = line<[number, number]>();
 
-    const drawing_line_tool = this.selection.select<SVGGElement>('g.drawing-line-tool');
+    const tool = drawing_line_tool.selectAll<SVGPathElement, [number, number][]>('path').data(link_data);
 
-    const tool = drawing_line_tool.selectAll<SVGGElement, DrawingLine>('path').data(link_data);
+    tool.exit().remove();
 
     const enter = tool.enter().append<SVGPathElement>('path');
 
-    tool.merge(enter).attr('d', value_line).attr('stroke', '#000').attr('stroke-width', '2');
-
-    tool.exit().remove();
+    tool.merge(enter).attr('d', value_line).attr('stroke', '#000').attr('stroke-width', '2').attr('fill', 'none');
   }
 }

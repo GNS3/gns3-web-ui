@@ -1,122 +1,177 @@
-<div *ngIf="isDraggingEnabled && !isMaximized && !isMinimized" class="drag-overlay" (document:mousemove)="dragWidget($event)" (document:mouseup)="toggleDragging(false)"></div>
+@if (isDraggingEnabled && !isMaximized && !isMinimized) {
+<div
+  class="gns3-ai-chat__drag-overlay"
+  (document:mousemove)="dragWidget($event)"
+  (document:mouseup)="toggleDragging(false)"
+></div>
+}
 
 <!-- AI Chat Container -->
-<div class="ai-chat-container" [class.dark-theme]="!isLightThemeEnabled" [class.light-theme]="isLightThemeEnabled" [class.maximized]="isMaximized" [class.minimized]="isMinimized" [ngStyle]="style"
-  mwlResizable [validateResize]="validate" [resizeCursorPrecision]="6"
-  [resizeEdges]="{ right: true, left: true, bottom: true, top: true }" [enableGhostResize]="true"
-  (resizeStart)="toggleDragging(false)" (resizeEnd)="onResizeEnd($event)">
+<div
+  class="gns3-ai-chat"
+  [class.gns3-ai-chat--maximized]="isMaximized"
+  [class.gns3-ai-chat--minimized]="isMinimized"
+  [ngStyle]="style"
+  [style.z-index]="zIndex()"
+  (mousedown)="onWindowFocus()"
+  mwlResizable
+  [validateResize]="validate"
+  [enableGhostResize]="true"
+  (resizeStart)="toggleDragging(false)"
+  (resizeEnd)="onResizeEnd($event)"
+>
+  @if (!isMinimized) {
+  <!-- Edge handles -->
+  <div class="resize-handle resize-handle-top" mwlResizeHandle [resizeEdges]="{ top: true }"></div>
+  <div class="resize-handle resize-handle-right" mwlResizeHandle [resizeEdges]="{ right: true }"></div>
+  <div class="resize-handle resize-handle-bottom" mwlResizeHandle [resizeEdges]="{ bottom: true }"></div>
+  <div class="resize-handle resize-handle-left" mwlResizeHandle [resizeEdges]="{ left: true }"></div>
+
+  <!-- Corner handles -->
+  <div class="resize-handle resize-handle-top-left" mwlResizeHandle [resizeEdges]="{ top: true, left: true }"></div>
+  <div class="resize-handle resize-handle-top-right" mwlResizeHandle [resizeEdges]="{ top: true, right: true }"></div>
+  <div class="resize-handle resize-handle-bottom-left" mwlResizeHandle [resizeEdges]="{ bottom: true, left: true }"></div>
+  <div class="resize-handle resize-handle-bottom-right" mwlResizeHandle [resizeEdges]="{ bottom: true, right: true }"></div>
+  }
 
   <!-- Minimized state - disabled, now using sidebar AI button instead -->
-  <!--
-  <div class="minimized-bar" *ngIf="isMinimized" (click)="restoreChat()" title="Click to restore AI Assistant">
-    <mat-icon class="minimized-icon">chat_bubble_outline</mat-icon>
-  </div>
-  -->
 
   <!-- Normal/Maximized state -->
-  <ng-container *ngIf="!isMinimized">
-    <!-- Session sidebar -->
-    <div class="chat-sidebar" [class.collapsed]="sidebarCollapsed">
-      <div class="sidebar-header">
-        <h3 class="sidebar-title"
-            (mousedown)="$event.stopPropagation()"
-            (click)="toggleSidebar()"
-            [class.clickable]="true"
-            title="Click to toggle sidebar">
-          <span class="ai-logo">AI</span>
-          <span class="sidebar-text" *ngIf="!sidebarCollapsed">Assistant</span>
-        </h3>
-      </div>
+  @if (!isMinimized) {
+  <!-- Session sidebar -->
+  <div class="gns3-ai-chat__sidebar" [class.gns3-ai-chat__sidebar--collapsed]="sidebarCollapsed">
+    <div class="gns3-ai-chat__sidebar-header">
+      <h3
+        class="gns3-ai-chat__sidebar-title"
+        (mousedown)="$event.stopPropagation()"
+        (click)="toggleSidebar()"
+        [class.gns3-ai-chat__sidebar-title--clickable]="true"
+        title="Click to toggle sidebar"
+      >
+        <span class="gns3-ai-chat__logo">AI</span>
+        @if (!sidebarCollapsed) {
+        <span class="sidebar-text">Assistant</span>
+        }
+      </h3>
+    </div>
 
-      <!-- New chat button for collapsed state -->
-      <div class="sidebar-content" *ngIf="sidebarCollapsed">
-        <button class="collapsed-new-chat-btn"
-                mat-icon-button
-                (click)="onSessionCreated()">
-          <mat-icon>add</mat-icon>
+    <!-- New chat button for collapsed state -->
+    @if (sidebarCollapsed) {
+    <div class="gns3-ai-chat__sidebar-content">
+      <button class="gns3-ai-chat__new-chat-btn" mat-icon-button (click)="onSessionCreated()">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
+    } @if (!sidebarCollapsed) {
+    <div class="gns3-ai-chat__sidebar-content">
+      <app-chat-session-list
+        [sessions]="sessions"
+        [currentSessionId]="currentSessionId"
+        [controller]="controller"
+        [projectId]="project().project_id"
+        (sessionSelected)="onSessionSelected($event)"
+        (sessionCreated)="onSessionCreated()"
+        (sessionRenamed)="onSessionRenamed($event)"
+        (sessionDeleted)="onSessionDeleted($event)"
+        (sessionPinned)="onSessionPinned($event)"
+        (sessionUnpinned)="onSessionUnpinned($event)"
+      >
+      </app-chat-session-list>
+    </div>
+    }
+  </div>
+
+  <!-- Chat main area -->
+  <div class="gns3-ai-chat__main">
+    <!-- Chat header -->
+    <div class="gns3-ai-chat__header" (mousedown)="!isMaximized && toggleDragging(true)">
+      <div class="gns3-ai-chat__title">
+        <span>{{ currentSessionTitle }}</span>
+      </div>
+      <div class="gns3-ai-chat__header-actions">
+        <button
+          mat-icon-button
+          (mousedown)="$event.stopPropagation()"
+          (click)="$event.stopPropagation(); minimizeChat()"
+          class="minimize-button"
+        >
+          <svg
+            class="gns3-ai-chat__header-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            height="20"
+            width="20"
+            viewBox="0 0 24 24"
+          >
+            <path d="M19 13H5v-2h14v2z" />
+          </svg>
+        </button>
+        <button
+          mat-icon-button
+          (mousedown)="$event.stopPropagation()"
+          (click)="$event.stopPropagation(); maximizeChat()"
+          class="maximize-button"
+        >
+          <svg
+            class="gns3-ai-chat__header-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            height="20"
+            width="20"
+            viewBox="0 0 24 24"
+          >
+            @if (!isMaximized) {
+            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z" />
+            } @if (isMaximized) {
+            <path d="M5 5h14v14H5z" />
+            }
+          </svg>
+        </button>
+        <button
+          mat-icon-button
+          (mousedown)="$event.stopPropagation()"
+          (click)="$event.stopPropagation(); closeChat()"
+          class="close-button"
+        >
+          <svg
+            class="gns3-ai-chat__header-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            height="20"
+            width="20"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+            />
+          </svg>
         </button>
       </div>
-
-      <div class="sidebar-content" *ngIf="!sidebarCollapsed">
-        <app-chat-session-list
-          [sessions]="sessions"
-          [currentSessionId]="currentSessionId"
-          [controller]="controller"
-          [projectId]="project.project_id"
-          (sessionSelected)="onSessionSelected($event)"
-          (sessionCreated)="onSessionCreated()"
-          (sessionRenamed)="onSessionRenamed($event)"
-          (sessionDeleted)="onSessionDeleted($event)"
-          (sessionPinned)="onSessionPinned($event)"
-          (sessionUnpinned)="onSessionUnpinned($event)">
-        </app-chat-session-list>
-      </div>
     </div>
 
-    <!-- Chat main area -->
-    <div class="chat-main">
-      <!-- Chat header -->
-      <div class="chat-header" (mousedown)="!isMaximized && toggleDragging(true)">
-        <div class="chat-title">
-          <span>{{ currentSessionTitle }}</span>
-        </div>
-        <div class="header-actions">
-          <button mat-icon-button
-            (mousedown)="$event.stopPropagation()"
-            (click)="$event.stopPropagation(); minimizeChat()"
-            class="minimize-button">
-            <svg class="header-icon" xmlns="http://www.w3.org/2000/svg"
-                 height="20" width="20"
-                 viewBox="0 0 24 24">
-              <path d="M19 13H5v-2h14v2z"/>
-            </svg>
-          </button>
-          <button mat-icon-button
-            (mousedown)="$event.stopPropagation()"
-            (click)="$event.stopPropagation(); maximizeChat()"
-            class="maximize-button">
-            <svg class="header-icon" xmlns="http://www.w3.org/2000/svg"
-                 height="20" width="20"
-                 viewBox="0 0 24 24">
-              <path *ngIf="!isMaximized" d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-              <path *ngIf="isMaximized" d="M5 5h14v14H5z"/>
-            </svg>
-          </button>
-          <button mat-icon-button
-            (mousedown)="$event.stopPropagation()"
-            (click)="$event.stopPropagation(); closeChat()"
-            class="close-button">
-            <svg class="header-icon" xmlns="http://www.w3.org/2000/svg"
-                 height="20" width="20"
-                 viewBox="0 0 24 24">
-              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- Messages list -->
-      <div class="chat-messages">
-        <app-chat-message-list
-          [messages]="currentMessages"
-          [isStreaming]="isStreaming"
-          (scrollToEnd)="onScrollToEnd()"
-          (suggestionClicked)="onSuggestionClicked($event)">
-        </app-chat-message-list>
-      </div>
-
-      <!-- Input area -->
-      <div class="chat-input">
-        <app-chat-input-area
-          [disabled]="isStreaming"
-          [modelConfigs]="modelConfigs"
-          [currentModelId]="currentModelId"
-          [currentCopilotMode]="currentCopilotMode"
-          (messageSent)="onMessageSent($event)"
-          (modelSelected)="onModelSelected($event)"
-          (copilotModeSelected)="onCopilotModeSelected($event)">
-        </app-chat-input-area>
-      </div>
+    <!-- Messages list -->
+    <div class="gns3-ai-chat__messages">
+      <app-chat-message-list
+        [messages]="currentMessages"
+        [isStreaming]="isStreaming"
+        (scrollToEnd)="onScrollToEnd()"
+        (suggestionClicked)="onSuggestionClicked($event)"
+      >
+      </app-chat-message-list>
     </div>
-  </ng-container>
+
+    <!-- Input area -->
+    <div class="gns3-ai-chat__input">
+      <app-chat-input-area
+        [disabled]="isStreaming"
+        [isStreaming]="isStreaming"
+        [modelConfigs]="modelConfigs"
+        [currentModelId]="currentModelId"
+        [currentCopilotMode]="currentCopilotMode"
+        (messageSent)="onMessageSent($event)"
+        (modelSelected)="onModelSelected($event)"
+        (copilotModeSelected)="onCopilotModeSelected($event)"
+        (abortClicked)="onAbortClicked()"
+      >
+      </app-chat-input-area>
+    </div>
+  </div>
+  }
 </div>
