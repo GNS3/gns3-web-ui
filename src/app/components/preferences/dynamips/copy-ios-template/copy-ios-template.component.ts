@@ -82,8 +82,15 @@ export class CopyIosTemplateComponent implements OnInit {
       this.iosTemplate.template_id = uuid();
       this.iosTemplate.name = this.formGroup.get('templateName').value;
 
-      this.iosService.addTemplate(this.controller, this.iosTemplate).subscribe((template: IosTemplate) => {
-        this.goBack();
+      this.iosService.addTemplate(this.controller, this.iosTemplate).subscribe({
+        next: (template: IosTemplate) => {
+          this.goBack();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to copy ios template';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        }
       });
     } else {
       this.toasterService.error(`Fill all required fields`);
