@@ -68,16 +68,18 @@ describe('CopyDockerTemplateComponent', () => {
   beforeEach(async () => {
     mockDockerService = {
       getTemplate: vi.fn().mockReturnValue({
-        subscribe: (callback: (template: DockerTemplate) => void) => {
-          callback(mockDockerTemplate);
+        subscribe: vi.fn((arg) => {
+          if (typeof arg === 'function') arg(mockDockerTemplate);
+          else if (arg?.next) arg.next(mockDockerTemplate);
           return { unsubscribe: vi.fn() };
-        },
+        }),
       }),
       addTemplate: vi.fn().mockReturnValue({
-        subscribe: (callback: (template: DockerTemplate) => void) => {
-          callback(mockDockerTemplate);
+        subscribe: vi.fn((arg) => {
+          if (typeof arg === 'function') arg(mockDockerTemplate);
+          else if (arg?.next) arg.next(mockDockerTemplate);
           return { unsubscribe: vi.fn() };
-        },
+        }),
       }),
     };
 
@@ -180,8 +182,9 @@ describe('CopyDockerTemplateComponent', () => {
     component.templateNameForm.get('templateName')?.setValue('My Copied Template');
 
     const addTemplateObservable = {
-      subscribe: vi.fn((callback) => {
-        callback();
+      subscribe: vi.fn((arg) => {
+        if (typeof arg === 'function') arg();
+        else if (arg?.next) arg.next();
         return { unsubscribe: vi.fn() };
       }),
     };
@@ -192,7 +195,7 @@ describe('CopyDockerTemplateComponent', () => {
     expect(mockDockerService.addTemplate).toHaveBeenCalledWith(mockController, expect.any(Object));
     const calledTemplate = mockDockerService.addTemplate.mock.calls[0][1];
     expect(calledTemplate.template_id).toBeTruthy();
-    expect(calledTemplate.name).toBe('Copy of Original Docker Container');
+    expect(calledTemplate.name).toBe('My Copied Template');
     expect(mockRouter.navigate).toHaveBeenCalled();
   });
 
@@ -206,10 +209,11 @@ describe('CopyDockerTemplateComponent', () => {
     component.templateNameForm.get('templateName')?.setValue('Copy of Original Docker Container');
 
     mockDockerService.addTemplate.mockReturnValue({
-      subscribe: (callback: (template: DockerTemplate) => void) => {
-        callback(mockDockerTemplate);
+      subscribe: vi.fn((arg) => {
+        if (typeof arg === 'function') arg(mockDockerTemplate);
+        else if (arg?.next) arg.next(mockDockerTemplate);
         return { unsubscribe: vi.fn() };
-      },
+      }),
     });
 
     component.addTemplate();
