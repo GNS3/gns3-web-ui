@@ -89,8 +89,15 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
       template.linked_clone = this.linkedClone();
       template.template_id = uuid();
 
-      this.virtualBoxService.addTemplate(this.controller(), template).subscribe(() => {
-        this.goBack();
+      this.virtualBoxService.addTemplate(this.controller(), template).subscribe({
+        next: () => {
+          this.goBack();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to add virtual box template';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        }
       });
     } else {
       this.toasterService.error(`Fill all required fields`);
