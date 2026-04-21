@@ -1,14 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { of, throwError } from 'rxjs';
 import { ResumeLinkActionComponent } from './resume-link-action.component';
-import { LinkService } from '@services/link.service';
-import { Controller } from '@models/controller';
-import { Link } from '@models/link';
+import { LinkService } from '../../../../../services/link.service';
+import { ToasterService } from '../../../../../services/toaster.service';
+import { Controller } from '../../../../../models/controller';
+import { Link } from '../../../../../models/link';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('ResumeLinkActionComponent', () => {
   let fixture: ComponentFixture<ResumeLinkActionComponent>;
   let mockLinkService: { updateLink: ReturnType<typeof vi.fn> };
+  let mockToasterService: { error: ReturnType<typeof vi.fn> };
 
   const createMockLink = (overrides: Partial<Link> = {}): Link => {
     const defaults: Link = {
@@ -48,19 +53,26 @@ describe('ResumeLinkActionComponent', () => {
   });
 
   beforeEach(async () => {
-    mockLinkService = { updateLink: vi.fn() };
+    vi.clearAllMocks();
+
+    mockLinkService = { updateLink: vi.fn().mockReturnValue(of({})) };
+    mockToasterService = { error: vi.fn() };
 
     await TestBed.configureTestingModule({
-      imports: [ResumeLinkActionComponent],
-      providers: [{ provide: LinkService, useValue: mockLinkService }],
+      imports: [ResumeLinkActionComponent, MatButtonModule, MatIconModule, MatMenuModule],
+      providers: [
+        { provide: LinkService, useValue: mockLinkService },
+        { provide: ToasterService, useValue: mockToasterService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(ResumeLinkActionComponent);
-    fixture.detectChanges();
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('template visibility', () => {
@@ -135,6 +147,67 @@ describe('ResumeLinkActionComponent', () => {
       fixture.detectChanges();
 
       expect(mockLinkService.updateLink).toHaveBeenCalled();
+    });
+
+    it('should display toaster error when updateLink fails with error message', async () => {
+      const mockError = {
+        error: { message: 'Network error' },
+      };
+      mockLinkService.updateLink.mockReturnValue(throwError(() => mockError));
+
+      const mockLink = createMockLink({ suspend: true });
+      const mockController = createMockController();
+      fixture.componentRef.setInput('link', mockLink);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Network error');
+    });
+
+    it('should display generic error message when updateLink fails without specific message', async () => {
+      mockLinkService.updateLink.mockReturnValue(throwError(() => new Error()));
+
+      const mockLink = createMockLink({ suspend: true });
+      const mockController = createMockController();
+      fixture.componentRef.setInput('link', mockLink);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to resume link');
+    });
+
+    it('should call markForCheck after error in updateLink', async () => {
+      mockLinkService.updateLink.mockReturnValue(throwError(() => new Error('Test error')));
+
+      const mockLink = createMockLink({ suspend: true });
+      const mockController = createMockController();
+      fixture.componentRef.setInput('link', mockLink);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      // Spy on the component's ChangeDetectorRef
+      const component = fixture.componentInstance;
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });
