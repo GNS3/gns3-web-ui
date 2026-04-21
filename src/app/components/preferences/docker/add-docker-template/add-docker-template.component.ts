@@ -125,8 +125,8 @@ export class AddDockerTemplateComponent implements OnInit {
       this.dockerTemplate.adapters = this.adapters();
       this.dockerTemplate.compute_id = 'local';
       this.dockerTemplate.start_command = this.startCommand();
-      this.dockerTemplate.console_type = this.consoleType();
-      this.dockerTemplate.aux_type = this.auxConsoleType();
+      this.dockerTemplate.console_type = this.consoleType() || 'none';
+      this.dockerTemplate.aux_type = this.auxConsoleType() || 'none';
       this.dockerTemplate.environment = this.environment();
 
       this.dockerService.addTemplate(this.controller, this.dockerTemplate).subscribe({
