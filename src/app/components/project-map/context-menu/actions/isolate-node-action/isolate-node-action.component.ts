@@ -25,7 +25,7 @@ export class IsolateNodeActionComponent {
     this.nodeService.isolate(this.controller(), this.node()).subscribe(
       (n: Node) => {},
       (error) => {
-        this.toasterService.error(error.error.message);
+        this.toasterService.error(error.error?.message || error.message || 'Failed to isolate node');
         this.cdr.markForCheck();
       }
     );

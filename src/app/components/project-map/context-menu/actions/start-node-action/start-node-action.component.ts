@@ -37,7 +37,7 @@ export class StartNodeActionComponent implements OnChanges {
       this.nodeService.start(this.controller(), node).subscribe(
         (n: Node) => {},
         (error) => {
-          this.toasterService.error(error.error.message);
+          this.toasterService.error(error.error?.message || error.message || 'Failed to start node');
         }
       );
     });

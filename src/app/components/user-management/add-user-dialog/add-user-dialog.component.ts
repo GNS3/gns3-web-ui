@@ -148,7 +148,7 @@ export class AddUserDialogComponent implements OnInit {
         this.dialogRef.close();
       },
       (error: HttpErrorResponse) => {
-        this.toasterService.error('Cannot create user: ' + `${error.error.message}`);
+        this.toasterService.error('Cannot create user: ' + `${error.error?.message || error.message}`);
       }
     );
   }

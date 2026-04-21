@@ -146,7 +146,7 @@ export class RoleManagementComponent implements OnInit, AfterViewInit {
             },
             (error: HttpErrorResponse) =>
               this.toasterService.error(`${error.message}
-              ${error.error.message}`)
+              ${error.error?.message || ''}`)
           );
         }
       });

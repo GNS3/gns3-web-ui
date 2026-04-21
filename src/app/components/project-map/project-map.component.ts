@@ -835,7 +835,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           });
         },
         (error) => {
-          this.toasterService.error(error.error.message);
+          this.toasterService.error(error.error?.message || error.message || 'Failed to create node from template');
         }
       );
   }

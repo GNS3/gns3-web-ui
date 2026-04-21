@@ -102,7 +102,7 @@ export class RoleDetailComponent implements OnInit {
         this.roleService.getById(this.controller, this.roleId).subscribe((role: Role) => this.$role.next(role));
       },
       (error: HttpErrorResponse) => {
-        this.toastService.error(`${error.message}\n${error.error.message}`);
+        this.toastService.error(`${error.message}\n${error.error?.message || ''}`);
       }
     );
   }
