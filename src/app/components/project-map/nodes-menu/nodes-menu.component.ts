@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,6 +32,7 @@ export class NodesMenuComponent {
   private settingsService = inject(SettingsService);
   private mapSettingsService = inject(MapSettingsService);
   private dialog = inject(MatDialog);
+  private cdr = inject(ChangeDetectorRef);
   readonly project = input<Project>(undefined);
   readonly controller = input<Controller>(undefined);
 
@@ -44,32 +45,57 @@ export class NodesMenuComponent {
   }
 
   startNodes() {
-    this.nodeService.startAll(this.controller(), this.project()).subscribe(() => {
-      this.toasterService.success('All nodes successfully started');
+    this.nodeService.startAll(this.controller(), this.project()).subscribe({
+      next: () => this.toasterService.success('All nodes successfully started'),
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to start nodes';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      },
     });
   }
 
   stopNodes() {
-    this.nodeService.stopAll(this.controller(), this.project()).subscribe(() => {
-      this.toasterService.success('All nodes successfully stopped');
+    this.nodeService.stopAll(this.controller(), this.project()).subscribe({
+      next: () => this.toasterService.success('All nodes successfully stopped'),
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to stop nodes';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      },
     });
   }
 
   suspendNodes() {
-    this.nodeService.suspendAll(this.controller(), this.project()).subscribe(() => {
-      this.toasterService.success('All nodes successfully suspended');
+    this.nodeService.suspendAll(this.controller(), this.project()).subscribe({
+      next: () => this.toasterService.success('All nodes successfully suspended'),
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to suspend nodes';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      },
     });
   }
 
   reloadNodes() {
-    this.nodeService.reloadAll(this.controller(), this.project()).subscribe(() => {
-      this.toasterService.success('All nodes successfully reloaded');
+    this.nodeService.reloadAll(this.controller(), this.project()).subscribe({
+      next: () => this.toasterService.success('All nodes successfully reloaded'),
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to reload nodes';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      },
     });
   }
 
   resetNodes() {
-    this.nodeService.resetAllNodes(this.controller(), this.project()).subscribe(() => {
-      this.toasterService.success('Successfully reset all console connections');
+    this.nodeService.resetAllNodes(this.controller(), this.project()).subscribe({
+      next: () => this.toasterService.success('Successfully reset all console connections'),
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to reset nodes';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      },
     });
   }
 
