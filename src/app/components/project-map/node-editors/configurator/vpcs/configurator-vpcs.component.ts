@@ -101,9 +101,15 @@ export class ConfiguratorDialogVpcsComponent implements OnInit {
       this.node.console_type = formValues.console_type;
       this.node.console_auto_start = formValues.console_auto_start;
 
-      this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
-        this.toasterService.success(`Node ${this.node.name} updated.`);
-        this.onCancelClick();
+      this.nodeService.updateNode(this.controller, this.node).subscribe({
+        next: () => {
+          this.toasterService.success(`Node ${this.node.name} updated.`);
+          this.onCancelClick();
+        },
+        error: (error: unknown) => {
+          const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
+          this.toasterService.error(errorMessage);
+        },
       });
     } else {
       this.toasterService.error(`Fill all required fields.`);
