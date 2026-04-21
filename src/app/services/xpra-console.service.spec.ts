@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { APP_BASE_HREF } from '@angular/common';
 import { XpraConsoleService } from './xpra-console.service';
 import { ToasterService } from './toaster.service';
 import { Controller } from '@models/controller';
@@ -51,7 +50,6 @@ describe('XpraConsoleService', () => {
       providers: [
         XpraConsoleService,
         { provide: ToasterService, useValue: mockToasterService },
-        { provide: APP_BASE_HREF, useValue: '/' },
       ],
     });
 

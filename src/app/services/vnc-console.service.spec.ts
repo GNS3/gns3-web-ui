@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
-import { APP_BASE_HREF } from '@angular/common';
 import { VncConsoleService } from './vnc-console.service';
 import { ToasterService } from './toaster.service';
 import { Node } from '../cartography/models/node';
@@ -57,7 +56,6 @@ describe('VncConsoleService', () => {
       providers: [
         VncConsoleService,
         { provide: ToasterService, useValue: mockToasterService },
-        { provide: APP_BASE_HREF, useValue: '/' },
       ],
     });
 

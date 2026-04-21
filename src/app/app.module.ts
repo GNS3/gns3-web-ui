@@ -2,7 +2,6 @@
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CdkTableModule } from '@angular/cdk/table';
-import { APP_BASE_HREF } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ErrorHandler, NgModule, SecurityContext } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -642,7 +641,6 @@ import { GlobalUploadIndicatorComponent } from '@components/global-upload-indica
     MarkdownModule.forRoot(),
   ],
   providers: [
-    { provide: APP_BASE_HREF, useValue: '/' },
     SettingsService,
     { provide: ErrorHandler, useClass: ToasterErrorHandler },
     { provide: HTTP_INTERCEPTORS, useClass: HttpRequestsInterceptor, multi: true },

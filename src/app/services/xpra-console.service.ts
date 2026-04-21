@@ -1,5 +1,4 @@
-import { Injectable, Inject } from '@angular/core';
-import { APP_BASE_HREF } from '@angular/common';
+import { Injectable } from '@angular/core';
 import { Controller } from '@models/controller';
 import { Link } from '@models/link';
 import { Node } from '../cartography/models/node';
@@ -12,7 +11,6 @@ import { ToasterService } from './toaster.service';
 export class XpraConsoleService {
   constructor(
     private toasterService: ToasterService,
-    @Inject(APP_BASE_HREF) private readonly baseHref: string
   ) {}
 
   /**
@@ -99,10 +97,8 @@ export class XpraConsoleService {
     params.set('clipboard', 'true');
     params.set('encoding', 'h264');
 
-    // Return path to standalone HTML page with base href
-    // Remove trailing slash from baseHref if present to avoid double slashes
-    const baseHref = this.baseHref.endsWith('/') ? this.baseHref.slice(0, -1) : this.baseHref;
-    return `${baseHref}/assets/xpra-html5/index.html?${params.toString()}`;
+    // Return path to standalone HTML page using relative path
+    return `assets/xpra-html5/index.html?${params.toString()}`;
   }
 
   /**
