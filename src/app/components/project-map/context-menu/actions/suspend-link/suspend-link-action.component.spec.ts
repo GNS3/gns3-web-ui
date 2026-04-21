@@ -2,16 +2,18 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { of, throwError } from 'rxjs';
 import { SuspendLinkActionComponent } from './suspend-link-action.component';
-import { LinkService } from '@services/link.service';
-import { Link } from '@models/link';
-import { Controller } from '@models/controller';
-import { of } from 'rxjs';
+import { LinkService } from '../../../../../services/link.service';
+import { ToasterService } from '../../../../../services/toaster.service';
+import { Link } from '../../../../../models/link';
+import { Controller } from '../../../../../models/controller';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('SuspendLinkActionComponent', () => {
   let fixture: ComponentFixture<SuspendLinkActionComponent>;
   let mockLinkService: any;
+  let mockToasterService: any;
   let mockController: Controller;
   let mockLink: Link;
 
@@ -38,8 +40,14 @@ describe('SuspendLinkActionComponent', () => {
     } as Controller);
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockLinkService = {
       updateLink: vi.fn().mockReturnValue(of({})),
+    };
+
+    mockToasterService = {
+      error: vi.fn(),
     };
 
     mockLink = createMockLink();
@@ -47,14 +55,19 @@ describe('SuspendLinkActionComponent', () => {
 
     await TestBed.configureTestingModule({
       imports: [SuspendLinkActionComponent, MatButtonModule, MatIconModule, MatMenuModule],
-      providers: [{ provide: LinkService, useValue: mockLinkService }],
+      providers: [
+        { provide: LinkService, useValue: mockLinkService },
+        { provide: ToasterService, useValue: mockToasterService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SuspendLinkActionComponent);
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('button visibility', () => {
@@ -103,6 +116,61 @@ describe('SuspendLinkActionComponent', () => {
       const [controller, link] = mockLinkService.updateLink.mock.calls[0];
       expect(controller).toBe(mockController);
       expect(link).toBe(mockLink);
+    });
+
+    it('should display toaster error when updateLink fails with error message', async () => {
+      const mockError = {
+        error: { message: 'Link busy' },
+      };
+      mockLinkService.updateLink.mockReturnValue(throwError(() => mockError));
+
+      fixture.componentRef.setInput('link', mockLink);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Link busy');
+    });
+
+    it('should display generic error message when updateLink fails without specific message', async () => {
+      mockLinkService.updateLink.mockReturnValue(throwError(() => new Error()));
+
+      fixture.componentRef.setInput('link', mockLink);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to suspend link');
+    });
+
+    it('should call markForCheck after error in updateLink', async () => {
+      mockLinkService.updateLink.mockReturnValue(throwError(() => new Error('Test error')));
+
+      fixture.componentRef.setInput('link', mockLink);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      // Spy on the component's ChangeDetectorRef
+      const component = fixture.componentInstance;
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });
