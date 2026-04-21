@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, model, signal, inject, computed } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnDestroy, model, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -59,6 +59,7 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
   private computeService = inject(ComputeService);
   private snackBar = inject(MatSnackBar);
   private uploadServiceService = inject(UploadServiceService);
+  private cd = inject(ChangeDetectorRef);
   subscription: Subscription;
 
   readonly controller = signal<Controller | undefined>(undefined);
@@ -198,8 +199,15 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
       template.console_type = this.consoleType();
       template.aux_type = this.auxConsoleType();
 
-      this.qemuService.addTemplate(this.controller(), template).subscribe((qemuTemplate: QemuTemplate) => {
-        this.goBack();
+      this.qemuService.addTemplate(this.controller(), template).subscribe({
+        next: (qemuTemplate: QemuTemplate) => {
+          this.goBack();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to add qemu template';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        }
       });
     } else {
       this.toasterService.error(`Fill all required fields`);
