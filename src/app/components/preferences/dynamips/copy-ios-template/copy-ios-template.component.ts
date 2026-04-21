@@ -80,7 +80,7 @@ export class CopyIosTemplateComponent implements OnInit {
   addTemplate() {
     if (!this.formGroup.invalid) {
       this.iosTemplate.template_id = uuid();
-      this.iosTemplate.name = this.templateName;
+      this.iosTemplate.name = this.formGroup.get('templateName').value;
 
       this.iosService.addTemplate(this.controller, this.iosTemplate).subscribe((template: IosTemplate) => {
         this.goBack();

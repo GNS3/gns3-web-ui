@@ -81,7 +81,7 @@ export class CopyQemuVmTemplateComponent implements OnInit {
   addTemplate() {
     if (!this.nameForm.invalid) {
       this.qemuTemplate.template_id = uuid();
-      this.qemuTemplate.name = this.templateName;
+      this.qemuTemplate.name = this.nameForm.get('templateName').value;
 
       this.qemuService.addTemplate(this.controller, this.qemuTemplate).subscribe((template: QemuTemplate) => {
         this.goBack();

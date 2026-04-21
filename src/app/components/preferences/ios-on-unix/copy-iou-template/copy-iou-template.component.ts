@@ -80,7 +80,7 @@ export class CopyIouTemplateComponent implements OnInit {
   addTemplate() {
     if (!this.templateNameForm.invalid) {
       this.iouTemplate.template_id = uuid();
-      this.iouTemplate.name = this.templateName;
+      this.iouTemplate.name = this.templateNameForm.get('templateName').value;
 
       this.iouService.addTemplate(this.controller, this.iouTemplate).subscribe((template: IouTemplate) => {
         this.goBack();
