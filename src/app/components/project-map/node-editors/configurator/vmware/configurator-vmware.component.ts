@@ -191,9 +191,15 @@ export class ConfiguratorDialogVmwareComponent implements OnInit {
       this.node.properties.use_any_adapter = formValues.use_any_adapter;
       this.node.properties.usage = formValues.usage;
 
-      this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe(() => {
-        this.toasterService.success(`Node ${this.node.name} updated.`);
-        this.onCancelClick();
+      this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe({
+        next: () => {
+          this.toasterService.success(`Node ${this.node.name} updated.`);
+          this.onCancelClick();
+        },
+        error: (error: unknown) => {
+          const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
+          this.toasterService.error(errorMessage);
+        },
       });
     } else {
       this.toasterService.error(`Fill all required fields.`);
