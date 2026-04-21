@@ -127,3 +127,40 @@ injection tokens, and structural patterns the project expects.
 - [ ] Cancel button before confirm button in DOM order
 - [ ] Component class name ends in `DialogComponent`
 - [ ] Panel CSS class ends in `-dialog-panel`
+
+---
+
+## Avoiding Double Scrollbars
+
+Two scrollbars appear when `mat-dialog-content` is nested inside a scrollable container (e.g., each `mat-step` in a `mat-horizontal-stepper`). Each scrollable element creates its own scrollbar.
+
+### Pattern A — Configurator (tabs/forms, no stepper)
+Use **one** `mat-dialog-content` wrapping all content. Buttons live in a single `mat-dialog-actions` at the bottom. The dialog panel CSS handles scrolling via `max-height: calc(80vh - 140px)` on `.mat-mdc-dialog-content`.
+
+### Pattern B — Stepper Dialog (multi-step with `mat-horizontal-stepper`)
+Keep `mat-dialog-content` **outside** the stepper — only one content wrapper for the entire dialog. Place navigation buttons in the `mat-dialog-title` header area instead of inside each step. This keeps scrolling to a single container.
+
+```html
+<!-- ✅ Correct: single content wrapper, buttons in header -->
+<h1 mat-dialog-title>
+  Title
+  <span class="dialog-header-actions">
+    <button mat-button (click)="stepper()?.next()">Next</button>
+    <button mat-button (click)="onClose()">Cancel</button>
+  </span>
+</h1>
+
+<div mat-dialog-content>
+  <mat-horizontal-stepper #stepper>
+    <mat-step><!-- no mat-dialog-content here --></mat-step>
+  </mat-horizontal-stepper>
+</div>
+```
+
+```html
+<!-- ❌ Wrong: mat-dialog-content inside each step creates double scrollbars -->
+<mat-step>
+  <mat-dialog-content>...</mat-dialog-content>  <!-- creates second scrollbar -->
+  <mat-dialog-actions>...</mat-dialog-actions>
+</mat-step>
+```
