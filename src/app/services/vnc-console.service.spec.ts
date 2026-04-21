@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { TestBed } from '@angular/core/testing';
 import { VncConsoleService } from './vnc-console.service';
 import { ToasterService } from './toaster.service';
 import { Node } from '../cartography/models/node';
@@ -18,6 +19,7 @@ describe('VncConsoleService', () => {
   let originalWindow: typeof window;
 
   beforeEach(() => {
+    vi.clearAllMocks();
     originalWindow = global.window;
 
     mockToasterService = {
@@ -50,7 +52,14 @@ describe('VncConsoleService', () => {
       })),
     } as any;
 
-    service = new VncConsoleService(mockToasterService);
+    TestBed.configureTestingModule({
+      providers: [
+        VncConsoleService,
+        { provide: ToasterService, useValue: mockToasterService },
+      ],
+    });
+
+    service = TestBed.inject(VncConsoleService);
   });
 
   afterEach(() => {
@@ -103,7 +112,7 @@ describe('VncConsoleService', () => {
     it('should return path to VNC console HTML page', () => {
       const url = service.buildVncConsolePageUrl(mockController, mockNode);
 
-      expect(url).toContain('/assets/vnc-console/index.html?');
+      expect(url).toContain('assets/vnc-console/index.html?');
     });
 
     it.each([

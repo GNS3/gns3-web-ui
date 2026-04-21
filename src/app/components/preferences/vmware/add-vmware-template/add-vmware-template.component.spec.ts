@@ -77,16 +77,18 @@ describe('AddVmwareTemplateComponent', () => {
   beforeEach(async () => {
     mockVmwareService = {
       getVirtualMachines: vi.fn().mockReturnValue({
-        subscribe: (callback: (vms: VmwareVm[]) => void) => {
-          callback(mockVirtualMachines);
+        subscribe: vi.fn((arg) => {
+          if (typeof arg === 'function') arg(mockVirtualMachines);
+          else if (arg?.next) arg.next(mockVirtualMachines);
           return { unsubscribe: vi.fn() };
-        },
+        }),
       }),
       addTemplate: vi.fn().mockReturnValue({
-        subscribe: (callback: () => void) => {
-          callback();
+        subscribe: vi.fn((arg) => {
+          if (typeof arg === 'function') arg();
+          else if (arg?.next) arg.next();
           return { unsubscribe: vi.fn() };
-        },
+        }),
       }),
     };
 
@@ -96,10 +98,11 @@ describe('AddVmwareTemplateComponent', () => {
 
     mockTemplateMocksService = {
       getVmwareTemplate: vi.fn().mockReturnValue({
-        subscribe: (callback: (template: VmwareTemplate) => void) => {
-          callback(mockVmwareTemplate);
+        subscribe: vi.fn((arg) => {
+          if (typeof arg === 'function') arg(mockVmwareTemplate);
+          else if (arg?.next) arg.next(mockVmwareTemplate);
           return { unsubscribe: vi.fn() };
-        },
+        }),
       }),
     };
 
@@ -193,8 +196,9 @@ describe('AddVmwareTemplateComponent', () => {
     component.linkedClone.set(true);
 
     const addTemplateObservable = {
-      subscribe: vi.fn((callback) => {
-        callback();
+      subscribe: vi.fn((arg) => {
+        if (typeof arg === 'function') arg();
+        else if (arg?.next) arg.next();
         return { unsubscribe: vi.fn() };
       }),
     };

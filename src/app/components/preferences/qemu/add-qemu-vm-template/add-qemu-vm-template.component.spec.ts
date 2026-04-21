@@ -107,16 +107,18 @@ describe('AddQemuVmTemplateComponent', () => {
 
     mockQemuService = {
       getImages: vi.fn().mockReturnValue({
-        subscribe: (callback: (images: QemuImage[]) => void) => {
-          callback(mockQemuImages);
+        subscribe: vi.fn((arg) => {
+          if (typeof arg === 'function') arg(mockQemuImages);
+          else if (arg?.next) arg.next(mockQemuImages);
           return { unsubscribe: vi.fn() };
-        },
+        }),
       }),
       addTemplate: vi.fn().mockReturnValue({
-        subscribe: (callback: (template: QemuTemplate) => void) => {
-          callback(mockQemuTemplate);
+        subscribe: vi.fn((arg) => {
+          if (typeof arg === 'function') arg(mockQemuTemplate);
+          else if (arg?.next) arg.next(mockQemuTemplate);
           return { unsubscribe: vi.fn() };
-        },
+        }),
       }),
       getImagePath: vi.fn().mockReturnValue('http://localhost:3080/v3/images/upload/test.qcow2'),
     };
@@ -133,10 +135,11 @@ describe('AddQemuVmTemplateComponent', () => {
 
     mockTemplateMocksService = {
       getQemuTemplate: vi.fn().mockReturnValue({
-        subscribe: (callback: (template: QemuTemplate) => void) => {
-          callback(mockQemuTemplate);
+        subscribe: vi.fn((arg) => {
+          if (typeof arg === 'function') arg(mockQemuTemplate);
+          else if (arg?.next) arg.next(mockQemuTemplate);
           return { unsubscribe: vi.fn() };
-        },
+        }),
       }),
     };
 
@@ -317,8 +320,9 @@ describe('AddQemuVmTemplateComponent', () => {
     component.selectedImage.set(mockQemuImages[0]);
 
     const addTemplateObservable = {
-      subscribe: vi.fn((callback) => {
-        callback(mockQemuTemplate);
+      subscribe: vi.fn((arg) => {
+        if (typeof arg === 'function') arg(mockQemuTemplate);
+        else if (arg?.next) arg.next(mockQemuTemplate);
         return { unsubscribe: vi.fn() };
       }),
     };
@@ -349,8 +353,9 @@ describe('AddQemuVmTemplateComponent', () => {
     component.chosenImage.set('new-image.qcow2');
 
     const addTemplateObservable = {
-      subscribe: vi.fn((callback) => {
-        callback(mockQemuTemplate);
+      subscribe: vi.fn((arg) => {
+        if (typeof arg === 'function') arg(mockQemuTemplate);
+        else if (arg?.next) arg.next(mockQemuTemplate);
         return { unsubscribe: vi.fn() };
       }),
     };

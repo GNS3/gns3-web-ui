@@ -209,7 +209,9 @@ describe('ConfiguratorDialogVirtualBoxComponent', () => {
 
     it('should show success toast and close dialog on successful save', () => {
       (mockNodeService.updateNodeWithCustomAdapters as ReturnType<typeof vi.fn>).mockReturnValue({
-        subscribe: (fn: () => void) => fn(),
+        subscribe: (observer: { next?: () => void }) => {
+          if (observer.next) observer.next();
+        },
       });
 
       fixture.componentInstance.generalSettingsForm.setValue({

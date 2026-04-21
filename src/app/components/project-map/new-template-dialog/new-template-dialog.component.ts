@@ -610,10 +610,17 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe((answer: string) => {
       if (answer) {
         iouTemplate.name = answer;
-        this.iouService.addTemplate(this.controller, iouTemplate).subscribe((template) => {
-          this.templateService.newTemplateCreated.next(template);
-          this.toasterService.success('Template added');
-          this.dialogRef.close();
+        this.iouService.addTemplate(this.controller, iouTemplate).subscribe({
+          next: (template) => {
+            this.templateService.newTemplateCreated.next(template);
+            this.toasterService.success('Template added');
+            this.dialogRef.close();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to add template';
+            this.toasterService.error(message);
+            this.changeDetector.markForCheck();
+          }
         });
       } else {
         return false;
@@ -666,10 +673,17 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
       if (answer) {
         iosTemplate.name = answer;
 
-        this.iosService.addTemplate(this.controller, iosTemplate).subscribe((template) => {
-          this.templateService.newTemplateCreated.next(template as any as Template);
-          this.toasterService.success('Template added');
-          this.dialogRef.close();
+        this.iosService.addTemplate(this.controller, iosTemplate).subscribe({
+          next: (template) => {
+            this.templateService.newTemplateCreated.next(template as any as Template);
+            this.toasterService.success('Template added');
+            this.dialogRef.close();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to add template';
+            this.toasterService.error(message);
+            this.changeDetector.markForCheck();
+          }
         });
       } else {
         return false;
@@ -704,10 +718,17 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
       if (answer) {
         dockerTemplate.name = answer;
 
-        this.dockerService.addTemplate(this.controller, dockerTemplate).subscribe((template) => {
-          this.templateService.newTemplateCreated.next(template as any as Template);
-          this.toasterService.success('Template added');
-          this.dialogRef.close();
+        this.dockerService.addTemplate(this.controller, dockerTemplate).subscribe({
+          next: (template) => {
+            this.templateService.newTemplateCreated.next(template as any as Template);
+            this.toasterService.success('Template added');
+            this.dialogRef.close();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to add template';
+            this.toasterService.error(message);
+            this.changeDetector.markForCheck();
+          }
         });
       } else {
         return false;
@@ -769,10 +790,17 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
       if (answer) {
         qemuTemplate.name = answer;
 
-        this.qemuService.addTemplate(this.controller, qemuTemplate).subscribe((template) => {
-          this.templateService.newTemplateCreated.next(template as any as Template);
-          this.toasterService.success('Template added');
-          this.dialogRef.close();
+        this.qemuService.addTemplate(this.controller, qemuTemplate).subscribe({
+          next: (template) => {
+            this.templateService.newTemplateCreated.next(template as any as Template);
+            this.toasterService.success('Template added');
+            this.dialogRef.close();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to add template';
+            this.toasterService.error(message);
+            this.changeDetector.markForCheck();
+          }
         });
       } else {
         return false;

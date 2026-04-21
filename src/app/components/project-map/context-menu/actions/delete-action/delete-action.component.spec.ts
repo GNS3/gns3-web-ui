@@ -1,9 +1,10 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatBottomSheet, MatBottomSheetModule } from '@angular/material/bottom-sheet';
+import { of, throwError } from 'rxjs';
 import { DeleteActionComponent } from './delete-action.component';
 import { ConfirmationBottomSheetComponent } from 'app/components/projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
@@ -11,26 +12,25 @@ import { LinksDataSource } from '../../../../../cartography/datasources/links-da
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
 import { Node } from '../../../../../cartography/models/node';
 import { Drawing } from '../../../../../cartography/models/drawing';
-import { Link } from '@models/link';
-import { Controller } from '@models/controller';
-import { NodeService } from '@services/node.service';
-import { DrawingService } from '@services/drawing.service';
-import { LinkService } from '@services/link.service';
-import { LinkTypeCache } from '@services/link-type-cache';
-import { ToasterService } from '@services/toaster.service';
-import { of } from 'rxjs';
+import { Link } from '../../../../../models/link';
+import { Controller } from '../../../../../models/controller';
+import { NodeService } from '../../../../../services/node.service';
+import { DrawingService } from '../../../../../services/drawing.service';
+import { LinkService } from '../../../../../services/link.service';
+import { LinkTypeCache } from '../../../../../services/link-type-cache';
+import { ToasterService } from '../../../../../services/toaster.service';
 
 describe('DeleteActionComponent', () => {
   let component: DeleteActionComponent;
   let fixture: ComponentFixture<DeleteActionComponent>;
-  let mockBottomSheet: MatBottomSheet;
-  let mockNodesDataSource: NodesDataSource;
-  let mockLinksDataSource: LinksDataSource;
-  let mockDrawingsDataSource: DrawingsDataSource;
-  let mockNodeService: NodeService;
-  let mockDrawingService: DrawingService;
-  let mockLinkService: LinkService;
-  let mockToasterService: ToasterService;
+  let mockBottomSheet: any;
+  let mockNodesDataSource: any;
+  let mockLinksDataSource: any;
+  let mockDrawingsDataSource: any;
+  let mockNodeService: any;
+  let mockDrawingService: any;
+  let mockLinkService: any;
+  let mockToasterService: any;
   let bottomSheetRef: any;
 
   const mockController: Controller = {
@@ -72,6 +72,8 @@ describe('DeleteActionComponent', () => {
     } as Link);
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     bottomSheetRef = {
       afterDismissed: vi.fn().mockReturnValue(of(false)),
     };
@@ -124,6 +126,12 @@ describe('DeleteActionComponent', () => {
 
     fixture = TestBed.createComponent(DeleteActionComponent);
     component = fixture.componentInstance;
+  });
+
+  afterEach(() => {
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('confirmDelete()', () => {
@@ -331,6 +339,138 @@ describe('DeleteActionComponent', () => {
       expect(mockToasterService.error).toHaveBeenCalledWith('Cannot delete locked node: Locked');
       expect(mockNodesDataSource.remove).toHaveBeenCalledWith(unlockedNode);
       expect(mockNodeService.delete).toHaveBeenCalledWith(mockController, unlockedNode);
+    });
+  });
+
+  describe('error handling', () => {
+    it('should display toaster error when nodeService.delete() fails', async () => {
+      const mockError = {
+        error: { message: 'Node not found' },
+      };
+      mockNodeService.delete.mockReturnValue(throwError(() => mockError));
+
+      const node = createMockNode({ locked: false });
+      fixture.componentRef.setInput('nodes', [node]);
+      fixture.componentRef.setInput('drawings', []);
+      fixture.componentRef.setInput('links', []);
+      fixture.componentRef.setInput('controller', mockController);
+
+      component.delete();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Node not found');
+    });
+
+    it('should display generic error message when nodeService.delete() fails without specific message', async () => {
+      mockNodeService.delete.mockReturnValue(throwError(() => new Error()));
+
+      const node = createMockNode({ locked: false });
+      fixture.componentRef.setInput('nodes', [node]);
+      fixture.componentRef.setInput('drawings', []);
+      fixture.componentRef.setInput('links', []);
+      fixture.componentRef.setInput('controller', mockController);
+
+      component.delete();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to delete node');
+    });
+
+    it('should display toaster error when drawingService.delete() fails', async () => {
+      const mockError = {
+        error: { message: 'Drawing not found' },
+      };
+      mockDrawingService.delete.mockReturnValue(throwError(() => mockError));
+
+      const drawing = createMockDrawing({ locked: false });
+      fixture.componentRef.setInput('nodes', []);
+      fixture.componentRef.setInput('drawings', [drawing]);
+      fixture.componentRef.setInput('links', []);
+      fixture.componentRef.setInput('controller', mockController);
+
+      component.delete();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Drawing not found');
+    });
+
+    it('should display generic error message when drawingService.delete() fails without specific message', async () => {
+      mockDrawingService.delete.mockReturnValue(throwError(() => new Error()));
+
+      const drawing = createMockDrawing({ locked: false });
+      fixture.componentRef.setInput('nodes', []);
+      fixture.componentRef.setInput('drawings', [drawing]);
+      fixture.componentRef.setInput('links', []);
+      fixture.componentRef.setInput('controller', mockController);
+
+      component.delete();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to delete drawing');
+    });
+
+    it('should display toaster error when linkService.deleteLink() fails', async () => {
+      const mockError = {
+        error: { message: 'Link not found' },
+      };
+      mockLinkService.deleteLink.mockReturnValue(throwError(() => mockError));
+
+      const link = createMockLink();
+      fixture.componentRef.setInput('nodes', []);
+      fixture.componentRef.setInput('drawings', []);
+      fixture.componentRef.setInput('links', [link]);
+      fixture.componentRef.setInput('controller', mockController);
+
+      component.delete();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Link not found');
+    });
+
+    it('should display generic error message when linkService.deleteLink() fails without specific message', async () => {
+      mockLinkService.deleteLink.mockReturnValue(throwError(() => new Error()));
+
+      const link = createMockLink();
+      fixture.componentRef.setInput('nodes', []);
+      fixture.componentRef.setInput('drawings', []);
+      fixture.componentRef.setInput('links', [link]);
+      fixture.componentRef.setInput('controller', mockController);
+
+      component.delete();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to delete link');
+    });
+
+    it('should call markForCheck after node deletion error', async () => {
+      mockNodeService.delete.mockReturnValue(throwError(() => new Error('Test error')));
+
+      const node = createMockNode({ locked: false });
+      fixture.componentRef.setInput('nodes', [node]);
+      fixture.componentRef.setInput('drawings', []);
+      fixture.componentRef.setInput('links', []);
+      fixture.componentRef.setInput('controller', mockController);
+
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      component.delete();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });

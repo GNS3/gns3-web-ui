@@ -151,7 +151,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
         this.refreshTableRows();
       },
       (error) => {
-        this.toasterService.error(error.error.message);
+        this.toasterService.error(error.error?.message || error.message || 'Failed to get images');
       }
     );
   }
@@ -220,7 +220,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
         (error) => {
           this.getImages();
           this.unChecked();
-          this.toasterService.error(error.error.message);
+          this.toasterService.error(error.error?.message || error.message || 'Failed to delete file');
         }
       );
     });
@@ -314,7 +314,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
             this.toasterService.success('Images installed');
           },
           (error) => {
-            this.toasterService.error(error.error.message);
+            this.toasterService.error(error.error?.message || error.message || 'Failed to install images');
           }
         );
       }
@@ -338,7 +338,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
           (error) => {
             this.getImages();
             this.unChecked();
-            this.toasterService.error(error.error.message);
+            this.toasterService.error(error.error?.message || error.message || 'Failed to prune images');
           }
         );
       }

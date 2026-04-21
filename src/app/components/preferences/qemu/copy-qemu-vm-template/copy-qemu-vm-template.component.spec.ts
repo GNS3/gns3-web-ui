@@ -91,16 +91,18 @@ describe('CopyQemuVmTemplateComponent', () => {
   beforeEach(async () => {
     mockQemuService = {
       getTemplate: vi.fn().mockReturnValue({
-        subscribe: (callback: (template: QemuTemplate) => void) => {
-          callback(mockQemuTemplate);
+        subscribe: vi.fn((arg) => {
+          if (typeof arg === 'function') arg(mockQemuTemplate);
+          else if (arg?.next) arg.next(mockQemuTemplate);
           return { unsubscribe: vi.fn() };
-        },
+        }),
       }),
       addTemplate: vi.fn().mockReturnValue({
-        subscribe: (callback: (template: QemuTemplate) => void) => {
-          callback(mockQemuTemplate);
+        subscribe: vi.fn((arg) => {
+          if (typeof arg === 'function') arg(mockQemuTemplate);
+          else if (arg?.next) arg.next(mockQemuTemplate);
           return { unsubscribe: vi.fn() };
-        },
+        }),
       }),
     };
 
@@ -201,8 +203,9 @@ describe('CopyQemuVmTemplateComponent', () => {
     component.nameForm.get('templateName')?.setValue('My Copied Template');
 
     const addTemplateObservable = {
-      subscribe: vi.fn((callback) => {
-        callback();
+      subscribe: vi.fn((arg) => {
+        if (typeof arg === 'function') arg();
+        else if (arg?.next) arg.next();
         return { unsubscribe: vi.fn() };
       }),
     };
@@ -213,7 +216,7 @@ describe('CopyQemuVmTemplateComponent', () => {
     expect(mockQemuService.addTemplate).toHaveBeenCalledWith(mockController, expect.any(Object));
     const calledTemplate = mockQemuService.addTemplate.mock.calls[0][1];
     expect(calledTemplate.template_id).toBeTruthy();
-    expect(calledTemplate.name).toBe('Copy of Original QEMU VM');
+    expect(calledTemplate.name).toBe('My Copied Template');
     expect(mockRouter.navigate).toHaveBeenCalled();
   });
 
@@ -226,17 +229,17 @@ describe('CopyQemuVmTemplateComponent', () => {
   it('should generate new UUID for copied template', () => {
     component.nameForm.get('templateName')?.setValue('Copy of Original QEMU VM');
 
-    let capturedTemplate: QemuTemplate | undefined;
     mockQemuService.addTemplate.mockReturnValue({
-      subscribe: (callback: (template: QemuTemplate) => void) => {
-        callback(mockQemuTemplate);
+      subscribe: vi.fn((arg) => {
+        if (typeof arg === 'function') arg(mockQemuTemplate);
+        else if (arg?.next) arg.next(mockQemuTemplate);
         return { unsubscribe: vi.fn() };
-      },
+      }),
     });
 
     component.addTemplate();
 
-    capturedTemplate = mockQemuService.addTemplate.mock.calls[0][1];
+    const capturedTemplate = mockQemuService.addTemplate.mock.calls[0][1];
     expect(capturedTemplate.template_id).not.toBe('original-template-id');
     expect(capturedTemplate.template_id).toBeTruthy();
   });

@@ -96,8 +96,15 @@ export class AddVpcsTemplateComponent implements OnInit {
 
       (vpcsTemplate.template_id = uuid()), (vpcsTemplate.name = this.templateName), (vpcsTemplate.compute_id = 'local');
 
-      this.vpcsService.addTemplate(this.controller, vpcsTemplate).subscribe(() => {
-        this.goBack();
+      this.vpcsService.addTemplate(this.controller, vpcsTemplate).subscribe({
+        next: () => {
+          this.goBack();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to add vpcs template';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        }
       });
     } else {
       this.toasterService.error(`Fill all required fields`);

@@ -66,16 +66,18 @@ describe('CopyIouTemplateComponent', () => {
   beforeEach(async () => {
     mockIouService = {
       getTemplate: vi.fn().mockReturnValue({
-        subscribe: (callback: (template: IouTemplate) => void) => {
-          callback(mockIouTemplate);
+        subscribe: vi.fn((arg) => {
+          if (typeof arg === 'function') arg(mockIouTemplate);
+          else if (arg?.next) arg.next(mockIouTemplate);
           return { unsubscribe: vi.fn() };
-        },
+        }),
       }),
       addTemplate: vi.fn().mockReturnValue({
-        subscribe: (callback: (template: IouTemplate) => void) => {
-          callback(mockIouTemplate);
+        subscribe: vi.fn((arg) => {
+          if (typeof arg === 'function') arg(mockIouTemplate);
+          else if (arg?.next) arg.next(mockIouTemplate);
           return { unsubscribe: vi.fn() };
-        },
+        }),
       }),
     };
 
@@ -160,8 +162,15 @@ describe('CopyIouTemplateComponent', () => {
   it('should add template with new UUID and name when addTemplate is called with valid data', () => {
     const initialTemplateId = mockIouTemplate.template_id;
     component.templateNameForm.get('templateName').setValue('MyCopyTemplate');
-    component.templateName = 'MyCopyTemplate';
     fixture.detectChanges();
+
+    mockIouService.addTemplate.mockReturnValue({
+      subscribe: vi.fn((arg) => {
+        if (typeof arg === 'function') arg(mockIouTemplate);
+        else if (arg?.next) arg.next(mockIouTemplate);
+        return { unsubscribe: vi.fn() };
+      }),
+    });
 
     component.addTemplate();
 
@@ -173,8 +182,15 @@ describe('CopyIouTemplateComponent', () => {
 
   it('should navigate back after successfully adding template', () => {
     component.templateNameForm.get('templateName').setValue('MyCopyTemplate');
-    component.templateName = 'MyCopyTemplate';
     fixture.detectChanges();
+
+    mockIouService.addTemplate.mockReturnValue({
+      subscribe: vi.fn((arg) => {
+        if (typeof arg === 'function') arg(mockIouTemplate);
+        else if (arg?.next) arg.next(mockIouTemplate);
+        return { unsubscribe: vi.fn() };
+      }),
+    });
 
     component.addTemplate();
 

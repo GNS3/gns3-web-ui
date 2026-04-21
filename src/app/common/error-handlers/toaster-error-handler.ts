@@ -57,7 +57,7 @@ export class ToasterErrorHandler implements ErrorHandler {
     if (!err) return;
 
     const toasterService = this.injector.get(ToasterService);
-    if (err.error && err.error.message) {
+    if (err.error?.message) {
       toasterService.error(err.error.message);
     } else if (err.message) {
       toasterService.error(err.message);

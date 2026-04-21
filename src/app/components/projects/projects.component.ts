@@ -240,8 +240,15 @@ export class ProjectsComponent implements OnInit {
 
         const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
           if (result) {
-            this.projectService.open(this.controller, uuid).subscribe(() => {
-              this.router.navigate(['/controller', this.controller.id, 'project', uuid]);
+            this.projectService.open(this.controller, uuid).subscribe({
+              next: () => {
+                this.router.navigate(['/controller', this.controller.id, 'project', uuid]);
+              },
+              error: (err) => {
+                const message = err.error?.message || err.message || 'Failed to open project';
+                this.toasterService.error(message);
+                this.cdr.markForCheck();
+              },
             });
           }
         });

@@ -9,7 +9,9 @@ import { environment } from 'environments/environment';
  */
 @Injectable()
 export class VncConsoleService {
-  constructor(private toasterService: ToasterService) {}
+  constructor(
+    private toasterService: ToasterService,
+  ) {}
 
   /**
    * Build WebSocket URL for VNC console connection
@@ -50,8 +52,8 @@ export class VncConsoleService {
       autoconnect: '1',
     });
 
-    // Return path to standalone HTML page
-    return `/assets/vnc-console/index.html?${params.toString()}`;
+    // Return path to standalone HTML page using relative path
+    return `assets/vnc-console/index.html?${params.toString()}`;
   }
 
   /**

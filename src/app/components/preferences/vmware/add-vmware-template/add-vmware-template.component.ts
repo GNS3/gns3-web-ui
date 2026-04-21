@@ -86,8 +86,15 @@ export class AddVmwareTemplateComponent implements OnInit {
       template.linked_clone = this.linkedClone();
       template.template_id = uuid();
 
-      this.vmwareService.addTemplate(this.controller(), template).subscribe(() => {
-        this.goBack();
+      this.vmwareService.addTemplate(this.controller(), template).subscribe({
+        next: () => {
+          this.goBack();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to add vmware template';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        }
       });
     } else {
       this.toasterService.error(`Fill all required fields`);

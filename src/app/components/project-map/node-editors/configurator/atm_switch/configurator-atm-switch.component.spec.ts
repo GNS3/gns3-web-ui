@@ -327,8 +327,8 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
       component.nameForm.patchValue({ name: 'ATM-Switch-Saved' });
       component.nodeMappingsDataSource = [];
       (mockNodeService.updateNode as ReturnType<typeof vi.fn>).mockReturnValue({
-        subscribe: vi.fn((callback) => {
-          callback();
+        subscribe: vi.fn((observer) => {
+          if (observer.next) observer.next();
           return { unsubscribe: vi.fn() };
         }),
       });

@@ -75,16 +75,18 @@ describe('CopyIosTemplateComponent', () => {
   beforeEach(async () => {
     mockIosService = {
       getTemplate: vi.fn().mockReturnValue({
-        subscribe: (callback: (template: IosTemplate) => void) => {
-          callback(mockIosTemplate);
+        subscribe: vi.fn((arg) => {
+          if (typeof arg === 'function') arg(mockIosTemplate);
+          else if (arg?.next) arg.next(mockIosTemplate);
           return { unsubscribe: vi.fn() };
-        },
+        }),
       }),
       addTemplate: vi.fn().mockReturnValue({
-        subscribe: (callback: (template: IosTemplate) => void) => {
-          callback(mockIosTemplate);
+        subscribe: vi.fn((arg) => {
+          if (typeof arg === 'function') arg(mockIosTemplate);
+          else if (arg?.next) arg.next(mockIosTemplate);
           return { unsubscribe: vi.fn() };
-        },
+        }),
       }),
     };
 
@@ -187,8 +189,9 @@ describe('CopyIosTemplateComponent', () => {
     component.formGroup.get('templateName')?.setValue('My Copied Template');
 
     const addTemplateObservable = {
-      subscribe: vi.fn((callback) => {
-        callback();
+      subscribe: vi.fn((arg) => {
+        if (typeof arg === 'function') arg();
+        else if (arg?.next) arg.next();
         return { unsubscribe: vi.fn() };
       }),
     };
@@ -199,7 +202,7 @@ describe('CopyIosTemplateComponent', () => {
     expect(mockIosService.addTemplate).toHaveBeenCalledWith(mockController, expect.any(Object));
     const calledTemplate = mockIosService.addTemplate.mock.calls[0][1];
     expect(calledTemplate.template_id).toBeTruthy();
-    expect(calledTemplate.name).toBe('Copy of Original IOS Router');
+    expect(calledTemplate.name).toBe('My Copied Template');
     expect(mockRouter.navigate).toHaveBeenCalled();
   });
 
@@ -212,17 +215,17 @@ describe('CopyIosTemplateComponent', () => {
   it('should generate new UUID for copied template', () => {
     component.formGroup.get('templateName')?.setValue('Copy of Original IOS Router');
 
-    let capturedTemplate: IosTemplate | undefined;
     mockIosService.addTemplate.mockReturnValue({
-      subscribe: (callback: (template: IosTemplate) => void) => {
-        callback(mockIosTemplate);
+      subscribe: vi.fn((arg) => {
+        if (typeof arg === 'function') arg(mockIosTemplate);
+        else if (arg?.next) arg.next(mockIosTemplate);
         return { unsubscribe: vi.fn() };
-      },
+      }),
     });
 
     component.addTemplate();
 
-    capturedTemplate = mockIosService.addTemplate.mock.calls[0][1];
+    const capturedTemplate = mockIosService.addTemplate.mock.calls[0][1];
     expect(capturedTemplate.template_id).not.toBe('original-template-id');
     expect(capturedTemplate.template_id).toBeTruthy();
   });

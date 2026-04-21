@@ -1,5 +1,5 @@
 import { Location } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, model, signal, inject, computed } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, model, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -61,6 +61,7 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   private uploadServiceService = inject(UploadServiceService);
   private progressService = inject(ProgressService);
   private snackBar = inject(MatSnackBar);
+  private cd = inject(ChangeDetectorRef);
 
   readonly controller = signal<Controller | undefined>(undefined);
   readonly iosTemplate = signal<IosTemplate>(new IosTemplate());
@@ -210,8 +211,15 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
       if (this.idlepc()) template.idlepc = this.idlepc();
       template.compute_id = 'local';
 
-      this.iosService.addTemplate(this.controller(), template).subscribe((iosTemplate: IosTemplate) => {
-        this.goBack();
+      this.iosService.addTemplate(this.controller(), template).subscribe({
+        next: (iosTemplate: IosTemplate) => {
+          this.goBack();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to add ios template';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        }
       });
     } else {
       this.toasterService.error(`Fill all required fields`);

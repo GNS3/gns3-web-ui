@@ -129,8 +129,8 @@ describe('ConfiguratorDialogDockerComponent', () => {
         }),
       }),
       updateNode: vi.fn().mockReturnValue({
-        subscribe: vi.fn((callback) => {
-          callback();
+        subscribe: vi.fn((observer) => {
+          if (observer.next) observer.next();
           return { unsubscribe: vi.fn() };
         }),
       }),

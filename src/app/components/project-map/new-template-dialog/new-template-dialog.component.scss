@@ -41,6 +41,14 @@
     font-size: 14px;
   }
 
+  &__feature-unavailable {
+    margin-left: 8px;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--mat-sys-on-surface-variant);
+    opacity: 0.8;
+  }
+
   &__actions {
     display: flex;
     justify-content: flex-end;

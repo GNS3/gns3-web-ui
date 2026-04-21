@@ -80,10 +80,17 @@ export class CopyDockerTemplateComponent implements OnInit {
   addTemplate() {
     if (!this.templateNameForm.invalid) {
       this.dockerTemplate.template_id = uuid();
-      this.dockerTemplate.name = this.templateName;
+      this.dockerTemplate.name = this.templateNameForm.get('templateName').value;
 
-      this.dockerService.addTemplate(this.controller, this.dockerTemplate).subscribe((template: DockerTemplate) => {
-        this.goBack();
+      this.dockerService.addTemplate(this.controller, this.dockerTemplate).subscribe({
+        next: (template: DockerTemplate) => {
+          this.goBack();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to copy docker template';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        }
       });
     } else {
       this.toasterService.error(`Fill all required fields`);

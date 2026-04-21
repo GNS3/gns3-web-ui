@@ -31,7 +31,7 @@ export class ExportConfigActionComponent {
           this.downloadByHtmlTag(config);
         },
         error: (error) => {
-          this.toasterService.error(error.error?.message || 'Failed to export configuration');
+          this.toasterService.error(error.error?.message || error.message || 'Failed to export configuration');
         },
       });
     } else {
@@ -48,7 +48,7 @@ export class ExportConfigActionComponent {
               this.downloadByHtmlTag(config);
             },
             error: (error) => {
-              this.toasterService.error(error.error?.message || 'Failed to export startup configuration');
+              this.toasterService.error(error.error?.message || error.message || 'Failed to export startup configuration');
             },
           });
         } else if (configType === 'private-config') {
@@ -57,7 +57,7 @@ export class ExportConfigActionComponent {
               this.downloadByHtmlTag(config);
             },
             error: (error) => {
-              this.toasterService.error(error.error?.message || 'Failed to export private configuration');
+              this.toasterService.error(error.error?.message || error.message || 'Failed to export private configuration');
             },
           });
         }

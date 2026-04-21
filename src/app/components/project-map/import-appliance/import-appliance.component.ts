@@ -53,13 +53,41 @@ export class ImportApplianceComponent implements OnInit {
       headers: ParsedResponseHeaders
     ) => {
       if (this.template.template_type === 'qemu') {
-        this.qemuService.addTemplate(this.controller(), this.template).subscribe(() => this.onUploadComplete());
+        this.qemuService.addTemplate(this.controller(), this.template).subscribe({
+          next: () => this.onUploadComplete(),
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to add qemu template';
+            this.toasterService.error(message);
+            this.cdr.markForCheck();
+          }
+        });
       } else if (this.template.template_type === 'iou') {
-        this.iouService.addTemplate(this.controller(), this.template).subscribe(() => this.onUploadComplete());
+        this.iouService.addTemplate(this.controller(), this.template).subscribe({
+          next: () => this.onUploadComplete(),
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to add iou template';
+            this.toasterService.error(message);
+            this.cdr.markForCheck();
+          }
+        });
       } else if (this.template.template_type === 'dynamips') {
-        this.iosService.addTemplate(this.controller(), this.template).subscribe(() => this.onUploadComplete());
+        this.iosService.addTemplate(this.controller(), this.template).subscribe({
+          next: () => this.onUploadComplete(),
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to add ios template';
+            this.toasterService.error(message);
+            this.cdr.markForCheck();
+          }
+        });
       } else if (this.template.template_type === 'docker') {
-        this.dockerService.addTemplate(this.controller(), this.template).subscribe(() => this.onUploadComplete());
+        this.dockerService.addTemplate(this.controller(), this.template).subscribe({
+          next: () => this.onUploadComplete(),
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to add docker template';
+            this.toasterService.error(message);
+            this.cdr.markForCheck();
+          }
+        });
       }
     };
   }

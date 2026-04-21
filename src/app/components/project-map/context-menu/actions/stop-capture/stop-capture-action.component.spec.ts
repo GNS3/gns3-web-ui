@@ -2,16 +2,18 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { StopCaptureActionComponent } from './stop-capture-action.component';
-import { LinkService } from '@services/link.service';
-import { Controller } from '@models/controller';
-import { Link } from '@models/link';
+import { LinkService } from '../../../../../services/link.service';
+import { ToasterService } from '../../../../../services/toaster.service';
+import { Controller } from '../../../../../models/controller';
+import { Link } from '../../../../../models/link';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('StopCaptureActionComponent', () => {
   let fixture: ComponentFixture<StopCaptureActionComponent>;
   let mockLinkService: any;
+  let mockToasterService: any;
 
   const mockController: Controller = {
     id: 1,
@@ -38,20 +40,31 @@ describe('StopCaptureActionComponent', () => {
     } as Link);
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockLinkService = {
       stopCaptureOnLink: vi.fn().mockReturnValue(of({})),
     };
 
+    mockToasterService = {
+      error: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [StopCaptureActionComponent, MatButtonModule, MatIconModule, MatMenuModule],
-      providers: [{ provide: LinkService, useValue: mockLinkService }],
+      providers: [
+        { provide: LinkService, useValue: mockLinkService },
+        { provide: ToasterService, useValue: mockToasterService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(StopCaptureActionComponent);
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('rendering', () => {
@@ -108,6 +121,64 @@ describe('StopCaptureActionComponent', () => {
 
       // No button exists, so nothing to click
       expect(mockLinkService.stopCaptureOnLink).not.toHaveBeenCalled();
+    });
+
+    it('should display toaster error when stopCaptureOnLink fails with error message', async () => {
+      const mockError = {
+        error: { message: 'Capture device busy' },
+      };
+      mockLinkService.stopCaptureOnLink.mockReturnValue(throwError(() => mockError));
+
+      const mockLink = createMockLink({ capturing: true });
+      fixture.componentRef.setInput('link', mockLink);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Capture device busy');
+    });
+
+    it('should display generic error message when stopCaptureOnLink fails without specific message', async () => {
+      mockLinkService.stopCaptureOnLink.mockReturnValue(throwError(() => new Error()));
+
+      const mockLink = createMockLink({ capturing: true });
+      fixture.componentRef.setInput('link', mockLink);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to stop capture');
+    });
+
+    it('should call markForCheck after error in stopCaptureOnLink', async () => {
+      mockLinkService.stopCaptureOnLink.mockReturnValue(throwError(() => new Error('Test error')));
+
+      const mockLink = createMockLink({ capturing: true });
+      fixture.componentRef.setInput('link', mockLink);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      // Spy on the component's ChangeDetectorRef
+      const component = fixture.componentInstance;
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });

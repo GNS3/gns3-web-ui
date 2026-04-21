@@ -80,10 +80,17 @@ export class CopyIouTemplateComponent implements OnInit {
   addTemplate() {
     if (!this.templateNameForm.invalid) {
       this.iouTemplate.template_id = uuid();
-      this.iouTemplate.name = this.templateName;
+      this.iouTemplate.name = this.templateNameForm.get('templateName').value;
 
-      this.iouService.addTemplate(this.controller, this.iouTemplate).subscribe((template: IouTemplate) => {
-        this.goBack();
+      this.iouService.addTemplate(this.controller, this.iouTemplate).subscribe({
+        next: (template: IouTemplate) => {
+          this.goBack();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to copy iou template';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        }
       });
     } else {
       this.toasterService.error(`Fill all required fields`);

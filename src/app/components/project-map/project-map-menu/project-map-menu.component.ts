@@ -479,32 +479,67 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.projectServices.getProjectStatus(controller, project.project_id).subscribe((status) => {
-      if (status) {
-        this.isLocked = true;
-        this.lock = 'lock';
-      } else {
-        this.isLocked = false;
-        this.lock = 'lock_open';
-      }
-      this.cdr.markForCheck();
+    this.projectServices.getProjectStatus(controller, project.project_id).subscribe({
+      next: (status) => {
+        if (status) {
+          this.isLocked = true;
+          this.lock = 'lock';
+        } else {
+          this.isLocked = false;
+          this.lock = 'lock_open';
+        }
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to get project status';
+        this.toaster.error(message);
+        this.cdr.markForCheck();
+      },
     });
-    this.projectServices.nodes(controller, project.project_id).subscribe((response) => {
-      this.nodes = response;
-      this.nodes.forEach((node) => {
-        this.nodeService.updateNode(controller, node).subscribe((node) => {
-          this.nodesDataSource.update(node);
+    this.projectServices.nodes(controller, project.project_id).subscribe({
+      next: (response) => {
+        this.nodes = response;
+        this.nodes.forEach((node) => {
+          this.nodeService.updateNode(controller, node).subscribe({
+            next: (node) => {
+              this.nodesDataSource.update(node);
+            },
+            error: (err) => {
+              const message = err.error?.message || err.message || 'Failed to update node';
+              this.toaster.error(message);
+              this.cdr.markForCheck();
+            },
+          });
         });
-      });
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load nodes';
+        this.toaster.error(message);
+        this.cdr.markForCheck();
+      },
     });
 
-    this.projectServices.drawings(this.controller(), this.project().project_id).subscribe((response) => {
-      this.drawing = response;
-      this.drawing.forEach((drawing) => {
-        this.drawingService.update(this.controller(), drawing).subscribe((drawing) => {
-          this.drawingsDataSource.update(drawing);
+    this.projectServices.drawings(this.controller(), this.project().project_id).subscribe({
+      next: (response) => {
+        this.drawing = response;
+        this.drawing.forEach((drawing) => {
+          this.drawingService.update(this.controller(), drawing).subscribe({
+            next: (drawing) => {
+              this.drawingsDataSource.update(drawing);
+            },
+            error: (err) => {
+              const message = err.error?.message || err.message || 'Failed to update drawing';
+              this.toaster.error(message);
+              this.cdr.markForCheck();
+            },
+          });
         });
-      });
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load drawings';
+        this.toaster.error(message);
+        this.cdr.markForCheck();
+      },
     });
   }
 
@@ -537,13 +572,20 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     this.lock = 'lock';
     this.isLocked = true;
     this.cdr.markForCheck();
-    this.drawingService.lockAllNodes(this.controller(), this.project()).subscribe((res) => {
-      // Ensure update happens in next tick
-      setTimeout(() => {
-        this.lock = 'lock';
-        this.isLocked = true;
+    this.drawingService.lockAllNodes(this.controller(), this.project()).subscribe({
+      next: (res) => {
+        // Ensure update happens in next tick
+        setTimeout(() => {
+          this.lock = 'lock';
+          this.isLocked = true;
+          this.cdr.markForCheck();
+        });
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to lock nodes';
+        this.toaster.error(message);
         this.cdr.markForCheck();
-      });
+      },
     });
   }
 
@@ -551,13 +593,20 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
     this.lock = 'lock_open';
     this.isLocked = false;
     this.cdr.markForCheck();
-    this.drawingService.unLockAllNodes(this.controller(), this.project()).subscribe((res) => {
-      // Ensure update happens in next tick
-      setTimeout(() => {
-        this.lock = 'lock_open';
-        this.isLocked = false;
+    this.drawingService.unLockAllNodes(this.controller(), this.project()).subscribe({
+      next: (res) => {
+        // Ensure update happens in next tick
+        setTimeout(() => {
+          this.lock = 'lock_open';
+          this.isLocked = false;
+          this.cdr.markForCheck();
+        });
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to unlock nodes';
+        this.toaster.error(message);
         this.cdr.markForCheck();
-      });
+      },
     });
   }
 
@@ -575,7 +624,14 @@ export class ProjectMapMenuComponent implements OnInit, OnDestroy {
       let svg = this.createSvgFileForImage(image, imageToUpload);
       this.drawingService
         .add(this.controller(), this.project().project_id, -(imageToUpload.width / 2), -(imageToUpload.height / 2), svg)
-        .subscribe(() => {});
+        .subscribe({
+          next: () => {},
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to add image';
+            this.toaster.error(message);
+            this.cdr.markForCheck();
+          },
+        });
     };
 
     imageToUpload.onload = () => {

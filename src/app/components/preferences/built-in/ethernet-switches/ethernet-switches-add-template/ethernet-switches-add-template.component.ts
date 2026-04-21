@@ -105,9 +105,16 @@ export class EthernetSwitchesAddTemplateComponent implements OnInit {
         });
       }
 
-      this.builtInTemplatesService.addTemplate(this.controller, ethernetSwitchTemplate).subscribe(() => {
-        this.toasterService.success('Template added successfully');
-        this.goBack();
+      this.builtInTemplatesService.addTemplate(this.controller, ethernetSwitchTemplate).subscribe({
+        next: () => {
+          this.toasterService.success('Template added successfully');
+          this.goBack();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to add ethernet switch template';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        }
       });
     } else {
       this.toasterService.error(`Fill all required fields`);

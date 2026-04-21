@@ -81,10 +81,17 @@ export class CopyQemuVmTemplateComponent implements OnInit {
   addTemplate() {
     if (!this.nameForm.invalid) {
       this.qemuTemplate.template_id = uuid();
-      this.qemuTemplate.name = this.templateName;
+      this.qemuTemplate.name = this.nameForm.get('templateName').value;
 
-      this.qemuService.addTemplate(this.controller, this.qemuTemplate).subscribe((template: QemuTemplate) => {
-        this.goBack();
+      this.qemuService.addTemplate(this.controller, this.qemuTemplate).subscribe({
+        next: (template: QemuTemplate) => {
+          this.goBack();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to copy qemu template';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        }
       });
     } else {
       this.toasterService.error(`Fill all required fields`);

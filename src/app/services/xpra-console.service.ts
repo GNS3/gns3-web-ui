@@ -9,7 +9,9 @@ import { ToasterService } from './toaster.service';
  */
 @Injectable()
 export class XpraConsoleService {
-  constructor(private toasterService: ToasterService) {}
+  constructor(
+    private toasterService: ToasterService,
+  ) {}
 
   /**
    * Parse WebSocket URL and extract components for xpra-html5
@@ -95,9 +97,8 @@ export class XpraConsoleService {
     params.set('clipboard', 'true');
     params.set('encoding', 'h264');
 
-    // Return path to standalone HTML page (relative to base href)
-    const baseHref = document.querySelector('base')?.getAttribute('href') || '/';
-    return `${baseHref}assets/xpra-html5/index.html?${params.toString()}`;
+    // Return path to standalone HTML page using relative path
+    return `assets/xpra-html5/index.html?${params.toString()}`;
   }
 
   /**

@@ -598,8 +598,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           .filter((item) => item instanceof MapNode)
           .forEach((item: MapNode) => {
             const node = this.mapNodeToNode.convert(item);
-            this.nodeService.delete(this.controller, node).subscribe((data) => {
-              this.toasterService.success('Node has been deleted');
+            this.nodeService.delete(this.controller, node).subscribe({
+              next: () => this.toasterService.success('Node has been deleted'),
+              error: (err) => {
+                const message = err.error?.message || err.message || 'Failed to delete node';
+                this.toasterService.error(message);
+                this.cd.markForCheck();
+              },
             });
           });
 
@@ -607,8 +612,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           .filter((item) => item instanceof MapLink)
           .forEach((item: MapLink) => {
             const link = this.mapLinkToLink.convert(item);
-            this.linkService.deleteLink(this.controller, link).subscribe(() => {
-              this.toasterService.success('Link has been deleted');
+            this.linkService.deleteLink(this.controller, link).subscribe({
+              next: () => this.toasterService.success('Link has been deleted'),
+              error: (err) => {
+                const message = err.error?.message || err.message || 'Failed to delete link';
+                this.toasterService.error(message);
+                this.cd.markForCheck();
+              },
             });
           });
 
@@ -616,8 +626,13 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           .filter((item) => item instanceof MapDrawing)
           .forEach((item: MapDrawing) => {
             const drawing = this.mapDrawingToDrawing.convert(item);
-            this.drawingService.delete(this.controller, drawing).subscribe((data) => {
-              this.toasterService.success('Drawing has been deleted');
+            this.drawingService.delete(this.controller, drawing).subscribe({
+              next: () => this.toasterService.success('Drawing has been deleted'),
+              error: (err) => {
+                const message = err.error?.message || err.message || 'Failed to delete drawing';
+                this.toasterService.error(message);
+                this.cd.markForCheck();
+              },
             });
           });
       }
@@ -820,7 +835,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           });
         },
         (error) => {
-          this.toasterService.error(error.error.message);
+          this.toasterService.error(error.error?.message || error.message || 'Failed to create node from template');
         }
       );
   }
@@ -1322,8 +1337,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
 
         const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
           if (result) {
-            this.projectService.open(this.controller, uuid).subscribe(() => {
-              this.router.navigate(['/controller', this.controller.id, 'project', uuid]);
+            this.projectService.open(this.controller, uuid).subscribe({
+              next: () => {
+                this.router.navigate(['/controller', this.controller.id, 'project', uuid]);
+              },
+              error: (err) => {
+                const message = err.error?.message || err.message || 'Failed to open project';
+                this.toasterService.error(message);
+                this.cd.markForCheck();
+              },
             });
           }
         });
@@ -1376,7 +1398,14 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
                 xlink:href=\"${image}\"/>\n</svg>`;
       this.drawingService
         .add(this.controller, this.project.project_id, -(imageToUpload.width / 2), -(imageToUpload.height / 2), svg)
-        .subscribe(() => {});
+        .subscribe({
+          next: () => {},
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to add image';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
+        });
     };
 
     imageToUpload.onload = () => {
@@ -1392,8 +1421,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
-        this.projectService.close(this.controller, this.project.project_id).subscribe(() => {
-          this.router.navigate(['/controller', this.controller.id, 'projects']);
+        this.projectService.close(this.controller, this.project.project_id).subscribe({
+          next: () => {
+            this.router.navigate(['/controller', this.controller.id, 'projects']);
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to close project';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
         });
       }
     });
@@ -1406,8 +1442,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
     });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
-        this.projectService.delete(this.controller, this.project.project_id).subscribe(() => {
-          this.router.navigate(['/controller', this.controller.id, 'projects']);
+        this.projectService.delete(this.controller, this.project.project_id).subscribe({
+          next: () => {
+            this.router.navigate(['/controller', this.controller.id, 'projects']);
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to delete project';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
         });
       }
     });

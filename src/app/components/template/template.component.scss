@@ -100,6 +100,8 @@
   border-radius: 8px;
   transition: background-color 0.2s ease;
   cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
 
   &:hover {
     background-color: color-mix(in srgb, var(--mat-sys-primary) 10%, transparent);

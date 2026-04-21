@@ -1,25 +1,26 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { of } from 'rxjs';
+import { ChangeDetectorRef } from '@angular/core';
+import { of, throwError } from 'rxjs';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { MoveLayerUpActionComponent } from './move-layer-up-action.component';
 import { Node } from '../../../../../cartography/models/node';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { DrawingService } from '@services/drawing.service';
+import { ToasterService } from '@services/toaster.service';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('MoveLayerUpActionComponent', () => {
   let component: MoveLayerUpActionComponent;
   let fixture: ComponentFixture<MoveLayerUpActionComponent>;
   let mockNodeService: { update: ReturnType<typeof vi.fn> };
   let mockDrawingService: { update: ReturnType<typeof vi.fn> };
+  let mockToasterService: { error: ReturnType<typeof vi.fn> };
   let mockNodesDataSource: { update: ReturnType<typeof vi.fn> };
   let mockDrawingsDataSource: { update: ReturnType<typeof vi.fn> };
+  let mockCdr: { markForCheck: ReturnType<typeof vi.fn> };
 
   const mockController: Controller = {
     id: 1,
@@ -79,26 +80,36 @@ describe('MoveLayerUpActionComponent', () => {
   });
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockNodeService = { update: vi.fn().mockReturnValue(of({})) };
     mockDrawingService = { update: vi.fn().mockReturnValue(of({})) };
+    mockToasterService = { error: vi.fn() };
     mockNodesDataSource = { update: vi.fn() };
     mockDrawingsDataSource = { update: vi.fn() };
+    mockCdr = { markForCheck: vi.fn() };
 
     await TestBed.configureTestingModule({
-      imports: [MatButtonModule, MatIconModule, MatMenuModule],
-    })
-      .overrideProvider(NodeService, { useValue: mockNodeService })
-      .overrideProvider(DrawingService, { useValue: mockDrawingService })
-      .overrideProvider(NodesDataSource, { useValue: mockNodesDataSource })
-      .overrideProvider(DrawingsDataSource, { useValue: mockDrawingsDataSource })
-      .compileComponents();
+      imports: [MoveLayerUpActionComponent],
+      providers: [
+        { provide: NodeService, useValue: mockNodeService },
+        { provide: DrawingService, useValue: mockDrawingService },
+        { provide: ToasterService, useValue: mockToasterService },
+        { provide: NodesDataSource, useValue: mockNodesDataSource },
+        { provide: DrawingsDataSource, useValue: mockDrawingsDataSource },
+        { provide: ChangeDetectorRef, useValue: mockCdr },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(MoveLayerUpActionComponent);
     component = fixture.componentInstance;
+    fixture.detectChanges();
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('moveLayerUp', () => {
@@ -199,6 +210,86 @@ describe('MoveLayerUpActionComponent', () => {
       button.click();
 
       expect(moveLayerUpSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('initialization', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy();
+    });
+
+    it('should have moveLayerUp method', () => {
+      expect(typeof component.moveLayerUp).toBe('function');
+    });
+  });
+
+  describe('error handling', () => {
+    it('should handle node service error and show toaster', () => {
+      const errorResponse = { error: { message: 'Network error' } };
+      mockNodeService.update.mockReturnValue(throwError(errorResponse));
+      const nodes = [createMockNode(0)];
+      const drawings: Drawing[] = [];
+      fixture.componentRef.setInput('nodes', nodes);
+      fixture.componentRef.setInput('drawings', drawings);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      component.moveLayerUp();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Network error');
+    });
+
+    it('should handle drawing service error and show toaster', () => {
+      const errorResponse = { error: { message: 'Drawing update failed' } };
+      mockDrawingService.update.mockReturnValue(throwError(errorResponse));
+      const nodes: Node[] = [];
+      const drawings = [createMockDrawing(0)];
+      fixture.componentRef.setInput('nodes', nodes);
+      fixture.componentRef.setInput('drawings', drawings);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      component.moveLayerUp();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Drawing update failed');
+    });
+
+    it('should use default error message when error has no message', () => {
+      mockNodeService.update.mockReturnValue(throwError({}));
+      const nodes = [createMockNode(0)];
+      const drawings: Drawing[] = [];
+      fixture.componentRef.setInput('nodes', nodes);
+      fixture.componentRef.setInput('drawings', drawings);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      component.moveLayerUp();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to move layer up');
+    });
+
+    it('should handle empty nodes array', () => {
+      const drawings = [createMockDrawing(0)];
+      fixture.componentRef.setInput('nodes', []);
+      fixture.componentRef.setInput('drawings', drawings);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      expect(() => component.moveLayerUp()).not.toThrow();
+      expect(mockNodesDataSource.update).not.toHaveBeenCalled();
+      expect(mockNodeService.update).not.toHaveBeenCalled();
+    });
+
+    it('should handle empty drawings array', () => {
+      const nodes = [createMockNode(0)];
+      fixture.componentRef.setInput('nodes', nodes);
+      fixture.componentRef.setInput('drawings', []);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      expect(() => component.moveLayerUp()).not.toThrow();
+      expect(mockDrawingsDataSource.update).not.toHaveBeenCalled();
+      expect(mockDrawingService.update).not.toHaveBeenCalled();
     });
   });
 });
