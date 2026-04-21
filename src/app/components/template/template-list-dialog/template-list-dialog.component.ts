@@ -94,10 +94,17 @@ export class TemplateListDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.templateService.list(this.controller).subscribe((listOfTemplates: Template[]) => {
-      this.filteredTemplates = listOfTemplates;
-      this.templates = listOfTemplates;
-      this.cd.markForCheck();
+    this.templateService.list(this.controller).subscribe({
+      next: (listOfTemplates: Template[]) => {
+        this.filteredTemplates = listOfTemplates;
+        this.templates = listOfTemplates;
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load templates';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
 
     // Listen for new template creation events to refresh the list
@@ -209,8 +216,13 @@ export class TemplateDatabase {
   }
 
   constructor(private controller: Controller, private templateService: TemplateService) {
-    this.templateService.list(this.controller).subscribe((templates) => {
-      this.dataChange.next(templates);
+    this.templateService.list(this.controller).subscribe({
+      next: (templates) => {
+        this.dataChange.next(templates);
+      },
+      error: () => {
+        this.dataChange.next([]);
+      },
     });
   }
 }

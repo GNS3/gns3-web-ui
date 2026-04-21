@@ -45,6 +45,7 @@ import { ComputeService } from '@services/compute.service';
 import { Compute } from '@models/compute';
 import { ComputeSelectorComponent } from './compute-selector/compute-selector.component';
 import { NotificationService } from '@services/notification.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-template',
@@ -78,6 +79,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
   private cd = inject(ChangeDetectorRef);
   private computeService = inject(ComputeService);
   private notificationService = inject(NotificationService);
+  private toasterService = inject(ToasterService);
 
   readonly controller = input<Controller>(undefined);
   readonly project = input<Project>(undefined);
@@ -198,12 +200,19 @@ export class TemplateComponent implements OnInit, OnDestroy {
   }
 
   private loadTemplates() {
-    this.templateService.list(this.controller()).subscribe((listOfTemplates: Template[]) => {
-      this.filteredTemplates = listOfTemplates;
-      this.sortTemplates();
-      this.templates = listOfTemplates;
-      this.loadTemplateSymbolBlobs(listOfTemplates);
-      this.cd.markForCheck();
+    this.templateService.list(this.controller()).subscribe({
+      next: (listOfTemplates: Template[]) => {
+        this.filteredTemplates = listOfTemplates;
+        this.sortTemplates();
+        this.templates = listOfTemplates;
+        this.loadTemplateSymbolBlobs(listOfTemplates);
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load templates';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
