@@ -96,8 +96,15 @@ export class CloudNodesAddTemplateComponent implements OnInit {
       cloudTemplate.name = this.formGroup.get('templateName').value;
       cloudTemplate.compute_id = 'local';
 
-      this.builtInTemplatesService.addTemplate(this.controller, cloudTemplate).subscribe((cloudNodeTemplate) => {
-        this.goBack();
+      this.builtInTemplatesService.addTemplate(this.controller, cloudTemplate).subscribe({
+        next: (cloudNodeTemplate) => {
+          this.goBack();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to Cloud node add template';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        }
       });
     } else {
       this.toasterService.error(`Fill all required fields`);
