@@ -24,7 +24,8 @@ export class ReloadNodeActionComponent implements OnInit {
   filteredNodes: Node[] = [];
 
   ngOnInit() {
-    this.nodes().forEach((node) => {
+    const nodes = this.nodes() || [];
+    nodes.forEach((node) => {
       if (
         node.node_type === 'vpcs' ||
         node.node_type === 'qemu' ||
