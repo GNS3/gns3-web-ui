@@ -104,8 +104,15 @@ export class EthernetHubsAddTemplateComponent implements OnInit {
         });
       }
 
-      this.builtInTemplatesService.addTemplate(this.controller, ethernetHubTemplate).subscribe(() => {
-        this.goBack();
+      this.builtInTemplatesService.addTemplate(this.controller, ethernetHubTemplate).subscribe({
+        next: () => {
+          this.goBack();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to add ethernet hub template';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        }
       });
     } else {
       this.toasterService.error(`Fill all required fields`);
