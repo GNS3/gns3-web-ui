@@ -56,7 +56,14 @@ export class DeleteActionComponent {
     this.nodes().forEach((node) => {
       if (!node.locked) {
         this.nodesDataSource.remove(node);
-        this.nodeService.delete(this.controller(), node).subscribe((node: Node) => {});
+        this.nodeService.delete(this.controller(), node).subscribe({
+          next: (node: Node) => {},
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to delete node';
+            this.toasterService.error(message);
+            this.cdr.markForCheck();
+          },
+        });
       } else {
         this.toasterService.error('Cannot delete locked node: ' + node.name);
         this.cdr.markForCheck();
@@ -67,7 +74,14 @@ export class DeleteActionComponent {
     this.drawings().forEach((drawing) => {
       if (!drawing.locked) {
         this.drawingsDataSource.remove(drawing);
-        this.drawingService.delete(this.controller(), drawing).subscribe((drawing: Drawing) => {});
+        this.drawingService.delete(this.controller(), drawing).subscribe({
+          next: (drawing: Drawing) => {},
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to delete drawing';
+            this.toasterService.error(message);
+            this.cdr.markForCheck();
+          },
+        });
       } else {
         this.toasterService.error('Cannot delete locked drawing');
         this.cdr.markForCheck();
@@ -78,8 +92,15 @@ export class DeleteActionComponent {
     if (this.nodes().length == 0 && this.drawings().length == 0) {
       this.links().forEach((link) => {
         this.linksDataSource.remove(link);
-        this.linkService.deleteLink(this.controller(), link).subscribe(() => {
-          LinkTypeCache.remove(link.project_id, link.link_id);
+        this.linkService.deleteLink(this.controller(), link).subscribe({
+          next: () => {
+            LinkTypeCache.remove(link.project_id, link.link_id);
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to delete link';
+            this.toasterService.error(message);
+            this.cdr.markForCheck();
+          },
         });
       });
     }
