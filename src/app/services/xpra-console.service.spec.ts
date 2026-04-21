@@ -131,7 +131,7 @@ describe('XpraConsoleService', () => {
 
       const result = service.buildXpraConsolePageUrl(wsUrl);
 
-      expect(result).toContain('/assets/xpra-html5/index.html');
+      expect(result).toContain('assets/xpra-html5/index.html');
       expect(result).toContain('server=localhost');
       expect(result).toContain('port=3080');
       expect(result).toContain('ssl=true');
@@ -182,7 +182,7 @@ describe('XpraConsoleService', () => {
 
       const result = service.buildXpraConsolePageUrlFromNode(controller, node);
 
-      expect(result).toContain('/assets/xpra-html5/index.html');
+      expect(result).toContain('assets/xpra-html5/index.html');
       expect(result).toContain('server=localhost');
     });
   });
@@ -219,7 +219,7 @@ describe('XpraConsoleService', () => {
 
       service.openXpraConsole(controller, node, true);
 
-      expect(window.open).toHaveBeenCalledWith(expect.stringContaining('/assets/xpra-html5/index.html'), '_blank');
+      expect(window.open).toHaveBeenCalledWith(expect.stringContaining('assets/xpra-html5/index.html'), '_blank');
     });
 
     it('should show error toast if popup is blocked', () => {

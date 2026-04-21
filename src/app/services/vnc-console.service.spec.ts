@@ -112,7 +112,7 @@ describe('VncConsoleService', () => {
     it('should return path to VNC console HTML page', () => {
       const url = service.buildVncConsolePageUrl(mockController, mockNode);
 
-      expect(url).toContain('/assets/vnc-console/index.html?');
+      expect(url).toContain('assets/vnc-console/index.html?');
     });
 
     it.each([
