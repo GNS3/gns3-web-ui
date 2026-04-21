@@ -72,7 +72,7 @@ export class ImportConfigActionComponent {
             this.cdr.markForCheck();
           },
           error: (error) => {
-            this.toasterService.error(error.error?.message || 'Failed to import startup configuration');
+            this.toasterService.error(error.message || 'Failed to import startup configuration');
             this.cdr.markForCheck();
           },
         });
@@ -83,7 +83,7 @@ export class ImportConfigActionComponent {
             this.cdr.markForCheck();
           },
           error: (error) => {
-            this.toasterService.error(error.error?.message || 'Failed to import private configuration');
+            this.toasterService.error(error.message || 'Failed to import private configuration');
             this.cdr.markForCheck();
           },
         });
