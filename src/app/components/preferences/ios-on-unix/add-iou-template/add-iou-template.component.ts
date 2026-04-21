@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, model, signal, inject, computed } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, model, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -56,6 +56,7 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   private computeService = inject(ComputeService);
   private uploadServiceService = inject(UploadServiceService);
   private snackBar = inject(MatSnackBar);
+  private cd = inject(ChangeDetectorRef);
 
   readonly controller = signal<Controller | undefined>(undefined);
   readonly iouTemplate = signal<IouTemplate>(new IouTemplate());
@@ -178,8 +179,15 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
         template.serial_adapters = 2;
       }
 
-      this.iouService.addTemplate(this.controller(), template).subscribe((iouTemplate: IouTemplate) => {
-        this.goBack();
+      this.iouService.addTemplate(this.controller(), template).subscribe({
+        next: (iouTemplate: IouTemplate) => {
+          this.goBack();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to add iou template';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        }
       });
     } else {
       this.toasterService.error(`Fill all required fields`);
