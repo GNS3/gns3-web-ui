@@ -31,4 +31,15 @@ version: 1.2.0
 
 ---
 
-**Last Updated**: 2026-04-21
+## Critical Files (DO NOT MODIFY UNLESS EXPLICITLY REQUIRED)
+
+These two files have **global impact** — modifying them affects **all** 108 components that use toasterService. **Unless explicitly required, DO NOT modify**:
+
+| File | Purpose |
+|------|---------|
+| `src/app/services/toaster.service.ts` | Global toast service — displays error/warning/success notifications |
+| `src/app/common/error-handlers/toaster-error-handler.ts` | Global ErrorHandler — catches all unhandled exceptions |
+
+---
+
+**Last Updated**: 2026-04-22
