@@ -1,29 +1,28 @@
-<div class="content">
-  <div class="default-header">
-    <div class="row">
-      <div class="col col-md-1">
-        @if (controller) {
-        <button class="top-button" class="cancel-button" mat-button (click)="goBack()">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-        }
-      </div>
-      <div class="col col-md-11">
-        <h1 class="col">Copy IOU device template</h1>
-      </div>
-    </div>
-  </div>
-  <div class="default-content">
-    <mat-card class="matCard">
-      <form [formGroup]="templateNameForm">
-        <mat-form-field class="form-field">
+<div class="iou-copy">
+  <header class="iou-copy__header">
+    @if (controller) {
+    <button class="iou-copy__back-btn" (click)="goBack()" mat-icon-button>
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    }
+    <h1 class="iou-copy__title">Copy IOU device template</h1>
+  </header>
+
+  <main class="iou-copy__content">
+    <section class="iou-copy__form-card">
+      <form [formGroup]="templateNameForm" class="iou-copy__form">
+        <mat-form-field appearance="fill" class="iou-copy__field">
+          <mat-label>Template name</mat-label>
           <input matInput type="text" placeholder="Name" formControlName="templateName" />
         </mat-form-field>
       </form>
-    </mat-card>
-    <div class="buttons-bar">
-      <button mat-button class="cancel-button" (click)="goBack()">Cancel</button>
-      <button mat-raised-button color="primary" (click)="addTemplate()">Copy template</button>
+    </section>
+
+    <div class="iou-copy__actions">
+      <button mat-button class="iou-copy__cancel-btn" (click)="goBack()">Cancel</button>
+      <button mat-raised-button color="primary" class="iou-copy__submit-btn" (click)="addTemplate()">
+        Copy template
+      </button>
     </div>
-  </div>
+  </main>
 </div>
