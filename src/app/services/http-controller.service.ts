@@ -87,6 +87,8 @@ export class ControllerErrorHandler {
 
     if (error.name === 'HttpErrorResponse' && error.status === 0) {
       err = ControllerError.fromError('Controller is unreachable', error);
+    } else if (error.error?.message) {
+      err = new ControllerError(error.error.message);
     }
 
     //if (error.status === 401) {
