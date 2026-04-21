@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { APP_BASE_HREF } from '@angular/common';
 import { Controller } from '@models/controller';
 import { Link } from '@models/link';
@@ -10,9 +10,10 @@ import { ToasterService } from './toaster.service';
  */
 @Injectable()
 export class XpraConsoleService {
-  private readonly baseHref = inject(APP_BASE_HREF);
-
-  constructor(private toasterService: ToasterService) {}
+  constructor(
+    private toasterService: ToasterService,
+    @Inject(APP_BASE_HREF) private readonly baseHref: string
+  ) {}
 
   /**
    * Parse WebSocket URL and extract components for xpra-html5

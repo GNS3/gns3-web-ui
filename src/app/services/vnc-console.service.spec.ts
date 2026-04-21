@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { TestBed } from '@angular/core/testing';
+import { APP_BASE_HREF } from '@angular/common';
 import { VncConsoleService } from './vnc-console.service';
 import { ToasterService } from './toaster.service';
 import { Node } from '../cartography/models/node';
@@ -18,6 +20,7 @@ describe('VncConsoleService', () => {
   let originalWindow: typeof window;
 
   beforeEach(() => {
+    vi.clearAllMocks();
     originalWindow = global.window;
 
     mockToasterService = {
@@ -50,7 +53,15 @@ describe('VncConsoleService', () => {
       })),
     } as any;
 
-    service = new VncConsoleService(mockToasterService);
+    TestBed.configureTestingModule({
+      providers: [
+        VncConsoleService,
+        { provide: ToasterService, useValue: mockToasterService },
+        { provide: APP_BASE_HREF, useValue: '/' },
+      ],
+    });
+
+    service = TestBed.inject(VncConsoleService);
   });
 
   afterEach(() => {

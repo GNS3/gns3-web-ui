@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { APP_BASE_HREF } from '@angular/common';
 import { Controller } from '@models/controller';
 import { Node } from '../cartography/models/node';
@@ -10,9 +10,10 @@ import { environment } from 'environments/environment';
  */
 @Injectable()
 export class VncConsoleService {
-  private readonly baseHref = inject(APP_BASE_HREF);
-
-  constructor(private toasterService: ToasterService) {}
+  constructor(
+    private toasterService: ToasterService,
+    @Inject(APP_BASE_HREF) private readonly baseHref: string
+  ) {}
 
   /**
    * Build WebSocket URL for VNC console connection
