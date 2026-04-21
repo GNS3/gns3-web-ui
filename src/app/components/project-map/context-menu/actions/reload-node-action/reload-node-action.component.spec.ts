@@ -1,18 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
-import { MatMenuModule } from '@angular/material/menu';
-import { of } from 'rxjs';
+import { ChangeDetectorRef } from '@angular/core';
+import { of, throwError } from 'rxjs';
+import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { ReloadNodeActionComponent } from './reload-node-action.component';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { ToasterService } from '@services/toaster.service';
 
 describe('ReloadNodeActionComponent', () => {
   let component: ReloadNodeActionComponent;
   let fixture: ComponentFixture<ReloadNodeActionComponent>;
   let mockNodeService: { reload: ReturnType<typeof vi.fn> };
+  let mockToasterService: { error: ReturnType<typeof vi.fn> };
+  let mockCdr: { markForCheck: ReturnType<typeof vi.fn> };
 
   const mockController: Controller = {
     id: 1,
@@ -60,20 +61,29 @@ describe('ReloadNodeActionComponent', () => {
   });
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockNodeService = { reload: vi.fn().mockReturnValue(of({})) };
+    mockToasterService = { error: vi.fn() };
+    mockCdr = { markForCheck: vi.fn() };
 
     await TestBed.configureTestingModule({
-      imports: [MatButtonModule, MatIconModule, MatMenuModule],
-    })
-      .overrideProvider(NodeService, { useValue: mockNodeService })
-      .compileComponents();
+      imports: [ReloadNodeActionComponent],
+      providers: [
+        { provide: NodeService, useValue: mockNodeService },
+        { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: mockCdr },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ReloadNodeActionComponent);
     component = fixture.componentInstance;
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('filteredNodes', () => {
@@ -191,6 +201,60 @@ describe('ReloadNodeActionComponent', () => {
 
       component.reloadNodes();
 
+      expect(mockNodeService.reload).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('initialization', () => {
+    it('should create', () => {
+      expect(component).toBeTruthy();
+    });
+
+    it('should have reloadNodes method', () => {
+      expect(typeof component.reloadNodes).toBe('function');
+    });
+
+    it('should initialize filteredNodes as empty array', () => {
+      fixture.componentRef.setInput('nodes', []);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      expect(component.filteredNodes).toEqual([]);
+    });
+  });
+
+  describe('error handling', () => {
+    it('should handle node service error and show toaster', () => {
+      const errorResponse = { error: { message: 'Network error' } };
+      mockNodeService.reload.mockReturnValue(throwError(errorResponse));
+      const nodes = [createMockNode('vpcs')];
+      fixture.componentRef.setInput('nodes', nodes);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      component.reloadNodes();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Network error');
+    });
+
+    it('should use default error message when error has no message', () => {
+      mockNodeService.reload.mockReturnValue(throwError({}));
+      const nodes = [createMockNode('vpcs')];
+      fixture.componentRef.setInput('nodes', nodes);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      component.reloadNodes();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to reload node');
+    });
+
+    it('should handle empty nodes array', () => {
+      fixture.componentRef.setInput('nodes', []);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      expect(() => component.reloadNodes()).not.toThrow();
       expect(mockNodeService.reload).not.toHaveBeenCalled();
     });
   });
