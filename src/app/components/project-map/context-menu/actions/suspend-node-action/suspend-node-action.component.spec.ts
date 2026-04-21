@@ -1,15 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
+import { of, throwError } from 'rxjs';
 import { SuspendNodeActionComponent } from './suspend-node-action.component';
-import { NodeService } from '@services/node.service';
+import { NodeService } from '../../../../../services/node.service';
+import { ToasterService } from '../../../../../services/toaster.service';
 import { Node } from '../../../../../cartography/models/node';
-import { Controller } from '@models/controller';
+import { Controller } from '../../../../../models/controller';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { of } from 'rxjs';
 
 describe('SuspendNodeActionComponent', () => {
   let fixture: ComponentFixture<SuspendNodeActionComponent>;
   let component: SuspendNodeActionComponent;
   let mockNodeService: any;
+  let mockToasterService: any;
   let mockController: Controller;
 
   const createMockNode = (overrides: Partial<Node> = {}): Node =>
@@ -22,8 +27,14 @@ describe('SuspendNodeActionComponent', () => {
     } as Node);
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockNodeService = {
       suspend: vi.fn().mockReturnValue(of({})),
+    };
+
+    mockToasterService = {
+      error: vi.fn(),
     };
 
     mockController = {
@@ -43,8 +54,11 @@ describe('SuspendNodeActionComponent', () => {
     } as Controller;
 
     await TestBed.configureTestingModule({
-      imports: [SuspendNodeActionComponent],
-      providers: [{ provide: NodeService, useValue: mockNodeService }],
+      imports: [SuspendNodeActionComponent, MatButtonModule, MatIconModule, MatMenuModule],
+      providers: [
+        { provide: NodeService, useValue: mockNodeService },
+        { provide: ToasterService, useValue: mockToasterService },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(SuspendNodeActionComponent);
@@ -52,7 +66,9 @@ describe('SuspendNodeActionComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('Creation', () => {
@@ -186,6 +202,65 @@ describe('SuspendNodeActionComponent', () => {
       button.click();
 
       expect(mockNodeService.suspend).toHaveBeenCalled();
+    });
+  });
+
+  describe('error handling', () => {
+    it('should display toaster error when nodeService.suspend() fails with error message', async () => {
+      const mockError = {
+        error: { message: 'Node busy' },
+      };
+      mockNodeService.suspend.mockReturnValue(throwError(() => mockError));
+
+      const nodes = [createMockNode({ status: 'started' })];
+      fixture.componentRef.setInput('nodes', nodes);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Node busy');
+    });
+
+    it('should display generic error message when nodeService.suspend() fails without specific message', async () => {
+      mockNodeService.suspend.mockReturnValue(throwError(() => new Error()));
+
+      const nodes = [createMockNode({ status: 'started' })];
+      fixture.componentRef.setInput('nodes', nodes);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to suspend node');
+    });
+
+    it('should call markForCheck after error in nodeService.suspend()', async () => {
+      mockNodeService.suspend.mockReturnValue(throwError(() => new Error('Test error')));
+
+      const nodes = [createMockNode({ status: 'started' })];
+      fixture.componentRef.setInput('nodes', nodes);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      // Spy on the component's ChangeDetectorRef
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      const button = fixture.nativeElement.querySelector('button');
+      button.click();
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });
