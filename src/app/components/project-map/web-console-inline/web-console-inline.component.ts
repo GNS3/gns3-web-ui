@@ -231,7 +231,7 @@ export class WebConsoleInlineComponent implements OnInit, OnDestroy {
       project_id: node.project_id,
       autoconnect: '1',
     });
-    return `/assets/vnc-console/index.html?${params.toString()}`;
+    return `assets/vnc-console/index.html?${params.toString()}`;
   }
 
   /**
