@@ -129,8 +129,15 @@ export class AddDockerTemplateComponent implements OnInit {
       this.dockerTemplate.aux_type = this.auxConsoleType();
       this.dockerTemplate.environment = this.environment();
 
-      this.dockerService.addTemplate(this.controller, this.dockerTemplate).subscribe((template: DockerTemplate) => {
-        this.goBack();
+      this.dockerService.addTemplate(this.controller, this.dockerTemplate).subscribe({
+        next: (template: DockerTemplate) => {
+          this.goBack();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to add template';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        }
       });
     } else {
       this.toasterService.error(`Fill all required fields`);
