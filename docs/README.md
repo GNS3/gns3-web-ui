@@ -4,7 +4,7 @@
 
 > Complete documentation index for GNS3 Web UI project
 
-**Last Updated**: 2026-04-18
+**Last Updated**: 2026-04-22
 
 ---
 
@@ -61,8 +61,15 @@ docs/
 │   │   └── map-backgrounds.md
 │   ├── dialog-style-isolation.md
 │   └── window-boundary-service.md
+├── inventory/                   # ⭐ Codebase inventory
+│   ├── services-by-domain.md   # Service catalog by functional domain (73 services)
+│   ├── components-by-feature.md # Component catalog by feature area (249 components)
+│   └── service-dependency-analysis-report.md # Component-to-service dependency analysis with usage heatmap
 ├── known-issues/               # Known issues (won't fix)
 │   └── route-transition-white-flash.md
+├── testing/                     # Testing documentation
+│   ├── e2e-testing-decision.md
+│   └── unit-testing-best-practices.md
 ├── todo/                        # Optimization tasks
 │   └── optimization-todos.md
 └── archive/                     # Historical & deprecated docs
@@ -117,6 +124,16 @@ docs/
 | [Hardcoded Color Protection](./guides/css/hardcoded-color-protection.md) | ⭐ Multi-layer protection mechanism for code quality |
 | [Map Backgrounds](./guides/css/map-backgrounds.md) | Project map background & screenshot export |
 | [Window Boundary Service](./guides/window-boundary-service.md) | Window boundary management |
+
+---
+
+### Codebase Inventory
+
+| Document | Description |
+|----------|-------------|
+| [Services by Domain](./inventory/services-by-domain.md) | ⭐ Complete service catalog (73 services) by functional domain |
+| [Components by Feature](./inventory/components-by-feature.md) | ⭐ Complete component catalog (249 components) by feature area |
+| [Service Dependency Analysis](./inventory/service-dependency-analysis-report.md) | ⭐ Component-to-service dependency analysis with usage heatmap (249 components, 69 services) |
 
 ---
 
