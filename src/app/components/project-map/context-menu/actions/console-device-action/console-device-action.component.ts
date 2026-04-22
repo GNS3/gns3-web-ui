@@ -1,3 +1,19 @@
+/**
+ * @deprecated LEGACY COMPONENT - DO NOT USE
+ *
+ * This component is a leftover from the Electron desktop application removal.
+ * Electron support was removed in commit b5bfb767.
+ *
+ * The console functionality is now handled by ConsoleDeviceActionBrowserComponent,
+ * which uses custom protocol handlers (gns3+telnet://, gns3+spice://) to launch
+ * external console applications.
+ *
+ * TODO: Remove this component and its test files when convenient.
+ * - Remove component files (console-device-action.component.ts/html)
+ * - Remove test file (console-device-action.component.spec.ts)
+ * - Remove import and declaration from app.module.ts
+ */
+
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
