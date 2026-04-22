@@ -15,41 +15,28 @@ import { XtermService } from '@services/xterm.service';
 // Store DOM elements for cleanup
 const domElementsToCleanup: HTMLElement[] = [];
 
-// Store latest mock instances
-let mockTermInstance: any = null;
-let mockFitAddonInstance: any = null;
-let allMockTermInstances: any[] = [];
-
-// Create mock instances
-const createMockTermInstance = () => {
-  const element = document.createElement('div');
-  domElementsToCleanup.push(element);
-  return {
-    open: vi.fn(),
-    dispose: vi.fn(),
-    loadAddon: vi.fn(),
-    focus: vi.fn(),
-    write: vi.fn(),
-    resize: vi.fn(),
-    attachCustomKeyEventHandler: vi.fn().mockReturnValue(true),
-    cols: 100,
-    rows: 32,
-    element,
-  };
-};
-
-const createMockFitAddonInstance = () => ({
-  fit: vi.fn(),
-  activate: vi.fn(),
-  load: vi.fn(),
-});
+// Store mock instances globally to avoid pollution issues
+const mockTermInstances: any[] = [];
+const mockFitAddonInstances: any[] = [];
 
 // Mock xterm.js before importing component
 vi.mock('@xterm/xterm', () => ({
   Terminal: vi.fn().mockImplementation(function () {
-    const instance = createMockTermInstance();
-    mockTermInstance = instance;
-    allMockTermInstances.push(instance);
+    const element = document.createElement('div');
+    domElementsToCleanup.push(element);
+    const instance = {
+      open: vi.fn(),
+      dispose: vi.fn(),
+      loadAddon: vi.fn(),
+      focus: vi.fn(),
+      write: vi.fn(),
+      resize: vi.fn(),
+      attachCustomKeyEventHandler: vi.fn().mockReturnValue(true),
+      cols: 100,
+      rows: 32,
+      element,
+    };
+    mockTermInstances.push(instance);
     return instance;
   }),
 }));
@@ -62,8 +49,12 @@ vi.mock('@xterm/addon-attach', () => ({
 
 vi.mock('@xterm/addon-fit', () => ({
   FitAddon: vi.fn().mockImplementation(function () {
-    const instance = createMockFitAddonInstance();
-    mockFitAddonInstance = instance;
+    const instance = {
+      fit: vi.fn(),
+      activate: vi.fn(),
+      load: vi.fn(),
+    };
+    mockFitAddonInstances.push(instance);
     return instance;
   }),
 }));
@@ -151,6 +142,16 @@ describe('WebConsoleComponent', () => {
     });
   };
 
+  // Helper to get mock terminal instance from global array
+  const getMockTermInstance = () => {
+    return mockTermInstances.length > 0 ? mockTermInstances[mockTermInstances.length - 1] : null;
+  };
+
+  // Helper to get mock fit addon instance from global array
+  const getMockFitAddonInstance = () => {
+    return mockFitAddonInstances.length > 0 ? mockFitAddonInstances[mockFitAddonInstances.length - 1] : null;
+  };
+
   beforeAll(() => {
     // Mock WebSocket once before all tests
     const mockSocketClose = vi.fn();
@@ -210,10 +211,9 @@ describe('WebConsoleComponent', () => {
     // Clear all mocks to prevent test pollution
     vi.clearAllMocks();
 
-    // Clear previous mock instances
-    allMockTermInstances = [];
-    mockTermInstance = null;
-    mockFitAddonInstance = null;
+    // Clear mock instance arrays to ensure test isolation
+    mockTermInstances.length = 0;
+    mockFitAddonInstances.length = 0;
 
     // Reset service mocks to default state
     mockNodeConsoleService.getNumberOfColumns.mockReturnValue(80);
@@ -258,11 +258,6 @@ describe('WebConsoleComponent', () => {
       element.remove();
     });
     domElementsToCleanup.length = 0;
-
-    // Clean up mock instances
-    allMockTermInstances = [];
-    mockTermInstance = null;
-    mockFitAddonInstance = null;
   });
 
   afterAll(() => {
@@ -314,20 +309,23 @@ describe('WebConsoleComponent', () => {
       fixture.detectChanges();
       expect(mockNodeConsoleService.getNumberOfColumns).toHaveBeenCalled();
       expect(mockNodeConsoleService.getNumberOfRows).toHaveBeenCalled();
-      expect(mockTermInstance.resize).toHaveBeenCalledWith(80, 24);
+      const mockTermInstance = getMockTermInstance();
+      expect(mockTermInstance?.resize).toHaveBeenCalledWith(80, 24);
     });
 
     it('should not resize terminal when getNumberOfColumns returns falsy', () => {
       mockNodeConsoleService.getNumberOfColumns.mockReturnValue(0);
       fixture.detectChanges();
-      expect(mockTermInstance.resize).not.toHaveBeenCalled();
+      const mockTermInstance = getMockTermInstance();
+      expect(mockTermInstance?.resize).not.toHaveBeenCalled();
     });
   });
 
   describe('ngAfterViewInit', () => {
     it('should open terminal on DOM element', () => {
       fixture.detectChanges();
-      expect(mockTermInstance.open).toHaveBeenCalled();
+      const mockTermInstance = getMockTermInstance();
+      expect(mockTermInstance?.open).toHaveBeenCalled();
     });
 
     it('should update terminal theme', () => {
@@ -342,7 +340,8 @@ describe('WebConsoleComponent', () => {
 
     it('should load attach addon to terminal', () => {
       fixture.detectChanges();
-      expect(mockTermInstance.loadAddon).toHaveBeenCalled();
+      const mockTermInstance = getMockTermInstance();
+      expect(mockTermInstance?.loadAddon).toHaveBeenCalled();
     });
 
     it('should initialize terminal with fitAddon', () => {
@@ -352,17 +351,20 @@ describe('WebConsoleComponent', () => {
 
     it('should fit the terminal', () => {
       fixture.detectChanges();
-      expect(mockFitAddonInstance.fit).toHaveBeenCalled();
+      const mockFitAddonInstance = getMockFitAddonInstance();
+      expect(mockFitAddonInstance?.fit).toHaveBeenCalled();
     });
 
     it('should focus the terminal', () => {
       fixture.detectChanges();
-      expect(mockTermInstance.focus).toHaveBeenCalled();
+      const mockTermInstance = getMockTermInstance();
+      expect(mockTermInstance?.focus).toHaveBeenCalled();
     });
 
     it('should attach custom key event handler', () => {
       fixture.detectChanges();
-      expect(mockTermInstance.attachCustomKeyEventHandler).toHaveBeenCalled();
+      const mockTermInstance = getMockTermInstance();
+      expect(mockTermInstance?.attachCustomKeyEventHandler).toHaveBeenCalled();
     });
 
     it('should attach context menu for copy/paste', () => {
@@ -372,7 +374,8 @@ describe('WebConsoleComponent', () => {
 
     it('should block Alt+1-9 key events by dispatching custom event', () => {
       fixture.detectChanges();
-      const handler = mockTermInstance.attachCustomKeyEventHandler.mock.calls[0][0];
+      const mockTermInstance = getMockTermInstance();
+      const handler = mockTermInstance?.attachCustomKeyEventHandler.mock.calls[0][0];
       const altKey = { altKey: true, key: '1' } as KeyboardEvent;
       const dispatchEventSpy = vi.spyOn(mockTermInstance.element, 'dispatchEvent');
       const result = handler(altKey);
@@ -382,28 +385,32 @@ describe('WebConsoleComponent', () => {
 
     it('should block Ctrl+Shift+C key events', () => {
       fixture.detectChanges();
-      const handler = mockTermInstance.attachCustomKeyEventHandler.mock.calls[0][0];
+      const mockTermInstance = getMockTermInstance();
+      const handler = mockTermInstance?.attachCustomKeyEventHandler.mock.calls[0][0];
       const ctrlShiftC = { code: 'KeyC', ctrlKey: true, shiftKey: true } as KeyboardEvent;
       expect(handler(ctrlShiftC)).toBe(false);
     });
 
     it('should block Ctrl+Shift+V key events', () => {
       fixture.detectChanges();
-      const handler = mockTermInstance.attachCustomKeyEventHandler.mock.calls[0][0];
+      const mockTermInstance = getMockTermInstance();
+      const handler = mockTermInstance?.attachCustomKeyEventHandler.mock.calls[0][0];
       const ctrlShiftV = { code: 'KeyV', ctrlKey: true, shiftKey: true } as KeyboardEvent;
       expect(handler(ctrlShiftV)).toBe(false);
     });
 
     it('should allow regular Ctrl+C key events', () => {
       fixture.detectChanges();
-      const handler = mockTermInstance.attachCustomKeyEventHandler.mock.calls[0][0];
+      const mockTermInstance = getMockTermInstance();
+      const handler = mockTermInstance?.attachCustomKeyEventHandler.mock.calls[0][0];
       const ctrlC = { code: 'KeyC', ctrlKey: true, shiftKey: false } as KeyboardEvent;
       expect(handler(ctrlC)).toBe(true);
     });
 
     it('should allow regular Ctrl+V key events', () => {
       fixture.detectChanges();
-      const handler = mockTermInstance.attachCustomKeyEventHandler.mock.calls[0][0];
+      const mockTermInstance = getMockTermInstance();
+      const handler = mockTermInstance?.attachCustomKeyEventHandler.mock.calls[0][0];
       const ctrlV = { code: 'KeyV', ctrlKey: true, shiftKey: false } as KeyboardEvent;
       expect(handler(ctrlV)).toBe(true);
     });
@@ -418,7 +425,8 @@ describe('WebConsoleComponent', () => {
       if (wsInstance && wsInstance.onerror) {
         wsInstance.onerror(new Event('error'));
       }
-      expect(mockTermInstance.write).toHaveBeenCalled();
+      const mockTermInstance = getMockTermInstance();
+      expect(mockTermInstance?.write).toHaveBeenCalled();
     });
 
     it('should write close message and close console on socket close', () => {
@@ -428,7 +436,8 @@ describe('WebConsoleComponent', () => {
       if (wsInstance && wsInstance.onclose) {
         wsInstance.onclose(new CloseEvent('close'));
       }
-      expect(mockTermInstance.write).toHaveBeenCalled();
+      const mockTermInstance = getMockTermInstance();
+      expect(mockTermInstance?.write).toHaveBeenCalled();
       expect(mockNodeConsoleService.closeConsoleForNode).toHaveBeenCalledWith(mockNode);
     });
   });
@@ -437,7 +446,8 @@ describe('WebConsoleComponent', () => {
     it('should focus the terminal', () => {
       fixture.detectChanges();
       component.focusTerminal();
-      expect(mockTermInstance.focus).toHaveBeenCalled();
+      const mockTermInstance = getMockTermInstance();
+      expect(mockTermInstance?.focus).toHaveBeenCalled();
     });
   });
 
@@ -445,20 +455,23 @@ describe('WebConsoleComponent', () => {
     it('should fit the terminal', () => {
       fixture.detectChanges();
       (component as any).fitTerminal();
-      expect(mockFitAddonInstance.fit).toHaveBeenCalled();
+      const mockFitAddonInstance = getMockFitAddonInstance();
+      expect(mockFitAddonInstance?.fit).toHaveBeenCalled();
     });
 
     it('should set number of columns and rows on consoleService', () => {
       fixture.detectChanges();
       (component as any).fitTerminal();
-      expect(mockNodeConsoleService.setNumberOfColumns).toHaveBeenCalledWith(mockTermInstance.cols);
-      expect(mockNodeConsoleService.setNumberOfRows).toHaveBeenCalledWith(mockTermInstance.rows);
+      const mockTermInstance = getMockTermInstance();
+      expect(mockNodeConsoleService.setNumberOfColumns).toHaveBeenCalledWith(mockTermInstance?.cols);
+      expect(mockNodeConsoleService.setNumberOfRows).toHaveBeenCalledWith(mockTermInstance?.rows);
     });
 
     it('should resize terminal to fit dimensions', () => {
       fixture.detectChanges();
       (component as any).fitTerminal();
-      expect(mockTermInstance.resize).toHaveBeenCalledWith(mockTermInstance.cols, mockTermInstance.rows);
+      const mockTermInstance = getMockTermInstance();
+      expect(mockTermInstance?.resize).toHaveBeenCalledWith(mockTermInstance?.cols, mockTermInstance?.rows);
     });
   });
 
@@ -516,7 +529,8 @@ describe('WebConsoleComponent', () => {
     it('should dispose terminal', () => {
       fixture.detectChanges();
       component.ngOnDestroy();
-      expect(mockTermInstance.dispose).toHaveBeenCalled();
+      const mockTermInstance = getMockTermInstance();
+      expect(mockTermInstance?.dispose).toHaveBeenCalled();
     });
 
     it('should handle multiple destroy calls gracefully', () => {
