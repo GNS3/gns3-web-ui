@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { EventEmitter } from '@angular/core';
+import { EventEmitter, ChangeDetectorRef } from '@angular/core';
 import { LinkCreatedComponent } from './link-created.component';
 import { LinksEventSource } from '../../../cartography/events/links-event-source';
 import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
@@ -7,6 +7,7 @@ import { MapPortToPortConverter } from '../../../cartography/converters/map/map-
 import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
 import { LinkService } from '@services/link.service';
 import { ProjectService } from '@services/project.service';
+import { ToasterService } from '@services/toaster.service';
 import { MapLinkCreated } from '../../../cartography/events/links';
 import { MapNode } from '../../../cartography/models/map/map-node';
 import { MapPort } from '../../../cartography/models/map/map-port';
@@ -15,8 +16,9 @@ import { Port } from '@models/port';
 import { Link } from '@models/link';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
-import { of, Subject } from 'rxjs';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { of, Subject, throwError, Observable } from 'rxjs';
+import { queueScheduler } from 'rxjs';
+import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, vi } from 'vitest';
 
 describe('LinkCreatedComponent', () => {
   let fixture: ComponentFixture<LinkCreatedComponent>;
@@ -29,6 +31,8 @@ describe('LinkCreatedComponent', () => {
   let mockLinksDataSource: { set: ReturnType<typeof vi.fn> };
   let mockLinkService: { createLink: ReturnType<typeof vi.fn> };
   let mockProjectService: { links: ReturnType<typeof vi.fn> };
+  let mockToasterService: { error: ReturnType<typeof vi.fn> };
+  let mockChangeDetectorRef: { markForCheck: ReturnType<typeof vi.fn> };
 
   // Events
   let linkCreatedEmitter: EventEmitter<MapLinkCreated>;
@@ -45,6 +49,7 @@ describe('LinkCreatedComponent', () => {
   let mockConvertedTargetNode: Node;
   let mockConvertedSourcePort: Port;
   let mockConvertedTargetPort: Port;
+
 
   const createMapNode = (overrides: Partial<MapNode> = {}): MapNode => ({
     id: 'node1',
@@ -85,6 +90,8 @@ describe('LinkCreatedComponent', () => {
   });
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     linkCreatedEmitter = new EventEmitter<MapLinkCreated>();
 
     mockMapNodeToNode = {
@@ -105,6 +112,14 @@ describe('LinkCreatedComponent', () => {
 
     mockProjectService = {
       links: vi.fn().mockReturnValue(of([])),
+    };
+
+    mockToasterService = {
+      error: vi.fn(),
+    };
+
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
     };
 
     mockLinksEventSource = {
@@ -152,6 +167,8 @@ describe('LinkCreatedComponent', () => {
         { provide: LinksDataSource, useValue: mockLinksDataSource },
         { provide: LinkService, useValue: mockLinkService },
         { provide: ProjectService, useValue: mockProjectService },
+        { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -305,19 +322,102 @@ describe('LinkCreatedComponent', () => {
     });
   });
 
+  describe('error handling', () => {
+    it('should display error message when createLink fails with error.error.message', async () => {
+      const errorMessage = 'Cannot get an IP address on same subnet: No common subnet';
+      const mockError = {
+        error: { message: errorMessage },
+      };
+      mockLinkService.createLink.mockReturnValue(throwError(() => mockError));
+
+      // Spy on component's internal cdr
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      component.onLinkCreated(mockLinkCreatedEvent);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith(errorMessage);
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should display error message when createLink fails with err.message', async () => {
+      const errorMessage = 'Network connection failed';
+      const error = new Error(errorMessage);
+      mockLinkService.createLink.mockReturnValue(throwError(() => error));
+
+      // Spy on component's internal cdr
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      component.onLinkCreated(mockLinkCreatedEvent);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith(errorMessage);
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should display fallback error message when error has no message', async () => {
+      const error = {};
+      mockLinkService.createLink.mockReturnValue(throwError(() => error));
+
+      // Spy on component's internal cdr
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      component.onLinkCreated(mockLinkCreatedEvent);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to create link');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should not update linksDataSource when createLink fails', async () => {
+      const error = new Error('Creation failed');
+      mockLinkService.createLink.mockReturnValue(throwError(() => error));
+
+      component.onLinkCreated(mockLinkCreatedEvent);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockLinksDataSource.set).not.toHaveBeenCalled();
+    });
+
+    it('should not call projectService.links when createLink fails', async () => {
+      const error = new Error('Creation failed');
+      mockLinkService.createLink.mockReturnValue(throwError(() => error));
+
+      component.onLinkCreated(mockLinkCreatedEvent);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockProjectService.links).not.toHaveBeenCalled();
+    });
+  });
+
   describe('ngOnDestroy', () => {
     it('should unsubscribe from linksEventSource.created when component is destroyed', () => {
-      const unsubscribeSpy = vi.fn();
-      const originalSubscribe = mockLinksEventSource.created.subscribe;
-      mockLinksEventSource.created.subscribe = vi.fn().mockReturnValue({
-        unsubscribe: unsubscribeSpy,
-      });
-
       const testComponent = fixture.componentInstance;
       testComponent.ngOnInit();
+
+      const unsubscribeSpy = vi.spyOn(testComponent['linkCreated'], 'unsubscribe');
+
       testComponent.ngOnDestroy();
 
       expect(unsubscribeSpy).toHaveBeenCalled();
+    });
+
+    it('should not throw error if ngOnDestroy is called before ngOnInit', () => {
+      const testComponent = fixture.componentInstance;
+
+      expect(() => {
+        testComponent.ngOnDestroy();
+      }).not.toThrow();
     });
   });
 });

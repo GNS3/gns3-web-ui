@@ -223,6 +223,44 @@ Other test files calling `vi.unstubAllGlobals()` may clear your stubs.
 beforeEach(() => { vi.stubGlobal('WebSocket', MockWebSocket); });
 ```
 
+### 7. Testing inject() Dependencies
+
+When components use Angular's `inject()` function, spy on the component's internal instance, NOT the mocked provider.
+
+```typescript
+// ❌ WRONG - spying on mock provider won't work
+const mockChangeDetectorRef = { markForCheck: vi.fn() };
+TestBed.configureTestingModule({
+  providers: [
+    { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef }
+  ],
+});
+// ... later in test
+expect(mockChangeDetectorRef.markForCheck).toHaveBeenCalled(); // ❌ Fails - instance is different!
+
+// ✅ RIGHT - spy on component's internal instance
+const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+expect(cdrSpy).toHaveBeenCalled(); // ✅ Passes
+```
+
+**Why**: `inject()` creates a new instance in the component, separate from the mock provided to TestBed. The mock is used for dependency injection, but the component holds its own reference.
+
+**Common pattern with error handling**:
+
+```typescript
+it('should call markForCheck after error', async () => {
+  mockService.method.mockReturnValue(throwError(() => new Error('test')));
+
+  // Spy on component's internal instance
+  const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+  component.methodThatFails();
+  await vi.runAllTimersAsync();
+
+  expect(cdrSpy).toHaveBeenCalled(); // ✅ Works!
+});
+```
+
 ---
 
 ## Lifecycle Hooks Quick Reference
@@ -277,7 +315,8 @@ beforeEach(() => { vi.stubGlobal('WebSocket', MockWebSocket); });
 - `src/app/components/template/template.component.spec.ts` — 32 tests passing
 - `src/app/services/xterm.service.spec.ts` — 39 tests passing
 - `src/app/services/notification.service.spec.ts` — 16 tests passing (global stub pattern)
+- `src/app/components/project-map/context-menu/actions/stop-node-action/stop-node-action.component.spec.ts` — error handling with inject() pattern
 
 ---
 
-**Last Updated**: 2026-04-04
+**Last Updated**: 2026-04-23
