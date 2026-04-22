@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapNodeToNodeConverter } from '../../../cartography/converters/map/map-node-to-node-converter';
 import { MapPortToPortConverter } from '../../../cartography/converters/map/map-port-to-port-converter';
@@ -10,6 +10,7 @@ import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { LinkService } from '@services/link.service';
 import { ProjectService } from '@services/project.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-link-created',
@@ -29,6 +30,8 @@ export class LinkCreatedComponent implements OnInit, OnDestroy {
   private linksEventSource = inject(LinksEventSource);
   private mapNodeToNode = inject(MapNodeToNodeConverter);
   private mapPortToPort = inject(MapPortToPortConverter);
+  private toasterService = inject(ToasterService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit() {
     this.linkCreated = this.linksEventSource.created.subscribe((evt) => this.onLinkCreated(evt));
@@ -97,10 +100,17 @@ export class LinkCreatedComponent implements OnInit, OnDestroy {
         xLabelTargetNode,
         yLabelTargetNode
       )
-      .subscribe(() => {
-        this.projectService.links(this.controller(), this.project.project_id).subscribe((links: Link[]) => {
-          this.linksDataSource.set(links);
-        });
+      .subscribe({
+        next: () => {
+          this.projectService.links(this.controller(), this.project.project_id).subscribe((links: Link[]) => {
+            this.linksDataSource.set(links);
+          });
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to create link';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
       });
   }
 
