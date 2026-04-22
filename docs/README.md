@@ -63,7 +63,8 @@ docs/
 │   └── window-boundary-service.md
 ├── inventory/                   # ⭐ Codebase inventory
 │   ├── services-by-domain.md   # Service catalog by functional domain (73 services)
-│   └── components-by-feature.md # Component catalog by feature area (249 components)
+│   ├── components-by-feature.md # Component catalog by feature area (249 components)
+│   └── service-dependency-analysis-report.md # Component-to-service dependency analysis with usage heatmap
 ├── known-issues/               # Known issues (won't fix)
 │   └── route-transition-white-flash.md
 ├── testing/                     # Testing documentation
@@ -132,6 +133,7 @@ docs/
 |----------|-------------|
 | [Services by Domain](./inventory/services-by-domain.md) | ⭐ Complete service catalog (73 services) by functional domain |
 | [Components by Feature](./inventory/components-by-feature.md) | ⭐ Complete component catalog (249 components) by feature area |
+| [Service Dependency Analysis](./inventory/service-dependency-analysis-report.md) | ⭐ Component-to-service dependency analysis with usage heatmap (249 components, 69 services) |
 
 ---
 

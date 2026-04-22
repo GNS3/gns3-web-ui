@@ -226,10 +226,43 @@ Miscellaneous utility services.
 
 ### Dependencies
 
+#### Service-to-Service Dependencies
+
 - **HttpController**: Used by 40+ services for HTTP communication
 - **ToasterService**: Used by 10+ services for user notifications
 - **ThemeService**: Used by console and UI services for theming
 - **SettingsService**: Used by settings and configuration services
+
+#### Component-to-Service Dependencies (Usage Heatmap)
+
+**Analysis Summary** (based on 249 components):
+- **Total unique services used by components**: 69
+- **Total service dependencies**: 541
+- **Average dependencies per component**: 2.17
+
+**Top 10 Most Used Services by Components**:
+
+| Rank | Service | Components | Impact Level |
+|------|---------|------------|--------------|
+| 1 | **ToasterService** | 121 (48.6%) | 🔴 Critical - nearly half of all components |
+| 2 | **ControllerService** | 62 (24.9%) | 🔴 Critical - core communication layer |
+| 3 | **NodeService** | 45 (18.1%) | 🔴 Critical - central to node operations |
+| 4 | **ThemeService** | 17 (6.8%) | 🟡 High - UI theming |
+| 5 | **ProjectService** | 16 (6.4%) | 🟡 High - project management |
+| 6 | **DialogConfigService** | 16 (6.4%) | 🟡 High - dialog configuration |
+| 7 | **LinkService** | 15 (6.0%) | 🟡 High - link management |
+| 8 | **DrawingService** | 15 (6.0%) | 🟡 High - drawing operations |
+| 9 | **ComputeService** | 13 (5.2%) | 🟡 High - compute node management |
+| 10 | **ProgressService** | 12 (4.8%) | 🟡 High - progress tracking |
+
+**Impact Assessment**:
+- 🔴 **Critical services** (>20 components): 3 services - Changes require extensive testing
+- 🟡 **High-impact services** (10-19 components): 7 services - Changes affect multiple features
+- 🟢 **Medium-impact services** (5-9 components): 14 services - Moderate testing needed
+- 🔵 **Low-impact services** (2-4 components): 36 services - Minimal testing needed
+- ⚪ **Single-use services** (1 component): 9 services - May need refactoring
+
+> 📊 **Full analysis report**: See [`service-dependency-analysis-report.md`](./service-dependency-analysis-report.md) for complete statistics including all 69 services and their component references.
 
 ### Framework Compatibility
 
