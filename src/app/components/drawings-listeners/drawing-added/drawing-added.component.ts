@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -21,6 +22,7 @@ import { Drawing } from '../../../cartography/models/drawing';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-drawing-added',
@@ -41,6 +43,8 @@ export class DrawingAddedComponent implements OnInit, OnDestroy, OnChanges {
   private drawingsEventSource = inject(DrawingsEventSource);
   private drawingsFactory = inject(DefaultDrawingsFactory);
   private mapDrawingToSvgConverter = inject(MapDrawingToSvgConverter);
+  private toasterService = inject(ToasterService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit() {
     this.pointToAddSelected = this.drawingsEventSource.pointToAddSelected.subscribe((evt) => this.onDrawingSaved(evt));
@@ -69,9 +73,16 @@ export class DrawingAddedComponent implements OnInit, OnDestroy, OnChanges {
 
     this.drawingService
       .add(this.controller(), this.project.project_id, evt.x, evt.y, svgText)
-      .subscribe((controllerDrawing: Drawing) => {
-        this.drawingsDataSource.add(controllerDrawing);
-        this.drawingSaved.emit(true);
+      .subscribe({
+        next: (controllerDrawing: Drawing) => {
+          this.drawingsDataSource.add(controllerDrawing);
+          this.drawingSaved.emit(true);
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to create drawing';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
       });
   }
 

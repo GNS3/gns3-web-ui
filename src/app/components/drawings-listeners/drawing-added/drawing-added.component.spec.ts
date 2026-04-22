@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChangeDetectorRef } from '@angular/core';
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { DrawingAddedComponent } from './drawing-added.component';
 import { DrawingService } from '@services/drawing.service';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
@@ -11,6 +11,7 @@ import { AddedDataEvent } from '../../../cartography/events/event-source';
 import { Drawing } from '../../../cartography/models/drawing';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
+import { ToasterService } from '@services/toaster.service';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('DrawingAddedComponent', () => {
@@ -22,6 +23,7 @@ describe('DrawingAddedComponent', () => {
   let mockDrawingsEventSource: any;
   let mockDrawingsFactory: any;
   let mockMapDrawingToSvgConverter: any;
+  let mockToasterService: any;
   let mockChangeDetectorRef: any;
 
   let pointToAddSelected$ = new Subject<AddedDataEvent>();
@@ -31,6 +33,8 @@ describe('DrawingAddedComponent', () => {
   let mockDrawing: Drawing;
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockDrawingService = {
       add: vi.fn().mockReturnValue(of(mockDrawing)),
     };
@@ -52,6 +56,10 @@ describe('DrawingAddedComponent', () => {
 
     mockMapDrawingToSvgConverter = {
       convert: vi.fn().mockReturnValue('<svg>test</svg>'),
+    };
+
+    mockToasterService = {
+      error: vi.fn(),
     };
 
     mockChangeDetectorRef = {
@@ -112,6 +120,7 @@ describe('DrawingAddedComponent', () => {
         { provide: DrawingsEventSource, useValue: mockDrawingsEventSource },
         { provide: DefaultDrawingsFactory, useValue: mockDrawingsFactory },
         { provide: MapDrawingToSvgConverter, useValue: mockMapDrawingToSvgConverter },
+        { provide: ToasterService, useValue: mockToasterService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
@@ -243,6 +252,129 @@ describe('DrawingAddedComponent', () => {
 
       expect(drawingSavedSpy).toHaveBeenCalledWith(true);
     });
+
+    it('should skip drawing creation when selectedDrawing is curve', () => {
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.componentRef.setInput('project', mockProject);
+      component.selectedDrawing = 'curve';
+      fixture.detectChanges();
+
+      const event = new AddedDataEvent(100, 200);
+      component.onDrawingSaved(event);
+
+      expect(mockDrawingsFactory.getDrawingMock).not.toHaveBeenCalled();
+      expect(mockDrawingService.add).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('error handling', () => {
+    it('should display error message when add fails with error.error.message', async () => {
+      const errorMessage = 'Failed to create drawing: insufficient space';
+      const mockError = {
+        error: { message: errorMessage },
+      };
+      mockDrawingService.add.mockReturnValue(throwError(() => mockError));
+
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.componentRef.setInput('project', mockProject);
+      component.selectedDrawing = 'rectangle';
+      fixture.detectChanges();
+
+      // Spy on component's internal cdr
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      const event = new AddedDataEvent(100, 200);
+      component.onDrawingSaved(event);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith(errorMessage);
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should display error message when add fails with err.message', async () => {
+      const errorMessage = 'Network connection failed';
+      const error = new Error(errorMessage);
+      mockDrawingService.add.mockReturnValue(throwError(() => error));
+
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.componentRef.setInput('project', mockProject);
+      component.selectedDrawing = 'rectangle';
+      fixture.detectChanges();
+
+      // Spy on component's internal cdr
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      const event = new AddedDataEvent(100, 200);
+      component.onDrawingSaved(event);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith(errorMessage);
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should display fallback error message when error has no message', async () => {
+      const error = {};
+      mockDrawingService.add.mockReturnValue(throwError(() => error));
+
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.componentRef.setInput('project', mockProject);
+      component.selectedDrawing = 'rectangle';
+      fixture.detectChanges();
+
+      // Spy on component's internal cdr
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      const event = new AddedDataEvent(100, 200);
+      component.onDrawingSaved(event);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to create drawing');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should not add drawing to data source when add fails', async () => {
+      const error = new Error('Creation failed');
+      mockDrawingService.add.mockReturnValue(throwError(() => error));
+
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.componentRef.setInput('project', mockProject);
+      component.selectedDrawing = 'rectangle';
+      fixture.detectChanges();
+
+      const event = new AddedDataEvent(100, 200);
+      component.onDrawingSaved(event);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockDrawingsDataSource.add).not.toHaveBeenCalled();
+    });
+
+    it('should not emit drawingSaved event when add fails', async () => {
+      const error = new Error('Creation failed');
+      mockDrawingService.add.mockReturnValue(throwError(() => error));
+
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.componentRef.setInput('project', mockProject);
+      component.selectedDrawing = 'rectangle';
+      fixture.detectChanges();
+
+      const drawingSavedSpy = vi.spyOn(component.drawingSaved, 'emit');
+
+      const event = new AddedDataEvent(100, 200);
+      component.onDrawingSaved(event);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(drawingSavedSpy).not.toHaveBeenCalled();
+    });
   });
 
   describe('ngOnDestroy', () => {
@@ -252,12 +384,30 @@ describe('DrawingAddedComponent', () => {
       component.selectedDrawing = 'rectangle';
       fixture.detectChanges();
 
-      if (fixture) {
-        fixture.destroy();
-      }
+      const unsubscribeSpy = vi.spyOn(component['pointToAddSelected'], 'unsubscribe');
 
-      // If subscription is not cleaned up, this would cause an error
+      component.ngOnDestroy();
+
+      expect(unsubscribeSpy).toHaveBeenCalled();
+    });
+
+    it('should not call drawingService.add after component is destroyed', async () => {
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.componentRef.setInput('project', mockProject);
+      component.selectedDrawing = 'rectangle';
+      fixture.detectChanges();
+
+      // Destroy the component
+      component.ngOnDestroy();
+
+      // Clear previous calls
+      vi.clearAllMocks();
+      mockDrawingService.add.mockClear();
+
+      // Emit event after destruction - should not trigger service call
       pointToAddSelected$.next(new AddedDataEvent(100, 200));
+      await vi.runAllTimersAsync();
+
       expect(mockDrawingService.add).not.toHaveBeenCalled();
     });
   });
