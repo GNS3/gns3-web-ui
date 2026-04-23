@@ -12,6 +12,7 @@ import { Controller } from '@models/controller';
 import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-direct-link',
@@ -36,6 +37,7 @@ export class DirectLinkComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private toasterService = inject(ToasterService);
+  private cdr = inject(ChangeDetectorRef);
 
   readonly controllerOptionsVisibility = signal(false);
   public controllerIp;
@@ -74,15 +76,22 @@ export class DirectLinkComponent implements OnInit {
     this.controllerPort = +this.route.snapshot.paramMap.get('controller_port');
     this.projectId = this.route.snapshot.paramMap.get('project_id');
 
-    const controllers = await this.controllerService.findAll();
-    const controller = controllers.filter(
-      (controller) => controller.host === this.controllerIp && controller.port === this.controllerPort
-    )[0];
+    try {
+      const controllers = await this.controllerService.findAll();
+      const controller = controllers.filter(
+        (controller) => controller.host === this.controllerIp && controller.port === this.controllerPort
+      )[0];
 
-    if (controller) {
-      this.router.navigate(['/controller', controller.id, 'project', this.projectId]);
-    } else {
-      this.controllerOptionsVisibility.set(true);
+      if (controller) {
+        this.router.navigate(['/controller', controller.id, 'project', this.projectId]);
+      } else {
+        this.controllerOptionsVisibility.set(true);
+        this.cdr.markForCheck();
+      }
+    } catch (err) {
+      const message = err.error?.message || err.message || 'Failed to load controllers';
+      this.toasterService.error(message);
+      this.cdr.markForCheck();
     }
   }
 
@@ -104,8 +113,15 @@ export class DirectLinkComponent implements OnInit {
     controllerToAdd.location = this.controllerForm.get('location').value;
     controllerToAdd.protocol = this.controllerForm.get('protocol').value;
 
-    this.controllerService.create(controllerToAdd).then((addedController: Controller) => {
-      this.router.navigate(['/controller', addedController.id, 'project', this.projectId]);
-    });
+    this.controllerService.create(controllerToAdd).then(
+      (addedController: Controller) => {
+        this.router.navigate(['/controller', addedController.id, 'project', this.projectId]);
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to create controller';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      }
+    );
   }
 }
