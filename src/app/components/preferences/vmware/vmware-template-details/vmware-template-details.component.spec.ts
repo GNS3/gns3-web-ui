@@ -242,13 +242,13 @@ describe('VmwareTemplateDetailsComponent', () => {
   it('should handle save error', () => {
     mockVmwareService.saveTemplate.mockReturnValue({
       subscribe: (handlers: any) => {
-        handlers.error({ message: 'Save failed' });
+        handlers.error({ error: { message: 'Save failed' } });
       },
     });
 
     fixture.componentInstance.onSave();
 
-    expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Failed to save template'));
+    expect(mockToasterService.error).toHaveBeenCalledWith('Save failed');
   });
 
   it('should add a tag when addTag is called with valid value', () => {
@@ -334,5 +334,71 @@ describe('VmwareTemplateDetailsComponent', () => {
     expect(mockVmwareConfigurationService.getCategories).toHaveBeenCalled();
     expect(mockVmwareConfigurationService.getOnCloseoptions).toHaveBeenCalled();
     expect(mockVmwareConfigurationService.getNetworkTypes).toHaveBeenCalled();
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(VmwareTemplateDetailsComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(VmwareTemplateDetailsComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when getTemplate fails', async () => {
+      mockVmwareService.getTemplate.mockReturnValue({
+        subscribe: (handlers: any) => {
+          handlers.error({ error: { message: 'Template error' } });
+        },
+      });
+
+      fixture = TestBed.createComponent(VmwareTemplateDetailsComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Template error');
+    });
+
+    it('should use fallback message when getTemplate error has no message', async () => {
+      mockVmwareService.getTemplate.mockReturnValue({
+        subscribe: (handlers: any) => {
+          handlers.error({});
+        },
+      });
+
+      fixture = TestBed.createComponent(VmwareTemplateDetailsComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load VMware template');
+    });
+
+    it('should use fallback message when saveTemplate error has no message', () => {
+      mockVmwareService.saveTemplate.mockReturnValue({
+        subscribe: (handlers: any) => {
+          handlers.error({});
+        },
+      });
+
+      fixture.componentInstance.onSave();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to save VMware template');
+    });
   });
 });
