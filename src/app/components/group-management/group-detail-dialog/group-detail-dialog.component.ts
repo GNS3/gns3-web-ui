@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Inject, OnInit, inject, signal, computed, model } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnInit, inject, signal, computed, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UntypedFormControl, UntypedFormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
@@ -63,6 +63,7 @@ export class GroupDetailDialogComponent implements OnInit {
   private aclService = inject(AclService);
   private roleService = inject(RoleService);
   private toastService = inject(ToasterService);
+  private cd = inject(ChangeDetectorRef);
 
   group: Group;
   controller: Controller;
@@ -99,35 +100,54 @@ export class GroupDetailDialogComponent implements OnInit {
         this.members.set(
           members.sort((a: User, b: User) => a.username.toLowerCase().localeCompare(b.username.toLowerCase()))
         );
-        // No need for markForCheck() with signals - they automatically trigger updates
+        this.cd.markForCheck();
       },
-      error: (error) => {
-        console.error('Failed to load members:', error);
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load members';
+        this.toastService.error(message);
+        this.cd.markForCheck();
       },
     });
   }
 
   loadAces(): void {
-    this.roleService.get(this.controller).subscribe((roles: Role[]) => {
-      this.aclService.getEndpoints(this.controller).subscribe((endps: Endpoint[]) => {
-        this.aclService.list(this.controller).subscribe({
-          next: (allAces: ACE[]) => {
-            // Filter ACEs for this group
-            const groupAces = allAces.filter(
-              (ace: ACE) => ace.ace_type === 'group' && ace.group_id === this.group.user_group_id
-            );
-            this.aces = groupAces.map((ace: ACE) => {
-              const endpoint = endps.filter((endp: Endpoint) => endp.endpoint === ace.path)[0];
-              const role = roles.filter((r: Role) => r.role_id === ace.role_id)[0];
-              return { ...ace, endpoint_name: endpoint?.name || ace.path, role_name: role?.name || 'Unknown' };
+    this.roleService.get(this.controller).subscribe({
+      next: (roles: Role[]) => {
+        this.aclService.getEndpoints(this.controller).subscribe({
+          next: (endps: Endpoint[]) => {
+            this.aclService.list(this.controller).subscribe({
+              next: (allAces: ACE[]) => {
+                // Filter ACEs for this group
+                const groupAces = allAces.filter(
+                  (ace: ACE) => ace.ace_type === 'group' && ace.group_id === this.group.user_group_id
+                );
+                this.aces = groupAces.map((ace: ACE) => {
+                  const endpoint = endps.filter((endp: Endpoint) => endp.endpoint === ace.path)[0];
+                  const role = roles.filter((r: Role) => r.role_id === ace.role_id)[0];
+                  return { ...ace, endpoint_name: endpoint?.name || ace.path, role_name: role?.name || 'Unknown' };
+                });
+                this.aceDatasource.data = this.aces;
+                this.cd.markForCheck();
+              },
+              error: (err) => {
+                const message = err.error?.message || err.message || 'Failed to load ACEs';
+                this.toastService.error(message);
+                this.cd.markForCheck();
+              },
             });
-            this.aceDatasource.data = this.aces;
           },
-          error: (error) => {
-            console.error('Failed to load ACEs:', error);
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load endpoints';
+            this.toastService.error(message);
+            this.cd.markForCheck();
           },
         });
-      });
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load roles';
+        this.toastService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -140,8 +160,10 @@ export class GroupDetailDialogComponent implements OnInit {
         this.group.name = updatedGroup.name;
         this.toastService.success('Group updated successfully');
       },
-      error: (error) => {
-        this.toastService.error('Cannot update group: ' + error);
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to update group';
+        this.toastService.error(message);
+        this.cd.markForCheck();
       },
     });
   }
@@ -178,8 +200,10 @@ export class GroupDetailDialogComponent implements OnInit {
               this.toastService.success(`User ${user.username} was removed`);
               this.loadMembers();
             },
-            error: (error) => {
-              this.toastService.error(`Error while removing user: ${error}`);
+            error: (err) => {
+              const message = err.error?.message || err.message || 'Failed to remove user';
+              this.toastService.error(message);
+              this.cd.markForCheck();
             },
           });
         }
