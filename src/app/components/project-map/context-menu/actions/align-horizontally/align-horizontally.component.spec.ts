@@ -260,7 +260,7 @@ describe('AlignHorizontallyActionComponent', () => {
       expect(mockNodeService.update).not.toHaveBeenCalled();
     });
 
-    it('should show error toaster when nodeService.update fails with error.error.message', () => {
+    it('should show error toaster when nodeService.update fails with error.error.message', async () => {
       mockNodeService.update.mockReturnValue(
         throwError(() => ({ error: { message: 'Update failed' } }))
       );
@@ -269,22 +269,24 @@ describe('AlignHorizontallyActionComponent', () => {
       fixture.componentRef.setInput('controller', createMockController());
 
       component.alignHorizontally();
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Update failed');
     });
 
-    it('should use fallback message when error has no message', () => {
+    it('should use fallback message when error has no message', async () => {
       mockNodeService.update.mockReturnValue(throwError(() => ({})));
       const node = createMockNode({ y: 100 });
       fixture.componentRef.setInput('nodes', [node]);
       fixture.componentRef.setInput('controller', createMockController());
 
       component.alignHorizontally();
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to align node');
     });
 
-    it('should call markForCheck when nodeService.update fails', () => {
+    it('should call markForCheck when nodeService.update fails', async () => {
       mockNodeService.update.mockReturnValue(
         throwError(() => ({ error: { message: 'Update failed' } }))
       );
@@ -292,9 +294,11 @@ describe('AlignHorizontallyActionComponent', () => {
       fixture.componentRef.setInput('nodes', [node]);
       fixture.componentRef.setInput('controller', createMockController());
 
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
       component.alignHorizontally();
+      await vi.runAllTimersAsync();
 
-      expect(mockCdr.markForCheck).toHaveBeenCalled();
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });
