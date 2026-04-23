@@ -1,3 +1,4 @@
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of, throwError } from 'rxjs';
@@ -27,6 +28,7 @@ describe('GroupManagementComponent', () => {
   let mockControllerService: any;
   let mockToasterService: any;
   let mockDialog: any;
+  let mockChangeDetectorRef: any;
 
   const mockController: Controller = {
     id: 1,
@@ -86,6 +88,10 @@ describe('GroupManagementComponent', () => {
       error: vi.fn(),
     };
 
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [
         GroupManagementComponent,
@@ -108,6 +114,7 @@ describe('GroupManagementComponent', () => {
         { provide: ToasterService, useValue: mockToasterService },
         { provide: MatDialog, useValue: mockDialog },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -238,6 +245,56 @@ describe('GroupManagementComponent', () => {
   describe('openGroupAiProfileDialog', () => {
     it('should be defined', () => {
       expect(component.openGroupAiProfileDialog).toBeDefined();
+    });
+  });
+
+  describe('ngOnInit error handling', () => {
+    it('should display error when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller not found' } });
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.ngOnInit();
+
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller not found');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should use fallback error message when no message available', async () => {
+      mockControllerService.get.mockRejectedValue({ code: 'INTERNAL_ERROR' });
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.ngOnInit();
+
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('refresh error handling', () => {
+    it('should display error when getGroups fails', () => {
+      component.controller = mockController;
+      mockGroupService.getGroups.mockReturnValue(throwError(() => ({ error: { message: 'Load failed' } })));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.refresh();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Load failed');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should use fallback error message when getGroups fails with no message', () => {
+      component.controller = mockController;
+      mockGroupService.getGroups.mockReturnValue(throwError(() => ({})));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.refresh();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load groups');
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });
