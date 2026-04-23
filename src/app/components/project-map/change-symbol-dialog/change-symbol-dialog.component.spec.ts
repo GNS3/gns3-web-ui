@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Component, EventEmitter, input } from '@angular/core';
+import { Component, EventEmitter, input, ChangeDetectorRef } from '@angular/core';
 import { ChangeSymbolDialogComponent } from './change-symbol-dialog.component';
 import { Node } from '../../../cartography/models/node';
 import { Controller } from '@models/controller';

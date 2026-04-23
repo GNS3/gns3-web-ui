@@ -313,7 +313,7 @@ describe('UserManagementComponent', () => {
 
     it('should show error when delete fails with error.error.message', () => {
       const users = [createMockUser({ user_id: 'user-1' })];
-      component.selection.setSelection(users);
+      (component.selection as any).setSelection(users);
       mockDialogRef.afterClosed.mockReturnValue(of(true));
       (mockUserService.delete as any).mockReturnValue(
         throwError(() => ({ error: { message: 'Delete failed' } }))
@@ -326,7 +326,7 @@ describe('UserManagementComponent', () => {
 
     it('should use fallback message when delete error has no message', () => {
       const users = [createMockUser({ user_id: 'user-1' })];
-      component.selection.setSelection(users);
+      (component.selection as any).setSelection(users);
       mockDialogRef.afterClosed.mockReturnValue(of(true));
       (mockUserService.delete as any).mockReturnValue(throwError(() => ({})));
 
