@@ -9,7 +9,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('IdlePCDialogComponent', () => {
@@ -82,6 +82,8 @@ describe('IdlePCDialogComponent', () => {
   });
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockController = {
       id: 1,
       name: 'Test Controller',
@@ -128,12 +130,13 @@ describe('IdlePCDialogComponent', () => {
     };
 
     mockNodeService = {
-      getIdlePCProposals: vi.fn(),
-      updateNode: vi.fn(),
+      getIdlePCProposals: vi.fn().mockReturnValue(of([])),
+      updateNode: vi.fn().mockReturnValue(of({})),
     };
 
     mockToasterService = {
       success: vi.fn(),
+      error: vi.fn(),
     };
 
     mockDialogRef = {
@@ -271,6 +274,38 @@ describe('IdlePCDialogComponent', () => {
 
       expect(component.isComputing).toBe(false);
     });
+
+    it('should show error toast when getIdlePCProposals fails', async () => {
+      mockNodeService.getIdlePCProposals.mockReturnValue(
+        throwError(() => ({ error: { message: 'Failed to get proposals' } }))
+      );
+
+      component.onCompute();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to get proposals');
+    });
+
+    it('should use fallback message when getIdlePCProposals error has no message', async () => {
+      mockNodeService.getIdlePCProposals.mockReturnValue(throwError(() => ({})));
+
+      component.onCompute();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to compute idle-PC proposals');
+    });
+
+    it('should call markForCheck when getIdlePCProposals fails', async () => {
+      mockNodeService.getIdlePCProposals.mockReturnValue(
+        throwError(() => ({ error: { message: 'Failed' } }))
+      );
+
+      const cdrSpy = vi.spyOn(fixture.componentInstance['cd'], 'markForCheck');
+      component.onCompute();
+      await vi.runAllTimersAsync();
+
+      expect(cdrSpy).toHaveBeenCalled();
+    });
   });
 
   describe('onClose', () => {
@@ -327,6 +362,30 @@ describe('IdlePCDialogComponent', () => {
       expect(mockToasterService.success).toHaveBeenCalledWith(
         `Node ${mockNode.name} updated with idle-PC value 0x60c09aa0`
       );
+    });
+
+    it('should show error toast when updateNode fails', async () => {
+      component.idlePC.set('0x60c09aa0');
+      mockNodeService.updateNode.mockReturnValue(
+        throwError(() => ({ error: { message: 'Update failed' } }))
+      );
+
+      const cdrSpy = vi.spyOn(fixture.componentInstance['cd'], 'markForCheck');
+      component.onApply();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Update failed');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should use fallback message when updateNode error has no message', async () => {
+      component.idlePC.set('0x60c09aa0');
+      mockNodeService.updateNode.mockReturnValue(throwError(() => ({})));
+
+      component.onApply();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update node with idle-PC value');
     });
   });
 });

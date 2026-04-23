@@ -42,26 +42,34 @@ export class IdlePCDialogComponent implements OnInit {
 
   onCompute() {
     this.isComputing = true;
-    this.nodeService.getIdlePCProposals(this.controller, this.node).subscribe((idlepcs: any) => {
-      let idlepcs_values = [];
-      for (let value of idlepcs) {
-        // validate idle-pc format, e.g. 0x60c09aa0
-        const match = value.match(/^(0x[0-9a-f]{8})\s+\[(\d+)\]$/);
-        if (match) {
-          const idlepc = match[1];
-          const count = parseInt(match[2], 10);
-          if (50 <= count && count <= 60) {
-            value += '*';
+    this.nodeService.getIdlePCProposals(this.controller, this.node).subscribe({
+      next: (idlepcs: any) => {
+        let idlepcs_values = [];
+        for (let value of idlepcs) {
+          // validate idle-pc format, e.g. 0x60c09aa0
+          const match = value.match(/^(0x[0-9a-f]{8})\s+\[(\d+)\]$/);
+          if (match) {
+            const idlepc = match[1];
+            const count = parseInt(match[2], 10);
+            if (50 <= count && count <= 60) {
+              value += '*';
+            }
+            idlepcs_values.push({ key: idlepc, name: value });
           }
-          idlepcs_values.push({ key: idlepc, name: value });
         }
-      }
-      this.idlepcs = idlepcs_values;
-      if (this.idlepcs.length > 0) {
-        this.idlePC.set(this.idlepcs[0].key);
-      }
-      this.isComputing = false;
-      this.cd.markForCheck();
+        this.idlepcs = idlepcs_values;
+        if (this.idlepcs.length > 0) {
+          this.idlePC.set(this.idlepcs[0].key);
+        }
+        this.isComputing = false;
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to compute idle-PC proposals';
+        this.toasterService.error(message);
+        this.isComputing = false;
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -72,9 +80,16 @@ export class IdlePCDialogComponent implements OnInit {
   onApply() {
     if (this.idlePC() && this.idlePC() !== '0x0') {
       this.node.properties.idlepc = this.idlePC();
-      this.nodeService.updateNode(this.controller, this.node).subscribe(() => {
-        this.toasterService.success(`Node ${this.node.name} updated with idle-PC value ${this.idlePC()}`);
-        this.cd.markForCheck();
+      this.nodeService.updateNode(this.controller, this.node).subscribe({
+        next: () => {
+          this.toasterService.success(`Node ${this.node.name} updated with idle-PC value ${this.idlePC()}`);
+          this.cd.markForCheck();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to update node with idle-PC value';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        },
       });
     }
   }
