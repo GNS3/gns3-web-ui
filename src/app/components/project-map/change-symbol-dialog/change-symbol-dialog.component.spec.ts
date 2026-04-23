@@ -5,7 +5,9 @@ import { ChangeSymbolDialogComponent } from './change-symbol-dialog.component';
 import { Node } from '../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { of, throwError } from 'rxjs';
 
 // Mock SymbolsComponent to avoid complex dependencies
 @Component({
@@ -24,6 +26,8 @@ describe('ChangeSymbolDialogComponent', () => {
   let fixture: ComponentFixture<ChangeSymbolDialogComponent>;
   let mockDialogRef: any;
   let mockNodeService: any;
+  let mockToasterService: any;
+  let mockCdr: any;
   let mockController: Controller;
   let mockNode: Node;
 
@@ -33,7 +37,16 @@ describe('ChangeSymbolDialogComponent', () => {
     };
 
     mockNodeService = {
-      updateSymbol: vi.fn().mockReturnValue({ subscribe: (fn: () => void) => fn() }),
+      updateSymbol: vi.fn().mockReturnValue(of(undefined)),
+    };
+
+    mockToasterService = {
+      success: vi.fn(),
+      error: vi.fn(),
+    };
+
+    mockCdr = {
+      markForCheck: vi.fn(),
     };
 
     mockController = {
@@ -146,6 +159,8 @@ describe('ChangeSymbolDialogComponent', () => {
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: NodeService, useValue: mockNodeService },
+        { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: mockCdr },
       ],
     })
       .overrideComponent(ChangeSymbolDialogComponent, {
@@ -226,6 +241,48 @@ describe('ChangeSymbolDialogComponent', () => {
       component.onSelectClick();
 
       expect(mockDialogRef.close).toHaveBeenCalled();
+    });
+
+    it('should show error toast when update fails with error.error.message', () => {
+      mockNodeService.updateSymbol.mockReturnValue(
+        throwError(() => ({ error: { message: 'Symbol update failed' } }))
+      );
+      component.ngOnInit();
+
+      component.onSelectClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Symbol update failed');
+    });
+
+    it('should use fallback message when error has no message', () => {
+      mockNodeService.updateSymbol.mockReturnValue(throwError(() => ({})));
+      component.ngOnInit();
+
+      component.onSelectClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update symbol');
+    });
+
+    it('should call markForCheck when update fails', () => {
+      mockNodeService.updateSymbol.mockReturnValue(
+        throwError(() => ({ error: { message: 'Failed' } }))
+      );
+      component.ngOnInit();
+
+      component.onSelectClick();
+
+      expect(mockCdr.markForCheck).toHaveBeenCalled();
+    });
+
+    it('should not close dialog when update fails', () => {
+      mockNodeService.updateSymbol.mockReturnValue(
+        throwError(() => ({ error: { message: 'Failed' } }))
+      );
+      component.ngOnInit();
+
+      component.onSelectClick();
+
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 });

@@ -5,6 +5,7 @@ import { Node } from '../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { SymbolsComponent } from '@components/preferences/common/symbols/symbols.component';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   standalone: true,
@@ -17,6 +18,7 @@ import { SymbolsComponent } from '@components/preferences/common/symbols/symbols
 export class ChangeSymbolDialogComponent implements OnInit {
   public dialogRef = inject(MatDialogRef<ChangeSymbolDialogComponent>);
   private nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
   private cd = inject(ChangeDetectorRef);
 
   @Input() controller: Controller;
@@ -38,8 +40,15 @@ export class ChangeSymbolDialogComponent implements OnInit {
   }
 
   onSelectClick() {
-    this.nodeService.updateSymbol(this.controller, this.node, this.symbol).subscribe(() => {
-      this.onCloseClick();
+    this.nodeService.updateSymbol(this.controller, this.node, this.symbol).subscribe({
+      next: () => {
+        this.onCloseClick();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to update symbol';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 }
