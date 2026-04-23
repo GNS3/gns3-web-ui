@@ -207,16 +207,19 @@ describe('LoginComponent', () => {
     expect(mockLoginService.login).toHaveBeenCalled();
   });
 
-  it('should handle login error', () => {
+  it('should handle login error with standardized message', async () => {
     component.loginForm.get('username')?.setValue('admin');
     component.loginForm.get('password')?.setValue('wrong');
 
-    mockLoginService.login = vi.fn().mockReturnValue(throwError(() => new Error('Login failed')));
+    mockLoginService.login = vi.fn().mockReturnValue(throwError(() => ({ error: { message: 'Invalid credentials' } })));
 
     component.login();
 
-    // The error handler should set isLoading to false
+    await vi.runAllTimersAsync();
+
+    // The error handler should set isLoading to false and display standardized message
     expect(component.isLoading()).toBe(false);
+    expect(mockToasterService.error).toHaveBeenCalledWith('Invalid credentials');
   });
 
   it('should have currentYear as number', () => {
