@@ -186,6 +186,34 @@ describe('EditControllerDialogComponent', () => {
       expect(mockControllerService.update).toHaveBeenCalled();
       expect(mockDialogRef.close).toHaveBeenCalled();
     });
+
+    it('should display error when update fails', async () => {
+      component.ngOnInit();
+      fixture.detectChanges();
+      mockControllerService.update = vi.fn().mockRejectedValue({ error: { message: 'Update failed' } });
+      const markForCheckSpy = vi.spyOn(component['changeDetector'], 'markForCheck');
+
+      component.onSave();
+      await Promise.resolve();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Update failed');
+      expect(markForCheckSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
+
+    it('should display fallback error when update fails with no message', async () => {
+      component.ngOnInit();
+      fixture.detectChanges();
+      mockControllerService.update = vi.fn().mockRejectedValue(new Error('Network error'));
+      const markForCheckSpy = vi.spyOn(component['changeDetector'], 'markForCheck');
+
+      component.onSave();
+      await Promise.resolve();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Network error');
+      expect(markForCheckSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
   });
 
   describe('onCancel', () => {
