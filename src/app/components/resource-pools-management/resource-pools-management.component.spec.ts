@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { ActivatedRoute, RouterModule } from '@angular/router';
@@ -206,6 +206,50 @@ describe('ResourcePoolsManagementComponent', () => {
   describe('onDelete', () => {
     it('should be defined', () => {
       expect(typeof component.onDelete).toBe('function');
+    });
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller failed' } });
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller failed');
+    });
+
+    it('should use fallback message when controller error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when getAll fails', async () => {
+      component.controller = mockController;
+      mockResourcePoolsService.getAll.mockReturnValue(
+        throwError(() => ({ error: { message: 'Get failed' } }))
+      );
+
+      component.refresh();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Get failed');
+    });
+
+    it('should use fallback message when getAll error has no message', async () => {
+      component.controller = mockController;
+      mockResourcePoolsService.getAll.mockReturnValue(throwError(() => ({})));
+
+      component.refresh();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load resource pools');
     });
   });
 });
