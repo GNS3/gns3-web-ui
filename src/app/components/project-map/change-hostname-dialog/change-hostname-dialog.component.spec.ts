@@ -8,6 +8,7 @@ import { Node } from '../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { ChangeDetectorRef } from '@angular/core';
 
 describe('ChangeHostnameDialogComponent', () => {
   let component: ChangeHostnameDialogComponent;
@@ -15,6 +16,7 @@ describe('ChangeHostnameDialogComponent', () => {
   let mockDialogRef: any;
   let mockNodeService: any;
   let mockToasterService: any;
+  let mockCdr: any;
 
   const mockNode: Node = {
     id: 'node-1',
@@ -49,6 +51,7 @@ describe('ChangeHostnameDialogComponent', () => {
     mockDialogRef = { close: vi.fn() };
     mockNodeService = { updateNode: vi.fn() };
     mockToasterService = { success: vi.fn(), error: vi.fn() };
+    mockCdr = { markForCheck: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [ChangeHostnameDialogComponent],
@@ -56,6 +59,7 @@ describe('ChangeHostnameDialogComponent', () => {
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: mockCdr },
       ],
     }).compileComponents();
 
@@ -122,6 +126,28 @@ describe('ChangeHostnameDialogComponent', () => {
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Server error');
       expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
+
+    it('should use fallback message when error has no message', () => {
+      mockNodeService.updateNode.mockReturnValue(throwError(() => ({})));
+      component.ngOnInit();
+      component.inputForm.get('name')?.setValue('NewRouter');
+      fixture.detectChanges();
+
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update node.');
+    });
+
+    it('should call markForCheck when API call fails', () => {
+      mockNodeService.updateNode.mockReturnValue(throwError(() => ({ error: { message: 'Server error' } })));
+      component.ngOnInit();
+      component.inputForm.get('name')?.setValue('NewRouter');
+      fixture.detectChanges();
+
+      component.onSaveClick();
+
+      expect(mockCdr.markForCheck).toHaveBeenCalled();
     });
   });
 

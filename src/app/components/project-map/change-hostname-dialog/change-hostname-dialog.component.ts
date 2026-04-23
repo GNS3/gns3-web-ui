@@ -64,9 +64,10 @@ export class ChangeHostnameDialogComponent implements OnInit {
           this.toasterService.success(`Node ${this.node.name} updated.`);
           this.onCancelClick();
         },
-        error: (error) => {
-          const message = error.error?.message || error.message || 'Failed to update node.';
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to update node.';
           this.toasterService.error(message);
+          this.cd.markForCheck();
         },
       });
     } else {
