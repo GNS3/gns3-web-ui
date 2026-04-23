@@ -5,7 +5,7 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { ConfirmationDeleteAllProjectsComponent } from './confirmation-delete-all-projects.component';
 import { ProjectService } from '@services/project.service';
 import { ToasterService } from '@services/toaster.service';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('ConfirmationDeleteAllProjectsComponent', () => {
   let fixture: ComponentFixture<ConfirmationDeleteAllProjectsComponent>;
@@ -113,6 +113,47 @@ describe('ConfirmationDeleteAllProjectsComponent', () => {
 
       expect(fixture.componentInstance.deleteFliesDetails().length).toBe(2);
       expect(fixture.componentInstance.isUsedFiles()).toBeTruthy();
+    });
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when deleteFile fails with error.message', async () => {
+      mockProjectService.delete.mockReturnValue(
+        throwError(() => ({ error: { message: 'Delete failed' } }))
+      );
+
+      fixture.componentInstance.deleteFile();
+      fixture.detectChanges();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Delete failed');
+    });
+
+    it('should use fallback message when deleteFile error has no message', async () => {
+      mockProjectService.delete.mockReturnValue(throwError(() => ({})));
+
+      fixture.componentInstance.deleteFile();
+      fixture.detectChanges();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to delete projects');
+    });
+
+    it('should call markForCheck when deleteFile fails', async () => {
+      mockProjectService.delete.mockReturnValue(
+        throwError(() => ({ error: { message: 'Delete failed' } }))
+      );
+
+      const cdrSpy = vi.spyOn(fixture.componentInstance['cd'], 'markForCheck');
+      fixture.componentInstance.deleteFile();
+      fixture.detectChanges();
+      await vi.runAllTimersAsync();
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });
