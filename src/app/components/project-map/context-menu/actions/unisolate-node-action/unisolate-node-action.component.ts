@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -16,16 +16,19 @@ import { ToasterService } from '@services/toaster.service';
 export class UnisolateNodeActionComponent {
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
+  private cdr = inject(ChangeDetectorRef);
 
   readonly controller = input<Controller>(undefined);
   readonly node = input<Node>(undefined);
 
   unisolate() {
-    this.nodeService.unisolate(this.controller(), this.node()).subscribe(
-      (n: Node) => {},
-      (error) => {
-        this.toasterService.error(error.error?.message || error.message || 'Failed to unisolate node');
-      }
-    );
+    this.nodeService.unisolate(this.controller(), this.node()).subscribe({
+      next: (n: Node) => {},
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to unisolate node';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      },
+    });
   }
 }

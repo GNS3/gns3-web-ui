@@ -3,6 +3,7 @@ import { of, throwError } from 'rxjs';
 import { UnisolateNodeActionComponent } from './unisolate-node-action.component';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { ChangeDetectorRef } from '@angular/core';
 import { Node, Properties } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -139,7 +140,9 @@ describe('UnisolateNodeActionComponent', () => {
   });
 
   beforeEach(async () => {
-    mockNodeService = { unisolate: vi.fn() };
+    vi.clearAllMocks();
+
+    mockNodeService = { unisolate: vi.fn().mockReturnValue(of({})) };
     mockToasterService = { error: vi.fn() };
 
     await TestBed.configureTestingModule({
@@ -147,6 +150,7 @@ describe('UnisolateNodeActionComponent', () => {
       providers: [
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: { markForCheck: vi.fn() } },
       ],
     }).compileComponents();
 
@@ -191,20 +195,38 @@ describe('UnisolateNodeActionComponent', () => {
       expect(mockToasterService.error).not.toHaveBeenCalled();
     });
 
-    it('should show error toast when unisolate fails', () => {
+    it('should show error toast when unisolate fails', async () => {
+      mockNodeService.unisolate.mockReturnValue(
+        throwError(() => ({ error: { message: 'Unisolate failed' } }))
+      );
       const mockNode = createMockNode();
       const mockController = createMockController();
-      const errorResponse = throwError(() => ({ error: { message: 'Unisolate failed' } }));
-      mockNodeService.unisolate.mockReturnValue(errorResponse);
+
+      fixture.componentRef.setInput('node', mockNode);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      const cdrSpy = vi.spyOn(fixture.componentInstance['cdr'], 'markForCheck');
+      fixture.nativeElement.querySelector('button').click();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Unisolate failed');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should use fallback message when unisolate error has no message', async () => {
+      mockNodeService.unisolate.mockReturnValue(throwError(() => ({})));
+      const mockNode = createMockNode();
+      const mockController = createMockController();
 
       fixture.componentRef.setInput('node', mockNode);
       fixture.componentRef.setInput('controller', mockController);
       fixture.detectChanges();
 
       fixture.nativeElement.querySelector('button').click();
-      fixture.detectChanges();
+      await vi.runAllTimersAsync();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith('Unisolate failed');
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to unisolate node');
     });
   });
 });
