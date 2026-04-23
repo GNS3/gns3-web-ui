@@ -99,40 +99,52 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.cd.markForCheck();
 
-      this.getConfiguration();
-      this.builtInTemplatesService
-        .getTemplate(this.controller, template_id)
-        .subscribe((cloudNodeTemplate: CloudTemplate) => {
-          this.cloudNodeTemplate = cloudNodeTemplate;
+        this.getConfiguration();
+        this.builtInTemplatesService.getTemplate(this.controller, template_id).subscribe({
+          next: (cloudNodeTemplate: CloudTemplate) => {
+            this.cloudNodeTemplate = cloudNodeTemplate;
 
-          if (!this.cloudNodeTemplate.tags) {
-            this.cloudNodeTemplate.tags = [];
-          }
+            if (!this.cloudNodeTemplate.tags) {
+              this.cloudNodeTemplate.tags = [];
+            }
 
-          // Initialize model signals
-          this.name.set(cloudNodeTemplate.name || '');
-          this.defaultNameFormat.set(cloudNodeTemplate.default_name_format || '');
-          this.symbol.set(cloudNodeTemplate.symbol || '');
-          this.category.set(cloudNodeTemplate.category || '');
-          this.consoleType.set(cloudNodeTemplate.remote_console_type || '');
-          this.consoleHost.set(cloudNodeTemplate.remote_console_host || '');
-          this.consolePort.set(cloudNodeTemplate.remote_console_port || 0);
-          this.consoleHttpPath.set(cloudNodeTemplate.remote_console_http_path || '');
-          this.usage.set(cloudNodeTemplate.usage || '');
-          this.tags.set(cloudNodeTemplate.tags || []);
+            // Initialize model signals
+            this.name.set(cloudNodeTemplate.name || '');
+            this.defaultNameFormat.set(cloudNodeTemplate.default_name_format || '');
+            this.symbol.set(cloudNodeTemplate.symbol || '');
+            this.category.set(cloudNodeTemplate.category || '');
+            this.consoleType.set(cloudNodeTemplate.remote_console_type || '');
+            this.consoleHost.set(cloudNodeTemplate.remote_console_host || '');
+            this.consolePort.set(cloudNodeTemplate.remote_console_port || 0);
+            this.consoleHttpPath.set(cloudNodeTemplate.remote_console_http_path || '');
+            this.usage.set(cloudNodeTemplate.usage || '');
+            this.tags.set(cloudNodeTemplate.tags || []);
 
-          this.portsMappingEthernet = this.cloudNodeTemplate.ports_mapping.filter((elem) => elem.type === 'ethernet');
-          this.portsMappingTap = this.cloudNodeTemplate.ports_mapping.filter((elem) => elem.type === 'tap');
-          this.portsMappingUdp = this.cloudNodeTemplate.ports_mapping.filter((elem) => elem.type === 'udp');
-          this.dataSourceUdp = [...this.portsMappingUdp];
+            this.portsMappingEthernet = this.cloudNodeTemplate.ports_mapping.filter((elem) => elem.type === 'ethernet');
+            this.portsMappingTap = this.cloudNodeTemplate.ports_mapping.filter((elem) => elem.type === 'tap');
+            this.portsMappingUdp = this.cloudNodeTemplate.ports_mapping.filter((elem) => elem.type === 'udp');
+            this.dataSourceUdp = [...this.portsMappingUdp];
 
-          this.cd.markForCheck();
+            this.cd.markForCheck();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load template';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
         });
-    });
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   goBack() {
@@ -229,11 +241,17 @@ export class CloudNodesTemplateDetailsComponent implements OnInit {
       ...this.portsMappingUdp,
     ];
 
-    this.builtInTemplatesService
-      .saveTemplate(this.controller, this.cloudNodeTemplate)
-      .subscribe((cloudNodeTemplate: CloudTemplate) => {
+    this.builtInTemplatesService.saveTemplate(this.controller, this.cloudNodeTemplate).subscribe({
+      next: () => {
         this.toasterService.success('Changes saved');
-      });
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to save template';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   chooseSymbol() {
