@@ -122,21 +122,35 @@ export class IosTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
-
-      this.getConfiguration();
-      this.iosService.getTemplate(this.controller, template_id).subscribe((iosTemplate: IosTemplate) => {
-        this.iosTemplate = iosTemplate;
-        if (!this.iosTemplate.tags) {
-          this.iosTemplate.tags = [];
-        }
-        this.fillSlotsData();
-        this.populateForms();
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
         this.cd.markForCheck();
-      });
-    });
+
+        this.getConfiguration();
+        this.iosService.getTemplate(this.controller, template_id).subscribe({
+          next: (iosTemplate: IosTemplate) => {
+            this.iosTemplate = iosTemplate;
+            if (!this.iosTemplate.tags) {
+              this.iosTemplate.tags = [];
+            }
+            this.fillSlotsData();
+            this.populateForms();
+            this.cd.markForCheck();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load template';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
+        });
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   getConfiguration() {
@@ -341,8 +355,15 @@ export class IosTemplateDetailsComponent implements OnInit {
       this.iosTemplate.mmap = this.advancedForm.get('mmap').value;
       this.iosTemplate.sparsemem = this.advancedForm.get('sparsemem').value;
 
-      this.iosService.saveTemplate(this.controller, this.iosTemplate).subscribe((iosTemplate: IosTemplate) => {
-        this.toasterService.success('Changes saved');
+      this.iosService.saveTemplate(this.controller, this.iosTemplate).subscribe({
+        next: (iosTemplate: IosTemplate) => {
+          this.toasterService.success('Changes saved');
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to save template';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        },
       });
     }
   }
