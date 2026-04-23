@@ -243,44 +243,49 @@ describe('ChangeSymbolDialogComponent', () => {
       expect(mockDialogRef.close).toHaveBeenCalled();
     });
 
-    it('should show error toast when update fails with error.error.message', () => {
+    it('should show error toast when update fails with error.error.message', async () => {
       mockNodeService.updateSymbol.mockReturnValue(
         throwError(() => ({ error: { message: 'Symbol update failed' } }))
       );
       component.ngOnInit();
 
       component.onSelectClick();
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Symbol update failed');
     });
 
-    it('should use fallback message when error has no message', () => {
+    it('should use fallback message when error has no message', async () => {
       mockNodeService.updateSymbol.mockReturnValue(throwError(() => ({})));
       component.ngOnInit();
 
       component.onSelectClick();
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update symbol');
     });
 
-    it('should call markForCheck when update fails', () => {
+    it('should call markForCheck when update fails', async () => {
       mockNodeService.updateSymbol.mockReturnValue(
         throwError(() => ({ error: { message: 'Failed' } }))
       );
       component.ngOnInit();
 
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
       component.onSelectClick();
+      await vi.runAllTimersAsync();
 
-      expect(mockCdr.markForCheck).toHaveBeenCalled();
+      expect(cdrSpy).toHaveBeenCalled();
     });
 
-    it('should not close dialog when update fails', () => {
+    it('should not close dialog when update fails', async () => {
       mockNodeService.updateSymbol.mockReturnValue(
         throwError(() => ({ error: { message: 'Failed' } }))
       );
       component.ngOnInit();
 
       component.onSelectClick();
+      await vi.runAllTimersAsync();
 
       expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
