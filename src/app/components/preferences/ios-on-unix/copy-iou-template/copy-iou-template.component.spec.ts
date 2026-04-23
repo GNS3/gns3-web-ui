@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
+import { of, throwError } from 'rxjs';
 import { CopyIouTemplateComponent } from './copy-iou-template.component';
 import { IouService } from '@services/iou.service';
 import { ControllerService } from '@services/controller.service';
@@ -65,20 +66,8 @@ describe('CopyIouTemplateComponent', () => {
 
   beforeEach(async () => {
     mockIouService = {
-      getTemplate: vi.fn().mockReturnValue({
-        subscribe: vi.fn((arg) => {
-          if (typeof arg === 'function') arg(mockIouTemplate);
-          else if (arg?.next) arg.next(mockIouTemplate);
-          return { unsubscribe: vi.fn() };
-        }),
-      }),
-      addTemplate: vi.fn().mockReturnValue({
-        subscribe: vi.fn((arg) => {
-          if (typeof arg === 'function') arg(mockIouTemplate);
-          else if (arg?.next) arg.next(mockIouTemplate);
-          return { unsubscribe: vi.fn() };
-        }),
-      }),
+      getTemplate: vi.fn().mockReturnValue(of(mockIouTemplate)),
+      addTemplate: vi.fn().mockReturnValue(of(mockIouTemplate)),
     };
 
     mockControllerService = {
@@ -164,13 +153,7 @@ describe('CopyIouTemplateComponent', () => {
     component.templateNameForm.get('templateName').setValue('MyCopyTemplate');
     fixture.detectChanges();
 
-    mockIouService.addTemplate.mockReturnValue({
-      subscribe: vi.fn((arg) => {
-        if (typeof arg === 'function') arg(mockIouTemplate);
-        else if (arg?.next) arg.next(mockIouTemplate);
-        return { unsubscribe: vi.fn() };
-      }),
-    });
+    mockIouService.addTemplate.mockReturnValue(of(mockIouTemplate));
 
     component.addTemplate();
 
@@ -184,13 +167,7 @@ describe('CopyIouTemplateComponent', () => {
     component.templateNameForm.get('templateName').setValue('MyCopyTemplate');
     fixture.detectChanges();
 
-    mockIouService.addTemplate.mockReturnValue({
-      subscribe: vi.fn((arg) => {
-        if (typeof arg === 'function') arg(mockIouTemplate);
-        else if (arg?.next) arg.next(mockIouTemplate);
-        return { unsubscribe: vi.fn() };
-      }),
-    });
+    mockIouService.addTemplate.mockReturnValue(of(mockIouTemplate));
 
     component.addTemplate();
 
@@ -199,5 +176,51 @@ describe('CopyIouTemplateComponent', () => {
 
   it('should use OnPush change detection strategy', () => {
     expect(component).toBeTruthy();
+  });
+
+  describe('error handling', () => {
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(CopyIouTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(CopyIouTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when iouService.getTemplate fails', async () => {
+      mockIouService.getTemplate.mockReturnValue(throwError(() => ({ error: { message: 'Template error' } })));
+
+      fixture = TestBed.createComponent(CopyIouTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Template error');
+    });
+
+    it('should use fallback message when iouService.getTemplate error has no message', async () => {
+      mockIouService.getTemplate.mockReturnValue(throwError(() => ({})));
+
+      fixture = TestBed.createComponent(CopyIouTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load IOU template');
+    });
   });
 });
