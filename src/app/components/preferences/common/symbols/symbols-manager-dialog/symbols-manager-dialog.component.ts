@@ -8,6 +8,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { Controller } from '@models/controller';
 import { Symbol } from '@models/symbol';
 import { SymbolService } from '@services/symbol.service';
+import { ToasterService } from '@services/toaster.service';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { forkJoin } from 'rxjs';
 import { environment } from 'environments/environment';
@@ -24,6 +25,7 @@ export class SymbolsManagerDialogComponent {
   private dialogRef = inject(MatDialogRef<SymbolsManagerDialogComponent>);
   private cd = inject(ChangeDetectorRef);
   private symbolService = inject(SymbolService);
+  private toasterService = inject(ToasterService);
   private data = inject(MAT_DIALOG_DATA);
 
   readonly controller = signal<Controller>(undefined);
@@ -61,11 +63,18 @@ export class SymbolsManagerDialogComponent {
   loadCustomSymbols() {
     if (!this.controller()) return;
 
-    this.symbolService.list(this.controller()).subscribe((symbols: Symbol[]) => {
-      const custom = symbols.filter((s) => !s.builtin);
-      this.customSymbols.set(custom);
-      this.loadSymbolBlobs(custom);
-      this.cd.markForCheck();
+    this.symbolService.list(this.controller()).subscribe({
+      next: (symbols: Symbol[]) => {
+        const custom = symbols.filter((s) => !s.builtin);
+        this.customSymbols.set(custom);
+        this.loadSymbolBlobs(custom);
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load symbols';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -79,8 +88,8 @@ export class SymbolsManagerDialogComponent {
 
     // Fetch all blob URLs in parallel
     const uniquePaths = Array.from(symbolPathMap.values());
-    forkJoin(uniquePaths.map((path) => this.symbolService.getSymbolBlobUrl(this.controller(), path))).subscribe(
-      (blobUrls: string[]) => {
+    forkJoin(uniquePaths.map((path) => this.symbolService.getSymbolBlobUrl(this.controller(), path))).subscribe({
+      next: (blobUrls: string[]) => {
         uniquePaths.forEach((path, index) => {
           // Find which symbol_id this path belongs to
           for (const [symbolId, symbolPath] of symbolPathMap.entries()) {
@@ -91,8 +100,13 @@ export class SymbolsManagerDialogComponent {
           }
         });
         this.cd.markForCheck();
-      }
-    );
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load symbol images';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   getImageSource(symbolId: string): string {
@@ -143,10 +157,17 @@ export class SymbolsManagerDialogComponent {
       this.symbolService.delete(this.controller(), symbol.symbol_id)
     );
 
-    forkJoin(deleteObservables).subscribe(() => {
-      this.selectedForDeletion.set(new Set());
-      this.loadCustomSymbols();
-      this.symbolsUpdated.emit();
+    forkJoin(deleteObservables).subscribe({
+      next: () => {
+        this.selectedForDeletion.set(new Set());
+        this.loadCustomSymbols();
+        this.symbolsUpdated.emit();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to delete symbols';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -182,8 +203,9 @@ export class SymbolsManagerDialogComponent {
               this.cd.markForCheck();
             }, 3000);
           },
-          error: (error) => {
-            this.uploadStatus.set(`Failed to upload ${fileName}: ${error.message || 'Unknown error'}`);
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to upload symbol';
+            this.uploadStatus.set(`Failed to upload ${fileName}: ${message}`);
             this.uploadSuccess.set(false);
             this.cd.markForCheck();
           },
@@ -213,8 +235,9 @@ export class SymbolsManagerDialogComponent {
             this.cd.markForCheck();
           }, 3000);
         },
-        error: (error) => {
-          this.uploadStatus.set(`Failed to upload ${fileName}: ${error.message || 'Unknown error'}`);
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to upload symbol';
+          this.uploadStatus.set(`Failed to upload ${fileName}: ${message}`);
           this.uploadSuccess.set(false);
           this.cd.markForCheck();
         },
@@ -236,8 +259,9 @@ export class SymbolsManagerDialogComponent {
             this.cd.markForCheck();
           }, 3000);
         },
-        error: (error) => {
-          this.uploadStatus.set(`Failed to upload ${fileName}: ${error.message || 'Unknown error'}`);
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to upload symbol';
+          this.uploadStatus.set(`Failed to upload ${fileName}: ${message}`);
           this.uploadSuccess.set(false);
           this.cd.markForCheck();
         },
