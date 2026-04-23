@@ -91,34 +91,48 @@ export class DockerTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
-
-      this.getConfiguration();
-      this.dockerService.getTemplate(this.controller, template_id).subscribe((dockerTemplate: DockerTemplate) => {
-        this.dockerTemplate = dockerTemplate;
-        // Initialize model signals from dockerTemplate
-        this.name.set(dockerTemplate.name || '');
-        this.defaultNameFormat.set(dockerTemplate.default_name_format || '');
-        this.category.set(dockerTemplate.category || '');
-        this.symbol.set(dockerTemplate.symbol || '');
-        this.tags.set(dockerTemplate.tags || []);
-        this.startCommand.set(dockerTemplate.start_command || '');
-        this.macAddress.set(dockerTemplate.mac_address || '');
-        this.adaptersCount.set(dockerTemplate.adapters || 0);
-        this.consoleType.set(dockerTemplate.console_type || '');
-        this.auxConsoleType.set(dockerTemplate.aux_type || '');
-        this.consoleAutoStart.set(dockerTemplate.console_auto_start || false);
-        this.consoleResolution.set(dockerTemplate.console_resolution || '');
-        this.consoleHttpPort.set(dockerTemplate.console_http_port || 0);
-        this.consoleHttpPath.set(dockerTemplate.console_http_path || '');
-        this.environment.set(dockerTemplate.environment || '');
-        this.extraHosts.set(dockerTemplate.extra_hosts || '');
-        this.usage.set(dockerTemplate.usage || '');
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
         this.cd.markForCheck();
-      });
-    });
+
+        this.getConfiguration();
+        this.dockerService.getTemplate(this.controller, template_id).subscribe({
+          next: (dockerTemplate: DockerTemplate) => {
+            this.dockerTemplate = dockerTemplate;
+            // Initialize model signals from dockerTemplate
+            this.name.set(dockerTemplate.name || '');
+            this.defaultNameFormat.set(dockerTemplate.default_name_format || '');
+            this.category.set(dockerTemplate.category || '');
+            this.symbol.set(dockerTemplate.symbol || '');
+            this.tags.set(dockerTemplate.tags || []);
+            this.startCommand.set(dockerTemplate.start_command || '');
+            this.macAddress.set(dockerTemplate.mac_address || '');
+            this.adaptersCount.set(dockerTemplate.adapters || 0);
+            this.consoleType.set(dockerTemplate.console_type || '');
+            this.auxConsoleType.set(dockerTemplate.aux_type || '');
+            this.consoleAutoStart.set(dockerTemplate.console_auto_start || false);
+            this.consoleResolution.set(dockerTemplate.console_resolution || '');
+            this.consoleHttpPort.set(dockerTemplate.console_http_port || 0);
+            this.consoleHttpPath.set(dockerTemplate.console_http_path || '');
+            this.environment.set(dockerTemplate.environment || '');
+            this.extraHosts.set(dockerTemplate.extra_hosts || '');
+            this.usage.set(dockerTemplate.usage || '');
+            this.cd.markForCheck();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load template';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
+        });
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   getConfiguration() {
@@ -166,8 +180,15 @@ export class DockerTemplateDetailsComponent implements OnInit {
     this.dockerTemplate.extra_hosts = this.extraHosts();
     this.dockerTemplate.usage = this.usage();
 
-    this.dockerService.saveTemplate(this.controller, this.dockerTemplate).subscribe((savedTemplate: DockerTemplate) => {
-      this.toasterService.success('Changes saved');
+    this.dockerService.saveTemplate(this.controller, this.dockerTemplate).subscribe({
+      next: (savedTemplate: DockerTemplate) => {
+        this.toasterService.success('Changes saved');
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to save template';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
