@@ -1,10 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { AlignVerticallyActionComponent } from './align-vertically.component';
 import { NodeService } from '@services/node.service';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
+import { ToasterService } from '@services/toaster.service';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('AlignVerticallyActionComponent', () => {
@@ -12,6 +14,8 @@ describe('AlignVerticallyActionComponent', () => {
   let component: AlignVerticallyActionComponent;
   let mockNodeService: any;
   let mockNodesDataSource: any;
+  let mockToasterService: any;
+  let mockCdr: any;
   let mockController: Controller;
   let mockNodes: Node[];
 
@@ -52,6 +56,15 @@ describe('AlignVerticallyActionComponent', () => {
       update: vi.fn(),
     };
 
+    mockToasterService = {
+      success: vi.fn(),
+      error: vi.fn(),
+    };
+
+    mockCdr = {
+      markForCheck: vi.fn(),
+    };
+
     mockController = createMockController();
     mockNodes = [
       createMockNode({ node_id: 'node-1', x: 100 }),
@@ -64,6 +77,8 @@ describe('AlignVerticallyActionComponent', () => {
       providers: [
         { provide: NodeService, useValue: mockNodeService },
         { provide: NodesDataSource, useValue: mockNodesDataSource },
+        { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: mockCdr },
       ],
     }).compileComponents();
 
@@ -179,6 +194,43 @@ describe('AlignVerticallyActionComponent', () => {
       // Average = 150, all nodes stay at 150
       expect(mockNodesDataSource.update).toHaveBeenCalledWith(expect.objectContaining({ node_id: 'node-a', x: 150 }));
       expect(mockNodesDataSource.update).toHaveBeenCalledWith(expect.objectContaining({ node_id: 'node-b', x: 150 }));
+    });
+
+    it('should show error toaster when nodeService.update fails with error.error.message', () => {
+      mockNodeService.update.mockReturnValue(
+        throwError(() => ({ error: { message: 'Update failed' } }))
+      );
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.componentRef.setInput('nodes', [mockNodes[0]]);
+      fixture.detectChanges();
+
+      component.alignVertically();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Update failed');
+    });
+
+    it('should use fallback message when error has no message', () => {
+      mockNodeService.update.mockReturnValue(throwError(() => ({})));
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.componentRef.setInput('nodes', [mockNodes[0]]);
+      fixture.detectChanges();
+
+      component.alignVertically();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to align node');
+    });
+
+    it('should call markForCheck when nodeService.update fails', () => {
+      mockNodeService.update.mockReturnValue(
+        throwError(() => ({ error: { message: 'Update failed' } }))
+      );
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.componentRef.setInput('nodes', [mockNodes[0]]);
+      fixture.detectChanges();
+
+      component.alignVertically();
+
+      expect(mockCdr.markForCheck).toHaveBeenCalled();
     });
   });
 
