@@ -1,31 +1,15 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { of } from 'rxjs';
 import { SymbolsMenuComponent } from './symbols-menu.component';
 import { SymbolsComponent } from '../symbols/symbols.component';
 import { MatButtonModule } from '@angular/material/button';
 import { Controller } from '@models/controller';
 import { SymbolService } from '@services/symbol.service';
 import { DialogConfigService } from '@services/dialog-config.service';
+import { ToasterService } from '@services/toaster.service';
 import { MatDialog } from '@angular/material/dialog';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-
-const mockSymbolService = {
-  list: vi.fn().mockReturnValue({ subscribe: (cb: (data: any) => void) => cb([]) }),
-  get: vi.fn(),
-  delete: vi.fn(),
-};
-
-const mockDialog = {
-  open: vi
-    .fn()
-    .mockReturnValue({
-      afterClosed: vi.fn().mockReturnValue({ subscribe: (cb: (result: boolean) => void) => cb(true) }),
-    }),
-};
-
-const mockDialogConfigService = {
-  openConfig: vi.fn(),
-};
 
 describe('SymbolsMenuComponent', () => {
   let component: SymbolsMenuComponent;
@@ -33,8 +17,33 @@ describe('SymbolsMenuComponent', () => {
 
   let mockController: Controller;
   let symbolChangedEmitterSpy: any;
+  let mockSymbolService: any;
+  let mockDialog: any;
+  let mockDialogConfigService: any;
+  let mockToasterService: any;
 
   beforeEach(async () => {
+    mockSymbolService = {
+      list: vi.fn().mockReturnValue(of([])),
+      get: vi.fn(),
+      delete: vi.fn(),
+    };
+
+    mockDialog = {
+      open: vi.fn().mockReturnValue({
+        afterClosed: vi.fn().mockReturnValue(of(true)),
+      }),
+    };
+
+    mockDialogConfigService = {
+      openConfig: vi.fn(),
+    };
+
+    mockToasterService = {
+      error: vi.fn(),
+      success: vi.fn(),
+    };
+
     mockController = {
       id: 1,
       name: 'Test Controller',
@@ -57,6 +66,7 @@ describe('SymbolsMenuComponent', () => {
         { provide: SymbolService, useValue: mockSymbolService },
         { provide: MatDialog, useValue: mockDialog },
         { provide: DialogConfigService, useValue: mockDialogConfigService },
+        { provide: ToasterService, useValue: mockToasterService },
       ],
     }).compileComponents();
 
