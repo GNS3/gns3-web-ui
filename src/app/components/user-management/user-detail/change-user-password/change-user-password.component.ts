@@ -65,17 +65,18 @@ export class ChangeUserPasswordComponent {
     updatedUser['password'] = this.editPasswordForm.get('password').value;
     updatedUser['user_id'] = this.user().user_id;
 
-    this.userService.update(this.data.controller, updatedUser, this.data.self_update).subscribe(
-      (user: User) => {
+    this.userService.update(this.data.controller, updatedUser, this.data.self_update).subscribe({
+      next: (user: User) => {
         this.toasterService.success(`User ${user.username} password updated`);
         this.editPasswordForm.reset();
         this.dialogRef.close(true);
         this.cd.markForCheck();
       },
-      (error) => {
-        this.toasterService.error('Cannot update password for user: ' + error);
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to update password';
+        this.toasterService.error(message);
         this.cd.markForCheck();
-      }
-    );
+      },
+    });
   }
 }
