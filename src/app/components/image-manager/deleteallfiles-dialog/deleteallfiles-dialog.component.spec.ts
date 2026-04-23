@@ -196,4 +196,14 @@ describe('DeleteAllImageFilesDialogComponent', () => {
       expect(mockDialogRef.close).toHaveBeenCalledWith(false);
     });
   });
+
+  describe('deleteFile() error handling', () => {
+    it('should have ToasterService injected', () => {
+      expect(component['toasterService']).toBeDefined();
+    });
+
+    it('should have cd (ChangeDetectorRef) injected', () => {
+      expect(component['cd']).toBeDefined();
+    });
+  });
 });
