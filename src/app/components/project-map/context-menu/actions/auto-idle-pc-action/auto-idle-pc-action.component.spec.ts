@@ -270,7 +270,7 @@ describe('AutoIdlePcActionComponent', () => {
       expect(mockProgressService.deactivate).toHaveBeenCalled();
     });
 
-    it('should show error toast when API call fails', () => {
+    it('should show error toast when API call fails', async () => {
       const mockNode = createMockNode({ name: 'Router1' });
       const mockController = createMockController();
       fixture.componentRef.setInput('node', mockNode);
@@ -280,11 +280,12 @@ describe('AutoIdlePcActionComponent', () => {
       );
 
       component.autoIdlePC();
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('API error');
     });
 
-    it('should use fallback message when error has no message', () => {
+    it('should use fallback message when error has no message', async () => {
       const mockNode = createMockNode({ name: 'Router1' });
       const mockController = createMockController();
       fixture.componentRef.setInput('node', mockNode);
@@ -292,11 +293,12 @@ describe('AutoIdlePcActionComponent', () => {
       mockNodeService.getAutoIdlePC.mockReturnValue(throwError(() => ({})));
 
       component.autoIdlePC();
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update idle-PC value');
     });
 
-    it('should call markForCheck when API call fails', () => {
+    it('should call markForCheck when API call fails', async () => {
       const mockNode = createMockNode({ name: 'Router1' });
       const mockController = createMockController();
       fixture.componentRef.setInput('node', mockNode);
@@ -305,12 +307,14 @@ describe('AutoIdlePcActionComponent', () => {
         throwError(() => ({ error: { message: 'API error' } }))
       );
 
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
       component.autoIdlePC();
+      await vi.runAllTimersAsync();
 
-      expect(mockCdr.markForCheck).toHaveBeenCalled();
+      expect(cdrSpy).toHaveBeenCalled();
     });
 
-    it('should deactivate progress service on error', () => {
+    it('should deactivate progress service on error', async () => {
       const mockNode = createMockNode();
       const mockController = createMockController();
       fixture.componentRef.setInput('node', mockNode);
@@ -318,6 +322,7 @@ describe('AutoIdlePcActionComponent', () => {
       mockNodeService.getAutoIdlePC.mockReturnValue(throwError(() => new Error('API error')));
 
       component.autoIdlePC();
+      await vi.runAllTimersAsync();
 
       expect(mockProgressService.deactivate).toHaveBeenCalled();
     });
