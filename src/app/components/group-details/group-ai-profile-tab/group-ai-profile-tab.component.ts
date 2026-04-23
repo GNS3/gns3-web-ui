@@ -425,12 +425,7 @@ export class GroupAiProfileTabComponent implements OnInit, OnDestroy {
   private handleError(error: any, defaultMessage: string): void {
     console.error(`${defaultMessage}:`, error);
 
-    let message = defaultMessage;
-    if (error?.error?.detail) {
-      message = error.error.detail;
-    } else if (error?.message) {
-      message = error.message;
-    }
+    const message = error.error?.message || error.message || defaultMessage;
 
     this.error$.next(message);
     this.loading$.next(false);
