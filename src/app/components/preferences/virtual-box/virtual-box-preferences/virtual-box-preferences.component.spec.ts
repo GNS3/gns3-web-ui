@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { VirtualBoxPreferencesComponent } from './virtual-box-preferences.component';
 import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
 import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
@@ -12,6 +13,7 @@ describe('VirtualBoxPreferencesComponent', () => {
   let mockControllerService: any;
   let mockChangeDetectorRef: any;
   let mockActivatedRoute: any;
+  let mockToasterService: any;
   let mockController: Controller;
 
   const createMockController = (): Controller =>
@@ -50,12 +52,18 @@ describe('VirtualBoxPreferencesComponent', () => {
       },
     };
 
+    mockToasterService = {
+      error: vi.fn(),
+      success: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [VirtualBoxPreferencesComponent],
       providers: [
         { provide: ControllerService, useValue: mockControllerService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
+        { provide: ToasterService, useValue: mockToasterService },
       ],
     }).compileComponents();
 
@@ -138,6 +146,30 @@ describe('VirtualBoxPreferencesComponent', () => {
 
       const input: HTMLInputElement = fixture.nativeElement.querySelector('input');
       expect(input.value).toBe('/usr/bin/vboxmanage');
+    });
+  });
+
+  describe('error handling', () => {
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(VirtualBoxPreferencesComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(VirtualBoxPreferencesComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
     });
   });
 });
