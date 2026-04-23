@@ -241,24 +241,36 @@ describe('UserManagementComponent', () => {
       expect(component.onDelete).toBeDefined();
     });
 
-    it('should show error when delete fails with error.error.message', () => {
+    it('should show error when delete fails with error.error.message', async () => {
       const user = createMockUser();
-      mockDialogRef.afterClosed.mockReturnValue(of(true));
+      const mockDialogRef = {
+        afterClosed: vi.fn().mockReturnValue(of(true)),
+      };
+      component['dialog'] = {
+        open: vi.fn().mockReturnValue(mockDialogRef),
+      } as any;
       (mockUserService.delete as any).mockReturnValue(
         throwError(() => ({ error: { message: 'Delete failed' } }))
       );
 
       component.onDelete(user);
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Delete failed');
     });
 
-    it('should use fallback message when delete error has no message', () => {
+    it('should use fallback message when delete error has no message', async () => {
       const user = createMockUser();
-      mockDialogRef.afterClosed.mockReturnValue(of(true));
+      const mockDialogRef = {
+        afterClosed: vi.fn().mockReturnValue(of(true)),
+      };
+      component['dialog'] = {
+        open: vi.fn().mockReturnValue(mockDialogRef),
+      } as any;
       (mockUserService.delete as any).mockReturnValue(throwError(() => ({})));
 
       component.onDelete(user);
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to delete user testuser');
     });
@@ -311,26 +323,44 @@ describe('UserManagementComponent', () => {
       expect(component.deleteMultiple).toBeDefined();
     });
 
-    it('should show error when delete fails with error.error.message', () => {
+    it('should show error when delete fails with error.error.message', async () => {
       const users = [createMockUser({ user_id: 'user-1' })];
-      (component.selection as any).setSelection(users);
-      mockDialogRef.afterClosed.mockReturnValue(of(true));
+      Object.defineProperty(component.selection, 'selected', {
+        value: users,
+        writable: true,
+      });
+      const mockDialogRef = {
+        afterClosed: vi.fn().mockReturnValue(of(true)),
+      };
+      component['dialog'] = {
+        open: vi.fn().mockReturnValue(mockDialogRef),
+      } as any;
       (mockUserService.delete as any).mockReturnValue(
         throwError(() => ({ error: { message: 'Delete failed' } }))
       );
 
       component.deleteMultiple();
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Delete failed');
     });
 
-    it('should use fallback message when delete error has no message', () => {
+    it('should use fallback message when delete error has no message', async () => {
       const users = [createMockUser({ user_id: 'user-1' })];
-      (component.selection as any).setSelection(users);
-      mockDialogRef.afterClosed.mockReturnValue(of(true));
+      Object.defineProperty(component.selection, 'selected', {
+        value: users,
+        writable: true,
+      });
+      const mockDialogRef = {
+        afterClosed: vi.fn().mockReturnValue(of(true)),
+      };
+      component['dialog'] = {
+        open: vi.fn().mockReturnValue(mockDialogRef),
+      } as any;
       (mockUserService.delete as any).mockReturnValue(throwError(() => ({})));
 
       component.deleteMultiple();
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to delete user testuser');
     });
