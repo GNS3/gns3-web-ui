@@ -58,27 +58,34 @@ export class SaveProjectDialogComponent implements OnInit {
     if (this.projectNameForm.invalid) {
       return;
     }
-    this.projectService.list(this.controller).subscribe((projects: Project[]) => {
-      const projectName = this.projectNameForm.controls['projectName'].value;
-      let existingProject = projects.find((project) => project.name === projectName);
+    this.projectService.list(this.controller).subscribe({
+      next: (projects: Project[]) => {
+        const projectName = this.projectNameForm.controls['projectName'].value;
+        let existingProject = projects.find((project) => project.name === projectName);
 
-      if (existingProject) {
-        this.toasterService.error(`Project with this name already exists.`);
-      } else if (
-        this.nodesDataSource
-          .getItems()
-          .filter(
-            (node) =>
-              (node.status === 'started' && node.node_type === 'vpcs') ||
-              (node.status === 'started' && node.node_type === 'virtualbox') ||
-              (node.status === 'started' && node.node_type === 'vmware')
-          ).length > 0
-      ) {
-        this.toasterService.error('Please stop all nodes in order to save project.');
-      } else {
-        this.addProject();
-      }
-      this.cd.markForCheck();
+        if (existingProject) {
+          this.toasterService.error(`Project with this name already exists.`);
+        } else if (
+          this.nodesDataSource
+            .getItems()
+            .filter(
+              (node) =>
+                (node.status === 'started' && node.node_type === 'vpcs') ||
+                (node.status === 'started' && node.node_type === 'virtualbox') ||
+                (node.status === 'started' && node.node_type === 'vmware')
+            ).length > 0
+        ) {
+          this.toasterService.error('Please stop all nodes in order to save project.');
+        } else {
+          this.addProject();
+        }
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to list projects';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -89,9 +96,16 @@ export class SaveProjectDialogComponent implements OnInit {
   addProject(): void {
     this.projectService
       .duplicate(this.controller, this.project.project_id, this.projectNameForm.controls['projectName'].value)
-      .subscribe((project: Project) => {
-        this.dialogRef.close();
-        this.toasterService.success(`Project ${project.name} added`);
+      .subscribe({
+        next: (project: Project) => {
+          this.dialogRef.close();
+          this.toasterService.success(`Project ${project.name} added`);
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to save project';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        },
       });
   }
 

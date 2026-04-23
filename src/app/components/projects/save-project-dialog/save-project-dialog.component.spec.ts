@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChangeDetectorRef } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { SaveProjectDialogComponent } from './save-project-dialog.component';
 import { ProjectService } from '@services/project.service';
 import { ToasterService } from '@services/toaster.service';
@@ -206,6 +206,64 @@ describe('SaveProjectDialogComponent', () => {
       component.addProject();
 
       expect(mockToasterService.success).toHaveBeenCalledWith('Project New Project added');
+    });
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when list fails with error.message', async () => {
+      mockProjectService.list.mockReturnValue(
+        throwError(() => ({ error: { message: 'List failed' } }))
+      );
+      component.projectNameForm.controls['projectName'].setValue('New Project');
+
+      component.onAddClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('List failed');
+    });
+
+    it('should use fallback message when list error has no message', async () => {
+      mockProjectService.list.mockReturnValue(throwError(() => ({})));
+      component.projectNameForm.controls['projectName'].setValue('New Project');
+
+      component.onAddClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to list projects');
+    });
+
+    it('should show error toaster when duplicate fails with error.message', async () => {
+      mockProjectService.duplicate.mockReturnValue(
+        throwError(() => ({ error: { message: 'Duplicate failed' } }))
+      );
+      component.projectNameForm.controls['projectName'].setValue('New Project');
+
+      component.addProject();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Duplicate failed');
+    });
+
+    it('should use fallback message when duplicate error has no message', async () => {
+      mockProjectService.duplicate.mockReturnValue(throwError(() => ({})));
+      component.projectNameForm.controls['projectName'].setValue('New Project');
+
+      component.addProject();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to save project');
+    });
+
+    it('should call markForCheck when duplicate fails', async () => {
+      mockProjectService.duplicate.mockReturnValue(
+        throwError(() => ({ error: { message: 'Duplicate failed' } }))
+      );
+      component.projectNameForm.controls['projectName'].setValue('New Project');
+
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.addProject();
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });
