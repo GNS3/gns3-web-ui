@@ -328,4 +328,54 @@ describe('EditProjectDialogComponent', () => {
       expect(component.displayedColumns).toEqual(['name', 'value', 'actions']);
     });
   });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when update fails with error.message', async () => {
+      mockProjectService.update.mockReturnValue(
+        throwError(() => ({ error: { message: 'Update failed' } }))
+      );
+      initializeComponent();
+
+      component.onYesClick();
+
+      expect(mockToastService.error).toHaveBeenCalledWith('Update failed');
+    });
+
+    it('should use fallback message when update error has no message', async () => {
+      mockProjectService.update.mockReturnValue(throwError(() => ({})));
+      initializeComponent();
+
+      component.onYesClick();
+
+      expect(mockToastService.error).toHaveBeenCalledWith('Failed to update project');
+    });
+
+    it('should call markForCheck when update fails', async () => {
+      mockProjectService.update.mockReturnValue(
+        throwError(() => ({ error: { message: 'Update failed' } }))
+      );
+      initializeComponent();
+
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.onYesClick();
+
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show error toaster when postReadmeFile fails', async () => {
+      mockProjectService.update.mockReturnValue(of(createMockProject()));
+      mockProjectService.postReadmeFile.mockReturnValue(
+        throwError(() => ({ error: { message: 'Readme failed' } }))
+      );
+      initializeComponent();
+
+      component.onYesClick();
+
+      expect(mockToastService.error).toHaveBeenCalledWith('Readme failed');
+    });
+  });
 });
