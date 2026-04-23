@@ -45,10 +45,17 @@ export class ImportConfigActionComponent {
         disableClose: false,
       });
       let instance = dialogRef.componentInstance;
-      dialogRef.afterClosed().subscribe((configType: string) => {
-        this.configType = configType;
-        this.cdr.markForCheck();
-        this.fileInput().nativeElement.click();
+      dialogRef.afterClosed().subscribe({
+        next: (configType: string) => {
+          this.configType = configType;
+          this.cdr.markForCheck();
+          this.fileInput().nativeElement.click();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to get config type';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
       });
     } else {
       this.configType = 'startup-config';

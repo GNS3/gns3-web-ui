@@ -11,7 +11,7 @@ import { ToasterService } from '@services/toaster.service';
 import { ConfigDialogComponent } from '../../dialogs/config-dialog/config-dialog.component';
 import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('ImportConfigActionComponent', () => {
   let component: ImportConfigActionComponent;
@@ -76,6 +76,8 @@ describe('ImportConfigActionComponent', () => {
     } as Node);
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockNodeService = {
       saveConfiguration: vi.fn().mockReturnValue(of({})),
       savePrivateConfiguration: vi.fn().mockReturnValue(of({})),
@@ -188,6 +190,34 @@ describe('ImportConfigActionComponent', () => {
       component.triggerClick();
 
       expect(mockDialogRef.afterClosed).toHaveBeenCalled();
+    });
+
+    it('should show error toast when afterClosed fails', async () => {
+      mockDialogRef.afterClosed.mockReturnValue(throwError(() => ({ error: { message: 'Dialog failed' } })));
+      const node = createMockNode({ node_type: 'dynamips' });
+      fixture.componentRef.setInput('node', node);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      const cdrSpy = vi.spyOn(fixture.componentInstance['cdr'], 'markForCheck');
+      component.triggerClick();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Dialog failed');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should use fallback message when afterClosed error has no message', async () => {
+      mockDialogRef.afterClosed.mockReturnValue(throwError(() => ({})));
+      const node = createMockNode({ node_type: 'dynamips' });
+      fixture.componentRef.setInput('node', node);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      component.triggerClick();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to get config type');
     });
   });
 });
