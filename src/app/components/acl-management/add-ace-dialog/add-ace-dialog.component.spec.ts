@@ -91,6 +91,10 @@ describe('AddAceDialogComponent', () => {
       error: vi.fn(),
     };
 
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [AddAceDialogComponent],
       providers: [
@@ -101,6 +105,7 @@ describe('AddAceDialogComponent', () => {
         { provide: GroupService, useValue: mockGroupService },
         { provide: RoleService, useValue: mockRoleService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -158,6 +163,44 @@ describe('AddAceDialogComponent', () => {
 
       expect(mockRoleService.get).toHaveBeenCalledWith(mockController);
       expect(component.roles).toEqual(mockRoles);
+    });
+  });
+
+  describe('ngOnInit error handling', () => {
+    it('should display error when groupService.getGroups fails', async () => {
+      mockGroupService.getGroups.mockReturnValue(throwError(() => ({ error: { message: 'Failed to load groups' } })));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.ngOnInit();
+
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load groups');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should display error when userService.list fails', async () => {
+      mockUserService.list.mockReturnValue(throwError(() => new Error('Network error')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.ngOnInit();
+
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Network error');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should display error when roleService.get fails', async () => {
+      mockRoleService.get.mockReturnValue(throwError(() => ({})));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.ngOnInit();
+
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load roles');
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 
@@ -537,15 +580,34 @@ describe('AddAceDialogComponent', () => {
       expect(mockToasterService.success).toHaveBeenCalledWith('ACE was added for path /projects');
     });
 
-    it('should show error toast on failed add', () => {
+    it('should show error toast on failed add', async () => {
       mockAclService.add.mockReturnValue(throwError(() => ({ error: { message: 'Failed to add ACE' } })));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
       component.selectedEndpoint = { endpoint: '/projects', name: 'Projects', endpoint_type: RessourceType.project };
       component.selectedRole = mockRoles[0];
       component.selectedUser = mockUsers[0];
 
       component.onAddClick();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith('Cannot create ACE: Failed to add ACE');
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to add ACE');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show fallback error message when error has no message', async () => {
+      mockAclService.add.mockReturnValue(throwError(() => ({})));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.selectedEndpoint = { endpoint: '/projects', name: 'Projects', endpoint_type: RessourceType.project };
+      component.selectedRole = mockRoles[0];
+      component.selectedUser = mockUsers[0];
+
+      component.onAddClick();
+
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to create ACE');
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });
