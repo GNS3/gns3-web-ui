@@ -69,15 +69,16 @@ export class AddResourcePoolDialogComponent implements OnInit {
     }
     const poolName = this.poolNameForm.controls['poolName'].value;
 
-    this.resourcePoolsService.add(this.controller, poolName).subscribe(
-      (pool) => {
+    this.resourcePoolsService.add(this.controller, poolName).subscribe({
+      next: (pool) => {
         this.dialogRef.close(true);
       },
-      (error) => {
-        this.toasterService.error(`An error occur while trying to create new pool ${poolName}`);
-        this.dialogRef.close(false);
-      }
-    );
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to create resource pool';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   onNoClick() {
