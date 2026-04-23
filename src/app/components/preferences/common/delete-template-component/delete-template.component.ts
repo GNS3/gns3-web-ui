@@ -32,9 +32,15 @@ export class DeleteTemplateComponent {
 
     dialogRef.afterClosed().subscribe((answer: boolean) => {
       if (answer) {
-        this.templateService.deleteTemplate(this.controller(), templateId).subscribe((answer) => {
-          this.deleteEvent.emit(templateId);
-          this.toasterService.success(`Template ${templateName} deleted.`);
+        this.templateService.deleteTemplate(this.controller(), templateId).subscribe({
+          next: () => {
+            this.deleteEvent.emit(templateId);
+            this.toasterService.success(`Template ${templateName} deleted.`);
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to delete template';
+            this.toasterService.error(message);
+          },
         });
       }
     });
