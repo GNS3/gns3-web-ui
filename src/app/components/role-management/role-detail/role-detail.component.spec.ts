@@ -203,12 +203,31 @@ describe('RoleDetailComponent', () => {
     });
 
     it('should show error toast on update failure', () => {
-      const errorResponse = { message: 'Update failed', error: { message: 'Server error' } } as any;
+      const errorResponse = { error: { message: 'Update failed' } } as any;
       mockRoleService.update.mockReturnValue(throwError(() => errorResponse));
 
       component.onUpdate();
 
-      expect(mockToastService.error).toHaveBeenCalledWith(`${errorResponse.message}\n${errorResponse.error.message}`);
+      expect(mockToastService.error).toHaveBeenCalledWith('Update failed');
+    });
+
+    it('should use fallback message when update error has no message', () => {
+      mockRoleService.update.mockReturnValue(throwError(() => ({})));
+
+      component.onUpdate();
+
+      expect(mockToastService.error).toHaveBeenCalledWith('Failed to update role');
+    });
+
+    it('should call markForCheck when update fails', () => {
+      mockRoleService.update.mockReturnValue(
+        throwError(() => ({ error: { message: 'Update failed' } }))
+      );
+
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.onUpdate();
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 
@@ -270,6 +289,72 @@ describe('RoleDetailComponent', () => {
 
     it('should expose privileges observable', () => {
       expect(component.privileges).toBeDefined();
+    });
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when getById fails', async () => {
+      mockRoleService.getById.mockReturnValue(
+        throwError(() => ({ error: { message: 'Load failed' } }))
+      );
+
+      const newFixture = TestBed.createComponent(RoleDetailComponent);
+      newFixture.detectChanges();
+
+      expect(mockToastService.error).toHaveBeenCalledWith('Load failed');
+    });
+
+    it('should use fallback message when getById error has no message', async () => {
+      mockRoleService.getById.mockReturnValue(throwError(() => ({})));
+
+      const newFixture = TestBed.createComponent(RoleDetailComponent);
+      newFixture.detectChanges();
+
+      expect(mockToastService.error).toHaveBeenCalledWith('Failed to load role');
+    });
+
+    it('should show error toaster when setPrivileges fails', async () => {
+      const privilegesChange: IPrivilegesChange = { add: ['priv-2'], delete: [] };
+      mockRoleService.setPrivileges.mockReturnValue(
+        throwError(() => ({ error: { message: 'Set failed' } }))
+      );
+
+      component.onPrivilegesUpdate(privilegesChange);
+
+      expect(mockToastService.error).toHaveBeenCalledWith('Set failed');
+    });
+
+    it('should use fallback message when setPrivileges error has no message', async () => {
+      const privilegesChange: IPrivilegesChange = { add: ['priv-2'], delete: [] };
+      mockRoleService.setPrivileges.mockReturnValue(throwError(() => ({})));
+
+      component.onPrivilegesUpdate(privilegesChange);
+
+      expect(mockToastService.error).toHaveBeenCalledWith('Failed to update privileges');
+    });
+
+    it('should show error toaster when removePrivileges fails', async () => {
+      const privilegesChange: IPrivilegesChange = { add: [], delete: ['priv-1'] };
+      mockRoleService.removePrivileges.mockReturnValue(
+        throwError(() => ({ error: { message: 'Remove failed' } }))
+      );
+
+      component.onPrivilegesUpdate(privilegesChange);
+
+      expect(mockToastService.error).toHaveBeenCalledWith('Remove failed');
+    });
+
+    it('should use fallback message when removePrivileges error has no message', async () => {
+      const privilegesChange: IPrivilegesChange = { add: [], delete: ['priv-1'] };
+      mockRoleService.removePrivileges.mockReturnValue(throwError(() => ({})));
+
+      component.onPrivilegesUpdate(privilegesChange);
+
+      expect(mockToastService.error).toHaveBeenCalledWith('Failed to update privileges');
     });
   });
 });
