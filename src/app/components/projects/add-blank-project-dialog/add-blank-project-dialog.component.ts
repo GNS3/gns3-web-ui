@@ -79,17 +79,18 @@ export class AddBlankProjectDialogComponent implements OnInit {
 
   addProject(): void {
     this.uuid = uuid();
-    this.projectService.add(this.controller, this.projectNameForm.controls['projectName'].value, this.uuid).subscribe(
-      (project: Project) => {
+    this.projectService.add(this.controller, this.projectNameForm.controls['projectName'].value, this.uuid).subscribe({
+      next: (project: Project) => {
         this.dialogRef.close();
         this.toasterService.success(`Project ${project.name} added`);
         this.router.navigate(['/controller', this.controller.id, 'project', project.project_id]);
       },
-      (error) => {
-        this.toasterService.error('Cannot create new project');
-        console.log(error);
-      }
-    );
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Cannot create new project';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   onKeyDown(event) {
