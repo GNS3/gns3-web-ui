@@ -116,38 +116,42 @@ describe('ChangeHostnameDialogComponent', () => {
       expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
 
-    it('should show error toast when API call fails', () => {
+    it('should show error toast when API call fails', async () => {
       mockNodeService.updateNode.mockReturnValue(throwError(() => ({ error: { message: 'Server error' } })));
       component.ngOnInit();
       component.inputForm.get('name')?.setValue('NewRouter');
       fixture.detectChanges();
 
       component.onSaveClick();
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Server error');
       expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
 
-    it('should use fallback message when error has no message', () => {
+    it('should use fallback message when error has no message', async () => {
       mockNodeService.updateNode.mockReturnValue(throwError(() => ({})));
       component.ngOnInit();
       component.inputForm.get('name')?.setValue('NewRouter');
       fixture.detectChanges();
 
       component.onSaveClick();
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update node.');
     });
 
-    it('should call markForCheck when API call fails', () => {
+    it('should call markForCheck when API call fails', async () => {
       mockNodeService.updateNode.mockReturnValue(throwError(() => ({ error: { message: 'Server error' } })));
       component.ngOnInit();
       component.inputForm.get('name')?.setValue('NewRouter');
       fixture.detectChanges();
 
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
       component.onSaveClick();
+      await vi.runAllTimersAsync();
 
-      expect(mockCdr.markForCheck).toHaveBeenCalled();
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 
