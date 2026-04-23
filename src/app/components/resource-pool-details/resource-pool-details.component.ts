@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormControl, FormGroup, UntypedFormControl } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -46,6 +46,7 @@ export class ResourcePoolDetailsComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private resourcePoolsService = inject(ResourcePoolsService);
   private dialog = inject(MatDialog);
+  private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
   pool = signal<ResourcePool | undefined>(undefined);
@@ -70,8 +71,15 @@ export class ResourcePoolDetailsComponent implements OnInit {
     const name = this.editPoolForm.get('poolname')?.value;
     if (name && this.pool()) {
       this.pool.update((p) => (p ? { ...p, name } : p));
-      this.resourcePoolsService.update(this.controller, this.pool()).subscribe((pool: ResourcePool) => {
-        this.toastService.success(`Pool ${pool.name} updated`);
+      this.resourcePoolsService.update(this.controller, this.pool()).subscribe({
+        next: (pool: ResourcePool) => {
+          this.toastService.success(`Pool ${pool.name} updated`);
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to update pool';
+          this.toastService.error(message);
+          this.cd.markForCheck();
+        },
       });
     }
   }
@@ -80,10 +88,17 @@ export class ResourcePoolDetailsComponent implements OnInit {
     const selected = this.addResourceFormControl.value;
     const project = this.projects().filter((p) => p.name.includes(selected));
     if (project.length === 1) {
-      this.resourcePoolsService.addResource(this.controller, this.pool(), project[0]).subscribe(() => {
-        this.toastService.success(`Project ${project[0].name} added to pool: ${this.pool().name}`);
-        this.refresh();
-        this.addResourceFormControl.setValue('');
+      this.resourcePoolsService.addResource(this.controller, this.pool(), project[0]).subscribe({
+        next: () => {
+          this.toastService.success(`Project ${project[0].name} added to pool: ${this.pool().name}`);
+          this.refresh();
+          this.addResourceFormControl.setValue('');
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to add resource to pool';
+          this.toastService.error(message);
+          this.cd.markForCheck();
+        },
       });
       return;
     }
@@ -105,29 +120,50 @@ export class ResourcePoolDetailsComponent implements OnInit {
       .afterClosed()
       .subscribe((result: Resource) => {
         if (result) {
-          this.resourcePoolsService.deleteResource(this.controller, result, this.pool()).subscribe(() => {
-            this.refresh();
-            this.toastService.success(`Resource ${result.name} deleted from pool ${this.pool().name}`);
+          this.resourcePoolsService.deleteResource(this.controller, result, this.pool()).subscribe({
+            next: () => {
+              this.refresh();
+              this.toastService.success(`Resource ${result.name} deleted from pool ${this.pool().name}`);
+            },
+            error: (err) => {
+              const message = err.error?.message || err.message || 'Failed to delete resource from pool';
+              this.toastService.error(message);
+              this.cd.markForCheck();
+            },
           });
         }
       });
   }
 
   private refresh(): void {
-    this.resourcePoolsService.get(this.controller, this.pool().resource_pool_id).subscribe((pool) => {
-      this.pool.set(pool);
+    this.resourcePoolsService.get(this.controller, this.pool().resource_pool_id).subscribe({
+      next: (pool) => {
+        this.pool.set(pool);
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load pool';
+        this.toastService.error(message);
+        this.cd.markForCheck();
+      },
     });
 
-    this.resourcePoolsService.getFreeResources(this.controller).subscribe((projects: Project[]) => {
-      this.projects.set(projects);
-      this.addResourceFilteredOptions = this.addResourceFormControl.valueChanges.pipe(
-        startWith(''),
-        map((value: string) =>
-          this.projects()
-            .filter((project: Project) => project.name.toLowerCase().includes(value?.toLowerCase() || ''))
-            .map((project: Project) => project.name)
-        )
-      );
+    this.resourcePoolsService.getFreeResources(this.controller).subscribe({
+      next: (projects: Project[]) => {
+        this.projects.set(projects);
+        this.addResourceFilteredOptions = this.addResourceFormControl.valueChanges.pipe(
+          startWith(''),
+          map((value: string) =>
+            this.projects()
+              .filter((project: Project) => project.name.toLowerCase().includes(value?.toLowerCase() || ''))
+              .map((project: Project) => project.name)
+          )
+        );
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load free resources';
+        this.toastService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 }
