@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { QemuVmTemplatesComponent } from './qemu-vm-templates.component';
 import { ControllerService } from '@services/controller.service';
 import { QemuService } from '@services/qemu.service';
@@ -21,6 +21,7 @@ describe('QemuVmTemplatesComponent', () => {
   let mockRouter: any;
   let mockActivatedRoute: any;
   let mockDeleteComponent: any;
+  let mockToasterService: any;
 
   let mockController: Controller;
   let mockQemuTemplates: QemuTemplate[];
@@ -132,7 +133,7 @@ describe('QemuVmTemplatesComponent', () => {
       deleteTemplate: vi.fn().mockReturnValue(of({})),
     };
 
-    const mockToasterService = {
+    mockToasterService = {
       success: vi.fn(),
       error: vi.fn(),
     };
@@ -371,6 +372,60 @@ describe('QemuVmTemplatesComponent', () => {
 
       expect(component.qemuTemplates).toHaveLength(1);
       expect(component.qemuTemplates[0].name).toBe('Full VM');
+    });
+  });
+
+  describe('error handling', () => {
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(QemuVmTemplatesComponent);
+      component = fixture.componentInstance;
+      Object.defineProperty(component, 'deleteComponent', {
+        get: () => () => mockDeleteComponent,
+        configurable: true,
+      });
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(QemuVmTemplatesComponent);
+      component = fixture.componentInstance;
+      Object.defineProperty(component, 'deleteComponent', {
+        get: () => () => mockDeleteComponent,
+        configurable: true,
+      });
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when getTemplates fails', async () => {
+      mockQemuService.getTemplates.mockReturnValue(throwError(() => ({ error: { message: 'Templates error' } })));
+      component.controller = mockController;
+
+      component.getTemplates();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Templates error');
+    });
+
+    it('should use fallback message when getTemplates error has no message', async () => {
+      mockQemuService.getTemplates.mockReturnValue(throwError(() => ({})));
+      component.controller = mockController;
+
+      component.getTemplates();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load QEMU templates');
     });
   });
 });
