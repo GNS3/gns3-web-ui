@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ComputeStatistics, LinkStats, NodeStats, ProjectStats } from '@models/computeStatistics';
@@ -20,6 +20,7 @@ export class StatusInfoComponent implements OnInit {
   private computeService = inject(ComputeService);
   private controllerService = inject(ControllerService);
   private toasterService = inject(ToasterService);
+  private cd = inject(ChangeDetectorRef);
 
   public controllerId: string = '';
   public computeStatistics = signal<ComputeStatistics[]>([]);
@@ -40,21 +41,33 @@ export class StatusInfoComponent implements OnInit {
   }
 
   getStatistics() {
-    this.controllerService.get(Number(this.controllerId)).then((controller: Controller) => {
-      this.computeService.getStatistics(controller).subscribe({
-        next: (statistics) => {
-          this.computeStatistics.set(statistics.computes);
-          this.projectStats.set(statistics.projects);
-          this.nodeStats.set(statistics.nodes);
-          this.linkStats.set(statistics.links);
-          setTimeout(() => {
-            this.getStatistics();
-          }, 20000);
+    this.controllerService
+      .get(Number(this.controllerId))
+      .then(
+        (controller: Controller) => {
+          this.computeService.getStatistics(controller).subscribe({
+            next: (statistics) => {
+              this.computeStatistics.set(statistics.computes);
+              this.projectStats.set(statistics.projects);
+              this.nodeStats.set(statistics.nodes);
+              this.linkStats.set(statistics.links);
+              setTimeout(() => {
+                this.getStatistics();
+              }, 20000);
+            },
+            error: (err) => {
+              const message = err.error?.message || err.message || 'Failed to load statistics';
+              this.toasterService.error(message);
+              this.connectionFailed = true;
+              this.cd.markForCheck();
+            },
+          });
         },
-        error: () => {
-          this.connectionFailed = true;
-        },
-      });
-    });
+        (err) => {
+          const message = err.error?.message || err.message || 'Failed to load controller';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        }
+      );
   }
 }

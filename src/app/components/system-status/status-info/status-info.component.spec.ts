@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
+import { ChangeDetectorRef } from '@angular/core';
 import { of, throwError } from 'rxjs';
 import { StatusInfoComponent } from './status-info.component';
 import { StatusChartComponent } from '../status-chart/status-chart.component';
@@ -16,6 +17,7 @@ describe('StatusInfoComponent', () => {
   let mockControllerService: any;
   let mockComputeService: any;
   let mockToasterService: any;
+  let mockChangeDetectorRef: any;
   let mockActivatedRoute: any;
   let mockController: Controller;
   let mockControllerStatistics: ControllerStatistics;
@@ -101,6 +103,10 @@ describe('StatusInfoComponent', () => {
       error: vi.fn(),
     };
 
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [StatusInfoComponent, StatusChartComponent],
       providers: [
@@ -108,6 +114,7 @@ describe('StatusInfoComponent', () => {
         { provide: ComputeService, useValue: mockComputeService },
         { provide: ControllerService, useValue: mockControllerService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -232,6 +239,75 @@ describe('StatusInfoComponent', () => {
         await fixture.whenStable();
 
         expect(component.connectionFailed).toBe(true);
+      });
+
+      it('should show error toaster when getStatistics fails', async () => {
+        mockComputeService.getStatistics.mockReturnValue(
+          throwError(() => ({ error: { message: 'Statistics failed' } }))
+        );
+
+        component.getStatistics();
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Statistics failed');
+      });
+
+      it('should use fallback message when getStatistics error has no message', async () => {
+        mockComputeService.getStatistics.mockReturnValue(throwError(() => ({})));
+
+        component.getStatistics();
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load statistics');
+      });
+
+      it('should call markForCheck when getStatistics fails', async () => {
+        mockComputeService.getStatistics.mockReturnValue(
+          throwError(() => ({ error: { message: 'Statistics failed' } }))
+        );
+
+        const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+        component.getStatistics();
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(cdrSpy).toHaveBeenCalled();
+      });
+    });
+
+    describe('failed controller fetch', () => {
+      beforeEach(() => {
+        component.controllerId = '1';
+        mockControllerService.get.mockRejectedValue({ error: { message: 'Controller failed' } });
+      });
+
+      it('should show error toaster when controllerService.get fails', async () => {
+        component.getStatistics();
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Controller failed');
+      });
+
+      it('should use fallback message when controller error has no message', async () => {
+        mockControllerService.get.mockRejectedValue({});
+
+        component.getStatistics();
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+      });
+
+      it('should call markForCheck when controllerService.get fails', async () => {
+        const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+        component.getStatistics();
+        fixture.detectChanges();
+        await fixture.whenStable();
+
+        expect(cdrSpy).toHaveBeenCalled();
       });
     });
   });
