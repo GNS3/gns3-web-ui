@@ -8,6 +8,7 @@ import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
 import { VmwareTemplate } from '@models/templates/vmware-template';
 import { VmwareVm } from '@models/vmware/vmware-vm';
+import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, afterEach, vi, beforeAll } from 'vitest';
 
 describe('AddVmwareTemplateComponent', () => {
@@ -76,20 +77,8 @@ describe('AddVmwareTemplateComponent', () => {
 
   beforeEach(async () => {
     mockVmwareService = {
-      getVirtualMachines: vi.fn().mockReturnValue({
-        subscribe: vi.fn((arg) => {
-          if (typeof arg === 'function') arg(mockVirtualMachines);
-          else if (arg?.next) arg.next(mockVirtualMachines);
-          return { unsubscribe: vi.fn() };
-        }),
-      }),
-      addTemplate: vi.fn().mockReturnValue({
-        subscribe: vi.fn((arg) => {
-          if (typeof arg === 'function') arg();
-          else if (arg?.next) arg.next();
-          return { unsubscribe: vi.fn() };
-        }),
-      }),
+      getVirtualMachines: vi.fn().mockReturnValue(of(mockVirtualMachines)),
+      addTemplate: vi.fn().mockReturnValue(of({})),
     };
 
     mockControllerService = {
@@ -97,13 +86,7 @@ describe('AddVmwareTemplateComponent', () => {
     };
 
     mockTemplateMocksService = {
-      getVmwareTemplate: vi.fn().mockReturnValue({
-        subscribe: vi.fn((arg) => {
-          if (typeof arg === 'function') arg(mockVmwareTemplate);
-          else if (arg?.next) arg.next(mockVmwareTemplate);
-          return { unsubscribe: vi.fn() };
-        }),
-      }),
+      getVmwareTemplate: vi.fn().mockReturnValue(of(mockVmwareTemplate)),
     };
 
     mockToasterService = {
@@ -195,15 +178,6 @@ describe('AddVmwareTemplateComponent', () => {
     component.selectedVM.set(mockVirtualMachines[0]);
     component.linkedClone.set(true);
 
-    const addTemplateObservable = {
-      subscribe: vi.fn((arg) => {
-        if (typeof arg === 'function') arg();
-        else if (arg?.next) arg.next();
-        return { unsubscribe: vi.fn() };
-      }),
-    };
-    mockVmwareService.addTemplate.mockReturnValue(addTemplateObservable);
-
     component.addTemplate();
 
     expect(mockVmwareService.addTemplate).toHaveBeenCalledWith(mockController, expect.any(Object));
@@ -246,5 +220,81 @@ describe('AddVmwareTemplateComponent', () => {
   it('should update templateName model signal when input changes', () => {
     component.templateName.set('MyTemplate');
     expect(component.templateName()).toBe('MyTemplate');
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(AddVmwareTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(AddVmwareTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when getVirtualMachines fails', async () => {
+      mockVmwareService.getVirtualMachines.mockReturnValue(
+        throwError(() => ({ error: { message: 'VMware VMs error' } }))
+      );
+
+      fixture = TestBed.createComponent(AddVmwareTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('VMware VMs error');
+    });
+
+    it('should use fallback message when getVirtualMachines error has no message', async () => {
+      mockVmwareService.getVirtualMachines.mockReturnValue(throwError(() => ({})));
+
+      fixture = TestBed.createComponent(AddVmwareTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load VMware VMs');
+    });
+
+    it('should show error toaster when getVmwareTemplate fails', async () => {
+      mockTemplateMocksService.getVmwareTemplate.mockReturnValue(
+        throwError(() => ({ error: { message: 'Template error' } }))
+      );
+
+      fixture = TestBed.createComponent(AddVmwareTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Template error');
+    });
+
+    it('should use fallback message when getVmwareTemplate error has no message', async () => {
+      mockTemplateMocksService.getVmwareTemplate.mockReturnValue(throwError(() => ({})));
+
+      fixture = TestBed.createComponent(AddVmwareTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load VMware template');
+    });
   });
 });

@@ -58,20 +58,41 @@ export class AddVmwareTemplateComponent implements OnInit {
       `VMware VM support is deprecated and will be removed in a future version, please use Qemu VMs instead`
     );
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller.set(controller);
-      this.cd.markForCheck();
-
-      this.vmwareService.getVirtualMachines(this.controller()).subscribe((virtualMachines: VmwareVm[]) => {
-        this.virtualMachines.set(virtualMachines);
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller.set(controller);
         this.cd.markForCheck();
 
-        this.templateMocksService.getVmwareTemplate().subscribe((template: VmwareTemplate) => {
-          this.vmwareTemplate.set(template);
-          this.cd.markForCheck();
+        this.vmwareService.getVirtualMachines(this.controller()).subscribe({
+          next: (virtualMachines: VmwareVm[]) => {
+            this.virtualMachines.set(virtualMachines);
+            this.cd.markForCheck();
+
+            this.templateMocksService.getVmwareTemplate().subscribe({
+              next: (template: VmwareTemplate) => {
+                this.vmwareTemplate.set(template);
+                this.cd.markForCheck();
+              },
+              error: (err) => {
+                const message = err.error?.message || err.message || 'Failed to load VMware template';
+                this.toasterService.error(message);
+                this.cd.markForCheck();
+              },
+            });
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load VMware VMs';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
         });
-      });
-    });
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   goBack() {
