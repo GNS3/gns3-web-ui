@@ -96,23 +96,35 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.cd.markForCheck();
 
-      this.getConfiguration();
-      this.virtualBoxService
-        .getTemplate(this.controller, template_id)
-        .subscribe((virtualBoxTemplate: VirtualBoxTemplate) => {
-          this.virtualBoxTemplate = virtualBoxTemplate;
-          if (!this.virtualBoxTemplate.tags) {
-            this.virtualBoxTemplate.tags = [];
-          }
-          // Custom adapters will be managed through the dialog (incremental save)
-          this.initFormFromTemplate();
-          this.cd.markForCheck();
+        this.getConfiguration();
+        this.virtualBoxService.getTemplate(this.controller, template_id).subscribe({
+          next: (virtualBoxTemplate: VirtualBoxTemplate) => {
+            this.virtualBoxTemplate = virtualBoxTemplate;
+            if (!this.virtualBoxTemplate.tags) {
+              this.virtualBoxTemplate.tags = [];
+            }
+            // Custom adapters will be managed through the dialog (incremental save)
+            this.initFormFromTemplate();
+            this.cd.markForCheck();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load VirtualBox template';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
         });
-    });
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   initFormFromTemplate() {
@@ -270,8 +282,10 @@ export class VirtualBoxTemplateDetailsComponent implements OnInit {
         this.initFormFromTemplate();
         this.cd.markForCheck();
       },
-      error: (error) => {
-        this.toasterService.error('Failed to save template: ' + (error.message || 'Unknown error'));
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to save VirtualBox template';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
       },
     });
   }

@@ -335,12 +335,12 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
     });
 
     it('should show error when save fails', () => {
-      const error = { message: 'Server error' };
+      const error = { error: { message: 'Server error' } };
       mockVirtualBoxService.saveTemplate.mockReturnValue(throwError(() => error));
 
       component.onSave();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Failed to save template'));
+      expect(mockToasterService.error).toHaveBeenCalledWith('Server error');
     });
   });
 
@@ -612,6 +612,78 @@ describe('VirtualBoxTemplateDetailsComponent', () => {
     it('should update usage signal', () => {
       component.usage.set('New usage text');
       expect(component.usage()).toBe('New usage text');
+    });
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(VirtualBoxTemplateDetailsComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(VirtualBoxTemplateDetailsComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when getTemplate fails', async () => {
+      mockVirtualBoxService.getTemplate.mockReturnValue(
+        throwError(() => ({ error: { message: 'Template error' } }))
+      );
+
+      fixture = TestBed.createComponent(VirtualBoxTemplateDetailsComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Template error');
+    });
+
+    it('should use fallback message when getTemplate error has no message', async () => {
+      mockVirtualBoxService.getTemplate.mockReturnValue(throwError(() => ({})));
+
+      fixture = TestBed.createComponent(VirtualBoxTemplateDetailsComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load VirtualBox template');
+    });
+
+    it('should show error toaster when saveTemplate fails with error.message', async () => {
+      setupComponentState(createMockTemplate());
+      mockVirtualBoxService.saveTemplate.mockReturnValue(
+        throwError(() => ({ error: { message: 'Save failed' } }))
+      );
+
+      component.onSave();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Save failed');
+    });
+
+    it('should use fallback message when saveTemplate error has no message', async () => {
+      setupComponentState(createMockTemplate());
+      mockVirtualBoxService.saveTemplate.mockReturnValue(throwError(() => ({})));
+
+      component.onSave();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to save VirtualBox template');
     });
   });
 });
