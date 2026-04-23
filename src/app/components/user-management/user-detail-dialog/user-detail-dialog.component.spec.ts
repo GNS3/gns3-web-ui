@@ -245,42 +245,46 @@ describe('UserDetailDialogComponent', () => {
         vi.clearAllMocks();
       });
 
-      it('should show error toaster when getGroupsByUserId fails with error.error.message', () => {
+      it('should show error toaster when getGroupsByUserId fails with error.error.message', async () => {
         (mockUserService.getGroupsByUserId as ReturnType<typeof vi.fn>).mockReturnValue(
           throwError(() => ({ error: { message: 'Groups failed' } }))
         );
 
         component.loadGroupsData();
+        await vi.runAllTimersAsync();
 
         expect(mockToasterService.error).toHaveBeenCalledWith('Groups failed');
       });
 
-      it('should use fallback message when error has no message', () => {
+      it('should use fallback message when error has no message', async () => {
         (mockUserService.getGroupsByUserId as ReturnType<typeof vi.fn>).mockReturnValue(
           throwError(() => ({}))
         );
 
         component.loadGroupsData();
+        await vi.runAllTimersAsync();
 
         expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load groups');
       });
 
-      it('should set groupsLoaded to true on error', () => {
+      it('should set groupsLoaded to true on error', async () => {
         (mockUserService.getGroupsByUserId as ReturnType<typeof vi.fn>).mockReturnValue(
           throwError(() => ({ error: { message: 'Failed' } }))
         );
 
         component.loadGroupsData();
+        await vi.runAllTimersAsync();
         expect(component.groupsLoaded).toBe(true);
       });
 
-      it('should call markForCheck when getGroupsByUserId fails', () => {
+      it('should call markForCheck when getGroupsByUserId fails', async () => {
         (mockUserService.getGroupsByUserId as ReturnType<typeof vi.fn>).mockReturnValue(
           throwError(() => ({ error: { message: 'Failed' } }))
         );
 
         const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
         component.loadGroupsData();
+        await vi.runAllTimersAsync();
 
         expect(cdrSpy).toHaveBeenCalled();
       });
@@ -316,42 +320,46 @@ describe('UserDetailDialogComponent', () => {
         vi.clearAllMocks();
       });
 
-      it('should show error toaster when forkJoin fails with error.error.message', () => {
+      it('should show error toaster when forkJoin fails with error.error.message', async () => {
         (mockRoleService.get as ReturnType<typeof vi.fn>).mockReturnValue(
           throwError(() => ({ error: { message: 'Load failed' } }))
         );
 
         component.loadAceData();
+        await vi.runAllTimersAsync();
 
         expect(mockToasterService.error).toHaveBeenCalledWith('Load failed');
       });
 
-      it('should use fallback message when error has no message', () => {
+      it('should use fallback message when error has no message', async () => {
         (mockRoleService.get as ReturnType<typeof vi.fn>).mockReturnValue(
           throwError(() => ({}))
         );
 
         component.loadAceData();
+        await vi.runAllTimersAsync();
 
         expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load access control entries');
       });
 
-      it('should set acesLoaded to true on error', () => {
+      it('should set acesLoaded to true on error', async () => {
         (mockRoleService.get as ReturnType<typeof vi.fn>).mockReturnValue(
           throwError(() => ({ error: { message: 'Failed' } }))
         );
 
         component.loadAceData();
+        await vi.runAllTimersAsync();
         expect(component.acesLoaded).toBe(true);
       });
 
-      it('should call markForCheck when load fails', () => {
+      it('should call markForCheck when load fails', async () => {
         (mockRoleService.get as ReturnType<typeof vi.fn>).mockReturnValue(
           throwError(() => ({ error: { message: 'Failed' } }))
         );
 
         const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
         component.loadAceData();
+        await vi.runAllTimersAsync();
 
         expect(cdrSpy).toHaveBeenCalled();
       });
@@ -391,6 +399,8 @@ describe('UserDetailDialogComponent', () => {
       component.editUserForm.get('username')?.clearAsyncValidators();
       component.editUserForm.get('email')?.clearAsyncValidators();
       component.editUserForm.updateValueAndValidity();
+      component.editUserForm.get('username')?.updateValueAndValidity();
+      component.editUserForm.get('email')?.updateValueAndValidity();
     });
 
     it('should not call update if form is invalid', () => {
@@ -400,11 +410,12 @@ describe('UserDetailDialogComponent', () => {
       expect(mockUserService.update).not.toHaveBeenCalled();
     });
 
-    it('should show success toast and close dialog on successful update', () => {
+    it('should show success toast and close dialog on successful update', async () => {
       component.editUserForm.get('full_name')?.setValue('Updated Name');
       component.editUserForm.get('full_name')?.markAsDirty();
 
       component.onSaveChanges();
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.success).toHaveBeenCalledWith(`User ${mockUser.username} updated`);
       expect(mockDialogRef.close).toHaveBeenCalledWith(mockUser);
@@ -415,7 +426,7 @@ describe('UserDetailDialogComponent', () => {
         vi.clearAllMocks();
       });
 
-      it('should show error toaster when update fails with error.error.message', () => {
+      it('should show error toaster when update fails with error.error.message', async () => {
         (mockUserService.update as ReturnType<typeof vi.fn>).mockReturnValue(
           throwError(() => ({ error: { message: 'Update failed' } }))
         );
@@ -423,11 +434,12 @@ describe('UserDetailDialogComponent', () => {
         component.editUserForm.get('full_name')?.markAsDirty();
 
         component.onSaveChanges();
+        await vi.runAllTimersAsync();
 
         expect(mockToasterService.error).toHaveBeenCalledWith('Update failed');
       });
 
-      it('should use fallback message when error has no message', () => {
+      it('should use fallback message when error has no message', async () => {
         (mockUserService.update as ReturnType<typeof vi.fn>).mockReturnValue(
           throwError(() => ({}))
         );
@@ -435,11 +447,12 @@ describe('UserDetailDialogComponent', () => {
         component.editUserForm.get('full_name')?.markAsDirty();
 
         component.onSaveChanges();
+        await vi.runAllTimersAsync();
 
         expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update user');
       });
 
-      it('should call markForCheck when update fails', () => {
+      it('should call markForCheck when update fails', async () => {
         (mockUserService.update as ReturnType<typeof vi.fn>).mockReturnValue(
           throwError(() => ({ error: { message: 'Update failed' } }))
         );
@@ -448,11 +461,12 @@ describe('UserDetailDialogComponent', () => {
 
         const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
         component.onSaveChanges();
+        await vi.runAllTimersAsync();
 
         expect(cdrSpy).toHaveBeenCalled();
       });
 
-      it('should not close dialog when update fails', () => {
+      it('should not close dialog when update fails', async () => {
         (mockUserService.update as ReturnType<typeof vi.fn>).mockReturnValue(
           throwError(() => ({ error: { message: 'Update failed' } }))
         );
@@ -460,6 +474,7 @@ describe('UserDetailDialogComponent', () => {
         component.editUserForm.get('full_name')?.markAsDirty();
 
         component.onSaveChanges();
+        await vi.runAllTimersAsync();
 
         expect(mockDialogRef.close).not.toHaveBeenCalled();
       });
