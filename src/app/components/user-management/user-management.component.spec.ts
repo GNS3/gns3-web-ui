@@ -21,6 +21,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router';
 import { of, throwError } from 'rxjs';
 import { User } from '@models/users/user';
 import { Controller } from '@models/controller';
+import { ChangeDetectorRef } from '@angular/core';
 
 describe('UserManagementComponent', () => {
   let component: UserManagementComponent;
@@ -119,6 +120,7 @@ describe('UserManagementComponent', () => {
         { provide: ToasterService, useValue: mockToasterService },
         { provide: MatDialog, useValue: mockDialog },
         { provide: Location, useValue: mockLocation },
+        { provide: ChangeDetectorRef, useValue: { markForCheck: vi.fn() } },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -166,6 +168,31 @@ describe('UserManagementComponent', () => {
     });
   });
 
+  describe('ngOnInit', () => {
+    it('should show error and navigate back when controllerService.get fails', async () => {
+      (mockControllerService.get as any).mockRejectedValue({ error: { message: 'Controller not found' } });
+
+      const newFixture = TestBed.createComponent(UserManagementComponent);
+      const newComponent = newFixture.componentInstance;
+      newFixture.detectChanges();
+      await newFixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller not found');
+      expect(mockLocation.back).toHaveBeenCalled();
+    });
+
+    it('should use fallback message when controller error has no message', async () => {
+      (mockControllerService.get as any).mockRejectedValue({});
+
+      const newFixture = TestBed.createComponent(UserManagementComponent);
+      const newComponent = newFixture.componentInstance;
+      newFixture.detectChanges();
+      await newFixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+  });
+
   describe('refresh', () => {
     it('should fetch users and update dataSource', () => {
       const users = [createMockUser(), createMockUser({ user_id: 'user-2' })];
@@ -187,8 +214,17 @@ describe('UserManagementComponent', () => {
       fixture.detectChanges();
 
       expect(mockProgressService.setError).toHaveBeenCalledWith(error);
-      expect(mockToasterService.error).toHaveBeenCalledWith('Cannot open the user management page');
+      expect(mockToasterService.error).toHaveBeenCalledWith('Network error');
       expect(mockLocation.back).toHaveBeenCalled();
+    });
+
+    it('should use fallback message when error has no message', () => {
+      (mockUserService.list as any).mockReturnValue(throwError(() => ({})));
+
+      component.refresh();
+      fixture.detectChanges();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load users');
     });
   });
 
@@ -203,6 +239,28 @@ describe('UserManagementComponent', () => {
     it('should open delete user dialog', () => {
       // Dialog components require full dependency graph - tested in integration tests
       expect(component.onDelete).toBeDefined();
+    });
+
+    it('should show error when delete fails with error.error.message', () => {
+      const user = createMockUser();
+      mockDialogRef.afterClosed.mockReturnValue(of(true));
+      (mockUserService.delete as any).mockReturnValue(
+        throwError(() => ({ error: { message: 'Delete failed' } }))
+      );
+
+      component.onDelete(user);
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Delete failed');
+    });
+
+    it('should use fallback message when delete error has no message', () => {
+      const user = createMockUser();
+      mockDialogRef.afterClosed.mockReturnValue(of(true));
+      (mockUserService.delete as any).mockReturnValue(throwError(() => ({})));
+
+      component.onDelete(user);
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to delete user testuser');
     });
   });
 
@@ -252,17 +310,60 @@ describe('UserManagementComponent', () => {
       // Dialog components require full dependency graph - tested in integration tests
       expect(component.deleteMultiple).toBeDefined();
     });
+
+    it('should show error when delete fails with error.error.message', () => {
+      const users = [createMockUser({ user_id: 'user-1' })];
+      component.selection.setSelection(users);
+      mockDialogRef.afterClosed.mockReturnValue(of(true));
+      (mockUserService.delete as any).mockReturnValue(
+        throwError(() => ({ error: { message: 'Delete failed' } }))
+      );
+
+      component.deleteMultiple();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Delete failed');
+    });
+
+    it('should use fallback message when delete error has no message', () => {
+      const users = [createMockUser({ user_id: 'user-1' })];
+      component.selection.setSelection(users);
+      mockDialogRef.afterClosed.mockReturnValue(of(true));
+      (mockUserService.delete as any).mockReturnValue(throwError(() => ({})));
+
+      component.deleteMultiple();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to delete user testuser');
+    });
   });
 
   describe('openUserDetailDialog', () => {
-    it('should show error when fetching user data fails', () => {
+    it('should show error when fetching user data fails with error.error.message', () => {
       const user = createMockUser();
-      const error = { message: 'Failed to load' };
+      const error = { error: { message: 'Failed to load' } };
       (mockUserService.get as any).mockReturnValue(throwError(() => error));
 
       component.openUserDetailDialog(user);
 
-      expect(mockToasterService.error).toHaveBeenCalledWith('Cannot load user data: [object Object]');
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load');
+    });
+
+    it('should use fallback message when error has no message', () => {
+      const user = createMockUser();
+      (mockUserService.get as any).mockReturnValue(throwError(() => ({})));
+
+      component.openUserDetailDialog(user);
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load user data');
+    });
+
+    it('should call markForCheck when fetching user data fails', () => {
+      const user = createMockUser();
+      (mockUserService.get as any).mockReturnValue(throwError(() => ({ error: { message: 'Failed' } })));
+
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.openUserDetailDialog(user);
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 
