@@ -10,7 +10,7 @@ import { ProjectService } from '@services/project.service';
 import { ToasterService } from '@services/toaster.service';
 import { MatDialogModule } from '@angular/material/dialog';
 import { FileUploader } from 'ng2-file-upload';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('ImportProjectDialogComponent', () => {
@@ -309,6 +309,44 @@ describe('ImportProjectDialogComponent', () => {
       component.onImportClick();
 
       expect(component.submitted).toBe(true);
+    });
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when projectService.list fails', async () => {
+      mockProjectService.list.mockReturnValue(
+        throwError(() => ({ error: { message: 'List failed' } }))
+      );
+      component.projectNameForm.patchValue({ projectName: 'TestProject' });
+
+      component.onImportClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('List failed');
+    });
+
+    it('should use fallback message when list error has no message', async () => {
+      mockProjectService.list.mockReturnValue(throwError(() => ({})));
+      component.projectNameForm.patchValue({ projectName: 'TestProject' });
+
+      component.onImportClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to list projects');
+    });
+
+    it('should call markForCheck when list fails', async () => {
+      mockProjectService.list.mockReturnValue(
+        throwError(() => ({ error: { message: 'List failed' } }))
+      );
+      component.projectNameForm.patchValue({ projectName: 'TestProject' });
+
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.onImportClick();
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });
