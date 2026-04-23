@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, signal, viewChild, model } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject, signal, viewChild, model } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
@@ -84,6 +84,7 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   private toasterService = inject(ToasterService);
   private imageUploadSessionService = inject(ImageUploadSessionService);
   private router = inject(Router);
+  private cd = inject(ChangeDetectorRef);
 
   constructor() {}
 
@@ -120,12 +121,19 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
       }
     });
 
-    this.controllerService.get(this.controllerId).then((controller: Controller) => {
-      this.controller = controller;
-      if (controller.authToken) {
-        this.getImages();
+    this.controllerService.get(this.controllerId).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        if (controller.authToken) {
+          this.getImages();
+        }
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
       }
-    });
+    );
   }
 
   ngOnDestroy(): void {
@@ -144,16 +152,19 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
   }
 
   getImages() {
-    this.imageService.getImages(this.controller).subscribe(
-      (images: Image[]) => {
+    this.imageService.getImages(this.controller).subscribe({
+      next: (images: Image[]) => {
         this.images = images || [];
         this.syncUploadedRowsWithPersistedData();
         this.refreshTableRows();
+        this.cd.markForCheck();
       },
-      (error) => {
-        this.toasterService.error(error.error?.message || error.message || 'Failed to get images');
-      }
-    );
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to get images';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   onPageEvent(event: any) {
@@ -211,18 +222,21 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
         return;
       }
 
-      this.imageService.deleteFile(this.controller, path).subscribe(
-        (res) => {
+      this.imageService.deleteFile(this.controller, path).subscribe({
+        next: () => {
           this.getImages();
           this.unChecked();
           this.toasterService.success('File deleted');
+          this.cd.markForCheck();
         },
-        (error) => {
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to delete file';
+          this.toasterService.error(message);
           this.getImages();
           this.unChecked();
-          this.toasterService.error(error.error?.message || error.message || 'Failed to delete file');
-        }
-      );
+          this.cd.markForCheck();
+        },
+      });
     });
   }
 
@@ -309,14 +323,17 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
-        this.imageService.installImages(this.controller).subscribe(
-          () => {
+        this.imageService.installImages(this.controller).subscribe({
+          next: () => {
             this.toasterService.success('Images installed');
+            this.cd.markForCheck();
           },
-          (error) => {
-            this.toasterService.error(error.error?.message || error.message || 'Failed to install images');
-          }
-        );
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to install images';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
+        });
       }
     });
   }
@@ -329,18 +346,21 @@ export class ImageManagerComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe((result: boolean) => {
       if (result) {
-        this.imageService.pruneImages(this.controller).subscribe(
-          () => {
+        this.imageService.pruneImages(this.controller).subscribe({
+          next: () => {
             this.getImages();
             this.unChecked();
             this.toasterService.success('Images pruned');
+            this.cd.markForCheck();
           },
-          (error) => {
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to prune images';
+            this.toasterService.error(message);
             this.getImages();
             this.unChecked();
-            this.toasterService.error(error.error?.message || error.message || 'Failed to prune images');
-          }
-        );
+            this.cd.markForCheck();
+          },
+        });
       }
     });
   }
