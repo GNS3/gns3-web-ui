@@ -12,7 +12,7 @@ import { EmptyTemplatesListComponent } from '../../common/empty-templates-list/e
 import { Controller } from '@models/controller';
 import { DockerTemplate } from '@models/templates/docker-template';
 import { ChangeDetectorRef } from '@angular/core';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('DockerTemplatesComponent', () => {
   let fixture: ComponentFixture<DockerTemplatesComponent>;
@@ -104,7 +104,7 @@ describe('DockerTemplatesComponent', () => {
           useValue: { open: vi.fn().mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(true)) }) },
         },
         { provide: TemplateService, useValue: { deleteTemplate: vi.fn().mockReturnValue(of({})) } },
-        { provide: ToasterService, useValue: { success: vi.fn() } },
+        { provide: ToasterService, useValue: { success: vi.fn(), error: vi.fn() } },
       ],
     }).compileComponents();
 
@@ -239,6 +239,50 @@ describe('DockerTemplatesComponent', () => {
 
       const addBtn = fixture.nativeElement.querySelector('.docker-templates__add-btn');
       expect(addBtn).toBeTruthy();
+    });
+  });
+
+  describe('error handling', () => {
+    let mockToasterService: any;
+
+    beforeEach(() => {
+      mockToasterService = TestBed.inject(ToasterService);
+    });
+
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(DockerTemplatesComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(DockerTemplatesComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when getTemplates fails', () => {
+      mockDockerService.getTemplates.mockReturnValue(throwError(() => ({ error: { message: 'Templates error' } })));
+
+      fixture.componentInstance.getTemplates();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Templates error');
+    });
+
+    it('should use fallback message when getTemplates error has no message', () => {
+      mockDockerService.getTemplates.mockReturnValue(throwError(() => ({})));
+
+      fixture.componentInstance.getTemplates();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load templates');
     });
   });
 });
