@@ -70,34 +70,46 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.cd.markForCheck();
 
-      this.categories = this.builtInTemplatesConfigurationService.getCategoriesForEthernetHubs();
-      this.builtInTemplatesService
-        .getTemplate(this.controller, template_id)
-        .subscribe((ethernetHubTemplate: EthernetHubTemplate) => {
-          this.ethernetHubTemplate = ethernetHubTemplate;
-          if (!this.ethernetHubTemplate.ports_mapping) {
-            this.ethernetHubTemplate.ports_mapping = [];
-          }
-          if (!this.ethernetHubTemplate.tags) {
-            this.ethernetHubTemplate.tags = [];
-          }
+        this.categories = this.builtInTemplatesConfigurationService.getCategoriesForEthernetHubs();
+        this.builtInTemplatesService.getTemplate(this.controller, template_id).subscribe({
+          next: (ethernetHubTemplate: EthernetHubTemplate) => {
+            this.ethernetHubTemplate = ethernetHubTemplate;
+            if (!this.ethernetHubTemplate.ports_mapping) {
+              this.ethernetHubTemplate.ports_mapping = [];
+            }
+            if (!this.ethernetHubTemplate.tags) {
+              this.ethernetHubTemplate.tags = [];
+            }
 
-          // Initialize model signals
-          this.templateName.set(ethernetHubTemplate.name || '');
-          this.defaultName.set(ethernetHubTemplate.default_name_format || '');
-          this.symbol.set(ethernetHubTemplate.symbol || '');
-          this.category.set(ethernetHubTemplate.category || '');
-          this.numberOfPorts.set(ethernetHubTemplate.ports_mapping.length || 0);
-          this.tags.set(ethernetHubTemplate.tags || []);
-          this.usage.set(ethernetHubTemplate.usage || '');
+            // Initialize model signals
+            this.templateName.set(ethernetHubTemplate.name || '');
+            this.defaultName.set(ethernetHubTemplate.default_name_format || '');
+            this.symbol.set(ethernetHubTemplate.symbol || '');
+            this.category.set(ethernetHubTemplate.category || '');
+            this.numberOfPorts.set(ethernetHubTemplate.ports_mapping.length || 0);
+            this.tags.set(ethernetHubTemplate.tags || []);
+            this.usage.set(ethernetHubTemplate.usage || '');
 
-          this.cd.markForCheck();
+            this.cd.markForCheck();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load template';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
         });
-    });
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   goBack() {
@@ -122,11 +134,17 @@ export class EthernetHubsTemplateDetailsComponent implements OnInit {
       });
     }
 
-    this.builtInTemplatesService
-      .saveTemplate(this.controller, this.ethernetHubTemplate)
-      .subscribe((ethernetHubTemplate: EthernetHubTemplate) => {
+    this.builtInTemplatesService.saveTemplate(this.controller, this.ethernetHubTemplate).subscribe({
+      next: () => {
         this.toasterService.success('Changes saved');
-      });
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to save template';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   chooseSymbol() {
