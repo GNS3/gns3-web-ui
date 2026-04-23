@@ -87,13 +87,20 @@ export class AddGroupDialogComponent implements OnInit {
         [groupNameAsyncValidator(this.data.controller, this.groupService)]
       ),
     });
-    this.userService.list(this.controller).subscribe((users: User[]) => {
-      this.users = users;
-      this.filteredUsers = this.autocompleteControl.valueChanges.pipe(
-        startWith(''),
-        map((value) => this._filter(value))
-      );
-      this.cd.markForCheck();
+    this.userService.list(this.controller).subscribe({
+      next: (users: User[]) => {
+        this.users = users;
+        this.filteredUsers = this.autocompleteControl.valueChanges.pipe(
+          startWith(''),
+          map((value) => this._filter(value))
+        );
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load users';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -114,27 +121,28 @@ export class AddGroupDialogComponent implements OnInit {
     const groupName = this.groupNameForm.controls['groupName'].value;
     const toAdd = Array.from(this.usersToAdd.values());
 
-    this.groupService.addGroup(this.controller, groupName).subscribe(
-      (group) => {
+    this.groupService.addGroup(this.controller, groupName).subscribe({
+      next: (group) => {
         toAdd.forEach((user: User) => {
-          this.groupService.addMemberToGroup(this.controller, group, user).subscribe(
-            () => {
+          this.groupService.addMemberToGroup(this.controller, group, user).subscribe({
+            next: () => {
               this.toasterService.success(`user ${user.username} was added`);
             },
-            (error) => {
-              this.toasterService.error(
-                `An error occur while trying to add user ${user.username} to group ${groupName}`
-              );
-            }
-          );
+            error: (err) => {
+              const message = err.error?.message || err.message || 'Failed to add user to group';
+              this.toasterService.error(message);
+              this.cd.markForCheck();
+            },
+          });
         });
         this.dialogRef.close(true);
       },
-      (error) => {
-        this.toasterService.error(`An error occur while trying to create new group ${groupName}`);
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to create group';
+        this.toasterService.error(message);
         this.dialogRef.close(false);
-      }
-    );
+      },
+    });
   }
 
   onNoClick() {
