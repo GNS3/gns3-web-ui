@@ -28,6 +28,7 @@ import { ComputeService } from '@services/compute.service';
 import { ProjectService } from '@services/project.service';
 import { ThemeService } from '@services/theme.service';
 import { NotificationService, ComputeNotification } from '@services/notification.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-topology-summary',
@@ -43,6 +44,7 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
   private linksDataSource = inject(LinksDataSource);
   private themeService = inject(ThemeService);
   private notificationService = inject(NotificationService);
+  private toasterService = inject(ToasterService);
   private cd = inject(ChangeDetectorRef);
 
   @Input() controller: Controller;
@@ -112,10 +114,17 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
 
     this.computesInitialized = true;
 
-    this.projectService.getStatistics(this.controller, this.project.project_id).subscribe((stats) => {
-      this.projectsStatistics = stats;
-      // In zoneless mode, trigger change detection when async data arrives
-      this.cd.markForCheck();
+    this.projectService.getStatistics(this.controller, this.project.project_id).subscribe({
+      next: (stats) => {
+        this.projectsStatistics = stats;
+        // In zoneless mode, trigger change detection when async data arrives
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load project statistics';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
 
     // Try to load from cache first
@@ -125,12 +134,19 @@ export class TopologySummaryComponent implements OnInit, OnDestroy {
       this.cd.markForCheck();
     } else {
       // If no cache, load from HTTP
-      this.computeService.getComputes(this.controller).subscribe((computes) => {
-        // Set to cache
-        this.notificationService.setInitialComputes(computes);
-        this.computes = computes;
-        // In zoneless mode, trigger change detection when async data arrives
-        this.cd.markForCheck();
+      this.computeService.getComputes(this.controller).subscribe({
+        next: (computes) => {
+          // Set to cache
+          this.notificationService.setInitialComputes(computes);
+          this.computes = computes;
+          // In zoneless mode, trigger change detection when async data arrives
+          this.cd.markForCheck();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to load computes';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        },
       });
     }
 
