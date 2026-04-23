@@ -10,7 +10,7 @@ import { ProtocolHandlerService } from '@services/protocol-handler.service';
 import { VncConsoleService } from '@services/vnc-console.service';
 import { Controller } from '@models/controller';
 import { Node } from '../../../../../cartography/models/node';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('ConsoleDeviceActionBrowserComponent', () => {
   let component: ConsoleDeviceActionBrowserComponent;
@@ -245,6 +245,50 @@ describe('ConsoleDeviceActionBrowserComponent', () => {
       component.openConsole();
 
       expect(mockNodeService.getNode).not.toHaveBeenCalled();
+    });
+
+    it('should show error toast when nodeService.getNode fails', async () => {
+      (mockNodeService.getNode as any).mockReturnValue(
+        throwError(() => ({ error: { message: 'Failed to fetch node' } }))
+      );
+      const mockNode = createMockNode();
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.componentRef.setInput('node', mockNode);
+      fixture.detectChanges();
+
+      component.openConsole();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to fetch node');
+    });
+
+    it('should use fallback message when getNode error has no message', async () => {
+      (mockNodeService.getNode as any).mockReturnValue(throwError(() => ({})));
+      const mockNode = createMockNode();
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.componentRef.setInput('node', mockNode);
+      fixture.detectChanges();
+
+      component.openConsole();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to get node information');
+    });
+
+    it('should call markForCheck when getNode fails', async () => {
+      (mockNodeService.getNode as any).mockReturnValue(
+        throwError(() => ({ error: { message: 'Failed' } }))
+      );
+      const mockNode = createMockNode();
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.componentRef.setInput('node', mockNode);
+      fixture.detectChanges();
+
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.openConsole();
+      await vi.runAllTimersAsync();
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 
