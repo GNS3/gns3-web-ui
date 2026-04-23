@@ -237,8 +237,8 @@ export class TemplateComponent implements OnInit, OnDestroy {
 
     // Fetch all blob URLs in parallel
     const uniquePaths = Array.from(symbolPathMap.values());
-    forkJoin(uniquePaths.map((path) => this.symbolService.getSymbolBlobUrl(this.controller(), path))).subscribe(
-      (blobUrls: string[]) => {
+    forkJoin(uniquePaths.map((path) => this.symbolService.getSymbolBlobUrl(this.controller(), path))).subscribe({
+      next: (blobUrls: string[]) => {
         uniquePaths.forEach((path, index) => {
           // Find which symbol this path belongs to
           for (const [symbol, symbolPath] of symbolPathMap.entries()) {
@@ -249,8 +249,13 @@ export class TemplateComponent implements OnInit, OnDestroy {
           }
         });
         this.cd.markForCheck();
-      }
-    );
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load template symbols';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   sortTemplates() {
@@ -349,8 +354,10 @@ export class TemplateComponent implements OnInit, OnDestroy {
           // Now process with loaded data
           this.processNodeCreation(template, finalX, finalY, loadedComputes);
         },
-        error: (error) => {
-          console.error('Failed to load computes:', error);
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to load computes';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
           // Fallback to local on error
           const nodeAddedEvent: NodeAddedEvent = {
             template: template,
@@ -360,7 +367,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
             y: finalY,
           };
           this.nodeCreationChange.emit(nodeAddedEvent);
-        }
+        },
       });
     } else {
       // Use cached data (instant)

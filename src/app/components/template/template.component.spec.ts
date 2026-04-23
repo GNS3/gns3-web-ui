@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { OverlayContainer } from '@angular/cdk/overlay';
-import { Subject, of } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 import { TemplateComponent } from './template.component';
 import { TemplateService } from '@services/template.service';
 import { SymbolService } from '@services/symbol.service';
@@ -524,6 +524,136 @@ describe('TemplateComponent', () => {
 
     it('should accept project input', () => {
       expect(component.project()).toBe(mockProject);
+    });
+  });
+
+  describe('error handling', () => {
+    let mockToasterService: any;
+    let mockComputeService: any;
+    let mockSymbolService: any;
+
+    beforeEach(() => {
+      vi.clearAllMocks();
+
+      mockToasterService = {
+        error: vi.fn(),
+        success: vi.fn(),
+      };
+
+      mockComputeService = {
+        getComputes: vi.fn().mockReturnValue(of([])),
+      };
+
+      mockSymbolService = {
+        list: vi.fn().mockReturnValue(of([])),
+        getSymbolFromTemplate: vi.fn().mockReturnValue('http://localhost:3080/v4/symbols/router/raw'),
+        getSymbolBlobUrl: vi.fn().mockReturnValue(of('blob:http://example.com/symbol')),
+      };
+
+      TestBed.resetTestingModule();
+      TestBed.configureTestingModule({
+        imports: [TemplateComponent, MatDialogModule],
+        providers: [
+          { provide: TemplateService, useValue: mockTemplateService },
+          { provide: SymbolService, useValue: mockSymbolService },
+          { provide: ThemeService, useValue: mockThemeService },
+          { provide: OverlayContainer, useValue: mockOverlayContainer },
+          { provide: Context, useValue: mockContext },
+          { provide: MatDialog, useValue: mockDialog },
+          { provide: ComputeService, useValue: mockComputeService },
+          { provide: ToasterService, useValue: mockToasterService },
+          { provide: NotificationService, useValue: {
+            computeNotificationEmitter: new Subject(),
+            connectToComputeNotifications: vi.fn(),
+            hasCachedData: vi.fn().mockReturnValue(false),
+            getCachedComputes: vi.fn().mockReturnValue([]),
+            setInitialComputes: vi.fn(),
+            computeCacheUpdated: new Subject(),
+          }},
+        ],
+      });
+
+      fixture = TestBed.createComponent(TemplateComponent);
+      component = fixture.componentInstance;
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.componentRef.setInput('project', mockProject);
+      component['subscription'] = { unsubscribe: vi.fn() } as any;
+      component['themeSubscription'] = { unsubscribe: vi.fn() } as any;
+    });
+
+    describe('loadTemplates', () => {
+      it('should show error toaster when list fails with error.error.message', () => {
+        mockTemplateService.list.mockReturnValue(
+          throwError(() => ({ error: { message: 'List failed' } }))
+        );
+
+        component.ngOnInit();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('List failed');
+      });
+
+      it('should use fallback message when list error has no message', () => {
+        mockTemplateService.list.mockReturnValue(throwError(() => ({})));
+
+        component.ngOnInit();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load templates');
+      });
+    });
+
+    describe('loadTemplateSymbolBlobs', () => {
+      it('should show error toaster when forkJoin fails', () => {
+        mockTemplateService.list.mockReturnValue(of([createMockTemplate('t1', 'Test', 'vpcs')]));
+        mockSymbolService.getSymbolBlobUrl.mockReturnValue(throwError(() => ({ error: { message: 'Symbol failed' } })));
+
+        component.ngOnInit();
+
+        // Need to wait for async operations
+        expect(mockToasterService.error).toHaveBeenCalledWith('Symbol failed');
+      });
+
+      it('should use fallback message when symbol error has no message', () => {
+        mockTemplateService.list.mockReturnValue(of([createMockTemplate('t1', 'Test', 'vpcs')]));
+        mockSymbolService.getSymbolBlobUrl.mockReturnValue(throwError(() => ({})));
+
+        component.ngOnInit();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load template symbols');
+      });
+    });
+
+    describe('dragEnd - getComputes', () => {
+      beforeEach(() => {
+        component['cachedComputes'].set([]);
+        component['lastPageX'].set(100);
+        component['lastPageY'].set(100);
+        component['mouseOffsetX'] = 0;
+        component['mouseOffsetY'] = 0;
+      });
+
+      it('should show error toaster when getComputes fails and fallback to local', () => {
+        mockComputeService.getComputes.mockReturnValue(
+          throwError(() => ({ error: { message: 'Computes failed' } }))
+        );
+        const emitSpy = vi.spyOn(component.nodeCreationChange, 'emit');
+
+        component.dragEnd({} as any, createMockTemplate('t1', 'Test', 'vpcs'));
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Computes failed');
+        expect(emitSpy).toHaveBeenCalled();
+        const emittedEvent = emitSpy.mock.calls[0][0] as NodeAddedEvent;
+        expect(emittedEvent.controller).toBe('local');
+      });
+
+      it('should use fallback message when getComputes error has no message', () => {
+        mockComputeService.getComputes.mockReturnValue(throwError(() => ({})));
+        const emitSpy = vi.spyOn(component.nodeCreationChange, 'emit');
+
+        component.dragEnd({} as any, createMockTemplate('t1', 'Test', 'vpcs'));
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load computes');
+        expect(emitSpy).toHaveBeenCalled();
+      });
     });
   });
 });
