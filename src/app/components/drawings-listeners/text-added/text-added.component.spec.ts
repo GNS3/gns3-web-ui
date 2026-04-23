@@ -1,9 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Subject, of } from 'rxjs';
+import { ChangeDetectorRef } from '@angular/core';
+import { Subject, of, throwError } from 'rxjs';
 import { TextAddedComponent } from './text-added.component';
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 import { DrawingService } from '@services/drawing.service';
+import { ToasterService } from '@services/toaster.service';
 import { DefaultDrawingsFactory } from '../../../cartography/helpers/default-drawings-factory';
 import { MapDrawingToSvgConverter } from '../../../cartography/converters/map/map-drawing-to-svg-converter';
 import { Context } from '../../../cartography/models/context';
@@ -23,6 +25,8 @@ describe('TextAddedComponent', () => {
   let mockDrawingService: any;
   let mockDrawingsFactory: any;
   let mockMapDrawingToSvgConverter: any;
+  let mockToasterService: any;
+  let mockChangeDetectorRef: any;
   let mockContext: any;
 
   let textAddedSubject: Subject<TextAddedDataEvent>;
@@ -53,7 +57,6 @@ describe('TextAddedComponent', () => {
     auto_start: false,
     scene_width: 2000,
     scene_height: 1000,
-    zoom: 100,
     show_layers: false,
     snap_to_grid: false,
     show_grid: false,
@@ -80,6 +83,8 @@ describe('TextAddedComponent', () => {
   const mockSvgText = '<text>Converted SVG</text>';
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     textAddedSubject = new Subject<TextAddedDataEvent>();
 
     mockDrawingsDataSource = {
@@ -96,6 +101,14 @@ describe('TextAddedComponent', () => {
 
     mockMapDrawingToSvgConverter = {
       convert: vi.fn().mockReturnValue(mockSvgText),
+    };
+
+    mockToasterService = {
+      error: vi.fn(),
+    };
+
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
     };
 
     mockContext = {
@@ -116,6 +129,8 @@ describe('TextAddedComponent', () => {
         { provide: DrawingService, useValue: mockDrawingService },
         { provide: DefaultDrawingsFactory, useValue: mockDrawingsFactory },
         { provide: MapDrawingToSvgConverter, useValue: mockMapDrawingToSvgConverter },
+        { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
         { provide: Context, useValue: mockContext },
       ],
     }).compileComponents();
@@ -131,6 +146,7 @@ describe('TextAddedComponent', () => {
     if (fixture) {
       fixture.destroy();
     }
+    textAddedSubject.complete();
   });
 
   describe('Creation', () => {
@@ -188,14 +204,112 @@ describe('TextAddedComponent', () => {
     });
   });
 
+  describe('error handling', () => {
+    it('should display error message when add fails with error.error.message', async () => {
+      const errorMessage = 'Failed to create text: insufficient space';
+      const mockError = {
+        error: { message: errorMessage },
+      };
+      mockDrawingService.add.mockReturnValue(throwError(() => mockError));
+
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      const event = new TextAddedDataEvent('Test Text', 100, 200);
+
+      component.onTextAdded(event);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith(errorMessage);
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should display error message when add fails with err.message', async () => {
+      const errorMessage = 'Network connection failed';
+      const error = new Error(errorMessage);
+      mockDrawingService.add.mockReturnValue(throwError(() => error));
+
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      const event = new TextAddedDataEvent('Test Text', 100, 200);
+
+      component.onTextAdded(event);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith(errorMessage);
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should display fallback error message when error has no message', async () => {
+      const error = {};
+      mockDrawingService.add.mockReturnValue(throwError(() => error));
+
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      const event = new TextAddedDataEvent('Test Text', 100, 200);
+
+      component.onTextAdded(event);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to create text drawing');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should not add drawing to data source when add fails', async () => {
+      const error = new Error('Creation failed');
+      mockDrawingService.add.mockReturnValue(throwError(() => error));
+
+      const event = new TextAddedDataEvent('Test Text', 100, 200);
+      component.onTextAdded(event);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockDrawingsDataSource.add).not.toHaveBeenCalled();
+    });
+
+    it('should not emit drawingSaved event when add fails', async () => {
+      const error = new Error('Creation failed');
+      mockDrawingService.add.mockReturnValue(throwError(() => error));
+
+      const event = new TextAddedDataEvent('Test Text', 100, 200);
+      const emitSpy = vi.spyOn(component.drawingSaved, 'emit');
+
+      component.onTextAdded(event);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(emitSpy).not.toHaveBeenCalled();
+    });
+  });
+
   describe('ngOnDestroy', () => {
-    it('should unsubscribe on destroy', () => {
-      const subscription = (component as any).textAdded;
-      const unsubscribeSpy = vi.spyOn(subscription, 'unsubscribe');
+    it('should unsubscribe from textAdded', () => {
+      const unsubscribeSpy = vi.spyOn(component['textAdded'], 'unsubscribe');
 
       component.ngOnDestroy();
 
       expect(unsubscribeSpy).toHaveBeenCalled();
+    });
+
+    it('should not call drawingService.add after component is destroyed', async () => {
+      // Destroy the component (which unsubscribes)
+      component.ngOnDestroy();
+
+      // Clear previous calls
+      vi.clearAllMocks();
+      mockDrawingService.add.mockClear();
+
+      // Emit event through the event source after destruction
+      const event = new TextAddedDataEvent('Test Text', 100, 200);
+      textAddedSubject.next(event);
+      await vi.runAllTimersAsync();
+
+      // Should not call add since subscription is cancelled
+      expect(mockDrawingService.add).not.toHaveBeenCalled();
     });
   });
 

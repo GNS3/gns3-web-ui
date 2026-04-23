@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
   Input,
@@ -21,6 +22,7 @@ import { TextElement } from '../../../cartography/models/drawings/text-element';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-text-added',
@@ -41,6 +43,8 @@ export class TextAddedComponent implements OnInit, OnDestroy {
   private drawingsFactory = inject(DefaultDrawingsFactory);
   private mapDrawingToSvgConverter = inject(MapDrawingToSvgConverter);
   private context = inject(Context);
+  private toasterService = inject(ToasterService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit() {
     this.textAdded = this.drawingsEventSource.textAdded.subscribe((evt) => this.onTextAdded(evt));
@@ -60,9 +64,16 @@ export class TextAddedComponent implements OnInit, OnDestroy {
         evt.y,
         svgText
       )
-      .subscribe((controllerDrawing: Drawing) => {
-        this.drawingsDataSource.add(controllerDrawing);
-        this.drawingSaved.emit(true);
+      .subscribe({
+        next: (controllerDrawing: Drawing) => {
+          this.drawingsDataSource.add(controllerDrawing);
+          this.drawingSaved.emit(true);
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to create text drawing';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
       });
   }
 
