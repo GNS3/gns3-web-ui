@@ -10,12 +10,13 @@
  *
  * Author: Sylvain MATHIEU, Elise LEBEAU
  */
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
 import { Controller } from '@models/controller';
 import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-management',
@@ -28,6 +29,8 @@ export class ManagementComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private controllerService = inject(ControllerService);
+  private toasterService = inject(ToasterService);
+  private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
   readonly links = signal(['users', 'groups', 'roles', 'pools', 'ACL']);
@@ -36,8 +39,16 @@ export class ManagementComponent implements OnInit {
 
   ngOnInit(): void {
     const controllerId = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(+controllerId).then((controller: Controller) => {
-      this.controller = controller;
-    });
+    this.controllerService.get(+controllerId).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.cd.markForCheck();
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 }
