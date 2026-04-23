@@ -12,7 +12,7 @@ import { EmptyTemplatesListComponent } from '../../common/empty-templates-list/e
 import { Controller } from '@models/controller';
 import { VpcsTemplate } from '@models/templates/vpcs-template';
 import { ChangeDetectorRef } from '@angular/core';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('VpcsTemplatesComponent', () => {
   let fixture: ComponentFixture<VpcsTemplatesComponent>;
@@ -20,6 +20,7 @@ describe('VpcsTemplatesComponent', () => {
   let mockVpcsService: any;
   let mockCdr: any;
   let mockActivatedRoute: any;
+  let mockToasterService: any;
 
   const createMockController = (): Controller =>
     ({
@@ -52,6 +53,11 @@ describe('VpcsTemplatesComponent', () => {
       markForCheck: vi.fn(),
     };
 
+    mockToasterService = {
+      success: vi.fn(),
+      error: vi.fn(),
+    };
+
     mockActivatedRoute = {
       snapshot: {
         paramMap: {
@@ -82,7 +88,7 @@ describe('VpcsTemplatesComponent', () => {
         { provide: VpcsService, useValue: mockVpcsService },
         { provide: ChangeDetectorRef, useValue: mockCdr },
         { provide: TemplateService, useValue: { deleteTemplate: vi.fn().mockReturnValue(of({})) } },
-        { provide: ToasterService, useValue: { success: vi.fn() } },
+        { provide: ToasterService, useValue: mockToasterService },
         {
           provide: MatDialog,
           useValue: { open: vi.fn().mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(true)) }) },
@@ -199,6 +205,56 @@ describe('VpcsTemplatesComponent', () => {
 
       const addBtn = fixture.nativeElement.querySelector('.vpcs-templates__add-btn');
       expect(addBtn).toBeTruthy();
+    });
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(VpcsTemplatesComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(VpcsTemplatesComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when getTemplates fails', async () => {
+      mockVpcsService.getTemplates.mockReturnValue(
+        throwError(() => ({ error: { message: 'Templates error' } }))
+      );
+      fixture.componentInstance.controller = createMockController();
+
+      fixture.componentInstance.getTemplates();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Templates error');
+    });
+
+    it('should use fallback message when getTemplates error has no message', async () => {
+      mockVpcsService.getTemplates.mockReturnValue(throwError(() => ({})));
+      fixture.componentInstance.controller = createMockController();
+
+      fixture.componentInstance.getTemplates();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load VPCS templates');
     });
   });
 });

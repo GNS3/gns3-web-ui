@@ -10,6 +10,7 @@ import { Controller } from '@models/controller';
 import { VpcsTemplate } from '@models/templates/vpcs-template';
 import { ControllerService } from '@services/controller.service';
 import { VpcsService } from '@services/vpcs.service';
+import { ToasterService } from '@services/toaster.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 import { EmptyTemplatesListComponent } from '../../common/empty-templates-list/empty-templates-list.component';
 
@@ -35,6 +36,7 @@ export class VpcsTemplatesComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private vpcsService = inject(VpcsService);
+  private toasterService = inject(ToasterService);
   private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
@@ -43,17 +45,31 @@ export class VpcsTemplatesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
-      this.getTemplates();
-    });
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.cd.markForCheck();
+        this.getTemplates();
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   getTemplates() {
-    this.vpcsService.getTemplates(this.controller).subscribe((vpcsTemplates: VpcsTemplate[]) => {
-      this.vpcsTemplates = vpcsTemplates.filter((elem) => elem.template_type === 'vpcs' && !elem.builtin);
-      this.cd.markForCheck();
+    this.vpcsService.getTemplates(this.controller).subscribe({
+      next: (vpcsTemplates: VpcsTemplate[]) => {
+        this.vpcsTemplates = vpcsTemplates.filter((elem) => elem.template_type === 'vpcs' && !elem.builtin);
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load VPCS templates';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
