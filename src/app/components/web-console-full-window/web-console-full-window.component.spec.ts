@@ -55,6 +55,8 @@ import { NodeService } from '@services/node.service';
 import { ThemeService } from '@services/theme.service';
 import { XtermContextMenuService } from '@services/xterm-context-menu.service';
 import { XtermService } from '@services/xterm.service';
+import { ToasterService } from '@services/toaster.service';
+import { throwError } from 'rxjs';
 
 describe('WebConsoleFullWindowComponent', () => {
   let fixture: ComponentFixture<WebConsoleFullWindowComponent>;
@@ -119,6 +121,10 @@ describe('WebConsoleFullWindowComponent', () => {
     }),
     updateTerminalTheme: vi.fn(),
     initTerminal: vi.fn(),
+  };
+
+  const mockToasterService = {
+    error: vi.fn(),
   };
 
   const mockActivatedRoute = {
@@ -217,6 +223,7 @@ describe('WebConsoleFullWindowComponent', () => {
         { provide: XtermContextMenuService, useValue: mockXtermContextMenuService },
         { provide: ChangeDetectorRef, useValue: mockCdr },
         { provide: XtermService, useValue: mockXtermService },
+        { provide: ToasterService, useValue: mockToasterService },
       ],
     });
 
@@ -372,6 +379,87 @@ describe('WebConsoleFullWindowComponent', () => {
     it('should subscribe to consoleResized events', () => {
       fixture.detectChanges();
       expect(mockNodeConsoleService.consoleResized).toBeDefined();
+    });
+
+    describe('error handling', () => {
+      it('should show error when controllerService.get fails with error.error.message', async () => {
+        mockControllerService.get.mockRejectedValue({ error: { message: 'Controller failed' } });
+
+        fixture = TestBed.createComponent(WebConsoleFullWindowComponent);
+        component = fixture.componentInstance;
+        setupTerminalMock();
+        fixture.detectChanges();
+        await vi.runAllTimersAsync();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Controller failed');
+      });
+
+      it('should use fallback message when controller error has no message', async () => {
+        mockControllerService.get.mockRejectedValue({});
+
+        fixture = TestBed.createComponent(WebConsoleFullWindowComponent);
+        component = fixture.componentInstance;
+        setupTerminalMock();
+        fixture.detectChanges();
+        await vi.runAllTimersAsync();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+      });
+
+      it('should show error when nodeService.getNodeById fails with error.error.message', async () => {
+        mockControllerService.get.mockResolvedValue(mockController);
+        mockNodeService.getNodeById.mockReturnValue(
+          throwError(() => ({ error: { message: 'Node failed' } }))
+        );
+
+        fixture = TestBed.createComponent(WebConsoleFullWindowComponent);
+        component = fixture.componentInstance;
+        setupTerminalMock();
+        fixture.detectChanges();
+        await vi.runAllTimersAsync();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Node failed');
+      });
+
+      it('should use fallback message when node error has no message', async () => {
+        mockControllerService.get.mockResolvedValue(mockController);
+        mockNodeService.getNodeById.mockReturnValue(throwError(() => ({})));
+
+        fixture = TestBed.createComponent(WebConsoleFullWindowComponent);
+        component = fixture.componentInstance;
+        setupTerminalMock();
+        fixture.detectChanges();
+        await vi.runAllTimersAsync();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load node');
+      });
+
+      it('should call markForCheck when controllerService.get fails', async () => {
+        mockControllerService.get.mockRejectedValue({ error: { message: 'Failed' } });
+
+        fixture = TestBed.createComponent(WebConsoleFullWindowComponent);
+        component = fixture.componentInstance;
+        setupTerminalMock();
+        fixture.detectChanges();
+        await vi.runAllTimersAsync();
+
+        expect(mockCdr.markForCheck).toHaveBeenCalled();
+      });
+
+      it('should call markForCheck when nodeService.getNodeById fails', async () => {
+        mockControllerService.get.mockResolvedValue(mockController);
+        mockNodeService.getNodeById.mockReturnValue(
+          throwError(() => ({ error: { message: 'Failed' } }))
+        );
+
+        fixture = TestBed.createComponent(WebConsoleFullWindowComponent);
+        component = fixture.componentInstance;
+        setupTerminalMock();
+        fixture.detectChanges();
+        await vi.runAllTimersAsync();
+
+        expect(mockCdr.markForCheck).toHaveBeenCalled();
+      });
     });
   });
 

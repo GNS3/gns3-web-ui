@@ -23,6 +23,7 @@ import { ControllerService } from '@services/controller.service';
 import { ThemeService } from '@services/theme.service';
 import { XtermContextMenuService } from '@services/xterm-context-menu.service';
 import { XtermService } from '@services/xterm.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-web-console-full-window',
@@ -51,6 +52,7 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
   private contextMenuService = inject(XtermContextMenuService);
   private cdr = inject(ChangeDetectorRef);
   private xtermService = inject(XtermService);
+  private toasterService = inject(ToasterService);
 
   // Now can use xtermService for terminal initialization
   public term: Terminal = new Terminal({
@@ -86,17 +88,31 @@ export class WebConsoleFullWindowComponent implements OnInit, OnDestroy {
       this.fitAddon.fit();
     });
 
-    this.controllerService.get(+this.controllerId).then((controller: Controller) => {
-      this.controller = controller;
-      this.nodeService
-        .getNodeById(this.controller, this.projectId, this.nodeId)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe((node: GNS3Node) => {
-          this.node = node;
-          this.title.setTitle(this.node.name);
-          this.openTerminal();
-        });
-    });
+    this.controllerService.get(+this.controllerId).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.nodeService
+          .getNodeById(this.controller, this.projectId, this.nodeId)
+          .pipe(takeUntil(this.destroy$))
+          .subscribe({
+            next: (node: GNS3Node) => {
+              this.node = node;
+              this.title.setTitle(this.node.name);
+              this.openTerminal();
+            },
+            error: (err) => {
+              const message = err.error?.message || err.message || 'Failed to load node';
+              this.toasterService.error(message);
+              this.cdr.markForCheck();
+            },
+          });
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      }
+    );
   }
 
   openTerminal() {
