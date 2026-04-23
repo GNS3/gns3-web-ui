@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
+import { of, throwError } from 'rxjs';
 import { CopyQemuVmTemplateComponent } from './copy-qemu-vm-template.component';
 import { QemuService } from '@services/qemu.service';
 import { ControllerService } from '@services/controller.service';
@@ -90,20 +91,8 @@ describe('CopyQemuVmTemplateComponent', () => {
 
   beforeEach(async () => {
     mockQemuService = {
-      getTemplate: vi.fn().mockReturnValue({
-        subscribe: vi.fn((arg) => {
-          if (typeof arg === 'function') arg(mockQemuTemplate);
-          else if (arg?.next) arg.next(mockQemuTemplate);
-          return { unsubscribe: vi.fn() };
-        }),
-      }),
-      addTemplate: vi.fn().mockReturnValue({
-        subscribe: vi.fn((arg) => {
-          if (typeof arg === 'function') arg(mockQemuTemplate);
-          else if (arg?.next) arg.next(mockQemuTemplate);
-          return { unsubscribe: vi.fn() };
-        }),
-      }),
+      getTemplate: vi.fn().mockReturnValue(of(mockQemuTemplate)),
+      addTemplate: vi.fn().mockReturnValue(of(mockQemuTemplate)),
     };
 
     mockControllerService = {
@@ -112,6 +101,7 @@ describe('CopyQemuVmTemplateComponent', () => {
 
     mockToasterService = {
       error: vi.fn(),
+      success: vi.fn(),
     };
 
     mockRouter = {
@@ -202,14 +192,7 @@ describe('CopyQemuVmTemplateComponent', () => {
   it('should add template and navigate back when addTemplate is called with valid data', () => {
     component.nameForm.get('templateName')?.setValue('My Copied Template');
 
-    const addTemplateObservable = {
-      subscribe: vi.fn((arg) => {
-        if (typeof arg === 'function') arg();
-        else if (arg?.next) arg.next();
-        return { unsubscribe: vi.fn() };
-      }),
-    };
-    mockQemuService.addTemplate.mockReturnValue(addTemplateObservable);
+    mockQemuService.addTemplate.mockReturnValue(of(mockQemuTemplate));
 
     component.addTemplate();
 
@@ -229,13 +212,7 @@ describe('CopyQemuVmTemplateComponent', () => {
   it('should generate new UUID for copied template', () => {
     component.nameForm.get('templateName')?.setValue('Copy of Original QEMU VM');
 
-    mockQemuService.addTemplate.mockReturnValue({
-      subscribe: vi.fn((arg) => {
-        if (typeof arg === 'function') arg(mockQemuTemplate);
-        else if (arg?.next) arg.next(mockQemuTemplate);
-        return { unsubscribe: vi.fn() };
-      }),
-    });
+    mockQemuService.addTemplate.mockReturnValue(of(mockQemuTemplate));
 
     component.addTemplate();
 
@@ -251,5 +228,51 @@ describe('CopyQemuVmTemplateComponent', () => {
   it('should update templateName when nameForm templateName control changes', () => {
     component.nameForm.get('templateName')?.setValue('Custom Name');
     expect(component.nameForm.get('templateName')?.value).toBe('Custom Name');
+  });
+
+  describe('error handling', () => {
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(CopyQemuVmTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(CopyQemuVmTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when qemuService.getTemplate fails', async () => {
+      mockQemuService.getTemplate.mockReturnValue(throwError(() => ({ error: { message: 'Template error' } })));
+
+      fixture = TestBed.createComponent(CopyQemuVmTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Template error');
+    });
+
+    it('should use fallback message when qemuService.getTemplate error has no message', async () => {
+      mockQemuService.getTemplate.mockReturnValue(throwError(() => ({})));
+
+      fixture = TestBed.createComponent(CopyQemuVmTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load QEMU template');
+    });
   });
 });
