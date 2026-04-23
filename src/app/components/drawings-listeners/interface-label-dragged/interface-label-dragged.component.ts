@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
@@ -7,6 +7,7 @@ import { MapLinkNode } from '../../../cartography/models/map/map-link-node';
 import { Link } from '@models/link';
 import { Controller } from '@models/controller';
 import { LinkService } from '@services/link.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-interface-label-dragged',
@@ -22,6 +23,8 @@ export class InterfaceLabelDraggedComponent implements OnInit, OnDestroy {
   private linkService = inject(LinkService);
   private linksDataSource = inject(LinksDataSource);
   private linksEventSource = inject(LinksEventSource);
+  private toasterService = inject(ToasterService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit() {
     this.interfaceDragged = this.linksEventSource.interfaceDragged.subscribe((evt) =>
@@ -40,9 +43,18 @@ export class InterfaceLabelDraggedComponent implements OnInit, OnDestroy {
       link.nodes[1].label.y += draggedEvent.dy;
     }
 
-    this.linkService.updateNodes(this.controller(), link, link.nodes).subscribe((controllerLink: Link) => {
-      this.linksDataSource.update(controllerLink);
-    });
+    this.linkService
+      .updateNodes(this.controller(), link, link.nodes)
+      .subscribe({
+        next: (controllerLink: Link) => {
+          this.linksDataSource.update(controllerLink);
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to update interface label position';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   ngOnDestroy() {

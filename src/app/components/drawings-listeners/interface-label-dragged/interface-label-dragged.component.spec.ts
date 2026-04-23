@@ -1,10 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChangeDetectorRef } from '@angular/core';
-import { of, Subject, Subscription } from 'rxjs';
+import { of, Subject, Subscription, throwError } from 'rxjs';
 import { InterfaceLabelDraggedComponent } from './interface-label-dragged.component';
 import { LinksDataSource } from '../../../cartography/datasources/links-datasource';
 import { LinksEventSource } from '../../../cartography/events/links-event-source';
 import { LinkService } from '@services/link.service';
+import { ToasterService } from '@services/toaster.service';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
 import { MapLinkNode } from '../../../cartography/models/map/map-link-node';
 import { Link } from '@models/link';
@@ -17,6 +18,7 @@ describe('InterfaceLabelDraggedComponent', () => {
   let mockLinksEventSource: any;
   let mockLinksDataSource: any;
   let mockLinkService: any;
+  let mockToasterService: any;
   let mockChangeDetectorRef: any;
   let interfaceDragged$: Subject<DraggedDataEvent<MapLinkNode>>;
   let mockController: Controller;
@@ -86,6 +88,8 @@ describe('InterfaceLabelDraggedComponent', () => {
   };
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     interfaceDragged$ = new Subject();
 
     mockLinksEventSource = {
@@ -102,6 +106,10 @@ describe('InterfaceLabelDraggedComponent', () => {
       updateNodes: vi.fn().mockReturnValue(of(mockLink)),
     };
 
+    mockToasterService = {
+      error: vi.fn(),
+    };
+
     mockChangeDetectorRef = {
       markForCheck: vi.fn(),
     };
@@ -114,6 +122,7 @@ describe('InterfaceLabelDraggedComponent', () => {
         { provide: LinksEventSource, useValue: mockLinksEventSource },
         { provide: LinksDataSource, useValue: mockLinksDataSource },
         { provide: LinkService, useValue: mockLinkService },
+        { provide: ToasterService, useValue: mockToasterService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
@@ -126,17 +135,22 @@ describe('InterfaceLabelDraggedComponent', () => {
     if (fixture) {
       fixture.destroy();
     }
+    interfaceDragged$.complete();
   });
 
-  it('should create', () => {
-    fixture.detectChanges();
-    expect(component).toBeTruthy();
+  describe('initialization', () => {
+    it('should create', () => {
+      fixture.detectChanges();
+      expect(component).toBeTruthy();
+    });
   });
 
   describe('ngOnInit', () => {
     it('should subscribe to linksEventSource.interfaceDragged', () => {
-      fixture.detectChanges();
-      expect(interfaceDragged$.observed).toBe(true);
+      const subscribeSpy = vi.spyOn(mockLinksEventSource.interfaceDragged, 'subscribe');
+      component.ngOnInit();
+
+      expect(subscribeSpy).toHaveBeenCalled();
     });
   });
 
@@ -202,6 +216,108 @@ describe('InterfaceLabelDraggedComponent', () => {
       component.onInterfaceLabelDragged(event);
 
       expect(mockLinksDataSource.update).toHaveBeenCalledWith(updatedLink);
+    });
+  });
+
+  describe('error handling', () => {
+    it('should display error message when updateNodes fails with error.error.message', async () => {
+      const errorMessage = 'Failed to update label: link locked';
+      const mockError = {
+        error: { message: errorMessage },
+      };
+      mockLinkService.updateNodes.mockReturnValue(throwError(() => mockError));
+
+      fixture.detectChanges();
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      const event = createDraggedEvent('node-1', 10, 20);
+
+      component.onInterfaceLabelDragged(event);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith(errorMessage);
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should display error message when updateNodes fails with err.message', async () => {
+      const errorMessage = 'Network connection failed';
+      const error = new Error(errorMessage);
+      mockLinkService.updateNodes.mockReturnValue(throwError(() => error));
+
+      fixture.detectChanges();
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      const event = createDraggedEvent('node-1', 10, 20);
+
+      component.onInterfaceLabelDragged(event);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith(errorMessage);
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should display fallback error message when error has no message', async () => {
+      const error = {};
+      mockLinkService.updateNodes.mockReturnValue(throwError(() => error));
+
+      fixture.detectChanges();
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      const event = createDraggedEvent('node-1', 10, 20);
+
+      component.onInterfaceLabelDragged(event);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update interface label position');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should not update data source when updateNodes fails', async () => {
+      const error = new Error('Update failed');
+      mockLinkService.updateNodes.mockReturnValue(throwError(() => error));
+
+      fixture.detectChanges();
+      const event = createDraggedEvent('node-1', 10, 20);
+      component.onInterfaceLabelDragged(event);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockLinksDataSource.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('ngOnDestroy', () => {
+    it('should unsubscribe from interfaceDragged', () => {
+      fixture.detectChanges();
+      const unsubscribeSpy = vi.spyOn(component['interfaceDragged'], 'unsubscribe');
+
+      component.ngOnDestroy();
+
+      expect(unsubscribeSpy).toHaveBeenCalled();
+    });
+
+    it('should not call updateNodes after component is destroyed', async () => {
+      fixture.detectChanges();
+      fixture.componentRef.setInput('controller', mockController);
+
+      // Destroy the component (which unsubscribes)
+      component.ngOnDestroy();
+
+      // Clear previous calls
+      vi.clearAllMocks();
+      mockLinkService.updateNodes.mockClear();
+
+      // Emit event through the event source after destruction
+      const event = createDraggedEvent('node-1', 10, 20);
+      interfaceDragged$.next(event);
+      await vi.runAllTimersAsync();
+
+      // Should not call updateNodes since subscription is cancelled
+      expect(mockLinkService.updateNodes).not.toHaveBeenCalled();
     });
   });
 
