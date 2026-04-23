@@ -18,7 +18,8 @@ import { NotificationService } from '@services/notification.service';
 import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
 import { Compute } from '@models/compute';
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
+import { ChangeDetectorRef } from '@angular/core';
 
 describe('ComputesComponent', () => {
   let component: ComputesComponent;
@@ -29,6 +30,7 @@ describe('ComputesComponent', () => {
   let mockToasterService: ToasterService;
   let mockDialog: MatDialog;
   let mockDialogRef: MatDialogRef<any>;
+  let mockChangeDetectorRef: any;
   let computeNotificationEmitter: Subject<any>;
 
   const mockController: Controller = {
@@ -101,6 +103,10 @@ describe('ComputesComponent', () => {
       open: vi.fn().mockReturnValue(mockDialogRef),
     } as any as MatDialog;
 
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
+    };
+
     const mockActivatedRoute = {
       snapshot: {
         paramMap: {
@@ -130,6 +136,7 @@ describe('ComputesComponent', () => {
         { provide: NotificationService, useValue: mockNotificationService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: MatDialog, useValue: mockDialog },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
       ],
     }).compileComponents();
@@ -257,5 +264,99 @@ describe('ComputesComponent', () => {
     component.handleComputeNotification(notification);
 
     expect(mockToasterService.success).toHaveBeenCalledWith('Compute "Local Compute" deleted');
+  });
+
+  describe('loadControllerAndComputes error handling', () => {
+    it('should display error when controllerService.get fails', async () => {
+      mockControllerService.get = vi.fn().mockRejectedValue({ error: { message: 'Failed to load controller' } });
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.loadControllerAndComputes();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(component.loading()).toBe(false);
+    });
+
+    it('should display fallback error when controllerService.get fails with no message', async () => {
+      mockControllerService.get = vi.fn().mockRejectedValue(new Error('Network error'));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.loadControllerAndComputes();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Network error');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(component.loading()).toBe(false);
+    });
+  });
+
+  describe('loadComputes error handling', () => {
+    it('should display error when getComputes fails', async () => {
+      mockComputeService.getComputes = vi.fn().mockReturnValue(
+        throwError(() => ({ error: { message: 'Failed to load computes' } }))
+      );
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.loadComputes();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load computes');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(component.loading()).toBe(false);
+    });
+
+    it('should display fallback error when getComputes fails with no message', async () => {
+      mockComputeService.getComputes = vi.fn().mockReturnValue(throwError(() => new Error('Connection failed')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.loadComputes();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Connection failed');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(component.loading()).toBe(false);
+    });
+  });
+
+  describe('connectCompute error handling', () => {
+    it('should display error when connectCompute fails', async () => {
+      mockComputeService.connectCompute = vi.fn().mockReturnValue(
+        throwError(() => ({ error: { message: 'Connection refused' } }))
+      );
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.connectCompute(mockComputes[0]);
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Connection refused');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should display fallback error when connectCompute fails with no message', async () => {
+      mockComputeService.connectCompute = vi.fn().mockReturnValue(throwError(() => ({})));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.connectCompute(mockComputes[0]);
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to connect compute');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('Dialog methods', () => {
+    it('openAddDialog should be defined', () => {
+      expect(component.openAddDialog).toBeDefined();
+    });
+
+    it('openEditDialog should be defined', () => {
+      expect(component.openEditDialog).toBeDefined();
+    });
+
+    it('deleteCompute should be defined', () => {
+      expect(component.deleteCompute).toBeDefined();
+    });
   });
 });
