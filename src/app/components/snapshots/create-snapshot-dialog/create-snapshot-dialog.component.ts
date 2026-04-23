@@ -56,9 +56,16 @@ export class CreateSnapshotDialogComponent {
     });
 
     if (this.project?.project_id) {
-      this.snapshotService.list(this.controller, this.project.project_id).subscribe((snapshots: Snapshot[]) => {
-        this.existingSnapshotNames = snapshots.map((s) => s.name);
-        this.cd.markForCheck();
+      this.snapshotService.list(this.controller, this.project.project_id).subscribe({
+        next: (snapshots: Snapshot[]) => {
+          this.existingSnapshotNames = snapshots.map((s) => s.name);
+          this.cd.markForCheck();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to load snapshots';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        },
       });
     }
   }

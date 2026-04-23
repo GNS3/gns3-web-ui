@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { UntypedFormControl, UntypedFormGroup } from '@angular/forms';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { CreateSnapshotDialogComponent } from './create-snapshot-dialog.component';
 import { SnapshotService } from '@services/snapshot.service';
 import { ToasterService } from '@services/toaster.service';
@@ -180,6 +180,34 @@ describe('CreateSnapshotDialogComponent', () => {
       // No detectChanges needed since list is not called
 
       expect(mockSnapshotService.list).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when list fails with error.message', async () => {
+      mockSnapshotService.list.mockReturnValue(
+        throwError(() => ({ error: { message: 'List failed' } }))
+      );
+
+      const component = createComponent();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('List failed');
+    });
+
+    it('should use fallback message when list error has no message', async () => {
+      mockSnapshotService.list.mockReturnValue(throwError(() => ({})));
+
+      const component = createComponent();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load snapshots');
     });
   });
 
