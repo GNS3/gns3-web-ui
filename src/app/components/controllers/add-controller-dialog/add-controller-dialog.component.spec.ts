@@ -258,7 +258,27 @@ describe('AddControllerDialogComponent', () => {
 
       expect(component.connectionError).toBe('Cannot connect to the controller. It appears offline.');
       expect(component.canAddAnyway).toBe(true);
-      expect(mockToasterService.error).toHaveBeenCalledWith('Cannot connect to the controller: Error: Network error');
+      expect(mockToasterService.error).toHaveBeenCalledWith('Network error');
+    });
+
+    it('should display error with error.error.message format', () => {
+      mockControllerService.checkControllerVersion.mockReturnValue(
+        throwError(() => ({ error: { message: 'Connection refused' } }))
+      );
+
+      component.onAddClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Connection refused');
+      expect(component.canAddAnyway).toBe(true);
+    });
+
+    it('should display fallback error when error has no message', () => {
+      mockControllerService.checkControllerVersion.mockReturnValue(throwError(() => ({})));
+
+      component.onAddClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Cannot connect to the controller');
+      expect(component.canAddAnyway).toBe(true);
     });
 
     it('should set isCheckingConnection to true during check and false after', () => {

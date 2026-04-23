@@ -98,8 +98,8 @@ export class AddControllerDialogComponent {
     // Auto-detect location based on host
     controller.location = this.detectLocation(controller.host);
 
-    this.controllerService.checkControllerVersion(controller).subscribe(
-      (controllerInfo) => {
+    this.controllerService.checkControllerVersion(controller).subscribe({
+      next: (controllerInfo) => {
         this.isCheckingConnection = false;
         if (controllerInfo.version.split('.')[0] >= 3) {
           this.dialogRef.close(controller);
@@ -111,14 +111,15 @@ export class AddControllerDialogComponent {
         }
         this.changeDetector.markForCheck();
       },
-      (error) => {
+      error: (err) => {
         this.isCheckingConnection = false;
         this.connectionError = 'Cannot connect to the controller. It appears offline.';
         this.canAddAnyway = true;
-        this.toasterService.error('Cannot connect to the controller: ' + error);
+        const message = err.error?.message || err.message || 'Cannot connect to the controller';
+        this.toasterService.error(message);
         this.changeDetector.markForCheck();
-      }
-    );
+      },
+    });
   }
 
   onAddAnywayClick(): void {
