@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { MapLabelToLabelConverter } from '../../../cartography/converters/map/map-label-to-label-converter';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
@@ -8,6 +8,7 @@ import { MapLabel } from '../../../cartography/models/map/map-label';
 import { Node } from '../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-node-label-dragged',
@@ -24,6 +25,8 @@ export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
   private nodeService = inject(NodeService);
   private nodesEventSource = inject(NodesEventSource);
   private mapLabelToLabel = inject(MapLabelToLabelConverter);
+  private toasterService = inject(ToasterService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit() {
     this.nodeLabelDragged = this.nodesEventSource.labelDragged.subscribe((evt) => this.onNodeLabelDragged(evt));
@@ -36,9 +39,18 @@ export class NodeLabelDraggedComponent implements OnInit, OnDestroy {
     const label = this.mapLabelToLabel.convert(mapLabel);
     node.label = label;
 
-    this.nodeService.updateLabel(this.controller(), node, node.label).subscribe((controllerNode: Node) => {
-      this.nodesDataSource.update(controllerNode);
-    });
+    this.nodeService
+      .updateLabel(this.controller(), node, node.label)
+      .subscribe({
+        next: (controllerNode: Node) => {
+          this.nodesDataSource.update(controllerNode);
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to update node label position';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
+      });
   }
 
   ngOnDestroy() {

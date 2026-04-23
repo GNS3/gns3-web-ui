@@ -1,9 +1,11 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Subject, of } from 'rxjs';
+import { ChangeDetectorRef } from '@angular/core';
+import { Subject, of, throwError } from 'rxjs';
 import { NodeLabelDraggedComponent } from './node-label-dragged.component';
 import { NodesDataSource } from '../../../cartography/datasources/nodes-datasource';
 import { NodeService } from '@services/node.service';
 import { NodesEventSource } from '../../../cartography/events/nodes-event-source';
+import { ToasterService } from '@services/toaster.service';
 import { MapLabelToLabelConverter } from '../../../cartography/converters/map/map-label-to-label-converter';
 import { DraggedDataEvent } from '../../../cartography/events/event-source';
 import { MapLabel } from '../../../cartography/models/map/map-label';
@@ -18,6 +20,8 @@ describe('NodeLabelDraggedComponent', () => {
   let mockNodeService: any;
   let mockNodesEventSource: any;
   let mockMapLabelToLabel: any;
+  let mockToasterService: any;
+  let mockChangeDetectorRef: any;
   let labelDraggedSubject: Subject<DraggedDataEvent<MapLabel>>;
   let mockController: Controller;
 
@@ -105,6 +109,8 @@ describe('NodeLabelDraggedComponent', () => {
   });
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     labelDraggedSubject = new Subject<DraggedDataEvent<MapLabel>>();
 
     mockController = {
@@ -140,6 +146,14 @@ describe('NodeLabelDraggedComponent', () => {
       convert: vi.fn().mockReturnValue({ x: 150, y: 250, text: 'Node Label', rotation: 0, style: '' }),
     };
 
+    mockToasterService = {
+      error: vi.fn(),
+    };
+
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [NodeLabelDraggedComponent],
       providers: [
@@ -147,6 +161,8 @@ describe('NodeLabelDraggedComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: NodesEventSource, useValue: mockNodesEventSource },
         { provide: MapLabelToLabelConverter, useValue: mockMapLabelToLabel },
+        { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -159,11 +175,12 @@ describe('NodeLabelDraggedComponent', () => {
     if (fixture) {
       fixture.destroy();
     }
+    labelDraggedSubject.complete();
   });
 
   describe('ngOnInit', () => {
     it('should subscribe to labelDragged event', () => {
-      const subscribeSpy = vi.spyOn(labelDraggedSubject, 'subscribe');
+      const subscribeSpy = vi.spyOn(mockNodesEventSource.labelDragged, 'subscribe');
       component.ngOnInit();
       expect(subscribeSpy).toHaveBeenCalled();
     });
@@ -253,17 +270,118 @@ describe('NodeLabelDraggedComponent', () => {
     });
   });
 
+  describe('error handling', () => {
+    it('should display error message when updateLabel fails with error.error.message', async () => {
+      const errorMessage = 'Failed to update label: node locked';
+      const mockError = {
+        error: { message: errorMessage },
+      };
+      mockNodeService.updateLabel.mockReturnValue(throwError(() => mockError));
+
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      const mockNode = createMockNode();
+      mockNodesDataSource.get.mockReturnValue(mockNode);
+
+      const mapLabel = createMockMapLabel();
+      const draggedEvent = new DraggedDataEvent<MapLabel>(mapLabel, 50, 50);
+
+      component.onNodeLabelDragged(draggedEvent);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith(errorMessage);
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should display error message when updateLabel fails with err.message', async () => {
+      const errorMessage = 'Network connection failed';
+      const error = new Error(errorMessage);
+      mockNodeService.updateLabel.mockReturnValue(throwError(() => error));
+
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      const mockNode = createMockNode();
+      mockNodesDataSource.get.mockReturnValue(mockNode);
+
+      const mapLabel = createMockMapLabel();
+      const draggedEvent = new DraggedDataEvent<MapLabel>(mapLabel, 50, 50);
+
+      component.onNodeLabelDragged(draggedEvent);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith(errorMessage);
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should display fallback error message when error has no message', async () => {
+      const error = {};
+      mockNodeService.updateLabel.mockReturnValue(throwError(() => error));
+
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      const mockNode = createMockNode();
+      mockNodesDataSource.get.mockReturnValue(mockNode);
+
+      const mapLabel = createMockMapLabel();
+      const draggedEvent = new DraggedDataEvent<MapLabel>(mapLabel, 50, 50);
+
+      component.onNodeLabelDragged(draggedEvent);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update node label position');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should not update data source when updateLabel fails', async () => {
+      const error = new Error('Update failed');
+      mockNodeService.updateLabel.mockReturnValue(throwError(() => error));
+
+      const mockNode = createMockNode();
+      mockNodesDataSource.get.mockReturnValue(mockNode);
+
+      const mapLabel = createMockMapLabel();
+      const draggedEvent = new DraggedDataEvent<MapLabel>(mapLabel, 50, 50);
+
+      component.onNodeLabelDragged(draggedEvent);
+
+      // Advance fake timers for async error handling
+      await vi.runAllTimersAsync();
+
+      expect(mockNodesDataSource.update).not.toHaveBeenCalled();
+    });
+  });
+
   describe('ngOnDestroy', () => {
-    it('should unsubscribe from labelDragged', () => {
-      const subscribeSpy = vi.spyOn(mockNodesEventSource.labelDragged, 'subscribe');
+    it('should unsubscribe from nodeLabelDragged', () => {
+      const unsubscribeSpy = vi.spyOn(component['nodeLabelDragged'], 'unsubscribe');
 
-      component.ngOnInit();
-      const subscription = subscribeSpy.mock.results[0].value;
-
-      const unsubscribeSpy = vi.spyOn(subscription, 'unsubscribe');
       component.ngOnDestroy();
 
       expect(unsubscribeSpy).toHaveBeenCalled();
+    });
+
+    it('should not call updateLabel after component is destroyed', async () => {
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      // Destroy the component (which unsubscribes)
+      component.ngOnDestroy();
+
+      // Clear previous calls
+      vi.clearAllMocks();
+      mockNodeService.updateLabel.mockClear();
+
+      // Emit event through the event source after destruction
+      const mapLabel = createMockMapLabel();
+      const draggedEvent = new DraggedDataEvent<MapLabel>(mapLabel, 50, 50);
+      labelDraggedSubject.next(draggedEvent);
+      await vi.runAllTimersAsync();
+
+      // Should not call updateLabel since subscription is cancelled
+      expect(mockNodeService.updateLabel).not.toHaveBeenCalled();
     });
   });
 });
