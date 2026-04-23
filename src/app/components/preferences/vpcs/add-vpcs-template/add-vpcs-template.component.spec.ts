@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { AddVpcsTemplateComponent } from './add-vpcs-template.component';
 import { VpcsService } from '@services/vpcs.service';
 import { ComputeService } from '@services/compute.service';
@@ -322,6 +322,62 @@ describe('AddVpcsTemplateComponent', () => {
 
       // The built-in required validator treats whitespace-only as valid
       expect(component.templateNameForm.get('templateName').hasError('required')).toBe(false);
+    });
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(AddVpcsTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(AddVpcsTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when getVpcsTemplate fails', async () => {
+      mockTemplateMocksService.getVpcsTemplate.mockReturnValue(
+        throwError(() => ({ error: { message: 'Template error' } }))
+      );
+      component.controller = mockController;
+      component.templateNameForm.get('templateName').setValue('Test');
+      fixture.detectChanges();
+
+      component.addTemplate();
+      fixture.detectChanges();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Template error');
+    });
+
+    it('should use fallback message when getVpcsTemplate error has no message', async () => {
+      mockTemplateMocksService.getVpcsTemplate.mockReturnValue(throwError(() => ({})));
+      component.controller = mockController;
+      component.templateNameForm.get('templateName').setValue('Test');
+      fixture.detectChanges();
+
+      component.addTemplate();
+      fixture.detectChanges();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load VPCS template');
     });
   });
 });
