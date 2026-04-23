@@ -8,6 +8,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('StartNodeActionComponent', () => {
@@ -62,6 +63,8 @@ describe('StartNodeActionComponent', () => {
   });
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockNodeService = { start: vi.fn().mockReturnValue(of({})) };
     mockToasterService = { error: vi.fn() };
 
@@ -70,6 +73,7 @@ describe('StartNodeActionComponent', () => {
     })
       .overrideProvider(NodeService, { useValue: mockNodeService })
       .overrideProvider(ToasterService, { useValue: mockToasterService })
+      .overrideProvider(ChangeDetectorRef, { useValue: { markForCheck: vi.fn() } })
       .compileComponents();
 
     fixture = TestBed.createComponent(StartNodeActionComponent);
@@ -164,15 +168,32 @@ describe('StartNodeActionComponent', () => {
       expect(mockNodeService.start).toHaveBeenCalledWith(mockController, nodes[1]);
     });
 
-    it('should show error toast when nodeService.start fails', () => {
-      const error = { error: { message: 'Failed to start node' } };
-      mockNodeService.start.mockReturnValue(throwError(() => error));
+    it('should show error toast when nodeService.start fails', async () => {
+      mockNodeService.start.mockReturnValue(
+        throwError(() => ({ error: { message: 'Failed to start node' } }))
+      );
+      const nodes = [createMockNode('stopped')];
+      fixture.componentRef.setInput('nodes', nodes);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      const cdrSpy = vi.spyOn(fixture.componentInstance['cdr'], 'markForCheck');
+      component.startNodes();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to start node');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should use fallback message when nodeService.start error has no message', async () => {
+      mockNodeService.start.mockReturnValue(throwError(() => ({})));
       const nodes = [createMockNode('stopped')];
       fixture.componentRef.setInput('nodes', nodes);
       fixture.componentRef.setInput('controller', mockController);
       fixture.detectChanges();
 
       component.startNodes();
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to start node');
     });
