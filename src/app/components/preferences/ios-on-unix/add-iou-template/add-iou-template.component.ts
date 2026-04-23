@@ -103,13 +103,26 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
     };
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((ctrl: Controller) => {
-      this.controller.set(ctrl);
-      this.getImages();
-      this.templateMocksService.getIouTemplate().subscribe((iouTemplate: IouTemplate) => {
-        this.iouTemplate.set(iouTemplate);
-      });
-    });
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (ctrl: Controller) => {
+        this.controller.set(ctrl);
+        this.getImages();
+        this.templateMocksService.getIouTemplate().subscribe({
+          next: (iouTemplate: IouTemplate) => {
+            this.iouTemplate.set(iouTemplate);
+          },
+          error: () => {
+            this.toasterService.error('Failed to load IOU template');
+            this.cd.markForCheck();
+          },
+        });
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
     this.subscription = this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
       if (isCancel) {
         this.cancelUploading();
@@ -118,8 +131,15 @@ export class AddIouTemplateComponent implements OnInit, OnDestroy {
   }
 
   getImages() {
-    this.iouService.getImages(this.controller()).subscribe((images: IouImage[]) => {
-      this.iouImages.set(images);
+    this.iouService.getImages(this.controller()).subscribe({
+      next: (images: IouImage[]) => {
+        this.iouImages.set(images);
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load IOU images';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 

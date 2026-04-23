@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { AddIouTemplateComponent } from './add-iou-template.component';
 import { IouService } from '@services/iou.service';
 import { ComputeService } from '@services/compute.service';
@@ -639,6 +639,68 @@ describe('AddIouTemplateComponent', () => {
       component.ngOnDestroy();
 
       expect(unsubscribeSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('error handling', () => {
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(AddIouTemplateComponent);
+      component = fixture.componentInstance;
+      component.ngOnInit();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(AddIouTemplateComponent);
+      component = fixture.componentInstance;
+      component.ngOnInit();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when templateMocksService.getIouTemplate fails', async () => {
+      mockTemplateMocksService.getIouTemplate.mockReturnValue(throwError(() => ({ error: { message: 'Template error' } })));
+
+      fixture = TestBed.createComponent(AddIouTemplateComponent);
+      component = fixture.componentInstance;
+      component.ngOnInit();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load IOU template');
+    });
+
+    it('should show error toaster when getImages fails', async () => {
+      mockIouService.getImages.mockReturnValue(throwError(() => ({ error: { message: 'Images error' } })));
+      component.controller.set(mockController);
+      fixture.detectChanges();
+
+      component.getImages();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Images error');
+    });
+
+    it('should use fallback message when getImages error has no message', async () => {
+      mockIouService.getImages.mockReturnValue(throwError(() => ({})));
+      component.controller.set(mockController);
+      fixture.detectChanges();
+
+      component.getImages();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load IOU images');
     });
   });
 });
