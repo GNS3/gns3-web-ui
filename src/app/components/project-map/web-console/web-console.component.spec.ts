@@ -208,14 +208,11 @@ describe('WebConsoleComponent', () => {
   });
 
   beforeEach(async () => {
-    // Clear all mocks to prevent test pollution
-    vi.clearAllMocks();
-
     // Clear mock instance arrays to ensure test isolation
     mockTermInstances.length = 0;
     mockFitAddonInstances.length = 0;
 
-    // Reset service mocks to default state
+    // Reset service mocks to default state (DO NOT use vi.clearAllMocks() as it breaks global mock instances)
     mockNodeConsoleService.getNumberOfColumns.mockReturnValue(80);
     mockNodeConsoleService.getNumberOfRows.mockReturnValue(24);
     mockXtermService.getDefaultTerminalOptions.mockClear();
