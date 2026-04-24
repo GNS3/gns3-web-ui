@@ -1,11 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 import { EditNetworkConfigurationDialogComponent } from './edit-network-configuration.component';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('EditNetworkConfigurationDialogComponent', () => {
@@ -14,11 +15,14 @@ describe('EditNetworkConfigurationDialogComponent', () => {
   let mockNodeService: any;
   let mockToasterService: any;
   let mockDialogRef: any;
+  let mockChangeDetectorRef: any;
   let mockController: Controller;
   let mockNode: Node;
   const mockConfiguration = 'ethernet0_config = "..."\nnetwork_mode = "bridge"';
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockNode = {
       node_id: 'docker1',
       name: 'DockerContainer',
@@ -99,12 +103,17 @@ describe('EditNetworkConfigurationDialogComponent', () => {
       close: vi.fn(),
     };
 
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [EditNetworkConfigurationDialogComponent],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -196,6 +205,34 @@ describe('EditNetworkConfigurationDialogComponent', () => {
       fixture.detectChanges();
 
       expect(component.configuration()).toBe(mockConfiguration);
+    });
+  });
+
+  describe('Error handling', () => {
+    it('should show error toast when getNetworkConfiguration fails', () => {
+      mockNodeService.getNetworkConfiguration.mockReturnValue(
+        throwError(() => new Error('Failed to load network configuration'))
+      );
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      fixture.detectChanges();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load network configuration');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show error toast when saveNetworkConfiguration fails', () => {
+      mockNodeService.saveNetworkConfiguration.mockReturnValue(
+        throwError(() => new Error('Failed to save network configuration'))
+      );
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      component.configuration.set(mockConfiguration);
+
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to save network configuration');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 });
