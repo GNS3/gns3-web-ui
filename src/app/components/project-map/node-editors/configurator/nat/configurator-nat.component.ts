@@ -60,19 +60,26 @@ export class ConfiguratorDialogNatComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
-      this.node = node;
-      this.name = node.name;
+    this.nodeService.getNode(this.controller, this.node).subscribe({
+      next: (node: Node) => {
+        this.node = node;
+        this.name = node.name;
 
-      // Update form values with node data
-      this.generalSettingsForm.patchValue({
-        name: node.name,
-      });
+        // Update form values with node data
+        this.generalSettingsForm.patchValue({
+          name: node.name,
+        });
 
-      if (!this.node.tags) {
-        this.node.tags = [];
-      }
-      this.cd.markForCheck();
+        if (!this.node.tags) {
+          this.node.tags = [];
+        }
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load node';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
