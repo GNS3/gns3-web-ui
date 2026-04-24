@@ -63,13 +63,6 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
   dataSource = [];
   displayedColumns = ['portIn', 'portOut', 'actions'];
 
-  sourcePort: string = '';
-  sourceVpi: string = '';
-  sourceVci: string = '';
-  destinationPort: string = '';
-  destinationVpi: string = '';
-  destinationVci: string = '';
-
   useVpiOnly: boolean = false;
 
   constructor() {
@@ -126,9 +119,13 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
 
   delete(elem: NodeMapping) {
     this.nodeMappingsDataSource = this.nodeMappingsDataSource.filter((n) => n !== elem);
+    this.cd.markForCheck();
   }
 
   add() {
+    const inputValues = this.inputForm.value;
+    const abstractValues = this.abstractForm.value;
+
     if (this.inputForm.valid) {
       let nodeMapping: NodeMapping;
       const useVpiOnly = this.nameForm.value.useVpiOnly;
@@ -136,8 +133,8 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
       if (!useVpiOnly) {
         if (this.abstractForm.valid) {
           nodeMapping = {
-            portIn: `${this.sourcePort}:${this.sourceVpi}:${this.sourceVci}`,
-            portOut: `${this.destinationPort}:${this.destinationVpi}:${this.destinationVci}`,
+            portIn: `${inputValues.sourcePort}:${abstractValues.sourceVpi}:${inputValues.sourceVci}`,
+            portOut: `${inputValues.destinationPort}:${abstractValues.destinationVpi}:${inputValues.destinationVci}`,
           };
 
           if (this.nodeMappingsDataSource.filter((n) => n.portIn === nodeMapping.portIn).length > 0) {
@@ -145,14 +142,15 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
           } else {
             this.nodeMappingsDataSource = this.nodeMappingsDataSource.concat([nodeMapping]);
             this.clearUserInput();
+            this.cd.markForCheck();
           }
         } else {
           this.toasterService.error('Fill all required fields.');
         }
       } else {
         nodeMapping = {
-          portIn: `${this.sourcePort}:${this.sourceVci}`,
-          portOut: `${this.destinationPort}:${this.destinationVci}`,
+          portIn: `${inputValues.sourcePort}:${inputValues.sourceVci}`,
+          portOut: `${inputValues.destinationPort}:${inputValues.destinationVci}`,
         };
 
         if (this.nodeMappingsDataSource.filter((n) => n.portIn === nodeMapping.portIn).length > 0) {
@@ -160,6 +158,7 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
         } else {
           this.nodeMappingsDataSource = this.nodeMappingsDataSource.concat([nodeMapping]);
           this.clearUserInput();
+          this.cd.markForCheck();
         }
       }
     } else {
@@ -168,12 +167,8 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
   }
 
   clearUserInput() {
-    this.sourcePort = '0';
-    this.sourceVpi = '0';
-    this.sourceVci = '0';
-    this.destinationPort = '0';
-    this.destinationVpi = '0';
-    this.sourceVci = '0';
+    this.inputForm.reset();
+    this.abstractForm.reset();
   }
 
   strMapToObj(strMap) {
