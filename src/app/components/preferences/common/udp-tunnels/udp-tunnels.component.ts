@@ -13,6 +13,24 @@ import { BuiltInTemplatesConfigurationService } from '@services/built-in-templat
   selector: 'app-udp-tunnels',
   templateUrl: './udp-tunnels.component.html',
   styleUrl: '../../preferences.component.scss',
+  styles: [
+    `
+      .udp-tunnels__input-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 16px;
+      }
+
+      .udp-tunnels__add-btn {
+        display: flex;
+        justify-content: center;
+
+        button {
+          width: 80%;
+        }
+      }
+    `,
+  ],
   imports: [
     CommonModule,
     MatTableModule,
@@ -54,6 +72,7 @@ export class UdpTunnelsComponent implements OnInit {
       rhost: this.newPortRhost(),
       rport: this.newPortRport(),
       port_number: 0,
+      type: 'udp',
     };
     this.dataSourceUdp = this.dataSourceUdp.concat([newPort]);
 
