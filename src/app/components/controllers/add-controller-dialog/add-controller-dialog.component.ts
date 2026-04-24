@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Controller } from '@models/controller';
 import { ControllerService } from '@services/controller.service';
 import { ToasterService } from '@services/toaster.service';
@@ -25,6 +26,7 @@ import { ToasterService } from '@services/toaster.service';
     MatInputModule,
     MatSelectModule,
     MatOptionModule,
+    MatProgressSpinnerModule,
   ],
 })
 export class AddControllerDialogComponent {

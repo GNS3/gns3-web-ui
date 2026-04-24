@@ -49,7 +49,11 @@
       color="primary"
       [disabled]="isCheckingConnection"
     >
-      Add
+      @if (isCheckingConnection) {
+        <mat-spinner diameter="16"></mat-spinner>
+      } @else {
+        Add
+      }
     </button>
     @if (canAddAnyway) {
     <button mat-button (click)="onAddAnywayClick()" mat-raised-button color="warn">Add anyway</button>
