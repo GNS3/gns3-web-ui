@@ -141,67 +141,81 @@ export class ConfiguratorDialogQemuComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
-      this.node = node;
-      this.name = node.name;
+    this.nodeService.getNode(this.controller, this.node).subscribe({
+      next: (node: Node) => {
+        this.node = node;
+        this.name = node.name;
 
-      // Update form values
-      this.generalSettingsForm.patchValue({
-        name: node.name,
-        ram: node.properties.ram || '',
-        platform: node.properties.platform || '',
-        cpus: node.properties.cpus || '',
-        boot_priority: node.properties.boot_priority || '',
-        on_close: node.properties.on_close || '',
-        console_type: node.console_type || '',
-        aux_type: node.properties.aux_type || '',
-        console_auto_start: node.console_auto_start || false,
-        // HDD fields
-        hda_disk_image: node.properties.hda_disk_image || '',
-        hda_disk_interface: node.properties.hda_disk_interface || '',
-        hdb_disk_image: node.properties.hdb_disk_image || '',
-        hdb_disk_interface: node.properties.hdb_disk_interface || '',
-        hdc_disk_image: node.properties.hdc_disk_image || '',
-        hdc_disk_interface: node.properties.hdc_disk_interface || '',
-        hdd_disk_image: node.properties.hdd_disk_image || '',
-        hdd_disk_interface: node.properties.hdd_disk_interface || '',
-        // CD/DVD
-        cdrom_image: node.properties.cdrom_image || '',
-        // Advanced
-        initrd: node.properties.initrd || '',
-        kernel_image: node.properties.kernel_image || '',
-        kernel_command_line: node.properties.kernel_command_line || '',
-        bios_image: node.properties.bios_image || '',
-        activateCpuThrottling: false,
-        cpu_throttling: node.properties.cpu_throttling || '',
-        process_priority: node.properties.process_priority || '',
-        qemu_path: node.properties.qemu_path || '',
-        options: node.properties.options || '',
-        tpm: node.properties.tpm || false,
-        uefi: node.properties.uefi || false,
-        // Usage
-        usage: node.properties.usage || '',
-      });
+        // Update form values
+        this.generalSettingsForm.patchValue({
+          name: node.name,
+          ram: node.properties.ram || '',
+          platform: node.properties.platform || '',
+          cpus: node.properties.cpus || '',
+          boot_priority: node.properties.boot_priority || '',
+          on_close: node.properties.on_close || '',
+          console_type: node.console_type || '',
+          aux_type: node.properties.aux_type || '',
+          console_auto_start: node.console_auto_start || false,
+          // HDD fields
+          hda_disk_image: node.properties.hda_disk_image || '',
+          hda_disk_interface: node.properties.hda_disk_interface || '',
+          hdb_disk_image: node.properties.hdb_disk_image || '',
+          hdb_disk_interface: node.properties.hdb_disk_interface || '',
+          hdc_disk_image: node.properties.hdc_disk_image || '',
+          hdc_disk_interface: node.properties.hdc_disk_interface || '',
+          hdd_disk_image: node.properties.hdd_disk_image || '',
+          hdd_disk_interface: node.properties.hdd_disk_interface || '',
+          // CD/DVD
+          cdrom_image: node.properties.cdrom_image || '',
+          // Advanced
+          initrd: node.properties.initrd || '',
+          kernel_image: node.properties.kernel_image || '',
+          kernel_command_line: node.properties.kernel_command_line || '',
+          bios_image: node.properties.bios_image || '',
+          activateCpuThrottling: false,
+          cpu_throttling: node.properties.cpu_throttling || '',
+          process_priority: node.properties.process_priority || '',
+          qemu_path: node.properties.qemu_path || '',
+          options: node.properties.options || '',
+          tpm: node.properties.tpm || false,
+          uefi: node.properties.uefi || false,
+          // Usage
+          usage: node.properties.usage || '',
+        });
 
-      // Update network settings form
-      this.networkSettingsForm.patchValue({
-        adapters: node.properties.adapters || '',
-        mac_address: node.properties.mac_address || '',
-        adapter_type: node.properties.adapter_type || '',
-        replicate_network_connection_state: node.properties.replicate_network_connection_state || false,
-      });
+        // Update network settings form
+        this.networkSettingsForm.patchValue({
+          adapters: node.properties.adapters || '',
+          mac_address: node.properties.mac_address || '',
+          adapter_type: node.properties.adapter_type || '',
+          replicate_network_connection_state: node.properties.replicate_network_connection_state || false,
+        });
 
-      if (!this.node.tags) {
-        this.node.tags = [];
-      }
-      this.getConfiguration();
-      this.cd.markForCheck();
+        if (!this.node.tags) {
+          this.node.tags = [];
+        }
+        this.getConfiguration();
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load node';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
 
-    this.qemuService.getImages(this.controller).subscribe((qemuImages: QemuImage[]) => {
-      this.qemuImages = qemuImages;
-      this.filteredImages = qemuImages;
-      this.cd.markForCheck();
+    this.qemuService.getImages(this.controller).subscribe({
+      next: (qemuImages: QemuImage[]) => {
+        this.qemuImages = qemuImages;
+        this.filteredImages = qemuImages;
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load QEMU images';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
     this.selectPlatform = this.qemuConfigurationService.getPlatform();
   }
