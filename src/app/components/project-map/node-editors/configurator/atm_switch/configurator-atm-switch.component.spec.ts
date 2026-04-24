@@ -171,13 +171,7 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
     });
 
     it('should add mapping with VPI and VCI when useVpiOnly is false', () => {
-      // Set both component properties AND form control values
-      component.sourcePort = '0';
-      component.sourceVpi = '5';
-      component.sourceVci = '1';
-      component.destinationPort = '1';
-      component.destinationVpi = '10';
-      component.destinationVci = '2';
+      // Set both form control values
       component.inputForm.patchValue({
         sourcePort: '0',
         sourceVci: '1',
@@ -188,7 +182,7 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
         sourceVpi: '5',
         destinationVpi: '10',
       });
-      component.nameForm.get('useVpiOnly')?.setValue(false);
+      component.nameForm.patchValue({ useVpiOnly: false });
 
       component.add();
 
@@ -199,17 +193,13 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
     });
 
     it('should add mapping with VPI only when useVpiOnly is true', () => {
-      component.sourcePort = '0';
-      component.sourceVci = '32';
-      component.destinationPort = '1';
-      component.destinationVci = '64';
       component.inputForm.patchValue({
         sourcePort: '0',
         sourceVci: '32',
         destinationPort: '1',
         destinationVci: '64',
       });
-      component.nameForm.get('useVpiOnly')?.setValue(true);
+      component.nameForm.patchValue({ useVpiOnly: true });
 
       component.add();
 
@@ -226,12 +216,16 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
       const initialLength = component.nodeMappingsDataSource.length;
 
       // Set up form with the same values as existing mapping
-      component.sourcePort = '0';
-      component.sourceVpi = '5';
-      component.sourceVci = '1';
-      component.destinationPort = '1';
-      component.destinationVpi = '10';
-      component.destinationVci = '2';
+      component.inputForm.patchValue({
+        sourcePort: '0',
+        sourceVci: '1',
+        destinationPort: '1',
+        destinationVci: '2',
+      });
+      component.abstractForm.patchValue({
+        sourceVpi: '5',
+        destinationVpi: '10',
+      });
 
       component.add();
 
@@ -240,10 +234,6 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
     });
 
     it('should show error when abstractForm is invalid with useVpiOnly false', () => {
-      component.sourcePort = '0';
-      component.sourceVci = '1';
-      component.destinationPort = '1';
-      component.destinationVci = '2';
       component.inputForm.patchValue({
         sourcePort: '0',
         sourceVci: '1',
@@ -252,7 +242,7 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
       });
       component.abstractForm.get('sourceVpi')?.setValue('');
       component.abstractForm.get('destinationVpi')?.setValue('');
-      component.nameForm.get('useVpiOnly')?.setValue(false);
+      component.nameForm.patchValue({ useVpiOnly: false });
 
       component.add();
 
@@ -261,26 +251,28 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
   });
 
   describe('clearUserInput', () => {
-    it('should reset sourcePort, sourceVpi, destinationPort, destinationVpi to 0', () => {
-      component.sourcePort = '5';
-      component.sourceVpi = '10';
-      component.destinationPort = '15';
-      component.destinationVpi = '25';
+    it('should reset inputForm and abstractForm controls', () => {
+      // Set form control values
+      component.inputForm.patchValue({
+        sourcePort: '5',
+        sourceVci: '10',
+        destinationPort: '15',
+        destinationVci: '25',
+      });
+      component.abstractForm.patchValue({
+        sourceVpi: '10',
+        destinationVpi: '25',
+      });
 
       component.clearUserInput();
 
-      expect(component.sourcePort).toBe('0');
-      expect(component.sourceVpi).toBe('0');
-      expect(component.destinationPort).toBe('0');
-      expect(component.destinationVpi).toBe('0');
-    });
-
-    it('should reset sourceVci to 0', () => {
-      component.sourceVci = '20';
-
-      component.clearUserInput();
-
-      expect(component.sourceVci).toBe('0');
+      // Forms should be reset (null after reset)
+      expect(component.inputForm.get('sourcePort')?.value).toBe(null);
+      expect(component.inputForm.get('sourceVci')?.value).toBe(null);
+      expect(component.inputForm.get('destinationPort')?.value).toBe(null);
+      expect(component.inputForm.get('destinationVci')?.value).toBe(null);
+      expect(component.abstractForm.get('sourceVpi')?.value).toBe(null);
+      expect(component.abstractForm.get('destinationVpi')?.value).toBe(null);
     });
   });
 

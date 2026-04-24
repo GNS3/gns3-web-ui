@@ -116,6 +116,7 @@ describe('ProjectsComponent', () => {
     mockActivatedRoute = {
       snapshot: {
         data: { controller: mockController },
+        queryParams: {},
       },
     };
 

@@ -58,6 +58,12 @@ describe('ConfigActionComponent', () => {
     disableClose: false,
   };
 
+  const atmSwitchDialogConfig = {
+    panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'atm-switch-config-panel'],
+    autoFocus: false,
+    disableClose: false,
+  };
+
   beforeEach(async () => {
     mockDialogRef = {
       componentInstance: {
@@ -217,7 +223,7 @@ describe('ConfigActionComponent', () => {
 
       component.configureNode();
 
-      expect(mockDialog.open).toHaveBeenCalledWith(ConfiguratorDialogAtmSwitchComponent, baseDialogConfig);
+      expect(mockDialog.open).toHaveBeenCalledWith(ConfiguratorDialogAtmSwitchComponent, atmSwitchDialogConfig);
     });
 
     it('should set controller on dialog component instance', () => {
