@@ -13,6 +13,8 @@ import { MapNode } from '../../../cartography/models/map/map-node';
 import { MapPort } from '../../../cartography/models/map/map-port';
 import { Node } from '../../../cartography/models/node';
 import { Port } from '@models/port';
+import { ToasterService } from '../../../services/toaster.service';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('DrawLinkToolComponent', () => {
@@ -27,11 +29,14 @@ describe('DrawLinkToolComponent', () => {
   let mockNodeToMapNode: { convert: ReturnType<typeof vi.fn> };
   let mockPortToMapPort: { convert: ReturnType<typeof vi.fn> };
   let mockNodeSelectMenu: { open: ReturnType<typeof vi.fn> };
+  let mockToasterService: { error: ReturnType<typeof vi.fn> };
+  let mockChangeDetectorRef: { markForCheck: ReturnType<typeof vi.fn> };
 
   // Emitter for node clicks
   let nodeClickedEmitter: EventEmitter<ClickedDataEvent<MapNode>>;
 
   beforeEach(async () => {
+    vi.clearAllMocks();
     nodeClickedEmitter = new EventEmitter<ClickedDataEvent<MapNode>>();
 
     mockDrawingLineTool = {
@@ -68,6 +73,14 @@ describe('DrawLinkToolComponent', () => {
       open: vi.fn(),
     };
 
+    mockToasterService = {
+      error: vi.fn(),
+    };
+
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [DrawLinkToolComponent],
       providers: [
@@ -77,6 +90,8 @@ describe('DrawLinkToolComponent', () => {
         { provide: MapNodeToNodeConverter, useValue: mockMapNodeToNode },
         { provide: NodeToMapNodeConverter, useValue: mockNodeToMapNode },
         { provide: PortToMapPortConverter, useValue: mockPortToMapPort },
+        { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
