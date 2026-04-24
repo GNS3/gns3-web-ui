@@ -27,6 +27,25 @@ import { ToasterService } from '@services/toaster.service';
   selector: 'app-configurator-atm-switch',
   templateUrl: './configurator-atm-switch.component.html',
   // Styles centralized in src/styles/_dialogs.scss via panelClass: 'atm-switch-config-panel'
+  styles: [
+    `
+      .atm-switch__input-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 16px;
+      }
+
+      .atm-switch__add-btn {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 16px;
+
+        button {
+          width: 80%;
+        }
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,

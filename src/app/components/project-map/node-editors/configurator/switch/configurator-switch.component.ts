@@ -25,7 +25,26 @@ import { ToasterService } from '@services/toaster.service';
   standalone: true,
   selector: 'app-configurator-switch',
   templateUrl: './configurator-switch.component.html',
-  styleUrls: ['../configurator.component.scss', '../../../../preferences/preferences.component.scss'],
+  styleUrl: '../../../../preferences/preferences.component.scss',
+  styles: [
+    `
+      .fr-switch__input-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 16px;
+      }
+
+      .fr-switch__add-btn {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 16px;
+
+        button {
+          width: 80%;
+        }
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -59,11 +78,6 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
   nodeMappingsDataSource: NodeMapping[] = [];
   dataSource = [];
   displayedColumns = ['portIn', 'portOut', 'actions'];
-
-  sourcePort: string = '';
-  sourceDlci: string = '';
-  destinationPort: string = '';
-  destinationDlci: string = '';
 
   constructor() {
     this.nameForm = this.formBuilder.group({
@@ -111,9 +125,10 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
 
   add() {
     if (this.inputForm.valid) {
+      const formValues = this.inputForm.value;
       let nodeMapping: NodeMapping = {
-        portIn: `${this.sourcePort}:${this.sourceDlci}`,
-        portOut: `${this.destinationPort}:${this.destinationDlci}`,
+        portIn: `${formValues.sourcePort}:${formValues.sourceDlci}`,
+        portOut: `${formValues.destinationPort}:${formValues.destinationDlci}`,
       };
 
       if (this.nodeMappingsDataSource.filter((n) => n.portIn === nodeMapping.portIn).length > 0) {
@@ -128,10 +143,12 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
   }
 
   clearUserInput() {
-    this.sourcePort = '0';
-    this.sourceDlci = '1';
-    this.destinationPort = '0';
-    this.destinationDlci = '1';
+    this.inputForm.patchValue({
+      sourcePort: '',
+      sourceDlci: '',
+      destinationPort: '',
+      destinationDlci: '',
+    });
   }
 
   strMapToObj(strMap) {
