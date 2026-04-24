@@ -79,22 +79,29 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
-      this.node = node;
-      this.name = node.name;
+    this.nodeService.getNode(this.controller, this.node).subscribe({
+      next: (node: Node) => {
+        this.node = node;
+        this.name = node.name;
 
-      let mappings = node.properties.mappings;
-      Object.keys(mappings).forEach((key) => {
-        this.nodeMappings.set(key, mappings[key]);
-      });
-
-      this.nodeMappings.forEach((value: string, key: string) => {
-        this.nodeMappingsDataSource.push({
-          portIn: key,
-          portOut: value,
+        let mappings = node.properties.mappings;
+        Object.keys(mappings).forEach((key) => {
+          this.nodeMappings.set(key, mappings[key]);
         });
-      });
-      this.cd.markForCheck();
+
+        this.nodeMappings.forEach((value: string, key: string) => {
+          this.nodeMappingsDataSource.push({
+            portIn: key,
+            portOut: value,
+          });
+        });
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load node';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
