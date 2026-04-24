@@ -91,6 +91,13 @@ export class ProjectsComponent implements OnInit {
     if (!this.controller) this.router.navigate(['/controllers']);
     this.recentlyOpenedProjectService.setcontrollerIdProjectList(this.controller.id.toString());
 
+    // Handle error queryParam from redirect after project not found (404)
+    const errorParam = this.route.snapshot.queryParams['error'];
+    if (errorParam) {
+      this.toasterService.error(errorParam);
+      this.router.navigate([], { queryParams: {}, replaceUrl: true });
+    }
+
     this.refresh();
     this.sort().sort(<MatSortable>{
       id: 'name',

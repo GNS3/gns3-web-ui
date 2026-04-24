@@ -529,8 +529,21 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
             this.cd.markForCheck();
             if (this.mapSettingsService.openReadme) this.showReadme();
           },
+          // Note: Not using error-handler skill pattern because:
+          // 1. The error is wrapped by ControllerErrorHandler, so message is at error.message (not err.error?.message)
+          // 2. For 404 errors, we redirect to projects page with error message via queryParams since toast won't persist
           (error) => {
             this.progressService.setError(error);
+            const message = error?.message || error?.originalError?.message || 'Failed to load project';
+            // Redirect to projects page if project not found (404)
+            const status = error?.originalError?.status;
+            if (status === 404) {
+              this.router.navigate(['/controller', controller_id, 'projects'], {
+                queryParams: { error: message },
+              });
+            } else {
+              this.toasterService.error(message);
+            }
             this.cd.markForCheck();
           },
           () => {
