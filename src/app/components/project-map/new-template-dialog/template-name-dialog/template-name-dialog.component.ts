@@ -66,15 +66,23 @@ export class TemplateNameDialogComponent implements OnInit {
       this.toasterService.error('Please enter correct name for new template');
       return;
     }
-    this.templateService.list(this.controller).subscribe((templates: Template[]) => {
-      const templateName = this.templateNameForm.controls['templateName'].value;
-      let existingProject = templates.find((t) => t.name === templateName);
+    this.templateService.list(this.controller).subscribe({
+      next: (templates: Template[]) => {
+        const templateName = this.templateNameForm.controls['templateName'].value;
+        let existingProject = templates.find((t) => t.name === templateName);
 
-      if (existingProject) {
-        this.toasterService.error('Template with this name exists');
-      } else {
-        this.dialogRef.close(this.templateNameForm.controls['templateName'].value);
-      }
+        if (existingProject) {
+          this.toasterService.error('Template with this name exists');
+          this.cdr.markForCheck();
+        } else {
+          this.dialogRef.close(this.templateNameForm.controls['templateName'].value);
+        }
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load templates';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      },
     });
   }
 
