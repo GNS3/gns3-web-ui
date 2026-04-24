@@ -205,10 +205,12 @@ describe('UdpTunnelsComponent', () => {
   });
 
   describe('template rendering', () => {
-    it('should not render table when dataSourceUdp is empty', () => {
+    it('should render table header but no data rows when dataSourceUdp is empty', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       const table = compiled.querySelector('table[mat-table]');
-      expect(table).toBeFalsy();
+      expect(table).toBeTruthy();
+      const rows = compiled.querySelectorAll('tr[mat-row]');
+      expect(rows.length).toBe(0);
     });
 
     it('should render add button', () => {
