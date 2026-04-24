@@ -245,39 +245,56 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
     this.aiChatStore
       .getSessions()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((sessions) => {
-        this.sessions = sessions;
-        this.cdr.markForCheck(); // Trigger change detection
+      .subscribe({
+        next: (sessions) => {
+          this.sessions = sessions;
+          this.cdr.markForCheck(); // Trigger change detection
+        },
+        error: (err) => {
+          this.logError('Failed to subscribe to sessions:', err);
+          this.showError(err || 'Failed to load sessions');
+        },
       });
 
     // Subscribe to current session
     this.aiChatStore
       .getCurrentSessionId()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((sessionId) => {
-        this.currentSessionId = sessionId;
-        // Only load session messages if not currently streaming
-        // This prevents clearing the current conversation while streaming is active
-        if (sessionId && !this.isStreaming) {
-          this.loadSessionMessages(sessionId);
-        }
-        this.cdr.markForCheck(); // Trigger change detection
+      .subscribe({
+        next: (sessionId) => {
+          this.currentSessionId = sessionId;
+          // Only load session messages if not currently streaming
+          // This prevents clearing the current conversation while streaming is active
+          if (sessionId && !this.isStreaming) {
+            this.loadSessionMessages(sessionId);
+          }
+          this.cdr.markForCheck(); // Trigger change detection
+        },
+        error: (err) => {
+          this.logError('Failed to subscribe to current session:', err);
+        },
       });
 
     // Subscribe to streaming state
     this.aiChatStore
       .getStreamingState()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((streaming) => {
-        this.isStreaming = streaming;
-        this.cdr.markForCheck(); // Trigger change detection
+      .subscribe({
+        next: (streaming) => {
+          this.isStreaming = streaming;
+          this.cdr.markForCheck(); // Trigger change detection
+        },
+        error: (err) => {
+          this.logError('Failed to subscribe to streaming state:', err);
+        },
       });
 
     // Subscribe to panel state changes
     this.aiChatStore
       .getPanelState()
       .pipe(takeUntil(this.destroy$))
-      .subscribe((panelState) => {
+      .subscribe({
+        next: (panelState) => {
         const wasMinimized = this.isMinimized;
         const wasMaximized = this.isMaximized;
         this.isMinimized = panelState.isMinimized;
@@ -324,7 +341,11 @@ export class AiChatComponent implements OnInit, OnDestroy, OnChanges {
           }
           this.cdr.markForCheck();
         }
-      });
+      },
+      error: (err) => {
+        this.logError('Failed to subscribe to panel state:', err);
+      },
+    });
   }
 
   /**

@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatMenuModule, MatMenuTrigger } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { ChatSession } from '@models/ai-chat.interface';
 import { Controller } from '@models/controller';
@@ -29,6 +30,7 @@ import {
     MatMenuModule,
     MatButtonModule,
     MatDialogModule,
+    MatSnackBarModule,
     MatDividerModule,
   ],
   templateUrl: './chat-session-list.component.html',
@@ -38,6 +40,7 @@ import {
 export class ChatSessionListComponent {
   private dialog = inject(MatDialog);
   private aiChatService = inject(AiChatService);
+  private snackBar = inject(MatSnackBar);
 
   readonly sessions = input<ChatSession[]>([]);
   readonly currentSessionId = input<string | null>(null);
@@ -221,7 +224,13 @@ export class ChatSessionListComponent {
         this.sessionDeleted.emit(session.thread_id);
       },
       error: (error) => {
-        console.error('[ChatSessionList] Delete failed:', error);
+        const message = error?.error?.message || error?.message || 'Failed to delete session';
+        this.snackBar.open(message, 'Close', {
+          duration: 6000,
+          panelClass: ['ai-chat-snack-error'],
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+        });
       },
     });
   }
