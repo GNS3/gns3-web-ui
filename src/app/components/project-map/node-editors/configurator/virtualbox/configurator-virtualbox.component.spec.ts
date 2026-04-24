@@ -1,11 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
+import { of, throwError } from 'rxjs';
 import { ToasterService } from '@services/toaster.service';
 import { NodeService } from '@services/node.service';
 import { VirtualBoxConfigurationService } from '@services/virtual-box-configuration.service';
 import { ConfiguratorDialogVirtualBoxComponent } from './configurator-virtualbox.component';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('ConfiguratorDialogVirtualBoxComponent', () => {
@@ -21,6 +23,7 @@ describe('ConfiguratorDialogVirtualBoxComponent', () => {
     getOnCloseoptions: ReturnType<typeof vi.fn>;
     getNetworkTypes: ReturnType<typeof vi.fn>;
   };
+  let mockChangeDetectorRef: { markForCheck: ReturnType<typeof vi.fn> };
 
   const mockController = {
     authToken: '',
@@ -124,10 +127,11 @@ describe('ConfiguratorDialogVirtualBoxComponent', () => {
   });
 
   const createComponent = (controller: Controller, node: Node) => {
+    vi.clearAllMocks();
     mockDialogRef = { close: vi.fn() };
     mockNodeService = {
-      getNode: vi.fn().mockReturnValue({ subscribe: (fn: (n: Node) => void) => fn(node) }),
-      updateNodeWithCustomAdapters: vi.fn().mockReturnValue({ subscribe: () => {} }),
+      getNode: vi.fn().mockReturnValue(of(node)),
+      updateNodeWithCustomAdapters: vi.fn().mockReturnValue(of({})),
     };
     mockToasterService = {
       success: vi.fn(),
@@ -142,6 +146,9 @@ describe('ConfiguratorDialogVirtualBoxComponent', () => {
       ]),
       getNetworkTypes: vi.fn().mockReturnValue(['Intel PRO/1000 MT Desktop (82540EM)']),
     };
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
+    };
 
     TestBed.resetTestingModule();
     TestBed.configureTestingModule({
@@ -151,6 +158,7 @@ describe('ConfiguratorDialogVirtualBoxComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: VirtualBoxConfigurationService, useValue: mockVirtualBoxConfigurationService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
         { provide: MAT_DIALOG_DATA, useValue: { controller, node } },
       ],
     });
@@ -276,6 +284,49 @@ describe('ConfiguratorDialogVirtualBoxComponent', () => {
 
     it('should have removeTag method', () => {
       expect(typeof (ConfiguratorDialogVirtualBoxComponent.prototype as any).removeTag).toBe('function');
+    });
+  });
+
+  describe('Error handling', () => {
+    it('should show error toast when getNode fails', () => {
+      const mockNode = createMockNode();
+      // First create component with normal mock, then override to error
+      createComponent(mockController as Controller, mockNode);
+      mockNodeService.getNode.mockReturnValue(throwError(() => new Error('Failed to load node')));
+      const cdrSpy = vi.spyOn(fixture.componentInstance['cd'], 'markForCheck');
+
+      // Manually trigger ngOnInit since it already ran during detectChanges
+      fixture.componentInstance.ngOnInit();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load node');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show error toast when updateNodeWithCustomAdapters fails', () => {
+      const mockNode = createMockNode();
+      createComponent(mockController as Controller, mockNode);
+      const cdrSpy = vi.spyOn(fixture.componentInstance['cd'], 'markForCheck');
+
+      mockNodeService.updateNodeWithCustomAdapters.mockReturnValue(
+        throwError(() => new Error('Failed to update node'))
+      );
+
+      fixture.componentInstance.generalSettingsForm.setValue({
+        name: 'UpdatedVM',
+        console_type: 'telnet',
+        console_auto_start: false,
+        ram: '1024',
+        on_close: 'power_off',
+        headless: true,
+        use_any_adapter: false,
+        usage: '',
+      });
+
+      fixture.componentInstance.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update node');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 });
