@@ -1173,6 +1173,25 @@ h2[mat-dialog-title] {
     width: 100%;
   }
 
+  /* Delete button - 30x30px compact size */
+  .delete-btn {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    padding: 0;
+    min-width: 30px;
+    line-height: 30px;
+
+    mat-icon {
+      font-size: 26px;
+      width: 26px;
+      height: 26px;
+    }
+  }
+
   /* Mapping inputs row layout - 3 columns per row */
   .mapping-inputs-row {
     display: flex;
