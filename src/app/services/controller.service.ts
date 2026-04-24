@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, throwError } from 'rxjs';
+import { catchError, timeout } from 'rxjs/operators';
 import { Controller, ControllerProtocol } from '@models/controller';
 import { HttpController } from './http-controller.service';
 
@@ -120,7 +121,16 @@ export class ControllerService {
   }
 
   public checkControllerVersion(controller: Controller): Observable<any> {
-    return this.httpController.get(controller, '/version');
+    return this.httpController.get(controller, '/version').pipe(
+      timeout(5000),
+      catchError((error) => {
+        if (error.name === 'TimeoutError') {
+          const timeoutError = new Error('Connection timeout');
+          return throwError(() => timeoutError);
+        }
+        return throwError(() => error);
+      })
+    );
   }
 
   public getLocalController(host: string, port: number) {
