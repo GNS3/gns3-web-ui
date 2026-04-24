@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of, throwError } from 'rxjs';
 import { MatDialogRef, MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatCardModule } from '@angular/material/card';
@@ -17,6 +18,7 @@ import { ToasterService } from '@services/toaster.service';
 import { NonNegativeValidator } from '../../../../../validators/non-negative-validator';
 import { Node, Properties } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('ConfiguratorDialogDockerComponent', () => {
@@ -106,6 +108,8 @@ describe('ConfiguratorDialogDockerComponent', () => {
   } as unknown as Node;
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockDialogRef = { close: vi.fn() };
 
     mockDialog = {
@@ -122,18 +126,8 @@ describe('ConfiguratorDialogDockerComponent', () => {
     };
 
     mockNodeService = {
-      getNode: vi.fn().mockReturnValue({
-        subscribe: vi.fn((cb) => {
-          cb(mockNode);
-          return { unsubscribe: vi.fn() };
-        }),
-      }),
-      updateNode: vi.fn().mockReturnValue({
-        subscribe: vi.fn((observer) => {
-          if (observer.next) observer.next();
-          return { unsubscribe: vi.fn() };
-        }),
-      }),
+      getNode: vi.fn().mockReturnValue(of(mockNode)),
+      updateNode: vi.fn().mockReturnValue(of(undefined)),
     };
 
     mockToasterService = {
@@ -170,6 +164,7 @@ describe('ConfiguratorDialogDockerComponent', () => {
         { provide: ToasterService, useValue: mockToasterService },
         { provide: DockerConfigurationService, useValue: mockDockerConfigurationService },
         { provide: NonNegativeValidator, useValue: mockNonNegativeValidator },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -391,6 +386,35 @@ describe('ConfiguratorDialogDockerComponent', () => {
       component.onCancelClick();
 
       expect(mockDialogRef.close).toHaveBeenCalledWith();
+    });
+  });
+
+  describe('Error handling', () => {
+    it('should show error toast when getNode fails', () => {
+      mockNodeService.getNode.mockReturnValue(throwError(() => new Error('Failed to load node')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.ngOnInit();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load node');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show error toast when updateNode fails', () => {
+      mockNodeService.updateNode.mockReturnValue(throwError(() => new Error('Failed to update node')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.generalSettingsForm.patchValue({
+        name: 'Docker-Test',
+        adapter: 1,
+        consoleHttpPort: '80',
+        consoleHttpPath: '/path',
+      });
+
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update node');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 });

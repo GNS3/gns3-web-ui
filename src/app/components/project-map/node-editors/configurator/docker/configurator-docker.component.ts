@@ -108,36 +108,43 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
-      this.node = node;
-      this.name = node.name;
+    this.nodeService.getNode(this.controller, this.node).subscribe({
+      next: (node: Node) => {
+        this.node = node;
+        this.name = node.name;
 
-      // Update form values with node data
-      this.generalSettingsForm.patchValue({
-        name: node.name,
-        startCommand: node.properties.start_command || '',
-        adapter: node.properties.adapters || 0,
-        mac_address: node.properties.mac_address || '',
-        memory: node.properties.memory || 0,
-        cpus: node.properties.cpus || 0,
-        console_type: node.console_type || '',
-        aux_type: node.aux_type || '',
-        console_auto_start: node.console_auto_start || false,
-        console_resolution: node.properties.console_resolution || '',
-        consoleHttpPort: node.properties.console_http_port || '',
-        consoleHttpPath: node.properties.console_http_path || '',
-        environment: node.properties.environment || '',
-        extra_hosts: node.properties.extra_hosts || '',
-        extra_volumes: node.properties.extra_volumes || '',
-        usage: node.properties.usage || '',
-      });
+        // Update form values with node data
+        this.generalSettingsForm.patchValue({
+          name: node.name,
+          startCommand: node.properties.start_command || '',
+          adapter: node.properties.adapters || 0,
+          mac_address: node.properties.mac_address || '',
+          memory: node.properties.memory || 0,
+          cpus: node.properties.cpus || 0,
+          console_type: node.console_type || '',
+          aux_type: node.aux_type || '',
+          console_auto_start: node.console_auto_start || false,
+          console_resolution: node.properties.console_resolution || '',
+          consoleHttpPort: node.properties.console_http_port || '',
+          consoleHttpPath: node.properties.console_http_path || '',
+          environment: node.properties.environment || '',
+          extra_hosts: node.properties.extra_hosts || '',
+          extra_volumes: node.properties.extra_volumes || '',
+          usage: node.properties.usage || '',
+        });
 
-      this.getConfiguration();
-      if (!this.node.properties.cpus) this.node.properties.cpus = 0.0;
-      if (!this.node.tags) {
-        this.node.tags = [];
-      }
-      this.cd.markForCheck();
+        this.getConfiguration();
+        if (!this.node.properties.cpus) this.node.properties.cpus = 0.0;
+        if (!this.node.tags) {
+          this.node.tags = [];
+        }
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load node';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -190,6 +197,7 @@ export class ConfiguratorDialogDockerComponent implements OnInit {
         error: (error: unknown) => {
           const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
           this.toasterService.error(errorMessage);
+          this.cd.markForCheck();
         },
       });
     } else {
