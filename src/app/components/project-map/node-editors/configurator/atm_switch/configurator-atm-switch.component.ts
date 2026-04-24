@@ -92,28 +92,35 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
-      this.node = node;
-      this.name = node.name;
+    this.nodeService.getNode(this.controller, this.node).subscribe({
+      next: (node: Node) => {
+        this.node = node;
+        this.name = node.name;
 
-      // Update form values with node data
-      this.nameForm.patchValue({
-        name: node.name,
-        useVpiOnly: false,
-      });
-
-      let mappings = node.properties.mappings;
-      Object.keys(mappings).forEach((key) => {
-        this.nodeMappings.set(key, mappings[key]);
-      });
-
-      this.nodeMappings.forEach((value: string, key: string) => {
-        this.nodeMappingsDataSource.push({
-          portIn: key,
-          portOut: value,
+        // Update form values with node data
+        this.nameForm.patchValue({
+          name: node.name,
+          useVpiOnly: false,
         });
-      });
-      this.cd.markForCheck();
+
+        let mappings = node.properties.mappings;
+        Object.keys(mappings).forEach((key) => {
+          this.nodeMappings.set(key, mappings[key]);
+        });
+
+        this.nodeMappings.forEach((value: string, key: string) => {
+          this.nodeMappingsDataSource.push({
+            portIn: key,
+            portOut: value,
+          });
+        });
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load node';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -203,6 +210,7 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
         error: (error: unknown) => {
           const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
           this.toasterService.error(errorMessage);
+          this.cd.markForCheck();
         },
       });
     } else {

@@ -5,7 +5,9 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { of, throwError } from 'rxjs';
 
 describe('ConfiguratorDialogAtmSwitchComponent', () => {
   let fixture: ComponentFixture<ConfiguratorDialogAtmSwitchComponent>;
@@ -13,6 +15,7 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
   let mockNodeService: any;
   let mockToasterService: any;
+  let mockChangeDetectorRef: any;
 
   const mockController = { id: 1 } as unknown as Controller;
   const mockNode = {
@@ -22,16 +25,22 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
   } as unknown as Node;
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockDialogRef = { close: vi.fn() };
 
     mockNodeService = {
-      getNode: vi.fn().mockReturnValue({ subscribe: vi.fn((cb) => cb(mockNode)) }),
-      updateNode: vi.fn().mockReturnValue({ subscribe: vi.fn(() => {}) }),
+      getNode: vi.fn().mockReturnValue(of(mockNode)),
+      updateNode: vi.fn().mockReturnValue(of({})),
     };
 
     mockToasterService = {
       error: vi.fn(),
       success: vi.fn(),
+    };
+
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -40,6 +49,7 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -405,6 +415,30 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
     it('should export NodeMapping interface', () => {
       const nodeMapping: NodeMapping = { portIn: '0:0:0', portOut: '1:0:0' };
       expect(nodeMapping.portIn).toBe('0:0:0');
+    });
+  });
+
+  describe('Error handling', () => {
+    it('should show error toast when getNode fails', () => {
+      mockNodeService.getNode.mockReturnValue(throwError(() => new Error('Failed to load node')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.ngOnInit();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load node');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show error toast when updateNode fails', () => {
+      mockNodeService.updateNode.mockReturnValue(throwError(() => new Error('Failed to update node')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.nameForm.patchValue({ name: 'Test Node' });
+
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update node');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 });
