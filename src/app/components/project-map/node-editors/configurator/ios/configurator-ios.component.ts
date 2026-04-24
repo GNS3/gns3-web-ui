@@ -114,60 +114,67 @@ export class ConfiguratorDialogIosComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
-      this.node = node;
-      this.name = node.name;
+    this.nodeService.getNode(this.controller, this.node).subscribe({
+      next: (node: Node) => {
+        this.node = node;
+        this.name = node.name;
 
-      // Update form values with node data
-      this.generalSettingsForm.patchValue({
-        name: node.name,
-        path: node.properties.image || '',
-        midplane: node.properties.midplane || '',
-        npe: node.properties.npe || '',
-        console_type: node.console_type || '',
-        aux_type: node.properties.aux_type || '',
-        console_auto_start: node.console_auto_start || false,
-        // Slots
-        slot0: node.properties.slot0 || '',
-        slot1: node.properties.slot1 || '',
-        slot2: node.properties.slot2 || '',
-        slot3: node.properties.slot3 || '',
-        slot4: node.properties.slot4 || '',
-        slot5: node.properties.slot5 || '',
-        slot6: node.properties.slot6 || '',
-        // WICs
-        wic0: node.properties.wic0 || '',
-        wic1: node.properties.wic1 || '',
-        wic2: node.properties.wic2 || '',
-      });
+        // Update form values with node data
+        this.generalSettingsForm.patchValue({
+          name: node.name,
+          path: node.properties.image || '',
+          midplane: node.properties.midplane || '',
+          npe: node.properties.npe || '',
+          console_type: node.console_type || '',
+          aux_type: node.properties.aux_type || '',
+          console_auto_start: node.console_auto_start || false,
+          // Slots
+          slot0: node.properties.slot0 || '',
+          slot1: node.properties.slot1 || '',
+          slot2: node.properties.slot2 || '',
+          slot3: node.properties.slot3 || '',
+          slot4: node.properties.slot4 || '',
+          slot5: node.properties.slot5 || '',
+          slot6: node.properties.slot6 || '',
+          // WICs
+          wic0: node.properties.wic0 || '',
+          wic1: node.properties.wic1 || '',
+          wic2: node.properties.wic2 || '',
+        });
 
-      this.memoryForm.patchValue({
-        ram: node.properties.ram || '',
-        nvram: node.properties.nvram || '',
-        iomem: node.properties.iomem || '',
-        disk0: node.properties.disk0 || 0,
-        disk1: node.properties.disk1 || 0,
-        auto_delete_disks: node.properties.auto_delete_disks || false,
-      });
+        this.memoryForm.patchValue({
+          ram: node.properties.ram || '',
+          nvram: node.properties.nvram || '',
+          iomem: node.properties.iomem || '',
+          disk0: node.properties.disk0 || 0,
+          disk1: node.properties.disk1 || 0,
+          auto_delete_disks: node.properties.auto_delete_disks || false,
+        });
 
-      this.advancedSettingsForm.patchValue({
-        system_id: node.properties.system_id || '',
-        mac_addr: node.properties.mac_addr || '',
-        idlepc: node.properties.idlepc || '',
-        idlemax: node.properties.idlemax || '',
-        idlesleep: node.properties.idlesleep || '',
-        exec_area: node.properties.exec_area || '',
-        mmap: node.properties.mmap || false,
-        sparsemem: node.properties.sparsemem || false,
-        usage: node.properties.usage || '',
-      });
+        this.advancedSettingsForm.patchValue({
+          system_id: node.properties.system_id || '',
+          mac_addr: node.properties.mac_addr || '',
+          idlepc: node.properties.idlepc || '',
+          idlemax: node.properties.idlemax || '',
+          idlesleep: node.properties.idlesleep || '',
+          exec_area: node.properties.exec_area || '',
+          mmap: node.properties.mmap || false,
+          sparsemem: node.properties.sparsemem || false,
+          usage: node.properties.usage || '',
+        });
 
-      if (!this.node.tags) {
-        this.node.tags = [];
-      }
-      this.getConfiguration();
-      this.fillSlotsData();
-      this.cd.markForCheck();
+        if (!this.node.tags) {
+          this.node.tags = [];
+        }
+        this.getConfiguration();
+        this.fillSlotsData();
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load node';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -276,6 +283,7 @@ export class ConfiguratorDialogIosComponent implements OnInit {
         error: (error: unknown) => {
           const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
           this.toasterService.error(errorMessage);
+          this.cd.markForCheck();
         },
       });
     } else {

@@ -1,13 +1,14 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { ConfiguratorDialogIosComponent } from './configurator-ios.component';
 import { IosConfigurationService } from '@services/ios-configuration.service';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 import { Node, Properties } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('ConfiguratorDialogIosComponent', () => {
@@ -18,6 +19,7 @@ describe('ConfiguratorDialogIosComponent', () => {
   let mockNodeService: any;
   let mockToasterService: any;
   let mockConfigurationService: any;
+  let mockChangeDetectorRef: any;
   let mockController: Controller;
   let mockNode: Node;
   let nodeSubject: Subject<Node>;
@@ -97,6 +99,7 @@ describe('ConfiguratorDialogIosComponent', () => {
   });
 
   beforeEach(async () => {
+    vi.clearAllMocks();
     nodeSubject = new Subject<Node>();
 
     mockDialogRef = {
@@ -135,6 +138,10 @@ describe('ConfiguratorDialogIosComponent', () => {
       }),
       getMacAddrRegex: vi.fn().mockReturnValue(/^([0-9a-fA-F]{4}\.){2}[0-9a-fA-F]{4}$|^$/),
       getIdlepcRegex: vi.fn().mockReturnValue(/^(0x[0-9a-fA-F]+)?$|^$/),
+    };
+
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
     };
 
     mockController = {
@@ -190,6 +197,7 @@ describe('ConfiguratorDialogIosComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: IosConfigurationService, useValue: mockConfigurationService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -547,6 +555,38 @@ describe('ConfiguratorDialogIosComponent', () => {
       component.onSaveClick();
 
       expect(saveSlotsSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('Error handling', () => {
+    it('should show error toast when getNode fails', () => {
+      mockNodeService.getNode.mockReturnValue(throwError(() => new Error('Failed to load node')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.ngOnInit();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load node');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show error toast when updateNode fails', () => {
+      mockNodeService.updateNode.mockReturnValue(throwError(() => new Error('Failed to update node')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.generalSettingsForm.patchValue({
+        name: 'R1-updated',
+        path: 'new-image.bin',
+      });
+      component.memoryForm.patchValue({
+        ram: 512,
+        nvram: 512,
+      });
+      component.advancedSettingsForm.patchValue({});
+
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update node');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 });
