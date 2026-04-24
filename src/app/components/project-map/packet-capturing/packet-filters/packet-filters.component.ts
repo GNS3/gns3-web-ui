@@ -14,6 +14,7 @@ import { Controller } from '@models/controller';
 import { LinkService } from '@services/link.service';
 import { HelpDialogComponent } from '../../help-dialog/help-dialog.component';
 import { DialogConfigService } from '@services/dialog-config.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-packet-filters',
@@ -35,6 +36,7 @@ export class PacketFiltersDialogComponent implements OnInit {
   private dialog = inject(MatDialog);
   private dialogConfig = inject(DialogConfigService);
   private cdr = inject(ChangeDetectorRef);
+  private toasterService = inject(ToasterService);
 
   controller: Controller;
   project: Project;
@@ -45,32 +47,44 @@ export class PacketFiltersDialogComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    this.linkService.getLink(this.controller, this.link.project_id, this.link.link_id).subscribe((link: Link) => {
-      this.link = link;
-      this.filters = {
-        bpf: [],
-        corrupt: [0],
-        delay: [0, 0],
-        frequency_drop: [0],
-        packet_loss: [0],
-      };
+    this.linkService.getLink(this.controller, this.link.project_id, this.link.link_id).subscribe({
+      next: (link: Link) => {
+        this.link = link;
+        this.filters = {
+          bpf: [],
+          corrupt: [0],
+          delay: [0, 0],
+          frequency_drop: [0],
+          packet_loss: [0],
+        };
 
-      if (this.link.filters) {
-        this.filters.bpf = this.link.filters.bpf ? this.link.filters.bpf : [];
-        this.filters.corrupt = this.link.filters.corrupt ? this.link.filters.corrupt : [0];
-        this.filters.delay = this.link.filters.delay ? this.link.filters.delay : [0, 0];
-        this.filters.frequency_drop = this.link.filters.frequency_drop ? this.link.filters.frequency_drop : [0];
-        this.filters.packet_loss = this.link.filters.packet_loss ? this.link.filters.packet_loss : [0];
-      }
-      this.cdr.markForCheck();
+        if (this.link.filters) {
+          this.filters.bpf = this.link.filters.bpf ? this.link.filters.bpf : [];
+          this.filters.corrupt = this.link.filters.corrupt ? this.link.filters.corrupt : [0];
+          this.filters.delay = this.link.filters.delay ? this.link.filters.delay : [0, 0];
+          this.filters.frequency_drop = this.link.filters.frequency_drop ? this.link.filters.frequency_drop : [0];
+          this.filters.packet_loss = this.link.filters.packet_loss ? this.link.filters.packet_loss : [0];
+        }
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load link filters';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      },
     });
 
-    this.linkService
-      .getAvailableFilters(this.controller, this.link)
-      .subscribe((availableFilters: FilterDescription[]) => {
+    this.linkService.getAvailableFilters(this.controller, this.link).subscribe({
+      next: (availableFilters: FilterDescription[]) => {
         this.availableFilters = availableFilters;
         this.cdr.markForCheck();
-      });
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load available filters';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   onFrequencyDropChange(value: number) {
@@ -116,15 +130,31 @@ export class PacketFiltersDialogComponent implements OnInit {
       packet_loss: [0],
     };
 
-    this.linkService.updateLink(this.controller, this.link).subscribe((link: Link) => {
-      this.dialogRef.close();
+    this.linkService.updateLink(this.controller, this.link).subscribe({
+      next: (link: Link) => {
+        this.dialogRef.close();
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to reset filters';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      },
     });
   }
 
   onYesClick() {
     this.link.filters = this.filters;
-    this.linkService.updateLink(this.controller, this.link).subscribe((link: Link) => {
-      this.dialogRef.close();
+    this.linkService.updateLink(this.controller, this.link).subscribe({
+      next: (link: Link) => {
+        this.dialogRef.close();
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to apply filters';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      },
     });
   }
 
