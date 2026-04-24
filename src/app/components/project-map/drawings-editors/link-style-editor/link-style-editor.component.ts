@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormsModule,
@@ -53,6 +53,7 @@ export class LinkStyleEditorDialogComponent implements OnInit {
   private linksEventSource = inject(LinksEventSource);
   private linkToMapLink = inject(LinkToMapLinkConverter);
   private nonNegativeValidator = inject(NonNegativeValidator);
+  private cdr = inject(ChangeDetectorRef);
 
   controller: Controller;
   project: Project;
@@ -141,24 +142,31 @@ export class LinkStyleEditorDialogComponent implements OnInit {
       StyleTranslator.normalizeFlowchartRoundness(configuredFlowchartRoundness)
     );
 
-    this.formGroup.controls['linkType'].valueChanges.subscribe((selectedLinkTypeLabel) => {
-      const selectedLinkType = this.normalizeLinkType(selectedLinkTypeLabel);
-      const previousLinkType = this.curvinessLinkTypeContext;
-      this.applyCurvinessValidators(selectedLinkType);
+    this.formGroup.controls['linkType'].valueChanges.subscribe({
+      next: (selectedLinkTypeLabel) => {
+        const selectedLinkType = this.normalizeLinkType(selectedLinkTypeLabel);
+        const previousLinkType = this.curvinessLinkTypeContext;
+        this.applyCurvinessValidators(selectedLinkType);
 
-      const rawCurviness = this.formGroup.controls['bezierCurviness'].value;
-      const currentCurviness = this.normalizeCurvinessByLinkType(previousLinkType, rawCurviness);
-      const previousTypeDefaultCurviness = this.getCurvinessDefaultByLinkType(previousLinkType);
-      const shouldUseSelectedTypeDefault = currentCurviness === previousTypeDefaultCurviness;
-      const selectedTypeDefaultCurviness = this.getCurvinessDefaultByLinkType(selectedLinkType);
+        const rawCurviness = this.formGroup.controls['bezierCurviness'].value;
+        const currentCurviness = this.normalizeCurvinessByLinkType(previousLinkType, rawCurviness);
+        const previousTypeDefaultCurviness = this.getCurvinessDefaultByLinkType(previousLinkType);
+        const shouldUseSelectedTypeDefault = currentCurviness === previousTypeDefaultCurviness;
+        const selectedTypeDefaultCurviness = this.getCurvinessDefaultByLinkType(selectedLinkType);
 
-      const nextCurviness = shouldUseSelectedTypeDefault
-        ? selectedTypeDefaultCurviness
-        : this.normalizeCurvinessByLinkType(selectedLinkType, rawCurviness);
+        const nextCurviness = shouldUseSelectedTypeDefault
+          ? selectedTypeDefaultCurviness
+          : this.normalizeCurvinessByLinkType(selectedLinkType, rawCurviness);
 
-      this.formGroup.controls['bezierCurviness'].setValue(nextCurviness, { emitEvent: false });
+        this.formGroup.controls['bezierCurviness'].setValue(nextCurviness, { emitEvent: false });
 
-      this.curvinessLinkTypeContext = selectedLinkType;
+        this.curvinessLinkTypeContext = selectedLinkType;
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to update link type';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      },
     });
   }
 
@@ -268,8 +276,8 @@ export class LinkStyleEditorDialogComponent implements OnInit {
       const expectedFlowchartRoundness = this.link.link_style.flowchart_roundness;
       const linkTypeChanged = expectedLinkType !== originalLinkType;
 
-      this.linkService.updateLinkStyle(this.controller, this.link).subscribe(
-        (link: Link) => {
+      this.linkService.updateLinkStyle(this.controller, this.link).subscribe({
+        next: (link: Link) => {
           if (!link.link_style) {
             link.link_style = {} as LinkStyle;
           }
@@ -322,10 +330,12 @@ export class LinkStyleEditorDialogComponent implements OnInit {
 
           this.dialogRef.close();
         },
-        () => {
-          this.toasterService.error('Unable to update link style');
-        }
-      );
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to update link style';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
+      });
     } else {
       this.toasterService.error(`Entered data is incorrect`);
     }
