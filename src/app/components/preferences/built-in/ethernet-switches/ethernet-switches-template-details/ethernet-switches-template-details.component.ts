@@ -132,7 +132,11 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
     this.ethernetSwitchTemplate.tags = this.tags();
     this.ethernetSwitchTemplate.usage = this.usage();
 
-    this.ethernetSwitchTemplate.ports_mapping = this.portsComponent.ethernetPorts;
+    // Only update ports_mapping if the ports component is rendered
+    // (it's conditionally rendered based on portsExpanded state)
+    if (this.portsComponent) {
+      this.ethernetSwitchTemplate.ports_mapping = this.portsComponent.ethernetPorts;
+    }
     this.builtInTemplatesService.saveTemplate(this.controller, this.ethernetSwitchTemplate).subscribe({
       next: () => {
         this.toasterService.success('Changes saved');
