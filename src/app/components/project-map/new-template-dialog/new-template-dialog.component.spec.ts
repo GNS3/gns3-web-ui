@@ -3,7 +3,7 @@ import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSortModule, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { NewTemplateDialogComponent } from './new-template-dialog.component';
 import { Appliance, Image } from '@models/appliance';
 import { Controller } from '@models/controller';
@@ -138,6 +138,8 @@ describe('NewTemplateDialogComponent', () => {
   const mockCompute = { capabilities: { platform: 'linux' } };
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockDialogRef = {
       close: vi.fn(),
       afterClosed: vi.fn().mockReturnValue(of(null)),
@@ -614,6 +616,41 @@ describe('NewTemplateDialogComponent', () => {
           data: { upload_file_type: 'Image' },
         })
       );
+    });
+  });
+
+  describe('Error handling', () => {
+    it('should show error toast when updateAppliances fails', () => {
+      mockApplianceService.updateAppliances.mockReturnValue(throwError(() => new Error('Update failed')));
+      const cdrSpy = vi.spyOn(component['changeDetectorRef'], 'markForCheck');
+
+      component.updateAppliances();
+
+      expect(mockProgressService.deactivate).toHaveBeenCalled();
+      expect(mockToasterService.error).toHaveBeenCalledWith('Update failed');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show error toast when getAppliance fails', () => {
+      mockApplianceService.getAppliance.mockReturnValue(throwError(() => new Error('Failed to load appliance')));
+      const cdrSpy = vi.spyOn(component['changeDetectorRef'], 'markForCheck');
+
+      component.getAppliance('/appliances/test');
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load appliance');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should handle refreshImages errors gracefully', () => {
+      mockQemuService.getImages.mockReturnValue(throwError(() => new Error('QEMU images failed')));
+      mockIosService.getImages.mockReturnValue(throwError(() => new Error('IOS images failed')));
+      mockIouService.getImages.mockReturnValue(throwError(() => new Error('IOU images failed')));
+      const cdrSpy = vi.spyOn(component['changeDetectorRef'], 'markForCheck');
+
+      component.refreshImages();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('QEMU images failed');
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });
