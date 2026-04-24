@@ -87,10 +87,12 @@ export const PROVIDER_PRESETS: ProviderPreset[] = [
     label: 'DeepSeek',
     provider: 'deepseek',
     baseUrl: 'https://api.deepseek.com/v1',
-    models: ['deepseek-chat'],
+    models: ['deepseek-chat', 'deepseek-v4-flash', 'deepseek-v4-pro'],
     defaultTemperature: 0.3,
     modelContextLimits: {
-      'deepseek-chat': 128,
+      'deepseek-chat': 1000,
+      'deepseek-v4-flash': 1000,
+      'deepseek-v4-pro': 1000,
     },
   },
 ];
