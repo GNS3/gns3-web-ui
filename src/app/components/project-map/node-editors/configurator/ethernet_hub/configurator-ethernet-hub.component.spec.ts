@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { ConfiguratorDialogEthernetHubComponent } from './configurator-ethernet-hub.component';
@@ -9,6 +9,7 @@ import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
 import { Node, Properties, PortsMapping } from '../../../../../cartography/models/node';
 import { Port } from '@models/port';
 import { Controller } from '@models/controller';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('ConfiguratorDialogEthernetHubComponent', () => {
@@ -18,6 +19,7 @@ describe('ConfiguratorDialogEthernetHubComponent', () => {
   let mockNodeService: any;
   let mockToasterService: any;
   let mockVpcsConfigurationService: any;
+  let mockChangeDetectorRef: any;
 
   const createMockProperties = (): Properties =>
     ({
@@ -131,6 +133,8 @@ describe('ConfiguratorDialogEthernetHubComponent', () => {
   } as Controller;
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockDialogRef = { close: vi.fn() };
 
     mockNodeService = {
@@ -148,6 +152,10 @@ describe('ConfiguratorDialogEthernetHubComponent', () => {
       getCategories: vi.fn().mockReturnValue(['category1', 'category2']),
     };
 
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [ConfiguratorDialogEthernetHubComponent, MatChipsModule],
       providers: [
@@ -155,6 +163,7 @@ describe('ConfiguratorDialogEthernetHubComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: VpcsConfigurationService, useValue: mockVpcsConfigurationService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -408,6 +417,34 @@ describe('ConfiguratorDialogEthernetHubComponent', () => {
       component.onCancelClick();
 
       expect(mockDialogRef.close).toHaveBeenCalled();
+    });
+  });
+
+  describe('Error handling', () => {
+    it('should show error toast when getNode fails', () => {
+      mockNodeService.getNode.mockReturnValue(throwError(() => new Error('Failed to load node')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      fixture.detectChanges();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load node');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show error toast when updateNode fails', () => {
+      mockNodeService.updateNode.mockReturnValue(throwError(() => new Error('Failed to update node')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.node = createMockNode();
+      component.inputForm.patchValue({
+        name: 'Updated Hub',
+        numberOfPorts: 4,
+      });
+
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update node');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 });
