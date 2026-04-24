@@ -103,12 +103,10 @@ export class ConfiguratorDialogSwitchComponent implements OnInit {
           this.nodeMappings.set(key, mappings[key]);
         });
 
-        this.nodeMappings.forEach((value: string, key: string) => {
-          this.nodeMappingsDataSource.push({
-            portIn: key,
-            portOut: value,
-          });
-        });
+        this.nodeMappingsDataSource = Array.from(this.nodeMappings.entries()).map(([key, value]) => ({
+          portIn: key,
+          portOut: value,
+        }));
         this.cd.markForCheck();
       },
       error: (err) => {
