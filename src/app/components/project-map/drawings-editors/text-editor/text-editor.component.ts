@@ -170,18 +170,34 @@ export class TextEditorDialogComponent implements OnInit {
         this.node.label.style = this.getStyleFromTextElement();
         this.node.label.rotation = +this.rotation;
 
-        this.nodeService.updateLabel(this.controller, this.node, this.node.label).subscribe((node: Node) => {
-          this.nodesDataSource.update(node);
-          this.dialogRef.close();
+        this.nodeService.updateLabel(this.controller, this.node, this.node.label).subscribe({
+          next: (node: Node) => {
+            this.nodesDataSource.update(node);
+            this.dialogRef.close();
+            this.cdr.markForCheck();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to update node label';
+            this.toasterService.error(message);
+            this.cdr.markForCheck();
+          },
         });
       } else if (this.linkNode && this.link) {
         this.label.style = this.getStyleFromTextElement();
         this.label.rotation = +this.rotation;
         this.label.text = this.element.text;
 
-        this.linkService.updateLink(this.controller, this.link).subscribe((link: Link) => {
-          this.linksDataSource.update(link);
-          this.dialogRef.close();
+        this.linkService.updateLink(this.controller, this.link).subscribe({
+          next: (link: Link) => {
+            this.linksDataSource.update(link);
+            this.dialogRef.close();
+            this.cdr.markForCheck();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to update link';
+            this.toasterService.error(message);
+            this.cdr.markForCheck();
+          },
         });
       } else if (this.drawing) {
         this.drawing.rotation = +this.rotation;
@@ -192,9 +208,17 @@ export class TextEditorDialogComponent implements OnInit {
 
         this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
 
-        this.drawingService.update(this.controller, this.drawing).subscribe((controllerDrawing: Drawing) => {
-          this.drawingsDataSource.update(controllerDrawing);
-          this.dialogRef.close();
+        this.drawingService.update(this.controller, this.drawing).subscribe({
+          next: (controllerDrawing: Drawing) => {
+            this.drawingsDataSource.update(controllerDrawing);
+            this.dialogRef.close();
+            this.cdr.markForCheck();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to update drawing';
+            this.toasterService.error(message);
+            this.cdr.markForCheck();
+          },
         });
       }
     } else {

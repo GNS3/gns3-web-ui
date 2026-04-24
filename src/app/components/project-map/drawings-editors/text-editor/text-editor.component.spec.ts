@@ -20,6 +20,7 @@ import { ToasterService } from '@services/toaster.service';
 import { RotationValidator } from '../../../../validators/rotation-validator';
 import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { of, throwError } from 'rxjs';
 
 describe('TextEditorDialogComponent', () => {
   let fixture: ComponentFixture<TextEditorDialogComponent>;
@@ -118,20 +119,22 @@ describe('TextEditorDialogComponent', () => {
   });
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockDialogRef = {
       close: vi.fn(),
     };
 
     mockDrawingService = {
-      update: vi.fn().mockReturnValue({ subscribe: (fn: (d: any) => void) => fn({}) }),
+      update: vi.fn().mockReturnValue(of({})),
     };
 
     mockNodeService = {
-      updateLabel: vi.fn().mockReturnValue({ subscribe: (fn: (n: any) => void) => fn({}) }),
+      updateLabel: vi.fn().mockReturnValue(of({})),
     };
 
     mockLinkService = {
-      updateLink: vi.fn().mockReturnValue({ subscribe: (fn: (l: any) => void) => fn({}) }),
+      updateLink: vi.fn().mockReturnValue(of({})),
     };
 
     mockToasterService = {
@@ -245,6 +248,15 @@ describe('TextEditorDialogComponent', () => {
       component.onYesClick();
       expect(mockDialogRef.close).toHaveBeenCalled();
     });
+
+    it('should show error toast when drawingService.update fails', () => {
+      mockDrawingService.update.mockReturnValue(throwError(() => new Error('Drawing update failed')));
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      component.onYesClick();
+      expect(mockToasterService.error).toHaveBeenCalledWith('Drawing update failed');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
   });
 
   describe('Node label mode', () => {
@@ -279,6 +291,15 @@ describe('TextEditorDialogComponent', () => {
     it('should close dialog after successful label update', () => {
       component.onYesClick();
       expect(mockDialogRef.close).toHaveBeenCalled();
+    });
+
+    it('should show error toast when nodeService.updateLabel fails', () => {
+      mockNodeService.updateLabel.mockReturnValue(throwError(() => new Error('Node label update failed')));
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      component.onYesClick();
+      expect(mockToasterService.error).toHaveBeenCalledWith('Node label update failed');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 
@@ -322,6 +343,15 @@ describe('TextEditorDialogComponent', () => {
     it('should close dialog after successful link update', () => {
       component.onYesClick();
       expect(mockDialogRef.close).toHaveBeenCalled();
+    });
+
+    it('should show error toast when linkService.updateLink fails', () => {
+      mockLinkService.updateLink.mockReturnValue(throwError(() => new Error('Link update failed')));
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      component.onYesClick();
+      expect(mockToasterService.error).toHaveBeenCalledWith('Link update failed');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 
