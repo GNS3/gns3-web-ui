@@ -4,6 +4,61 @@
   <div class="content">
     <div class="default-content">
       <mat-card>
+        <form [formGroup]="nameForm">
+          <mat-form-field class="form-field">
+            <mat-label>Name</mat-label>
+            <input matInput type="text" formControlName="name" />
+          </mat-form-field>
+        </form>
+
+        <form [formGroup]="nameForm">
+          <mat-checkbox formControlName="useVpiOnly"> Use VPI only (VP tunnel) </mat-checkbox>
+        </form>
+
+        <div class="mapping-inputs-row">
+          <form [formGroup]="inputForm">
+            <mat-form-field class="form-field">
+              <mat-label>Source Port</mat-label>
+              <input matInput type="number" min="0" formControlName="sourcePort" />
+            </mat-form-field>
+          </form>
+          <form [formGroup]="abstractForm">
+            <mat-form-field class="form-field">
+              <mat-label>Source VPI</mat-label>
+              <input matInput type="number" min="1" formControlName="sourceVpi" />
+            </mat-form-field>
+          </form>
+          <form [formGroup]="inputForm">
+            <mat-form-field class="form-field">
+              <mat-label>Source VCI</mat-label>
+              <input matInput type="number" min="1" formControlName="sourceVci" />
+            </mat-form-field>
+          </form>
+        </div>
+
+        <div class="mapping-inputs-row">
+          <form [formGroup]="inputForm">
+            <mat-form-field class="form-field">
+              <mat-label>Destination Port</mat-label>
+              <input matInput type="number" min="0" formControlName="destinationPort" />
+            </mat-form-field>
+          </form>
+          <form [formGroup]="abstractForm">
+            <mat-form-field class="form-field">
+              <mat-label>Destination VPI</mat-label>
+              <input matInput type="number" min="1" formControlName="destinationVpi" />
+            </mat-form-field>
+          </form>
+          <form [formGroup]="inputForm">
+            <mat-form-field class="form-field">
+              <mat-label>Destination VCI</mat-label>
+              <input matInput type="number" min="1" formControlName="destinationVci" />
+            </mat-form-field>
+          </form>
+        </div>
+
+        <button mat-button class="form-field" (click)="add()">Add</button>
+
         @if (nodeMappingsDataSource.length) {
         <table mat-table [dataSource]="nodeMappingsDataSource">
           <ng-container matColumnDef="portIn">
@@ -34,55 +89,6 @@
           <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
         </table>
         }
-        <br />
-
-        <form [formGroup]="nameForm">
-          <mat-form-field class="form-field">
-            <mat-label>Name</mat-label>
-            <input matInput type="text" formControlName="name" />
-          </mat-form-field>
-        </form>
-
-        <form [formGroup]="nameForm">
-          <mat-checkbox formControlName="useVpiOnly"> Use VPI only (VP tunnel) </mat-checkbox>
-        </form>
-
-        <form [formGroup]="inputForm">
-          <mat-form-field class="form-field">
-            <mat-label>Source Port</mat-label>
-            <input matInput type="number" min="0" formControlName="sourcePort" />
-          </mat-form-field>
-        </form>
-        <form [formGroup]="abstractForm">
-          <mat-form-field class="form-field">
-            <mat-label>Source VPI</mat-label>
-            <input matInput type="number" min="1" formControlName="sourceVpi" />
-          </mat-form-field>
-        </form>
-        <form [formGroup]="inputForm">
-          <mat-form-field class="form-field">
-            <mat-label>Source VCI</mat-label>
-            <input matInput type="number" min="1" formControlName="sourceVci" />
-          </mat-form-field>
-          <mat-form-field class="form-field">
-            <mat-label>Destination Port</mat-label>
-            <input matInput type="number" min="0" formControlName="destinationPort" />
-          </mat-form-field>
-        </form>
-        <form [formGroup]="abstractForm">
-          <mat-form-field class="form-field">
-            <mat-label>Destination VPI</mat-label>
-            <input matInput type="number" min="1" formControlName="destinationVpi" />
-          </mat-form-field>
-        </form>
-        <form [formGroup]="inputForm">
-          <mat-form-field class="form-field">
-            <mat-label>Destination VCI</mat-label>
-            <input matInput type="number" min="1" formControlName="destinationVci" />
-          </mat-form-field>
-        </form>
-
-        <button mat-button class="form-field" (click)="add()">Add</button>
       </mat-card>
     </div>
   </div>

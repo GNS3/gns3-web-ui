@@ -1163,3 +1163,70 @@ h2[mat-dialog-title] {
     }
   }
 }
+
+/* =============================================
+// ATM Switch Configurator
+// ============================================= */
+.atm-switch-config-panel {
+  /* Make mat-form-field full width within forms */
+  mat-card form mat-form-field {
+    width: 100%;
+  }
+
+  /* Mapping inputs row layout - 3 columns per row */
+  .mapping-inputs-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .mapping-inputs-row form {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Visual separator between Source and Destination rows */
+  .mapping-inputs-row:nth-of-type(2) {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px dashed var(--mat-sys-outline-variant);
+  }
+
+  /* Add button - full width with better styling */
+  mat-card button {
+    width: 100%;
+    margin-top: 24px;
+    padding: 12px;
+    font-weight: 500;
+  }
+
+  /* Table styling */
+  table {
+    margin-bottom: 24px;
+    width: 100%;
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  mat-header-row {
+    background: var(--mat-sys-surface-container);
+  }
+
+  mat-row:hover {
+    background: var(--mat-sys-surface-container-low);
+  }
+
+  mat-header-cell {
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 13px;
+    padding: 12px 16px;
+  }
+
+  mat-cell {
+    color: var(--mat-sys-on-surface);
+    font-size: 14px;
+    padding: 12px 16px;
+  }
+}

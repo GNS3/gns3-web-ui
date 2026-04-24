@@ -26,7 +26,7 @@ import { ToasterService } from '@services/toaster.service';
   standalone: true,
   selector: 'app-configurator-atm-switch',
   templateUrl: './configurator-atm-switch.component.html',
-  // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
+  // Styles centralized in src/styles/_dialogs.scss via panelClass: 'atm-switch-config-panel'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
