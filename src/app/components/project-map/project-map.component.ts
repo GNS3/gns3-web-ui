@@ -381,9 +381,14 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
         // Fetch dimensions for any node with unknown size
         nodesToLoad.forEach((node: Node) => {
           if (node.width == 0 && node.height == 0) {
-            this.symbolService.getDimensions(this.controller, node.symbol).subscribe((symbolDimensions) => {
-              node.width = symbolDimensions.width;
-              node.height = symbolDimensions.height;
+            this.symbolService.getDimensions(this.controller, node.symbol).subscribe({
+              next: (symbolDimensions) => {
+                node.width = symbolDimensions.width;
+                node.height = symbolDimensions.height;
+              },
+              error: (err) => {
+                console.error('Failed to get symbol dimensions:', err);
+              },
             });
           }
         });
@@ -661,13 +666,20 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           return this.projectService.drawings(this.controller, project.project_id);
         })
       )
-      .subscribe((drawings: Drawing[]) => {
-        this.drawingsDataSource.set(drawings);
+      .subscribe({
+        next: (drawings: Drawing[]) => {
+          this.drawingsDataSource.set(drawings);
 
-        this.setUpMapCallbacks();
-        this.setUpProjectWS(project);
+          this.setUpMapCallbacks();
+          this.setUpProjectWS(project);
 
-        this.progressService.deactivate();
+          this.progressService.deactivate();
+        },
+        error: (err) => {
+          this.toasterService.error('Failed to load project data: ' + (err.error?.message || err.message || 'Unknown error'));
+          this.progressService.deactivate();
+          this.cd.markForCheck();
+        },
       });
     this.projectMapSubscription.add(subscription);
   }
@@ -815,23 +827,34 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           //   node.name = nodeAddedEvent.name;
           //   this.nodeService.updateNode(this.controller, node).subscribe(()=>{});
           // }
-          this.projectService.nodes(this.controller, this.project.project_id).subscribe((nodes: Node[]) => {
-            nodes
-              .filter((node) => node.label.style === null)
-              .forEach((node) => {
-                const fixedNode = this.nodeCreatedLabelStylesFixer.fix(node);
-                this.nodeService.updateLabel(this.controller, node, fixedNode.label).subscribe();
-              });
+          this.projectService.nodes(this.controller, this.project.project_id).subscribe({
+            next: (nodes: Node[]) => {
+              nodes
+                .filter((node) => node.label.style === null)
+                .forEach((node) => {
+                  const fixedNode = this.nodeCreatedLabelStylesFixer.fix(node);
+                  this.nodeService.updateLabel(this.controller, node, fixedNode.label).subscribe({
+                    next: () => {},
+                    error: (err) => {
+                      console.error('Failed to update node label:', err);
+                    },
+                  });
+                });
 
-            this.nodesDataSource.set(nodes);
-            nodeAddedEvent.numberOfNodes--;
-            if (nodeAddedEvent.numberOfNodes > 0) {
-              nodeAddedEvent.x =
-                nodeAddedEvent.x + 50 < this.project.scene_width / 2 ? nodeAddedEvent.x + 50 : nodeAddedEvent.x;
-              nodeAddedEvent.y =
-                nodeAddedEvent.y + 50 < this.project.scene_height / 2 ? nodeAddedEvent.y + 50 : nodeAddedEvent.y;
-              this.onNodeCreation(nodeAddedEvent);
-            }
+              this.nodesDataSource.set(nodes);
+              nodeAddedEvent.numberOfNodes--;
+              if (nodeAddedEvent.numberOfNodes > 0) {
+                nodeAddedEvent.x =
+                  nodeAddedEvent.x + 50 < this.project.scene_width / 2 ? nodeAddedEvent.x + 50 : nodeAddedEvent.x;
+                nodeAddedEvent.y =
+                  nodeAddedEvent.y + 50 < this.project.scene_height / 2 ? nodeAddedEvent.y + 50 : nodeAddedEvent.y;
+                this.onNodeCreation(nodeAddedEvent);
+              }
+            },
+            error: (err) => {
+              this.toasterService.error('Failed to load nodes: ' + (err.error?.message || err.message || 'Unknown error'));
+              this.cd.markForCheck();
+            },
           });
         },
         (error) => {
