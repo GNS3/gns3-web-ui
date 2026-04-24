@@ -57,9 +57,17 @@ export class ConfigureCustomAdaptersDialogComponent implements OnInit {
 
   onSaveClick() {
     this.node.custom_adapters = this.adapters();
-    this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe(() => {
-      this.onCancelClick();
-      this.toasterService.success(`Configuration saved for node ${this.node.name}`);
+    this.nodeService.updateNodeWithCustomAdapters(this.controller, this.node).subscribe({
+      next: () => {
+        this.onCancelClick();
+        this.toasterService.success(`Configuration saved for node ${this.node.name}`);
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to update node with custom adapters';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      },
     });
   }
 

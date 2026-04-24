@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { MatDialogRef } from '@angular/material/dialog';
 import { Node } from '../../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
@@ -7,6 +7,7 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 import { DockerConfigurationService } from '@services/docker-configuration.service';
 import { ConfigureCustomAdaptersDialogComponent, CustomAdapter } from './configure-custom-adapters.component';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('ConfigureCustomAdaptersDialogComponent', () => {
@@ -15,10 +16,13 @@ describe('ConfigureCustomAdaptersDialogComponent', () => {
   let mockNodeService: any;
   let mockToasterService: any;
   let mockDialogRef: any;
+  let mockChangeDetectorRef: any;
   let mockController: Controller;
   let mockNode: Node;
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockNode = {
       node_id: 'docker1',
       name: 'DockerContainer',
@@ -101,6 +105,10 @@ describe('ConfigureCustomAdaptersDialogComponent', () => {
       close: vi.fn(),
     };
 
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
+    };
+
     const mockDockerConfigurationService = {};
 
     await TestBed.configureTestingModule({
@@ -110,6 +118,7 @@ describe('ConfigureCustomAdaptersDialogComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: DockerConfigurationService, useValue: mockDockerConfigurationService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -224,6 +233,19 @@ describe('ConfigureCustomAdaptersDialogComponent', () => {
 
     it('should have onCancelClick method', () => {
       expect(typeof (ConfigureCustomAdaptersDialogComponent.prototype as any).onCancelClick).toBe('function');
+    });
+  });
+
+  describe('Error handling', () => {
+    it('should show error toast when updateNodeWithCustomAdapters fails', () => {
+      mockNodeService.updateNodeWithCustomAdapters.mockReturnValue(throwError(() => new Error('Failed to update')));
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 });
