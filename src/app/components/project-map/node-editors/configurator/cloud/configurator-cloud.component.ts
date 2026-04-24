@@ -91,32 +91,39 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
-      this.node = node;
-      this.name = node.name;
+    this.nodeService.getNode(this.controller, this.node).subscribe({
+      next: (node: Node) => {
+        this.node = node;
+        this.name = node.name;
 
-      // Update form values with node data
-      this.generalSettingsForm.patchValue({
-        name: node.name,
-        console_type: node.console_type || '',
-        remote_console_host: node.properties.remote_console_host || '',
-        remote_console_port: node.properties.remote_console_port || '',
-        remote_console_http_path: node.properties.remote_console_http_path || '',
-        usage: node.properties.usage || '',
-      });
+        // Update form values with node data
+        this.generalSettingsForm.patchValue({
+          name: node.name,
+          console_type: node.console_type || '',
+          remote_console_host: node.properties.remote_console_host || '',
+          remote_console_port: node.properties.remote_console_port || '',
+          remote_console_http_path: node.properties.remote_console_http_path || '',
+          usage: node.properties.usage || '',
+        });
 
-      this.getConfiguration();
+        this.getConfiguration();
 
-      if (!this.node.tags) {
-        this.node.tags = [];
-      }
+        if (!this.node.tags) {
+          this.node.tags = [];
+        }
 
-      this.portsMappingEthernet = this.node.properties.ports_mapping.filter((elem) => elem.type === 'ethernet');
+        this.portsMappingEthernet = this.node.properties.ports_mapping.filter((elem) => elem.type === 'ethernet');
 
-      this.portsMappingTap = this.node.properties.ports_mapping.filter((elem) => elem.type === 'tap');
+        this.portsMappingTap = this.node.properties.ports_mapping.filter((elem) => elem.type === 'tap');
 
-      this.portsMappingUdp = this.node.properties.ports_mapping.filter((elem) => elem.type === 'udp');
-      this.cd.markForCheck();
+        this.portsMappingUdp = this.node.properties.ports_mapping.filter((elem) => elem.type === 'udp');
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load node';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -172,6 +179,7 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
         error: (error: unknown) => {
           const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
           this.toasterService.error(errorMessage);
+          this.cd.markForCheck();
         },
       });
     } else {

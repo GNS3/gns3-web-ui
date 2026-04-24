@@ -9,7 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { ConfiguratorDialogCloudComponent } from './configurator-cloud.component';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
@@ -17,6 +17,7 @@ import { BuiltInTemplatesConfigurationService } from '@services/built-in-templat
 import { UdpTunnelsComponent } from '@components/preferences/common/udp-tunnels/udp-tunnels.component';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('ConfiguratorDialogCloudComponent', () => {
@@ -27,6 +28,7 @@ describe('ConfiguratorDialogCloudComponent', () => {
   let mockNodeService: any;
   let mockToasterService: any;
   let mockBuiltInTemplatesConfigurationService: any;
+  let mockChangeDetectorRef: any;
   let mockUdpTunnelsData: any[] = [];
 
   let mockController: Controller;
@@ -88,6 +90,8 @@ describe('ConfiguratorDialogCloudComponent', () => {
   });
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockController = createMockController();
     mockNode = createMockNode();
     mockUdpTunnelsData = [];
@@ -105,6 +109,10 @@ describe('ConfiguratorDialogCloudComponent', () => {
       getConsoleTypesForCloudNodes: vi.fn().mockReturnValue(['telnet', 'vnc', 'spice', 'http', 'https', 'none']),
       getEtherTypesForEthernetSwitches: vi.fn().mockReturnValue(['0x8100', '0x88A8', '0x9100', '0x9200']),
       getPortTypesForEthernetSwitches: vi.fn().mockReturnValue(['access', 'dot1q', 'qinq']),
+    };
+
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
     };
 
     mockNodeService = {
@@ -132,6 +140,7 @@ describe('ConfiguratorDialogCloudComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: BuiltInTemplatesConfigurationService, useValue: mockBuiltInTemplatesConfigurationService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -435,6 +444,48 @@ describe('ConfiguratorDialogCloudComponent', () => {
 
       const title = fixture.nativeElement.querySelector('h1[mat-dialog-title]');
       expect(title.textContent).toContain('Cloud-1');
+    });
+  });
+
+  describe('Error handling', () => {
+    it('should show error toast when getNode fails', () => {
+      mockNodeService.getNode.mockReturnValue(throwError(() => new Error('Failed to load node')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.ngOnInit();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load node');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show error toast when updateNode fails', () => {
+      mockNodeService.updateNode.mockReturnValue(throwError(() => new Error('Failed to update node')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.generalSettingsForm = {
+        valid: true,
+        value: {
+          name: 'Cloud-1',
+          console_type: 'telnet',
+          remote_console_host: 'localhost',
+          remote_console_port: 3080,
+          remote_console_http_path: '/',
+          usage: 'Test',
+        },
+      } as any;
+      component.node = { ...mockNode };
+      component.portsMappingUdp = mockUdpTunnelsData;
+
+      // Mock udpTunnels viewChild
+      Object.defineProperty(component, 'udpTunnels', {
+        get: () => () => ({ dataSourceUdp: mockUdpTunnelsData }),
+        configurable: true,
+      });
+
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update node');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 });
