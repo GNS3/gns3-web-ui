@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of, throwError } from 'rxjs';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { ConfiguratorDialogVpcsComponent } from './configurator-vpcs.component';
@@ -7,6 +8,7 @@ import { ToasterService } from '@services/toaster.service';
 import { VpcsConfigurationService } from '@services/vpcs-configuration.service';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('ConfiguratorDialogVpcsComponent', () => {
@@ -16,6 +18,7 @@ describe('ConfiguratorDialogVpcsComponent', () => {
   let mockNodeService: any;
   let mockToasterService: any;
   let mockVpcsConfigurationService: any;
+  let mockChangeDetectorRef: any;
 
   const mockController = { id: 1 } as unknown as Controller;
   const mockNode = {
@@ -27,11 +30,13 @@ describe('ConfiguratorDialogVpcsComponent', () => {
   } as unknown as Node;
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockDialogRef = { close: vi.fn() };
 
     mockNodeService = {
-      getNode: vi.fn().mockReturnValue({ subscribe: vi.fn((cb) => cb(mockNode)) }),
-      updateNode: vi.fn().mockReturnValue({ subscribe: vi.fn(() => {}) }),
+      getNode: vi.fn().mockReturnValue(of(mockNode)),
+      updateNode: vi.fn().mockReturnValue(of({})),
     };
 
     mockToasterService = {
@@ -43,6 +48,10 @@ describe('ConfiguratorDialogVpcsComponent', () => {
       getConsoleTypes: vi.fn().mockReturnValue(['telnet', 'vnc']),
     };
 
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [ConfiguratorDialogVpcsComponent, MatChipsModule],
       providers: [
@@ -50,6 +59,7 @@ describe('ConfiguratorDialogVpcsComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: VpcsConfigurationService, useValue: mockVpcsConfigurationService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -229,6 +239,34 @@ describe('ConfiguratorDialogVpcsComponent', () => {
 
     it('should have removeTag method', () => {
       expect(typeof (ConfiguratorDialogVpcsComponent.prototype as any).removeTag).toBe('function');
+    });
+  });
+
+  describe('Error handling', () => {
+    it('should show error toast when getNode fails', () => {
+      mockNodeService.getNode.mockReturnValue(throwError(() => new Error('Failed to load node')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.ngOnInit();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load node');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show error toast when updateNode fails', () => {
+      mockNodeService.updateNode.mockReturnValue(throwError(() => new Error('Failed to update node')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.node = { ...mockNode } as Node;
+      component.inputForm.patchValue({
+        name: 'Updated-VPCS',
+        console_type: 'telnet',
+      });
+
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update node');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 });
