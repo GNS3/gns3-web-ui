@@ -10,6 +10,7 @@ import { Node, Properties } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('ExportConfigActionComponent', () => {
@@ -68,6 +69,8 @@ describe('ExportConfigActionComponent', () => {
   });
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockDialogRef = {
       afterClosed: vi.fn().mockReturnValue(of(undefined)),
       componentInstance: {},
@@ -85,6 +88,7 @@ describe('ExportConfigActionComponent', () => {
         { provide: MatDialog, useValue: mockDialog },
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: { markForCheck: vi.fn() } },
       ],
     }).compileComponents();
 
@@ -179,7 +183,7 @@ describe('ExportConfigActionComponent', () => {
       expect(createElementSpy).toHaveBeenCalledWith('a');
     });
 
-    it('should show error toaster when startup config fetch fails for vpcs', () => {
+    it('should show error toaster when startup config fetch fails for vpcs', async () => {
       mockNodeService.getStartupConfiguration.mockReturnValue(
         throwError(() => ({ error: { message: 'Fetch failed' } }))
       );
@@ -189,9 +193,24 @@ describe('ExportConfigActionComponent', () => {
       fixture.detectChanges();
 
       fixture.nativeElement.querySelector('button').click();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Fetch failed');
+    });
+
+    it('should use fallback message when vpcs error has no message', async () => {
+      mockNodeService.getStartupConfiguration.mockReturnValue(throwError(() => ({})));
+      const mockNode = createMockNode('vpcs');
+      fixture.componentRef.setInput('node', mockNode);
+      fixture.componentRef.setInput('controller', createMockController());
       fixture.detectChanges();
 
-      expect(mockToasterService.error).toHaveBeenCalled();
+      const cdrSpy = vi.spyOn(fixture.componentInstance['cdr'], 'markForCheck');
+      fixture.nativeElement.querySelector('button').click();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to export configuration');
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 
@@ -269,7 +288,7 @@ describe('ExportConfigActionComponent', () => {
       expect(mockNodeService.getPrivateConfiguration).not.toHaveBeenCalled();
     });
 
-    it('should show error toaster when startup config fetch fails for dynamips', () => {
+    it('should show error toaster when startup config fetch fails for dynamips', async () => {
       mockDialogRef.afterClosed.mockReturnValue(of('startup-config'));
       mockNodeService.getStartupConfiguration.mockReturnValue(
         throwError(() => ({ error: { message: 'Failed to export startup configuration' } }))
@@ -279,13 +298,15 @@ describe('ExportConfigActionComponent', () => {
       fixture.componentRef.setInput('controller', createMockController());
       fixture.detectChanges();
 
+      const cdrSpy = vi.spyOn(fixture.componentInstance['cdr'], 'markForCheck');
       fixture.nativeElement.querySelector('button').click();
-      fixture.detectChanges();
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to export startup configuration');
+      expect(cdrSpy).toHaveBeenCalled();
     });
 
-    it('should show error toaster when private config fetch fails for iou', () => {
+    it('should show error toaster when private config fetch fails for iou', async () => {
       mockDialogRef.afterClosed.mockReturnValue(of('private-config'));
       mockNodeService.getPrivateConfiguration.mockReturnValue(
         throwError(() => ({ error: { message: 'Failed to export private configuration' } }))
@@ -295,10 +316,12 @@ describe('ExportConfigActionComponent', () => {
       fixture.componentRef.setInput('controller', createMockController());
       fixture.detectChanges();
 
+      const cdrSpy = vi.spyOn(fixture.componentInstance['cdr'], 'markForCheck');
       fixture.nativeElement.querySelector('button').click();
-      fixture.detectChanges();
+      await vi.runAllTimersAsync();
 
       expect(mockToasterService.error).toHaveBeenCalledWith('Failed to export private configuration');
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });

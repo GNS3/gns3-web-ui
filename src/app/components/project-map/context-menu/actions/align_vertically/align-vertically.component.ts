@@ -6,6 +6,7 @@ import { NodesDataSource } from '../../../../../cartography/datasources/nodes-da
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { NodeService } from '@services/node.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-align-vertically-action',
@@ -16,6 +17,7 @@ import { NodeService } from '@services/node.service';
 export class AlignVerticallyActionComponent {
   private nodesDataSource = inject(NodesDataSource);
   private nodeService = inject(NodeService);
+  private toasterService = inject(ToasterService);
   private cdr = inject(ChangeDetectorRef);
 
   readonly controller = input<Controller>(undefined);
@@ -32,8 +34,15 @@ export class AlignVerticallyActionComponent {
       node.x = averageX;
       this.nodesDataSource.update(node);
 
-      this.nodeService.update(this.controller(), node).subscribe((node: Node) => {
-        this.cdr.markForCheck();
+      this.nodeService.update(this.controller(), node).subscribe({
+        next: () => {
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to align node';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
       });
     });
   }

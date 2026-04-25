@@ -1,12 +1,11 @@
-import { ChangeDetectionStrategy, Component, Inject, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatDialogRef, MatDialogModule, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ProjectService } from '@services/project.service';
 import { ToasterService } from '@services/toaster.service';
-import { Observable, of, forkJoin } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-confirmation-delete-all-projects',
@@ -19,6 +18,7 @@ export class ConfirmationDeleteAllProjectsComponent {
   public dialogRef = inject(MatDialogRef<ConfirmationDeleteAllProjectsComponent>);
   private projectService = inject(ProjectService);
   private toasterService = inject(ToasterService);
+  private cd = inject(ChangeDetectorRef);
 
   isDelete = signal(false);
   isUsedFiles = signal(false);
@@ -36,16 +36,22 @@ export class ConfirmationDeleteAllProjectsComponent {
     const calls = [];
     this.deleteData.deleteFilesPaths.forEach((project) => {
       calls.push(
-        this.projectService
-          .delete(this.deleteData.controller, project.project_id)
-          .pipe(catchError((error) => of(error)))
+        this.projectService.delete(this.deleteData.controller, project.project_id)
       );
     });
-    forkJoin(calls).subscribe((responses) => {
-      this.deleteFliesDetails.set(responses.filter((x) => x !== null));
-      this.fileNotDeleted.set(responses.filter((x) => x === null));
-      this.isUsedFiles.set(true);
-      this.isDelete.set(true);
+    forkJoin(calls).subscribe({
+      next: (responses) => {
+        this.deleteFliesDetails.set(responses.filter((x) => x !== null));
+        this.fileNotDeleted.set(responses.filter((x) => x === null));
+        this.isUsedFiles.set(true);
+        this.isDelete.set(true);
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to delete projects';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 }

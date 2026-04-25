@@ -1,7 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
+import { throwError } from 'rxjs';
 import { DynamipsPreferencesComponent } from './dynamips-preferences.component';
 import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
@@ -9,6 +11,7 @@ describe('DynamipsPreferencesComponent', () => {
   let component: DynamipsPreferencesComponent;
   let fixture: ComponentFixture<DynamipsPreferencesComponent>;
   let mockControllerService: any;
+  let mockToasterService: any;
   let mockActivatedRoute: any;
   let mockController: Controller;
 
@@ -33,6 +36,10 @@ describe('DynamipsPreferencesComponent', () => {
       get: vi.fn().mockResolvedValue(mockController),
     };
 
+    mockToasterService = {
+      error: vi.fn(),
+    };
+
     mockActivatedRoute = {
       snapshot: {
         paramMap: {
@@ -46,6 +53,7 @@ describe('DynamipsPreferencesComponent', () => {
       providers: [
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: ControllerService, useValue: mockControllerService },
+        { provide: ToasterService, useValue: mockToasterService },
       ],
     }).compileComponents();
 
@@ -125,6 +133,30 @@ describe('DynamipsPreferencesComponent', () => {
   describe('dynamipsPath binding', () => {
     it('should have dynamipsPath property bound via ngModel', () => {
       expect(component.dynamipsPath()).toBe('');
+    });
+  });
+
+  describe('error handling', () => {
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(DynamipsPreferencesComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(DynamipsPreferencesComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
     });
   });
 });

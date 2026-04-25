@@ -10,6 +10,7 @@ import { Node } from '../../../../../cartography/models/node';
 import { Drawing } from '../../../../../cartography/models/drawing';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('DuplicateActionComponent', () => {
@@ -82,6 +83,8 @@ describe('DuplicateActionComponent', () => {
     } as Project);
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockNodeService = {
       duplicate: vi.fn(),
     };
@@ -115,6 +118,7 @@ describe('DuplicateActionComponent', () => {
         { provide: ToasterService, useValue: mockToasterService },
         { provide: NodesDataSource, useValue: mockNodesDataSource },
         { provide: DrawingsDataSource, useValue: mockDrawingsDataSource },
+        { provide: ChangeDetectorRef, useValue: { markForCheck: vi.fn() } },
       ],
     }).compileComponents();
 
@@ -220,9 +224,7 @@ describe('DuplicateActionComponent', () => {
 
         component.duplicate();
 
-        expect(mockToasterService.error).toHaveBeenCalledWith(
-          `Cannot duplicate node ${mockNode.name}: Internal server error`
-        );
+        expect(mockToasterService.error).toHaveBeenCalledWith('Internal server error');
       });
 
       it('should not add node to nodesDataSource on error', () => {
@@ -235,6 +237,31 @@ describe('DuplicateActionComponent', () => {
         component.duplicate();
 
         expect(mockNodesDataSource.add).not.toHaveBeenCalled();
+      });
+
+      it('should call markForCheck when nodeService.duplicate fails', async () => {
+        mockNodeService.duplicate.mockReturnValue(throwError(() => ({ status: 500 })));
+        fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('nodes', [mockNode]);
+        fixture.detectChanges();
+
+        const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+        component.duplicate();
+        await vi.runAllTimersAsync();
+
+        expect(cdrSpy).toHaveBeenCalled();
+      });
+
+      it('should use fallback message when node error has no message', async () => {
+        mockNodeService.duplicate.mockReturnValue(throwError(() => ({})));
+        fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('nodes', [mockNode]);
+        fixture.detectChanges();
+
+        component.duplicate();
+        await vi.runAllTimersAsync();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to duplicate node');
       });
     });
 
@@ -263,6 +290,45 @@ describe('DuplicateActionComponent', () => {
         component.duplicate();
 
         expect(mockDrawingsDataSource.add).toHaveBeenCalledWith(duplicatedDrawing);
+      });
+
+      it('should show error toast when drawingService.duplicate fails', async () => {
+        mockDrawingService.duplicate.mockReturnValue(
+          throwError(() => ({ error: { message: 'Failed to duplicate' } }))
+        );
+        fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('drawings', [mockDrawing]);
+        fixture.detectChanges();
+
+        component.duplicate();
+        await vi.runAllTimersAsync();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to duplicate');
+      });
+
+      it('should use fallback message when drawing error has no message', async () => {
+        mockDrawingService.duplicate.mockReturnValue(throwError(() => ({})));
+        fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('drawings', [mockDrawing]);
+        fixture.detectChanges();
+
+        component.duplicate();
+        await vi.runAllTimersAsync();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to duplicate drawing');
+      });
+
+      it('should call markForCheck when drawingService.duplicate fails', async () => {
+        mockDrawingService.duplicate.mockReturnValue(throwError(() => ({ error: { message: 'Failed' } })));
+        fixture.componentRef.setInput('controller', mockController);
+        fixture.componentRef.setInput('drawings', [mockDrawing]);
+        fixture.detectChanges();
+
+        const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+        component.duplicate();
+        await vi.runAllTimersAsync();
+
+        expect(cdrSpy).toHaveBeenCalled();
       });
     });
 

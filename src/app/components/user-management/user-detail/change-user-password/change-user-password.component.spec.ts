@@ -8,6 +8,7 @@ import { ToasterService } from '@services/toaster.service';
 import { User } from '@models/users/user';
 import { Controller } from '@models/controller';
 import { of, throwError } from 'rxjs';
+import { ChangeDetectorRef } from '@angular/core';
 
 describe('ChangeUserPasswordComponent', () => {
   let component: ChangeUserPasswordComponent;
@@ -71,6 +72,7 @@ describe('ChangeUserPasswordComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: dialogData },
         { provide: UserService, useValue: mockUserService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: { markForCheck: vi.fn() } },
       ],
     }).compileComponents();
 
@@ -199,14 +201,36 @@ describe('ChangeUserPasswordComponent', () => {
     });
 
     it('should show error toast on update failure', () => {
-      const error = new Error('Update failed');
-      mockUserService.update.mockReturnValue(throwError(() => error));
+      mockUserService.update.mockReturnValue(
+        throwError(() => ({ error: { message: 'Update failed' } }))
+      );
 
       component.onPasswordSave();
       fixture.detectChanges();
 
       expect(mockToasterService.error).toHaveBeenCalledTimes(1);
-      expect(mockToasterService.error).toHaveBeenCalledWith(`Cannot update password for user: ${error}`);
+      expect(mockToasterService.error).toHaveBeenCalledWith('Update failed');
+    });
+
+    it('should use fallback message when error has no message', () => {
+      mockUserService.update.mockReturnValue(throwError(() => ({})));
+
+      component.onPasswordSave();
+      fixture.detectChanges();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update password');
+    });
+
+    it('should call markForCheck when update fails', () => {
+      mockUserService.update.mockReturnValue(
+        throwError(() => ({ error: { message: 'Update failed' } }))
+      );
+
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.onPasswordSave();
+      fixture.detectChanges();
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
 
     it('should not close dialog on update failure', () => {

@@ -22,25 +22,27 @@
       <mat-icon>attach_file</mat-icon>
       Choose file
     </button>
-    <mat-form-field [ngClass]="{ empty: !isDeleteVisible }" class="file-name-form-field">
-      <input
-        matInput
-        type="text"
-        formControlName="projectName"
-        [ngClass]="{ 'is-invalid': form.projectName.errors }"
-        placeholder="Please enter name"
-      />
-      @if (form.projectName.errors && form.projectName.errors.required) {
-      <mat-error>Project name is required</mat-error>
-      } @if (form.projectName.errors && form.projectName.errors.invalidName) {
-      <mat-error>Project name is incorrect</mat-error>
+    <div class="input-row">
+      <mat-form-field [ngClass]="{ empty: !isDeleteVisible }" class="file-name-form-field">
+        <input
+          matInput
+          type="text"
+          formControlName="projectName"
+          [ngClass]="{ 'is-invalid': form.projectName.errors }"
+          placeholder="Please enter name"
+        />
+        @if (form.projectName.errors && form.projectName.errors.required) {
+        <mat-error>Project name is required</mat-error>
+        } @if (form.projectName.errors && form.projectName.errors.invalidName) {
+        <mat-error>Project name is incorrect</mat-error>
+        }
+      </mat-form-field>
+      @if (isDeleteVisible) {
+      <button class="delete-button" matTooltip="Remove selected file" matTooltipPosition="above">
+        <mat-icon color="primary" (click)="onDeleteClick()" class="delete-icon">clear</mat-icon>
+      </button>
       }
-    </mat-form-field>
-    @if (isDeleteVisible) {
-    <button class="delete-button">
-      <mat-icon color="primary" (click)="onDeleteClick()" class="delete-icon">clear</mat-icon>
-    </button>
-    }
+    </div>
     <div mat-dialog-actions align="end">
       <button mat-button (click)="onNoClick()" color="accent">Cancel</button>
       <button
@@ -61,7 +63,7 @@
   <!-- <div class="progress">
       <div class="progress-bar" role="progressbar" [ngStyle]="{ width: uploader.progress + '%' }"></div>
     </div> -->
-  <div class="">
+  <div class="result-message-box">
     <span>{{ resultMessage }}</span>
   </div>
   <div mat-dialog-actions align="end">

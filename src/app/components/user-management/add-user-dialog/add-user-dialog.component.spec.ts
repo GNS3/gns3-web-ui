@@ -15,8 +15,9 @@ import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
 import { Group } from '@models/groups/group';
 import { User } from '@models/users/user';
-import { of, throwError, lastValueFrom } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { HttpErrorResponse } from '@angular/common/http';
+import { ChangeDetectorRef } from '@angular/core';
 
 describe('AddUserDialogComponent', () => {
   let component: AddUserDialogComponent;
@@ -25,6 +26,7 @@ describe('AddUserDialogComponent', () => {
   let mockGroupService: Partial<GroupService>;
   let mockToasterService: Partial<ToasterService>;
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
+  let mockChangeDetectorRef: any;
 
   const mockController: Controller = {
     id: 1,
@@ -82,6 +84,10 @@ describe('AddUserDialogComponent', () => {
       close: vi.fn(),
     };
 
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [
         AddUserDialogComponent,
@@ -99,6 +105,7 @@ describe('AddUserDialogComponent', () => {
         { provide: UserService, useValue: mockUserService },
         { provide: GroupService, useValue: mockGroupService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -317,7 +324,43 @@ describe('AddUserDialogComponent', () => {
       });
       component.onAddClick();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith('Cannot create user: User already exists');
+      expect(mockToasterService.error).toHaveBeenCalledWith('User already exists');
+    });
+
+    it('should use fallback message when userService.add error has no message', () => {
+      (mockUserService.add as ReturnType<typeof vi.fn>).mockReturnValue(
+        throwError(() => ({ error: {} }))
+      );
+      component.addUserForm.patchValue({
+        username: 'newuser',
+        email: 'newuser@example.com',
+        password: 'password123',
+        confirmPassword: 'password123',
+        full_name: 'New User',
+        is_active: true,
+      });
+      component.onAddClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to create user');
+    });
+
+    it('should call markForCheck when userService.add fails', () => {
+      (mockUserService.add as ReturnType<typeof vi.fn>).mockReturnValue(
+        throwError(() => new HttpErrorResponse({ error: { message: 'Error' } }))
+      );
+      component.addUserForm.patchValue({
+        username: 'newuser',
+        email: 'newuser@example.com',
+        password: 'password123',
+        confirmPassword: 'password123',
+        full_name: 'New User',
+        is_active: true,
+      });
+
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.onAddClick();
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
 
     it('should not close dialog when userService.add fails', () => {
@@ -372,6 +415,90 @@ describe('AddUserDialogComponent', () => {
       const filteredResult = results.find((groups) => groups.length === 1);
       expect(filteredResult).toBeDefined();
       expect(filteredResult![0].name).toBe('Admins');
+    });
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    describe('getGroups', () => {
+      it('should show error toaster when getGroups fails with error.error.message', async () => {
+        (mockGroupService.getGroups as ReturnType<typeof vi.fn>).mockReturnValue(
+          throwError(() => ({ error: { message: 'Groups failed' } }))
+        );
+
+        component.ngOnInit();
+        fixture.detectChanges();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Groups failed');
+      });
+
+      it('should use fallback message when getGroups error has no message', async () => {
+        (mockGroupService.getGroups as ReturnType<typeof vi.fn>).mockReturnValue(throwError(() => ({})));
+
+        component.ngOnInit();
+        fixture.detectChanges();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load groups');
+      });
+
+      it('should call markForCheck when getGroups fails', async () => {
+        (mockGroupService.getGroups as ReturnType<typeof vi.fn>).mockReturnValue(
+          throwError(() => ({ error: { message: 'Groups failed' } }))
+        );
+
+        const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+        component.ngOnInit();
+        fixture.detectChanges();
+
+        expect(cdrSpy).toHaveBeenCalled();
+      });
+    });
+
+    describe('addMemberToGroup', () => {
+      beforeEach(() => {
+        component.ngOnInit();
+        // Clear async validators to avoid timing issues in tests
+        component.addUserForm.get('username')?.clearAsyncValidators();
+        component.addUserForm.get('email')?.clearAsyncValidators();
+        component.addUserForm.updateValueAndValidity();
+      });
+
+      it('should show error toaster when addMemberToGroup fails', () => {
+        (mockGroupService.addMemberToGroup as ReturnType<typeof vi.fn>).mockReturnValue(
+          throwError(() => ({ error: { message: 'Add member failed' } }))
+        );
+        component.addUserForm.patchValue({
+          username: 'newuser',
+          email: 'newuser@example.com',
+          password: 'password123',
+          confirmPassword: 'password123',
+          full_name: 'New User',
+          is_active: true,
+        });
+        component.selectedGroup(mockGroups[0]);
+        component.onAddClick();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Add member failed');
+      });
+
+      it('should use fallback message when addMemberToGroup error has no message', () => {
+        (mockGroupService.addMemberToGroup as ReturnType<typeof vi.fn>).mockReturnValue(throwError(() => ({})));
+        component.addUserForm.patchValue({
+          username: 'newuser',
+          email: 'newuser@example.com',
+          password: 'password123',
+          confirmPassword: 'password123',
+          full_name: 'New User',
+          is_active: true,
+        });
+        component.selectedGroup(mockGroups[0]);
+        component.onAddClick();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to add user to group');
+      });
     });
   });
 });

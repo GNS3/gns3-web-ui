@@ -3,7 +3,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { MatBottomSheet } from '@angular/material/bottom-sheet';
 import { Router, ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, of, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, of, firstValueFrom, throwError } from 'rxjs';
 import { ProjectsComponent, ProjectDatabase, ProjectDataSource } from './projects.component';
 import { ProjectService } from '@services/project.service';
 import { SettingsService, Settings } from '@services/settings.service';
@@ -116,6 +116,7 @@ describe('ProjectsComponent', () => {
     mockActivatedRoute = {
       snapshot: {
         data: { controller: mockController },
+        queryParams: {},
       },
     };
 
@@ -265,6 +266,45 @@ describe('ProjectsComponent', () => {
       component.selectAllImages();
 
       expect(component.selection.selected.length).toBe(2);
+    });
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when refresh list fails', async () => {
+      mockProjectService.list.mockReturnValue(
+        throwError(() => ({ error: { message: 'List failed' } }))
+      );
+      fixture.detectChanges();
+
+      component.refresh();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('List failed');
+      expect(mockProgressService.setError).toHaveBeenCalled();
+    });
+
+    it('should use fallback message when list error has no message', async () => {
+      mockProjectService.list.mockReturnValue(throwError(() => ({})));
+      fixture.detectChanges();
+
+      component.refresh();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to list projects');
+    });
+
+    it('should call markForCheck when list fails', async () => {
+      mockProjectService.list.mockReturnValue(
+        throwError(() => ({ error: { message: 'List failed' } }))
+      );
+      fixture.detectChanges();
+
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      component.refresh();
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });

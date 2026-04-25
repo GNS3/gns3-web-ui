@@ -12,7 +12,8 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('ConfiguratorDialogIouComponent', () => {
@@ -22,6 +23,7 @@ describe('ConfiguratorDialogIouComponent', () => {
   let mockNodeService: any;
   let mockToasterService: any;
   let mockConfigurationService: any;
+  let mockChangeDetectorRef: any;
   let mockController: Controller;
   let mockNode: Node;
 
@@ -111,6 +113,7 @@ describe('ConfiguratorDialogIouComponent', () => {
     } as unknown as Node);
 
   beforeEach(async () => {
+    vi.clearAllMocks();
     mockController = { project_id: 'proj-1' } as unknown as Controller;
     mockNode = createMockNode();
 
@@ -132,6 +135,10 @@ describe('ConfiguratorDialogIouComponent', () => {
       getConsoleTypes: vi.fn().mockReturnValue(['telnet', 'vnc', 'none']),
     };
 
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [
         ConfiguratorDialogIouComponent,
@@ -147,6 +154,7 @@ describe('ConfiguratorDialogIouComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: IouConfigurationService, useValue: mockConfigurationService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
         UntypedFormBuilder,
       ],
     }).compileComponents();
@@ -464,6 +472,31 @@ describe('ConfiguratorDialogIouComponent', () => {
       const serialControl = component.networkForm.get('serialAdapters');
       serialControl?.setValue('');
       expect(serialControl?.valid).toBe(false);
+    });
+  });
+
+  describe('Error handling', () => {
+    it('should show error toast when getNode fails', () => {
+      mockNodeService.getNode.mockReturnValue(throwError(() => new Error('Failed to load node')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.ngOnInit();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load node');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show error toast when updateNode fails', () => {
+      mockNodeService.updateNode.mockReturnValue(throwError(() => new Error('Failed to update node')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.generalSettingsForm.patchValue({ name: 'IOU1' });
+      component.networkForm.patchValue({ ethernetAdapters: 2, serialAdapters: 0 });
+
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update node');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 });

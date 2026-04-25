@@ -322,11 +322,11 @@ describe('QemuVmTemplateDetailsComponent', () => {
   });
 
   it('should handle save error', () => {
-    mockQemuService.saveTemplate.mockReturnValue(throwError(() => new Error('Save failed')));
+    mockQemuService.saveTemplate.mockReturnValue(throwError(() => ({ error: { message: 'Save failed' } })));
 
     fixture.componentInstance.onSave();
 
-    expect(mockToasterService.error).toHaveBeenCalledWith(expect.stringContaining('Failed to save template'));
+    expect(mockToasterService.error).toHaveBeenCalledWith('Save failed');
   });
 
   it('should add a tag when addTag is called with valid value', () => {
@@ -554,5 +554,47 @@ describe('QemuVmTemplateDetailsComponent', () => {
     // Component handles undefined tags by setting empty array in ngOnInit before initFormFromTemplate
     // This is tested by verifying that tags() returns the mock template's tags
     expect(fixture.componentInstance.tags()).toEqual(mockQemuTemplate.tags);
+  });
+
+  describe('error handling', () => {
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(QemuVmTemplateDetailsComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(QemuVmTemplateDetailsComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when qemuService.getTemplate fails', async () => {
+      mockQemuService.getTemplate.mockReturnValue(throwError(() => ({ error: { message: 'Template error' } })));
+
+      fixture = TestBed.createComponent(QemuVmTemplateDetailsComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Template error');
+    });
+
+    it('should use fallback message when qemuService.getTemplate error has no message', async () => {
+      mockQemuService.getTemplate.mockReturnValue(throwError(() => ({})));
+
+      fixture = TestBed.createComponent(QemuVmTemplateDetailsComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load QEMU template');
+    });
   });
 });

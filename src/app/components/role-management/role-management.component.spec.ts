@@ -233,12 +233,100 @@ describe('RoleManagementComponent', () => {
     });
 
     it('should set error on progress service when fetch fails', () => {
-      const error = { message: 'Failed to load' };
+      const error = { error: { message: 'Failed to load' } };
       mockRoleService.get.mockReturnValue(throwError(() => error));
       component.refresh();
       vi.runAllTimers();
       fixture.detectChanges();
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load');
       expect(mockProgressService.setError).toHaveBeenCalledWith(error);
+    });
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller failed' } });
+
+      const newFixture = TestBed.createComponent(RoleManagementComponent);
+      newFixture.detectChanges();
+      await newFixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller failed');
+    });
+
+    it('should use fallback message when controller error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      const newFixture = TestBed.createComponent(RoleManagementComponent);
+      newFixture.detectChanges();
+      await newFixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should use fallback message when refresh error has no message', async () => {
+      mockRoleService.get.mockReturnValue(throwError(() => ({})));
+      component.refresh();
+      vi.runAllTimers();
+      fixture.detectChanges();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load roles');
+    });
+
+    it('should show error toaster when create role fails', async () => {
+      const dialogMock = {
+        afterClosed: vi.fn().mockReturnValue(of({ name: 'Admin', description: 'Test' })),
+        componentInstance: {},
+      };
+      vi.spyOn(component.dialog, 'open').mockReturnValue(dialogMock as any);
+      mockRoleService.create.mockReturnValue(throwError(() => ({ error: { message: 'Create failed' } })));
+
+      component.addRole();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Create failed');
+    });
+
+    it('should use fallback message when create error has no message', async () => {
+      const dialogMock = {
+        afterClosed: vi.fn().mockReturnValue(of({ name: 'Admin', description: 'Test' })),
+        componentInstance: {},
+      };
+      vi.spyOn(component.dialog, 'open').mockReturnValue(dialogMock as any);
+      mockRoleService.create.mockReturnValue(throwError(() => ({})));
+
+      component.addRole();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to create role');
+    });
+
+    it('should show error toaster when delete roles fails', async () => {
+      const dialogMock = {
+        afterClosed: vi.fn().mockReturnValue(of(true)),
+        componentInstance: {},
+      };
+      vi.spyOn(component.dialog, 'open').mockReturnValue(dialogMock as any);
+      mockRoleService.delete.mockReturnValue(throwError(() => ({ error: { message: 'Delete failed' } })));
+
+      component.onDelete(mockRoles);
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Delete failed');
+    });
+
+    it('should use fallback message when delete error has no message', async () => {
+      const dialogMock = {
+        afterClosed: vi.fn().mockReturnValue(of(true)),
+        componentInstance: {},
+      };
+      vi.spyOn(component.dialog, 'open').mockReturnValue(dialogMock as any);
+      mockRoleService.delete.mockReturnValue(throwError(() => ({})));
+
+      component.onDelete(mockRoles);
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to delete roles');
     });
   });
 });

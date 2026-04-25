@@ -85,39 +85,53 @@ export class IouTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
-
-      this.getConfiguration();
-      this.iouService.getTemplate(this.controller, template_id).subscribe((iouTemplate: IouTemplate) => {
-        this.iouTemplate = iouTemplate;
-        if (!this.iouTemplate.tags) {
-          this.iouTemplate.tags = [];
-        }
-
-        // Initialize model signals
-        this.templateName.set(iouTemplate.name || '');
-        this.defaultName.set(iouTemplate.default_name_format || '');
-        this.symbol.set(iouTemplate.symbol || '');
-        this.path.set(iouTemplate.path || '');
-        this.initialConfig.set(iouTemplate.startup_config || '');
-        this.privateConfig.set(iouTemplate.private_config || '');
-        this.category.set(iouTemplate.category || '');
-        this.consoleType.set(iouTemplate.console_type || '');
-        this.consoleAutoStart.set(iouTemplate.console_auto_start || false);
-        this.l1Keepalives.set(iouTemplate.l1_keepalives || false);
-        this.useDefaultIouValues.set(iouTemplate.use_default_iou_values !== false);
-        this.ram.set(iouTemplate.ram || 256);
-        this.nvram.set(iouTemplate.nvram || 128);
-        this.ethernetAdapters.set(iouTemplate.ethernet_adapters || 0);
-        this.serialAdapters.set(iouTemplate.serial_adapters || 0);
-        this.usage.set(iouTemplate.usage || '');
-        this.tags.set(iouTemplate.tags || []);
-
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
         this.cd.markForCheck();
-      });
-    });
+
+        this.getConfiguration();
+        this.iouService.getTemplate(this.controller, template_id).subscribe({
+          next: (iouTemplate: IouTemplate) => {
+            this.iouTemplate = iouTemplate;
+            if (!this.iouTemplate.tags) {
+              this.iouTemplate.tags = [];
+            }
+
+            // Initialize model signals
+            this.templateName.set(iouTemplate.name || '');
+            this.defaultName.set(iouTemplate.default_name_format || '');
+            this.symbol.set(iouTemplate.symbol || '');
+            this.path.set(iouTemplate.path || '');
+            this.initialConfig.set(iouTemplate.startup_config || '');
+            this.privateConfig.set(iouTemplate.private_config || '');
+            this.category.set(iouTemplate.category || '');
+            this.consoleType.set(iouTemplate.console_type || '');
+            this.consoleAutoStart.set(iouTemplate.console_auto_start || false);
+            this.l1Keepalives.set(iouTemplate.l1_keepalives || false);
+            this.useDefaultIouValues.set(iouTemplate.use_default_iou_values !== false);
+            this.ram.set(iouTemplate.ram || 256);
+            this.nvram.set(iouTemplate.nvram || 128);
+            this.ethernetAdapters.set(iouTemplate.ethernet_adapters || 0);
+            this.serialAdapters.set(iouTemplate.serial_adapters || 0);
+            this.usage.set(iouTemplate.usage || '');
+            this.tags.set(iouTemplate.tags || []);
+
+            this.cd.markForCheck();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load IOU template';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
+        });
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   getConfiguration() {
@@ -149,9 +163,16 @@ export class IouTemplateDetailsComponent implements OnInit {
     this.iouTemplate.usage = this.usage();
     this.iouTemplate.tags = this.tags();
 
-    this.iouService.saveTemplate(this.controller, this.iouTemplate).subscribe(() => {
-      this.toasterService.success('Changes saved');
-    });
+    this.iouService.saveTemplate(this.controller, this.iouTemplate).subscribe({
+        next: () => {
+          this.toasterService.success('Changes saved');
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to save IOU template';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        },
+      });
   }
 
   uploadImageFile(event: Event) {

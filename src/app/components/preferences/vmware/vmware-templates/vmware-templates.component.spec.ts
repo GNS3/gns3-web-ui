@@ -11,7 +11,7 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
 import { EmptyTemplatesListComponent } from '../../common/empty-templates-list/empty-templates-list.component';
 import { Controller } from '@models/controller';
 import { VmwareTemplate } from '@models/templates/vmware-template';
-import { of, firstValueFrom } from 'rxjs';
+import { of, firstValueFrom, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('VmwareTemplatesComponent', () => {
@@ -22,6 +22,7 @@ describe('VmwareTemplatesComponent', () => {
   let mockActivatedRoute: any;
   let mockDialog: any;
   let mockSnackBar: any;
+  let mockToasterService: any;
 
   const mockController: Controller = {
     id: 1,
@@ -117,6 +118,10 @@ describe('VmwareTemplatesComponent', () => {
       open: vi.fn(),
     };
 
+    mockToasterService = {
+      error: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [VmwareTemplatesComponent, DeleteTemplateComponent, EmptyTemplatesListComponent],
       providers: [
@@ -126,7 +131,7 @@ describe('VmwareTemplatesComponent', () => {
         { provide: MatDialog, useValue: mockDialog },
         { provide: MatSnackBar, useValue: mockSnackBar },
         { provide: TemplateService, useValue: {} },
-        { provide: ToasterService, useValue: {} },
+        { provide: ToasterService, useValue: mockToasterService },
       ],
     }).compileComponents();
 
@@ -270,5 +275,57 @@ describe('VmwareTemplatesComponent', () => {
     fixture.detectChanges();
     expect(component.vmwareTemplates.length).toBe(2);
     expect(component.vmwareTemplates.every((t) => !t.builtin)).toBe(true);
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(VmwareTemplatesComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(VmwareTemplatesComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when getTemplates fails', async () => {
+      mockVmwareService.getTemplates.mockReturnValue(
+        throwError(() => ({ error: { message: 'Templates error' } }))
+      );
+      component.controller = mockController;
+
+      component.getTemplates();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Templates error');
+    });
+
+    it('should use fallback message when getTemplates error has no message', async () => {
+      mockVmwareService.getTemplates.mockReturnValue(throwError(() => ({})));
+      component.controller = mockController;
+
+      component.getTemplates();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load VMware templates');
+    });
   });
 });

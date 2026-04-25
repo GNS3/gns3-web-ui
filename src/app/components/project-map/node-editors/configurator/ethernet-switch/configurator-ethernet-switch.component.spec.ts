@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of, throwError } from 'rxjs';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatChipsModule } from '@angular/material/chips';
 import { ConfiguratorDialogEthernetSwitchComponent } from './configurator-ethernet-switch.component';
@@ -8,6 +9,7 @@ import { BuiltInTemplatesConfigurationService } from '@services/built-in-templat
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { PortsComponent } from '@components/preferences/common/ports/ports.component';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 describe('ConfiguratorDialogEthernetSwitchComponent', () => {
@@ -17,6 +19,7 @@ describe('ConfiguratorDialogEthernetSwitchComponent', () => {
   let mockNodeService: any;
   let mockToasterService: any;
   let mockEthernetSwitchesConfigurationService: any;
+  let mockChangeDetectorRef: any;
 
   const mockController = { id: 1 } as unknown as Controller;
   const mockNode = {
@@ -29,11 +32,13 @@ describe('ConfiguratorDialogEthernetSwitchComponent', () => {
   } as unknown as Node;
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockDialogRef = { close: vi.fn() };
 
     mockNodeService = {
-      getNode: vi.fn().mockReturnValue({ subscribe: vi.fn((cb) => cb(mockNode)) }),
-      updateNode: vi.fn().mockReturnValue({ subscribe: vi.fn(() => {}) }),
+      getNode: vi.fn().mockReturnValue(of(mockNode)),
+      updateNode: vi.fn().mockReturnValue(of({})),
     };
 
     mockToasterService = {
@@ -47,6 +52,10 @@ describe('ConfiguratorDialogEthernetSwitchComponent', () => {
       getPortTypesForEthernetSwitches: vi.fn().mockReturnValue(['access', 'trunk']),
     };
 
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [ConfiguratorDialogEthernetSwitchComponent, MatChipsModule],
       providers: [
@@ -54,6 +63,7 @@ describe('ConfiguratorDialogEthernetSwitchComponent', () => {
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: BuiltInTemplatesConfigurationService, useValue: mockEthernetSwitchesConfigurationService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -61,6 +71,11 @@ describe('ConfiguratorDialogEthernetSwitchComponent', () => {
     component = fixture.componentInstance;
     component.controller = mockController;
     component.node = mockNode as Node;
+    // Mock the portsComponent viewChild
+    Object.defineProperty(component, 'portsComponent', {
+      get: () => () => ({ ethernetPorts: [] }),
+      configurable: true,
+    });
     fixture.detectChanges();
   });
 
@@ -208,13 +223,6 @@ describe('ConfiguratorDialogEthernetSwitchComponent', () => {
         console_type: 'telnet',
       });
 
-      (mockNodeService.updateNode as ReturnType<typeof vi.fn>).mockReturnValue({
-        subscribe: vi.fn((observer) => {
-          if (observer.next) observer.next();
-          return { unsubscribe: vi.fn() };
-        }),
-      });
-
       component.onSaveClick();
 
       expect(mockToasterService.success).toHaveBeenCalledWith('Node Switch-Updated updated.');
@@ -253,6 +261,34 @@ describe('ConfiguratorDialogEthernetSwitchComponent', () => {
 
     it('should have removeTag method', () => {
       expect(typeof (ConfiguratorDialogEthernetSwitchComponent.prototype as any).removeTag).toBe('function');
+    });
+  });
+
+  describe('Error handling', () => {
+    it('should show error toast when getNode fails', () => {
+      mockNodeService.getNode.mockReturnValue(throwError(() => new Error('Failed to load node')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.ngOnInit();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load node');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show error toast when updateNode fails', () => {
+      mockNodeService.updateNode.mockReturnValue(throwError(() => new Error('Failed to update node')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.node = { ...mockNode, properties: { ports_mapping: [] } } as Node;
+      component.inputForm.patchValue({
+        name: 'Updated-Switch',
+        console_type: 'telnet',
+      });
+
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update node');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 });

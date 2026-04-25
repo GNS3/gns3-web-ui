@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { AddDockerTemplateComponent } from './add-docker-template.component';
 import { DockerService } from '@services/docker.service';
 import { ComputeService } from '@services/compute.service';
@@ -583,6 +583,56 @@ describe('AddDockerTemplateComponent', () => {
 
     it('should have multiple docker images', () => {
       expect(component.dockerImages.length).toBe(3);
+    });
+  });
+
+  describe('error handling', () => {
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(AddDockerTemplateComponent);
+      component = fixture.componentInstance;
+      component.ngOnInit();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(AddDockerTemplateComponent);
+      component = fixture.componentInstance;
+      component.ngOnInit();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when getDockerTemplate fails', async () => {
+      mockTemplateMocksService.getDockerTemplate.mockReturnValue(throwError(() => ({ error: { message: 'Template error' } })));
+
+      fixture = TestBed.createComponent(AddDockerTemplateComponent);
+      component = fixture.componentInstance;
+      component.ngOnInit();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Template error');
+    });
+
+    it('should show error toaster when getImages fails', async () => {
+      mockDockerService.getImages.mockReturnValue(throwError(() => ({ error: { message: 'Images error' } })));
+
+      fixture = TestBed.createComponent(AddDockerTemplateComponent);
+      component = fixture.componentInstance;
+      component.ngOnInit();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Images error');
     });
   });
 });

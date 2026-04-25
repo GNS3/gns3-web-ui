@@ -66,22 +66,29 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
-      this.node = node;
-      this.name = this.node.name;
-      this.numberOfPorts = this.node.ports.length;
+    this.nodeService.getNode(this.controller, this.node).subscribe({
+      next: (node: Node) => {
+        this.node = node;
+        this.name = this.node.name;
+        this.numberOfPorts = this.node.ports.length;
 
-      // Update form values with node data
-      this.inputForm.patchValue({
-        name: node.name,
-        numberOfPorts: this.node.ports.length,
-      });
+        // Update form values with node data
+        this.inputForm.patchValue({
+          name: node.name,
+          numberOfPorts: this.node.ports.length,
+        });
 
-      this.getConfiguration();
-      if (!this.node.tags) {
-        this.node.tags = [];
-      }
-      this.cd.markForCheck();
+        this.getConfiguration();
+        if (!this.node.tags) {
+          this.node.tags = [];
+        }
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load node';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -114,6 +121,7 @@ export class ConfiguratorDialogEthernetHubComponent implements OnInit {
         error: (error: unknown) => {
           const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
           this.toasterService.error(errorMessage);
+          this.cd.markForCheck();
         },
       });
     } else {

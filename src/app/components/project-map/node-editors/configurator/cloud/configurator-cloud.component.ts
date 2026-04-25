@@ -17,6 +17,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule, MatChipInputEvent } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { Node } from '../../../../../cartography/models/node';
 import { UdpTunnelsComponent } from '@components/preferences/common/udp-tunnels/udp-tunnels.component';
@@ -46,6 +48,8 @@ import { ToasterService } from '@services/toaster.service';
     MatButtonModule,
     MatChipsModule,
     MatIconModule,
+    MatTableModule,
+    MatTooltipModule,
     UdpTunnelsComponent,
   ],
 })
@@ -71,18 +75,20 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
   portsMappingTap: PortsMappingEntity[] = [];
   portsMappingUdp: PortsMappingEntity[] = [];
 
+  ethernetDisplayColumns: string[] = ['name', 'actions'];
+  tapDisplayColumns: string[] = ['name', 'actions'];
   displayedColumns: string[] = ['adapter_number', 'port_name', 'adapter_type', 'actions'];
   networkTypes = [];
   readonly tapInterface = model('');
   readonly ethernetInterface = model('');
-  ethernetInterfaces: string[] = ['Ethernet 2', 'Ethernet 3'];
+  availableEthernetInterfaces: string[] = [];
 
   readonly udpTunnels = viewChild<UdpTunnelsComponent>('udpTunnels');
 
   constructor() {
     this.generalSettingsForm = this.formBuilder.group({
       name: new UntypedFormControl('', Validators.required),
-      console_type: new UntypedFormControl(''),
+      console_type: new UntypedFormControl('none'),
       remote_console_host: new UntypedFormControl(''),
       remote_console_port: new UntypedFormControl(''),
       remote_console_http_path: new UntypedFormControl(''),
@@ -91,32 +97,40 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
-      this.node = node;
-      this.name = node.name;
+    this.nodeService.getNode(this.controller, this.node).subscribe({
+      next: (node: Node) => {
+        this.node = node;
+        this.name = node.name;
 
-      // Update form values with node data
-      this.generalSettingsForm.patchValue({
-        name: node.name,
-        console_type: node.console_type || '',
-        remote_console_host: node.properties.remote_console_host || '',
-        remote_console_port: node.properties.remote_console_port || '',
-        remote_console_http_path: node.properties.remote_console_http_path || '',
-        usage: node.properties.usage || '',
-      });
+        // Update form values with node data
+        this.generalSettingsForm.patchValue({
+          name: node.name,
+          console_type: node.console_type || 'none',
+          remote_console_host: node.properties.remote_console_host || '',
+          remote_console_port: node.properties.remote_console_port || '',
+          remote_console_http_path: node.properties.remote_console_http_path || '',
+          usage: node.properties.usage || '',
+        });
 
-      this.getConfiguration();
+        this.getConfiguration();
 
-      if (!this.node.tags) {
-        this.node.tags = [];
-      }
+        if (!this.node.tags) {
+          this.node.tags = [];
+        }
 
-      this.portsMappingEthernet = this.node.properties.ports_mapping.filter((elem) => elem.type === 'ethernet');
+        this.portsMappingEthernet = this.node.properties.ports_mapping.filter((elem) => elem.type === 'ethernet');
 
-      this.portsMappingTap = this.node.properties.ports_mapping.filter((elem) => elem.type === 'tap');
+        this.portsMappingTap = this.node.properties.ports_mapping.filter((elem) => elem.type === 'tap');
 
-      this.portsMappingUdp = this.node.properties.ports_mapping.filter((elem) => elem.type === 'udp');
-      this.cd.markForCheck();
+        this.portsMappingUdp = this.node.properties.ports_mapping.filter((elem) => elem.type === 'udp');
+
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load node';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -126,24 +140,56 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
 
   onAddEthernetInterface() {
     if (this.ethernetInterface()) {
+      // Check if interface already exists
+      const exists = this.portsMappingEthernet.some((port) => port.name === this.ethernetInterface());
+      if (exists) {
+        this.toasterService.error(`Interface ${this.ethernetInterface()} already configured.`);
+        return;
+      }
+
       this.portsMappingEthernet.push({
         interface: this.ethernetInterface(),
         name: this.ethernetInterface(),
         port_number: 0,
         type: 'ethernet',
       });
+      // Force array refresh for change detection
+      this.portsMappingEthernet = [...this.portsMappingEthernet];
+      this.ethernetInterface.set('');
+      this.cd.markForCheck();
     }
+  }
+
+  onDeleteEthernetInterface(port: PortsMappingEntity) {
+    this.portsMappingEthernet = this.portsMappingEthernet.filter((p) => p !== port);
+    this.cd.markForCheck();
   }
 
   onAddTapInterface() {
     if (this.tapInterface()) {
+      // Check if interface already exists
+      const exists = this.portsMappingTap.some((port) => port.name === this.tapInterface());
+      if (exists) {
+        this.toasterService.error(`Interface ${this.tapInterface()} already configured.`);
+        return;
+      }
+
       this.portsMappingTap.push({
         interface: this.tapInterface(),
         name: this.tapInterface(),
         port_number: 0,
         type: 'tap',
       });
+      // Force array refresh for change detection
+      this.portsMappingTap = [...this.portsMappingTap];
+      this.tapInterface.set('');
+      this.cd.markForCheck();
     }
+  }
+
+  onDeleteTapInterface(port: PortsMappingEntity) {
+    this.portsMappingTap = this.portsMappingTap.filter((p) => p !== port);
+    this.cd.markForCheck();
   }
 
   onSaveClick() {
@@ -152,7 +198,8 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
       const formValues = this.generalSettingsForm.value;
 
       this.node.name = formValues.name;
-      this.node.console_type = formValues.console_type;
+      // Ensure console_type is never empty - use 'none' as default
+      this.node.console_type = formValues.console_type || 'none';
       this.node.properties.remote_console_host = formValues.remote_console_host;
       this.node.properties.remote_console_port = formValues.remote_console_port;
       this.node.properties.remote_console_http_path = formValues.remote_console_http_path;
@@ -172,6 +219,7 @@ export class ConfiguratorDialogCloudComponent implements OnInit {
         error: (error: unknown) => {
           const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
           this.toasterService.error(errorMessage);
+          this.cd.markForCheck();
         },
       });
     } else {

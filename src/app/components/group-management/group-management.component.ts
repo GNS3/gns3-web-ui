@@ -12,6 +12,7 @@
  */
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   OnInit,
   QueryList,
@@ -84,6 +85,7 @@ export class GroupManagementComponent implements OnInit, AfterViewInit {
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private toasterService = inject(ToasterService);
+  private cd = inject(ChangeDetectorRef);
   public groupService = inject(GroupService);
   public dialog = inject(MatDialog);
 
@@ -103,10 +105,17 @@ export class GroupManagementComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(+controllerId).then((controller: Controller) => {
-      this.controller = controller;
-      this.refresh();
-    });
+    this.controllerService.get(+controllerId).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.refresh();
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   ngAfterViewInit() {
@@ -153,11 +162,18 @@ export class GroupManagementComponent implements OnInit, AfterViewInit {
   }
 
   refresh() {
-    this.groupService.getGroups(this.controller).subscribe((groups: Group[]) => {
-      this.isReady.set(true);
-      this.groups = groups;
-      this.dataSource.data = groups;
-      this.selection.clear();
+    this.groupService.getGroups(this.controller).subscribe({
+      next: (groups: Group[]) => {
+        this.isReady.set(true);
+        this.groups = groups;
+        this.dataSource.data = groups;
+        this.selection.clear();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load groups';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -168,20 +184,21 @@ export class GroupManagementComponent implements OnInit, AfterViewInit {
         data: { groups: groupsToDelete },
       })
       .afterClosed()
-      .subscribe((isDeletedConfirm) => {
+      .subscribe((isDeletedConfirm: boolean) => {
         if (isDeletedConfirm) {
           const observables = groupsToDelete.map((group: Group) =>
             this.groupService.delete(this.controller, group.user_group_id)
           );
-          forkJoin(observables).subscribe(
-            () => {
+          forkJoin(observables).subscribe({
+            next: () => {
               this.refresh();
             },
-            (error) => {
-              const errorMessage = error?.error?.message || 'An error occurred while trying to delete group';
-              this.toasterService.error(errorMessage);
-            }
-          );
+            error: (err) => {
+              const message = err.error?.message || err.message || 'Failed to delete groups';
+              this.toasterService.error(message);
+              this.cd.markForCheck();
+            },
+          });
         }
       });
   }

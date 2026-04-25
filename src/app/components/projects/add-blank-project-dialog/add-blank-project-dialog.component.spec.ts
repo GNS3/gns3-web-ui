@@ -3,7 +3,7 @@ import { UntypedFormControl, UntypedFormGroup, ReactiveFormsModule } from '@angu
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { ChangeDetectorRef } from '@angular/core';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { AddBlankProjectDialogComponent } from './add-blank-project-dialog.component';
 import { ProjectNameValidator } from '../models/projectNameValidator';
 import { ProjectService } from '@services/project.service';
@@ -189,6 +189,47 @@ describe('AddBlankProjectDialogComponent', () => {
   describe('addProject', () => {
     it('should be defined as a method', () => {
       expect(typeof component.addProject).toBe('function');
+    });
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when addProject fails with error.message', async () => {
+      mockProjectService.add.mockReturnValue(
+        throwError(() => ({ error: { message: 'Project error' } }))
+      );
+      component.projectNameForm.controls['projectName'].setValue('NewProject');
+      fixture.detectChanges();
+
+      component.addProject();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Project error');
+    });
+
+    it('should use fallback message when addProject error has no message', async () => {
+      mockProjectService.add.mockReturnValue(throwError(() => ({})));
+      component.projectNameForm.controls['projectName'].setValue('NewProject');
+      fixture.detectChanges();
+
+      component.addProject();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Cannot create new project');
+    });
+
+    it('should call markForCheck when addProject fails', async () => {
+      mockProjectService.add.mockReturnValue(
+        throwError(() => ({ error: { message: 'Project error' } }))
+      );
+      component.projectNameForm.controls['projectName'].setValue('NewProject');
+      fixture.detectChanges();
+
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.addProject();
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });

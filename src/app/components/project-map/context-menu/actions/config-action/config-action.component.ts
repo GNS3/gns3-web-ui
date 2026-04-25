@@ -71,7 +71,10 @@ export class ConfigActionComponent {
     } else if (node.node_type === 'frame_relay_switch') {
       this.dialogRef = this.dialog.open(ConfiguratorDialogSwitchComponent, this.conf);
     } else if (node.node_type === 'atm_switch') {
-      this.dialogRef = this.dialog.open(ConfiguratorDialogAtmSwitchComponent, this.conf);
+      this.dialogRef = this.dialog.open(ConfiguratorDialogAtmSwitchComponent, {
+        ...this.conf,
+        panelClass: ['base-dialog-panel', 'configurator-dialog-panel', 'atm-switch-config-panel'],
+      });
     }
 
     let instance = this.dialogRef.componentInstance;

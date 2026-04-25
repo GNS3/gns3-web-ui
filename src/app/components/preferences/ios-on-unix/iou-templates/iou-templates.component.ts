@@ -10,6 +10,7 @@ import { Controller } from '@models/controller';
 import { IouTemplate } from '@models/templates/iou-template';
 import { IouService } from '@services/iou.service';
 import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 import { EmptyTemplatesListComponent } from '../../common/empty-templates-list/empty-templates-list.component';
 
@@ -35,6 +36,7 @@ export class IouTemplatesComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private iouService = inject(IouService);
+  private toasterService = inject(ToasterService);
   private router = inject(Router);
   private cd = inject(ChangeDetectorRef);
 
@@ -44,17 +46,31 @@ export class IouTemplatesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
-      this.getTemplates();
-    });
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.cd.markForCheck();
+        this.getTemplates();
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   getTemplates() {
-    this.iouService.getTemplates(this.controller).subscribe((iouTemplates: IouTemplate[]) => {
-      this.iouTemplates = iouTemplates.filter((elem) => elem.template_type === 'iou' && !elem.builtin);
-      this.cd.markForCheck();
+    this.iouService.getTemplates(this.controller).subscribe({
+      next: (iouTemplates: IouTemplate[]) => {
+        this.iouTemplates = iouTemplates.filter((elem) => elem.template_type === 'iou' && !elem.builtin);
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load IOU templates';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 

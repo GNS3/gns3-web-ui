@@ -61,16 +61,30 @@ export class CopyIouTemplateComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
-
-      this.iouService.getTemplate(this.controller, template_id).subscribe((iouTemplate: IouTemplate) => {
-        this.iouTemplate = iouTemplate;
-        this.templateName = `Copy of ${this.iouTemplate.name}`;
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
         this.cd.markForCheck();
-      });
-    });
+
+        this.iouService.getTemplate(this.controller, template_id).subscribe({
+          next: (iouTemplate: IouTemplate) => {
+            this.iouTemplate = iouTemplate;
+            this.templateName = `Copy of ${this.iouTemplate.name}`;
+            this.cd.markForCheck();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load IOU template';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
+        });
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   goBack() {

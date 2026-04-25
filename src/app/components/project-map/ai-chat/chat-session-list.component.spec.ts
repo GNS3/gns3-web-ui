@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AiChatService } from '@services/ai-chat.service';
 import { ChatSessionListComponent } from './chat-session-list.component';
 import { ChatSession } from '@models/ai-chat.interface';
@@ -14,6 +15,7 @@ describe('ChatSessionListComponent', () => {
   let mockDialogRef: MatDialogRef<ConfirmationDialogComponent>;
   let mockDialog: MatDialog;
   let mockAiChatService: AiChatService;
+  let mockSnackBar: MatSnackBar;
 
   const mockController: Controller = {
     authToken: 'test-token',
@@ -63,14 +65,20 @@ describe('ChatSessionListComponent', () => {
       deleteSession: vi.fn(),
     } as any;
 
+    mockSnackBar = {
+      open: vi.fn(),
+    } as any;
+
     await TestBed.configureTestingModule({
       imports: [ChatSessionListComponent],
       providers: [
         { provide: MatDialog, useValue: mockDialog },
         { provide: AiChatService, useValue: mockAiChatService },
+        { provide: MatSnackBar, useValue: mockSnackBar },
       ],
     })
       .overrideProvider(MatDialog, { useValue: mockDialog })
+      .overrideProvider(MatSnackBar, { useValue: mockSnackBar })
       .compileComponents();
 
     fixture = TestBed.createComponent(ChatSessionListComponent);
@@ -309,13 +317,14 @@ describe('ChatSessionListComponent', () => {
       fixture.componentRef.setInput('controller', mockController);
       fixture.componentRef.setInput('projectId', 'project-456');
       fixture.detectChanges();
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
       (mockAiChatService.deleteSession as any).mockReturnValue(throwError(() => new Error('Delete failed')));
 
       component.delete(session);
 
-      expect(consoleSpy).toHaveBeenCalled();
-      consoleSpy.mockRestore();
+      expect(mockSnackBar.open).toHaveBeenCalledWith('Delete failed', 'Close', expect.objectContaining({
+        duration: 6000,
+        panelClass: ['ai-chat-snack-error'],
+      }));
     });
   });
 

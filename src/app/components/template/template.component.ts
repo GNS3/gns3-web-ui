@@ -47,6 +47,16 @@ import { ComputeSelectorComponent } from './compute-selector/compute-selector.co
 import { NotificationService } from '@services/notification.service';
 import { ToasterService } from '@services/toaster.service';
 
+export interface CreatingNodeState {
+  id: string;
+  template: Template;
+  x: number;
+  y: number;
+  computeId: string | null;
+  status: 'waiting_for_compute' | 'creating' | 'success' | 'error';
+  errorMessage?: string;
+}
+
 @Component({
   selector: 'app-template',
   templateUrl: './template.component.html',
@@ -135,6 +145,10 @@ export class TemplateComponent implements OnInit, OnDestroy {
   pendingNodePosition = signal<{ x: number; y: number } | null>(null);
   pendingTemplate = signal<Template | null>(null);
   cachedComputes = signal<Compute[]>([]);
+
+  // Track multiple nodes being created concurrently
+  creatingNodes = signal<Map<string, CreatingNodeState>>(new Map());
+  pendingCreationId = signal<string | null>(null);
 
   // Ghost icon screen position: converts world coordinates to screen coordinates
   ghostIconScreenPosition = computed(() => {
@@ -237,8 +251,8 @@ export class TemplateComponent implements OnInit, OnDestroy {
 
     // Fetch all blob URLs in parallel
     const uniquePaths = Array.from(symbolPathMap.values());
-    forkJoin(uniquePaths.map((path) => this.symbolService.getSymbolBlobUrl(this.controller(), path))).subscribe(
-      (blobUrls: string[]) => {
+    forkJoin(uniquePaths.map((path) => this.symbolService.getSymbolBlobUrl(this.controller(), path))).subscribe({
+      next: (blobUrls: string[]) => {
         uniquePaths.forEach((path, index) => {
           // Find which symbol this path belongs to
           for (const [symbol, symbolPath] of symbolPathMap.entries()) {
@@ -249,8 +263,13 @@ export class TemplateComponent implements OnInit, OnDestroy {
           }
         });
         this.cd.markForCheck();
-      }
-    );
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load template symbols';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   sortTemplates() {
@@ -349,8 +368,10 @@ export class TemplateComponent implements OnInit, OnDestroy {
           // Now process with loaded data
           this.processNodeCreation(template, finalX, finalY, loadedComputes);
         },
-        error: (error) => {
-          console.error('Failed to load computes:', error);
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to load computes';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
           // Fallback to local on error
           const nodeAddedEvent: NodeAddedEvent = {
             template: template,
@@ -360,7 +381,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
             y: finalY,
           };
           this.nodeCreationChange.emit(nodeAddedEvent);
-        }
+        },
       });
     } else {
       // Use cached data (instant)
@@ -369,22 +390,35 @@ export class TemplateComponent implements OnInit, OnDestroy {
   }
 
   private processNodeCreation(template: Template, x: number, y: number, computes: Compute[]) {
-    if (computes.length === 1) {
+    // Filter out unreachable compute nodes
+    const connectedComputes = computes.filter((compute) => compute.connected);
+
+    if (connectedComputes.length === 0) {
+      // No available compute nodes
+      this.toasterService.error('No reachable compute nodes available. Please check your compute nodes connection status.');
+      return;
+    }
+
+    // ✅ Immediately create independent task
+    const creationId = this.generateUniqueId();
+    const creatingNode: CreatingNodeState = {
+      id: creationId,
+      template: template,
+      x: x,
+      y: y,
+      computeId: null,
+      status: 'waiting_for_compute',
+    };
+    this.addCreatingNode(creatingNode);
+
+    if (connectedComputes.length === 1) {
       // Only one compute node, proceed directly
-      const nodeAddedEvent: NodeAddedEvent = {
-        template: template,
-        controller: computes[0].compute_id,
-        numberOfNodes: 1,
-        x: x,
-        y: y,
-      };
-      this.nodeCreationChange.emit(nodeAddedEvent);
+      this.startNodeCreation(creationId, connectedComputes[0].compute_id);
     } else {
       // Multiple compute nodes, show selector
-      this.pendingNodePosition.set({ x, y });
-      this.pendingTemplate.set(template);
+      this.pendingCreationId.set(creationId);
       // Sort computes: local first, then by name
-      const sortedComputes = [...computes].sort((a, b) => {
+      const sortedComputes = [...connectedComputes].sort((a, b) => {
         if (a.compute_id === 'local') return -1;
         if (b.compute_id === 'local') return 1;
         return (a.name || '').localeCompare(b.name || '');
@@ -395,32 +429,119 @@ export class TemplateComponent implements OnInit, OnDestroy {
     }
   }
 
-  clearPendingState() {
+  closeComputeSelector() {
     this.showComputeSelector.set(false);
-    this.pendingNodePosition.set(null);
-    this.pendingTemplate.set(null);
+    this.pendingCreationId.set(null);
   }
 
   onComputeSelected(computeId: string) {
-    const position = this.pendingNodePosition();
-    const template = this.pendingTemplate();
-
-    if (position && template) {
-      const nodeAddedEvent: NodeAddedEvent = {
-        template: template,
-        controller: computeId,
-        numberOfNodes: 1,
-        x: position.x,
-        y: position.y,
-      };
-      this.nodeCreationChange.emit(nodeAddedEvent);
+    const creationId = this.pendingCreationId();
+    if (!creationId) {
+      return;
     }
 
-    this.clearPendingState();
+    // Update the specific task with computeId
+    this.updateCreatingNodeCompute(creationId, computeId);
+
+    // Start node creation for this task
+    this.startNodeCreation(creationId, computeId);
+
+    // Close selector
+    this.closeComputeSelector();
   }
 
   onComputeSelectorCancelled() {
-    this.clearPendingState();
+    const creationId = this.pendingCreationId();
+    if (creationId) {
+      // Remove the waiting task
+      this.removeCreatingNode(creationId);
+    }
+    this.closeComputeSelector();
+  }
+
+  // Helper methods
+  private generateUniqueId(): string {
+    return `creation-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  }
+
+  private addCreatingNode(node: CreatingNodeState) {
+    const current = new Map(this.creatingNodes());
+    current.set(node.id, node);
+    this.creatingNodes.set(current);
+    this.cd.markForCheck();
+  }
+
+  private updateCreatingNodeCompute(creationId: string, computeId: string) {
+    const current = new Map(this.creatingNodes());
+    const node = current.get(creationId);
+    if (node) {
+      node.computeId = computeId;
+      node.status = 'creating';
+      current.set(creationId, node);
+      this.creatingNodes.set(current);
+      this.cd.markForCheck();
+    }
+  }
+
+  private updateCreatingNodeStatus(
+    creationId: string,
+    status: 'success' | 'error',
+    errorMessage?: string
+  ) {
+    const current = new Map(this.creatingNodes());
+    const node = current.get(creationId);
+    if (node) {
+      node.status = status;
+      node.errorMessage = errorMessage;
+      current.set(creationId, node);
+      this.creatingNodes.set(current);
+      this.cd.markForCheck();
+    }
+  }
+
+  private removeCreatingNode(creationId: string) {
+    const current = new Map(this.creatingNodes());
+    current.delete(creationId);
+    this.creatingNodes.set(current);
+    this.cd.markForCheck();
+  }
+
+  private getCreatingNodeScreenPosition(node: CreatingNodeState) {
+    const k = this.context.transformation.k;
+    const zeroZero = this.context.getZeroZeroTransformationPoint();
+
+    const screenX = node.x * k + zeroZero.x + this.context.transformation.x;
+    const screenY = node.y * k + zeroZero.y + this.context.transformation.y;
+
+    return { x: screenX, y: screenY };
+  }
+
+  private startNodeCreation(creationId: string, computeId: string) {
+    const node = this.creatingNodes().get(creationId);
+    if (!node) {
+      return;
+    }
+
+    const nodeAddedEvent: NodeAddedEvent = {
+      template: node.template,
+      controller: computeId,
+      numberOfNodes: 1,
+      x: node.x,
+      y: node.y,
+      creationId: creationId,
+    };
+    this.nodeCreationChange.emit(nodeAddedEvent);
+  }
+
+  // Called by project-map when node creation completes
+  onNodeCreated(creationId: string, success: boolean, error?: string) {
+    this.updateCreatingNodeStatus(creationId, success ? 'success' : 'error', error);
+
+    // Remove ghost icon after delay
+    const delay = success ? 1000 : 3000;
+    setTimeout(() => {
+      this.removeCreatingNode(creationId);
+    }, delay);
   }
 
   openDialog() {

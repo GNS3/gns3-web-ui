@@ -9,7 +9,7 @@ import { ToasterService } from '@services/toaster.service';
 import { HttpController } from '@services/http-controller.service';
 import { VirtualBoxTemplate } from '@models/templates/virtualbox-template';
 import { Controller } from '@models/controller';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('VirtualBoxTemplatesComponent', () => {
@@ -201,5 +201,57 @@ describe('VirtualBoxTemplatesComponent', () => {
 
   it('should use OnPush change detection strategy', () => {
     expect(component).toBeTruthy();
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(VirtualBoxTemplatesComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(VirtualBoxTemplatesComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when getTemplates fails', async () => {
+      mockVirtualBoxService.getTemplates.mockReturnValue(
+        throwError(() => ({ error: { message: 'Templates error' } }))
+      );
+      component.controller = mockController;
+
+      component.getTemplates();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Templates error');
+    });
+
+    it('should use fallback message when getTemplates error has no message', async () => {
+      mockVirtualBoxService.getTemplates.mockReturnValue(throwError(() => ({})));
+      component.controller = mockController;
+
+      component.getTemplates();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load VirtualBox templates');
+    });
   });
 });

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { DrawingsDataSource } from '../../../cartography/datasources/drawings-datasource';
 import { DrawingsEventSource } from '../../../cartography/events/drawings-event-source';
@@ -8,6 +8,7 @@ import { MapDrawing } from '../../../cartography/models/map/map-drawing';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-drawing-dragged',
@@ -24,6 +25,8 @@ export class DrawingDraggedComponent implements OnInit, OnDestroy {
   private drawingService = inject(DrawingService);
   private drawingsDataSource = inject(DrawingsDataSource);
   private drawingsEventSource = inject(DrawingsEventSource);
+  private toasterService = inject(ToasterService);
+  private cdr = inject(ChangeDetectorRef);
 
   ngOnInit() {
     this.drawingDragged = this.drawingsEventSource.dragged.subscribe((evt) => this.onDrawingDragged(evt));
@@ -36,8 +39,15 @@ export class DrawingDraggedComponent implements OnInit, OnDestroy {
 
     this.drawingService
       .updatePosition(this.controller(), this.project(), drawing, drawing.x, drawing.y)
-      .subscribe((controllerDrawing: Drawing) => {
-        this.drawingsDataSource.update(controllerDrawing);
+      .subscribe({
+        next: (controllerDrawing: Drawing) => {
+          this.drawingsDataSource.update(controllerDrawing);
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to update drawing position';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
       });
   }
 

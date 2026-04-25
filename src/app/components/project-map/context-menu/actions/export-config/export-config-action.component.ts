@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -19,6 +19,7 @@ export class ExportConfigActionComponent {
   private nodeService = inject(NodeService);
   private dialog = inject(MatDialog);
   private toasterService = inject(ToasterService);
+  private cdr = inject(ChangeDetectorRef);
 
   readonly controller = input<Controller>(undefined);
   readonly node = input<Node>(undefined);
@@ -30,8 +31,10 @@ export class ExportConfigActionComponent {
         next: (config: any) => {
           this.downloadByHtmlTag(config);
         },
-        error: (error) => {
-          this.toasterService.error(error.error?.message || error.message || 'Failed to export configuration');
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to export configuration';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
         },
       });
     } else {
@@ -41,26 +44,37 @@ export class ExportConfigActionComponent {
         disableClose: false,
       });
       let instance = dialogRef.componentInstance;
-      dialogRef.afterClosed().subscribe((configType: string) => {
-        if (configType === 'startup-config') {
-          this.nodeService.getStartupConfiguration(this.controller(), this.node()).subscribe({
-            next: (config: any) => {
-              this.downloadByHtmlTag(config);
-            },
-            error: (error) => {
-              this.toasterService.error(error.error?.message || error.message || 'Failed to export startup configuration');
-            },
-          });
-        } else if (configType === 'private-config') {
-          this.nodeService.getPrivateConfiguration(this.controller(), this.node()).subscribe({
-            next: (config: any) => {
-              this.downloadByHtmlTag(config);
-            },
-            error: (error) => {
-              this.toasterService.error(error.error?.message || error.message || 'Failed to export private configuration');
-            },
-          });
-        }
+      dialogRef.afterClosed().subscribe({
+        next: (configType: string) => {
+          if (configType === 'startup-config') {
+            this.nodeService.getStartupConfiguration(this.controller(), this.node()).subscribe({
+              next: (config: any) => {
+                this.downloadByHtmlTag(config);
+              },
+              error: (err) => {
+                const message = err.error?.message || err.message || 'Failed to export startup configuration';
+                this.toasterService.error(message);
+                this.cdr.markForCheck();
+              },
+            });
+          } else if (configType === 'private-config') {
+            this.nodeService.getPrivateConfiguration(this.controller(), this.node()).subscribe({
+              next: (config: any) => {
+                this.downloadByHtmlTag(config);
+              },
+              error: (err) => {
+                const message = err.error?.message || err.message || 'Failed to export private configuration';
+                this.toasterService.error(message);
+                this.cdr.markForCheck();
+              },
+            });
+          }
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to get config type';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
       });
     }
   }

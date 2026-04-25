@@ -37,13 +37,19 @@ export class ProjectReadmeComponent implements AfterViewInit {
   ngAfterViewInit() {
     let markdown = ``;
 
-    this.projectService.getReadmeFile(this.controller, this.project.project_id).subscribe((file) => {
-      if (file) {
-        markdown = file;
-        const markdownHtml = marked(markdown) as string;
-        this.readmeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownHtml);
+    this.projectService.getReadmeFile(this.controller, this.project.project_id).subscribe({
+      next: (file) => {
+        if (file) {
+          markdown = file;
+          const markdownHtml = marked(markdown) as string;
+          this.readmeHtml = this.sanitizer.bypassSecurityTrustHtml(markdownHtml);
+          this.cdr.markForCheck();
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load project readme:', err);
         this.cdr.markForCheck();
-      }
+      },
     });
   }
 

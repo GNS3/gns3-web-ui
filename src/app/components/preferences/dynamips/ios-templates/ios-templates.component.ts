@@ -11,6 +11,7 @@ import { IosTemplate } from '@models/templates/ios-template';
 import { VpcsTemplate } from '@models/templates/vpcs-template';
 import { IosService } from '@services/ios.service';
 import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 import { EmptyTemplatesListComponent } from '../../common/empty-templates-list/empty-templates-list.component';
 
@@ -36,6 +37,7 @@ export class IosTemplatesComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private iosService = inject(IosService);
+  private toasterService = inject(ToasterService);
   private router = inject(Router);
   private cd = inject(ChangeDetectorRef);
 
@@ -45,17 +47,31 @@ export class IosTemplatesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
-      this.getTemplates();
-    });
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.cd.markForCheck();
+        this.getTemplates();
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   getTemplates() {
-    this.iosService.getTemplates(this.controller).subscribe((templates: IosTemplate[]) => {
-      this.iosTemplates = templates.filter((elem) => elem.template_type === 'dynamips' && !elem.builtin);
-      this.cd.markForCheck();
+    this.iosService.getTemplates(this.controller).subscribe({
+      next: (templates: IosTemplate[]) => {
+        this.iosTemplates = templates.filter((elem) => elem.template_type === 'dynamips' && !elem.builtin);
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load templates';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 

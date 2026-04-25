@@ -81,31 +81,38 @@ export class ConfiguratorDialogIouComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
-      this.node = node;
-      this.name = node.name;
+    this.nodeService.getNode(this.controller, this.node).subscribe({
+      next: (node: Node) => {
+        this.node = node;
+        this.name = node.name;
 
-      // Update form values with node data
-      this.generalSettingsForm.patchValue({
-        name: node.name,
-        console_type: node.console_type || '',
-        console_auto_start: node.console_auto_start || false,
-        use_default_iou_values:
-          node.properties.use_default_iou_values !== undefined ? node.properties.use_default_iou_values : true,
-        ram: node.properties.ram || '',
-        nvram: node.properties.nvram || '',
-        usage: node.properties.usage || '',
-      });
+        // Update form values with node data
+        this.generalSettingsForm.patchValue({
+          name: node.name,
+          console_type: node.console_type || '',
+          console_auto_start: node.console_auto_start || false,
+          use_default_iou_values:
+            node.properties.use_default_iou_values !== undefined ? node.properties.use_default_iou_values : true,
+          ram: node.properties.ram || '',
+          nvram: node.properties.nvram || '',
+          usage: node.properties.usage || '',
+        });
 
-      this.networkForm.patchValue({
-        ethernetAdapters: node.properties.ethernet_adapters,
-        serialAdapters: node.properties.serial_adapters,
-      });
-      this.getConfiguration();
-      if (!this.node.tags) {
-        this.node.tags = [];
-      }
-      this.cd.markForCheck();
+        this.networkForm.patchValue({
+          ethernetAdapters: node.properties.ethernet_adapters,
+          serialAdapters: node.properties.serial_adapters,
+        });
+        this.getConfiguration();
+        if (!this.node.tags) {
+          this.node.tags = [];
+        }
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load node';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -138,6 +145,7 @@ export class ConfiguratorDialogIouComponent implements OnInit {
         error: (error: unknown) => {
           const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
           this.toasterService.error(errorMessage);
+          this.cd.markForCheck();
         },
       });
     } else {

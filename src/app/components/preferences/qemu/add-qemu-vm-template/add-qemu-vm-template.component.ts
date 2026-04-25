@@ -119,22 +119,42 @@ export class AddQemuVmTemplateComponent implements OnInit, OnDestroy {
     };
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((ctrl: Controller) => {
-      this.controller.set(ctrl);
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (ctrl: Controller) => {
+        this.controller.set(ctrl);
 
-      this.templateMocksService.getQemuTemplate().subscribe((qemuTemplate: QemuTemplate) => {
-        this.qemuTemplate.set(qemuTemplate);
-      });
+        this.templateMocksService.getQemuTemplate().subscribe({
+          next: (qemuTemplate: QemuTemplate) => {
+            this.qemuTemplate.set(qemuTemplate);
+          },
+          error: () => {
+            this.toasterService.error('Failed to load QEMU template');
+            this.cd.markForCheck();
+          },
+        });
 
-      this.qemuService.getImages(this.controller()).subscribe((qemuImages: QemuImage[]) => {
-        this.qemuImages.set(qemuImages);
-      });
+        this.qemuService.getImages(this.controller()).subscribe({
+          next: (qemuImages: QemuImage[]) => {
+            this.qemuImages.set(qemuImages);
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load QEMU images';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
+        });
 
-      this.selectPlatform.set(this.configurationService.getPlatform());
-      this.selectedPlatform.set(this.selectPlatform()[0]);
-      this.consoleTypes.set(this.configurationService.getConsoleTypes());
-      this.auxConsoleTypes.set(this.configurationService.getAuxConsoleTypes());
-    });
+        this.selectPlatform.set(this.configurationService.getPlatform());
+        this.selectedPlatform.set(this.selectPlatform()[0]);
+        this.consoleTypes.set(this.configurationService.getConsoleTypes());
+        this.auxConsoleTypes.set(this.configurationService.getAuxConsoleTypes());
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
 
     this.subscription = this.uploadServiceService.currentCancelItemDetails.subscribe((isCancel) => {
       if (isCancel) {

@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { SymbolsComponent } from './symbols.component';
 import { SymbolService } from '@services/symbol.service';
+import { ToasterService } from '@services/toaster.service';
 import { DialogConfigService } from '@services/dialog-config.service';
 import { Controller } from '@models/controller';
 import { Symbol } from '@models/symbol';
@@ -17,6 +18,7 @@ describe('SymbolsComponent', () => {
   let mockDialog: any;
   let mockDialogConfigService: any;
   let mockChangeDetectorRef: any;
+  let mockToasterService: any;
   let mockController: Controller;
   let mockSymbols: Symbol[];
 
@@ -59,6 +61,11 @@ describe('SymbolsComponent', () => {
       markForCheck: vi.fn(),
     };
 
+    mockToasterService = {
+      success: vi.fn(),
+      error: vi.fn(),
+    };
+
     mockDialogConfigService = {
       openConfig: vi.fn().mockReturnValue({ panelClass: ['base-dialog-panel'] }),
     };
@@ -87,6 +94,7 @@ describe('SymbolsComponent', () => {
         { provide: MatDialog, useValue: mockDialog },
         { provide: DialogConfigService, useValue: mockDialogConfigService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
+        { provide: ToasterService, useValue: mockToasterService },
       ],
     }).compileComponents();
 
@@ -380,6 +388,24 @@ describe('SymbolsComponent', () => {
       component.loadSymbols();
       expect(component.symbols).toEqual(newSymbols);
       expect(component.filteredSymbols).toEqual(newSymbols);
+    });
+  });
+
+  describe('error handling', () => {
+    it('should show error toaster when loadSymbols fails', () => {
+      mockSymbolService.list.mockReturnValue(throwError(() => ({ error: { message: 'Load failed' } })));
+
+      component.loadSymbols();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Load failed');
+    });
+
+    it('should use fallback message when loadSymbols error has no message', () => {
+      mockSymbolService.list.mockReturnValue(throwError(() => ({})));
+
+      component.loadSymbols();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load symbols');
     });
   });
 });

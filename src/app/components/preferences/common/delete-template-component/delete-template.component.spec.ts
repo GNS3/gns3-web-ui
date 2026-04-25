@@ -4,6 +4,7 @@ import { TemplateService } from '@services/template.service';
 import { ToasterService } from '@services/toaster.service';
 import { DeleteConfirmationDialogComponent } from '../delete-confirmation-dialog/delete-confirmation-dialog.component';
 import { Controller } from '@models/controller';
+import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, afterEach, vi, beforeAll } from 'vitest';
 
 describe('DeleteTemplateComponent', () => {
@@ -39,22 +40,12 @@ describe('DeleteTemplateComponent', () => {
 
   beforeEach(async () => {
     mockDialogRef = {
-      afterClosed: vi.fn().mockReturnValue({
-        subscribe: vi.fn((callback) => {
-          callback(false);
-          return { unsubscribe: vi.fn() };
-        }),
-      }),
+      afterClosed: vi.fn().mockReturnValue(of(false)),
       close: vi.fn(),
     };
 
     mockTemplateService = {
-      deleteTemplate: vi.fn().mockReturnValue({
-        subscribe: vi.fn((callback) => {
-          callback();
-          return { unsubscribe: vi.fn() };
-        }),
-      }),
+      deleteTemplate: vi.fn().mockReturnValue(of(undefined)),
     };
 
     mockToasterService = {
@@ -113,12 +104,7 @@ describe('DeleteTemplateComponent', () => {
   });
 
   it('should not delete template when dialog returns false', () => {
-    mockDialogRef.afterClosed.mockReturnValue({
-      subscribe: vi.fn((callback) => {
-        callback(false);
-        return { unsubscribe: vi.fn() };
-      }),
-    });
+    mockDialogRef.afterClosed.mockReturnValue(of(false));
 
     component.deleteItem(templateName, templateId);
 
@@ -127,12 +113,7 @@ describe('DeleteTemplateComponent', () => {
   });
 
   it('should not emit deleteEvent when dialog returns false', () => {
-    mockDialogRef.afterClosed.mockReturnValue({
-      subscribe: vi.fn((callback) => {
-        callback(false);
-        return { unsubscribe: vi.fn() };
-      }),
-    });
+    mockDialogRef.afterClosed.mockReturnValue(of(false));
 
     let emittedTemplateId: string | undefined;
     component.deleteEvent.subscribe((id: string) => {
@@ -145,12 +126,7 @@ describe('DeleteTemplateComponent', () => {
   });
 
   it('should delete template when dialog returns true', () => {
-    mockDialogRef.afterClosed.mockReturnValue({
-      subscribe: vi.fn((callback) => {
-        callback(true);
-        return { unsubscribe: vi.fn() };
-      }),
-    });
+    mockDialogRef.afterClosed.mockReturnValue(of(true));
 
     component.deleteItem(templateName, templateId);
 
@@ -158,12 +134,7 @@ describe('DeleteTemplateComponent', () => {
   });
 
   it('should emit deleteEvent with templateId when dialog returns true', () => {
-    mockDialogRef.afterClosed.mockReturnValue({
-      subscribe: vi.fn((callback) => {
-        callback(true);
-        return { unsubscribe: vi.fn() };
-      }),
-    });
+    mockDialogRef.afterClosed.mockReturnValue(of(true));
 
     let emittedTemplateId: string | undefined;
     component.deleteEvent.subscribe((id: string) => {
@@ -176,46 +147,25 @@ describe('DeleteTemplateComponent', () => {
   });
 
   it('should show success toaster when template is deleted', () => {
-    mockDialogRef.afterClosed.mockReturnValue({
-      subscribe: vi.fn((callback) => {
-        callback(true);
-        return { unsubscribe: vi.fn() };
-      }),
-    });
+    mockDialogRef.afterClosed.mockReturnValue(of(true));
 
     component.deleteItem(templateName, templateId);
 
     expect(mockToasterService.success).toHaveBeenCalledWith(`Template ${templateName} deleted.`);
   });
 
-  it('should handle deleteTemplate service error gracefully', () => {
-    mockDialogRef.afterClosed.mockReturnValue({
-      subscribe: vi.fn((callback) => {
-        callback(true);
-        return { unsubscribe: vi.fn() };
-      }),
-    });
+  it('should display error toaster when deleteTemplate fails', () => {
+    mockDialogRef.afterClosed.mockReturnValue(of(true));
 
-    // The component only handles success case, not error - error is silently ignored
-    mockTemplateService.deleteTemplate.mockReturnValue({
-      subscribe: vi.fn((onSuccess: () => void) => {
-        // Simulate an error by not calling onSuccess
-        return { unsubscribe: vi.fn() };
-      }),
-    });
+    mockTemplateService.deleteTemplate.mockReturnValue(throwError(() => ({ error: { message: 'Delete failed' } })));
 
     component.deleteItem(templateName, templateId);
 
-    expect(mockToasterService.success).not.toHaveBeenCalled();
+    expect(mockToasterService.error).toHaveBeenCalledWith('Delete failed');
   });
 
   it('should unsubscribe from dialog afterClosed when component is destroyed', () => {
-    mockDialogRef.afterClosed.mockReturnValue({
-      subscribe: vi.fn((callback) => {
-        callback(true);
-        return { unsubscribe: vi.fn() };
-      }),
-    });
+    mockDialogRef.afterClosed.mockReturnValue(of(true));
 
     const unsubscribeSpy = vi.spyOn(mockDialogRef, 'afterClosed');
 
@@ -229,12 +179,7 @@ describe('DeleteTemplateComponent', () => {
   });
 
   it('should call deleteTemplate with undefined controller when user confirms without setting controller', () => {
-    mockDialogRef.afterClosed.mockReturnValue({
-      subscribe: vi.fn((callback) => {
-        callback(true);
-        return { unsubscribe: vi.fn() };
-      }),
-    });
+    mockDialogRef.afterClosed.mockReturnValue(of(true));
 
     component.deleteItem('My Special Template', 'special-id-456');
 

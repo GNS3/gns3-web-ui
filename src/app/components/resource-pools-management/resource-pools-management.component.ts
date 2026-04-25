@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   OnInit,
   QueryList,
@@ -61,6 +62,7 @@ export class ResourcePoolsManagementComponent implements OnInit, AfterViewInit {
   private toasterService = inject(ToasterService);
   public resourcePoolsService = inject(ResourcePoolsService);
   public dialog = inject(MatDialog);
+  private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
 
@@ -78,10 +80,17 @@ export class ResourcePoolsManagementComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(+controllerId).then((controller: Controller) => {
-      this.controller = controller;
-      this.refresh();
-    });
+    this.controllerService.get(+controllerId).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.refresh();
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   ngAfterViewInit() {
@@ -128,11 +137,18 @@ export class ResourcePoolsManagementComponent implements OnInit, AfterViewInit {
   }
 
   refresh() {
-    this.resourcePoolsService.getAll(this.controller).subscribe((resourcePools: ResourcePool[]) => {
-      this.isReady.set(true);
-      this.resourcePools.set(resourcePools);
-      this.dataSource.data = resourcePools;
-      this.selection.clear();
+    this.resourcePoolsService.getAll(this.controller).subscribe({
+      next: (resourcePools: ResourcePool[]) => {
+        this.isReady.set(true);
+        this.resourcePools.set(resourcePools);
+        this.dataSource.data = resourcePools;
+        this.selection.clear();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load resource pools';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -148,14 +164,16 @@ export class ResourcePoolsManagementComponent implements OnInit, AfterViewInit {
           const observables = resourcePoolToDelete.map((resourcePool: ResourcePool) =>
             this.resourcePoolsService.delete(this.controller, resourcePool.resource_pool_id)
           );
-          forkJoin(observables).subscribe(
-            () => {
+          forkJoin(observables).subscribe({
+            next: () => {
               this.refresh();
             },
-            (error) => {
-              this.toasterService.error(`An error occur while trying to delete resource pool`);
-            }
-          );
+            error: (err) => {
+              const message = err.error?.message || err.message || 'Failed to delete resource pool';
+              this.toasterService.error(message);
+              this.cd.markForCheck();
+            },
+          });
         }
       });
   }

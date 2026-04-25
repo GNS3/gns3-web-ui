@@ -79,13 +79,18 @@ export class ChatInputAreaComponent implements OnInit, OnDestroy {
     }, 0);
 
     // Subscribe to theme changes to close menu when theme switches
-    this.themeService.themeChanged.pipe(takeUntil(this.destroy$)).subscribe((theme) => {
-      this.currentTheme = theme;
-      // Close menu if open to force re-render with new theme
-      const menuTrigger = this.menuTrigger();
-      if (menuTrigger && menuTrigger.menuOpen) {
-        menuTrigger.closeMenu();
-      }
+    this.themeService.themeChanged.pipe(takeUntil(this.destroy$)).subscribe({
+      next: (theme) => {
+        this.currentTheme = theme;
+        // Close menu if open to force re-render with new theme
+        const menuTrigger = this.menuTrigger();
+        if (menuTrigger && menuTrigger.menuOpen) {
+          menuTrigger.closeMenu();
+        }
+      },
+      error: (err) => {
+        console.error('[ChatInputArea] Theme subscription error:', err);
+      },
     });
   }
 

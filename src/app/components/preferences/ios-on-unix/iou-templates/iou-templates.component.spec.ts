@@ -10,7 +10,7 @@ import { DeleteTemplateComponent } from '../../common/delete-template-component/
 import { EmptyTemplatesListComponent } from '../../common/empty-templates-list/empty-templates-list.component';
 import { Controller } from '@models/controller';
 import { IouTemplate } from '@models/templates/iou-template';
-import { of, firstValueFrom } from 'rxjs';
+import { of, firstValueFrom, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('IouTemplatesComponent', () => {
@@ -21,6 +21,7 @@ describe('IouTemplatesComponent', () => {
   let mockActivatedRoute: any;
   let mockRouter: any;
   let mockDialog: any;
+  let mockToasterService: any;
 
   const mockController: Controller = {
     id: 1,
@@ -114,6 +115,11 @@ describe('IouTemplatesComponent', () => {
       }),
     };
 
+    mockToasterService = {
+      error: vi.fn(),
+      success: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [IouTemplatesComponent, DeleteTemplateComponent, EmptyTemplatesListComponent],
       providers: [
@@ -123,7 +129,7 @@ describe('IouTemplatesComponent', () => {
         { provide: Router, useValue: mockRouter },
         { provide: MatDialog, useValue: mockDialog },
         { provide: TemplateService, useValue: {} },
-        { provide: ToasterService, useValue: {} },
+        { provide: ToasterService, useValue: mockToasterService },
       ],
     }).compileComponents();
 
@@ -279,5 +285,51 @@ describe('IouTemplatesComponent', () => {
       template.template_id,
       'copy',
     ]);
+  });
+
+  describe('error handling', () => {
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(IouTemplatesComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(IouTemplatesComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when getTemplates fails', async () => {
+      mockIouService.getTemplates.mockReturnValue(throwError(() => ({ error: { message: 'Templates error' } })));
+      component.controller = mockController;
+
+      component.getTemplates();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Templates error');
+    });
+
+    it('should use fallback message when getTemplates error has no message', async () => {
+      mockIouService.getTemplates.mockReturnValue(throwError(() => ({})));
+      component.controller = mockController;
+
+      component.getTemplates();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load IOU templates');
+    });
   });
 });

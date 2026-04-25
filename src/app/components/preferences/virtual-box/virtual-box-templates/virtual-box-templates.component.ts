@@ -11,6 +11,7 @@ import { VirtualBoxTemplate } from '@models/templates/virtualbox-template';
 import { VpcsTemplate } from '@models/templates/vpcs-template';
 import { ControllerService } from '@services/controller.service';
 import { VirtualBoxService } from '@services/virtual-box.service';
+import { ToasterService } from '@services/toaster.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 import { EmptyTemplatesListComponent } from '../../common/empty-templates-list/empty-templates-list.component';
 
@@ -36,6 +37,7 @@ export class VirtualBoxTemplatesComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private virtualBoxService = inject(VirtualBoxService);
+  private toasterService = inject(ToasterService);
   private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
@@ -44,19 +46,33 @@ export class VirtualBoxTemplatesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
-      this.getTemplates();
-    });
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.cd.markForCheck();
+        this.getTemplates();
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   getTemplates() {
-    this.virtualBoxService.getTemplates(this.controller).subscribe((virtualBoxTemplates: VirtualBoxTemplate[]) => {
-      this.virtualBoxTemplates = virtualBoxTemplates.filter(
-        (elem) => elem.template_type === 'virtualbox' && !elem.builtin
-      );
-      this.cd.markForCheck();
+    this.virtualBoxService.getTemplates(this.controller).subscribe({
+      next: (virtualBoxTemplates: VirtualBoxTemplate[]) => {
+        this.virtualBoxTemplates = virtualBoxTemplates.filter(
+          (elem) => elem.template_type === 'virtualbox' && !elem.builtin
+        );
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load VirtualBox templates';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 

@@ -107,17 +107,38 @@ export class AddAceDialogComponent implements OnInit {
       role_id: new UntypedFormControl(),
       propagate: new UntypedFormControl(true),
     });
-    this.groupService.getGroups(this.controller).subscribe((groups: Group[]) => {
-      this.groups = groups;
-      this.cd.markForCheck();
+    this.groupService.getGroups(this.controller).subscribe({
+      next: (groups: Group[]) => {
+        this.groups = groups;
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load groups';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
-    this.userService.list(this.controller).subscribe((users: User[]) => {
-      this.users = users;
-      this.cd.markForCheck();
+    this.userService.list(this.controller).subscribe({
+      next: (users: User[]) => {
+        this.users = users;
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load users';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
-    this.roleService.get(this.controller).subscribe((roles: Role[]) => {
-      this.roles = roles;
-      this.cd.markForCheck();
+    this.roleService.get(this.controller).subscribe({
+      next: (roles: Role[]) => {
+        this.roles = roles;
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load roles';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -148,14 +169,16 @@ export class AddAceDialogComponent implements OnInit {
     };
 
     if (ACE.path && ACE.role_id && (ACE.user_id || ACE.group_id)) {
-      this.aclService.add(this.controller, ACE).subscribe(
-        (ace: ACE) => {
+      this.aclService.add(this.controller, ACE).subscribe({
+        next: (ace: ACE) => {
           this.toasterService.success(`ACE was added for path ${ACE.path}`);
         },
-        (error) => {
-          this.toasterService.error(`Cannot create ACE: ${error.error?.message || error.message}`);
-        }
-      );
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to create ACE';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        },
+      });
       this.dialogRef.close();
     }
   }

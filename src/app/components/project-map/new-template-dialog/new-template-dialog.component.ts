@@ -142,6 +142,89 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
   private uploadServiceService = inject(UploadServiceService);
 
   ngOnInit() {
+    this.applianceService.getAppliances(this.controller).subscribe({
+      next: (appliances) => {
+        this.appliances = appliances;
+        this.appliances.forEach((appliance) => {
+          if (appliance.docker) appliance.emulator = 'Docker';
+          if (appliance.dynamips) appliance.emulator = 'Dynamips';
+          if (appliance.iou) appliance.emulator = 'Iou';
+          if (appliance.qemu) appliance.emulator = 'Qemu';
+        });
+        this.allAppliances = appliances;
+        this.dataSource = new MatTableDataSource(this.allAppliances);
+        this.setupPaginator();
+        this.changeDetectorRef.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load appliances';
+        this.toasterService.error(message);
+        this.changeDetectorRef.markForCheck();
+      },
+    });
+
+    this.templateService.list(this.controller).subscribe({
+      next: (templates) => {
+        this.templates = templates;
+        this.changeDetectorRef.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load templates';
+        this.toasterService.error(message);
+        this.changeDetectorRef.markForCheck();
+      },
+    });
+
+    this.computeService.getComputes(this.controller).subscribe({
+      next: (computes) => {
+        computes.forEach((compute) => {
+          if (compute.capabilities?.platform === 'linux') this.isLinuxPlatform = true;
+        });
+        this.changeDetectorRef.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load computes';
+        this.toasterService.error(message);
+        this.changeDetectorRef.markForCheck();
+      },
+    });
+
+    this.qemuService.getImages(this.controller).subscribe({
+      next: (qemuImages) => {
+        this.qemuImages = qemuImages;
+        this.changeDetectorRef.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load QEMU images';
+        this.toasterService.error(message);
+        this.changeDetectorRef.markForCheck();
+      },
+    });
+
+    this.iosService.getImages(this.controller).subscribe({
+      next: (iosImages) => {
+        this.iosImages = iosImages;
+        this.changeDetectorRef.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load IOS images';
+        this.toasterService.error(message);
+        this.changeDetectorRef.markForCheck();
+      },
+    });
+
+    this.iouService.getImages(this.controller).subscribe({
+      next: (iouImages) => {
+        this.iouImages = iouImages;
+        this.changeDetectorRef.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load IOU images';
+        this.toasterService.error(message);
+        this.changeDetectorRef.markForCheck();
+      },
+    });
+
     this.applianceService.getAppliances(this.controller).subscribe((appliances) => {
       this.appliances = appliances;
       this.appliances.forEach((appliance) => {
@@ -155,44 +238,25 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
       this.setupPaginator();
     });
 
-    this.templateService.list(this.controller).subscribe((templates) => {
-      this.templates = templates;
-      this.changeDetectorRef.markForCheck();
-    });
-
-    this.computeService.getComputes(this.controller).subscribe((computes) => {
-      computes.forEach((compute) => {
-        if (compute.capabilities?.platform === 'linux') this.isLinuxPlatform = true;
-      });
-      this.changeDetectorRef.markForCheck();
-    });
-
-    this.qemuService.getImages(this.controller).subscribe((qemuImages) => {
-      this.qemuImages = qemuImages;
-      this.changeDetectorRef.markForCheck();
-    });
-
-    this.iosService.getImages(this.controller).subscribe((iosImages) => {
-      this.iosImages = iosImages;
-      this.changeDetectorRef.markForCheck();
-    });
-
-    this.iouService.getImages(this.controller).subscribe((iouImages) => {
-      this.iouImages = iouImages;
-      this.changeDetectorRef.markForCheck();
-    });
-
-    this.applianceService.getAppliances(this.controller).subscribe((appliances) => {
-      this.appliances = appliances;
-      this.appliances.forEach((appliance) => {
-        if (appliance.docker) appliance.emulator = 'Docker';
-        if (appliance.dynamips) appliance.emulator = 'Dynamips';
-        if (appliance.iou) appliance.emulator = 'Iou';
-        if (appliance.qemu) appliance.emulator = 'Qemu';
-      });
-      this.allAppliances = appliances;
-      this.dataSource = new MatTableDataSource(this.allAppliances);
-      this.setupPaginator();
+    this.applianceService.getAppliances(this.controller).subscribe({
+      next: (appliances) => {
+        this.appliances = appliances;
+        this.appliances.forEach((appliance) => {
+          if (appliance.docker) appliance.emulator = 'Docker';
+          if (appliance.dynamips) appliance.emulator = 'Dynamips';
+          if (appliance.iou) appliance.emulator = 'Iou';
+          if (appliance.qemu) appliance.emulator = 'Qemu';
+        });
+        this.allAppliances = appliances;
+        this.dataSource = new MatTableDataSource(this.allAppliances);
+        this.setupPaginator();
+        this.changeDetectorRef.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load appliances';
+        this.toasterService.error(message);
+        this.changeDetectorRef.markForCheck();
+      },
     });
 
     this.uploader = new FileUploader({ url: '' });
@@ -274,41 +338,76 @@ export class NewTemplateDialogComponent implements OnInit, AfterViewInit {
 
   updateAppliances() {
     this.progressService.activate();
-    this.applianceService.updateAppliances(this.controller).subscribe(
-      (appliances) => {
+    this.applianceService.updateAppliances(this.controller).subscribe({
+      next: (appliances) => {
         this.appliances = appliances;
         this.progressService.deactivate();
         this.toasterService.success('Appliances are up-to-date.');
+        this.changeDetectorRef.markForCheck();
       },
-      (error) => {
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to update appliances';
         this.progressService.deactivate();
-        this.toasterService.error('Appliances were not updated correctly.');
-      }
-    );
+        this.toasterService.error(message);
+        this.changeDetectorRef.markForCheck();
+      },
+    });
   }
 
   refreshImages() {
-    this.qemuService.getImages(this.controller).subscribe((qemuImages) => {
-      this.qemuImages = qemuImages;
+    this.qemuService.getImages(this.controller).subscribe({
+      next: (qemuImages) => {
+        this.qemuImages = qemuImages;
+        this.changeDetectorRef.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load QEMU images';
+        this.toasterService.error(message);
+        this.changeDetectorRef.markForCheck();
+      },
     });
 
-    this.iosService.getImages(this.controller).subscribe((iosImages) => {
-      this.iosImages = iosImages;
+    this.iosService.getImages(this.controller).subscribe({
+      next: (iosImages) => {
+        this.iosImages = iosImages;
+        this.changeDetectorRef.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load IOS images';
+        this.toasterService.error(message);
+        this.changeDetectorRef.markForCheck();
+      },
     });
 
-    this.iouService.getImages(this.controller).subscribe((iouImages) => {
-      this.iouImages = iouImages;
+    this.iouService.getImages(this.controller).subscribe({
+      next: (iouImages) => {
+        this.iouImages = iouImages;
+        this.changeDetectorRef.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load IOU images';
+        this.toasterService.error(message);
+        this.changeDetectorRef.markForCheck();
+      },
     });
   }
 
   getAppliance(url: string) {
     let str = url.split(`/${environment.current_version}`);
     let appliancePath = str[str.length - 1];
-    this.applianceService.getAppliance(this.controller, appliancePath).subscribe((appliance: Appliance) => {
-      this.applianceToInstall = appliance;
-      setTimeout(() => {
-        this.stepper().next();
-      }, 100);
+    this.applianceService.getAppliance(this.controller, appliancePath).subscribe({
+      next: (appliance: Appliance) => {
+        this.applianceToInstall = appliance;
+        setTimeout(() => {
+          this.stepper().next();
+        }, 100);
+        this.changeDetectorRef.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load appliance';
+        this.toasterService.error(message);
+        this.changeDetectorRef.markForCheck();
+      },
     });
   }
 

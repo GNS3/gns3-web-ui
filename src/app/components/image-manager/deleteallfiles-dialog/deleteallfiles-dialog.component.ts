@@ -46,12 +46,19 @@ export class DeleteAllImageFilesDialogComponent {
           .pipe(catchError((error) => of(error)))
       );
     });
-    forkJoin(calls).subscribe((responses) => {
-      this.deleteFliesDetails = responses.filter((x) => x !== null);
-      this.fileNotDeleted = responses.filter((x) => x === null);
-      this.isUsedFiles = true;
-      this.isDelete = true;
-      this.cd.markForCheck();
+    forkJoin(calls).subscribe({
+      next: (responses) => {
+        this.deleteFliesDetails = responses.filter((x) => x !== null);
+        this.fileNotDeleted = responses.filter((x) => x === null);
+        this.isUsedFiles = true;
+        this.isDelete = true;
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to delete files';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 }

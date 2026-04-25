@@ -74,31 +74,43 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     const template_id = this.route.snapshot.paramMap.get('template_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.cd.markForCheck();
 
-      this.getConfiguration();
-      this.builtInTemplatesService
-        .getTemplate(this.controller, template_id)
-        .subscribe((ethernetSwitchTemplate: EthernetSwitchTemplate) => {
-          this.ethernetSwitchTemplate = ethernetSwitchTemplate;
-          if (!this.ethernetSwitchTemplate.tags) {
-            this.ethernetSwitchTemplate.tags = [];
-          }
+        this.getConfiguration();
+        this.builtInTemplatesService.getTemplate(this.controller, template_id).subscribe({
+          next: (ethernetSwitchTemplate: EthernetSwitchTemplate) => {
+            this.ethernetSwitchTemplate = ethernetSwitchTemplate;
+            if (!this.ethernetSwitchTemplate.tags) {
+              this.ethernetSwitchTemplate.tags = [];
+            }
 
-          // Initialize model signals
-          this.templateName.set(ethernetSwitchTemplate.name || '');
-          this.defaultName.set(ethernetSwitchTemplate.default_name_format || '');
-          this.symbol.set(ethernetSwitchTemplate.symbol || '');
-          this.category.set(ethernetSwitchTemplate.category || '');
-          this.consoleType.set(ethernetSwitchTemplate.console_type || '');
-          this.tags.set(ethernetSwitchTemplate.tags || []);
-          this.usage.set(ethernetSwitchTemplate.usage || '');
+            // Initialize model signals
+            this.templateName.set(ethernetSwitchTemplate.name || '');
+            this.defaultName.set(ethernetSwitchTemplate.default_name_format || '');
+            this.symbol.set(ethernetSwitchTemplate.symbol || '');
+            this.category.set(ethernetSwitchTemplate.category || '');
+            this.consoleType.set(ethernetSwitchTemplate.console_type || '');
+            this.tags.set(ethernetSwitchTemplate.tags || []);
+            this.usage.set(ethernetSwitchTemplate.usage || '');
 
-          this.cd.markForCheck();
+            this.cd.markForCheck();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load template';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
         });
-    });
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   getConfiguration() {
@@ -120,12 +132,22 @@ export class EthernetSwitchesTemplateDetailsComponent implements OnInit {
     this.ethernetSwitchTemplate.tags = this.tags();
     this.ethernetSwitchTemplate.usage = this.usage();
 
-    this.ethernetSwitchTemplate.ports_mapping = this.portsComponent.ethernetPorts;
-    this.builtInTemplatesService
-      .saveTemplate(this.controller, this.ethernetSwitchTemplate)
-      .subscribe((ethernetSwitchTemplate: EthernetSwitchTemplate) => {
+    // Only update ports_mapping if the ports component is rendered
+    // (it's conditionally rendered based on portsExpanded state)
+    if (this.portsComponent) {
+      this.ethernetSwitchTemplate.ports_mapping = this.portsComponent.ethernetPorts;
+    }
+    this.builtInTemplatesService.saveTemplate(this.controller, this.ethernetSwitchTemplate).subscribe({
+      next: () => {
         this.toasterService.success('Changes saved');
-      });
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to save template';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   chooseSymbol() {

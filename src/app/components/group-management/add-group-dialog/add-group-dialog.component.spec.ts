@@ -195,11 +195,67 @@ describe('AddGroupDialogComponent', () => {
     });
 
     it('should close dialog with false when addGroup fails', () => {
-      mockGroupService.addGroup.mockReturnValue(throwError(() => new Error('Server error')));
+      mockGroupService.addGroup.mockReturnValue(throwError(() => ({ error: { message: 'Failed to create group' } })));
       component.groupNameForm.get('groupName')?.setValue('TestGroup');
       component.onAddClick();
-      expect(mockToasterService.error).toHaveBeenCalled();
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to create group');
       expect(mockDialogRef.close).toHaveBeenCalledWith(false);
+    });
+  });
+
+  describe('ngOnInit error handling', () => {
+    it('should display error when userService.list fails', async () => {
+      mockUserService.list.mockReturnValue(throwError(() => ({ error: { message: 'Failed to load users' } })));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.ngOnInit();
+
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load users');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should display fallback error when userService.list fails with no message', async () => {
+      mockUserService.list.mockReturnValue(throwError(() => new Error('Network error')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.ngOnInit();
+
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Network error');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('onAddClick error handling', () => {
+    it('should display error when addMemberToGroup fails', async () => {
+      component.groupNameForm.get('groupName')?.setValue('TestGroup');
+      component.selectedUser(mockUsers[0]);
+      mockGroupService.addMemberToGroup.mockReturnValue(throwError(() => ({ error: { message: 'Failed to add user' } })));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.onAddClick();
+
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to add user');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should display fallback error when addMemberToGroup fails with no message', async () => {
+      component.groupNameForm.get('groupName')?.setValue('TestGroup');
+      component.selectedUser(mockUsers[0]);
+      mockGroupService.addMemberToGroup.mockReturnValue(throwError(() => ({})));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.onAddClick();
+
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to add user to group');
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 

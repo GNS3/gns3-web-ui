@@ -55,6 +55,8 @@ import { NodeService } from '@services/node.service';
 import { ThemeService } from '@services/theme.service';
 import { XtermContextMenuService } from '@services/xterm-context-menu.service';
 import { XtermService } from '@services/xterm.service';
+import { ToasterService } from '@services/toaster.service';
+import { throwError } from 'rxjs';
 
 describe('WebConsoleFullWindowComponent', () => {
   let fixture: ComponentFixture<WebConsoleFullWindowComponent>;
@@ -119,6 +121,10 @@ describe('WebConsoleFullWindowComponent', () => {
     }),
     updateTerminalTheme: vi.fn(),
     initTerminal: vi.fn(),
+  };
+
+  const mockToasterService = {
+    error: vi.fn(),
   };
 
   const mockActivatedRoute = {
@@ -217,6 +223,7 @@ describe('WebConsoleFullWindowComponent', () => {
         { provide: XtermContextMenuService, useValue: mockXtermContextMenuService },
         { provide: ChangeDetectorRef, useValue: mockCdr },
         { provide: XtermService, useValue: mockXtermService },
+        { provide: ToasterService, useValue: mockToasterService },
       ],
     });
 

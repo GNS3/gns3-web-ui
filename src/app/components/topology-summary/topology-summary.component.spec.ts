@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ChangeDetectorRef } from '@angular/core';
-import { Subject, of } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 import { NodesDataSource } from '../../cartography/datasources/nodes-datasource';
 import { LinksDataSource } from '../../cartography/datasources/links-datasource';
 import { Node, Properties } from '../../cartography/models/node';
@@ -9,6 +9,7 @@ import { ComputeService } from '@services/compute.service';
 import { ProjectService } from '@services/project.service';
 import { ThemeService } from '@services/theme.service';
 import { NotificationService } from '@services/notification.service';
+import { ToasterService } from '@services/toaster.service';
 import { ProjectStatistics } from '@models/project-statistics';
 import { Compute } from '@models/compute';
 import { Project } from '@models/project';
@@ -27,6 +28,7 @@ describe('TopologySummaryComponent', () => {
   let mockComputeService: any;
   let mockThemeService: any;
   let mockNotificationService: any;
+  let mockToasterService: any;
   let mockChangeDetectorRef: any;
   let nodesSubject: Subject<Node[]>;
   let mockController: Controller;
@@ -196,6 +198,11 @@ describe('TopologySummaryComponent', () => {
       computeCacheUpdated: new Subject(),
     };
 
+    mockToasterService = {
+      error: vi.fn(),
+      success: vi.fn(),
+    };
+
     mockChangeDetectorRef = {
       markForCheck: vi.fn(),
     };
@@ -249,6 +256,7 @@ describe('TopologySummaryComponent', () => {
         { provide: ComputeService, useValue: mockComputeService },
         { provide: ThemeService, useValue: mockThemeService },
         { provide: NotificationService, useValue: mockNotificationService },
+        { provide: ToasterService, useValue: mockToasterService },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
@@ -993,6 +1001,80 @@ describe('TopologySummaryComponent', () => {
 
       // Verify that the component state is updated correctly
       expect(component.computes).toEqual(mockComputes);
+    });
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    describe('getStatistics', () => {
+      it('should show error toaster when getStatistics fails with error.error.message', async () => {
+        mockProjectService.getStatistics.mockReturnValue(
+          throwError(() => ({ error: { message: 'Statistics failed' } }))
+        );
+
+        component.ngOnInit();
+        await vi.runAllTimersAsync();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Statistics failed');
+      });
+
+      it('should use fallback message when getStatistics error has no message', async () => {
+        mockProjectService.getStatistics.mockReturnValue(throwError(() => ({})));
+
+        component.ngOnInit();
+        await vi.runAllTimersAsync();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load project statistics');
+      });
+
+      it('should call markForCheck when getStatistics fails', async () => {
+        mockProjectService.getStatistics.mockReturnValue(
+          throwError(() => ({ error: { message: 'Statistics failed' } }))
+        );
+
+        const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+        component.ngOnInit();
+        await vi.runAllTimersAsync();
+
+        expect(cdrSpy).toHaveBeenCalled();
+      });
+    });
+
+    describe('getComputes', () => {
+      it('should show error toaster when getComputes fails with error.error.message', async () => {
+        mockComputeService.getComputes.mockReturnValue(
+          throwError(() => ({ error: { message: 'Computes failed' } }))
+        );
+
+        component.ngOnInit();
+        await vi.runAllTimersAsync();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Computes failed');
+      });
+
+      it('should use fallback message when getComputes error has no message', async () => {
+        mockComputeService.getComputes.mockReturnValue(throwError(() => ({})));
+
+        component.ngOnInit();
+        await vi.runAllTimersAsync();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load computes');
+      });
+
+      it('should call markForCheck when getComputes fails', async () => {
+        mockComputeService.getComputes.mockReturnValue(
+          throwError(() => ({ error: { message: 'Computes failed' } }))
+        );
+
+        const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+        component.ngOnInit();
+        await vi.runAllTimersAsync();
+
+        expect(cdrSpy).toHaveBeenCalled();
+      });
     });
   });
 });

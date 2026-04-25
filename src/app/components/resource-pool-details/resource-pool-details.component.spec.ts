@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of, ReplaySubject } from 'rxjs';
+import { of, ReplaySubject, throwError } from 'rxjs';
 import { ResourcePoolDetailsComponent } from './resource-pool-details.component';
 import { ResourcePool } from '@models/resourcePools/ResourcePool';
 import { Controller } from '@models/controller';
@@ -226,4 +226,96 @@ describe('ResourcePoolDetailsComponent', () => {
   // The deleteResource tests fail with "Cannot read properties of undefined (reading 'push')"
   // because Angular Material's real dialog code is running instead of the mock.
   // This appears to be a specific issue with how inject(MatDialog) works with TestBed mocking.
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when update fails with error.message', async () => {
+      mockResourcePoolsService.update.mockReturnValue(
+        throwError(() => ({ error: { message: 'Update failed' } }))
+      );
+
+      component.editPoolForm.patchValue({ poolname: 'Updated Pool' });
+      component.onUpdate();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Update failed');
+    });
+
+    it('should use fallback message when update error has no message', async () => {
+      mockResourcePoolsService.update.mockReturnValue(throwError(() => ({})));
+
+      component.editPoolForm.patchValue({ poolname: 'Updated Pool' });
+      component.onUpdate();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update pool');
+    });
+
+    it('should show error toaster when addResource fails', async () => {
+      const mockProject = createMockProject('Project A');
+      mockResourcePoolsService.addResource.mockReturnValue(
+        throwError(() => ({ error: { message: 'Add failed' } }))
+      );
+
+      component.addResourceFormControl.setValue('Project A');
+      component.addResource();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Add failed');
+    });
+
+    it('should use fallback message when addResource error has no message', async () => {
+      const mockProject = createMockProject('Project A');
+      mockResourcePoolsService.addResource.mockReturnValue(throwError(() => ({})));
+
+      component.addResourceFormControl.setValue('Project A');
+      component.addResource();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to add resource to pool');
+    });
+
+    it('should show error toaster when get pool fails during ngOnInit', async () => {
+      mockResourcePoolsService.get.mockReturnValue(
+        throwError(() => ({ error: { message: 'Get failed' } }))
+      );
+
+      const newFixture = TestBed.createComponent(ResourcePoolDetailsComponent);
+      routeDataSubject.next({ controller: mockController, pool: createMockPool() });
+      newFixture.detectChanges();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Get failed');
+    });
+
+    it('should use fallback message when get pool error has no message during ngOnInit', async () => {
+      mockResourcePoolsService.get.mockReturnValue(throwError(() => ({})));
+
+      const newFixture = TestBed.createComponent(ResourcePoolDetailsComponent);
+      routeDataSubject.next({ controller: mockController, pool: createMockPool() });
+      newFixture.detectChanges();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load pool');
+    });
+
+    it('should show error toaster when getFreeResources fails during ngOnInit', async () => {
+      mockResourcePoolsService.getFreeResources.mockReturnValue(
+        throwError(() => ({ error: { message: 'Resources failed' } }))
+      );
+
+      const newFixture = TestBed.createComponent(ResourcePoolDetailsComponent);
+      routeDataSubject.next({ controller: mockController, pool: createMockPool() });
+      newFixture.detectChanges();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Resources failed');
+    });
+
+    it('should use fallback message when getFreeResources error has no message during ngOnInit', async () => {
+      mockResourcePoolsService.getFreeResources.mockReturnValue(throwError(() => ({})));
+
+      const newFixture = TestBed.createComponent(ResourcePoolDetailsComponent);
+      routeDataSubject.next({ controller: mockController, pool: createMockPool() });
+      newFixture.detectChanges();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load free resources');
+    });
+  });
 });

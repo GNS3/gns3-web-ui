@@ -12,6 +12,8 @@ import { MapPort } from '../../../cartography/models/map/map-port';
 import { DrawingLineWidget } from '../../../cartography/widgets/drawing-line';
 import { NodeSelectInterfaceComponent } from '@components/project-map/node-select-interface/node-select-interface.component';
 import { Link } from '@models/link';
+import { ToasterService } from '../../../services/toaster.service';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-draw-link-tool',
@@ -32,13 +34,22 @@ export class DrawLinkToolComponent implements OnInit, OnDestroy {
   private mapNodeToNode = inject(MapNodeToNodeConverter);
   private nodeToMapNode = inject(NodeToMapNodeConverter);
   private portToMapPort = inject(PortToMapPortConverter);
+  private toasterService = inject(ToasterService);
+  private cdr = inject(ChangeDetectorRef);
 
   constructor() {}
 
   ngOnInit() {
-    this.nodeClicked$ = this.nodesEventSource.clicked.subscribe((clickedEvent) => {
-      let node = this.mapNodeToNode.convert(clickedEvent.datum);
-      this.nodeSelectInterfaceMenu().open(node, clickedEvent.y, clickedEvent.x);
+    this.nodeClicked$ = this.nodesEventSource.clicked.subscribe({
+      next: (clickedEvent) => {
+        let node = this.mapNodeToNode.convert(clickedEvent.datum);
+        this.nodeSelectInterfaceMenu().open(node, clickedEvent.y, clickedEvent.x);
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to handle node click';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      },
     });
   }
 

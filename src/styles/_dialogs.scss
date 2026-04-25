@@ -1106,3 +1106,100 @@ h2[mat-dialog-title] {
     border-top: 1px solid var(--mat-sys-outline-variant);
   }
 }
+
+/* =============================================
+// Cloud Configurator - Interface Management Tables
+// ============================================= */
+.configurator-dialog-panel {
+  /* Interfaces list container */
+  .interfaces-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Interfaces table styling */
+  .interfaces-table {
+    width: 100%;
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 8px;
+    overflow: hidden;
+
+    mat-header-row {
+      background: var(--mat-sys-surface-container);
+    }
+
+    mat-row {
+      &:hover {
+        background: var(--mat-sys-surface-container-low);
+      }
+    }
+
+    mat-header-cell {
+      font-weight: 500;
+      color: var(--mat-sys-on-surface-variant);
+      font-size: 13px;
+      padding: 12px 16px;
+    }
+
+    mat-cell {
+      color: var(--mat-sys-on-surface);
+      font-size: 14px;
+      padding: 12px 16px;
+    }
+  }
+
+  /* Add interface row styling */
+  .add-interface-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 12px;
+    background: var(--mat-sys-surface-container-low);
+    border-radius: 8px;
+
+    mat-form-field {
+      flex: 1;
+    }
+  }
+}
+
+/* =============================================
+// ATM Switch Configurator
+// ============================================= */
+.atm-switch-config-panel {
+  /* Make mat-form-field full width within forms */
+  mat-card form mat-form-field {
+    width: 100%;
+  }
+
+  /* Table styling */
+  table {
+    margin-bottom: 24px;
+    width: 100%;
+    border: 1px solid var(--mat-sys-outline-variant);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  mat-header-row {
+    background: var(--mat-sys-surface-container);
+  }
+
+  mat-row:hover {
+    background: var(--mat-sys-surface-container-low);
+  }
+
+  mat-header-cell {
+    font-weight: 500;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 13px;
+    padding: 12px 16px;
+  }
+
+  mat-cell {
+    color: var(--mat-sys-on-surface);
+    font-size: 14px;
+    padding: 12px 16px;
+  }
+}

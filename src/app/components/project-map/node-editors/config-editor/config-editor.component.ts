@@ -29,15 +29,29 @@ export class ConfigEditorDialogComponent implements OnInit {
   readonly privateConfig = model<any>('');
 
   ngOnInit() {
-    this.nodeService.getStartupConfiguration(this.controller, this.node).subscribe((config: any) => {
-      this.config.set(config);
-      this.cdr.markForCheck();
+    this.nodeService.getStartupConfiguration(this.controller, this.node).subscribe({
+      next: (config: any) => {
+        this.config.set(config);
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load startup configuration';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      },
     });
 
     if (this.node.node_type === 'iou' || this.node.node_type === 'dynamips') {
-      this.nodeService.getPrivateConfiguration(this.controller, this.node).subscribe((privateConfig: any) => {
-        this.privateConfig.set(privateConfig);
-        this.cdr.markForCheck();
+      this.nodeService.getPrivateConfiguration(this.controller, this.node).subscribe({
+        next: (privateConfig: any) => {
+          this.privateConfig.set(privateConfig);
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to load private configuration';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
       });
     }
   }
@@ -53,16 +67,32 @@ export class ConfigEditorDialogComponent implements OnInit {
   }
 
   onSaveClick() {
-    this.nodeService.saveConfiguration(this.controller, this.node, this.config()).subscribe((response) => {
-      if (this.node.node_type === 'iou' || this.node.node_type === 'dynamips') {
-        this.nodeService.savePrivateConfiguration(this.controller, this.node, this.privateConfig()).subscribe((resp) => {
+    this.nodeService.saveConfiguration(this.controller, this.node, this.config()).subscribe({
+      next: (response) => {
+        if (this.node.node_type === 'iou' || this.node.node_type === 'dynamips') {
+          this.nodeService.savePrivateConfiguration(this.controller, this.node, this.privateConfig()).subscribe({
+            next: (resp) => {
+              this.dialogRef.close();
+              this.toasterService.success(`Configuration for node ${this.node.name} saved.`);
+              this.cdr.markForCheck();
+            },
+            error: (err) => {
+              const message = err.error?.message || err.message || 'Failed to save private configuration';
+              this.toasterService.error(message);
+              this.cdr.markForCheck();
+            },
+          });
+        } else {
           this.dialogRef.close();
           this.toasterService.success(`Configuration for node ${this.node.name} saved.`);
-        });
-      } else {
-        this.dialogRef.close();
-        this.toasterService.success(`Configuration for node ${this.node.name} saved.`);
-      }
+          this.cdr.markForCheck();
+        }
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to save configuration';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      },
     });
   }
 

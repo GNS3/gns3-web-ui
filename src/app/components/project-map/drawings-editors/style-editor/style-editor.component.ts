@@ -235,9 +235,16 @@ export class StyleEditorDialogComponent implements OnInit {
 
       this.drawing.svg = this.mapDrawingToSvgConverter.convert(mapDrawing);
 
-      this.drawingService.update(this.controller, this.drawing).subscribe((controllerDrawing: Drawing) => {
-        this.drawingsDataSource.update(controllerDrawing);
-        this.dialogRef.close();
+      this.drawingService.update(this.controller, this.drawing).subscribe({
+        next: (controllerDrawing: Drawing) => {
+          this.drawingsDataSource.update(controllerDrawing);
+          this.dialogRef.close();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to update drawing';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        },
       });
     } else {
       this.toasterService.error(`Entered data is incorrect`);

@@ -156,13 +156,27 @@ export class EditProjectDialogComponent implements OnInit {
       this.project.auto_close = !this.auto_close();
       this.project.show_interface_labels = this.show_interface_labels();
 
-      this.projectService.update(this.controller, this.project).subscribe((updatedProject: Project) => {
-        this.projectService
-          .postReadmeFile(this.controller, this.project.project_id, this.editor().markdown())
-          .subscribe((response) => {
-            this.toasterService.success(`Project ${updatedProject.name} updated.`);
-            this.dialogRef.close(updatedProject);
-          });
+      this.projectService.update(this.controller, this.project).subscribe({
+        next: (updatedProject: Project) => {
+          this.projectService
+            .postReadmeFile(this.controller, this.project.project_id, this.editor().markdown())
+            .subscribe({
+              next: () => {
+                this.toasterService.success(`Project ${updatedProject.name} updated.`);
+                this.dialogRef.close(updatedProject);
+              },
+              error: (err) => {
+                const message = err.error?.message || err.message || 'Failed to update project readme';
+                this.toasterService.error(message);
+                this.cd.markForCheck();
+              },
+            });
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to update project';
+          this.toasterService.error(message);
+          this.cd.markForCheck();
+        },
       });
     } else {
       this.toasterService.error(`Fill all required fields with correct values.`);

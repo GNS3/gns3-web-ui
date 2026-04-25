@@ -11,6 +11,7 @@ import { Controller } from '@models/controller';
 import { DrawingService } from '@services/drawing.service';
 import { NodeService } from '@services/node.service';
 import { ProjectService } from '@services/project.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   selector: 'app-lock-action',
@@ -26,6 +27,7 @@ export class LockActionComponent implements OnChanges {
   private projectService = inject(ProjectService);
   private cdr = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
+  private toasterService = inject(ToasterService);
 
   readonly controller = input<Controller>(undefined);
   readonly nodes = input<Node[]>(undefined);
@@ -63,10 +65,17 @@ export class LockActionComponent implements OnChanges {
         },
       });
 
-      dialogRef.afterClosed().subscribe((confirmed) => {
-        if (confirmed) {
-          this.performLockUnlock();
-        }
+      dialogRef.afterClosed().subscribe({
+        next: (confirmed) => {
+          if (confirmed) {
+            this.performLockUnlock();
+          }
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to process lock confirmation';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
       });
     } else {
       this.performLockUnlock();
@@ -76,17 +85,31 @@ export class LockActionComponent implements OnChanges {
   async performLockUnlock() {
     await this.nodes().forEach((node) => {
       node.locked = !node.locked;
-      this.nodeService.updateNode(this.controller(), node).subscribe((node) => {
-        this.nodesDataSource.update(node);
-        this.cdr.markForCheck();
+      this.nodeService.updateNode(this.controller(), node).subscribe({
+        next: (node) => {
+          this.nodesDataSource.update(node);
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to update node lock status';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
       });
     });
 
     await this.drawings().forEach((drawing) => {
       drawing.locked = !drawing.locked;
-      this.drawingService.update(this.controller(), drawing).subscribe((drawing) => {
-        this.drawingsDataSource.update(drawing);
-        this.cdr.markForCheck();
+      this.drawingService.update(this.controller(), drawing).subscribe({
+        next: (drawing) => {
+          this.drawingsDataSource.update(drawing);
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to update drawing lock status';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
       });
     });
     this.projectService.projectUpdateLockIcon();

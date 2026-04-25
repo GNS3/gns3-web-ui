@@ -7,7 +7,7 @@ import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
 import { QemuSettings } from '@models/settings/qemu-settings';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('QemuPreferencesComponent', () => {
   let component: QemuPreferencesComponent;
@@ -52,6 +52,7 @@ describe('QemuPreferencesComponent', () => {
 
     mockToasterService = {
       success: vi.fn(),
+      error: vi.fn(),
     };
 
     mockActivatedRoute = {
@@ -178,6 +179,61 @@ describe('QemuPreferencesComponent', () => {
       const callArgs = mockControllerSettingsService.updateSettingsForQemu.mock.calls[0];
       const defaultSettings = callArgs[1] as QemuSettings;
       expect(defaultSettings.require_hardware_acceleration).toBe(true);
+    });
+  });
+
+  describe('error handling', () => {
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(QemuPreferencesComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(QemuPreferencesComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when getSettingsForQemu fails', async () => {
+      mockControllerSettingsService.getSettingsForQemu.mockReturnValue(throwError(() => ({ error: { message: 'Settings error' } })));
+
+      fixture = TestBed.createComponent(QemuPreferencesComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Settings error');
+    });
+
+    it('should show error toaster when updateSettingsForQemu in apply fails', async () => {
+      mockControllerSettingsService.updateSettingsForQemu.mockReturnValue(throwError(() => ({ error: { message: 'Apply error' } })));
+
+      component.apply();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Apply error');
+    });
+
+    it('should show error toaster when updateSettingsForQemu in restoreDefaults fails', async () => {
+      mockControllerSettingsService.updateSettingsForQemu.mockReturnValue(throwError(() => ({ error: { message: 'Restore error' } })));
+
+      component.restoreDefaults();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Restore error');
     });
   });
 });

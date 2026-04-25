@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { Project } from '@models/project';
 import { Controller } from '@models/controller';
 import { ProjectService } from '@services/project.service';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   standalone: true,
@@ -20,6 +21,7 @@ import { ProjectService } from '@services/project.service';
 export class ChooseNameDialogComponent implements OnInit {
   public dialogRef = inject(MatDialogRef<ChooseNameDialogComponent>);
   private projectService = inject(ProjectService);
+  private toasterService = inject(ToasterService);
   private cd = inject(ChangeDetectorRef);
 
   @Input() controller: Controller;
@@ -36,8 +38,15 @@ export class ChooseNameDialogComponent implements OnInit {
   }
 
   onSaveClick() {
-    this.projectService.duplicate(this.controller, this.project.project_id, this.name()).subscribe(() => {
-      this.dialogRef.close();
+    this.projectService.duplicate(this.controller, this.project.project_id, this.name()).subscribe({
+      next: () => {
+        this.dialogRef.close();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to duplicate project';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 }

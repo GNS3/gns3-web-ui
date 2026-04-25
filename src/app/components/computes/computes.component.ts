@@ -85,37 +85,45 @@ export class ComputesComponent implements OnInit, OnDestroy {
 
   loadControllerAndComputes() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
-
-      // Try to load from cache first
-      if (this.notificationService.hasCachedData()) {
-        const cachedComputes = this.notificationService.getCachedComputes();
-        this._computes.set(cachedComputes);
-        this.loading.set(false);
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
         this.cd.markForCheck();
-      } else {
-        // If no cache, load from HTTP
-        this.loadComputes();
-      }
 
-      // Subscribe to compute notifications
-      this.subscription.add(
-        this.notificationService.computeNotificationEmitter.subscribe((notification) => {
-          this.handleComputeNotification(notification);
-        })
-      );
-
-      // Subscribe to cache updates
-      this.subscription.add(
-        this.notificationService.computeCacheUpdated.subscribe((computes) => {
-          this._computes.set(computes);
+        // Try to load from cache first
+        if (this.notificationService.hasCachedData()) {
+          const cachedComputes = this.notificationService.getCachedComputes();
+          this._computes.set(cachedComputes);
           this.loading.set(false);
           this.cd.markForCheck();
-        })
-      );
-    });
+        } else {
+          // If no cache, load from HTTP
+          this.loadComputes();
+        }
+
+        // Subscribe to compute notifications
+        this.subscription.add(
+          this.notificationService.computeNotificationEmitter.subscribe((notification) => {
+            this.handleComputeNotification(notification);
+          })
+        );
+
+        // Subscribe to cache updates
+        this.subscription.add(
+          this.notificationService.computeCacheUpdated.subscribe((computes) => {
+            this._computes.set(computes);
+            this.loading.set(false);
+            this.cd.markForCheck();
+          })
+        );
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.loading.set(false);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   handleComputeNotification(notification: { action: string; event: Compute }) {
@@ -147,9 +155,10 @@ export class ComputesComponent implements OnInit, OnDestroy {
         this.loading.set(false);
         this.cd.markForCheck();
       },
-      error: (error) => {
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load computes';
         this.loading.set(false);
-        this.toasterService.error('Failed to load computes: ' + error);
+        this.toasterService.error(message);
         this.cd.markForCheck();
       },
     });
@@ -170,8 +179,9 @@ export class ComputesComponent implements OnInit, OnDestroy {
             this.toasterService.success('Compute added successfully');
             this.loadComputes();
           },
-          error: (error) => {
-            this.toasterService.error('Failed to add compute: ' + error);
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to add compute';
+            this.toasterService.error(message);
             this.cd.markForCheck();
           },
         });
@@ -197,16 +207,18 @@ export class ComputesComponent implements OnInit, OnDestroy {
                 this.toasterService.success('Compute updated successfully');
                 this.loadComputes();
               },
-              error: (error) => {
-                this.toasterService.error('Failed to update compute: ' + error);
+              error: (err) => {
+                const message = err.error?.message || err.message || 'Failed to update compute';
+                this.toasterService.error(message);
                 this.cd.markForCheck();
               },
             });
           }
         });
       },
-      error: (error) => {
-        this.toasterService.error('Failed to load compute details: ' + error);
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load compute details';
+        this.toasterService.error(message);
         this.cd.markForCheck();
       },
     });
@@ -229,8 +241,9 @@ export class ComputesComponent implements OnInit, OnDestroy {
             this.toasterService.success('Compute deleted successfully');
             this.loadComputes();
           },
-          error: (error) => {
-            this.toasterService.error('Failed to delete compute: ' + error);
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to delete compute';
+            this.toasterService.error(message);
             this.cd.markForCheck();
           },
         });
@@ -257,8 +270,9 @@ export class ComputesComponent implements OnInit, OnDestroy {
           },
         });
       },
-      error: (error) => {
-        this.toasterService.error('Failed to connect compute: ' + error);
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to connect compute';
+        this.toasterService.error(message);
         this.cd.markForCheck();
       },
     });

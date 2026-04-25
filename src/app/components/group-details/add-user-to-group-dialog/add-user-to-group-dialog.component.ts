@@ -99,22 +99,29 @@ export class AddUserToGroupDialogComponent implements OnInit {
     forkJoin([
       this.userService.list(this.data.controller),
       this.groupService.getGroupMember(this.data.controller, this.data.group.user_group_id),
-    ]).subscribe((results) => {
-      const [userList, members] = results;
-      const users = userList.filter((user: User) => {
-        return !members.find((u: User) => u.user_id === user.user_id);
-      });
+    ]).subscribe({
+      next: (results) => {
+        const [userList, members] = results;
+        const users = userList.filter((user: User) => {
+          return !members.find((u: User) => u.user_id === user.user_id);
+        });
 
-      this.users.next(users);
-      this.displayedUsers.next(users);
-      this.cd.markForCheck();
+        this.users.next(users);
+        this.displayedUsers.next(users);
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load users';
+        this.toastService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
   addUser(user: User) {
     this.loading = true;
-    this.groupService.addMemberToGroup(this.data.controller, this.data.group, user).subscribe(
-      () => {
+    this.groupService.addMemberToGroup(this.data.controller, this.data.group, user).subscribe({
+      next: () => {
         this.toastService.success(`user ${user.username} was added`);
         // Remove from displayed users and deselect
         this.removeUserFromList(user);
@@ -126,13 +133,13 @@ export class AddUserToGroupDialogComponent implements OnInit {
         this.loading = false;
         this.cd.markForCheck();
       },
-      (err) => {
-        console.log(err);
-        this.toastService.error(`error while adding user ${user.username} to group ${this.data.group.name}`);
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to add user to group';
+        this.toastService.error(message);
         this.loading = false;
         this.cd.markForCheck();
-      }
-    );
+      },
+    });
   }
 
   toggleUserSelection(userId: string): void {
@@ -185,8 +192,8 @@ export class AddUserToGroupDialogComponent implements OnInit {
         this.dialogRef.close(true);
       },
       error: (err) => {
-        console.log(err);
-        this.toastService.error('Error adding users to group');
+        const message = err.error?.message || err.message || 'Failed to add users to group';
+        this.toastService.error(message);
         this.loading = false;
         this.cd.markForCheck();
       },

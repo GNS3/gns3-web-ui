@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, inject, input, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -24,6 +24,7 @@ export class DuplicateActionComponent {
   private drawingService = inject(DrawingService);
   private drawingsDataSource = inject(DrawingsDataSource);
   private toasterService = inject(ToasterService);
+  private cdr = inject(ChangeDetectorRef);
 
   readonly controller = input<Controller>(undefined);
   readonly project = input<Project>(undefined);
@@ -32,23 +33,32 @@ export class DuplicateActionComponent {
 
   duplicate() {
     for (let node of this.nodes()) {
-      this.nodeService.duplicate(this.controller(), node).subscribe(
-        (node: Node) => {
+      this.nodeService.duplicate(this.controller(), node).subscribe({
+        next: (node: Node) => {
           this.nodesDataSource.add(node);
         },
-        (error) => {
-          if (error.status === 409) {
+        error: (err) => {
+          if (err.status === 409) {
             this.toasterService.error(`Shutdown ${node.name} before duplicating`);
           } else {
-            this.toasterService.error(`Cannot duplicate node ${node.name}: ${error.message || error}`);
+            const message = err.error?.message || err.message || 'Failed to duplicate node';
+            this.toasterService.error(message);
           }
-        }
-      );
+          this.cdr.markForCheck();
+        },
+      });
     }
 
     for (let drawing of this.drawings()) {
-      this.drawingService.duplicate(this.controller(), drawing.project_id, drawing).subscribe((drawing: Drawing) => {
-        this.drawingsDataSource.add(drawing);
+      this.drawingService.duplicate(this.controller(), drawing.project_id, drawing).subscribe({
+        next: (drawing: Drawing) => {
+          this.drawingsDataSource.add(drawing);
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to duplicate drawing';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
       });
     }
   }

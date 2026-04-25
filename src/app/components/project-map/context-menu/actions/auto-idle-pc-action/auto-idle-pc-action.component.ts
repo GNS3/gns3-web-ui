@@ -25,19 +25,20 @@ export class AutoIdlePcActionComponent {
 
   autoIdlePC() {
     this.progressService.activate();
-    this.nodeService.getAutoIdlePC(this.controller(), this.node()).subscribe(
-      (result: any) => {
+    this.nodeService.getAutoIdlePC(this.controller(), this.node()).subscribe({
+      next: (result: any) => {
         this.progressService.deactivate();
         if (result.idlepc !== null) {
           this.toasterService.success(`Node ${this.node().name} updated with idle-PC value ${result.idlepc}`);
         }
         this.cdr.markForCheck();
       },
-      (error) => {
+      error: (err) => {
         this.progressService.deactivate();
-        this.toasterService.error(`Error while updating idle-PC value for node ${this.node().name}`);
+        const message = err.error?.message || err.message || 'Failed to update idle-PC value';
+        this.toasterService.error(message);
         this.cdr.markForCheck();
-      }
-    );
+      },
+    });
   }
 }

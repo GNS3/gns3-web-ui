@@ -12,6 +12,7 @@
  */
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   OnInit,
   QueryList,
@@ -46,7 +47,6 @@ import { AddRoleDialogComponent } from '@components/role-management/add-role-dia
 import { DeleteRoleDialogComponent } from '@components/role-management/delete-role-dialog/delete-role-dialog.component';
 import { RoleFilterPipe } from '@components/role-management/role-filter.pipe';
 import { forkJoin } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-role-management',
@@ -78,6 +78,7 @@ export class RoleManagementComponent implements OnInit, AfterViewInit {
   private controllerService = inject(ControllerService);
   public dialog = inject(MatDialog);
   private toasterService = inject(ToasterService);
+  private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
   dataSource = new MatTableDataSource<Role>();
@@ -93,10 +94,17 @@ export class RoleManagementComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(+controllerId).then((controller: Controller) => {
-      this.controller = controller;
-      this.refresh();
-    });
+    this.controllerService.get(+controllerId).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.refresh();
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   ngAfterViewInit() {
@@ -117,15 +125,18 @@ export class RoleManagementComponent implements OnInit, AfterViewInit {
   }
 
   refresh() {
-    this.roleService.get(this.controller).subscribe(
-      (roles: Role[]) => {
+    this.roleService.get(this.controller).subscribe({
+      next: (roles: Role[]) => {
         this.isReady.set(true);
         this.dataSource.data = roles;
       },
-      (error) => {
-        this.progressService.setError(error);
-      }
-    );
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load roles';
+        this.toasterService.error(message);
+        this.progressService.setError(err);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   addRole() {
@@ -139,15 +150,17 @@ export class RoleManagementComponent implements OnInit, AfterViewInit {
       .afterClosed()
       .subscribe((role: { name: string; description: string }) => {
         if (role) {
-          this.roleService.create(this.controller, role).subscribe(
-            () => {
+          this.roleService.create(this.controller, role).subscribe({
+            next: () => {
               this.toasterService.success(`${role.name} role created`);
               this.refresh();
             },
-            (error: HttpErrorResponse) =>
-              this.toasterService.error(`${error.message}
-              ${error.error?.message || ''}`)
-          );
+            error: (err) => {
+              const message = err.error?.message || err.message || 'Failed to create role';
+              this.toasterService.error(message);
+              this.cd.markForCheck();
+            },
+          });
         }
       });
   }
@@ -172,15 +185,16 @@ export class RoleManagementComponent implements OnInit, AfterViewInit {
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
           const observables = rolesToDelete.map((role: Role) => this.roleService.delete(this.controller, role.role_id));
-          forkJoin(observables).subscribe(
-            () => {
+          forkJoin(observables).subscribe({
+            next: () => {
               this.refresh();
             },
-            (error) => {
-              const errorMessage = error?.error?.message || 'An error occurred while trying to delete role';
-              this.toasterService.error(errorMessage);
-            }
-          );
+            error: (err) => {
+              const message = err.error?.message || err.message || 'Failed to delete roles';
+              this.toasterService.error(message);
+              this.cd.markForCheck();
+            },
+          });
         }
       });
   }

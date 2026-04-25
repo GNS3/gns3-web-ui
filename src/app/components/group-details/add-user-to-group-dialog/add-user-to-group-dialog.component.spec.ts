@@ -13,6 +13,7 @@ import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
 import { Group } from '@models/groups/group';
 import { User } from '@models/users/user';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { forkJoin, of, throwError } from 'rxjs';
 
@@ -26,6 +27,7 @@ describe('AddUserToGroupDialogComponent', () => {
     error: ReturnType<typeof vi.fn>;
     warning: ReturnType<typeof vi.fn>;
   };
+  let mockChangeDetectorRef: { markForCheck: ReturnType<typeof vi.fn> };
 
   const mockController: Controller = {
     id: 1,
@@ -108,6 +110,7 @@ describe('AddUserToGroupDialogComponent', () => {
       getGroupMember: vi.fn().mockReturnValue(of(mockMembers)),
       addMemberToGroup: vi.fn().mockReturnValue(of({})),
     };
+    mockChangeDetectorRef = { markForCheck: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [
@@ -126,6 +129,7 @@ describe('AddUserToGroupDialogComponent', () => {
         { provide: UserService, useValue: mockUserService },
         { provide: GroupService, useValue: mockGroupService },
         { provide: ToasterService, useValue: mockToastService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -276,11 +280,19 @@ describe('AddUserToGroupDialogComponent', () => {
     });
 
     it('should show error toast when adding user fails', () => {
-      mockGroupService.addMemberToGroup.mockReturnValue(throwError(() => ({ message: 'error' })));
+      mockGroupService.addMemberToGroup.mockReturnValue(throwError(() => ({ error: { message: 'Failed to add' } })));
       fixture.componentInstance.addUser(mockUsers[1]);
       fixture.detectChanges();
 
-      expect(mockToastService.error).toHaveBeenCalled();
+      expect(mockToastService.error).toHaveBeenCalledWith('Failed to add');
+    });
+
+    it('should show fallback error when adding user fails with no message', () => {
+      mockGroupService.addMemberToGroup.mockReturnValue(throwError(() => new Error('Network error')));
+      fixture.componentInstance.addUser(mockUsers[1]);
+      fixture.detectChanges();
+
+      expect(mockToastService.error).toHaveBeenCalledWith('Network error');
     });
   });
 
@@ -298,6 +310,58 @@ describe('AddUserToGroupDialogComponent', () => {
       fixture.detectChanges();
 
       expect(mockDialogRef.close).toHaveBeenCalled();
+    });
+  });
+
+  describe('getUsers error handling', () => {
+    it('should display error when forkJoin fails', () => {
+      mockUserService.list.mockReturnValue(throwError(() => ({ error: { message: 'Failed to load users' } })));
+      const cdrSpy = vi.spyOn(fixture.componentInstance['cd'], 'markForCheck');
+
+      fixture.componentInstance.getUsers();
+      fixture.detectChanges();
+
+      expect(mockToastService.error).toHaveBeenCalledWith('Failed to load users');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should display fallback error when forkJoin fails with no message', () => {
+      mockUserService.list.mockReturnValue(throwError(() => new Error('Network error')));
+      const cdrSpy = vi.spyOn(fixture.componentInstance['cd'], 'markForCheck');
+
+      fixture.componentInstance.getUsers();
+      fixture.detectChanges();
+
+      expect(mockToastService.error).toHaveBeenCalledWith('Network error');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('addSelectedUsers error handling', () => {
+    it('should display error when forkJoin fails', () => {
+      mockGroupService.addMemberToGroup.mockReturnValue(throwError(() => ({ error: { message: 'Failed to add users' } })));
+      const cdrSpy = vi.spyOn(fixture.componentInstance['cd'], 'markForCheck');
+
+      fixture.componentInstance.toggleSelectAll();
+      fixture.detectChanges();
+      fixture.componentInstance.addSelectedUsers();
+      fixture.detectChanges();
+
+      expect(mockToastService.error).toHaveBeenCalledWith('Failed to add users');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should display fallback error when forkJoin fails with no message', () => {
+      mockGroupService.addMemberToGroup.mockReturnValue(throwError(() => ({})));
+      const cdrSpy = vi.spyOn(fixture.componentInstance['cd'], 'markForCheck');
+
+      fixture.componentInstance.toggleSelectAll();
+      fixture.detectChanges();
+      fixture.componentInstance.addSelectedUsers();
+      fixture.detectChanges();
+
+      expect(mockToastService.error).toHaveBeenCalledWith('Failed to add users to group');
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });

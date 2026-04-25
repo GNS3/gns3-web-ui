@@ -23,6 +23,7 @@ import { Role } from '@models/api/role';
 import { userEmailAsyncValidator } from '@components/user-management/add-user-dialog/userEmailAsyncValidator';
 import { userNameAsyncValidator } from '@components/user-management/add-user-dialog/userNameAsyncValidator';
 import { ChangeUserPasswordComponent } from '@components/user-management/user-detail/change-user-password/change-user-password.component';
+import { forkJoin } from 'rxjs';
 
 export interface UserDetailDialogData {
   user: User;
@@ -110,8 +111,9 @@ export class UserDetailDialogComponent implements OnInit {
         this.groupsLoaded = true;
         this.cd.markForCheck();
       },
-      error: (error) => {
-        console.error('Failed to load groups:', error);
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load groups';
+        this.toasterService.error(message);
         this.groupsLoaded = true;
         this.cd.markForCheck();
       },
@@ -120,27 +122,28 @@ export class UserDetailDialogComponent implements OnInit {
 
   loadAceData() {
     // Load ACEs using AclService.list() and filter by user
-    this.roleService.get(this.controller).subscribe((roles: Role[]) => {
-      this.aclService.getEndpoints(this.controller).subscribe((endps: Endpoint[]) => {
-        this.aclService.list(this.controller).subscribe({
-          next: (allAces: ACE[]) => {
-            // Filter ACEs for this user
-            this.aces = allAces.filter((ace: ACE) => ace.ace_type === 'user' && ace.user_id === this.user.user_id);
-            this.aceDatasource.data = this.aces.map((ace: ACE) => {
-              const endpoint = endps.filter((endp: Endpoint) => endp.endpoint === ace.path)[0];
-              const role = roles.filter((r: Role) => r.role_id === ace.role_id)[0];
-              return { ...ace, endpoint_name: endpoint?.name || ace.path, role_name: role?.name || 'Unknown' };
-            });
-            this.acesLoaded = true;
-            this.cd.markForCheck();
-          },
-          error: (error) => {
-            console.error('Failed to load ACEs:', error);
-            this.acesLoaded = true;
-            this.cd.markForCheck();
-          },
+    forkJoin({
+      roles: this.roleService.get(this.controller),
+      endpoints: this.aclService.getEndpoints(this.controller),
+      aces: this.aclService.list(this.controller),
+    }).subscribe({
+      next: ({ roles, endpoints: endps, aces: allAces }) => {
+        // Filter ACEs for this user
+        this.aces = allAces.filter((ace: ACE) => ace.ace_type === 'user' && ace.user_id === this.user.user_id);
+        this.aceDatasource.data = this.aces.map((ace: ACE) => {
+          const endpoint = endps.filter((endp: Endpoint) => endp.endpoint === ace.path)[0];
+          const role = roles.filter((r: Role) => r.role_id === ace.role_id)[0];
+          return { ...ace, endpoint_name: endpoint?.name || ace.path, role_name: role?.name || 'Unknown' };
         });
-      });
+        this.acesLoaded = true;
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load access control entries';
+        this.toasterService.error(message);
+        this.acesLoaded = true;
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -152,15 +155,17 @@ export class UserDetailDialogComponent implements OnInit {
     const updatedUser = this.getUpdatedValues();
     updatedUser['user_id'] = this.user.user_id;
 
-    this.userService.update(this.controller, updatedUser, false).subscribe(
-      (user: User) => {
+    this.userService.update(this.controller, updatedUser, false).subscribe({
+      next: (user: User) => {
         this.toasterService.success(`User ${user.username} updated`);
         this.dialogRef.close(user);
       },
-      (error) => {
-        this.toasterService.error('Cannot update user : ' + error);
-      }
-    );
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to update user';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   getUpdatedValues() {

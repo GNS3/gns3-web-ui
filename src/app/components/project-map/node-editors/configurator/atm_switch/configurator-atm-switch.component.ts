@@ -26,7 +26,26 @@ import { ToasterService } from '@services/toaster.service';
   standalone: true,
   selector: 'app-configurator-atm-switch',
   templateUrl: './configurator-atm-switch.component.html',
-  // Styles centralized in src/styles/_dialogs.scss via panelClass: 'configurator-dialog-panel'
+  // Styles centralized in src/styles/_dialogs.scss via panelClass: 'atm-switch-config-panel'
+  styles: [
+    `
+      .atm-switch__input-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0 16px;
+      }
+
+      .atm-switch__add-btn {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 16px;
+
+        button {
+          width: 80%;
+        }
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -63,13 +82,6 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
   dataSource = [];
   displayedColumns = ['portIn', 'portOut', 'actions'];
 
-  sourcePort: string = '';
-  sourceVpi: string = '';
-  sourceVci: string = '';
-  destinationPort: string = '';
-  destinationVpi: string = '';
-  destinationVci: string = '';
-
   useVpiOnly: boolean = false;
 
   constructor() {
@@ -92,36 +104,45 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.nodeService.getNode(this.controller, this.node).subscribe((node: Node) => {
-      this.node = node;
-      this.name = node.name;
+    this.nodeService.getNode(this.controller, this.node).subscribe({
+      next: (node: Node) => {
+        this.node = node;
+        this.name = node.name;
 
-      // Update form values with node data
-      this.nameForm.patchValue({
-        name: node.name,
-        useVpiOnly: false,
-      });
+        // Update form values with node data
+        this.nameForm.patchValue({
+          name: node.name,
+          useVpiOnly: false,
+        });
 
-      let mappings = node.properties.mappings;
-      Object.keys(mappings).forEach((key) => {
-        this.nodeMappings.set(key, mappings[key]);
-      });
+        let mappings = node.properties.mappings;
+        Object.keys(mappings).forEach((key) => {
+          this.nodeMappings.set(key, mappings[key]);
+        });
 
-      this.nodeMappings.forEach((value: string, key: string) => {
-        this.nodeMappingsDataSource.push({
+        this.nodeMappingsDataSource = Array.from(this.nodeMappings.entries()).map(([key, value]) => ({
           portIn: key,
           portOut: value,
-        });
-      });
-      this.cd.markForCheck();
+        }));
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load node';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
   delete(elem: NodeMapping) {
     this.nodeMappingsDataSource = this.nodeMappingsDataSource.filter((n) => n !== elem);
+    this.cd.markForCheck();
   }
 
   add() {
+    const inputValues = this.inputForm.value;
+    const abstractValues = this.abstractForm.value;
+
     if (this.inputForm.valid) {
       let nodeMapping: NodeMapping;
       const useVpiOnly = this.nameForm.value.useVpiOnly;
@@ -129,8 +150,8 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
       if (!useVpiOnly) {
         if (this.abstractForm.valid) {
           nodeMapping = {
-            portIn: `${this.sourcePort}:${this.sourceVpi}:${this.sourceVci}`,
-            portOut: `${this.destinationPort}:${this.destinationVpi}:${this.destinationVci}`,
+            portIn: `${inputValues.sourcePort}:${abstractValues.sourceVpi}:${inputValues.sourceVci}`,
+            portOut: `${inputValues.destinationPort}:${abstractValues.destinationVpi}:${inputValues.destinationVci}`,
           };
 
           if (this.nodeMappingsDataSource.filter((n) => n.portIn === nodeMapping.portIn).length > 0) {
@@ -138,14 +159,15 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
           } else {
             this.nodeMappingsDataSource = this.nodeMappingsDataSource.concat([nodeMapping]);
             this.clearUserInput();
+            this.cd.markForCheck();
           }
         } else {
           this.toasterService.error('Fill all required fields.');
         }
       } else {
         nodeMapping = {
-          portIn: `${this.sourcePort}:${this.sourceVci}`,
-          portOut: `${this.destinationPort}:${this.destinationVci}`,
+          portIn: `${inputValues.sourcePort}:${inputValues.sourceVci}`,
+          portOut: `${inputValues.destinationPort}:${inputValues.destinationVci}`,
         };
 
         if (this.nodeMappingsDataSource.filter((n) => n.portIn === nodeMapping.portIn).length > 0) {
@@ -153,6 +175,7 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
         } else {
           this.nodeMappingsDataSource = this.nodeMappingsDataSource.concat([nodeMapping]);
           this.clearUserInput();
+          this.cd.markForCheck();
         }
       }
     } else {
@@ -161,12 +184,8 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
   }
 
   clearUserInput() {
-    this.sourcePort = '0';
-    this.sourceVpi = '0';
-    this.sourceVci = '0';
-    this.destinationPort = '0';
-    this.destinationVpi = '0';
-    this.sourceVci = '0';
+    this.inputForm.reset();
+    this.abstractForm.reset();
   }
 
   strMapToObj(strMap) {
@@ -203,6 +222,7 @@ export class ConfiguratorDialogAtmSwitchComponent implements OnInit {
         error: (error: unknown) => {
           const errorMessage = (error as any)?.error?.message || (error as any)?.message || 'Failed to update node';
           this.toasterService.error(errorMessage);
+          this.cd.markForCheck();
         },
       });
     } else {

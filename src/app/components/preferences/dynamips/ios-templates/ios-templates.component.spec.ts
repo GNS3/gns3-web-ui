@@ -12,7 +12,7 @@ import { EmptyTemplatesListComponent } from '../../common/empty-templates-list/e
 import { Controller } from '@models/controller';
 import { IosTemplate } from '@models/templates/ios-template';
 import { ChangeDetectorRef } from '@angular/core';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 describe('IosTemplatesComponent', () => {
   let fixture: ComponentFixture<IosTemplatesComponent>;
@@ -21,6 +21,7 @@ describe('IosTemplatesComponent', () => {
   let mockCdr: any;
   let mockActivatedRoute: any;
   let mockRouter: any;
+  let mockToasterService: any;
 
   const createMockController = (): Controller =>
     ({
@@ -99,6 +100,11 @@ describe('IosTemplatesComponent', () => {
       navigate: vi.fn(),
     };
 
+    mockToasterService = {
+      success: vi.fn(),
+      error: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [
         IosTemplatesComponent,
@@ -113,7 +119,7 @@ describe('IosTemplatesComponent', () => {
         { provide: IosService, useValue: mockIosService },
         { provide: ChangeDetectorRef, useValue: mockCdr },
         { provide: TemplateService, useValue: { deleteTemplate: vi.fn().mockReturnValue(of({})) } },
-        { provide: ToasterService, useValue: { success: vi.fn() } },
+        { provide: ToasterService, useValue: mockToasterService },
         {
           provide: MatDialog,
           useValue: { open: vi.fn().mockReturnValue({ afterClosed: vi.fn().mockReturnValue(of(true)) }) },
@@ -242,6 +248,50 @@ describe('IosTemplatesComponent', () => {
       fixture.componentInstance.onDeleteEvent();
 
       expect(getTemplatesSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('error handling', () => {
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(IosTemplatesComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(IosTemplatesComponent);
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when getTemplates fails', async () => {
+      mockIosService.getTemplates.mockReturnValue(throwError(() => ({ error: { message: 'Templates error' } })));
+      fixture.componentInstance.controller = createMockController();
+
+      fixture.componentInstance.getTemplates();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Templates error');
+    });
+
+    it('should use fallback message when getTemplates error has no message', async () => {
+      mockIosService.getTemplates.mockReturnValue(throwError(() => ({})));
+      fixture.componentInstance.controller = createMockController();
+
+      fixture.componentInstance.getTemplates();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load templates');
     });
   });
 });

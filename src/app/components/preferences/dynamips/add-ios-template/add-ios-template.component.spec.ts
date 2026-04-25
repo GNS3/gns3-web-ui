@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { of, firstValueFrom } from 'rxjs';
+import { of, firstValueFrom, throwError } from 'rxjs';
 import { AddIosTemplateComponent } from './add-ios-template.component';
 import { ComputeService } from '@services/compute.service';
 import { ControllerService } from '@services/controller.service';
@@ -915,6 +915,46 @@ describe('AddIosTemplateComponent', () => {
       component.ngOnDestroy();
 
       expect(unsubscribeSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('error handling', () => {
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(AddIosTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(AddIosTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when getImages fails', () => {
+      mockIosService.getImages.mockReturnValue(throwError(() => ({ error: { message: 'Images error' } })));
+
+      component.getImages();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Images error');
+    });
+
+    it('should use fallback message when getImages error has no message', () => {
+      mockIosService.getImages.mockReturnValue(throwError(() => ({})));
+
+      component.getImages();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load images');
     });
   });
 });

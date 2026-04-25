@@ -187,10 +187,16 @@ export class StartCaptureDialogComponent implements OnInit {
         );
       }
 
-      this.linkService.startCaptureOnLink(this.controller, this.link, captureSettings).subscribe((updatedLink: Link) => {
-        // Update the link in the data source with the response from server
-        this.linksDataSource.update(updatedLink);
-        this.dialogRef.close();
+      this.linkService.startCaptureOnLink(this.controller, this.link, captureSettings).subscribe({
+        next: (updatedLink: Link) => {
+          // Update the link in the data source with the response from server
+          this.linksDataSource.update(updatedLink);
+          this.dialogRef.close();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to start capture';
+          this.errorMessage.set(message);
+        },
       });
     }
   }

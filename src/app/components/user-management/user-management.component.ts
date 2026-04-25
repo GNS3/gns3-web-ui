@@ -102,10 +102,19 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(+controllerId).then((controller: Controller) => {
-      this.controller = controller;
-      this.refresh();
-    });
+    this.controllerService
+      .get(+controllerId)
+      .then(
+        (controller: Controller) => {
+          this.controller = controller;
+          this.refresh();
+        },
+        (err) => {
+          const message = err.error?.message || err.message || 'Failed to load controller';
+          this.toasterService.error(message);
+          this.location.back();
+        }
+      );
   }
 
   ngAfterViewInit() {
@@ -129,18 +138,19 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   }
 
   refresh() {
-    this.userService.list(this.controller).subscribe(
-      (users: User[]) => {
+    this.userService.list(this.controller).subscribe({
+      next: (users: User[]) => {
         this.isReady = true;
         this.dataSource.data = users;
         this.cd.markForCheck();
       },
-      (error) => {
-        this.progressService.setError(error);
-        this.toasterService.error(`Cannot open the user management page`);
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load users';
+        this.progressService.setError(err);
+        this.toasterService.error(message);
         this.location.back();
-      }
-    );
+      },
+    });
   }
 
   addUser() {
@@ -163,16 +173,16 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
-          this.userService.delete(this.controller, user.user_id).subscribe(
-            () => {
+          this.userService.delete(this.controller, user.user_id).subscribe({
+            next: () => {
               this.refresh();
             },
-            (error) => {
-              const errorMessage =
-                error?.error?.message || `An error occurred while trying to delete user ${user.username}`;
-              this.toasterService.error(errorMessage);
-            }
-          );
+            error: (err) => {
+              const message = err.error?.message || err.message || `Failed to delete user ${user.username}`;
+              this.toasterService.error(message);
+              this.cd.markForCheck();
+            },
+          });
         }
       });
   }
@@ -197,16 +207,16 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
           this.selection.selected.forEach((user: User) => {
-            this.userService.delete(this.controller, user.user_id).subscribe(
-              () => {
+            this.userService.delete(this.controller, user.user_id).subscribe({
+              next: () => {
                 this.refresh();
               },
-              (error) => {
-                const errorMessage =
-                  error?.error?.message || `An error occurred while trying to delete user ${user.username}`;
-                this.toasterService.error(errorMessage);
-              }
-            );
+              error: (err) => {
+                const message = err.error?.message || err.message || `Failed to delete user ${user.username}`;
+                this.toasterService.error(message);
+                this.cd.markForCheck();
+              },
+            });
           });
           this.selection.clear();
         }
@@ -233,8 +243,10 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
             this.refresh();
           });
       },
-      error: (error) => {
-        this.toasterService.error(`Cannot load user data: ${error}`);
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load user data';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
       },
     });
   }

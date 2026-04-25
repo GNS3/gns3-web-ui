@@ -10,6 +10,7 @@ import { Controller } from '@models/controller';
 import { VmwareTemplate } from '@models/templates/vmware-template';
 import { ControllerService } from '@services/controller.service';
 import { VmwareService } from '@services/vmware.service';
+import { ToasterService } from '@services/toaster.service';
 import { DeleteTemplateComponent } from '../../common/delete-template-component/delete-template.component';
 import { EmptyTemplatesListComponent } from '../../common/empty-templates-list/empty-templates-list.component';
 
@@ -35,6 +36,7 @@ export class VmwareTemplatesComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private vmwareService = inject(VmwareService);
+  private toasterService = inject(ToasterService);
   private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
@@ -43,17 +45,31 @@ export class VmwareTemplatesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
-      this.getTemplates();
-    });
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.cd.markForCheck();
+        this.getTemplates();
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   getTemplates() {
-    this.vmwareService.getTemplates(this.controller).subscribe((vmwareTemplates: VmwareTemplate[]) => {
-      this.vmwareTemplates = vmwareTemplates.filter((elem) => elem.template_type === 'vmware' && !elem.builtin);
-      this.cd.markForCheck();
+    this.vmwareService.getTemplates(this.controller).subscribe({
+      next: (vmwareTemplates: VmwareTemplate[]) => {
+        this.vmwareTemplates = vmwareTemplates.filter((elem) => elem.template_type === 'vmware' && !elem.builtin);
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load VMware templates';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 

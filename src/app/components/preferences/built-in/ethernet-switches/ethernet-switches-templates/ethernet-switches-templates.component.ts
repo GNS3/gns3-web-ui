@@ -12,6 +12,7 @@ import { BuiltInTemplatesService } from '@services/built-in-templates.service';
 import { ControllerService } from '@services/controller.service';
 import { DeleteTemplateComponent } from '../../../common/delete-template-component/delete-template.component';
 import { EmptyTemplatesListComponent } from '../../../common/empty-templates-list/empty-templates-list.component';
+import { ToasterService } from '@services/toaster.service';
 
 @Component({
   standalone: true,
@@ -35,6 +36,7 @@ export class EthernetSwitchesTemplatesComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private controllerService = inject(ControllerService);
   private builtInTemplatesService = inject(BuiltInTemplatesService);
+  private toasterService = inject(ToasterService);
   private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
@@ -43,22 +45,34 @@ export class EthernetSwitchesTemplatesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
-      this.getTemplates();
-    });
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.cd.markForCheck();
+        this.getTemplates();
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   getTemplates() {
-    this.builtInTemplatesService
-      .getTemplates(this.controller)
-      .subscribe((ethernetSwitchesTemplates: EthernetSwitchTemplate[]) => {
+    this.builtInTemplatesService.getTemplates(this.controller).subscribe({
+      next: (ethernetSwitchesTemplates: EthernetSwitchTemplate[]) => {
         this.ethernetSwitchesTemplates = ethernetSwitchesTemplates.filter(
           (elem) => elem.template_type === 'ethernet_switch' && !elem.builtin
         );
         this.cd.markForCheck();
-      });
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load templates';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   deleteTemplate(template: EthernetSwitchTemplate) {

@@ -243,17 +243,9 @@ describe('ConfiguratorDialogSwitchComponent', () => {
         { portIn: '0:1', portOut: '0:2' },
         { portIn: '0:3', portOut: '0:4' },
       ];
-      component.sourcePort = '0';
-      component.sourceDlci = '1';
-      component.destinationPort = '0';
-      component.destinationDlci = '1';
     });
 
     it('should add new mapping when form is valid', () => {
-      component.sourcePort = '1';
-      component.sourceDlci = '10';
-      component.destinationPort = '2';
-      component.destinationDlci = '20';
       component.inputForm.patchValue({
         sourcePort: '1',
         sourceDlci: '10',
@@ -267,10 +259,6 @@ describe('ConfiguratorDialogSwitchComponent', () => {
     });
 
     it('should show error when mapping already exists', () => {
-      component.sourcePort = '0';
-      component.sourceDlci = '1';
-      component.destinationPort = '0';
-      component.destinationDlci = '2';
       component.inputForm.patchValue({
         sourcePort: '0',
         sourceDlci: '1',
@@ -292,10 +280,6 @@ describe('ConfiguratorDialogSwitchComponent', () => {
     });
 
     it('should clear user input after successful add', () => {
-      component.sourcePort = '3';
-      component.sourceDlci = '30';
-      component.destinationPort = '4';
-      component.destinationDlci = '40';
       component.inputForm.patchValue({
         sourcePort: '3',
         sourceDlci: '30',
@@ -305,26 +289,28 @@ describe('ConfiguratorDialogSwitchComponent', () => {
 
       component.add();
 
-      expect(component.sourcePort).toBe('0');
-      expect(component.sourceDlci).toBe('1');
-      expect(component.destinationPort).toBe('0');
-      expect(component.destinationDlci).toBe('1');
+      expect(component.inputForm.value.sourcePort).toBe('');
+      expect(component.inputForm.value.sourceDlci).toBe('');
+      expect(component.inputForm.value.destinationPort).toBe('');
+      expect(component.inputForm.value.destinationDlci).toBe('');
     });
   });
 
   describe('clearUserInput', () => {
-    it('should reset all input fields to default values', () => {
-      component.sourcePort = '5';
-      component.sourceDlci = '50';
-      component.destinationPort = '6';
-      component.destinationDlci = '60';
+    it('should reset all input fields to empty values', () => {
+      component.inputForm.patchValue({
+        sourcePort: '5',
+        sourceDlci: '50',
+        destinationPort: '6',
+        destinationDlci: '60',
+      });
 
       component.clearUserInput();
 
-      expect(component.sourcePort).toBe('0');
-      expect(component.sourceDlci).toBe('1');
-      expect(component.destinationPort).toBe('0');
-      expect(component.destinationDlci).toBe('1');
+      expect(component.inputForm.value.sourcePort).toBe('');
+      expect(component.inputForm.value.sourceDlci).toBe('');
+      expect(component.inputForm.value.destinationPort).toBe('');
+      expect(component.inputForm.value.destinationDlci).toBe('');
     });
   });
 

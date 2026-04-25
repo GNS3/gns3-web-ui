@@ -28,18 +28,33 @@ export class EditNetworkConfigurationDialogComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    this.nodeService.getNetworkConfiguration(this.controller, this.node).subscribe((response: string) => {
-      this.configuration.set(response);
-      this.cdr.markForCheck();
+    this.nodeService.getNetworkConfiguration(this.controller, this.node).subscribe({
+      next: (response: string) => {
+        this.configuration.set(response);
+        this.cdr.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load network configuration';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      },
     });
   }
 
   onSaveClick() {
     this.nodeService
       .saveNetworkConfiguration(this.controller, this.node, this.configuration())
-      .subscribe((response: string) => {
-        this.onCancelClick();
-        this.toasterService.success(`Configuration for node ${this.node.name} saved.`);
+      .subscribe({
+        next: (response: string) => {
+          this.onCancelClick();
+          this.toasterService.success(`Configuration for node ${this.node.name} saved.`);
+          this.cdr.markForCheck();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to save network configuration';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
       });
   }
 

@@ -255,13 +255,13 @@ describe('GroupDetailDialogComponent', () => {
     });
 
     it('should handle error when loading members fails', () => {
-      mockGroupService.getGroupMember.mockReturnValue(throwError(() => new Error('Load failed')));
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      mockGroupService.getGroupMember.mockReturnValue(throwError(() => ({ error: { message: 'Load failed' } })));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
 
       component.loadMembers();
 
-      expect(consoleSpy).toHaveBeenCalled();
-      consoleSpy.mockRestore();
+      expect(mockToastService.error).toHaveBeenCalledWith('Load failed');
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 
@@ -351,13 +351,13 @@ describe('GroupDetailDialogComponent', () => {
       // Make aclService.list fail - this is the innermost subscribe with error handling
       mockRoleService.get.mockReturnValue(of([]));
       mockAclService.getEndpoints.mockReturnValue(of([]));
-      mockAclService.list.mockReturnValue(throwError(() => new Error('Load failed')));
-      const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+      mockAclService.list.mockReturnValue(throwError(() => ({ error: { message: 'Load failed' } })));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
 
       component.loadAces();
 
-      expect(consoleSpy).toHaveBeenCalledWith('Failed to load ACEs:', expect.any(Error));
-      consoleSpy.mockRestore();
+      expect(mockToastService.error).toHaveBeenCalledWith('Load failed');
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 
@@ -433,11 +433,13 @@ describe('GroupDetailDialogComponent', () => {
 
     it('should show error toast on failed update', () => {
       component.editGroupForm.get('groupname')?.setValue('UpdatedGroup');
-      mockGroupService.update.mockReturnValue(throwError(() => new Error('Update failed')));
+      mockGroupService.update.mockReturnValue(throwError(() => ({ error: { message: 'Update failed' } })));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
 
       component.onUpdate();
 
-      expect(mockToastService.error).toHaveBeenCalledWith('Cannot update group: Error: Update failed');
+      expect(mockToastService.error).toHaveBeenCalledWith('Update failed');
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 
@@ -521,11 +523,13 @@ describe('GroupDetailDialogComponent', () => {
 
     it('should show error toast when removal fails', () => {
       component.openRemoveUserDialog(mockUser);
-      mockGroupService.removeUser.mockReturnValue(throwError(() => new Error('Remove failed')));
+      mockGroupService.removeUser.mockReturnValue(throwError(() => ({ error: { message: 'Remove failed' } })));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
 
       removeUserClosed$.next(true);
 
-      expect(mockToastService.error).toHaveBeenCalledWith(`Error while removing user: Error: Remove failed`);
+      expect(mockToastService.error).toHaveBeenCalledWith('Remove failed');
+      expect(cdrSpy).toHaveBeenCalled();
     });
 
     it('should not remove user when dialog returns false', () => {

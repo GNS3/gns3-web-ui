@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnChanges, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnChanges, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
@@ -16,6 +16,7 @@ import { ToasterService } from '@services/toaster.service';
 export class StartNodeActionComponent implements OnChanges {
   private nodeService = inject(NodeService);
   private toasterService = inject(ToasterService);
+  private cdr = inject(ChangeDetectorRef);
 
   readonly controller = input<Controller>(undefined);
   readonly nodes = input<Node[]>(undefined);
@@ -34,12 +35,14 @@ export class StartNodeActionComponent implements OnChanges {
 
   startNodes() {
     this.nodes().forEach((node) => {
-      this.nodeService.start(this.controller(), node).subscribe(
-        (n: Node) => {},
-        (error) => {
-          this.toasterService.error(error.error?.message || error.message || 'Failed to start node');
-        }
-      );
+      this.nodeService.start(this.controller(), node).subscribe({
+        next: (n: Node) => {},
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to start node';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
+      });
     });
   }
 }

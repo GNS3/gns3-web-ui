@@ -9,7 +9,8 @@ import { NodeService } from '@services/node.service';
 import { Node, Properties } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
 import { ChangeDetectorRef } from '@angular/core';
-import { of } from 'rxjs';
+import { ToasterService } from '@services/toaster.service';
+import { of, throwError } from 'rxjs';
 
 const createMockProperties = (): Properties => ({
   adapter_type: '',
@@ -123,6 +124,7 @@ describe('AlignHorizontallyActionComponent', () => {
   let component: AlignHorizontallyActionComponent;
   let mockNodesDataSource: any;
   let mockNodeService: any;
+  let mockToasterService: any;
   let mockCdr: any;
 
   beforeEach(async () => {
@@ -134,6 +136,11 @@ describe('AlignHorizontallyActionComponent', () => {
       update: vi.fn().mockReturnValue(of({})),
     };
 
+    mockToasterService = {
+      success: vi.fn(),
+      error: vi.fn(),
+    };
+
     mockCdr = {
       markForCheck: vi.fn(),
     };
@@ -143,6 +150,7 @@ describe('AlignHorizontallyActionComponent', () => {
       providers: [
         { provide: NodesDataSource, useValue: mockNodesDataSource },
         { provide: NodeService, useValue: mockNodeService },
+        { provide: ToasterService, useValue: mockToasterService },
         { provide: ChangeDetectorRef, useValue: mockCdr },
       ],
     }).compileComponents();
@@ -250,6 +258,47 @@ describe('AlignHorizontallyActionComponent', () => {
       expect(() => component.alignHorizontally()).not.toThrow();
       expect(mockNodesDataSource.update).not.toHaveBeenCalled();
       expect(mockNodeService.update).not.toHaveBeenCalled();
+    });
+
+    it('should show error toaster when nodeService.update fails with error.error.message', async () => {
+      mockNodeService.update.mockReturnValue(
+        throwError(() => ({ error: { message: 'Update failed' } }))
+      );
+      const node = createMockNode({ y: 100 });
+      fixture.componentRef.setInput('nodes', [node]);
+      fixture.componentRef.setInput('controller', createMockController());
+
+      component.alignHorizontally();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Update failed');
+    });
+
+    it('should use fallback message when error has no message', async () => {
+      mockNodeService.update.mockReturnValue(throwError(() => ({})));
+      const node = createMockNode({ y: 100 });
+      fixture.componentRef.setInput('nodes', [node]);
+      fixture.componentRef.setInput('controller', createMockController());
+
+      component.alignHorizontally();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to align node');
+    });
+
+    it('should call markForCheck when nodeService.update fails', async () => {
+      mockNodeService.update.mockReturnValue(
+        throwError(() => ({ error: { message: 'Update failed' } }))
+      );
+      const node = createMockNode({ y: 100 });
+      fixture.componentRef.setInput('nodes', [node]);
+      fixture.componentRef.setInput('controller', createMockController());
+
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      component.alignHorizontally();
+      await vi.runAllTimersAsync();
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });

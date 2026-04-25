@@ -128,13 +128,35 @@ describe('AddResourcePoolDialogComponent', () => {
     });
 
     it('should show error toast and close dialog with false on add failure', () => {
-      mockResourcePoolsService.add.mockReturnValue(throwError(() => new Error('API error')));
+      mockResourcePoolsService.add.mockReturnValue(
+        throwError(() => ({ error: { message: 'API error' } }))
+      );
       component.poolNameForm.get('poolName')?.setValue('new-pool');
 
       component.onAddClick();
 
-      expect(mockToasterService.error).toHaveBeenCalledWith('An error occur while trying to create new pool new-pool');
-      expect(mockDialogRef.close).toHaveBeenCalledWith(false);
+      expect(mockToasterService.error).toHaveBeenCalledWith('API error');
+    });
+
+    it('should use fallback message when add error has no message', () => {
+      mockResourcePoolsService.add.mockReturnValue(throwError(() => ({})));
+      component.poolNameForm.get('poolName')?.setValue('new-pool');
+
+      component.onAddClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to create resource pool');
+    });
+
+    it('should call markForCheck when add fails', () => {
+      mockResourcePoolsService.add.mockReturnValue(
+        throwError(() => ({ error: { message: 'API error' } }))
+      );
+      component.poolNameForm.get('poolName')?.setValue('new-pool');
+
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.onAddClick();
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 

@@ -30,15 +30,29 @@ export class QemuPreferencesComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
-
-      this.controllerSettingsService.getSettingsForQemu(this.controller).subscribe((settings: QemuSettings) => {
-        this.settings = settings;
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
         this.cd.markForCheck();
-      });
-    });
+
+        this.controllerSettingsService.getSettingsForQemu(this.controller).subscribe({
+          next: (settings: QemuSettings) => {
+            this.settings = settings;
+            this.cd.markForCheck();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load QEMU settings';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
+        });
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   apply() {
@@ -46,11 +60,16 @@ export class QemuPreferencesComponent implements OnInit {
       this.settings.require_hardware_acceleration = false;
     }
 
-    this.controllerSettingsService
-      .updateSettingsForQemu(this.controller, this.settings)
-      .subscribe((qemuSettings: QemuSettings) => {
+    this.controllerSettingsService.updateSettingsForQemu(this.controller, this.settings).subscribe({
+      next: (qemuSettings: QemuSettings) => {
         this.toasterService.success(`Changes applied`);
-      });
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to apply QEMU settings';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   restoreDefaults() {
@@ -59,11 +78,16 @@ export class QemuPreferencesComponent implements OnInit {
       require_hardware_acceleration: true,
     };
 
-    this.controllerSettingsService
-      .updateSettingsForQemu(this.controller, defaultSettings)
-      .subscribe((qemuSettings: QemuSettings) => {
+    this.controllerSettingsService.updateSettingsForQemu(this.controller, defaultSettings).subscribe({
+      next: (qemuSettings: QemuSettings) => {
         this.settings = qemuSettings;
         this.toasterService.success(`Restored to default settings`);
-      });
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to restore QEMU settings';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 }

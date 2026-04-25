@@ -41,6 +41,12 @@
   box-sizing: border-box;
 }
 
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .file-name-form-field {
   width: 100%;
 }

@@ -34,11 +34,18 @@ export class ConsoleDeviceActionBrowserComponent {
     const currentNode = this.node();
     if (!currentNode) return;
 
-    this.nodeService.getNode(this.controller(), currentNode).subscribe((node: Node) => {
-      this.updatedNode.set(node);
-      // In zoneless mode, mark for check after async data arrives
-      this.cd.markForCheck();
-      this.startConsole(auxiliary);
+    this.nodeService.getNode(this.controller(), currentNode).subscribe({
+      next: (node: Node) => {
+        this.updatedNode.set(node);
+        // In zoneless mode, mark for check after async data arrives
+        this.cd.markForCheck();
+        this.startConsole(auxiliary);
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to get node information';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 

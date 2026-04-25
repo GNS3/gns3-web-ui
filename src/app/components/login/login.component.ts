@@ -1,5 +1,6 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   OnInit,
   computed,
@@ -62,6 +63,7 @@ export class LoginComponent implements OnInit {
   private versionService = inject(VersionService);
   private themeService = inject(ThemeService);
   private connectionManager = inject(ConnectionManagerService);
+  private cd = inject(ChangeDetectorRef);
 
   private controller: Controller;
   readonly returnUrl = signal('');
@@ -97,17 +99,31 @@ export class LoginComponent implements OnInit {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
     this.returnUrl.set(this.route.snapshot.queryParams['returnUrl'] || '/');
 
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
 
-      if (controller.authToken) {
-        this.router.navigate(['/controller', this.controller.id, 'projects']);
+        if (controller.authToken) {
+          this.router.navigate(['/controller', this.controller.id, 'projects']);
+        }
+
+        this.versionService.get(this.controller).subscribe({
+          next: (version: Version) => {
+            this.version.set(version.version);
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load version';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
+        });
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
       }
-
-      this.versionService.get(this.controller).subscribe((version: Version) => {
-        this.version.set(version.version);
-      });
-    });
+    );
 
     // Load remember me data
     this.loadRememberMeData();
@@ -154,8 +170,8 @@ export class LoginComponent implements OnInit {
 
     this.isLoading.set(true);
 
-    this.loginService.login(this.controller, username, password).subscribe(
-      async (response: AuthResponse) => {
+    this.loginService.login(this.controller, username, password).subscribe({
+      next: async (response: AuthResponse) => {
         let controller = this.controller;
         controller.authToken = response.access_token;
         controller.username = username;
@@ -170,6 +186,7 @@ export class LoginComponent implements OnInit {
         this.handleRememberMe(username);
 
         this.isLoading.set(false);
+        this.cd.markForCheck();
 
         if (this.returnUrl().length <= 1) {
           this.router.navigate(['/controller', this.controller.id, 'projects']);
@@ -177,11 +194,13 @@ export class LoginComponent implements OnInit {
           this.router.navigateByUrl(this.returnUrl());
         }
       },
-      (error) => {
+      error: (err) => {
         this.isLoading.set(false);
-        this.toasterService.error('Authentication was unsuccessful. The default username and password is admin');
-      }
-    );
+        const message = err.error?.message || err.message || 'Authentication failed';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   private handleRememberMe(username: string): void {

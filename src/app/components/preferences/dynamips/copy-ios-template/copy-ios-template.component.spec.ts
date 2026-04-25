@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
+import { of, throwError } from 'rxjs';
 import { CopyIosTemplateComponent } from './copy-ios-template.component';
 import { IosService } from '@services/ios.service';
 import { ControllerService } from '@services/controller.service';
@@ -74,20 +75,8 @@ describe('CopyIosTemplateComponent', () => {
 
   beforeEach(async () => {
     mockIosService = {
-      getTemplate: vi.fn().mockReturnValue({
-        subscribe: vi.fn((arg) => {
-          if (typeof arg === 'function') arg(mockIosTemplate);
-          else if (arg?.next) arg.next(mockIosTemplate);
-          return { unsubscribe: vi.fn() };
-        }),
-      }),
-      addTemplate: vi.fn().mockReturnValue({
-        subscribe: vi.fn((arg) => {
-          if (typeof arg === 'function') arg(mockIosTemplate);
-          else if (arg?.next) arg.next(mockIosTemplate);
-          return { unsubscribe: vi.fn() };
-        }),
-      }),
+      getTemplate: vi.fn().mockReturnValue(of(mockIosTemplate)),
+      addTemplate: vi.fn().mockReturnValue(of(mockIosTemplate)),
     };
 
     mockControllerService = {
@@ -188,15 +177,6 @@ describe('CopyIosTemplateComponent', () => {
   it('should add template and navigate back when addTemplate is called with valid data', () => {
     component.formGroup.get('templateName')?.setValue('My Copied Template');
 
-    const addTemplateObservable = {
-      subscribe: vi.fn((arg) => {
-        if (typeof arg === 'function') arg();
-        else if (arg?.next) arg.next();
-        return { unsubscribe: vi.fn() };
-      }),
-    };
-    mockIosService.addTemplate.mockReturnValue(addTemplateObservable);
-
     component.addTemplate();
 
     expect(mockIosService.addTemplate).toHaveBeenCalledWith(mockController, expect.any(Object));
@@ -237,5 +217,53 @@ describe('CopyIosTemplateComponent', () => {
   it('should update formGroup templateName control when value changes', () => {
     component.formGroup.get('templateName')?.setValue('Custom Name');
     expect(component.formGroup.get('templateName')?.value).toBe('Custom Name');
+  });
+
+  describe('error handling', () => {
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(CopyIosTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(CopyIosTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when getTemplate fails', async () => {
+      mockControllerService.get.mockResolvedValue(mockController);
+      mockIosService.getTemplate.mockReturnValue(throwError(() => ({ error: { message: 'Template error' } })));
+
+      fixture = TestBed.createComponent(CopyIosTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Template error');
+    });
+
+    it('should use fallback message when getTemplate error has no message', async () => {
+      mockControllerService.get.mockResolvedValue(mockController);
+      mockIosService.getTemplate.mockReturnValue(throwError(() => ({})));
+
+      fixture = TestBed.createComponent(CopyIosTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load template');
+    });
   });
 });

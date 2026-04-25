@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute } from '@angular/router';
 import { VpcsPreferencesComponent } from './vpcs-preferences.component';
 import { ControllerService } from '@services/controller.service';
+import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
@@ -10,6 +11,7 @@ describe('VpcsPreferencesComponent', () => {
   let component: VpcsPreferencesComponent;
   let mockControllerService: any;
   let mockActivatedRoute: any;
+  let mockToasterService: any;
 
   const mockController: Controller = {
     id: 1,
@@ -40,11 +42,16 @@ describe('VpcsPreferencesComponent', () => {
       },
     };
 
+    mockToasterService = {
+      error: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [VpcsPreferencesComponent],
       providers: [
         { provide: ActivatedRoute, useValue: mockActivatedRoute },
         { provide: ControllerService, useValue: mockControllerService },
+        { provide: ToasterService, useValue: mockToasterService },
       ],
     }).compileComponents();
 
@@ -110,6 +117,30 @@ describe('VpcsPreferencesComponent', () => {
       fixture.detectChanges();
 
       expect(component.vpcsExecutable()).toBe('');
+    });
+  });
+
+  describe('error handling', () => {
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(VpcsPreferencesComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(VpcsPreferencesComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
     });
   });
 });

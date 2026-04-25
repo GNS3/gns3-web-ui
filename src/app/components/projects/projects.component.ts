@@ -91,6 +91,13 @@ export class ProjectsComponent implements OnInit {
     if (!this.controller) this.router.navigate(['/controllers']);
     this.recentlyOpenedProjectService.setcontrollerIdProjectList(this.controller.id.toString());
 
+    // Handle error queryParam from redirect after project not found (404)
+    const errorParam = this.route.snapshot.queryParams['error'];
+    if (errorParam) {
+      this.toasterService.error(errorParam);
+      this.router.navigate([], { queryParams: {}, replaceUrl: true });
+    }
+
     this.refresh();
     this.sort().sort(<MatSortable>{
       id: 'name',
@@ -103,14 +110,17 @@ export class ProjectsComponent implements OnInit {
   }
 
   refresh() {
-    this.projectService.list(this.controller).subscribe(
-      (projects: Project[]) => {
+    this.projectService.list(this.controller).subscribe({
+      next: (projects: Project[]) => {
         this.projectDatabase.addProjects(projects);
       },
-      (error) => {
-        this.progressService.setError(error);
-      }
-    );
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to list projects';
+        this.toasterService.error(message);
+        this.progressService.setError(err);
+        this.cdr.markForCheck();
+      },
+    });
   }
 
   delete(project: Project) {
@@ -125,7 +135,9 @@ export class ProjectsComponent implements OnInit {
           next: () => {
             this.refresh();
           },
-          error: () => {
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to delete project';
+            this.toasterService.error(message);
             this.setProjectLoading(project.project_id, false);
           },
           complete: () => {
@@ -139,19 +151,20 @@ export class ProjectsComponent implements OnInit {
   open(project: Project) {
     this.progressService.activate();
 
-    this.projectService.open(this.controller, project.project_id).subscribe(
-      () => {
+    this.projectService.open(this.controller, project.project_id).subscribe({
+      next: () => {
         this.refresh();
       },
-      () => {
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Project was deleted';
         this.refresh();
         this.progressService.deactivate();
-        this.toasterService.error('Project was deleted.');
+        this.toasterService.error(message);
       },
-      () => {
+      complete: () => {
         this.progressService.deactivate();
-      }
-    );
+      },
+    });
   }
 
   close(project: Project) {
@@ -167,7 +180,9 @@ export class ProjectsComponent implements OnInit {
             this.refresh();
             this.progressService.deactivate();
           },
-          error: () => {
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to close project';
+            this.toasterService.error(message);
             this.setProjectLoading(project.project_id, false);
             this.progressService.deactivate();
           },

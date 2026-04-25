@@ -25,6 +25,7 @@ import { environment } from 'environments/environment';
 import { Controller } from '@models/controller';
 import { Symbol } from '@models/symbol';
 import { SymbolService } from '@services/symbol.service';
+import { ToasterService } from '@services/toaster.service';
 import { SearchFilter } from '@filters/searchFilter.pipe';
 import { ConfirmationDialogComponent } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
 import type { ConfirmationDialogData } from '@components/dialogs/confirmation-dialog/confirmation-dialog.component';
@@ -57,6 +58,7 @@ interface SymbolGroup {
 })
 export class SymbolsComponent implements OnInit {
   private symbolService = inject(SymbolService);
+  private toasterService = inject(ToasterService);
   private cd = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
   private dialogConfig = inject(DialogConfigService);
@@ -116,12 +118,19 @@ export class SymbolsComponent implements OnInit {
   }
 
   loadSymbols() {
-    this.symbolService.list(this.controller()).subscribe((symbols: Symbol[]) => {
-      this.symbols = symbols;
-      this.filteredSymbols = symbols;
-      this.loadSymbolBlobs(symbols);
-      this.updateSymbolGroups();
-      this.cd.markForCheck();
+    this.symbolService.list(this.controller()).subscribe({
+      next: (symbols: Symbol[]) => {
+        this.symbols = symbols;
+        this.filteredSymbols = symbols;
+        this.loadSymbolBlobs(symbols);
+        this.updateSymbolGroups();
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load symbols';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -135,8 +144,8 @@ export class SymbolsComponent implements OnInit {
 
     // Fetch all blob URLs in parallel
     const uniquePaths = Array.from(symbolPathMap.values());
-    forkJoin(uniquePaths.map((path) => this.symbolService.getSymbolBlobUrl(this.controller(), path))).subscribe(
-      (blobUrls: string[]) => {
+    forkJoin(uniquePaths.map((path) => this.symbolService.getSymbolBlobUrl(this.controller(), path))).subscribe({
+      next: (blobUrls: string[]) => {
         uniquePaths.forEach((path, index) => {
           // Find which symbol_id this path belongs to
           for (const [symbolId, symbolPath] of symbolPathMap.entries()) {
@@ -147,8 +156,13 @@ export class SymbolsComponent implements OnInit {
           }
         });
         this.cd.markForCheck();
-      }
-    );
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load symbol images';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   private updateSymbolGroups() {
@@ -190,8 +204,15 @@ export class SymbolsComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.symbolService.delete(this.controller(), symbol.symbol_id).subscribe(() => {
-          this.loadSymbols();
+        this.symbolService.delete(this.controller(), symbol.symbol_id).subscribe({
+          next: () => {
+            this.loadSymbols();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to delete symbol';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
         });
       }
     });
@@ -299,9 +320,16 @@ export class SymbolsComponent implements OnInit {
         );
 
         // Use forkJoin to wait for all deletions
-        forkJoin(deleteObservables).subscribe(() => {
-          this.selectedForDeletion.set(new Set());
-          this.loadSymbols();
+        forkJoin(deleteObservables).subscribe({
+          next: () => {
+            this.selectedForDeletion.set(new Set());
+            this.loadSymbols();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to delete symbols';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
         });
       }
     });

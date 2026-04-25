@@ -10,7 +10,7 @@
  *
  * Author: Sylvain MATHIEU, Elise LEBEAU
  */
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -25,7 +25,6 @@ import { ActivatedRoute } from '@angular/router';
 import { Controller } from '@models/controller';
 import { Role } from '@models/api/role';
 import { ToasterService } from '@services/toaster.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { Privilege } from '@models/api/Privilege';
 import { PrivilegeService } from '@services/privilege.service';
 import { BehaviorSubject, Observable, forkJoin } from 'rxjs';
@@ -57,6 +56,7 @@ export class RoleDetailComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private privilegeService = inject(PrivilegeService);
   private fb = inject(FormBuilder);
+  private cd = inject(ChangeDetectorRef);
 
   controller: Controller;
   $role: BehaviorSubject<Role> = new BehaviorSubject<Role>({
@@ -84,11 +84,25 @@ export class RoleDetailComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.data.subscribe((d: { controller: Controller; role: Role }) => {
-      this.controller = d.controller;
-      this.roleId = d.role.role_id;
-      this.privileges = this.privilegeService.get(this.controller);
-      this.roleService.getById(this.controller, this.roleId).subscribe((role: Role) => this.$role.next(role));
+    this.route.data.subscribe({
+      next: (d: { controller: Controller; role: Role }) => {
+        this.controller = d.controller;
+        this.roleId = d.role.role_id;
+        this.privileges = this.privilegeService.get(this.controller);
+        this.roleService.getById(this.controller, this.roleId).subscribe({
+          next: (role: Role) => this.$role.next(role),
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load role';
+            this.toastService.error(message);
+            this.cd.markForCheck();
+          },
+        });
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load route data';
+        this.toastService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -96,15 +110,24 @@ export class RoleDetailComponent implements OnInit {
     const role = this.$role.value;
     role.name = this.editRoleForm.get('rolename')?.value;
     role.description = this.editRoleForm.get('description')?.value;
-    this.roleService.update(this.controller, role).subscribe(
-      () => {
+    this.roleService.update(this.controller, role).subscribe({
+      next: () => {
         this.toastService.success(`Role ${role.name} was updated`);
-        this.roleService.getById(this.controller, this.roleId).subscribe((role: Role) => this.$role.next(role));
+        this.roleService.getById(this.controller, this.roleId).subscribe({
+          next: (updatedRole: Role) => this.$role.next(updatedRole),
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load role after update';
+            this.toastService.error(message);
+            this.cd.markForCheck();
+          },
+        });
       },
-      (error: HttpErrorResponse) => {
-        this.toastService.error(`${error.message}\n${error.error?.message || ''}`);
-      }
-    );
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to update role';
+        this.toastService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   onPrivilegesUpdate(privileges: IPrivilegesChange): void {
@@ -115,8 +138,22 @@ export class RoleDetailComponent implements OnInit {
     for (const privilege of privileges.delete) {
       tasks.push(this.roleService.removePrivileges(this.controller, this.roleId, privilege));
     }
-    forkJoin(tasks).subscribe(() => {
-      this.roleService.getById(this.controller, this.roleId).subscribe((role: Role) => this.$role.next(role));
+    forkJoin(tasks).subscribe({
+      next: () => {
+        this.roleService.getById(this.controller, this.roleId).subscribe({
+          next: (role: Role) => this.$role.next(role),
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load role after privilege update';
+            this.toastService.error(message);
+            this.cd.markForCheck();
+          },
+        });
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to update privileges';
+        this.toastService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 }

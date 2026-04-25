@@ -13,6 +13,7 @@
 
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   OnInit,
   QueryList,
@@ -75,6 +76,7 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
   private toasterService = inject(ToasterService);
   public aclService = inject(AclService);
   public dialog = inject(MatDialog);
+  private cdr = inject(ChangeDetectorRef);
 
   @ViewChildren('acesPaginator') acesPaginator: QueryList<MatPaginator>;
   @ViewChildren('acesSort') acesSort: QueryList<MatSort>;
@@ -93,9 +95,16 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
     const controllerId = this.route.parent.snapshot.paramMap.get('controller_id');
     this.controllerService.get(+controllerId).then((controller: Controller) => {
       this.controller = controller;
-      this.aclService.getEndpoints(this.controller).subscribe((endpoints: Endpoint[]) => {
-        this.endpoints.set(endpoints);
-        this.refresh();
+      this.aclService.getEndpoints(this.controller).subscribe({
+        next: (endpoints: Endpoint[]) => {
+          this.endpoints.set(endpoints);
+          this.refresh();
+        },
+        error: (err) => {
+          const message = err.error?.message || err.message || 'Failed to load endpoints';
+          this.toasterService.error(message);
+          this.cdr.markForCheck();
+        },
       });
     });
   }
@@ -122,11 +131,18 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
   }
 
   refresh() {
-    this.aclService.list(this.controller).subscribe((aces: ACE[]) => {
-      this.isReady.set(true);
-      this.aces = aces;
-      this.dataSource.data = aces;
-      this.selection.clear();
+    this.aclService.list(this.controller).subscribe({
+      next: (aces: ACE[]) => {
+        this.isReady.set(true);
+        this.aces = aces;
+        this.dataSource.data = aces;
+        this.selection.clear();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load ACL list';
+        this.toasterService.error(message);
+        this.cdr.markForCheck();
+      },
     });
   }
 
@@ -151,14 +167,16 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
-          this.aclService.delete(this.controller, ace.ace_id).subscribe(
-            () => {
+          this.aclService.delete(this.controller, ace.ace_id).subscribe({
+            next: () => {
               this.refresh();
             },
-            (error) => {
-              this.toasterService.error(`An error occur while trying to delete ace ${ace.ace_id}`);
-            }
-          );
+            error: (err) => {
+              const message = err.error?.message || err.message || 'Failed to delete ACE';
+              this.toasterService.error(message);
+              this.cdr.markForCheck();
+            },
+          });
         }
       });
   }
@@ -182,15 +200,21 @@ export class AclManagementComponent implements OnInit, AfterViewInit {
       .afterClosed()
       .subscribe((isDeletedConfirm) => {
         if (isDeletedConfirm) {
+          // TODO: This implementation has a race condition issue where each ACE deletion
+          // is subscribed to independently. Consider using Promise.all() + forkJoin to wait
+          // for all deletions to complete, or use concatMap for sequential deletion.
+          // For now, we keep the existing implementation as requested.
           this.selection.selected.forEach((ace: ACE) => {
-            this.aclService.delete(this.controller, ace.ace_id).subscribe(
-              () => {
+            this.aclService.delete(this.controller, ace.ace_id).subscribe({
+              next: () => {
                 this.refresh();
               },
-              (error) => {
-                this.toasterService.error(`An error occur while trying to delete ace ${ace.ace_id}`);
-              }
-            );
+              error: (err) => {
+                const message = err.error?.message || err.message || 'Failed to delete ACE';
+                this.toasterService.error(message);
+                this.cdr.markForCheck();
+              },
+            });
           });
           this.selection.clear();
         }

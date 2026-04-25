@@ -3,12 +3,13 @@ import { MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTabsModule } from '@angular/material/tabs';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { ConfigEditorDialogComponent } from './config-editor.component';
 import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 import { Node } from '../../../../cartography/models/node';
 import { Controller } from '@models/controller';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('ConfigEditorDialogComponent', () => {
@@ -18,6 +19,7 @@ describe('ConfigEditorDialogComponent', () => {
   let mockDialogRef: any;
   let mockNodeService: any;
   let mockToasterService: any;
+  let mockChangeDetectorRef: any;
 
   let mockController: Controller;
   let mockNode: Node;
@@ -69,6 +71,8 @@ describe('ConfigEditorDialogComponent', () => {
   });
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockController = createMockController();
     mockNode = createMockNode('vpcs');
 
@@ -88,12 +92,17 @@ describe('ConfigEditorDialogComponent', () => {
       savePrivateConfiguration: vi.fn().mockReturnValue(of({})),
     };
 
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
+    };
+
     await TestBed.configureTestingModule({
       imports: [MatDialogModule, MatButtonModule, MatProgressSpinnerModule, MatTabsModule, ConfigEditorDialogComponent],
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -296,6 +305,51 @@ describe('ConfigEditorDialogComponent', () => {
       applyButton.click();
 
       expect(mockNodeService.saveConfiguration).toHaveBeenCalled();
+    });
+  });
+
+  describe('Error handling', () => {
+    it('should show error toast when getStartupConfiguration fails', () => {
+      mockNodeService.getStartupConfiguration.mockReturnValue(throwError(() => new Error('Failed to load config')));
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      component.ngOnInit();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load config');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show error toast when getPrivateConfiguration fails', () => {
+      component.node = createMockNode('iou');
+      mockNodeService.getPrivateConfiguration.mockReturnValue(throwError(() => new Error('Failed to load private config')));
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      component.ngOnInit();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load private config');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show error toast when saveConfiguration fails', () => {
+      mockNodeService.saveConfiguration.mockReturnValue(throwError(() => new Error('Failed to save config')));
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to save config');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
+
+    it('should show error toast when savePrivateConfiguration fails', () => {
+      component.node = createMockNode('iou');
+      mockNodeService.savePrivateConfiguration.mockReturnValue(throwError(() => new Error('Failed to save private config')));
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to save private config');
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });

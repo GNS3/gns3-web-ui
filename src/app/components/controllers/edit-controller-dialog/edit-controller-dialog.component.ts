@@ -73,11 +73,18 @@ export class EditControllerDialogComponent implements OnInit {
       protocol: this.controllerForm.value.protocol,
     };
 
-    this.controllerService.update(updatedController).then(() => {
-      // Update the controller in the database
-      this.dialogRef.close(updatedController);
-      this.toasterService.success(`Controller ${updatedController.name} updated.`);
-    });
+    this.controllerService.update(updatedController).then(
+      () => {
+        // Update the controller in the database
+        this.dialogRef.close(updatedController);
+        this.toasterService.success(`Controller ${updatedController.name} updated.`);
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to update controller';
+        this.toasterService.error(message);
+        this.changeDetector.markForCheck();
+      }
+    );
   }
 
   onCancel(): void {

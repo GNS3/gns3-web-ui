@@ -103,25 +103,40 @@
 </mat-menu>
 
 @if (showComputeSelector()) {
-  <div class="template__selector-backdrop" (click)="onComputeSelectorCancelled()">
-    <div
-      class="template__ghost-icon"
-      [style.left.px]="ghostIconScreenPosition().x"
-      [style.top.px]="ghostIconScreenPosition().y"
-    >
-      @if (pendingTemplate()) {
-      <img
-        class="template__ghost-icon-img"
-        [src]="getImageSourceForTemplate(pendingTemplate())"
-        draggable="false"
-      />
-      }
-    </div>
-    <app-compute-selector
-      [computes]="availableComputes()"
-      [x]="lastPageX()"
-      [y]="lastPageY()"
-      (computeSelected)="onComputeSelected($event)"
+  <div class="template__selector-backdrop" (click)="onComputeSelectorCancelled()"></div>
+}
+
+@if (showComputeSelector()) {
+  <app-compute-selector
+    [computes]="availableComputes()"
+    [x]="lastPageX()"
+    [y]="lastPageY()"
+    (computeSelected)="onComputeSelected($event)"
+  />
+}
+
+@for (creatingNode of creatingNodes().values(); track creatingNode.id) {
+  @let position = getCreatingNodeScreenPosition(creatingNode);
+  @let shouldFade = creatingNode.status === 'success';
+  <div
+    class="template__ghost-icon"
+    [class.template__ghost-icon--fading]="shouldFade"
+    [style.left.px]="position.x"
+    [style.top.px]="position.y"
+  >
+    <div class="template__ghost-name">{{ creatingNode.template.name }}</div>
+
+    <img
+      class="template__ghost-icon-img"
+      [src]="getImageSourceForTemplate(creatingNode.template)"
+      [class.template__ghost-icon-img--error]="creatingNode.status === 'error'"
+      draggable="false"
     />
+
+    @if (creatingNode.status === 'error') {
+    <div class="template__ghost-icon-status">
+      <mat-icon class="template__status-icon--error">error</mat-icon>
+    </div>
+    }
   </div>
 }

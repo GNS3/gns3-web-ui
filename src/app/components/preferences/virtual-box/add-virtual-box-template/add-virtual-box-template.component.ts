@@ -60,20 +60,41 @@ export class AddVirtualBoxTemplateComponent implements OnInit {
       );
     });
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller.set(controller);
-      this.cd.markForCheck();
-
-      this.virtualBoxService.getVirtualMachines(this.controller()).subscribe((virtualMachines: VirtualBoxVm[]) => {
-        this.virtualMachines.set(virtualMachines);
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller.set(controller);
         this.cd.markForCheck();
 
-        this.templateMocksService.getVirtualBoxTemplate().subscribe((template: VirtualBoxTemplate) => {
-          this.virtualBoxTemplate.set(template);
-          this.cd.markForCheck();
+        this.virtualBoxService.getVirtualMachines(this.controller()).subscribe({
+          next: (virtualMachines: VirtualBoxVm[]) => {
+            this.virtualMachines.set(virtualMachines);
+            this.cd.markForCheck();
+
+            this.templateMocksService.getVirtualBoxTemplate().subscribe({
+              next: (template: VirtualBoxTemplate) => {
+                this.virtualBoxTemplate.set(template);
+                this.cd.markForCheck();
+              },
+              error: (err) => {
+                const message = err.error?.message || err.message || 'Failed to load VirtualBox template';
+                this.toasterService.error(message);
+                this.cd.markForCheck();
+              },
+            });
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load VirtualBox VMs';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
         });
-      });
-    });
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   goBack() {

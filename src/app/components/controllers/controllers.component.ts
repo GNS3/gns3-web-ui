@@ -30,6 +30,7 @@ import { ControllerManagementService } from '@services/controller-management.ser
 import { ControllerDatabase } from '@services/controller.database';
 import { ControllerService } from '@services/controller.service';
 import { ThemeService } from '@services/theme.service';
+import { ToasterService } from '@services/toaster.service';
 import { ConfirmationBottomSheetComponent } from '../projects/confirmation-bottomsheet/confirmation-bottomsheet.component';
 import { AddControllerDialogComponent } from './add-controller-dialog/add-controller-dialog.component';
 import { EditControllerDialogComponent } from './edit-controller-dialog/edit-controller-dialog.component';
@@ -66,6 +67,7 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private themeService = inject(ThemeService);
+  private toasterService = inject(ToasterService);
 
   dataSource: ControllerDataSource | null = null;
   displayedColumns = ['id', 'name', 'status', 'location', 'ip', 'port', 'actions'];
@@ -86,29 +88,36 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
   getControllers() {
     const runningControllerNames = this.controllerManagement.getRunningControllers();
 
-    this.controllerService.findAll().then((controllers: Controller[]) => {
-      controllers.forEach((controller) => {
-        controller.status = 'stopped';
+    this.controllerService.findAll().then(
+      (controllers: Controller[]) => {
+        controllers.forEach((controller) => {
+          controller.status = 'stopped';
 
-        const controllerIndex = runningControllerNames.findIndex(
-          (controllerName) => controller.name === controllerName
-        );
-        if (controllerIndex >= 0) {
-          controller.status = 'running';
-        }
+          const controllerIndex = runningControllerNames.findIndex(
+            (controllerName) => controller.name === controllerName
+          );
+          if (controllerIndex >= 0) {
+            controller.status = 'running';
+          }
 
-        if (!controller.protocol) {
-          controller.protocol = location.protocol as ControllerProtocol;
-        }
-      });
+          if (!controller.protocol) {
+            controller.protocol = location.protocol as ControllerProtocol;
+          }
+        });
 
-      this.controllerDatabase.addControllers(controllers);
-      this.changeDetector.markForCheck();
+        this.controllerDatabase.addControllers(controllers);
+        this.changeDetector.markForCheck();
 
-      controllers.forEach((controller) => {
-        this.updateControllerOnlineStatus(controller);
-      });
-    });
+        controllers.forEach((controller) => {
+          this.updateControllerOnlineStatus(controller);
+        });
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controllers';
+        this.toasterService.error(message);
+        this.changeDetector.markForCheck();
+      }
+    );
   }
 
   ngOnInit() {
@@ -214,15 +223,19 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
       if (controller) {
         this.controllerService
           .create(controller)
-          .then((created: Controller) => {
-            created.status = 'stopped';
-            this.controllerDatabase.addController(created);
-            this.updateControllerOnlineStatus(created);
-            this.changeDetector.markForCheck();
-          })
-          .catch((error) => {
-            this.changeDetector.markForCheck();
-          });
+          .then(
+            (created: Controller) => {
+              created.status = 'stopped';
+              this.controllerDatabase.addController(created);
+              this.updateControllerOnlineStatus(created);
+              this.changeDetector.markForCheck();
+            },
+            (err) => {
+              const message = err.error?.message || err.message || 'Failed to create controller';
+              this.toasterService.error(message);
+              this.changeDetector.markForCheck();
+            }
+          );
       }
     });
   }
@@ -243,18 +256,19 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private updateControllerOnlineStatus(controller: Controller) {
-    this.controllerService.checkControllerVersion(controller).subscribe(
-      (controllerInfo) => {
+    this.controllerService.checkControllerVersion(controller).subscribe({
+      next: (controllerInfo) => {
         controller.status = controllerInfo.version.split('.')[0] >= 3 ? 'running' : 'stopped';
         this.controllerDatabase.update(controller);
         this.changeDetector.markForCheck();
       },
-      () => {
+      error: () => {
+        // Silent failure - controller is considered offline/stopped
         controller.status = 'stopped';
         this.controllerDatabase.update(controller);
         this.changeDetector.markForCheck();
-      }
-    );
+      },
+    });
   }
 
   getControllerStatus(controller: Controller) {
@@ -271,10 +285,17 @@ export class ControllersComponent implements OnInit, AfterViewInit, OnDestroy {
     });
     const bottomSheetSubscription = bottomSheetRef.afterDismissed().subscribe((result: boolean) => {
       if (result) {
-        this.controllerService.delete(controller).then(() => {
-          this.controllerDatabase.remove(controller);
-          this.changeDetector.markForCheck();
-        });
+        this.controllerService.delete(controller).then(
+          () => {
+            this.controllerDatabase.remove(controller);
+            this.changeDetector.markForCheck();
+          },
+          (err) => {
+            const message = err.error?.message || err.message || 'Failed to delete controller';
+            this.toasterService.error(message);
+            this.changeDetector.markForCheck();
+          }
+        );
       }
     });
   }

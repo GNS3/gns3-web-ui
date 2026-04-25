@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { AddVirtualBoxTemplateComponent } from './add-virtual-box-template.component';
 import { VirtualBoxService } from '@services/virtual-box.service';
 import { ControllerService } from '@services/controller.service';
@@ -459,6 +459,84 @@ describe('AddVirtualBoxTemplateComponent', () => {
       const compiled = fixture.nativeElement as HTMLElement;
       expect(compiled.querySelector('.virtualbox-add__cancel-btn')).toBeTruthy();
       expect(compiled.querySelector('.virtualbox-add__submit-btn')).toBeTruthy();
+    });
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(AddVirtualBoxTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(AddVirtualBoxTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when getVirtualMachines fails', async () => {
+      mockVirtualBoxService.getVirtualMachines.mockReturnValue(
+        throwError(() => ({ error: { message: 'VirtualBox VMs error' } }))
+      );
+
+      fixture = TestBed.createComponent(AddVirtualBoxTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('VirtualBox VMs error');
+    });
+
+    it('should use fallback message when getVirtualMachines error has no message', async () => {
+      mockVirtualBoxService.getVirtualMachines.mockReturnValue(throwError(() => ({})));
+
+      fixture = TestBed.createComponent(AddVirtualBoxTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load VirtualBox VMs');
+    });
+
+    it('should show error toaster when getVirtualBoxTemplate fails', async () => {
+      mockTemplateMocksService.getVirtualBoxTemplate.mockReturnValue(
+        throwError(() => ({ error: { message: 'Template error' } }))
+      );
+
+      fixture = TestBed.createComponent(AddVirtualBoxTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await vi.runAllTimersAsync();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Template error');
+    });
+
+    it('should use fallback message when getVirtualBoxTemplate error has no message', async () => {
+      mockTemplateMocksService.getVirtualBoxTemplate.mockReturnValue(throwError(() => ({})));
+
+      fixture = TestBed.createComponent(AddVirtualBoxTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await vi.runAllTimersAsync();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load VirtualBox template');
     });
   });
 });

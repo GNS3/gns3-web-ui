@@ -2,15 +2,17 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ProjectService } from '@services/project.service';
 import { ChooseNameDialogComponent } from './choose-name-dialog.component';
+import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('ChooseNameDialogComponent', () => {
   let fixture: ComponentFixture<ChooseNameDialogComponent>;
   let mockDialogRef: any;
   let mockProjectService: any;
+  let mockToasterService: any;
   let mockController: Controller;
   let mockProject: Project;
 
@@ -63,6 +65,11 @@ describe('ChooseNameDialogComponent', () => {
       duplicate: vi.fn().mockReturnValue(of(undefined)),
     };
 
+    mockToasterService = {
+      error: vi.fn(),
+      success: vi.fn(),
+    };
+
     mockController = createMockController();
     mockProject = createMockProject();
 
@@ -71,6 +78,7 @@ describe('ChooseNameDialogComponent', () => {
       providers: [
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: ProjectService, useValue: mockProjectService },
+        { provide: ToasterService, useValue: mockToasterService },
       ],
     }).compileComponents();
 
@@ -121,6 +129,44 @@ describe('ChooseNameDialogComponent', () => {
       await vi.runAllTimersAsync();
 
       expect(mockDialogRef.close).toHaveBeenCalled();
+    });
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    it('should show error toaster when duplicate fails with error.message', async () => {
+      mockProjectService.duplicate.mockReturnValue(
+        throwError(() => ({ error: { message: 'Duplicate failed' } }))
+      );
+
+      fixture.componentInstance.onSaveClick();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Duplicate failed');
+    });
+
+    it('should use fallback message when duplicate error has no message', async () => {
+      mockProjectService.duplicate.mockReturnValue(throwError(() => ({})));
+
+      fixture.componentInstance.onSaveClick();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to duplicate project');
+    });
+
+    it('should call markForCheck when duplicate fails', async () => {
+      mockProjectService.duplicate.mockReturnValue(
+        throwError(() => ({ error: { message: 'Duplicate failed' } }))
+      );
+
+      const cdrSpy = vi.spyOn(fixture.componentInstance['cd'], 'markForCheck');
+      fixture.componentInstance.onSaveClick();
+      await vi.runAllTimersAsync();
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });

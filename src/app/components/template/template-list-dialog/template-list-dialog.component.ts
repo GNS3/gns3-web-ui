@@ -130,7 +130,9 @@ export class TemplateListDialogComponent implements OnInit {
         this.nodeControllers = [{ display: 'local', value: 'local' }, ...remoteComputes];
         this.cd.markForCheck();
       },
-      error: () => {
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load computes';
+        this.toasterService.error(message);
         // Fallback to local only if fails
         this.nodeControllers = [{ display: 'local', value: 'local' }];
         this.cd.markForCheck();
@@ -206,6 +208,7 @@ export interface NodeAddedEvent {
   numberOfNodes: number;
   x: number;
   y: number;
+  creationId?: string;
 }
 
 export class TemplateDatabase {

@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { of, throwError } from 'rxjs';
 import { AddQemuVmTemplateComponent } from './add-qemu-vm-template.component';
 import { QemuService } from '@services/qemu.service';
 import { QemuConfigurationService } from '@services/qemu-configuration.service';
@@ -106,20 +107,8 @@ describe('AddQemuVmTemplateComponent', () => {
     ];
 
     mockQemuService = {
-      getImages: vi.fn().mockReturnValue({
-        subscribe: vi.fn((arg) => {
-          if (typeof arg === 'function') arg(mockQemuImages);
-          else if (arg?.next) arg.next(mockQemuImages);
-          return { unsubscribe: vi.fn() };
-        }),
-      }),
-      addTemplate: vi.fn().mockReturnValue({
-        subscribe: vi.fn((arg) => {
-          if (typeof arg === 'function') arg(mockQemuTemplate);
-          else if (arg?.next) arg.next(mockQemuTemplate);
-          return { unsubscribe: vi.fn() };
-        }),
-      }),
+      getImages: vi.fn().mockReturnValue(of(mockQemuImages)),
+      addTemplate: vi.fn().mockReturnValue(of(mockQemuTemplate)),
       getImagePath: vi.fn().mockReturnValue('http://localhost:3080/v3/images/upload/test.qcow2'),
     };
 
@@ -134,13 +123,7 @@ describe('AddQemuVmTemplateComponent', () => {
     };
 
     mockTemplateMocksService = {
-      getQemuTemplate: vi.fn().mockReturnValue({
-        subscribe: vi.fn((arg) => {
-          if (typeof arg === 'function') arg(mockQemuTemplate);
-          else if (arg?.next) arg.next(mockQemuTemplate);
-          return { unsubscribe: vi.fn() };
-        }),
-      }),
+      getQemuTemplate: vi.fn().mockReturnValue(of(mockQemuTemplate)),
     };
 
     mockToasterService = {
@@ -319,14 +302,7 @@ describe('AddQemuVmTemplateComponent', () => {
     component.auxConsoleType.set('telnet');
     component.selectedImage.set(mockQemuImages[0]);
 
-    const addTemplateObservable = {
-      subscribe: vi.fn((arg) => {
-        if (typeof arg === 'function') arg(mockQemuTemplate);
-        else if (arg?.next) arg.next(mockQemuTemplate);
-        return { unsubscribe: vi.fn() };
-      }),
-    };
-    mockQemuService.addTemplate.mockReturnValue(addTemplateObservable);
+    mockQemuService.addTemplate.mockReturnValue(of(mockQemuTemplate));
 
     component.addTemplate();
 
@@ -352,14 +328,7 @@ describe('AddQemuVmTemplateComponent', () => {
     component.fileName.set('new-image.qcow2');
     component.chosenImage.set('new-image.qcow2');
 
-    const addTemplateObservable = {
-      subscribe: vi.fn((arg) => {
-        if (typeof arg === 'function') arg(mockQemuTemplate);
-        else if (arg?.next) arg.next(mockQemuTemplate);
-        return { unsubscribe: vi.fn() };
-      }),
-    };
-    mockQemuService.addTemplate.mockReturnValue(addTemplateObservable);
+    mockQemuService.addTemplate.mockReturnValue(of(mockQemuTemplate));
 
     component.addTemplate();
 
@@ -474,5 +443,62 @@ describe('AddQemuVmTemplateComponent', () => {
 
   it('should use OnPush change detection strategy', () => {
     expect(component).toBeTruthy();
+  });
+
+  describe('error handling', () => {
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(AddQemuVmTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(AddQemuVmTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when templateMocksService.getQemuTemplate fails', async () => {
+      mockTemplateMocksService.getQemuTemplate.mockReturnValue(throwError(() => ({ error: { message: 'Template error' } })));
+
+      fixture = TestBed.createComponent(AddQemuVmTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load QEMU template');
+    });
+
+    it('should show error toaster when qemuService.getImages fails', async () => {
+      mockQemuService.getImages.mockReturnValue(throwError(() => ({ error: { message: 'Images error' } })));
+
+      fixture = TestBed.createComponent(AddQemuVmTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Images error');
+    });
+
+    it('should use fallback message when qemuService.getImages error has no message', async () => {
+      mockQemuService.getImages.mockReturnValue(throwError(() => ({})));
+
+      fixture = TestBed.createComponent(AddQemuVmTemplateComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load QEMU images');
+    });
   });
 });

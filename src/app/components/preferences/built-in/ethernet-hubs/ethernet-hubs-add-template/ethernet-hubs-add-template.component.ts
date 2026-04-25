@@ -69,10 +69,17 @@ export class EthernetHubsAddTemplateComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
-    });
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.cd.markForCheck();
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   setControllerType(controllerType: string) {
@@ -87,32 +94,35 @@ export class EthernetHubsAddTemplateComponent implements OnInit {
 
   addTemplate() {
     if (!this.formGroup.invalid) {
-      let ethernetHubTemplate: EthernetHubTemplate;
+      this.templateMocksService.getEthernetHubTemplate().subscribe({
+        next: (ethernetHubTemplate: EthernetHubTemplate) => {
+          ethernetHubTemplate.template_id = uuid();
+          ethernetHubTemplate.name = this.formGroup.get('templateName').value;
+          ethernetHubTemplate.compute_id = 'local';
 
-      this.templateMocksService.getEthernetHubTemplate().subscribe((template: EthernetHubTemplate) => {
-        ethernetHubTemplate = template;
-      });
+          for (let i = 0; i < this.formGroup.get('numberOfPorts').value; i++) {
+            ethernetHubTemplate.ports_mapping.push({
+              name: `Ethernet${i}`,
+              port_number: i,
+            });
+          }
 
-      ethernetHubTemplate.template_id = uuid();
-      ethernetHubTemplate.name = this.formGroup.get('templateName').value;
-      ethernetHubTemplate.compute_id = 'local';
-
-      for (let i = 0; i < this.formGroup.get('numberOfPorts').value; i++) {
-        ethernetHubTemplate.ports_mapping.push({
-          name: `Ethernet${i}`,
-          port_number: i,
-        });
-      }
-
-      this.builtInTemplatesService.addTemplate(this.controller, ethernetHubTemplate).subscribe({
-        next: () => {
-          this.goBack();
+          this.builtInTemplatesService.addTemplate(this.controller, ethernetHubTemplate).subscribe({
+            next: () => {
+              this.goBack();
+            },
+            error: (err) => {
+              const message = err.error?.message || err.message || 'Failed to add ethernet hub template';
+              this.toasterService.error(message);
+              this.cd.markForCheck();
+            },
+          });
         },
         error: (err) => {
-          const message = err.error?.message || err.message || 'Failed to add ethernet hub template';
+          const message = err.error?.message || err.message || 'Failed to load template';
           this.toasterService.error(message);
           this.cd.markForCheck();
-        }
+        },
       });
     } else {
       this.toasterService.error(`Fill all required fields`);

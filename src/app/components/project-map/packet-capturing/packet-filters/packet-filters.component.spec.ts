@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { PacketFiltersDialogComponent } from './packet-filters.component';
 import { LinkService } from '@services/link.service';
@@ -8,6 +8,8 @@ import { Controller } from '@models/controller';
 import { Link } from '@models/link';
 import { FilterDescription } from '@models/filter-description';
 import { Filter } from '@models/filter';
+import { ChangeDetectorRef } from '@angular/core';
+import { ToasterService } from '@services/toaster.service';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 const mockController: Controller = {
@@ -71,8 +73,12 @@ describe('PacketFiltersDialogComponent', () => {
   let mockDialog: any;
   let mockDialogConfig: any;
   let mockDialogInstance: any;
+  let mockToasterService: any;
+  let mockChangeDetectorRef: any;
 
   beforeEach(() => {
+    vi.clearAllMocks();
+
     mockDialogInstance = {
       title: '',
       messages: [],
@@ -99,6 +105,15 @@ describe('PacketFiltersDialogComponent', () => {
       updateLink: vi.fn().mockReturnValue(of(createMockLink())),
     };
 
+    mockToasterService = {
+      success: vi.fn(),
+      error: vi.fn(),
+    };
+
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
+    };
+
     TestBed.configureTestingModule({
       imports: [PacketFiltersDialogComponent],
       providers: [
@@ -106,6 +121,8 @@ describe('PacketFiltersDialogComponent', () => {
         { provide: DialogConfigService, useValue: mockDialogConfig },
         { provide: MatDialog, useValue: mockDialog },
         { provide: MatDialogRef, useValue: mockDialogRef },
+        { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -291,6 +308,54 @@ describe('PacketFiltersDialogComponent', () => {
       const compiled = fixture.nativeElement;
       const cancelButton = compiled.querySelector('button');
       expect(cancelButton).toBeTruthy();
+    });
+  });
+
+  describe('Error handling', () => {
+    it('should show error toast when getLink fails', () => {
+      mockLinkService.getLink.mockReturnValue(throwError(() => new Error('Failed to load link filters')));
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      component.ngOnInit();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load link filters');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show error toast when getAvailableFilters fails', () => {
+      mockLinkService.getAvailableFilters.mockReturnValue(throwError(() => new Error('Failed to load available filters')));
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+
+      component.ngOnInit();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load available filters');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show error toast when updateLink fails on onResetClick', () => {
+      mockLinkService.updateLink.mockReturnValue(throwError(() => new Error('Failed to reset filters')));
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      component.link = createMockLink();
+      component.filters = { bpf: [], corrupt: [0], delay: [0, 0], frequency_drop: [0], packet_loss: [0] };
+
+      component.onResetClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to reset filters');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
+    });
+
+    it('should show error toast when updateLink fails on onYesClick', () => {
+      mockLinkService.updateLink.mockReturnValue(throwError(() => new Error('Failed to apply filters')));
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      component.link = createMockLink();
+      component.filters = { bpf: ['port 80'], corrupt: [0], delay: [0, 0], frequency_drop: [0], packet_loss: [0] };
+
+      component.onYesClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to apply filters');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 });

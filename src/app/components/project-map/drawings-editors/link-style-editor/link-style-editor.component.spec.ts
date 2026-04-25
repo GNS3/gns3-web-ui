@@ -17,6 +17,7 @@ import { LinksEventSource } from '../../../../cartography/events/links-event-sou
 import { LinkToMapLinkConverter } from '../../../../cartography/converters/map/link-to-map-link-converter';
 import { NonNegativeValidator } from '../../../../validators/non-negative-validator';
 import { StyleTranslator } from '../../../../cartography/widgets/links/style-translator';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { of, throwError } from 'rxjs';
 
@@ -33,6 +34,7 @@ describe('LinkStyleEditorDialogComponent', () => {
   let mockLinksDataSource: { update: ReturnType<typeof vi.fn> };
   let mockLinksEventSource: { edited: { next: ReturnType<typeof vi.fn> } };
   let mockLinkToMapLink: { convert: ReturnType<typeof vi.fn> };
+  let mockChangeDetectorRef: { markForCheck: ReturnType<typeof vi.fn> };
 
   const mockController: Controller = {
     id: 1,
@@ -82,6 +84,7 @@ describe('LinkStyleEditorDialogComponent', () => {
     } as Link);
 
   beforeEach(async () => {
+    vi.clearAllMocks();
     mockDialogRef = { close: vi.fn() };
     mockToasterService = {
       success: vi.fn(),
@@ -92,6 +95,7 @@ describe('LinkStyleEditorDialogComponent', () => {
     mockLinksDataSource = { update: vi.fn() };
     mockLinksEventSource = { edited: { next: vi.fn() } };
     mockLinkToMapLink = { convert: vi.fn() };
+    mockChangeDetectorRef = { markForCheck: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [
@@ -111,6 +115,7 @@ describe('LinkStyleEditorDialogComponent', () => {
         { provide: LinksEventSource, useValue: mockLinksEventSource },
         { provide: LinkToMapLinkConverter, useValue: mockLinkToMapLink },
         { provide: NonNegativeValidator, useValue: new NonNegativeValidator() },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
         UntypedFormBuilder,
       ],
     }).compileComponents();
@@ -378,8 +383,10 @@ describe('LinkStyleEditorDialogComponent', () => {
 
     it('should show error toast when update fails', () => {
       mockLinkService.updateLinkStyle.mockReturnValue(throwError(() => new Error('API Error')));
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
       component.onYesClick();
-      expect(mockToasterService.error).toHaveBeenCalledWith('Unable to update link style');
+      expect(mockToasterService.error).toHaveBeenCalledWith('API Error');
+      expect(cdrSpy).toHaveBeenCalled();
     });
 
     it('should not close dialog when update fails', () => {

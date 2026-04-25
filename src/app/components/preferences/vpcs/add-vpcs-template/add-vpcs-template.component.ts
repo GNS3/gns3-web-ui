@@ -68,10 +68,17 @@ export class AddVpcsTemplateComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
-    });
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.cd.markForCheck();
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   setControllerType(controllerType: string) {
@@ -88,23 +95,29 @@ export class AddVpcsTemplateComponent implements OnInit {
     if (!this.templateNameForm.invalid) {
       this.templateName = this.templateNameForm.get('templateName').value;
 
-      let vpcsTemplate: VpcsTemplate;
+      this.templateMocksService.getVpcsTemplate().subscribe({
+        next: (template: VpcsTemplate) => {
+          const vpcsTemplate = template;
+          vpcsTemplate.template_id = uuid();
+          vpcsTemplate.name = this.templateName;
+          vpcsTemplate.compute_id = 'local';
 
-      this.templateMocksService.getVpcsTemplate().subscribe((template: VpcsTemplate) => {
-        vpcsTemplate = template;
-      });
-
-      (vpcsTemplate.template_id = uuid()), (vpcsTemplate.name = this.templateName), (vpcsTemplate.compute_id = 'local');
-
-      this.vpcsService.addTemplate(this.controller, vpcsTemplate).subscribe({
-        next: () => {
-          this.goBack();
+          this.vpcsService.addTemplate(this.controller, vpcsTemplate).subscribe({
+            next: () => {
+              this.goBack();
+            },
+            error: (err) => {
+              const message = err.error?.message || err.message || 'Failed to add vpcs template';
+              this.toasterService.error(message);
+              this.cd.markForCheck();
+            },
+          });
         },
         error: (err) => {
-          const message = err.error?.message || err.message || 'Failed to add vpcs template';
+          const message = err.error?.message || err.message || 'Failed to load VPCS template';
           this.toasterService.error(message);
           this.cd.markForCheck();
-        }
+        },
       });
     } else {
       this.toasterService.error(`Fill all required fields`);

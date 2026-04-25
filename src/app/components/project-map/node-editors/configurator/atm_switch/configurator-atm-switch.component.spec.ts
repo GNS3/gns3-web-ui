@@ -5,7 +5,9 @@ import { NodeService } from '@services/node.service';
 import { ToasterService } from '@services/toaster.service';
 import { Node } from '../../../../../cartography/models/node';
 import { Controller } from '@models/controller';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { of, throwError } from 'rxjs';
 
 describe('ConfiguratorDialogAtmSwitchComponent', () => {
   let fixture: ComponentFixture<ConfiguratorDialogAtmSwitchComponent>;
@@ -13,6 +15,7 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
   let mockDialogRef: { close: ReturnType<typeof vi.fn> };
   let mockNodeService: any;
   let mockToasterService: any;
+  let mockChangeDetectorRef: any;
 
   const mockController = { id: 1 } as unknown as Controller;
   const mockNode = {
@@ -22,16 +25,22 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
   } as unknown as Node;
 
   beforeEach(async () => {
+    vi.clearAllMocks();
+
     mockDialogRef = { close: vi.fn() };
 
     mockNodeService = {
-      getNode: vi.fn().mockReturnValue({ subscribe: vi.fn((cb) => cb(mockNode)) }),
-      updateNode: vi.fn().mockReturnValue({ subscribe: vi.fn(() => {}) }),
+      getNode: vi.fn().mockReturnValue(of(mockNode)),
+      updateNode: vi.fn().mockReturnValue(of({})),
     };
 
     mockToasterService = {
       error: vi.fn(),
       success: vi.fn(),
+    };
+
+    mockChangeDetectorRef = {
+      markForCheck: vi.fn(),
     };
 
     await TestBed.configureTestingModule({
@@ -40,6 +49,7 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: NodeService, useValue: mockNodeService },
         { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
       ],
     }).compileComponents();
 
@@ -161,13 +171,7 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
     });
 
     it('should add mapping with VPI and VCI when useVpiOnly is false', () => {
-      // Set both component properties AND form control values
-      component.sourcePort = '0';
-      component.sourceVpi = '5';
-      component.sourceVci = '1';
-      component.destinationPort = '1';
-      component.destinationVpi = '10';
-      component.destinationVci = '2';
+      // Set both form control values
       component.inputForm.patchValue({
         sourcePort: '0',
         sourceVci: '1',
@@ -178,7 +182,7 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
         sourceVpi: '5',
         destinationVpi: '10',
       });
-      component.nameForm.get('useVpiOnly')?.setValue(false);
+      component.nameForm.patchValue({ useVpiOnly: false });
 
       component.add();
 
@@ -189,17 +193,13 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
     });
 
     it('should add mapping with VPI only when useVpiOnly is true', () => {
-      component.sourcePort = '0';
-      component.sourceVci = '32';
-      component.destinationPort = '1';
-      component.destinationVci = '64';
       component.inputForm.patchValue({
         sourcePort: '0',
         sourceVci: '32',
         destinationPort: '1',
         destinationVci: '64',
       });
-      component.nameForm.get('useVpiOnly')?.setValue(true);
+      component.nameForm.patchValue({ useVpiOnly: true });
 
       component.add();
 
@@ -216,12 +216,16 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
       const initialLength = component.nodeMappingsDataSource.length;
 
       // Set up form with the same values as existing mapping
-      component.sourcePort = '0';
-      component.sourceVpi = '5';
-      component.sourceVci = '1';
-      component.destinationPort = '1';
-      component.destinationVpi = '10';
-      component.destinationVci = '2';
+      component.inputForm.patchValue({
+        sourcePort: '0',
+        sourceVci: '1',
+        destinationPort: '1',
+        destinationVci: '2',
+      });
+      component.abstractForm.patchValue({
+        sourceVpi: '5',
+        destinationVpi: '10',
+      });
 
       component.add();
 
@@ -230,10 +234,6 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
     });
 
     it('should show error when abstractForm is invalid with useVpiOnly false', () => {
-      component.sourcePort = '0';
-      component.sourceVci = '1';
-      component.destinationPort = '1';
-      component.destinationVci = '2';
       component.inputForm.patchValue({
         sourcePort: '0',
         sourceVci: '1',
@@ -242,7 +242,7 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
       });
       component.abstractForm.get('sourceVpi')?.setValue('');
       component.abstractForm.get('destinationVpi')?.setValue('');
-      component.nameForm.get('useVpiOnly')?.setValue(false);
+      component.nameForm.patchValue({ useVpiOnly: false });
 
       component.add();
 
@@ -251,26 +251,28 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
   });
 
   describe('clearUserInput', () => {
-    it('should reset sourcePort, sourceVpi, destinationPort, destinationVpi to 0', () => {
-      component.sourcePort = '5';
-      component.sourceVpi = '10';
-      component.destinationPort = '15';
-      component.destinationVpi = '25';
+    it('should reset inputForm and abstractForm controls', () => {
+      // Set form control values
+      component.inputForm.patchValue({
+        sourcePort: '5',
+        sourceVci: '10',
+        destinationPort: '15',
+        destinationVci: '25',
+      });
+      component.abstractForm.patchValue({
+        sourceVpi: '10',
+        destinationVpi: '25',
+      });
 
       component.clearUserInput();
 
-      expect(component.sourcePort).toBe('0');
-      expect(component.sourceVpi).toBe('0');
-      expect(component.destinationPort).toBe('0');
-      expect(component.destinationVpi).toBe('0');
-    });
-
-    it('should reset sourceVci to 0', () => {
-      component.sourceVci = '20';
-
-      component.clearUserInput();
-
-      expect(component.sourceVci).toBe('0');
+      // Forms should be reset (null after reset)
+      expect(component.inputForm.get('sourcePort')?.value).toBe(null);
+      expect(component.inputForm.get('sourceVci')?.value).toBe(null);
+      expect(component.inputForm.get('destinationPort')?.value).toBe(null);
+      expect(component.inputForm.get('destinationVci')?.value).toBe(null);
+      expect(component.abstractForm.get('sourceVpi')?.value).toBe(null);
+      expect(component.abstractForm.get('destinationVpi')?.value).toBe(null);
     });
   });
 
@@ -405,6 +407,30 @@ describe('ConfiguratorDialogAtmSwitchComponent', () => {
     it('should export NodeMapping interface', () => {
       const nodeMapping: NodeMapping = { portIn: '0:0:0', portOut: '1:0:0' };
       expect(nodeMapping.portIn).toBe('0:0:0');
+    });
+  });
+
+  describe('Error handling', () => {
+    it('should show error toast when getNode fails', () => {
+      mockNodeService.getNode.mockReturnValue(throwError(() => new Error('Failed to load node')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
+      component.ngOnInit();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load node');
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show error toast when updateNode fails', () => {
+      mockNodeService.updateNode.mockReturnValue(throwError(() => new Error('Failed to update node')));
+      const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+      component.nameForm.patchValue({ name: 'Test Node' });
+
+      component.onSaveClick();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update node');
+      expect(cdrSpy).toHaveBeenCalled();
+      expect(mockDialogRef.close).not.toHaveBeenCalled();
     });
   });
 });

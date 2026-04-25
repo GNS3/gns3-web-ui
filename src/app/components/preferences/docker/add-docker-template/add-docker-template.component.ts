@@ -75,23 +75,44 @@ export class AddDockerTemplateComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
-
-      this.consoleTypes = this.configurationService.getConsoleTypes();
-      this.auxConsoleTypes = this.configurationService.getAuxConsoleTypes();
-
-      this.templateMocksService.getDockerTemplate().subscribe((dockerTemplate: DockerTemplate) => {
-        this.dockerTemplate = dockerTemplate;
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
         this.cd.markForCheck();
-      });
 
-      this.dockerService.getImages(controller).subscribe((images) => {
-        this.dockerImages = images;
+        this.consoleTypes = this.configurationService.getConsoleTypes();
+        this.auxConsoleTypes = this.configurationService.getAuxConsoleTypes();
+
+        this.templateMocksService.getDockerTemplate().subscribe({
+          next: (dockerTemplate: DockerTemplate) => {
+            this.dockerTemplate = dockerTemplate;
+            this.cd.markForCheck();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load template';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
+        });
+
+        this.dockerService.getImages(controller).subscribe({
+          next: (images) => {
+            this.dockerImages = images;
+            this.cd.markForCheck();
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load docker images';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
+        });
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
         this.cd.markForCheck();
-      });
-    });
+      }
+    );
   }
 
   setControllerType(controllerType: string) {

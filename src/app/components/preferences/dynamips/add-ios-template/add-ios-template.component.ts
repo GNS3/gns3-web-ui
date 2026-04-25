@@ -127,23 +127,37 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
     });
 
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((ctrl: Controller) => {
-      this.controller.set(ctrl);
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (ctrl: Controller) => {
+        this.controller.set(ctrl);
 
-      this.getImages();
+        this.getImages();
 
-      this.templateMocksService.getIosTemplate().subscribe((iosTemplate: IosTemplate) => {
-        this.iosTemplate.set(iosTemplate);
-        this.platforms.set(this.iosConfigurationService.getAvailablePlatforms());
-        this.platformsWithEtherSwitchRouterOption.set(
-          this.iosConfigurationService.getPlatformsWithEtherSwitchRouterOption()
-        );
-        this.chassisOptions.set(this.iosConfigurationService.getChassis());
-        this.defaultRam.set(this.iosConfigurationService.getDefaultRamSettings());
-        this.adapterMatrix.set(this.iosConfigurationService.getAdapterMatrix());
-        this.wicMatrix.set(this.iosConfigurationService.getWicMatrix());
-      });
-    });
+        this.templateMocksService.getIosTemplate().subscribe({
+          next: (iosTemplate: IosTemplate) => {
+            this.iosTemplate.set(iosTemplate);
+            this.platforms.set(this.iosConfigurationService.getAvailablePlatforms());
+            this.platformsWithEtherSwitchRouterOption.set(
+              this.iosConfigurationService.getPlatformsWithEtherSwitchRouterOption()
+            );
+            this.chassisOptions.set(this.iosConfigurationService.getChassis());
+            this.defaultRam.set(this.iosConfigurationService.getDefaultRamSettings());
+            this.adapterMatrix.set(this.iosConfigurationService.getAdapterMatrix());
+            this.wicMatrix.set(this.iosConfigurationService.getWicMatrix());
+          },
+          error: (err) => {
+            const message = err.error?.message || err.message || 'Failed to load template';
+            this.toasterService.error(message);
+            this.cd.markForCheck();
+          },
+        });
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   fillDefaultSlots() {
@@ -167,8 +181,15 @@ export class AddIosTemplateComponent implements OnInit, OnDestroy {
   }
 
   getImages() {
-    this.iosService.getImages(this.controller()).subscribe((images: IosImage[]) => {
-      this.iosImages.set(images);
+    this.iosService.getImages(this.controller()).subscribe({
+      next: (images: IosImage[]) => {
+        this.iosImages.set(images);
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load images';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 

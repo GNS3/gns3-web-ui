@@ -98,13 +98,20 @@ export class AddUserDialogComponent implements OnInit {
         validators: [matchingPassword],
       }
     );
-    this.groupService.getGroups(this.controller).subscribe((groups: Group[]) => {
-      this.groups = groups;
-      this.filteredGroups = this.autocompleteControl.valueChanges.pipe(
-        startWith(''),
-        map((value) => this._filter(value))
-      );
-      this.cd.markForCheck();
+    this.groupService.getGroups(this.controller).subscribe({
+      next: (groups: Group[]) => {
+        this.groups = groups;
+        this.filteredGroups = this.autocompleteControl.valueChanges.pipe(
+          startWith(''),
+          map((value) => this._filter(value))
+        );
+        this.cd.markForCheck();
+      },
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to load groups';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
     });
   }
 
@@ -130,27 +137,29 @@ export class AddUserDialogComponent implements OnInit {
     }
     const newUser = this.addUserForm.value;
     const toAdd = Array.from(this.groupsToAdd.values());
-    this.userService.add(this.controller, newUser).subscribe(
-      (user: User) => {
+    this.userService.add(this.controller, newUser).subscribe({
+      next: (user: User) => {
         this.toasterService.success(`User ${user.username} added`);
         toAdd.forEach((group: Group) => {
-          this.groupService.addMemberToGroup(this.controller, group, user).subscribe(
-            () => {
+          this.groupService.addMemberToGroup(this.controller, group, user).subscribe({
+            next: () => {
               this.toasterService.success(`user ${user.username} was added to group ${group.name}`);
             },
-            (error) => {
-              this.toasterService.error(
-                `An error occur while trying to add user ${user.username} to group ${group.name}`
-              );
-            }
-          );
+            error: (err) => {
+              const message = err.error?.message || err.message || 'Failed to add user to group';
+              this.toasterService.error(message);
+              this.cd.markForCheck();
+            },
+          });
         });
         this.dialogRef.close();
       },
-      (error: HttpErrorResponse) => {
-        this.toasterService.error('Cannot create user: ' + `${error.error?.message || error.message}`);
-      }
-    );
+      error: (err) => {
+        const message = err.error?.message || err.message || 'Failed to create user';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      },
+    });
   }
 
   deleteGroup(group: Group) {

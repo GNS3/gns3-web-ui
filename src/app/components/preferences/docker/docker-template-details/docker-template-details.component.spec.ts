@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { DockerTemplateDetailsComponent } from './docker-template-details.component';
 import { DockerService } from '@services/docker.service';
 import { DockerConfigurationService } from '@services/docker-configuration.service';
@@ -517,6 +517,76 @@ describe('DockerTemplateDetailsComponent', () => {
   describe('Template display', () => {
     it('should display columns for adapters table', () => {
       expect(component.displayedColumns).toEqual(['adapter_number', 'port_name']);
+    });
+  });
+
+  describe('error handling', () => {
+    it('should show error toaster when controllerService.get fails', async () => {
+      mockControllerService.get.mockRejectedValue({ error: { message: 'Controller error' } });
+
+      fixture = TestBed.createComponent(DockerTemplateDetailsComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Controller error');
+    });
+
+    it('should use fallback message when controllerService.get error has no message', async () => {
+      mockControllerService.get.mockRejectedValue({});
+
+      fixture = TestBed.createComponent(DockerTemplateDetailsComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load controller');
+    });
+
+    it('should show error toaster when getTemplate fails', async () => {
+      mockControllerService.get.mockResolvedValue(createMockController());
+      mockDockerService.getTemplate.mockReturnValue(throwError(() => ({ error: { message: 'Template error' } })));
+
+      fixture = TestBed.createComponent(DockerTemplateDetailsComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Template error');
+    });
+
+    it('should use fallback message when getTemplate error has no message', async () => {
+      mockControllerService.get.mockResolvedValue(createMockController());
+      mockDockerService.getTemplate.mockReturnValue(throwError(() => ({})));
+
+      fixture = TestBed.createComponent(DockerTemplateDetailsComponent);
+      component = fixture.componentInstance;
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load template');
+    });
+
+    it('should show error toaster when saveTemplate fails', () => {
+      const mockTemplate = createMockDockerTemplate('template-1');
+      component.dockerTemplate = mockTemplate;
+      component.controller = createMockController(1);
+      mockDockerService.saveTemplate.mockReturnValue(throwError(() => ({ error: { message: 'Save error' } })));
+
+      component.onSave();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Save error');
+    });
+
+    it('should use fallback message when saveTemplate error has no message', () => {
+      const mockTemplate = createMockDockerTemplate('template-1');
+      component.dockerTemplate = mockTemplate;
+      component.controller = createMockController(1);
+      mockDockerService.saveTemplate.mockReturnValue(throwError(() => ({})));
+
+      component.onSave();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to save template');
     });
   });
 });

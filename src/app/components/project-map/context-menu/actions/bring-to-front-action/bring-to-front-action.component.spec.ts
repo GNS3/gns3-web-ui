@@ -2,7 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { BringToFrontActionComponent } from './bring-to-front-action.component';
 import { Node } from '../../../../../cartography/models/node';
 import { Drawing } from '../../../../../cartography/models/drawing';
@@ -11,6 +11,8 @@ import { NodeService } from '@services/node.service';
 import { DrawingService } from '@services/drawing.service';
 import { NodesDataSource } from '../../../../../cartography/datasources/nodes-datasource';
 import { DrawingsDataSource } from '../../../../../cartography/datasources/drawings-datasource';
+import { ToasterService } from '@services/toaster.service';
+import { ChangeDetectorRef } from '@angular/core';
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('BringToFrontActionComponent', () => {
@@ -20,6 +22,8 @@ describe('BringToFrontActionComponent', () => {
   let mockDrawingService: { update: ReturnType<typeof vi.fn> };
   let mockNodesDataSource: { update: ReturnType<typeof vi.fn> };
   let mockDrawingsDataSource: { update: ReturnType<typeof vi.fn> };
+  let mockToasterService: { error: ReturnType<typeof vi.fn> };
+  let mockCdr: { markForCheck: ReturnType<typeof vi.fn> };
 
   const mockController: Controller = {
     id: 1,
@@ -83,15 +87,20 @@ describe('BringToFrontActionComponent', () => {
     mockDrawingService = { update: vi.fn().mockReturnValue(of({})) };
     mockNodesDataSource = { update: vi.fn() };
     mockDrawingsDataSource = { update: vi.fn() };
+    mockToasterService = { error: vi.fn() };
+    mockCdr = { markForCheck: vi.fn() };
 
     await TestBed.configureTestingModule({
       imports: [MatButtonModule, MatIconModule, MatMenuModule],
-    })
-      .overrideProvider(NodeService, { useValue: mockNodeService })
-      .overrideProvider(DrawingService, { useValue: mockDrawingService })
-      .overrideProvider(NodesDataSource, { useValue: mockNodesDataSource })
-      .overrideProvider(DrawingsDataSource, { useValue: mockDrawingsDataSource })
-      .compileComponents();
+      providers: [
+        { provide: NodeService, useValue: mockNodeService },
+        { provide: DrawingService, useValue: mockDrawingService },
+        { provide: NodesDataSource, useValue: mockNodesDataSource },
+        { provide: DrawingsDataSource, useValue: mockDrawingsDataSource },
+        { provide: ToasterService, useValue: mockToasterService },
+        { provide: ChangeDetectorRef, useValue: mockCdr },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(BringToFrontActionComponent);
     component = fixture.componentInstance;
@@ -244,6 +253,105 @@ describe('BringToFrontActionComponent', () => {
       button.click();
 
       expect(bringToFrontSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('error handling', () => {
+    it('should show error toast when nodeService.update fails', async () => {
+      mockNodeService.update.mockReturnValue(
+        throwError(() => ({ error: { message: 'Failed to update node' } }))
+      );
+      const nodes = [createMockNode(0)];
+      fixture.componentRef.setInput('nodes', nodes);
+      fixture.componentRef.setInput('drawings', []);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      component.bringToFront();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update node');
+    });
+
+    it('should use fallback message when nodeService.update error has no message', async () => {
+      mockNodeService.update.mockReturnValue(throwError(() => ({})));
+      const nodes = [createMockNode(0)];
+      fixture.componentRef.setInput('nodes', nodes);
+      fixture.componentRef.setInput('drawings', []);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      component.bringToFront();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to bring node to front');
+    });
+
+    it('should call markForCheck when nodeService.update fails', async () => {
+      mockNodeService.update.mockReturnValue(
+        throwError(() => ({ error: { message: 'Failed' } }))
+      );
+      const nodes = [createMockNode(0)];
+      fixture.componentRef.setInput('nodes', nodes);
+      fixture.componentRef.setInput('drawings', []);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      component.bringToFront();
+      await vi.runAllTimersAsync();
+
+      expect(cdrSpy).toHaveBeenCalled();
+    });
+
+    it('should show error toast when drawingService.update fails', async () => {
+      mockDrawingService.update.mockReturnValue(
+        throwError(() => ({ error: { message: 'Failed to update drawing' } }))
+      );
+      const nodes: Node[] = [];
+      const drawings = [createMockDrawing(0)];
+      fixture.componentRef.setInput('nodes', nodes);
+      fixture.componentRef.setInput('drawings', drawings);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      component.bringToFront();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to update drawing');
+    });
+
+    it('should use fallback message when drawingService.update error has no message', async () => {
+      mockDrawingService.update.mockReturnValue(throwError(() => ({})));
+      const nodes: Node[] = [];
+      const drawings = [createMockDrawing(0)];
+      fixture.componentRef.setInput('nodes', nodes);
+      fixture.componentRef.setInput('drawings', drawings);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      component.bringToFront();
+      await vi.runAllTimersAsync();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to bring drawing to front');
+    });
+
+    it('should call markForCheck when drawingService.update fails', async () => {
+      mockDrawingService.update.mockReturnValue(
+        throwError(() => ({ error: { message: 'Failed' } }))
+      );
+      const nodes: Node[] = [];
+      const drawings = [createMockDrawing(0)];
+      fixture.componentRef.setInput('nodes', nodes);
+      fixture.componentRef.setInput('drawings', drawings);
+      fixture.componentRef.setInput('controller', mockController);
+      fixture.detectChanges();
+
+      const cdrSpy = vi.spyOn(component['cdr'], 'markForCheck');
+      component.bringToFront();
+      await vi.runAllTimersAsync();
+
+      expect(cdrSpy).toHaveBeenCalled();
     });
   });
 });

@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { ChangeDetectorRef } from '@angular/core';
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { SnapshotDialogComponent } from './snapshot-dialog.component';
 import { SnapshotService } from '@services/snapshot.service';
 import { ProgressDialogService } from '../../../common/progress-dialog/progress-dialog.service';
@@ -9,7 +9,7 @@ import { ToasterService } from '@services/toaster.service';
 import { Snapshot } from '@models/snapshot';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 
 describe('SnapshotDialogComponent', () => {
   let component: SnapshotDialogComponent;
@@ -19,6 +19,7 @@ describe('SnapshotDialogComponent', () => {
   let mockDialog: any;
   let mockDialogRef: any;
   let mockChangeDetectorRef: any;
+  let mockProgressDialogService: any;
   let mockController: Controller;
   let mockProject: Project;
 
@@ -56,6 +57,13 @@ describe('SnapshotDialogComponent', () => {
 
     mockChangeDetectorRef = {
       markForCheck: vi.fn(),
+    };
+
+    mockProgressDialogService = {
+      open: vi.fn().mockReturnValue({
+        afterClosed: () => of(null),
+        close: vi.fn(),
+      }),
     };
 
     mockController = {
@@ -102,10 +110,7 @@ describe('SnapshotDialogComponent', () => {
         { provide: MAT_DIALOG_DATA, useValue: { controller: mockController, project: mockProject } },
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: SnapshotService, useValue: mockSnapshotService },
-        {
-          provide: ProgressDialogService,
-          useValue: { open: vi.fn().mockReturnValue({ afterClosed: () => of(null), close: vi.fn() }) },
-        },
+        { provide: ProgressDialogService, useValue: mockProgressDialogService },
         { provide: ToasterService, useValue: mockToasterService },
         { provide: MatDialog, useValue: mockDialog },
         { provide: ChangeDetectorRef, useValue: mockChangeDetectorRef },
@@ -114,6 +119,10 @@ describe('SnapshotDialogComponent', () => {
 
     fixture = TestBed.createComponent(SnapshotDialogComponent);
     component = fixture.componentInstance;
+  });
+
+  afterEach(() => {
+    if (fixture) fixture.destroy();
   });
 
   describe('Creation', () => {
@@ -185,6 +194,214 @@ describe('SnapshotDialogComponent', () => {
 
     it('should have deleteSnapshot method', () => {
       expect(typeof (SnapshotDialogComponent.prototype as any).deleteSnapshot).toBe('function');
+    });
+  });
+
+  describe('error handling', () => {
+    beforeEach(() => {
+      vi.clearAllMocks();
+    });
+
+    describe('loadSnapshots', () => {
+      it('should show error toaster when list fails with error.error.message', async () => {
+        mockSnapshotService.list.mockReturnValue(
+          throwError(() => ({ error: { message: 'List failed' } }))
+        );
+
+        const newFixture = TestBed.createComponent(SnapshotDialogComponent);
+        newFixture.detectChanges();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load snapshots: List failed');
+      });
+
+      it('should use err.message when error has no error.message', async () => {
+        const error = new Error('Network error');
+        mockSnapshotService.list.mockReturnValue(throwError(() => error));
+
+        const newFixture = TestBed.createComponent(SnapshotDialogComponent);
+        newFixture.detectChanges();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load snapshots: Network error');
+      });
+
+      it('should use fallback message when error has no message', async () => {
+        mockSnapshotService.list.mockReturnValue(throwError(() => ({})));
+
+        const newFixture = TestBed.createComponent(SnapshotDialogComponent);
+        newFixture.detectChanges();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load snapshots: Unknown error');
+      });
+    });
+
+    describe('openCreateDialog', () => {
+      it('should show error toaster when create fails', () => {
+        const testSnapshot = createMockSnapshot('snap-1', 'Test Snapshot');
+        const dialogMock = {
+          afterClosed: vi.fn().mockReturnValue(of(testSnapshot)),
+        };
+        vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+        mockSnapshotService.create.mockReturnValue(
+          throwError(() => ({ error: { message: 'Create failed' } }))
+        );
+        const mockProgress = {
+          close: vi.fn(),
+          afterClosed: () => of(null),
+        };
+        mockProgressDialogService.open.mockReturnValue(mockProgress);
+
+        component.openCreateDialog();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to create snapshot: Create failed');
+        expect(mockProgress.close).toHaveBeenCalled();
+      });
+
+      it('should use fallback message when create error has no message', () => {
+        const testSnapshot = createMockSnapshot('snap-1', 'Test Snapshot');
+        const dialogMock = {
+          afterClosed: vi.fn().mockReturnValue(of(testSnapshot)),
+        };
+        vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+        mockSnapshotService.create.mockReturnValue(throwError(() => ({})));
+        const mockProgress = {
+          close: vi.fn(),
+          afterClosed: () => of(null),
+        };
+        mockProgressDialogService.open.mockReturnValue(mockProgress);
+
+        component.openCreateDialog();
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to create snapshot: Unknown error');
+      });
+
+      it('should call markForCheck when create fails', () => {
+        const testSnapshot = createMockSnapshot('snap-1', 'Test Snapshot');
+        const dialogMock = {
+          afterClosed: vi.fn().mockReturnValue(of(testSnapshot)),
+        };
+        vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+        mockSnapshotService.create.mockReturnValue(
+          throwError(() => ({ error: { message: 'Create failed' } }))
+        );
+        const mockProgress = {
+          close: vi.fn(),
+          afterClosed: () => of(null),
+        };
+        mockProgressDialogService.open.mockReturnValue(mockProgress);
+
+        const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+        component.openCreateDialog();
+
+        expect(cdrSpy).toHaveBeenCalled();
+      });
+    });
+
+    describe('restoreSnapshot', () => {
+      it('should show error toaster when restore fails', () => {
+        const testSnapshot = createMockSnapshot('snap-1', 'Test Snapshot');
+        const dialogMock = {
+          afterClosed: vi.fn().mockReturnValue(of(true)),
+        };
+        vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+        mockSnapshotService.restore.mockReturnValue(
+          throwError(() => ({ error: { message: 'Restore failed' } }))
+        );
+        const mockProgress = {
+          close: vi.fn(),
+          afterClosed: () => of(null),
+        };
+        mockProgressDialogService.open.mockReturnValue(mockProgress);
+
+        component.restoreSnapshot(testSnapshot);
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to restore snapshot: Restore failed');
+        expect(mockProgress.close).toHaveBeenCalled();
+      });
+
+      it('should use fallback message when restore error has no message', () => {
+        const testSnapshot = createMockSnapshot('snap-1', 'Test Snapshot');
+        const dialogMock = {
+          afterClosed: vi.fn().mockReturnValue(of(true)),
+        };
+        vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+        mockSnapshotService.restore.mockReturnValue(throwError(() => ({})));
+        const mockProgress = {
+          close: vi.fn(),
+          afterClosed: () => of(null),
+        };
+        mockProgressDialogService.open.mockReturnValue(mockProgress);
+
+        component.restoreSnapshot(testSnapshot);
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to restore snapshot: Unknown error');
+      });
+
+      it('should call markForCheck when restore fails', () => {
+        const testSnapshot = createMockSnapshot('snap-1', 'Test Snapshot');
+        const dialogMock = {
+          afterClosed: vi.fn().mockReturnValue(of(true)),
+        };
+        vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+        mockSnapshotService.restore.mockReturnValue(
+          throwError(() => ({ error: { message: 'Restore failed' } }))
+        );
+        const mockProgress = {
+          close: vi.fn(),
+          afterClosed: () => of(null),
+        };
+        mockProgressDialogService.open.mockReturnValue(mockProgress);
+
+        const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+        component.restoreSnapshot(testSnapshot);
+
+        expect(cdrSpy).toHaveBeenCalled();
+      });
+    });
+
+    describe('deleteSnapshot', () => {
+      it('should show error toaster when delete fails', () => {
+        const testSnapshot = createMockSnapshot('snap-1', 'Test Snapshot');
+        const dialogMock = {
+          afterClosed: vi.fn().mockReturnValue(of(true)),
+        };
+        vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+        mockSnapshotService.delete.mockReturnValue(
+          throwError(() => ({ error: { message: 'Delete failed' } }))
+        );
+
+        component.deleteSnapshot(testSnapshot);
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to delete snapshot: Delete failed');
+      });
+
+      it('should use fallback message when delete error has no message', () => {
+        const testSnapshot = createMockSnapshot('snap-1', 'Test Snapshot');
+        const dialogMock = {
+          afterClosed: vi.fn().mockReturnValue(of(true)),
+        };
+        vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+        mockSnapshotService.delete.mockReturnValue(throwError(() => ({})));
+
+        component.deleteSnapshot(testSnapshot);
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('Failed to delete snapshot: Unknown error');
+      });
+
+      it('should call markForCheck when delete fails', () => {
+        const testSnapshot = createMockSnapshot('snap-1', 'Test Snapshot');
+        const dialogMock = {
+          afterClosed: vi.fn().mockReturnValue(of(true)),
+        };
+        vi.spyOn(component['dialog'], 'open').mockReturnValue(dialogMock as any);
+        mockSnapshotService.delete.mockReturnValue(
+          throwError(() => ({ error: { message: 'Delete failed' } }))
+        );
+
+        const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+        component.deleteSnapshot(testSnapshot);
+
+        expect(cdrSpy).toHaveBeenCalled();
+      });
     });
   });
 });

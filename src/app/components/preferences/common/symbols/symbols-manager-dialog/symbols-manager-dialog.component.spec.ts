@@ -2,6 +2,7 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { SymbolsManagerDialogComponent } from './symbols-manager-dialog.component';
 import { SymbolService } from '@services/symbol.service';
+import { ToasterService } from '@services/toaster.service';
 import { Controller } from '@models/controller';
 import { Symbol } from '@models/symbol';
 import { of, throwError } from 'rxjs';
@@ -12,6 +13,7 @@ describe('SymbolsManagerDialogComponent', () => {
   let fixture: ComponentFixture<SymbolsManagerDialogComponent>;
   let mockDialogRef: any;
   let mockSymbolService: any;
+  let mockToasterService: any;
 
   const mockController: Controller = {
     id: 1,
@@ -39,6 +41,10 @@ describe('SymbolsManagerDialogComponent', () => {
 
   beforeEach(async () => {
     mockDialogRef = { close: vi.fn() };
+    mockToasterService = {
+      success: vi.fn(),
+      error: vi.fn(),
+    };
     mockSymbolService = {
       list: vi.fn().mockReturnValue(of(mockSymbols)),
       add: vi.fn(),
@@ -62,6 +68,7 @@ describe('SymbolsManagerDialogComponent', () => {
         { provide: MatDialogRef, useValue: mockDialogRef },
         { provide: MAT_DIALOG_DATA, useValue: mockDialogData },
         { provide: SymbolService, useValue: mockSymbolService },
+        { provide: ToasterService, useValue: mockToasterService },
       ],
     }).compileComponents();
 
@@ -361,6 +368,44 @@ describe('SymbolsManagerDialogComponent', () => {
       const dialogActions = compiled.querySelector('mat-dialog-actions');
       const closeButton = dialogActions?.querySelector('button');
       expect(closeButton?.textContent).toContain('Close');
+    });
+  });
+
+  describe('error handling', () => {
+    it('should show error toaster when loadCustomSymbols fails', () => {
+      mockSymbolService.list.mockReturnValue(throwError(() => ({ error: { message: 'Load symbols failed' } })));
+
+      component.loadCustomSymbols();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Load symbols failed');
+    });
+
+    it('should use fallback message when loadCustomSymbols error has no message', () => {
+      mockSymbolService.list.mockReturnValue(throwError(() => ({})));
+
+      component.loadCustomSymbols();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load symbols');
+    });
+
+    it('should show error toaster when deleteSelectedSymbols fails', () => {
+      component.customSymbols.set(mockSymbols.filter((s) => !s.builtin));
+      component.selectedForDeletion.set(new Set(['router']));
+      mockSymbolService.delete.mockReturnValue(throwError(() => ({ error: { message: 'Delete failed' } })));
+
+      component.deleteSelectedSymbols();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Delete failed');
+    });
+
+    it('should use fallback message when deleteSelectedSymbols error has no message', () => {
+      component.customSymbols.set(mockSymbols.filter((s) => !s.builtin));
+      component.selectedForDeletion.set(new Set(['router']));
+      mockSymbolService.delete.mockReturnValue(throwError(() => ({})));
+
+      component.deleteSelectedSymbols();
+
+      expect(mockToasterService.error).toHaveBeenCalledWith('Failed to delete symbols');
     });
   });
 });

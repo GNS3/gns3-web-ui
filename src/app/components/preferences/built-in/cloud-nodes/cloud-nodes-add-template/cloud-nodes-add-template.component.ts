@@ -68,10 +68,17 @@ export class CloudNodesAddTemplateComponent implements OnInit {
 
   ngOnInit() {
     const controller_id = this.route.snapshot.paramMap.get('controller_id');
-    this.controllerService.get(parseInt(controller_id, 10)).then((controller: Controller) => {
-      this.controller = controller;
-      this.cd.markForCheck();
-    });
+    this.controllerService.get(parseInt(controller_id, 10)).then(
+      (controller: Controller) => {
+        this.controller = controller;
+        this.cd.markForCheck();
+      },
+      (err) => {
+        const message = err.error?.message || err.message || 'Failed to load controller';
+        this.toasterService.error(message);
+        this.cd.markForCheck();
+      }
+    );
   }
 
   setControllerType(controllerType: string) {
@@ -88,23 +95,29 @@ export class CloudNodesAddTemplateComponent implements OnInit {
     if (!this.formGroup.invalid) {
       let cloudTemplate: CloudTemplate;
 
-      this.templateMocksService.getCloudNodeTemplate().subscribe((template: CloudTemplate) => {
-        cloudTemplate = template;
-      });
+      this.templateMocksService.getCloudNodeTemplate().subscribe({
+        next: (template: CloudTemplate) => {
+          cloudTemplate = template;
+          cloudTemplate.template_id = uuid();
+          cloudTemplate.name = this.formGroup.get('templateName').value;
+          cloudTemplate.compute_id = 'local';
 
-      cloudTemplate.template_id = uuid();
-      cloudTemplate.name = this.formGroup.get('templateName').value;
-      cloudTemplate.compute_id = 'local';
-
-      this.builtInTemplatesService.addTemplate(this.controller, cloudTemplate).subscribe({
-        next: (cloudNodeTemplate) => {
-          this.goBack();
+          this.builtInTemplatesService.addTemplate(this.controller, cloudTemplate).subscribe({
+            next: () => {
+              this.goBack();
+            },
+            error: (err) => {
+              const message = err.error?.message || err.message || 'Failed to add cloud node template';
+              this.toasterService.error(message);
+              this.cd.markForCheck();
+            },
+          });
         },
         error: (err) => {
-          const message = err.error?.message || err.message || 'Failed to Cloud node add template';
+          const message = err.error?.message || err.message || 'Failed to load template';
           this.toasterService.error(message);
           this.cd.markForCheck();
-        }
+        },
       });
     } else {
       this.toasterService.error(`Fill all required fields`);
