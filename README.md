@@ -13,7 +13,9 @@ Please use GNS3 WebUI bundled in `gns3server` and `gns3`.
 
 ### Branches policy
 
-On branch `master` you can find the latest codebase including under development features. If you are looking for stable version with features promoted to be included in the current/next release please switch to `stable` branch.
+**Current branch**: `master-3.0` (Angular 21 Zoneless)
+
+This is the active development branch using Angular 21 Zoneless framework.
 
 ### Installation
 
@@ -23,14 +25,6 @@ We're using [yarn](https://yarnpkg.com/lang/en/) for packages installation:
 yarn install
 ```
 
-## JavaScript heap out of memory
-
-Increase the memory allocated to Node if you get JavaScript heap out of memory errors.
-
-```
-export NODE_OPTIONS=--max-old-space-size=8192
-```
-
 #### Run GNS3 server
 
 Visit [gns3-server](https://github.com/GNS3/gns3-server) for guide how to run GNS3 server.
@@ -38,8 +32,8 @@ Visit [gns3-server](https://github.com/GNS3/gns3-server) for guide how to run GN
 #### Run WebUI
 
 ```
-yarn ng serve
-``` 
+yarn start
+```
 
 Application is accessible on `http://127.0.0.1:4200/`. The app will automatically reload if you change any of the source files.
 
@@ -57,59 +51,55 @@ bash scripts/docker_dev_webui.sh
 yarn upgrade --latest
 ```
 
-### Code scaffolding
-
-Run `yarn ng generate component component-name` to generate a new component. You can also use `yarn ng generate directive|pipe|service|class|module`.
-
 ### Build
 
-Run `yarn ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+Run `yarn build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
 
 ### Running unit tests
 
-Run `yarn ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+Run `yarn test` to execute the unit tests via [Vitest](https://vitest.dev/).
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
 
 
 ## Releasing
 
-### Release naming convention
-
-Releases are named by the year and quarter when release is happening, e.g. January 2020 release is named 2020.1.X.
-
-### Bumping releases
-
-We're using [version-bump-prompt](https://www.npmjs.com/package/version-bump-prompt) for increasing version.
-
-Install `version-bump-prompt` via:
-
-        npm install -g version-bump-prompt
-        
-If you would like to bump prepatch just type:
-
-        bump --prepatch --tag --push
-        
 ### Distribute release
 
-We have got configured CircleCI, TravisCI and AppVeyor for distributing application for particular platform. In order to release you need to tag&push your changes from master.
+To create a release:
 
-First of all please remove `dev` from version in `package.json` (for instance `2019.2.0-alpha.4dev` to `2019.2.0-alpha.4`). Commit & push changes with message `Release 2019.2.0-alpha.4` . Next step is to tag repository and push to origin:
+1. Build the project: `yarn build --configuration production`
+2. Create a new release on [GitHub Releases](https://github.com/GNS3/gns3-web-ui/releases)
+3. Tag the release: `git tag v3.1.0 && git push origin v3.1.0`
+4. Upload the build artifacts from the `dist/` directory
 
-
-        git tag v2019.2.0-alpha.4
-        git push origin v2019.2.0-alpha.4
-        
-
-When artifacts are made you can see draft release here: [gns3-web-ui releases](https://github.com/GNS3/gns3-web-ui/releases) which is waiting to be published.
-After release please change current version in `package.json` to `2019.2.0-alpha.5dev`'. Otherwise artifacts will be overwritten during the next commit. Don't forget to commit & push changes.
+After publishing the release, update the version in `package.json` to the next development version (e.g., `3.1.0` → `3.2.0-dev`).
 
 #### Updating gns3server
 
-Checkout the latest master of `gns3server`. Run command `./scripts/update-bundled-web-ui.sh --tag=v2019.2.0-alpha.5`. Commit & push changes with message `Release 2019.2.0-alpha.4`.
+To bundle this Web UI into gns3-server, checkout the latest gns3-server and run:
 
-### Staging release
+```bash
+./scripts/update-bundled-web-ui.sh
+```
 
-In case you would like to create a new staging release. Please create draft release on github, like `0.0.1-dev1`. After successful build you can find artifacts there.
+Commit the changes with an appropriate release message.
+
+## Contributing
+
+Want to contribute to GNS3 Web UI? We'd love your help!
+
+Check out [CONTRIBUTING.md](CONTRIBUTING.md) for:
+- Development setup and guidelines
+- Code style and standards
+- Testing best practices
+- Pull request process
 
 ## Further help
 
-If you want to contribute to GNS3 Web UI feel free to reach us at `developers@gns3.net`.
+- **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Documentation**: See [docs/](docs/) directory
+- **Project Guide**: See [CLAUDE.md](CLAUDE.md) for AI-assisted development
+- **Issues**: [GitHub Issues](https://github.com/GNS3/gns3-web-ui/issues)
+
+For questions, feel free to open an issue or reach us at `developers@gns3.net`.
