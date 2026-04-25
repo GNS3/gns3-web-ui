@@ -376,11 +376,20 @@ export class TemplateComponent implements OnInit, OnDestroy {
   }
 
   private processNodeCreation(template: Template, x: number, y: number, computes: Compute[]) {
-    if (computes.length === 1) {
+    // Filter out unreachable compute nodes
+    const connectedComputes = computes.filter((compute) => compute.connected);
+
+    if (connectedComputes.length === 0) {
+      // No available compute nodes
+      this.toasterService.error('No reachable compute nodes available. Please check your compute nodes connection status.');
+      return;
+    }
+
+    if (connectedComputes.length === 1) {
       // Only one compute node, proceed directly
       const nodeAddedEvent: NodeAddedEvent = {
         template: template,
-        controller: computes[0].compute_id,
+        controller: connectedComputes[0].compute_id,
         numberOfNodes: 1,
         x: x,
         y: y,
@@ -391,7 +400,7 @@ export class TemplateComponent implements OnInit, OnDestroy {
       this.pendingNodePosition.set({ x, y });
       this.pendingTemplate.set(template);
       // Sort computes: local first, then by name
-      const sortedComputes = [...computes].sort((a, b) => {
+      const sortedComputes = [...connectedComputes].sort((a, b) => {
         if (a.compute_id === 'local') return -1;
         if (b.compute_id === 'local') return 1;
         return (a.name || '').localeCompare(b.name || '');
