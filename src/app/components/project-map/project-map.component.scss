@@ -397,7 +397,7 @@ line.selected {
 
 svg.map image:hover,
 svg.map image.chosen,
-g.selected {
+g.node_body.selected > image {
   filter: url('#grayscale');
 }
 

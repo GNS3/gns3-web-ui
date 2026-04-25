@@ -77,8 +77,8 @@ svg#map {
   background: var(--gns3-map-bg, var(--mat-sys-surface));
 }
 
-/* Node/Link selection grayscale effect */
-svg#map g.selected {
+/* Node selection grayscale effect: keep status badges colored */
+svg#map g.node_body.selected > image {
   filter: grayscale(100%);
   -webkit-filter: grayscale(100%);
 }
