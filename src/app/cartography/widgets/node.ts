@@ -95,15 +95,21 @@ export class NodeWidget implements Widget {
         .attr('transform', (n: MapNode) => {
           const w = n.width > 0 ? n.width : 60;
           const h = n.height > 0 ? n.height : 60;
-          // Cloud/NAT nodes have an irregular oval shape that doesn't fill bounding-box corners.
-          // Use the inscribed-ellipse 45° formula so the badge sits visually inside the symbol.
-          if (n.nodeType === 'cloud' || n.nodeType === 'nat') {
-            const inset = 12;
-            const bx = w / 2 + (w / 2 - inset) / Math.SQRT2;
-            const by = h / 2 - (h / 2 - inset) / Math.SQRT2;
+          // Place badge 25% inward from the top-right corner so it is always
+          // clearly inside the item regardless of size.
+          // Cloud/NAT nodes (and any node whose symbol name contains 'nat' or 'cloud')
+          // are oval-shaped — use a fixed 12px inset from the 45° arc point so the
+          // badge stays fully inside even on small nodes (badge half-size ≈ 8px).
+          const isOval =
+            n.nodeType === 'cloud' ||
+            n.nodeType === 'nat' ||
+            (n.symbol && (n.symbol.toLowerCase().includes('nat') || n.symbol.toLowerCase().includes('cloud')));
+          if (isOval) {
+            const bx = w / 2 + (w / 2 - 12) / Math.SQRT2;
+            const by = h / 2 - (h / 2 - 12) / Math.SQRT2;
             return `translate(${bx}, ${by})`;
           }
-          return `translate(${w - 12}, 12)`;
+          return `translate(${w * 0.80}, ${h * 0.20})`;
         });
 
       const lockedBadge = lockStatusBadge.filter((n: MapNode) => n.locked);

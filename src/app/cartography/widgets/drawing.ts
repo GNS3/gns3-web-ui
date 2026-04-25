@@ -103,12 +103,13 @@ export class DrawingWidget implements Widget {
         .attr('pointer-events', 'none')
         .attr('transform', (d: MapDrawing) => {
           if (d.element instanceof EllipseElement) {
-            // Place badge on the ellipse surface at ~45° (top-right), inset to match rectangle clearance
+            // Fixed 12px inset from the 45° arc point — stays stable when ellipse is resized.
             const bx = d.element.cx + (d.element.rx - 12) / Math.SQRT2;
             const by = d.element.cy - (d.element.ry - 12) / Math.SQRT2;
             return `translate(${bx}, ${by})`;
           }
           const elemWidth = d.element.width > 0 ? d.element.width : 60;
+          // Fixed 12px inset from the top-right corner — stays stable when drawing is resized.
           return `translate(${elemWidth - 12}, 12)`;
         });
 
