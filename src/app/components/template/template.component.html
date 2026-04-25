@@ -104,8 +104,9 @@
 
 @if (showComputeSelector() || currentCreationId()) {
   @if (showComputeSelector()) {
-  <div class="template__selector-backdrop" (click)="onComputeSelectorCancelled()">
+  <div class="template__selector-backdrop" (click)="onComputeSelectorCancelled()"></div>
   }
+
   <div
     class="template__ghost-icon"
     [style.left.px]="ghostIconScreenPosition().x"
@@ -131,6 +132,7 @@
     </div>
     }
   </div>
+
   @if (showComputeSelector()) {
     <app-compute-selector
       [computes]="availableComputes()"
@@ -138,6 +140,5 @@
       [y]="lastPageY()"
       (computeSelected)="onComputeSelected($event)"
     />
-  </div>
   }
 }
