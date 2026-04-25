@@ -102,21 +102,36 @@
   </div>
 </mat-menu>
 
-@if (showComputeSelector()) {
+@if (showComputeSelector() || currentCreationId()) {
+  @if (showComputeSelector()) {
   <div class="template__selector-backdrop" (click)="onComputeSelectorCancelled()">
-    <div
-      class="template__ghost-icon"
-      [style.left.px]="ghostIconScreenPosition().x"
-      [style.top.px]="ghostIconScreenPosition().y"
-    >
-      @if (pendingTemplate()) {
-      <img
-        class="template__ghost-icon-img"
-        [src]="getImageSourceForTemplate(pendingTemplate())"
-        draggable="false"
-      />
+  }
+  <div
+    class="template__ghost-icon"
+    [style.left.px]="ghostIconScreenPosition().x"
+    [style.top.px]="ghostIconScreenPosition().y"
+  >
+    @if (pendingTemplate()) {
+    <img
+      class="template__ghost-icon-img"
+      [src]="getImageSourceForTemplate(pendingTemplate())"
+      [class.template__ghost-icon-img--success]="currentCreationStatus() === 'success'"
+      [class.template__ghost-icon-img--error"]="currentCreationStatus() === 'error'"
+      draggable="false"
+    />
+    }
+
+    @if (currentCreationStatus() !== 'creating') {
+    <div class="template__ghost-icon-status">
+      @if (currentCreationStatus() === 'success') {
+      <mat-icon class="template__status-icon--success">check_circle</mat-icon>
+      } @else if (currentCreationStatus() === 'error') {
+      <mat-icon class="template__status-icon--error">error</mat-icon>
       }
     </div>
+    }
+  </div>
+  @if (showComputeSelector()) {
     <app-compute-selector
       [computes]="availableComputes()"
       [x]="lastPageX()"
@@ -124,31 +139,5 @@
       (computeSelected)="onComputeSelected($event)"
     />
   </div>
-}
-
-@for (creatingNode of creatingNodes().values(); track creatingNode.id) {
-  @let position = getCreatingNodeScreenPosition(creatingNode);
-  <div
-    class="template__creating-node"
-    [style.left.px]="position.x"
-    [style.top.px]="position.y"
-  >
-    <img
-      class="template__creating-node-icon"
-      [src]="getImageSourceForTemplate(creatingNode.template)"
-      [class.template__creating-node-icon--success]="creatingNode.status === 'success'"
-      [class.template__creating-node-icon--error]="creatingNode.status === 'error'"
-      draggable="false"
-    />
-
-    <div class="template__creating-node-status">
-      @if (creatingNode.status === 'creating') {
-      <mat-spinner diameter="20"></mat-spinner>
-      } @else if (creatingNode.status === 'success') {
-      <mat-icon class="template__status-icon--success">check_circle</mat-icon>
-      } @else if (creatingNode.status === 'error') {
-      <mat-icon class="template__status-icon--error">error</mat-icon>
-      }
-    </div>
-  </div>
+  }
 }

@@ -47,16 +47,6 @@ import { ComputeSelectorComponent } from './compute-selector/compute-selector.co
 import { NotificationService } from '@services/notification.service';
 import { ToasterService } from '@services/toaster.service';
 
-export interface CreatingNodeState {
-  id: string;
-  template: Template;
-  x: number;
-  y: number;
-  computeId: string;
-  status: 'creating' | 'success' | 'error';
-  errorMessage?: string;
-}
-
 @Component({
   selector: 'app-template',
   templateUrl: './template.component.html',
@@ -146,8 +136,9 @@ export class TemplateComponent implements OnInit, OnDestroy {
   pendingTemplate = signal<Template | null>(null);
   cachedComputes = signal<Compute[]>([]);
 
-  // Track multiple nodes being created concurrently
-  creatingNodes = signal<Map<string, CreatingNodeState>>(new Map());
+  // Track current node creation state
+  currentCreationId = signal<string | null>(null);
+  currentCreationStatus = signal<'creating' | 'success' | 'error'>('creating');
 
   // Ghost icon screen position: converts world coordinates to screen coordinates
   ghostIconScreenPosition = computed(() => {
@@ -426,8 +417,6 @@ export class TemplateComponent implements OnInit, OnDestroy {
 
   closeComputeSelector() {
     this.showComputeSelector.set(false);
-    this.pendingNodePosition.set(null);
-    this.pendingTemplate.set(null);
   }
 
   onComputeSelected(computeId: string) {
@@ -437,17 +426,8 @@ export class TemplateComponent implements OnInit, OnDestroy {
     if (position && template) {
       // Generate unique ID for this creation operation
       const creationId = this.generateUniqueId();
-
-      // Add to creating nodes list
-      const creatingNode: CreatingNodeState = {
-        id: creationId,
-        template: template,
-        x: position.x,
-        y: position.y,
-        computeId: computeId,
-        status: 'creating',
-      };
-      this.addCreatingNode(creatingNode);
+      this.currentCreationId.set(creationId);
+      this.currentCreationStatus.set('creating');
 
       // Emit event with creationId
       const nodeAddedEvent: NodeAddedEvent = {
@@ -467,63 +447,35 @@ export class TemplateComponent implements OnInit, OnDestroy {
 
   onComputeSelectorCancelled() {
     this.closeComputeSelector();
+    this.clearPendingState();
   }
 
-  // Helper methods for managing creating nodes
+  clearPendingState() {
+    this.showComputeSelector.set(false);
+    this.pendingNodePosition.set(null);
+    this.pendingTemplate.set(null);
+    this.currentCreationId.set(null);
+  }
+
+  // Helper methods
   private generateUniqueId(): string {
     return `creation-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  private addCreatingNode(creatingNode: CreatingNodeState) {
-    const current = new Map(this.creatingNodes());
-    current.set(creatingNode.id, creatingNode);
-    this.creatingNodes.set(current);
-    this.cd.markForCheck();
-  }
-
-  private updateCreatingNodeStatus(
-    creationId: string,
-    status: 'success' | 'error',
-    errorMessage?: string
-  ) {
-    const current = new Map(this.creatingNodes());
-    const node = current.get(creationId);
-    if (node) {
-      node.status = status;
-      node.errorMessage = errorMessage;
-      current.set(creationId, node);
-      this.creatingNodes.set(current);
-      this.cd.markForCheck();
-    }
-  }
-
-  private removeCreatingNode(creationId: string) {
-    const current = new Map(this.creatingNodes());
-    current.delete(creationId);
-    this.creatingNodes.set(current);
-    this.cd.markForCheck();
-  }
-
   // Called by project-map when node creation completes
   onNodeCreated(creationId: string, success: boolean, error?: string) {
-    this.updateCreatingNodeStatus(creationId, success ? 'success' : 'error', error);
+    // Check if this is the current creation
+    if (this.currentCreationId() !== creationId) {
+      return;
+    }
+
+    this.currentCreationStatus.set(success ? 'success' : 'error');
 
     // Remove ghost icon after delay
     const delay = success ? 1000 : 3000;
     setTimeout(() => {
-      this.removeCreatingNode(creationId);
+      this.clearPendingState();
     }, delay);
-  }
-
-  // Calculate screen position for a creating node
-  getCreatingNodeScreenPosition(creatingNode: CreatingNodeState) {
-    const k = this.context.transformation.k;
-    const zeroZero = this.context.getZeroZeroTransformationPoint();
-
-    const screenX = creatingNode.x * k + zeroZero.x + this.context.transformation.x;
-    const screenY = creatingNode.y * k + zeroZero.y + this.context.transformation.y;
-
-    return { x: screenX, y: screenY };
   }
 
   openDialog() {
