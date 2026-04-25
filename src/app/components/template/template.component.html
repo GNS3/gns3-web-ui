@@ -122,6 +122,8 @@
     [style.left.px]="position.x"
     [style.top.px]="position.y"
   >
+    <div class="template__ghost-name">{{ creatingNode.template.name }}</div>
+
     <img
       class="template__ghost-icon-img"
       [src]="getImageSourceForTemplate(creatingNode.template)"

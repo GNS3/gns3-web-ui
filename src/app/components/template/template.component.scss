@@ -186,6 +186,23 @@
   animation: pulse 1.5s ease-in-out infinite;
 }
 
+.template__ghost-name {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mat-sys-on-surface);
+  background: var(--mat-sys-surface);
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  box-shadow: 0 2px 4px var(--mat-sys-shadow);
+  pointer-events: none;
+}
+
 .template__ghost-icon-img {
   width: 60px;
   height: 60px;
