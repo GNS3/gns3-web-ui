@@ -15,7 +15,7 @@ import { Template } from '@models/template';
 import { Controller } from '@models/controller';
 import { Project } from '@models/project';
 import { NodeAddedEvent, TemplateListDialogComponent } from './template-list-dialog/template-list-dialog.component';
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, beforeAll, afterAll, vi } from 'vitest';
 
 describe('TemplateComponent', () => {
   let component: TemplateComponent;
@@ -165,7 +165,9 @@ describe('TemplateComponent', () => {
   });
 
   afterEach(() => {
-    fixture.destroy();
+    if (fixture) {
+      fixture.destroy();
+    }
   });
 
   describe('Creation', () => {
@@ -206,6 +208,7 @@ describe('TemplateComponent', () => {
       mockTemplateService.list.mockReturnValue(of(templates));
 
       component.ngOnInit();
+      fixture.detectChanges();
 
       expect(mockTemplateService.list).toHaveBeenCalledWith(mockController);
     });
@@ -215,6 +218,7 @@ describe('TemplateComponent', () => {
       mockTemplateService.list.mockReturnValue(of(templates));
 
       component.ngOnInit();
+      fixture.detectChanges();
 
       expect(component.templates).toEqual(templates);
       expect(component.filteredTemplates[0].name).toBe('Alpha');
@@ -225,6 +229,7 @@ describe('TemplateComponent', () => {
       mockTemplateService.list.mockReturnValue(of([]));
 
       component.ngOnInit();
+      fixture.detectChanges();
 
       expect(mockSymbolService.list).toHaveBeenCalledWith(mockController);
     });
@@ -234,6 +239,7 @@ describe('TemplateComponent', () => {
       mockTemplateService.list.mockReturnValue(of([]));
 
       component.ngOnInit();
+      fixture.detectChanges();
 
       expect(mockThemeService.getThemeType).toHaveBeenCalled();
       expect(component['isLightThemeEnabled']).toBe(true);
@@ -244,6 +250,7 @@ describe('TemplateComponent', () => {
       mockTemplateService.list.mockReturnValue(of([]));
 
       component.ngOnInit();
+      fixture.detectChanges();
 
       expect(mockThemeService.getThemeType).toHaveBeenCalled();
       expect(component['isLightThemeEnabled']).toBe(false);
@@ -254,6 +261,7 @@ describe('TemplateComponent', () => {
       mockTemplateService.list.mockReturnValue(of(templates));
 
       component.ngOnInit();
+      fixture.detectChanges();
 
       const newTemplate = createMockTemplate('t2', 'NewTemplate', 'docker');
       newTemplateCreatedSubject.next(newTemplate);
@@ -418,7 +426,7 @@ describe('TemplateComponent', () => {
 
       expect(component['dragElement']).toBe(mockElement);
 
-      eventSpy.mockReturnValue(originalWindowEvent);
+      eventSpy.mockRestore();
     });
   });
 
@@ -532,6 +540,14 @@ describe('TemplateComponent', () => {
     let mockComputeService: any;
     let mockSymbolService: any;
 
+    beforeAll(() => {
+      vi.useFakeTimers();
+    });
+
+    afterAll(() => {
+      vi.useRealTimers();
+    });
+
     beforeEach(() => {
       vi.clearAllMocks();
 
@@ -579,46 +595,62 @@ describe('TemplateComponent', () => {
       fixture.componentRef.setInput('project', mockProject);
       component['subscription'] = { unsubscribe: vi.fn() } as any;
       component['themeSubscription'] = { unsubscribe: vi.fn() } as any;
+      fixture.detectChanges(); // Initialize the component so inject() dependencies are available
     });
 
     describe('loadTemplates', () => {
-      it('should show error toaster when list fails with error.error.message', () => {
+      it('should show error toaster when list fails with error.error.message', async () => {
         mockTemplateService.list.mockReturnValue(
           throwError(() => ({ error: { message: 'List failed' } }))
         );
 
+        const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
         component.ngOnInit();
+        await vi.runAllTimersAsync();
 
         expect(mockToasterService.error).toHaveBeenCalledWith('List failed');
+        expect(cdrSpy).toHaveBeenCalled();
       });
 
-      it('should use fallback message when list error has no message', () => {
+      it('should use fallback message when list error has no message', async () => {
         mockTemplateService.list.mockReturnValue(throwError(() => ({})));
 
+        const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
         component.ngOnInit();
+        await vi.runAllTimersAsync();
 
         expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load templates');
+        expect(cdrSpy).toHaveBeenCalled();
       });
     });
 
     describe('loadTemplateSymbolBlobs', () => {
-      it('should show error toaster when forkJoin fails', () => {
+      it('should show error toaster when forkJoin fails', async () => {
         mockTemplateService.list.mockReturnValue(of([createMockTemplate('t1', 'Test', 'vpcs')]));
         mockSymbolService.getSymbolBlobUrl.mockReturnValue(throwError(() => ({ error: { message: 'Symbol failed' } })));
 
-        component.ngOnInit();
+        const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
 
-        // Need to wait for async operations
+        component.ngOnInit();
+        await vi.runAllTimersAsync();
+
         expect(mockToasterService.error).toHaveBeenCalledWith('Symbol failed');
+        expect(cdrSpy).toHaveBeenCalled();
       });
 
-      it('should use fallback message when symbol error has no message', () => {
+      it('should use fallback message when symbol error has no message', async () => {
         mockTemplateService.list.mockReturnValue(of([createMockTemplate('t1', 'Test', 'vpcs')]));
         mockSymbolService.getSymbolBlobUrl.mockReturnValue(throwError(() => ({})));
 
+        const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
+
         component.ngOnInit();
+        await vi.runAllTimersAsync();
 
         expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load template symbols');
+        expect(cdrSpy).toHaveBeenCalled();
       });
     });
 
@@ -631,31 +663,37 @@ describe('TemplateComponent', () => {
         component['mouseOffsetY'] = 0;
       });
 
-      it('should show error toaster when getComputes fails and fallback to local', () => {
+      it('should show error toaster when getComputes fails and fallback to local', async () => {
         mockComputeService.getComputes.mockReturnValue(
           throwError(() => ({ error: { message: 'Computes failed' } }))
         );
         const emitSpy = vi.spyOn(component.nodeCreationChange, 'emit');
+        const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
 
         component.dragEnd({} as any, createMockTemplate('t1', 'Test', 'vpcs'));
+        await vi.runAllTimersAsync();
 
         expect(mockToasterService.error).toHaveBeenCalledWith('Computes failed');
+        expect(cdrSpy).toHaveBeenCalled();
         expect(emitSpy).toHaveBeenCalled();
         const emittedEvent = emitSpy.mock.calls[0][0] as NodeAddedEvent;
         expect(emittedEvent.controller).toBe('local');
       });
 
-      it('should use fallback message when getComputes error has no message', () => {
+      it('should use fallback message when getComputes error has no message', async () => {
         mockComputeService.getComputes.mockReturnValue(throwError(() => ({})));
         const emitSpy = vi.spyOn(component.nodeCreationChange, 'emit');
+        const cdrSpy = vi.spyOn(component['cd'], 'markForCheck');
 
         component.dragEnd({} as any, createMockTemplate('t1', 'Test', 'vpcs'));
+        await vi.runAllTimersAsync();
 
         expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load computes');
+        expect(cdrSpy).toHaveBeenCalled();
         expect(emitSpy).toHaveBeenCalled();
       });
 
-      it('should filter out unreachable compute nodes and show error when none are reachable', () => {
+      it('should filter out unreachable compute nodes and show error when none are reachable', async () => {
         component['cachedComputes'].set([
           { compute_id: 'remote1', name: 'Remote1', host: '192.168.1.100', port: 3080, protocol: 'http:', connected: false } as any,
           { compute_id: 'remote2', name: 'Remote2', host: '192.168.1.101', port: 3080, protocol: 'http:', connected: false } as any,
