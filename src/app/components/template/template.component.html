@@ -102,43 +102,42 @@
   </div>
 </mat-menu>
 
-@if (showComputeSelector() || currentCreationId()) {
-  @if (showComputeSelector()) {
+@if (showComputeSelector()) {
   <div class="template__selector-backdrop" (click)="onComputeSelectorCancelled()"></div>
-  }
+}
 
+@if (showComputeSelector()) {
+  <app-compute-selector
+    [computes]="availableComputes()"
+    [x]="lastPageX()"
+    [y]="lastPageY()"
+    (computeSelected)="onComputeSelected($event)"
+  />
+}
+
+@for (creatingNode of creatingNodes().values(); track creatingNode.id) {
+  @let position = getCreatingNodeScreenPosition(creatingNode);
   <div
     class="template__ghost-icon"
-    [style.left.px]="ghostIconScreenPosition().x"
-    [style.top.px]="ghostIconScreenPosition().y"
+    [style.left.px]="position.x"
+    [style.top.px]="position.y"
   >
-    @if (pendingTemplate()) {
     <img
       class="template__ghost-icon-img"
-      [src]="getImageSourceForTemplate(pendingTemplate())"
-      [class.template__ghost-icon-img--success]="currentCreationStatus() === 'success'"
-      [class.template__ghost-icon-img--error"]="currentCreationStatus() === 'error'"
+      [src]="getImageSourceForTemplate(creatingNode.template)"
+      [class.template__ghost-icon-img--success]="creatingNode.status === 'success'"
+      [class.template__ghost-icon-img--error"]="creatingNode.status === 'error'"
       draggable="false"
     />
-    }
 
-    @if (currentCreationStatus() !== 'creating') {
+    @if (creatingNode.status !== 'waiting_for_compute' && creatingNode.status !== 'creating') {
     <div class="template__ghost-icon-status">
-      @if (currentCreationStatus() === 'success') {
+      @if (creatingNode.status === 'success') {
       <mat-icon class="template__status-icon--success">check_circle</mat-icon>
-      } @else if (currentCreationStatus() === 'error') {
+      } @else if (creatingNode.status === 'error') {
       <mat-icon class="template__status-icon--error">error</mat-icon>
       }
     </div>
     }
   </div>
-
-  @if (showComputeSelector()) {
-    <app-compute-selector
-      [computes]="availableComputes()"
-      [x]="lastPageX()"
-      [y]="lastPageY()"
-      (computeSelected)="onComputeSelected($event)"
-    />
-  }
 }
