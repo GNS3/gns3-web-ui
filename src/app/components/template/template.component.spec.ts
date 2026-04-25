@@ -425,7 +425,7 @@ describe('TemplateComponent', () => {
   describe('dragEnd', () => {
     beforeEach(() => {
       // Set cached computes so dragEnd uses cache instead of making HTTP request
-      component['cachedComputes'].set([{ compute_id: 'local', name: 'Local', host: 'localhost', port: 3080, protocol: 'http:' } as any]);
+      component['cachedComputes'].set([{ compute_id: 'local', name: 'Local', host: 'localhost', port: 3080, protocol: 'http:', connected: true } as any]);
     });
 
     it('should emit nodeCreationChange event', () => {
@@ -482,7 +482,7 @@ describe('TemplateComponent', () => {
       const emitSpy = vi.spyOn(component.nodeCreationChange, 'emit');
 
       // Set cached computes so dragEnd uses cache instead of making HTTP request
-      component['cachedComputes'].set([{ compute_id: 'local', name: 'Local', host: 'localhost', port: 3080, protocol: 'http:' } as any]);
+      component['cachedComputes'].set([{ compute_id: 'local', name: 'Local', host: 'localhost', port: 3080, protocol: 'http:', connected: true } as any]);
 
       mockContext.size = new Size(0, 0);
       component['lastPageX'].set(500);
@@ -653,6 +653,48 @@ describe('TemplateComponent', () => {
 
         expect(mockToasterService.error).toHaveBeenCalledWith('Failed to load computes');
         expect(emitSpy).toHaveBeenCalled();
+      });
+
+      it('should filter out unreachable compute nodes and show error when none are reachable', () => {
+        component['cachedComputes'].set([
+          { compute_id: 'remote1', name: 'Remote1', host: '192.168.1.100', port: 3080, protocol: 'http:', connected: false } as any,
+          { compute_id: 'remote2', name: 'Remote2', host: '192.168.1.101', port: 3080, protocol: 'http:', connected: false } as any,
+        ]);
+        component['lastPageX'].set(100);
+        component['lastPageY'].set(100);
+        component['mouseOffsetX'] = 0;
+        component['mouseOffsetY'] = 0;
+
+        const emitSpy = vi.spyOn(component.nodeCreationChange, 'emit');
+
+        component.dragEnd({} as any, createMockTemplate('t1', 'Test', 'vpcs'));
+
+        expect(mockToasterService.error).toHaveBeenCalledWith('No reachable compute nodes available. Please check your compute nodes connection status.');
+        expect(emitSpy).not.toHaveBeenCalled();
+      });
+
+      it('should filter out unreachable compute nodes and use only reachable ones', () => {
+        component['cachedComputes'].set([
+          { compute_id: 'local', name: 'Local', host: 'localhost', port: 3080, protocol: 'http:', connected: true } as any,
+          { compute_id: 'remote1', name: 'Remote1', host: '192.168.1.100', port: 3080, protocol: 'http:', connected: false } as any,
+          { compute_id: 'remote2', name: 'Remote2', host: '192.168.1.101', port: 3080, protocol: 'http:', connected: true } as any,
+        ]);
+        component['lastPageX'].set(100);
+        component['lastPageY'].set(100);
+        component['mouseOffsetX'] = 0;
+        component['mouseOffsetY'] = 0;
+
+        const emitSpy = vi.spyOn(component.nodeCreationChange, 'emit');
+
+        component.dragEnd({} as any, createMockTemplate('t1', 'Test', 'vpcs'));
+
+        // When there are multiple reachable computes, should show selector instead of emitting directly
+        expect(component['showComputeSelector']()).toBe(true);
+        expect(emitSpy).not.toHaveBeenCalled();
+        // Verify that only connected computes are available
+        const availableComputes = component['availableComputes']();
+        expect(availableComputes.length).toBe(2); // local and remote2 (remote1 is filtered out)
+        expect(availableComputes.every((c: any) => c.connected)).toBe(true);
       });
     });
   });
