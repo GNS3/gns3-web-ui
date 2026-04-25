@@ -241,6 +241,7 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   readonly mapChild = viewChild(D3MapComponent);
   readonly projectMapMenuComponent = viewChild.required(ProjectMapMenuComponent);
   readonly topologySummaryContainer = viewChild.required('topologySummaryContainer', { read: ViewContainerRef });
+  readonly templateComponent = viewChild(TemplateComponent);
 
   private projectMapSubscription: Subscription = new Subscription();
 
@@ -825,6 +826,8 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       return;
     }
 
+    const creationId = nodeAddedEvent.creationId;
+
     this.nodeService
       .createFromTemplate(
         this.controller,
@@ -836,6 +839,14 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
       )
       .subscribe(
         (node: Node) => {
+          // Notify template component of success
+          if (creationId && this.templateComponent()) {
+            this.templateComponent()!.onNodeCreated(creationId, true);
+          }
+
+          // Show success toast
+          this.toasterService.success(`Node "${node.name}" created successfully`);
+
           // if (nodeAddedEvent.name !== nodeAddedEvent.template.name) {
           //   node.name = nodeAddedEvent.name;
           //   this.nodeService.updateNode(this.controller, node).subscribe(()=>{});
@@ -871,6 +882,12 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
           });
         },
         (error) => {
+          // Notify template component of failure
+          if (creationId && this.templateComponent()) {
+            const errorMessage = error.error?.message || error.message || 'Unknown error';
+            this.templateComponent()!.onNodeCreated(creationId, false, errorMessage);
+          }
+
           this.toasterService.error(error.error?.message || error.message || 'Failed to create node from template');
         }
       );

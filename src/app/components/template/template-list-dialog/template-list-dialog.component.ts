@@ -208,6 +208,7 @@ export interface NodeAddedEvent {
   numberOfNodes: number;
   x: number;
   y: number;
+  creationId?: string;
 }
 
 export class TemplateDatabase {

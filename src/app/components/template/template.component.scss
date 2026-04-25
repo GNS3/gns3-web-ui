@@ -216,3 +216,61 @@
   z-index: 998;
   cursor: default;
 }
+
+/* =============================================
+// Creating Node (non-blocking, multiple concurrent)
+// ============================================= */
+.template__creating-node {
+  position: fixed;
+  z-index: 997;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.template__creating-node-icon {
+  width: 60px;
+  height: 60px;
+  opacity: 0.7;
+  filter: drop-shadow(0 4px 8px var(--mat-sys-shadow));
+  transition: all 0.3s ease;
+
+  &--success {
+    opacity: 1;
+    filter: drop-shadow(0 0 12px color-mix(in srgb, var(--mat-sys-primary) 40%, transparent));
+  }
+
+  &--error {
+    opacity: 0.4;
+    filter: grayscale(100%) drop-shadow(0 4px 8px var(--mat-sys-shadow));
+  }
+}
+
+.template__creating-node-status {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--mat-sys-surface);
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px var(--mat-sys-shadow);
+
+  mat-icon,
+  mat-spinner {
+    width: 20px;
+    height: 20px;
+  }
+
+  .template__status-icon--success {
+    color: var(--mat-sys-primary);
+    font-size: 20px;
+  }
+
+  .template__status-icon--error {
+    color: var(--mat-sys-error);
+    font-size: 20px;
+  }
+}
