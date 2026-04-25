@@ -16,8 +16,9 @@ const LOCKED_ICON_PATH =
 // Outer contour only (no inner rect subpath) — gives a solid filled shape so stroke only traces the outside edge
 const UNLOCKED_OUTER_PATH =
   'M18 8h-8V6c0-1.1.9-2 2-2s2 .9 2 2h2c0-2.21-1.79-4-4-4S8 3.79 8 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z';
-const LOCKED_ICON_COLOR = '#ff1744';
-const UNLOCKED_ICON_COLOR = '#00c853';
+const LOCKED_ICON_COLOR = 'var(--gns3-lock-badge-locked-color)';
+const UNLOCKED_ICON_COLOR = 'var(--gns3-lock-badge-unlocked-color)';
+const BADGE_OUTLINE_COLOR = 'var(--gns3-lock-badge-outline-color)';
 
 @Injectable()
 export class NodeWidget implements Widget {
@@ -111,7 +112,7 @@ export class NodeWidget implements Widget {
         .attr('d', LOCKED_ICON_PATH)
         .attr('transform', 'translate(-7.68, -7.68) scale(0.64)')
         .attr('fill', LOCKED_ICON_COLOR)
-        .attr('stroke', '#ffffff')
+        .attr('stroke', BADGE_OUTLINE_COLOR)
         .attr('stroke-width', 1.2)
         .attr('stroke-linejoin', 'round')
         .attr('paint-order', 'stroke fill');
@@ -126,7 +127,7 @@ export class NodeWidget implements Widget {
         .append<SVGPathElement>('path')
         .attr('d', UNLOCKED_OUTER_PATH)
         .attr('fill', UNLOCKED_ICON_COLOR)
-        .attr('stroke', '#ffffff')
+        .attr('stroke', BADGE_OUTLINE_COLOR)
         .attr('stroke-width', 1.2)
         .attr('stroke-linejoin', 'round')
         .attr('paint-order', 'stroke fill');
@@ -137,7 +138,7 @@ export class NodeWidget implements Widget {
         .attr('cx', 12)
         .attr('cy', 15)
         .attr('r', 2)
-        .attr('fill', '#ffffff');
+        .attr('fill', BADGE_OUTLINE_COLOR);
     }
 
     // update image of node
