@@ -117,8 +117,10 @@
 
 @for (creatingNode of creatingNodes().values(); track creatingNode.id) {
   @let position = getCreatingNodeScreenPosition(creatingNode);
+  @let shouldFade = creatingNode.status === 'success';
   <div
     class="template__ghost-icon"
+    [class.template__ghost-icon--fading]="shouldFade"
     [style.left.px]="position.x"
     [style.top.px]="position.y"
   >
@@ -127,18 +129,13 @@
     <img
       class="template__ghost-icon-img"
       [src]="getImageSourceForTemplate(creatingNode.template)"
-      [class.template__ghost-icon-img--success]="creatingNode.status === 'success'"
-      [class.template__ghost-icon-img--error"]="creatingNode.status === 'error'"
+      [class.template__ghost-icon-img--error]="creatingNode.status === 'error'"
       draggable="false"
     />
 
-    @if (creatingNode.status !== 'waiting_for_compute' && creatingNode.status !== 'creating') {
+    @if (creatingNode.status === 'error') {
     <div class="template__ghost-icon-status">
-      @if (creatingNode.status === 'success') {
-      <mat-icon class="template__status-icon--success">check_circle</mat-icon>
-      } @else if (creatingNode.status === 'error') {
       <mat-icon class="template__status-icon--error">error</mat-icon>
-      }
     </div>
     }
   </div>
