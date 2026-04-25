@@ -146,6 +146,7 @@ export class DrawingWidget implements Widget {
 
     drawing_body_merge
       .select<SVGAElement>('line.top')
+      .attr('stroke', 'transparent')
       .attr('stroke-width', '8px')
       .attr('x1', (drawing) =>
         drawing.element instanceof EllipseElement ? drawing.element.cx - drawing.element.width / 10 : '0'
