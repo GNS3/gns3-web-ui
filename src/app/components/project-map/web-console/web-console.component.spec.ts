@@ -15,9 +15,11 @@ import { XtermService } from '@services/xterm.service';
 // Store DOM elements for cleanup
 const domElementsToCleanup: HTMLElement[] = [];
 
-// Store mock instances globally to avoid pollution issues
-const mockTermInstances: any[] = [];
-const mockFitAddonInstances: any[] = [];
+// Store mock instances using vi.hoisted to ensure availability when vi.mock runs
+const { mockTermInstances, mockFitAddonInstances } = vi.hoisted(() => ({
+  mockTermInstances: [] as any[],
+  mockFitAddonInstances: [] as any[],
+}));
 
 // Mock xterm.js before importing component
 vi.mock('@xterm/xterm', () => ({
@@ -208,6 +210,9 @@ describe('WebConsoleComponent', () => {
   });
 
   beforeEach(async () => {
+    // Clear module cache to ensure mocks are properly applied
+    vi.resetModules();
+
     // Clear mock instance arrays to ensure test isolation
     mockTermInstances.length = 0;
     mockFitAddonInstances.length = 0;
