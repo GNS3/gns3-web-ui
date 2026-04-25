@@ -1279,11 +1279,15 @@ export class ProjectMapComponent implements OnInit, OnDestroy {
   public toggleItemLockStatus(visible: boolean) {
     this.itemLockStatusVisibility = visible;
     this.mapSettingsService.toggleItemLockStatus(visible);
-    const lockKey = `itemLockStatusVisibility_${this.project?.project_id}`;
-    if (visible) {
-      localStorage.setItem(lockKey, 'true');
-    } else {
-      localStorage.removeItem(lockKey);
+
+    const projectId = this.project?.project_id;
+    if (projectId != null) {
+      const lockKey = `itemLockStatusVisibility_${projectId}`;
+      if (visible) {
+        localStorage.setItem(lockKey, 'true');
+      } else {
+        localStorage.removeItem(lockKey);
+      }
     }
     this.mapChild()?.applyMapSettingsChanges();
   }
