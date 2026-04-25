@@ -97,6 +97,7 @@ export class ProjectService {
       scene_height: project.scene_height,
       snap_to_grid: project.snap_to_grid,
       show_interface_labels: project.show_interface_labels,
+      variables: project.variables,
     });
   }
 
