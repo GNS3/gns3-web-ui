@@ -182,7 +182,7 @@
   position: fixed;
   pointer-events: none;
   z-index: 999;
-  animation: pulse 1.5s ease-in-out infinite;
+  animation: pulse 2s ease-in-out infinite;
 
   &--fading {
     animation: fadeOut 1s ease-out forwards;
@@ -225,7 +225,7 @@
   }
   50% {
     opacity: 0.8;
-    transform: scale(1.05);
+    transform: scale(1.02);
   }
 }
 
@@ -265,17 +265,6 @@
 
   .template__status-icon--error {
     color: var(--mat-sys-error);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 0.6;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.05);
   }
 }
 
