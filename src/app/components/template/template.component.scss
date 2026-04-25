@@ -185,7 +185,7 @@
   animation: pulse 2s ease-in-out infinite;
 
   &--fading {
-    animation: fadeOut 1s ease-out forwards;
+    animation: fadeOut 0.5s ease-out forwards;
   }
 }
 
