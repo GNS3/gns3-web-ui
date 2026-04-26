@@ -2,7 +2,7 @@
 
 > Complete catalog of all components categorized by feature area
 
-**Last Updated**: 2026-04-22
+**Last Updated**: 2026-04-26
 **Total Components**: 249
 
 ---
@@ -27,9 +27,86 @@
 
 ---
 
+## Component Distribution Architecture
+
+```mermaid
+pie title Component Distribution by Feature Area
+    "Project Map/Topology" : 119
+    "Preferences/Settings" : 49
+    "User/Permission Management" : 23
+    "Project Management" : 11
+    "Other" : 13
+    "Cartography/Map Rendering" : 10
+    "Controller/Compute Management" : 5
+    "AI Chat" : 5
+    "Console/Terminal" : 4
+    "Dialogs (Common)" : 3
+    "Image Manager" : 3
+    "Common/Utilities" : 3
+    "Help/About" : 1
+```
+
+---
+
 ## 1. Project Map/Topology (119 components)
 
 The largest feature area, containing the main project map visualization, context menu actions, node configurators, and console interfaces.
+
+### Project Map Architecture
+
+```mermaid
+graph TB
+    subgraph "Project Map/Topology (119 components)"
+        A[project-map.component<br/>Core Map Component]
+
+        subgraph "AI Chat Integration (6)"
+            B1[ai-chat.component]
+            B2[chat-input-area.component]
+            B3[chat-message-list.component]
+            B4[chat-session-list.component]
+            B5[code-block-dialog.component]
+            B6[tool-details-dialog.component]
+        end
+
+        subgraph "Context Menu Actions (38)"
+            C1[context-menu.component]
+            C2[Node Actions - 20]
+            C3[Link Actions - 8]
+            C4[Layer Actions - 4]
+            C5[Style Actions - 6]
+        end
+
+        subgraph "Node Configurators (17)"
+            D1[config-editor.component]
+            D2[Platform Configurators - 7]
+            D3[Virtualization Configurators - 9]
+        end
+
+        subgraph "Console/Terminal (6)"
+            E1[console-wrapper.component]
+            E2[web-console.component]
+            E3[xterm integration]
+        end
+
+        subgraph "Drawing Editors (3)"
+            F1[link-style-editor.component]
+            F2[style-editor.component]
+            F3[text-editor.component]
+        end
+    end
+
+    A --> B1
+    A --> C1
+    A --> D1
+    A --> E1
+    A --> F1
+
+    style A fill:#ff6b6b
+    style B1 fill:#ffd93d
+    style C1 fill:#4ecdc4
+    style D1 fill:#95e1d3
+    style E1 fill:#f38181
+```
 
 ### Core Map Component
 - `project-map.component.ts` - Main project map view with D3.js rendering
