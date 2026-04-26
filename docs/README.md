@@ -4,7 +4,7 @@
 
 > Complete documentation index for GNS3 Web UI project
 
-**Last Updated**: 2026-04-22
+**Last Updated**: 2026-04-26
 
 ---
 
@@ -58,6 +58,7 @@ docs/
 │   │   ├── 02-material3-variables.md
 │   │   ├── hardcoded-colors-inventory.md
 │   │   ├── hardcoded-color-protection.md
+│   │   ├── how-to-add-hardcoded-colors.md
 │   │   └── map-backgrounds.md
 │   ├── dialog-style-isolation.md
 │   └── window-boundary-service.md
@@ -122,6 +123,7 @@ docs/
 | [Material 3 Variables](./guides/css/02-material3-variables.md) | Material Design 3 CSS variables |
 | [Hardcoded Color Inventory](./guides/css/hardcoded-colors-inventory.md) | All hardcoded color violations in codebase |
 | [Hardcoded Color Protection](./guides/css/hardcoded-color-protection.md) | ⭐ Multi-layer protection mechanism for code quality |
+| [How to Add Hardcoded Colors](./guides/css/how-to-add-hardcoded-colors.md) | ⭐ Quick reference guide for developers |
 | [Map Backgrounds](./guides/css/map-backgrounds.md) | Project map background & screenshot export |
 | [Window Boundary Service](./guides/window-boundary-service.md) | Window boundary management |
 
@@ -186,6 +188,17 @@ docs/
 ---
 
 ## Recent Changes
+
+### 2026-04-26
+
+- 📝 **Hardcoded Color Documentation Update**: Aligned documentation with actual implementation
+  - Removed inaccurate SHA256 protection description (was never implemented)
+  - Documented actual two-layer protection: Pre-commit warning + CI label check
+  - Added "How to Add Hardcoded Colors" quick reference guide
+  - Clarified support for .ts, .html, and .scss files
+  - Documentation: [guides/css/](./guides/css/)
+    - [hardcoded-color-protection.md](./guides/css/hardcoded-color-protection.md) (updated to v2.0.0)
+    - [how-to-add-hardcoded-colors.md](./guides/css/how-to-add-hardcoded-colors.md) ⭐ NEW
 
 ### 2026-04-18
 
@@ -282,7 +295,7 @@ docs/
 
 ---
 
-*Last Updated: 2026-04-18*
+*Last Updated: 2026-04-26*
 
 ---
 
