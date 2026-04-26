@@ -1,3 +1,11 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+See LICENSE file for licensing information.
+-->
+
+  > AI-assisted documentation. [See disclaimer](../README.md). 
+
+
 # GNS3 Web UI - Component Inventory by Feature
 
 > Complete catalog of all components categorized by feature area

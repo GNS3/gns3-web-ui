@@ -3,6 +3,9 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 See LICENSE file for licensing information.
 -->
 
+  > AI-assisted documentation. [See disclaimer](../README.md). 
+
+
 # GNS3 Web UI - Service Inventory by Domain
 
 > Complete catalog of all services categorized by functional domain

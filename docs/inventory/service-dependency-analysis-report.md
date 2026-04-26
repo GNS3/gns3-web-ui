@@ -1,3 +1,11 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+See LICENSE file for licensing information.
+-->
+
+  > AI-assisted documentation. [See disclaimer](../README.md). 
+
+
 # GNS3 Web UI - Service Dependency Analysis Report
 
 **Analysis Date**: 2026-04-26
