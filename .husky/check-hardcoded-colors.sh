@@ -27,26 +27,14 @@ load_allowed_colors() {
   done < <(jq -r '.allowed_colors[] | "\(.file)|\(.patterns[])"' "$CONFIG_FILE")
 }
 
-# Whitelist of variable names that are allowed to use hardcoded colors
-# (extracted from src/styles/_map.scss)
-ALLOWED_VARIABLES=(
-  "--gns3-map-bg-auto"
-  "--gns3-map-bg-light"
-  "--gns3-map-bg-dark"
-  "--gns3-map-bg-light-1"
-  "--gns3-map-bg-light-2"
-  "--gns3-map-bg-light-3"
-  "--gns3-map-bg-light-4"
-  "--gns3-map-bg-dark-1"
-  "--gns3-map-bg-dark-2"
-  "--gns3-map-bg-dark-3"
-  "--gns3-map-bg-dark-4"
-  "--gns3-map-bg"
-  "--gns3-canvas-label-color"
-  "--gns3-canvas-link-color"
-  "--gns3-grid-drawing-color"
-  "--gns3-grid-node-color"
-)
+# Load allowed SCSS variables from config
+load_allowed_scss_variables() {
+  ALLOWED_VARIABLES=()
+
+  while IFS= read -r var; do
+    ALLOWED_VARIABLES+=("$var")
+  done < <(jq -r '.allowed_scss_variables[].variables[]' "$CONFIG_FILE")
+}
 
 # Patterns to always exclude (comments, color-mix function, false positives)
 EXCLUDE_PATTERNS=(
@@ -125,6 +113,7 @@ check_file() {
 # Main
 check_config_exists
 load_allowed_colors
+load_allowed_scss_variables
 
 if [ "$1" = "--ci" ]; then
   # CI mode: check all files, fail on violations
