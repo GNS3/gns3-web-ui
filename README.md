@@ -59,6 +59,26 @@ Run `yarn build` to build the project. The build artifacts will be stored in the
 
 Run `yarn test` to execute the unit tests via [Vitest](https://vitest.dev/).
 
+### Code Quality Standards
+
+This project enforces strict code quality standards through automated checks:
+
+**Pre-commit Hooks**:
+- No `!important` in SCSS
+- No `::ng-deep` or `:deep()` in SCSS
+- No `ViewEncapsulation.None`
+- No Zone.js APIs (Zoneless framework)
+- No hardcoded colors (use CSS variables)
+
+**Hardcoded Color Protection**:
+- Use Material Design 3 variables: `--mat-sys-*`
+- Use GNS3 variables: `var(--gns3-*)`
+- See [docs/guides/css/](docs/guides/css/) for details
+
+**For exceptions**:
+- See [How to Add Hardcoded Colors](docs/guides/css/how-to-add-hardcoded-colors.md)
+- Requires `hooks-update` label when modifying quality checks
+
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
 
 

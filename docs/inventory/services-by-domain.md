@@ -3,12 +3,15 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 See LICENSE file for licensing information.
 -->
 
+  > AI-assisted documentation. [See disclaimer](../README.md). 
+
+
 # GNS3 Web UI - Service Inventory by Domain
 
 > Complete catalog of all services categorized by functional domain
 
-**Last Updated**: 2026-04-22
-**Total Services**: 73
+**Last Updated**: 2026-04-26
+**Total Services**: 75
 
 ---
 
@@ -24,7 +27,7 @@ See LICENSE file for licensing information.
 | Virtualization | 12 | Docker, QEMU, VirtualBox, VMware, IOS, IOU |
 | Network Simulation | 3 | VPCS, packet capture |
 | AI Features | 2 | AI chat and profile management |
-| System/Utilities | 19 | Settings, theme, notifications, progress |
+| System/Utilities | 21 | Settings, theme, notifications, progress, error handling |
 | Other/Utilities | 6 | Platform, version, external software |
 
 ---
@@ -71,7 +74,7 @@ Services for controller and compute node management.
 | **ControllerManagementService** | `controller-management.service.ts` | Local controller lifecycle (web stub) | None |
 | **ComputeService** | `compute.service.ts` | Compute node CRUD, connections, statistics | HttpController |
 | **ConnectionManagerService** | `connection-manager.service.ts` | WebSocket connection lifecycle for notifications | NotificationService |
-| **HttpController** | `http-controller.service.ts` | HTTP client wrapper with auth, error handling, URL construction | HttpClient, ControllerErrorHandler |
+| **HttpController** | `http-controller.service.ts` | HTTP client wrapper with auth, centralized error handling, URL construction | HttpClient, ControllerErrorHandler |
 
 ---
 
@@ -170,15 +173,15 @@ Services for AI-powered features (GNS3 Copilot).
 
 ---
 
-## 9. System/Utilities (19 services)
+## 9. System/Utilities (21 services)
 
-Core system services for settings, UI, notifications, and utilities.
+Core system services for settings, UI, notifications, error handling, and utilities.
 
 | Service | File | Description | Dependencies |
 |---------|------|-------------|--------------|
 | **SettingsService** | `settings.service.ts` | Application settings (crash reports, stats, console) | None |
 | **ThemeService** | `theme.service.ts` | Material Design 3 theme, light/dark mode | None |
-| **ToasterService** | `toaster.service.ts` | Toast notifications (success/warning/error) | MatSnackBar |
+| **ToasterService** | `toaster.service.ts` | Toast notifications (success/warning/error) - **Used by 121 components (48.6%)** | MatSnackBar |
 | **NotificationService** | `notification.service.ts` | WebSocket notifications for compute events | None |
 | **ProgressService** | `progress.service.ts` | Progress dialog state | None |
 | **ProgressDialogService** | `progress-dialog.service.ts` | Progress dialog display | MatDialog |
@@ -196,6 +199,8 @@ Core system services for settings, UI, notifications, and utilities.
 | **ProtocolHandlerService** | `protocol-handler.service.ts` | Custom protocol handler invocation | ToasterService, DeviceDetectorService, LoginService |
 | **VersionService** | `version.service.ts` | Controller version information | HttpController |
 | **UpdatesService** | `updates.service.ts` | GNS3 version update checks | HttpClient |
+| **ControllerErrorHandler** | `http-controller.service.ts` | HTTP error handling and transformation | None |
+| **ToasterErrorHandler** | `common/error-handlers/toaster-error-handler.ts` | Global error handler with toast notifications | ToasterService |
 
 ---
 
@@ -270,6 +275,186 @@ Miscellaneous utility services.
 - **Signal-based State**: Modern services use Signals for state management
 - **Centralized Configuration**: Dialog and settings configurations are centralized
 - **Modular Design**: Virtualization platforms follow consistent patterns
+
+---
+
+## Error Handling Architecture
+
+GNS3 Web UI implements a **two-tier error handling system** for robust error management.
+
+### Architecture Diagram
+
+```mermaid
+graph TB
+    subgraph "Component Layer"
+        A[Component]
+        B[ToasterService]
+    end
+
+    subgraph "Service Layer"
+        C[Business Service]
+        D[HttpController]
+    end
+
+    subgraph "HTTP Error Handling"
+        E[ControllerErrorHandler]
+    end
+
+    subgraph "Global Error Handling"
+        F[ToasterErrorHandler]
+    end
+
+    subgraph "External Systems"
+        G[GNS3 Controller API]
+    end
+
+    A -->|HTTP Request| C
+    C -->|Wrapped Call| D
+    D -->|HTTP Call| G
+    D -->|Error Transformation| E
+    E -->|ControllerError| D
+    D -->|Error Observable| C
+    C -->|Error| A
+    A -->|Display Error| B
+    A -->|Unhandled Error| F
+    F -->|Display Error| B
+
+    style E fill:#ffcccc
+    style F fill:#ffcccc
+    style B fill:#ccffcc
+```
+
+### Tier 1: HTTP Layer Error Handling
+
+**ControllerErrorHandler** provides centralized HTTP error handling:
+
+| Responsibility | Description |
+|----------------|-------------|
+| Error Transformation | Converts `HttpErrorResponse` to `ControllerError` |
+| Unreachable Controller Detection | Handles status 0 (network failures) |
+| Message Extraction | Extracts server error messages from response bodies |
+| Automatic Wrapping | Applied to all `HttpController` methods |
+
+**Error Types Handled**:
+
+| Error Type | Source | Transformation |
+|------------|--------|----------------|
+| Status 0 | Network failure | "Controller is unreachable" |
+| Server Error | API response | Extract `error.message` |
+| HTTP Error | Angular HTTP | Wrap in `ControllerError` |
+
+### Tier 2: Global Application Error Handler
+
+**ToasterErrorHandler** implements Angular's global error handling:
+
+| Responsibility | Description |
+|----------------|-------------|
+| Global Error Capture | Catches all unhandled errors via Angular's `ErrorHandler` |
+| Error Message Extraction | Extracts messages from various error types |
+| User Notification | Displays errors via `ToasterService` |
+| Console Logging | Logs errors (excludes 400, 403, 404, 409) |
+
+**Error Message Extraction Priority**:
+
+1. `error.error.message` - Server response body message
+2. `error.message` - Error object message
+3. `error.error` - Raw error object
+4. Fallback to "Handled unknown error"
+
+### Error Handling Flow
+
+```mermaid
+sequenceDiagram
+    participant C as Component
+    participant S as Service
+    participant H as HttpController
+    participant E as ControllerErrorHandler
+    participant G as ToasterErrorHandler
+    participant T as ToasterService
+    participant API as GNS3 API
+
+    C->>S: Call Service Method
+    S->>H: HTTP Request
+    H->>API: HTTP Call
+
+    alt HTTP Error
+        API-->>H: HttpErrorResponse
+        H->>E: handleError()
+        E->>E: Transform to ControllerError
+        E-->>H: ControllerError Observable
+        H-->>S: Error Observable
+        S-->>C: Error
+
+        alt Component Handles Error
+            C->>T: Display Error
+        else Component Doesn't Handle
+            C->>G: Unhandled Error
+            G->>T: Display Error
+        end
+    else HTTP Success
+        API-->>H: Response Data
+        H-->>S: Data Observable
+        S-->>C: Data
+    end
+```
+
+### Error Handling by Layer
+
+| Layer | Responsibility | Error Handler |
+|-------|----------------|---------------|
+| **HTTP Layer** | API call errors | `ControllerErrorHandler` |
+| **Service Layer** | Business logic errors | None (propagates to component) |
+| **Component Layer** | User-facing errors | `ToasterService` |
+| **Global Layer** | Unhandled errors | `ToasterErrorHandler` |
+
+---
+
+## ToasterService Architecture
+
+**Most Critical Service** - Used by 121 components (48.6% of all components)
+
+### Notification Types
+
+| Type | Duration | Panel Class | Use Case |
+|------|----------|-------------|----------|
+| Success | 4 seconds | `snackabar-success` | Operation completed successfully |
+| Warning | 4 seconds | `snackabar-warning` | Non-critical issues |
+| Error | 10 seconds | `snackabar-error` | Operation failures |
+
+### Notification Configuration
+
+| Property | Value |
+|----------|-------|
+| Horizontal Position | Center |
+| Vertical Position | Bottom |
+| Action Button | Close |
+| Auto-dismiss | Yes |
+| Styling | Material Design 3 themed |
+
+### ToasterService Integration Flow
+
+```mermaid
+graph LR
+    A[Component] -->|Direct Call| B[ToasterService]
+    A -->|Subscription Error| B
+    C[ToasterErrorHandler] -->|Unhandled Error| B
+    B -->|Display| D[Material Snackbar]
+
+    style B fill:#ccffcc
+    style D fill:#ccccff
+```
+
+### Usage Patterns
+
+| Pattern | Description | Components |
+|---------|-------------|------------|
+| **Direct Success** | Show success message after operation | 121 components |
+| **Direct Warning** | Show warning for non-critical issues | 121 components |
+| **Direct Error** | Show error message after failure | 121 components |
+| **Subscription Error** | Handle observable errors | Most components |
+| **Global Handler** | Automatic via `ToasterErrorHandler` | All components |
+
+---
 
 ---
 
