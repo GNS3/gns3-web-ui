@@ -8,7 +8,7 @@ See LICENSE file for licensing information.
 
 # How to Add Hardcoded Colors
 
-**Last Updated**: 2026-04-26
+**Last Updated**: 2026-04-27
 
 > 📖 **Background**: For protection mechanism details, see [Hardcoded Color Protection Mechanism](hardcoded-color-protection.md)
 
@@ -38,6 +38,27 @@ git push
 
 ## Config Format
 
+All hardcoded color exceptions are configured in `.husky/allowed-hardcoded-colors.json`
+
+### Format 1: SCSS CSS Variables
+For defining new CSS variables with hardcoded colors in SCSS files:
+
+```json
+{
+  "file": "src/styles/_map.scss",
+  "variables": [
+    "--gns3-my-new-variable",
+    "--gns3-another-variable"
+  ],
+  "reason": "Brief explanation of why these variables need hardcoded colors"
+}
+```
+
+Add to the `allowed_scss_variables` array in the config file.
+
+### Format 2: TS/HTML Hardcoded Colors
+For hardcoded colors directly used in TypeScript or HTML:
+
 ```json
 {
   "file": "src/app/path/to/file.ts",
@@ -46,9 +67,11 @@ git push
 }
 ```
 
+Add to the `allowed_colors` array in the config file.
+
 **Important**: `patterns` must match code exactly (including quotes, spaces)
 
-**Supports**: `.ts`, `.html`, `.scss` files (SCSS exceptions rarely needed - use predefined variables)
+**Supports**: `.ts`, `.html`, `.scss` files (SCSS CSS variable definitions use Format 1)
 
 ---
 
@@ -64,27 +87,14 @@ All hardcoded colors require exceptions in config file.
 | `STATUS = '#2ecc71'` | `STATUS = '#2ecc71'` |
 
 ### SCSS (.scss)
-**Special Rule**: Only predefined GNS3 variables can use hardcoded colors.
 
-**✅ Allowed** (14 predefined variables):
+#### Defining CSS Variables with Hardcoded Colors
+
+**✅ Allowed** (19 predefined variables in `src/styles/_map.scss`):
 ```scss
 --gns3-map-bg-auto: #ffffff;
 --gns3-canvas-label-color: #000000;
-```
-
-**❌ Detected** (requires config exception):
-```scss
-.test { color: #ff0000; }        // Detected
---my-var: #00ff00;               // Detected
-```
-
-**To add exception** (rare, prefer CSS variables):
-```json
-{
-  "file": "src/app/styles/_custom.scss",
-  "patterns": [".custom { color: #ff0000; }"],
-  "reason": "Specific reason why CSS variable cannot be used"
-}
+--gns3-lock-badge-locked-color: #ff1744;
 ```
 
 **Full allowed variable list**:
@@ -98,6 +108,47 @@ All hardcoded colors require exceptions in config file.
 - `--gns3-canvas-link-color`
 - `--gns3-grid-drawing-color`
 - `--gns3-grid-node-color`
+- `--gns3-lock-badge-locked-color`
+- `--gns3-lock-badge-unlocked-color`
+- `--gns3-lock-badge-outline-color`
+
+**To add new CSS variables**:
+```bash
+# 1. Define in SCSS
+echo "  --gns3-my-variable: #ff0000;" >> src/styles/_map.scss
+
+# 2. Add to config
+nano .husky/allowed-hardcoded-colors.json
+```
+
+```json
+{
+  "file": "src/styles/_map.scss",
+  "variables": ["--gns3-my-variable"],
+  "reason": "My specific use case"
+}
+```
+
+Add this object to the `allowed_scss_variables` array.
+
+#### Direct Hardcoded Colors in SCSS (Not Recommended)
+
+**❌ Detected** (requires config exception):
+```scss
+.test { color: #ff0000; }        // Detected
+--my-var: #00ff00;               // Detected (unless in allowed_scss_variables)
+```
+
+**To add exception** (rare, prefer CSS variables):
+```json
+{
+  "file": "src/app/styles/_custom.scss",
+  "patterns": [".custom { color: #ff0000; }"],
+  "reason": "Specific reason why CSS variable cannot be used"
+}
+```
+
+Add this object to the `allowed_colors` array.
 
 ### HTML (.html)
 All hardcoded colors require exceptions in config file.
