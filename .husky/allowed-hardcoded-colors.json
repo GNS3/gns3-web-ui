@@ -96,6 +96,15 @@
       "reason": "Node fill color"
     },
     {
+      "file": "src/styles/_map.scss",
+      "patterns": [
+        "--gns3-lock-badge-locked-color: #ff1744;",
+        "--gns3-lock-badge-unlocked-color: #00c853;",
+        "--gns3-lock-badge-outline-color: #ffffff;"
+      ],
+      "reason": "Lock status badge CSS variable definitions - red=locked, green=unlocked, white=outline"
+    },
+    {
       "file": "src/app/components/project-map/drawings-editors/style-editor/style-editor.component.ts",
       "patterns": [
         "stroke = this.element.stroke ?? '#000000'"
