@@ -1,10 +1,18 @@
+<!--
+SPDX-License-Identifier: CC-BY-SA-4.0
+See LICENSE file for licensing information.
+-->
+
+  > AI-assisted documentation. [See disclaimer](../README.md). 
+
+
 # GNS3 Web UI - Service Dependency Analysis Report
 
-**Analysis Date**: 2026-04-22
+**Analysis Date**: 2026-04-26
 **Total Components Analyzed**: 249
-**Total Services in Codebase**: 73
+**Total Services in Codebase**: 75
 **Services Used by Components**: 69
-**Services with Special Usage**: 4
+**Services with Special Usage**: 6
 **Total Service Dependencies**: 541
 **Average Dependencies per Component**: 2.17
 
@@ -47,7 +55,122 @@
 
 ---
 
-## 2. Key Insights
+## 2. Service Dependency Architecture
+
+### Overall Architecture
+
+```mermaid
+graph TB
+    subgraph "Component Layer (249 components)"
+        A[Components]
+    end
+
+    subgraph "Critical Services (High Impact)"
+        B[ToasterService<br/>121 components]
+        C[ControllerService<br/>62 components]
+        D[NodeService<br/>45 components]
+    end
+
+    subgraph "High-Impact Services (10-19 components)"
+        E[ThemeService<br/>17 components]
+        F[ProjectService<br/>16 components]
+        G[DialogConfigService<br/>16 components]
+        H[LinkService<br/>15 components]
+        I[DrawingService<br/>15 components]
+        J[ComputeService<br/>13 components]
+        K[ProgressService<br/>12 components]
+    end
+
+    subgraph "Infrastructure Services (Not used by components)"
+        L[ControllerErrorHandler]
+        M[ToasterErrorHandler]
+        N[DefaultConsoleService]
+        O[ExternalSoftwareDefinitionService]
+        P[GoogleAnalyticsService]
+        Q[PlatformService]
+    end
+
+    subgraph "Service-to-Service Dependencies"
+        R[HttpController]
+        S[ConsoleService]
+        T[InstalledSoftwareService]
+        U[ProtocolHandlerService]
+    end
+
+    A -->|48.6%| B
+    A -->|24.9%| C
+    A -->|18.1%| D
+    A -->|6.8%| E
+    A -->|6.4%| F
+    A -->|6.4%| G
+    A -->|6.0%| H
+    A -->|6.0%| I
+    A -->|5.2%| J
+    A -->|4.8%| K
+
+    R -->|Error Handling| L
+    M -->|Display Errors| B
+    S -->|Console Commands| N
+    T -->|Software Definitions| O
+    U -->|Platform Detection| Q
+    A -.->|Unhandled Errors| M
+
+    style B fill:#ff6b6b
+    style C fill:#ff6b6b
+    style D fill:#ff6b6b
+    style L fill:#ffd93d
+    style M fill:#ffd93d
+```
+
+### Special Usage Patterns Architecture
+
+```mermaid
+graph LR
+    subgraph "Module-Level Initialization"
+        A[AppModule]
+        B[GoogleAnalyticsService]
+        C[ToasterErrorHandler]
+    end
+
+    subgraph "Service-to-Service Chains"
+        D[ConsoleComponent]
+        E[ConsoleService]
+        F[DefaultConsoleService]
+
+        G[InstalledSoftwareComponent]
+        H[InstalledSoftwareService]
+        I[ExternalSoftwareDefinitionService]
+        J[PlatformService]
+
+        K[ProtocolHandlerService]
+    end
+
+    subgraph "Infrastructure Services"
+        L[HttpController]
+        M[ControllerErrorHandler]
+    end
+
+    A -->|Auto-init| B
+    A -->|Register| C
+    D --> E
+    E --> F
+    G --> H
+    H --> I
+    I --> J
+    K --> J
+    L --> M
+
+    style C fill:#ff6b6b
+    style M fill:#ff6b6b
+    style B fill:#ffd93d
+    style F fill:#ffd93d
+    style I fill:#ffd93d
+    style J fill:#ffd93d
+```
+
+---
+
+## 3. Key Insights
 
 ### Critical Findings
 
@@ -61,16 +184,30 @@
 
 ### Top 10 Most Critical Services
 
-1. **ToasterService** - 121 components (48.6% of all components)
-2. **ControllerService** - 62 components (24.9%)
-3. **NodeService** - 45 components (18.1%)
-4. **ThemeService** - 17 components (6.8%)
-5. **ProjectService** - 16 components (6.4%)
-6. **DialogConfigService** - 16 components (6.4%)
-7. **LinkService** - 15 components (6.0%)
-8. **DrawingService** - 15 components (6.0%)
-9. **ComputeService** - 13 components (5.2%)
-10. **ProgressService** - 12 components (4.8%)
+| Rank | Service | Components | Percentage | Impact Level |
+|------|---------|------------|------------|--------------|
+| 1 | **ToasterService** | 121 | 48.6% | 🔴 Critical |
+| 2 | **ControllerService** | 62 | 24.9% | 🔴 Critical |
+| 3 | **NodeService** | 45 | 18.1% | 🔴 Critical |
+| 4 | **ThemeService** | 17 | 6.8% | 🟡 High |
+| 5 | **ProjectService** | 16 | 6.4% | 🟡 High |
+| 6 | **DialogConfigService** | 16 | 6.4% | 🟡 High |
+| 7 | **LinkService** | 15 | 6.0% | 🟡 High |
+| 8 | **DrawingService** | 15 | 6.0% | 🟡 High |
+| 9 | **ComputeService** | 13 | 5.2% | 🟡 High |
+| 10 | **ProgressService** | 12 | 4.8% | 🟡 High |
+
+### Service Impact Distribution
+
+```mermaid
+pie title Service Impact Distribution
+    "Critical (>20 components)" : 3
+    "High (10-19 components)" : 7
+    "Medium (5-9 components)" : 14
+    "Low (2-4 components)" : 36
+    "Single-use (1 component)" : 9
+    "Infrastructure (0 components)" : 6
+```
 
 ### Service Distribution Analysis
 
@@ -102,7 +239,7 @@ These services are only used by one component each:
 8. **DeviceDetectorService** - `console-device-action-browser.component`
 9. **ControllerSettingsService** - `qemu-preferences.component`
 
-### Services Not Used by Components (4 services)
+### Services Not Used by Components (6 services)
 
 These services exist in the codebase but are **not directly used by any component**. They serve special purposes:
 
@@ -112,61 +249,46 @@ These services exist in the codebase but are **not directly used by any componen
 | **ExternalSoftwareDefinitionService** | `external-software-definition.service.ts` | Service-to-service dependency: Used only by `InstalledSoftwareService` | 🟢 Low - Software detection definitions |
 | **GoogleAnalyticsService** | `google-analytics.service.ts` | Module-level initialization: Auto-initialized in `app.module.ts` for route tracking | 🟢 Low - Analytics only |
 | **PlatformService** | `platform.service.ts` | Service-to-service dependency: Used by `ExternalSoftwareDefinitionService` and `ProtocolHandlerService` | 🟡 Medium - Platform detection utility |
+| **ControllerErrorHandler** | `http-controller.service.ts` | Service-to-service dependency: Used only by `HttpController` for centralized HTTP error handling | 🔴 Critical - Core error handling infrastructure |
+| **ToasterErrorHandler** | `common/error-handlers/toaster-error-handler.ts` | Global error handler: Registered as Angular's global `ErrorHandler` in `app.module.ts` | 🔴 Critical - Global error handling |
 
 #### Detailed Usage Patterns
 
 **1. DefaultConsoleService**
-```typescript
-// Indirect dependency chain
-@Component({...})
-export class ConsoleComponent {
-  constructor(consoleService: ConsoleService) {
-    // ConsoleService internally uses DefaultConsoleService
-  }
-}
-
-@Service({providedIn: 'root'})
-export class ConsoleService {
-  constructor(defaultConsole: DefaultConsoleService) {}
-}
-```
+- **Pattern**: Service-to-service dependency chain
+- **Flow**: Component → ConsoleService → DefaultConsoleService
+- **Purpose**: Provides default console command detection
+- **Impact**: Indirect - used by ConsoleService which is used by ConsoleComponent
 
 **2. ExternalSoftwareDefinitionService**
-```typescript
-// Two-level dependency chain
-@Component({...})
-export class InstalledSoftwareComponent {
-  constructor(installedSoftware: InstalledSoftwareService) {
-    // InstalledSoftwareService → ExternalSoftwareDefinitionService
-  }
-}
-```
+- **Pattern**: Two-level service-to-service dependency
+- **Flow**: Component → InstalledSoftwareService → ExternalSoftwareDefinitionService
+- **Purpose**: Defines external software detection rules
+- **Impact**: Indirect - software detection definitions
 
 **3. GoogleAnalyticsService**
-```typescript
-// Module-level initialization (not component injection)
-@NgModule({...})
-export class AppModule {
-  constructor(ga: GoogleAnalyticsService) {
-    // Auto-initializes on app bootstrap
-    // Subscribes to Router events for page tracking
-  }
-}
-```
+- **Pattern**: Module-level initialization
+- **Flow**: AppModule constructor → GoogleAnalyticsService initialization
+- **Purpose**: Auto-initializes on app bootstrap, subscribes to Router events
+- **Impact**: Analytics only, no component dependencies
 
 **4. PlatformService**
-```typescript
-// Used by multiple services, but not components
-@Service({providedIn: 'root'})
-export class ExternalSoftwareDefinitionService {
-  constructor(platform: PlatformService) {}
-}
+- **Pattern**: Multi-service utility dependency
+- **Flow**: Used by ExternalSoftwareDefinitionService and ProtocolHandlerService
+- **Purpose**: Platform detection (Windows/Linux/Mac)
+- **Impact**: Medium - platform detection utility for multiple services
 
-@Service({providedIn: 'root'})
-export class ProtocolHandlerService {
-  constructor(platform: PlatformService) {}
-}
-```
+**5. ControllerErrorHandler**
+- **Pattern**: Infrastructure service dependency
+- **Flow**: HttpController → ControllerErrorHandler
+- **Purpose**: Centralized HTTP error handling for all API calls
+- **Impact**: Critical - wraps all HttpController methods with error transformation
+
+**6. ToasterErrorHandler**
+- **Pattern**: Global error handler registration
+- **Flow**: AppModule providers → Angular ErrorHandler → ToasterErrorHandler
+- **Purpose**: Catches all unhandled errors and displays via ToasterService
+- **Impact**: Critical - global error handling safety net
 
 #### Why These Services Weren't Counted
 
@@ -423,14 +545,15 @@ The average component has 2.17 service dependencies, which indicates:
 **Limitations**:
 - Only analyzes **component-to-service dependencies** (direct `inject()` calls)
 - Does not include **service-to-service dependencies** (e.g., `DefaultConsoleService` → `ConsoleService`)
-- Does not track **module-level service initialization** (e.g., `GoogleAnalyticsService` in `app.module.ts`)
+- Does not track **module-level service initialization** (e.g., `GoogleAnalyticsService`, `ToasterErrorHandler` in `app.module.ts`)
 - Does not track usage frequency, only injection count
-- **Total services**: 73 (69 analyzed + 4 with special usage patterns)
+- **Total services**: 75 (69 analyzed + 6 with special usage patterns)
 
 **Special Usage Patterns Not Captured**:
 1. **Service-to-service chains**: Service A depends on Service B, which depends on Service C
-2. **Module-level initialization**: Services auto-initialized in module constructors
+2. **Module-level initialization**: Services auto-initialized in module constructors (e.g., global error handlers)
 3. **Indirect dependencies**: Services used by other services but not directly by components
+4. **Infrastructure services**: Critical services used by other services but not components (e.g., error handlers)
 
 **Tools Used**:
 - Python 3 script with regex pattern matching

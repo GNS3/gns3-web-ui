@@ -3,18 +3,18 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 See LICENSE file for licensing information.
 -->
 
-  > AI-assisted documentation. [See disclaimer](../../README.md). 
+  > AI-assisted documentation. [See disclaimer](../../README.md).
 
 
 # Hardcoded Color Protection Mechanism
 
-**Version**: 1.0.0
-**Last Updated**: 2026-03-31
+**Version**: 2.0.0
+**Last Updated**: 2026-04-26
 **Status**: Enforced
 
 ## Overview
 
-The hardcoded color protection system prevents code quality degradation by enforcing strict standards on color usage across the codebase. It combines automated checks with integrity protection to ensure quality standards cannot be bypassed.
+The hardcoded color protection system prevents code quality degradation by enforcing strict standards on color usage across the codebase. It combines automated pre-commit checks with CI validation to ensure quality standards cannot be bypassed.
 
 ## Architecture
 
@@ -23,16 +23,16 @@ The hardcoded color protection system prevents code quality degradation by enfor
 │                     Protection Layers                           │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│  ┌─────────────┐    ┌──────────────┐    ┌─────────────────┐   │
-│  │   Script    │    │ Pre-commit   │    │       CI        │   │
-│  │ Self-Check  │───▶│   Warning    │───▶│  Label Check   │   │
-│  └─────────────┘    └──────────────┘    └─────────────────┘   │
-│         │                   │                     │             │
-│         ▼                   ▼                     ▼             │
-│  ┌─────────────┐    ┌──────────────┐    ┌─────────────────┐   │
-│  │   SHA256    │    │  Interactive │    │  hooks-update   │   │
-│  │  Verify     │    │  Confirmation │    │     Label       │   │
-│  └─────────────┘    └──────────────┘    └─────────────────┘   │
+│  ┌──────────────┐              ┌─────────────────┐             │
+│  │  Pre-commit  │─────────────▶│       CI        │             │
+│  │   Warning    │              │  Label Check   │             │
+│  └──────────────┘              └─────────────────┘             │
+│         │                              │                        │
+│         ▼                              ▼                        │
+│  ┌──────────────┐              ┌─────────────────┐             │
+│  │  Interactive │              │  hooks-update   │             │
+│  │ Confirmation │              │     Label       │             │
+│  └──────────────┘              └─────────────────┘             │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
                             │
@@ -46,28 +46,7 @@ The hardcoded color protection system prevents code quality degradation by enfor
 
 ## Protection Layers
 
-### Layer 1: Script Self-Integrity (SHA256)
-
-**Purpose**: Prevents script modification
-**Mechanism**: SHA256 checksum verification
-**Behavior**: Fails immediately if script is tampered with
-
-**Workflow**:
-```
-Script runs → Calculates SHA256 → Compares with stored checksum
-                                     │
-                    ┌────────────────┴────────────────┐
-                    │                                 │
-              Match ✓                        Mismatch ✗
-                    │                                 │
-              Continue                     Exit with error
-```
-
-**Files Involved**:
-- `.husky/check-hardcoded-colors.sh` (main script)
-- `.husky/check-hardcoded-colors.sh.sha256` (checksum)
-
-### Layer 2: Pre-commit Interactive Warning
+### Layer 1: Pre-commit Interactive Warning
 
 **Purpose**: Prevents accidental hook modifications
 **Mechanism**: Detects `.husky/` changes in staged files
@@ -77,18 +56,24 @@ Script runs → Calculates SHA256 → Compares with stored checksum
 ```
 Developer: git commit
            ↓
-Pre-commit: ⚠️ WARNING: Modifying git hooks!
-           These files protect code quality:
+Pre-commit: ⚠️  WARNING: Modifying git hooks!
+           These files protect code quality standards:
              - .husky/pre-commit
              - .husky/check-hardcoded-colors.sh
-           Press Enter to continue, Ctrl+C to cancel
+           These changes require:
+             1. Team lead approval
+             2. Update allowed-hardcoded-colors.json if needed
+           If this is intentional, press Enter to continue.
+           Press Ctrl+C to cancel.
            ↓
 Developer: [Presses Enter]
            ↓
 Commit proceeds
 ```
 
-### Layer 3: CI Label Requirement
+**Implementation**: `.husky/pre-commit` (lines 6-24)
+
+### Layer 2: CI Label Requirement
 
 **Purpose**: Prevents unauthorized hook changes via PR
 **Mechanism**: Checks for `hooks-update` label on PRs
@@ -115,6 +100,8 @@ Commit proceeds
   Pass      Fail ✗
 ```
 
+**Implementation**: `.github/workflows/main.yml` (lines 121-149)
+
 ## Configuration Structure
 
 The allowed hardcoded colors are stored in a structured JSON file:
@@ -123,7 +110,7 @@ The allowed hardcoded colors are stored in a structured JSON file:
 {
   "version": "1.0.0",
   "last_updated": "2026-03-31",
-  "description": "Allowed hardcoded colors in legacy graphics rendering code",
+  "description": "Allowed hardcoded colors in legacy graphics rendering code. DO NOT modify without proper review.",
   "allowed_colors": [
     {
       "file": "path/to/file.ts",
@@ -170,6 +157,8 @@ The allowed hardcoded colors are stored in a structured JSON file:
 
 ## Update Workflow
 
+> 📖 **Quick Guide**: For step-by-step instructions, see [How to Add Hardcoded Colors](how-to-add-hardcoded-colors.md)
+
 ### Scenario 1: Adding New Allowed Color
 
 ```
@@ -188,46 +177,48 @@ The allowed hardcoded colors are stored in a structured JSON file:
 7. Get approval and merge
 ```
 
-### Scenario 2: Modifying Check Script
+### Scenario 2: Modifying Check Script or Hooks
 
 ```
-1. Edit .husky/check-hardcoded-colors.sh
+1. Edit .husky/check-hardcoded-colors.sh or other hook files
    ↓
-2. Update checksum:
-   sha256sum .husky/check-hardcoded-colors.sh > .husky/check-hardcoded-colors.sh.sha256
+2. Test: .husky/check-hardcoded-colors.sh --ci
    ↓
-3. Test: .husky/check-hardcoded-colors.sh --ci
+3. Commit (triggers warning, confirm)
    ↓
-4. Commit with --no-verify (first time)
+4. Push and create PR
    ↓
-5. Push and create PR
+5. Add 'hooks-update' label
    ↓
-6. Add 'hooks-update' label
-   ↓
-7. Get approval and merge
+6. Get approval and merge
 ```
 
 ## Security Benefits
 
 | Protection | Against | Mechanism |
 |------------|---------|-----------|
-| Script self-check | Tampering, AI modifications | SHA256 verification |
 | Pre-commit warning | Accidental changes | Interactive confirmation |
 | CI label check | Unauthorized PRs | Required approval label |
 | Config separation | Direct script editing | JSON file |
+| Git version control | Script tampering | Version history and diff |
 
 ## Error Messages
 
-### Script Integrity Failed
+### Pre-commit Warning
 ```
-❌ ERROR: Script integrity check failed!
-   Expected SHA256: abc123...
-   Current SHA256:  def456...
+⚠️  ⚠️  ⚠️  WARNING ⚠️  ⚠️  ⚠️
+You are modifying git hooks and quality check scripts!
 
-   To update this script:
-   1. Get approval from maintainers
-   2. Run: sha256sum .husky/check-hardcoded-colors.sh > .husky/check-hardcoded-colors.sh.sha256
-   3. Update allowed-hardcoded-colors.json if needed
+These files protect code quality standards:
+  - .husky/pre-commit
+  - .husky/check-hardcoded-colors.sh
+
+These changes require:
+  1. Team lead approval
+  2. Update allowed-hardcoded-colors.json if needed
+
+If this is intentional, press Enter to continue.
+Press Ctrl+C to cancel.
 ```
 
 ### CI Label Missing
@@ -239,12 +230,30 @@ To proceed:
   2. Get approval from maintainers
 ```
 
+### Hardcoded Color Check Failed
+```
+❌ FAIL: New hardcoded colors found (use --mat-sys-* or var(--gns3-*) variables)
+
+src/app/components/my-component/my.component.scss:15: #ff0000
+  Line: color: #ff0000;
+
+💡 Allowed:
+   - Material theme variables: --mat-sys-primary, --mat-sys-surface, etc.
+   - GNS3 map variables: var(--gns3-map-bg-*)
+   - Canvas variables: var(--gns3-canvas-*)
+
+📝 Styles should be in .scss files, NOT in .ts or .html files!
+⚠️  Existing legacy hardcoded colors are defined in:
+   .husky/allowed-hardcoded-colors.json
+```
+
 ## Maintenance
 
 ### Regular Tasks
 - Review `allowed-hardcoded-colors.json` quarterly
 - Remove obsolete entries as code is refactored
 - Document new exceptions with clear reasons
+- Monitor CI for failed hooks-update checks
 
 ### Emergency Override
 For urgent fixes requiring bypass:
@@ -253,9 +262,17 @@ git commit --no-verify
 ```
 Use sparingly and document the reason.
 
+## Version History
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 2.0.0 | 2026-04-26 | Removed inaccurate SHA256 description, updated to reflect actual two-layer protection mechanism |
+| 1.0.0 | 2026-03-31 | Initial version (included inaccurate SHA256 description) |
+
 ## Related Documentation
 
 - [Hardcoded Color Inventory](hardcoded-colors-inventory.md) - List of all current violations
+- [Protection Investigation Report](hardcoded-color-protection-investigation-2026-04-26.md) - Detailed verification of protection mechanism
 - [Material 3 Variables](02-material3-variables.md) - Theme system reference
 - [CSS Standards](../README.md) - Overall coding standards
 
@@ -266,7 +283,7 @@ This protection system ensures code quality standards remain effective even with
 - Multiple contributors
 - Large codebase evolution
 
-The multi-layer approach makes it difficult to bypass checks accidentally or intentionally, while still allowing authorized updates through a clear process.
+The two-layer approach (Pre-commit + CI) makes it difficult to bypass checks accidentally or intentionally, while still allowing authorized updates through a clear process. Git's version control provides additional protection against script tampering.
 
 ---
 
